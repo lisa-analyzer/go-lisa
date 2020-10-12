@@ -1,0 +1,13 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    api project(':lisa')
+
+    testImplementation 'junit:junit:4.12'
+}

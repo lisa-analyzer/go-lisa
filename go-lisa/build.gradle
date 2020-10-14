@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+   	id 'antlr'
 }
 
 repositories {
@@ -8,6 +9,23 @@ repositories {
 
 dependencies {
     api project(':lisa')
-
+    antlr 'org.antlr:antlr4:4.8-1'
     testImplementation 'junit:junit:4.12'
 }
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-visitor", "-no-listener"]
+    
+        doLast {
+    	copy {
+      		from 'build/generated-src/antlr/main/'
+      		include '*.*'
+      		into 'build/generated-src/antlr/main/antlr'
+    	}
+   		project.delete fileTree('build/generated-src/antlr/main').include('*.*')
+  	}
+}
+
+
+

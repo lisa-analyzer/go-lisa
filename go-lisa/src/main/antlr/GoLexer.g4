@@ -35,6 +35,8 @@
 
 lexer grammar GoLexer;
 
+@lexer::header {package it.unive.golisa.antlr;}
+
 // Keywords
 
 BREAK                  : 'break';

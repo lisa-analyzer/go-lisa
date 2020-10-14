@@ -35,6 +35,10 @@
  
  parser grammar GoParser;
 
+@header {
+    package it.unive.golisa.antlr;
+}
+
 options {
     tokenVocab=GoLexer;
     superClass=GoParserBase;

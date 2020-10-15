@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -17,9 +18,9 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
-import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.literals.GoInteger;
 import it.unive.lisa.cfg.CFG;
@@ -31,22 +32,35 @@ import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
 import it.unive.lisa.logging.IterationLogger;
 
+/**
+ * @GoToCFG manages the translation from a Go program to the
+ * corresponding LiSA @CFG.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ */
 public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	private static final Logger log = LogManager.getLogger(GoToCFG.class); 
 
 	/**
-	 * Go program file path
+	 * Go program file path.
 	 */
 	private String filePath;
 
 	/**
-	 * List of CFGs collected into the Go program at filePath
+	 * List of CFGs collected into the Go program at filePath.
 	 */
-	private List<CFG> cfgs;
+	private Collection<CFG> cfgs;
 
+	
+	/**
+	 * Builds an instance of @GoToCFG for a given Go program
+	 * given at the location filePath.
+	 *  
+	 * @param filePath file path to a Go program.
+	 */
 	public GoToCFG(String filePath) {
-		this.cfgs = new ArrayList<CFG>();
+		this.cfgs = new HashSet<CFG>();
 		this.filePath = filePath;
 	}
 
@@ -70,7 +84,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * Returns the parsed CFGs
 	 * @return the parsed CFGs
 	 */
-	public List<CFG> getCFGs() {
+	public Collection<CFG> getCFGs() {
 		return cfgs;
 	}
 
@@ -79,37 +93,47 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 */
 	private CFG currentCFG;
 
-	public static void main(String[] args) throws IOException {
-		log.info("GoToCFG setup...");
 
-		String filePath = "src/test/resources/go-tutorial/go001.go";
-		GoToCFG interpreter = new GoToCFG(filePath);
-		log.info("Reading file..." + filePath);
+	/**
+	 * Returns the collection of @CFG in a Go program at filePath.
+	 * 
+	 * @return collection of @CFG in file
+	 * @throws IOException
+	 */
+	public Collection<CFG> toLiSACFG() {
+		log.info("GoToCFG setup...");
+		log.info("Reading file... " + filePath);
 
 		InputStream stream;
 		try {
-			stream = new FileInputStream(interpreter.getFilePath());
+			stream = new FileInputStream(getFilePath());
 		} catch (FileNotFoundException e) {
 			System.err.println(filePath + " does not exist. Exiting.");
-			return;
+			return new ArrayList<>();
 		}
 
-		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
-		GoParser parser = new GoParser(new CommonTokenStream(lexer));
-		ParseTree tree = parser.sourceFile();
-		interpreter.visit(tree);
-		stream.close();
+		try {
+			GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+			GoParser parser = new GoParser(new CommonTokenStream(lexer));
+			ParseTree tree = parser.sourceFile();
+			visit(tree);
+			stream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return cfgs;
 	}
 
 	@Override
 	public Statement visit(ParseTree tree) {
+				
 		if (tree instanceof SourceFileContext)
-			visitSourceFile((SourceFileContext) tree);
+			return visitSourceFile((SourceFileContext) tree);
 		else {
-			visit(((RuleContext) tree));
+			return visit(((RuleContext) tree));
 		}
-		
-		return null;
 	}
 
 	@Override
@@ -161,8 +185,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitDeclaration(DeclarationContext ctx) {
-		visitChildren(ctx);
-		return null;
+		return visitChildren(ctx);
 	}
 
 	@Override
@@ -212,7 +235,9 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		int size = 0;
 		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
-			size += paramCxt.identifierList().children.size();
+			size += paramCxt.identifierList().IDENTIFIER().size();
+		
+		
 
 		String[] cfgArgs = new String[size];
 
@@ -220,7 +245,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		//TODO: for the moment, we skip the formal parameter type
 		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
-			for (ParseTree v : paramCxt.identifierList().children)
+			for (ParseTree v : paramCxt.identifierList().IDENTIFIER())
 				cfgArgs[i++] = v.getText();
 
 		CFG cfg = new CFG(new CFGDescriptor(filePath, line, col, funcName, cfgArgs));
@@ -228,8 +253,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		cfgs.add(cfg);
 
 		currentCFG = cfg;
-		visitBlock(ctx.block());		
-		return null;
+		return visitBlock(ctx.block());		
 	}
 
 	@Override
@@ -246,10 +270,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitVarDecl(VarDeclContext ctx) {
+		Statement lastStatement = null;
 		for (VarSpecContext varSpec : ctx.varSpec()) 
-			visitVarSpec(varSpec);
+			lastStatement = visitVarSpec(varSpec);
 
-		return null;
+		return lastStatement;
 	}
 
 
@@ -259,7 +284,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		ExpressionListContext exps = ctx.expressionList();
 
 		Statement prev = null;
-		
+
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
 			Expression exp = (Expression) visitExpression(exps.expression(i));
@@ -270,31 +295,37 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			if (prev != null)
 				currentCFG.addEdge(new SequentialEdge(prev, asg));
 			prev = asg;
-	
+
 		}
 
-		return null;
+		return prev;
 	}
 
 	@Override
 	public Statement visitBlock(BlockContext ctx) {
 		// Visit the statement list inside the block
-		visitStatementList(ctx.statementList());
-		return null;
+		return visitStatementList(ctx.statementList());
 	}
 
 	@Override
 	public Statement visitStatementList(StatementListContext ctx) {
-		for (int i = 0; i < ctx.statement().size(); i++) 
-			visitStatement(ctx.statement(i));
 
-		return null;
+		Statement previousStmt = null;
+
+		for (int i = 0; i < ctx.statement().size(); i++)  {
+			Statement currentStmt = visitStatement(ctx.statement(i));
+
+			if (previousStmt != null) 
+				currentCFG.addEdge(new SequentialEdge(previousStmt, currentStmt));
+			previousStmt = currentStmt;
+		}
+
+		return previousStmt;
 	}
 
 	@Override
 	public Statement visitStatement(StatementContext ctx) {
-		visitChildren(ctx);
-		return null;
+		return visitChildren(ctx);
 	}
 
 	@Override
@@ -305,8 +336,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitExpressionStmt(ExpressionStmtContext ctx) {
-		visitChildren(ctx);
-		return null;
+		return visitChildren(ctx);
 	}
 
 	@Override

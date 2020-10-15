@@ -1,0 +1,8 @@
+package main
+
+import "fmt"
+
+func main() {
+	var i, j int = 1, 2
+	var x int = 3;
+}

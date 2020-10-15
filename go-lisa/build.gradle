@@ -15,7 +15,7 @@ mainClassName = 'it.unive.golisa.cli.CLI'
 
 dependencies {
     implementation project(':lisa')
-    antlr 'org.antlr:antlr4:4.8-1'
+    antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
 }
 

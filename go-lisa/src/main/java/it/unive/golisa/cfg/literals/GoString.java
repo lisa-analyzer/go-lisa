@@ -16,7 +16,7 @@ public class GoString extends Literal {
 	 * (i.e. no source file/line/column is available).
 	 * 
 	 * @param cfg	the cfg that this Go string belongs to
-	 * @param value the integer value
+	 * @param value the string value
 	 */
 	public GoString(CFG cfg, Object value) {
 		super(cfg, value);

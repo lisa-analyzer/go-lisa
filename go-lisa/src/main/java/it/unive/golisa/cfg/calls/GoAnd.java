@@ -5,27 +5,27 @@ import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
- * Go numerical sum native function class.
+ * Go Boolean and native function class.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoSum extends NativeCall {
+public class GoAnd extends NativeCall {
 	
 	/**
-	 * Builds a Go sum expression. The location where 
-	 * this Go sum expression appears is unknown 
+	 * Builds a Go and expression. 
+	 * The location where this Go and expression appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
-	 * @param cfg	the cfg that this Go sum expression belongs to
+	 * @param cfg	the cfg that this Go and expression belongs to
 	 * @param exp1	left-side operand
 	 * @param exp2 	right-side operand 
 	 */
-	public GoSum(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "+", exp1, exp2);
+	public GoAnd(CFG cfg, Expression exp1, Expression exp2) {
+		super(cfg, null, -1, -1, "&&", exp1, exp2);
 	}
 	
 	@Override
 	public String toString() {
-		return getParameters()[0].toString() + " + " + getParameters()[1].toString();
+		return getParameters()[0].toString() + " && " + getParameters()[1].toString();
 	}
 }

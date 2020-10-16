@@ -14,6 +14,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,8 @@ import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.literals.GoInteger;
+import it.unive.golisa.cfg.calls.*;
+import it.unive.golisa.cfg.literals.*;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.SequentialEdge;
@@ -52,7 +54,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 */
 	private Collection<CFG> cfgs;
 
-	
+
 	/**
 	 * Builds an instance of @GoToCFG for a given Go program
 	 * given at the location filePath.
@@ -94,6 +96,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private CFG currentCFG;
 
 
+	public static void main(String[] args) {
+		String file = "src/test/resources/go-tutorial/go002.go";
+		GoToCFG translator = new GoToCFG(file);
+		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
+	}
+
 	/**
 	 * Returns the collection of @CFG in a Go program at filePath.
 	 * 
@@ -128,13 +136,18 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visit(ParseTree tree) {
-				
+
 		if (tree instanceof SourceFileContext)
 			return visitSourceFile((SourceFileContext) tree);
 		else {
 			return visit(((RuleContext) tree));
 		}
 	}
+	
+//	@Override 
+//	public Expression visitChildren(RuleNode node) {
+//		return null;
+//	}
 
 	@Override
 	public Statement visitTerminal(TerminalNode node) {
@@ -236,8 +249,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		int size = 0;
 		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
 			size += paramCxt.identifierList().IDENTIFIER().size();
-		
-		
+
+
 
 		String[] cfgArgs = new String[size];
 
@@ -629,13 +642,47 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitExpression(ExpressionContext ctx) {
-		return visitChildren(ctx);
+	public Expression visitExpression(ExpressionContext ctx) {	
+
+		// Go sum (+)
+		if (ctx.PLUS() != null)
+			return new GoSum(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go multiplication (*)
+		if (ctx.STAR() != null)
+			return new GoMul(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go division (/)
+		if (ctx.DIV() != null)
+			return new GoDiv(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go minus (-)
+		if (ctx.MINUS() != null)
+			return new GoMinus(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go and (&&)
+		if (ctx.LOGICAL_AND() != null)
+			return new GoAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+		
+		// Go and (||)
+		if (ctx.LOGICAL_OR() != null)
+			return new GoOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+		
+		// Primary expression
+		if (ctx.primaryExpr() != null)
+			return visitPrimaryExpr(ctx.primaryExpr());
+
+		return null;
 	}
 
 	@Override
-	public Statement visitPrimaryExpr(PrimaryExprContext ctx) {
-		return visitChildren(ctx);
+	public Expression visitPrimaryExpr(PrimaryExprContext ctx) {
+
+		// Operand expression
+		if (ctx.operand() != null)
+			return visitOperand(ctx.operand());
+
+		return null;
 	}
 
 	@Override
@@ -651,29 +698,44 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitOperand(OperandContext ctx) {
-		return visitChildren(ctx);
+	public Expression visitOperand(OperandContext ctx) {
+		if (ctx.literal() != null)
+			return visitLiteral(ctx.literal());
+		if (ctx.operandName() != null)
+			return visitOperandName(ctx.operandName());
+		
+		return null;
 	}
 
 	@Override
-	public Statement visitLiteral(LiteralContext ctx) {
-		return visitChildren(ctx);
+	public Expression visitLiteral(LiteralContext ctx) {
+		if (ctx.basicLit() != null)
+			return visitBasicLit(ctx.basicLit());
 
+		return null;
 	}
 
 	@Override
-	public Statement visitBasicLit(BasicLitContext ctx) {
-		return visitChildren(ctx);
+	public Expression visitBasicLit(BasicLitContext ctx) {
+		
+		// Go decimal integer
+		if (ctx.integer() != null)
+			return visitInteger(ctx.integer());
+
+		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
+		return null;
 	}
 
 	@Override
-	public Statement visitInteger(IntegerContext ctx) {
+	public Expression visitInteger(IntegerContext ctx) {
 		return new GoInteger(currentCFG, ctx.DECIMAL_LIT().getText());
 	}
 
 	@Override
-	public Statement visitOperandName(OperandNameContext ctx) {
-		// TODO Auto-generated method stub
+	public Expression visitOperandName(OperandNameContext ctx) {
+		if (ctx.IDENTIFIER() != null)
+			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
+		
 		return null;
 	}
 

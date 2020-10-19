@@ -23,7 +23,7 @@ public class IfStatementTest {
 String path = "src/test/resources/go-tutorial/";
 	
 	@Test
-	public void singleVariableDeclaration() throws IOException {
+	public void simpleIfElseStmt() throws IOException {
 		
 		String file = path + "go002.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
@@ -55,6 +55,38 @@ String path = "src/test/resources/go-tutorial/";
 		expectedCfg.addEdge(new SequentialEdge(bAsg, noop));
 
 		CFG cfg = cfgs.iterator().next();		
+		assertTrue(expectedCfg.isEqualTo(cfg));
+	}
+	
+	@Test
+	public void ifStmtWithoutElse() throws IOException {
+		
+		String file = path + "go004.go";
+		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		
+		// Check number of generated cfgs
+		assertEquals(cfgs.size(), 1);
+		
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		
+		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 100));
+		expectedCfg.addNode(xAsg);
+
+		GoEquals guard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		expectedCfg.addNode(guard);
+
+		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "y"), new GoInteger(expectedCfg, 5));
+		expectedCfg.addNode(yAsg);
+		
+		NoOp noop = new NoOp(expectedCfg);
+		expectedCfg.addNode(noop);
+		
+		expectedCfg.addEdge(new SequentialEdge(xAsg, guard));
+		expectedCfg.addEdge(new SequentialEdge(yAsg, noop));
+		expectedCfg.addEdge(new TrueEdge(guard, yAsg));
+		expectedCfg.addEdge(new FalseEdge(guard, noop));
+		
+		CFG cfg = cfgs.iterator().next();	
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
 }

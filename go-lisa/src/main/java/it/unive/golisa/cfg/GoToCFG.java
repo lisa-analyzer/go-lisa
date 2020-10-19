@@ -100,7 +100,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 
 	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/go002.go";
+		String file = "src/test/resources/go-tutorial/go004.go";
 		GoToCFG translator = new GoToCFG(file);
 		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
 	}
@@ -382,7 +382,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	public Statement visitShortVarDecl(ShortVarDeclContext ctx) {
 		/*
 		 * The short variable declaration in only
-		 * syntactic sugar of variable declaration
+		 * syntactic sugar for variable declaration
 		 * (e.g., x := 5 corresponds to var x int = 5).
 		 * Hence, the translation is identical to the one
 		 * of a variable declaration.
@@ -462,28 +462,39 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitIfStmt(IfStmtContext ctx) {
 
-		// Visit if Boolean Guard
+		// Visit If statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
 		currentCFG.addNode(booleanGuard);
 
-		Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
-		Statement exitStatementFalseBranch = visitBlock(ctx.block(1));
-
-		Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
-		Statement entryStatementFalseBranch = getEntryNode(ctx.block(1));
-
-		currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
-		currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
-
 		NoOp ifExitNode = new NoOp(currentCFG);
 		currentCFG.addNode(ifExitNode);
-		
-		currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
-		currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
 
+		if (ctx.ELSE() == null) {
+			// If statement without else branch
+			Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
+			Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
+			
+			currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));			
+			currentCFG.addEdge(new FalseEdge(booleanGuard, ifExitNode));			
+			currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+		} else {
+			// If statement with else branch
+			Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
+			Statement exitStatementFalseBranch = visitBlock(ctx.block(1));
+
+			Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
+			Statement entryStatementFalseBranch = getEntryNode(ctx.block(1));
+
+			currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
+			currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
+
+			currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+			currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
+		}
+		
 		
 		if (ctx.simpleStmt() != null) {
-			Statement initialStatement = visit(ctx.simpleStmt());
+			Statement initialStatement = visitSimpleStmt(ctx.simpleStmt());
 			currentCFG.addNode(initialStatement);
 			currentCFG.addEdge(new SequentialEdge(initialStatement, booleanGuard));
 		}
@@ -790,9 +801,9 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitOperandName(OperandNameContext ctx) {
-		if (ctx.IDENTIFIER() != null)
+		if (ctx.IDENTIFIER() != null) 
 			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
-
+		
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
@@ -945,11 +956,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 	
 	private Statement getNodeFromContext(ParserRuleContext ctx) {
-		for (Statement node : currentCFG.getNodes()) 
+		for (Statement node : currentCFG.getNodes()) {
 			if (node.getLine() == getLine(ctx) && node.getCol() == getCol(ctx))
 				return node;
+		}
 		
-		throw new IllegalStateException("Cannot find any node " + ctx.getText());
+		throw new IllegalStateException("Cannot find the node " + ctx.getText());
 	}
 	
 	private Statement getBlockEntryNode(BlockContext block) {

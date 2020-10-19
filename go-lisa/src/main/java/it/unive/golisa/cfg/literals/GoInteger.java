@@ -12,14 +12,13 @@ public class GoInteger extends Literal {
 
 	/**
 	 * Builds a Go integer value. The location where 
-	 * this Go integer valueappears is unknown 
+	 * this Go integer value appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
 	 * @param cfg   the cfg that this Go integer belongs to
 	 * @param value the integer value
 	 */
-	public GoInteger(CFG cfg, Object value) {
+	public GoInteger(CFG cfg, Integer value) {
 		super(cfg, value);
 	}
-
 }

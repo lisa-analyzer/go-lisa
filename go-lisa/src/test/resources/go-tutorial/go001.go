@@ -3,6 +3,6 @@ package main
 import "fmt"
 
 func main() {
-	var i, j int = 1, 2
-	var k int = 3;
+	var i int = 1
+	var j int = 2
 }

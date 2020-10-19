@@ -23,9 +23,4 @@ public class GoMul extends NativeCall {
 	public GoMul(CFG cfg, Expression exp1, Expression exp2) {
 		super(cfg, null, -1, -1, "*", exp1, exp2);
 	}
-	
-	@Override
-	public String toString() {
-		return getParameters()[0].toString() + " * " + getParameters()[1].toString();
-	}
 }

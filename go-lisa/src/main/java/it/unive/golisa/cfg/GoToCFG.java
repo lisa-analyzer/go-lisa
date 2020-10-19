@@ -11,10 +11,10 @@ import java.util.HashSet;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,12 +24,15 @@ import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.calls.*;
+import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literals.*;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
-import it.unive.lisa.cfg.SequentialEdge;
-import it.unive.lisa.cfg.statement.Assignment;
+import it.unive.lisa.cfg.edge.FalseEdge;
+import it.unive.lisa.cfg.edge.SequentialEdge;
+import it.unive.lisa.cfg.edge.TrueEdge;
 import it.unive.lisa.cfg.statement.Expression;
+import it.unive.lisa.cfg.statement.NoOp;
 import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
 import it.unive.lisa.logging.IterationLogger;
@@ -96,7 +99,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private CFG currentCFG;
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		String file = "src/test/resources/go-tutorial/go002.go";
 		GoToCFG translator = new GoToCFG(file);
 		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
@@ -106,9 +109,9 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * Returns the collection of @CFG in a Go program at filePath.
 	 * 
 	 * @return collection of @CFG in file
-	 * @throws IOException
+	 * @throws IOException if {@code stream} to file cannot be written to or closed
 	 */
-	public Collection<CFG> toLiSACFG() {
+	public Collection<CFG> toLiSACFG() throws IOException {
 		log.info("GoToCFG setup...");
 		log.info("Reading file... " + filePath);
 
@@ -120,16 +123,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			return new ArrayList<>();
 		}
 
-		try {
-			GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
-			GoParser parser = new GoParser(new CommonTokenStream(lexer));
-			ParseTree tree = parser.sourceFile();
-			visit(tree);
-			stream.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+		GoParser parser = new GoParser(new CommonTokenStream(lexer));
+		ParseTree tree = parser.sourceFile();
+		visit(tree);
+		stream.close();
 
 		return cfgs;
 	}
@@ -140,14 +138,15 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (tree instanceof SourceFileContext)
 			return visitSourceFile((SourceFileContext) tree);
 		else {
+			System.err.println(tree.getText());
 			return visit(((RuleContext) tree));
 		}
 	}
-	
-//	@Override 
-//	public Expression visitChildren(RuleNode node) {
-//		return null;
-//	}
+
+	//	@Override 
+	//	public Expression visitChildren(RuleNode node) {
+	//		return null;
+	//	}
 
 	@Override
 	public Statement visitTerminal(TerminalNode node) {
@@ -295,14 +294,17 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	public Statement visitVarSpec(VarSpecContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
-
+		
 		Statement prev = null;
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
 			Expression exp = (Expression) visitExpression(exps.expression(i));
 
-			Assignment asg = new Assignment(currentCFG, target, exp);
+			int line = getLine(ctx);
+			int col = getCol(ctx);
+
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
 			if (prev != null)
@@ -329,7 +331,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			Statement currentStmt = visitStatement(ctx.statement(i));
 
 			if (previousStmt != null) 
-				currentCFG.addEdge(new SequentialEdge(previousStmt, currentStmt));
+				currentCFG.addEdge(new SequentialEdge(previousStmt, getEntryNode(ctx.statement(i))));
 			previousStmt = currentStmt;
 		}
 
@@ -343,8 +345,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitSimpleStmt(SimpleStmtContext ctx) {
-		// TODO Auto-generated method stub
-		return null;
+		return visitChildren(ctx);
 	}
 
 	@Override
@@ -379,8 +380,35 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitShortVarDecl(ShortVarDeclContext ctx) {
-		// TODO Auto-generated method stub
-		return null;
+		/*
+		 * The short variable declaration in only
+		 * syntactic sugar of variable declaration
+		 * (e.g., x := 5 corresponds to var x int = 5).
+		 * Hence, the translation is identical to the one
+		 * of a variable declaration.
+		 */
+		IdentifierListContext ids = ctx.identifierList();
+		ExpressionListContext exps = ctx.expressionList();
+		
+		Statement prev = null;
+
+		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
+			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
+			Expression exp = (Expression) visitExpression(exps.expression(i));
+
+			int line = getLine(ctx);
+			int col = getCol(ctx);
+
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
+			currentCFG.addNode(asg);
+
+			if (prev != null)
+				currentCFG.addEdge(new SequentialEdge(prev, asg));
+			prev = asg;
+
+		}
+
+		return prev;
 	}
 
 	@Override
@@ -433,10 +461,36 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitIfStmt(IfStmtContext ctx) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
+		// Visit if Boolean Guard
+		Statement booleanGuard = visitExpression(ctx.expression());
+		currentCFG.addNode(booleanGuard);
+
+		Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
+		Statement exitStatementFalseBranch = visitBlock(ctx.block(1));
+
+		Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
+		Statement entryStatementFalseBranch = getEntryNode(ctx.block(1));
+
+		currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
+		currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
+
+		NoOp ifExitNode = new NoOp(currentCFG);
+		currentCFG.addNode(ifExitNode);
+		
+		currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+		currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
+
+		
+		if (ctx.simpleStmt() != null) {
+			Statement initialStatement = visit(ctx.simpleStmt());
+			currentCFG.addNode(initialStatement);
+			currentCFG.addEdge(new SequentialEdge(initialStatement, booleanGuard));
+		}
+		
+		return ifExitNode;
+	}
+	
 	@Override
 	public Statement visitSwitchStmt(SwitchStmtContext ctx) {
 		// TODO Auto-generated method stub
@@ -661,28 +715,31 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			return new GoMinus(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&&)
-		if (ctx.LOGICAL_AND() != null)
-			return new GoAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+		if (ctx.LOGICAL_AND() != null) 
+			return new GoAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 		
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
 			return new GoOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
-		
-		// Primary expression
-		if (ctx.primaryExpr() != null)
-			return visitPrimaryExpr(ctx.primaryExpr());
 
-		return null;
+		// Go equals (==)
+		if (ctx.EQUALS() != null)
+			return new GoEquals(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		Statement child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
 	public Expression visitPrimaryExpr(PrimaryExprContext ctx) {
-
-		// Operand expression
-		if (ctx.operand() != null)
-			return visitOperand(ctx.operand());
-
-		return null;
+		Statement child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
@@ -699,25 +756,25 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitOperand(OperandContext ctx) {
-		if (ctx.literal() != null)
-			return visitLiteral(ctx.literal());
-		if (ctx.operandName() != null)
-			return visitOperandName(ctx.operandName());
-		
-		return null;
+		Statement child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
 	public Expression visitLiteral(LiteralContext ctx) {
-		if (ctx.basicLit() != null)
-			return visitBasicLit(ctx.basicLit());
-
-		return null;
+		Statement child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
 	public Expression visitBasicLit(BasicLitContext ctx) {
-		
+
 		// Go decimal integer
 		if (ctx.integer() != null)
 			return visitInteger(ctx.integer());
@@ -728,15 +785,19 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitInteger(IntegerContext ctx) {
-		return new GoInteger(currentCFG, ctx.DECIMAL_LIT().getText());
+		return new GoInteger(currentCFG, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 	}
 
 	@Override
 	public Expression visitOperandName(OperandNameContext ctx) {
 		if (ctx.IDENTIFIER() != null)
 			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
-		
-		return null;
+
+		Statement child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
@@ -857,5 +918,41 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	public Statement visitEos(EosContext ctx) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private int getLine(ParserRuleContext ctx) {
+		return ctx.getStart().getLine();
+	} 
+
+	private int getCol(ParserRuleContext ctx) {
+		return ctx.getStop().getCharPositionInLine();
+	} 
+	
+	private Statement getEntryNode(ParserRuleContext ctx) {
+		if (ctx instanceof BlockContext)
+			return getBlockEntryNode((BlockContext) ctx);
+		
+		if (ctx instanceof IfStmtContext) 
+			return getNodeFromContext(((IfStmtContext) ctx).expression());
+		
+		if (ctx instanceof StatementContext) {
+			if (((StatementContext) ctx).ifStmt() != null)
+				return getNodeFromContext(((StatementContext) ctx).ifStmt().expression());				
+		}
+				
+		// If ctx is a simple statement (not composite) return this
+		return getNodeFromContext(ctx);
+	}
+	
+	private Statement getNodeFromContext(ParserRuleContext ctx) {
+		for (Statement node : currentCFG.getNodes()) 
+			if (node.getLine() == getLine(ctx) && node.getCol() == getCol(ctx))
+				return node;
+		
+		throw new IllegalStateException("Cannot find any node " + ctx.getText());
+	}
+	
+	private Statement getBlockEntryNode(BlockContext block) {
+		return getNodeFromContext(block.statementList().statement(0));
 	}
 }

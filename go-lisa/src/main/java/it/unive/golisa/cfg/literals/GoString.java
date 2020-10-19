@@ -18,7 +18,7 @@ public class GoString extends Literal {
 	 * @param cfg	the cfg that this Go string belongs to
 	 * @param value the string value
 	 */
-	public GoString(CFG cfg, Object value) {
+	public GoString(CFG cfg, String value) {
 		super(cfg, value);
 	}
 

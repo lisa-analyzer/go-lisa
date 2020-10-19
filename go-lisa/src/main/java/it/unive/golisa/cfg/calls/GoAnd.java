@@ -24,8 +24,20 @@ public class GoAnd extends NativeCall {
 		super(cfg, null, -1, -1, "&&", exp1, exp2);
 	}
 	
-	@Override
-	public String toString() {
-		return getParameters()[0].toString() + " && " + getParameters()[1].toString();
+	/**
+	 * Builds a Go and expression at a given location in the program.
+	 * 
+	 * @param cfg           the cfg that this and expression belongs to
+	 * @param sourceFile    the source file where this and expression happens. If
+	 *                      unknown, use {@code null}
+	 * @param line          the line number where this and expression happens in the
+	 *                      source file. If unknown, use {@code -1}
+	 * @param col           the column where this and expression happens in the source
+	 *                      file. If unknown, use {@code -1}
+	 * @param exp1		    left-side operand
+	 * @param exp2		    right-side operand
+	 */
+	public GoAnd(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, sourceFile, line, col, "&&", exp1, exp2);
 	}
 }

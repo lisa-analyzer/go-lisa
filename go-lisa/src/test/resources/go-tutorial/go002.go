@@ -3,6 +3,11 @@ package main
 import "fmt"
 
 func main() {
-	var i, j int = 1, 2
-	var k int = i + j
+	var i int = 1
+	
+	if i == 2 {
+		var a int = 1
+	} else {
+		var b int = 2
+	}
 }

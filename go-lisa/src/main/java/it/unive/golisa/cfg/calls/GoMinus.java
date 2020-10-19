@@ -5,7 +5,7 @@ import it.unive.lisa.cfg.statement.NativeCall;
 import it.unive.lisa.cfg.statement.Expression;
 
 /**
- * Go numerical multiplication native function class.
+ * Go numerical minus native function class.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
@@ -22,10 +22,5 @@ public class GoMinus extends NativeCall {
 	 */
 	public GoMinus(CFG cfg, Expression exp1, Expression exp2) {
 		super(cfg, null, -1, -1, "-", exp1, exp2);
-	}
-	
-	@Override
-	public String toString() {
-		return getParameters()[0].toString() + " - " + getParameters()[1].toString();
 	}
 }

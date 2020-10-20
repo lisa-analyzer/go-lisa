@@ -16,7 +16,7 @@ import it.unive.lisa.cfg.statement.Variable;
 
 public class VariableDeclarationTest {
 
-	String path = "src/test/resources/go-tutorial/";
+	String path = "src/test/resources/go-tutorial/decl/";
 	
 	@Test
 	public void singleVariableDeclaration() throws IOException {
@@ -44,7 +44,7 @@ public class VariableDeclarationTest {
 	@Test
 	public void multipleVariableDeclarations() throws IOException {
 		
-		String file = path + "go003.go";
+		String file = path + "go002.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 		
 		// Check number of generated cfgs

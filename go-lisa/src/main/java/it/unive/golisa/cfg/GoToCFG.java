@@ -53,7 +53,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private String filePath;
 
 	/**
-	 * List of CFGs collected into the Go program at filePath.
+	 * Collection of CFGs collected into the Go program at filePath.
 	 */
 	private Collection<CFG> cfgs;
 
@@ -98,6 +98,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 */
 	private CFG currentCFG;
 
+	private Object object;
+
 
 	public static void main(String[] args) throws IOException {
 		String file = "src/test/resources/go-tutorial/go004.go";
@@ -138,61 +140,63 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (tree instanceof SourceFileContext)
 			return visitSourceFile((SourceFileContext) tree);
 		else {
-			System.err.println(tree.getText());
 			return visit(((RuleContext) tree));
 		}
 	}
 
 	//	@Override 
 	//	public Expression visitChildren(RuleNode node) {
-	//		return null;
+	//				throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+
 	//	}
 
-	@Override
-	public Statement visitTerminal(TerminalNode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Statement visitErrorNode(ErrorNode node) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	//	@Override
+	//	public Statement visitTerminal(TerminalNode node) {
+	//		// TODO Auto-generated method stub
+	//		throw new UnsupportedOperationException("Unsupported translation: " + node.getText());
+	//
+	//	}
+	//
+	//	@Override
+	//	public Statement visitErrorNode(ErrorNode node) {
+	//		// TODO Auto-generated method stub
+	//		throw new UnsupportedOperationException("Unsupported translation: " + node.getText());
+	//	}
 
 	@Override
 	public Statement visitSourceFile(SourceFileContext ctx) {
 		//TODO: we skip, for the moment package information and imports
+		Statement lastStatement = null;
 
 		// Visit of each @FunctionDeclContext appearing in the source code
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations")) 
-			visitFunctionDecl(funcDecl);
+			lastStatement = visitFunctionDecl(funcDecl);
 
-		return null;
+		return lastStatement;
 	}
 
 	@Override
 	public Statement visitPackageClause(PackageClauseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitImportDecl(ImportDeclContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitImportSpec(ImportSpecContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitImportPath(ImportPathContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -203,37 +207,37 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitConstDecl(ConstDeclContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitConstSpec(ConstSpecContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitIdentifierList(IdentifierListContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitExpressionList(ExpressionListContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeDecl(TypeDeclContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeSpec(TypeSpecContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -271,13 +275,13 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitMethodDecl(MethodDeclContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitReceiver(ReceiverContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -294,7 +298,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	public Statement visitVarSpec(VarSpecContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
-		
+
 		Statement prev = null;
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
@@ -356,26 +360,26 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitSendStmt(SendStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitIncDecStmt(IncDecStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitAssignment(AssignmentContext ctx) {		
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 
 	@Override
 	public Statement visitAssign_op(Assign_opContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -389,7 +393,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		 */
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
-		
+
 		Statement prev = null;
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
@@ -414,49 +418,49 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitEmptyStmt(EmptyStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitReturnStmt(ReturnStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitBreakStmt(BreakStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitContinueStmt(ContinueStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitGotoStmt(GotoStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitFallthroughStmt(FallthroughStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitDeferStmt(DeferStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -473,237 +477,252 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			// If statement without else branch
 			Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
 			Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
-			
+
 			currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));			
 			currentCFG.addEdge(new FalseEdge(booleanGuard, ifExitNode));			
 			currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
 		} else {
-			// If statement with else branch
-			Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
-			Statement exitStatementFalseBranch = visitBlock(ctx.block(1));
+			if (ctx.block(1) != null) {
+				// If statement with else branch with no other if statements 
+				Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
+				Statement exitStatementFalseBranch = visitBlock(ctx.block(1));
 
-			Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
-			Statement entryStatementFalseBranch = getEntryNode(ctx.block(1));
+				Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
+				Statement entryStatementFalseBranch = getEntryNode(ctx.block(1));
 
-			currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
-			currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
+				currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
+				currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
 
-			currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
-			currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
+				currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+				currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
+			} else {
+				// If statement with else branch with other if statements 
+				Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
+				Statement exitStatementFalseBranch = visitIfStmt(ctx.ifStmt());
+
+				Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
+				Statement entryStatementFalseBranch = getEntryNode(ctx.ifStmt());
+
+				currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
+				currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
+
+				currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+				currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
+			}
 		}
-		
-		
+
+
 		if (ctx.simpleStmt() != null) {
 			Statement initialStatement = visitSimpleStmt(ctx.simpleStmt());
 			currentCFG.addNode(initialStatement);
 			currentCFG.addEdge(new SequentialEdge(initialStatement, booleanGuard));
 		}
-		
+
 		return ifExitNode;
 	}
-	
+
 	@Override
 	public Statement visitSwitchStmt(SwitchStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitExprSwitchStmt(ExprSwitchStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeSwitchStmt(TypeSwitchStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeSwitchGuard(TypeSwitchGuardContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeCaseClause(TypeCaseClauseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeSwitchCase(TypeSwitchCaseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeList(TypeListContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitSelectStmt(SelectStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitCommClause(CommClauseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitCommCase(CommCaseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitRecvStmt(RecvStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitForStmt(ForStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitForClause(ForClauseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitRangeClause(RangeClauseContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitGoStmt(GoStmtContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitType_(Type_Context ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeName(TypeNameContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeLit(TypeLitContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitArrayType(ArrayTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitArrayLength(ArrayLengthContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitElementType(ElementTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitPointerType(PointerTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitInterfaceType(InterfaceTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitSliceType(SliceTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitMapType(MapTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitChannelType(ChannelTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitMethodSpec(MethodSpecContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitFunctionType(FunctionTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitSignature(SignatureContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitResult(ResultContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitParameters(ParametersContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitParameterDecl(ParameterDeclContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -728,7 +747,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
 			return new GoAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
-		
+
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
 			return new GoOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
@@ -756,13 +775,13 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitUnaryExpr(UnaryExprContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitConversion(ConversionContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -791,7 +810,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			return visitInteger(ctx.integer());
 
 		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -803,7 +822,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	public Expression visitOperandName(OperandNameContext ctx) {
 		if (ctx.IDENTIFIER() != null) 
 			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
-		
+
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
@@ -814,121 +833,121 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitQualifiedIdent(QualifiedIdentContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitLiteralType(LiteralTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitLiteralValue(LiteralValueContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitElementList(ElementListContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitKeyedElement(KeyedElementContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitKey(KeyContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitElement(ElementContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitStructType(StructTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitFieldDecl(FieldDeclContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitString_(String_Context ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitAnonymousField(AnonymousFieldContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitFunctionLit(FunctionLitContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitIndex(IndexContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitSlice(SliceContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeAssertion(TypeAssertionContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitArguments(ArgumentsContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitMethodExpr(MethodExprContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitReceiverType(ReceiverTypeContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitEos(EosContext ctx) {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	private int getLine(ParserRuleContext ctx) {
@@ -938,32 +957,37 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private int getCol(ParserRuleContext ctx) {
 		return ctx.getStop().getCharPositionInLine();
 	} 
-	
+
 	private Statement getEntryNode(ParserRuleContext ctx) {
 		if (ctx instanceof BlockContext)
 			return getBlockEntryNode((BlockContext) ctx);
-		
-		if (ctx instanceof IfStmtContext) 
-			return getNodeFromContext(((IfStmtContext) ctx).expression());
-		
+
+		if (ctx instanceof IfStmtContext) {
+			IfStmtContext ifStmt = (IfStmtContext) ctx;
+			if (ifStmt.simpleStmt() != null)
+				return getEntryNode(ifStmt.simpleStmt());
+			else
+				return getEntryNode(ifStmt.expression());
+		}
+			
 		if (ctx instanceof StatementContext) {
 			if (((StatementContext) ctx).ifStmt() != null)
-				return getNodeFromContext(((StatementContext) ctx).ifStmt().expression());				
+				return getEntryNode(((StatementContext) ctx).ifStmt());
 		}
-				
+
 		// If ctx is a simple statement (not composite) return this
 		return getNodeFromContext(ctx);
 	}
-	
+
 	private Statement getNodeFromContext(ParserRuleContext ctx) {
 		for (Statement node : currentCFG.getNodes()) {
 			if (node.getLine() == getLine(ctx) && node.getCol() == getCol(ctx))
 				return node;
 		}
-		
-		throw new IllegalStateException("Cannot find the node " + ctx.getText());
+
+		throw new IllegalStateException("Cannot find the node " + ctx.getText() + " in cfg.");
 	}
-	
+
 	private Statement getBlockEntryNode(BlockContext block) {
 		return getNodeFromContext(block.statementList().statement(0));
 	}

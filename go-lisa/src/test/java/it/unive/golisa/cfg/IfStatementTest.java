@@ -8,7 +8,8 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import it.unive.golisa.cfg.calls.GoEquals;
+import it.unive.golisa.cfg.calls.binary.*;
+import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literals.GoInteger;
 import it.unive.lisa.cfg.CFG;
@@ -24,7 +25,6 @@ String path = "src/test/resources/go-tutorial/if/";
 	
 	@Test
 	public void simpleIfElseStmt() throws IOException {
-		
 		String file = path + "if001.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 		
@@ -60,7 +60,6 @@ String path = "src/test/resources/go-tutorial/if/";
 	
 	@Test
 	public void ifStmtWithoutElse() throws IOException {
-		
 		String file = path + "if002.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 		
@@ -92,7 +91,6 @@ String path = "src/test/resources/go-tutorial/if/";
 	
 	@Test
 	public void ifElseTest() throws IOException {
-		
 		String file = path + "if003.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 		
@@ -131,7 +129,6 @@ String path = "src/test/resources/go-tutorial/if/";
 	
 	@Test
 	public void nestedIfTest() throws IOException {
-		
 		String file = path + "if004.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 		
@@ -170,6 +167,119 @@ String path = "src/test/resources/go-tutorial/if/";
 
 		expectedCfg.addEdge(new SequentialEdge(zAsg, noop1));
 		expectedCfg.addEdge(new SequentialEdge(wAsg, noop1));
+		expectedCfg.addEdge(new SequentialEdge(noop1, noop2));
+		
+		CFG cfg = cfgs.iterator().next();	
+		assertTrue(expectedCfg.isEqualTo(cfg));
+	}
+	
+	@Test
+	public void nestedIfTestWithAssignments() throws IOException {
+		String file = path + "if005.go";
+		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		
+		// Check number of generated cfgs
+		assertEquals(cfgs.size(), 1);
+		
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		
+		GoVariableDeclaration xDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));
+		expectedCfg.addNode(xDecl);
+		GoVariableDeclaration yDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "y"), new GoInteger(expectedCfg, 2));
+		expectedCfg.addNode(yDecl);
+		GoVariableDeclaration wDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "w"), new GoInteger(expectedCfg, 3));
+		expectedCfg.addNode(wDecl);
+		GoVariableDeclaration zDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "z"), new GoInteger(expectedCfg, 4));
+		expectedCfg.addNode(zDecl);
+
+		GoEquals firstGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		expectedCfg.addNode(firstGuard);
+		GoEquals secondGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
+		expectedCfg.addNode(secondGuard);
+		
+		GoAssignment xAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));
+		expectedCfg.addNode(xAsg);
+		GoAssignment yAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "y"), new GoInteger(expectedCfg, 2));
+		expectedCfg.addNode(yAsg);
+		
+		GoAssignment zAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "z"), new GoInteger(expectedCfg, 3));
+		expectedCfg.addNode(zAsg);
+		GoAssignment wAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "w"), new GoInteger(expectedCfg, 4));
+		expectedCfg.addNode(wAsg);
+		
+		NoOp noop1 = new NoOp(expectedCfg);
+		expectedCfg.addNode(noop1);
+
+		NoOp noop2 = new NoOp(expectedCfg);
+		expectedCfg.addNode(noop2);
+		
+		expectedCfg.addEdge(new SequentialEdge(xDecl, yDecl));
+		expectedCfg.addEdge(new SequentialEdge(yDecl, wDecl));
+		expectedCfg.addEdge(new SequentialEdge(wDecl, zDecl));
+		expectedCfg.addEdge(new SequentialEdge(zDecl, firstGuard));
+
+		expectedCfg.addEdge(new TrueEdge(firstGuard, xAsg));
+		expectedCfg.addEdge(new FalseEdge(firstGuard, secondGuard));
+		expectedCfg.addEdge(new SequentialEdge(xAsg, yAsg));
+		expectedCfg.addEdge(new SequentialEdge(yAsg, noop2));
+		expectedCfg.addEdge(new TrueEdge(secondGuard, zAsg));
+		expectedCfg.addEdge(new FalseEdge(secondGuard, wAsg));
+
+		expectedCfg.addEdge(new SequentialEdge(zAsg, noop1));
+		expectedCfg.addEdge(new SequentialEdge(wAsg, noop1));
+		expectedCfg.addEdge(new SequentialEdge(noop1, noop2));
+		
+		CFG cfg = cfgs.iterator().next();	
+		assertTrue(expectedCfg.isEqualTo(cfg));
+	}
+	
+	@Test
+	public void nestedIfTestWithoutElse() throws IOException {
+		String file = path + "if006.go";
+		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		
+		// Check number of generated cfgs
+		assertEquals(cfgs.size(), 1);
+		
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		
+		GoVariableDeclaration xDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));
+		expectedCfg.addNode(xDecl);
+		GoVariableDeclaration yDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "y"), new GoInteger(expectedCfg, 2));
+		expectedCfg.addNode(yDecl);
+		GoVariableDeclaration zDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "z"), new GoInteger(expectedCfg, 3));
+		expectedCfg.addNode(zDecl);
+		
+		GoEquals firstGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		expectedCfg.addNode(firstGuard);
+		GoEquals secondGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
+		expectedCfg.addNode(secondGuard);
+		
+		GoAssignment xAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));
+		expectedCfg.addNode(xAsg);
+		GoAssignment yAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "y"), new GoInteger(expectedCfg, 2));
+		expectedCfg.addNode(yAsg);
+		GoAssignment zAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "z"), new GoInteger(expectedCfg, 3));
+		expectedCfg.addNode(zAsg);
+		
+		NoOp noop1 = new NoOp(expectedCfg);
+		expectedCfg.addNode(noop1);
+
+		NoOp noop2 = new NoOp(expectedCfg);
+		expectedCfg.addNode(noop2);
+		
+		expectedCfg.addEdge(new SequentialEdge(xDecl, yDecl));
+		expectedCfg.addEdge(new SequentialEdge(yDecl, zDecl));
+		expectedCfg.addEdge(new SequentialEdge(zDecl, firstGuard));
+
+		expectedCfg.addEdge(new TrueEdge(firstGuard, xAsg));
+		expectedCfg.addEdge(new SequentialEdge(xAsg, yAsg));
+		expectedCfg.addEdge(new SequentialEdge(yAsg, noop2));
+
+		expectedCfg.addEdge(new FalseEdge(firstGuard, secondGuard));
+		expectedCfg.addEdge(new TrueEdge(secondGuard, zAsg));
+		expectedCfg.addEdge(new SequentialEdge(zAsg, noop1));
+		expectedCfg.addEdge(new FalseEdge(secondGuard, noop1));
 		expectedCfg.addEdge(new SequentialEdge(noop1, noop2));
 		
 		CFG cfg = cfgs.iterator().next();	

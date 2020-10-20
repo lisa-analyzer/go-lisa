@@ -13,9 +13,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +21,9 @@ import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.calls.*;
+import it.unive.golisa.cfg.calls.unary.*;
+import it.unive.golisa.cfg.calls.binary.*;
+import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literals.*;
 import it.unive.lisa.cfg.CFG;
@@ -97,9 +97,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * Current CFG to parse
 	 */
 	private CFG currentCFG;
-
-	private Object object;
-
 
 	public static void main(String[] args) throws IOException {
 		String file = "src/test/resources/go-tutorial/go004.go";
@@ -371,8 +368,34 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitAssignment(AssignmentContext ctx) {		
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		ExpressionListContext ids = ctx.expressionList(0);
+		ExpressionListContext exps = ctx.expressionList(1);
+
+		Statement prev = null;
+
+		for (int i = 0; i < ids.expression().size(); i++) {
+			
+			Expression lhs = visitExpression(ids.expression(i));
+
+			// For the moment, we only support assignment where the left-hand side operand is an identifier
+			// and there is no assignment operand (e.g., += not supported)
+			if (!(lhs instanceof Variable) && ctx.assign_op() != null)
+				throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+			
+			Expression exp = (Expression) visitExpression(exps.expression(i));
+
+			int line = getLine(ctx);
+			int col = getCol(ctx);
+
+			GoAssignment asg = new GoAssignment(currentCFG, filePath, line, col, lhs, exp);
+			currentCFG.addNode(asg);
+
+			if (prev != null)
+				currentCFG.addEdge(new SequentialEdge(prev, asg));
+			prev = asg;
+		}
+
+		return prev;
 	}
 
 
@@ -742,7 +765,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		// Go minus (-)
 		if (ctx.MINUS() != null)
-			return new GoMinus(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoSubtraction(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
@@ -774,7 +797,13 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitUnaryExpr(UnaryExprContext ctx) {
-		// TODO Auto-generated method stub
+
+		if (ctx.PLUS() != null)
+			return new GoPlus(currentCFG, visitExpression(ctx.expression()));
+
+		if (ctx.MINUS() != null)
+			return new GoMinus(currentCFG, visitExpression(ctx.expression()));
+		
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -804,17 +833,20 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitBasicLit(BasicLitContext ctx) {
-
 		// Go decimal integer
 		if (ctx.integer() != null)
 			return visitInteger(ctx.integer());
 
-		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
+		// Go nil value
+		if (ctx.NIL_LIT() != null)
+			return new GoNil(currentCFG);
+			
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Expression visitInteger(IntegerContext ctx) {
+		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
 		return new GoInteger(currentCFG, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 	}
 

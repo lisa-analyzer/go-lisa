@@ -11,6 +11,7 @@ import org.junit.Test;
 import it.unive.golisa.cfg.calls.binary.GoLess;
 import it.unive.golisa.cfg.calls.binary.GoSum;
 import it.unive.golisa.cfg.custom.GoAssignment;
+import it.unive.golisa.cfg.custom.GoConstantDeclaration;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literals.GoInteger;
 import it.unive.golisa.cfg.literals.GoString;
@@ -36,6 +37,12 @@ public class ForStmtTest {
 		
 		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
 		
+		GoConstantDeclaration constantA = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "A"), new GoInteger(expectedCfg, 1));
+		expectedCfg.addNode(constantA);
+		
+		GoConstantDeclaration constantB = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "B"), new GoInteger(expectedCfg, 2));
+		expectedCfg.addNode(constantB);
+		
 		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(sum);
 
@@ -59,6 +66,8 @@ public class ForStmtTest {
 		NoOp exitFor = new NoOp(expectedCfg);
 		expectedCfg.addNode(exitFor);
 
+		expectedCfg.addEdge(new SequentialEdge(constantA, constantB));
+		expectedCfg.addEdge(new SequentialEdge(constantB, sum));
 		expectedCfg.addEdge(new SequentialEdge(sum, init));
 		expectedCfg.addEdge(new SequentialEdge(init, cond));
 		expectedCfg.addEdge(new TrueEdge(cond, body));
@@ -67,7 +76,7 @@ public class ForStmtTest {
 		expectedCfg.addEdge(new SequentialEdge(post, cond));
 		expectedCfg.addEdge(new SequentialEdge(exitFor, res));
 			
-		CFG cfg = cfgs.iterator().next();		
+		CFG cfg = cfgs.iterator().next();	
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
 	
@@ -81,6 +90,12 @@ public class ForStmtTest {
 		assertEquals(cfgs.size(), 1);
 		
 		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		
+		GoConstantDeclaration constantBig = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "Big"), new GoInteger(expectedCfg, 100));
+		expectedCfg.addNode(constantBig);
+		
+		GoConstantDeclaration constantSmall = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "Small"), new GoInteger(expectedCfg, 0));
+		expectedCfg.addNode(constantSmall);
 		
 		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(sum);
@@ -99,6 +114,8 @@ public class ForStmtTest {
 		NoOp exitFor = new NoOp(expectedCfg);
 		expectedCfg.addNode(exitFor);
 
+		expectedCfg.addEdge(new SequentialEdge(constantBig, constantSmall));
+		expectedCfg.addEdge(new SequentialEdge(constantSmall, sum));
 		expectedCfg.addEdge(new SequentialEdge(sum, cond));
 		expectedCfg.addEdge(new TrueEdge(cond, body));
 		expectedCfg.addEdge(new FalseEdge(cond, exitFor));

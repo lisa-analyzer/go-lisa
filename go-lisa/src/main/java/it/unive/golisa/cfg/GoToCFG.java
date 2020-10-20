@@ -25,6 +25,7 @@ import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.calls.unary.*;
 import it.unive.golisa.cfg.calls.binary.*;
 import it.unive.golisa.cfg.custom.GoAssignment;
+import it.unive.golisa.cfg.custom.GoConstantDeclaration;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literals.*;
 import it.unive.lisa.cfg.CFG;
@@ -204,14 +205,40 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitConstDecl(ConstDeclContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		Statement previousStmt = null;
+		for (ConstSpecContext constSpec : ctx.constSpec()) {
+			Statement lastStmt = visitConstSpec(constSpec);
+
+			if (previousStmt != null)
+				currentCFG.addEdge(new SequentialEdge(previousStmt, lastStmt));
+			previousStmt = lastStmt;
+		}
+		
+		return previousStmt;
 	}
 
 	@Override
 	public Statement visitConstSpec(ConstSpecContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		IdentifierListContext ids = ctx.identifierList();
+		ExpressionListContext exps = ctx.expressionList();
+
+		Statement prev = null;
+
+		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
+			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
+			Expression exp = (Expression) visitExpression(exps.expression(i));
+
+			int line = getLine(ctx);
+			int col = getCol(ctx);
+
+			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, filePath, line, col, target, exp);
+			currentCFG.addNode(asg);
+			if (prev != null)
+				currentCFG.addEdge(new SequentialEdge(prev, asg));
+			prev = asg;
+		}
+
+		return prev;
 	}
 
 	@Override
@@ -251,8 +278,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
 			size += paramCxt.identifierList().IDENTIFIER().size();
 
-
-
 		String[] cfgArgs = new String[size];
 
 		int i = 0;
@@ -291,7 +316,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		return lastStatement;
 	}
 
-
 	@Override
 	public Statement visitVarSpec(VarSpecContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
@@ -312,7 +336,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			if (prev != null)
 				currentCFG.addEdge(new SequentialEdge(prev, asg));
 			prev = asg;
-
 		}
 
 		return prev;
@@ -1043,10 +1066,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	public Expression visitString_(String_Context ctx) {
 		if (ctx.RAW_STRING_LIT() != null)
 			return new GoString(currentCFG, removeQuotes(ctx.RAW_STRING_LIT().getText()));
-		
+
 		if (ctx.INTERPRETED_STRING_LIT() != null)
 			return new GoString(currentCFG, removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
-		
+
 		throw new IllegalStateException("Illegal state: string rule has no other productions.");
 	}
 
@@ -1189,7 +1212,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 				(ctx.forClause().simpleStmt(0) != null &&  
 				getCol(ctx.forClause().simpleStmt(0)) > getCol(ctx.forClause().SEMI(1).getSymbol()));
 	}
-	
+
 	private String removeQuotes(String str) {
 		return str.substring(1, str.length()-1);
 	}

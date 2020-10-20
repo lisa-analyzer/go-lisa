@@ -658,7 +658,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			boolean hasInitStmt = hasInitStmt(ctx);
 			boolean hasCondition = hasCondition(ctx);
 			boolean hasPostStmt = hasPostStmt(ctx);
- 
+
 			// Checking if initialization is missing
 			Statement init = null;
 			if (hasInitStmt) {
@@ -939,7 +939,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (ctx.NIL_LIT() != null)
 			return new GoNil(currentCFG);
 
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		Statement child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
@@ -1036,9 +1040,14 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitString_(String_Context ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Expression visitString_(String_Context ctx) {
+		if (ctx.RAW_STRING_LIT() != null)
+			return new GoString(currentCFG, removeQuotes(ctx.RAW_STRING_LIT().getText()));
+		
+		if (ctx.INTERPRETED_STRING_LIT() != null)
+			return new GoString(currentCFG, removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
+		
+		throw new IllegalStateException("Illegal state: string rule has no other productions.");
 	}
 
 	@Override
@@ -1179,5 +1188,9 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		return ctx.forClause().simpleStmt(1) != null ||
 				(ctx.forClause().simpleStmt(0) != null &&  
 				getCol(ctx.forClause().simpleStmt(0)) > getCol(ctx.forClause().SEMI(1).getSymbol()));
+	}
+	
+	private String removeQuotes(String str) {
+		return str.substring(1, str.length()-1);
 	}
 }

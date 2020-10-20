@@ -13,6 +13,7 @@ import it.unive.golisa.cfg.calls.binary.GoSum;
 import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literals.GoInteger;
+import it.unive.golisa.cfg.literals.GoString;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.FalseEdge;
@@ -52,6 +53,9 @@ public class ForStmtTest {
 				new GoSum(expectedCfg, new Variable(expectedCfg, "sum"), new Variable(expectedCfg, "i")));
 		expectedCfg.addNode(body);
 
+		GoVariableDeclaration res = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "res"), new GoString(expectedCfg, "Hello"));
+		expectedCfg.addNode(res);
+		
 		NoOp exitFor = new NoOp(expectedCfg);
 		expectedCfg.addNode(exitFor);
 
@@ -61,6 +65,7 @@ public class ForStmtTest {
 		expectedCfg.addEdge(new FalseEdge(cond, exitFor));
 		expectedCfg.addEdge(new SequentialEdge(body, post));
 		expectedCfg.addEdge(new SequentialEdge(post, cond));
+		expectedCfg.addEdge(new SequentialEdge(exitFor, res));
 			
 		CFG cfg = cfgs.iterator().next();		
 		assertTrue(expectedCfg.isEqualTo(cfg));

@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,7 +100,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private CFG currentCFG;
 
 	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/go004.go";
+		String file = "src/test/resources/go-tutorial/simple-for/for001.go";
 		GoToCFG translator = new GoToCFG(file);
 		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
 	}
@@ -362,6 +363,31 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitIncDecStmt(IncDecStmtContext ctx) {
+
+		Expression exp = visitExpression(ctx.expression());
+
+		if (exp instanceof Variable) {
+			// TODO: at the moment, we support only increment and decrement of single variable
+			// e.g., x++, x--
+			int line = getLine(ctx);
+			int col = getCol(ctx);
+
+			Statement asg = null;
+
+			// increment and decrement statements are syntactic sugar
+			// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
+			if (ctx.PLUS_PLUS() != null)
+				asg = new GoAssignment(currentCFG, filePath, line, col, (Variable) exp, 
+						new GoSum(currentCFG, (Variable) exp,  new GoInteger(currentCFG, 1)));		
+			else
+				asg = new GoAssignment(currentCFG, filePath, line, col, (Variable) exp, 
+						new GoSubtraction(currentCFG, (Variable) exp,  new GoInteger(currentCFG, 1)));
+
+			currentCFG.addNode(asg);
+			return asg;
+		}
+
+
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
@@ -374,14 +400,14 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		Statement prev = null;
 
 		for (int i = 0; i < ids.expression().size(); i++) {
-			
+
 			Expression lhs = visitExpression(ids.expression(i));
 
 			// For the moment, we only support assignment where the left-hand side operand is an identifier
 			// and there is no assignment operand (e.g., += not supported)
 			if (!(lhs instanceof Variable) && ctx.assign_op() != null)
 				throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-			
+
 			Expression exp = (Expression) visitExpression(exps.expression(i));
 
 			int line = getLine(ctx);
@@ -624,6 +650,73 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitForStmt(ForStmtContext ctx) {
+
+		// Simple for (without range and first expression)
+		// e.g., for i := 0; i < 10; i++ block
+		if (ctx.forClause() != null) {
+
+			boolean hasInitStmt = hasInitStmt(ctx);
+			boolean hasCondition = hasCondition(ctx);
+			boolean hasPostStmt = hasPostStmt(ctx);
+ 
+			// Checking if initialization is missing
+			Statement init = null;
+			if (hasInitStmt) {
+				init = visitSimpleStmt(ctx.forClause().simpleStmt(0));
+				currentCFG.addNode(init);
+			}
+
+			// Checking if condition is missing
+			Statement cond = null;
+			if (hasCondition) {
+				cond = visitExpression(ctx.forClause().expression());
+				currentCFG.addNode(cond);
+			}
+
+
+			// Checking if post statement is missing
+			Statement post = null;
+			if (hasPostStmt) {
+				post = visitSimpleStmt(hasInitStmt ? ctx.forClause().simpleStmt(1) : ctx.forClause().simpleStmt(0));
+				currentCFG.addNode(post);
+			}
+
+			// TODO: at the moment, we suppose that the block is non-empty
+			Statement lastStmtOfBlock = visitBlock(ctx.block());
+			Statement entryNodeOfBlock = getEntryNode(ctx.block());
+			Statement exitNode = new NoOp(currentCFG);
+
+			currentCFG.addNode(exitNode);
+
+			if (hasCondition) {
+				currentCFG.addEdge(new TrueEdge(cond, entryNodeOfBlock));
+				currentCFG.addEdge(new FalseEdge(cond, exitNode));
+
+				if (hasInitStmt)
+					currentCFG.addEdge(new SequentialEdge(init, cond));
+
+				if (hasPostStmt) {
+					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, post));
+					currentCFG.addEdge(new SequentialEdge(post, cond));
+				} else {
+					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, cond));
+				}
+			} else {
+				if (hasInitStmt)
+					currentCFG.addEdge(new SequentialEdge(init, entryNodeOfBlock));
+
+				if (hasPostStmt) {
+					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, post));
+					currentCFG.addEdge(new SequentialEdge(post, entryNodeOfBlock));
+				} else {
+					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, entryNodeOfBlock));
+				}
+			}
+
+			return exitNode;
+		}
+
+
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
@@ -773,11 +866,16 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
-			return new GoOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go equals (==)
 		if (ctx.EQUALS() != null)
 			return new GoEquals(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go equals (==)
+		if (ctx.LESS() != null)
+			return new GoLess(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
 
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -803,7 +901,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		if (ctx.MINUS() != null)
 			return new GoMinus(currentCFG, visitExpression(ctx.expression()));
-		
+
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -840,14 +938,29 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		// Go nil value
 		if (ctx.NIL_LIT() != null)
 			return new GoNil(currentCFG);
-			
+
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Expression visitInteger(IntegerContext ctx) {
 		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
-		return new GoInteger(currentCFG, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
+		if (ctx.DECIMAL_LIT() != null)
+			return new GoInteger(currentCFG, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
+
+		// TODO: 0 matched as octacl literal and not decimal literal
+		if (ctx.OCTAL_LIT() != null)
+			return new GoInteger(currentCFG, Integer.parseInt(ctx.OCTAL_LIT().getText()));
+
+		if (ctx.IMAGINARY_LIT() != null)
+			throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+
+		if (ctx.HEX_LIT() != null)
+			throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+
+
+
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());	
 	}
 
 	@Override
@@ -990,6 +1103,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		return ctx.getStop().getCharPositionInLine();
 	} 
 
+	private int getCol(Token ctx) {
+		return ctx.getCharPositionInLine();
+	} 
+
 	private Statement getEntryNode(ParserRuleContext ctx) {
 		if (ctx instanceof BlockContext)
 			return getBlockEntryNode((BlockContext) ctx);
@@ -1001,10 +1118,15 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			else
 				return getEntryNode(ifStmt.expression());
 		}
-			
+
 		if (ctx instanceof StatementContext) {
 			if (((StatementContext) ctx).ifStmt() != null)
 				return getEntryNode(((StatementContext) ctx).ifStmt());
+
+			if  (((StatementContext) ctx).forStmt() != null) {
+				return getForEntryNode(((StatementContext) ctx).forStmt());
+			}
+
 		}
 
 		// If ctx is a simple statement (not composite) return this
@@ -1022,5 +1144,40 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	private Statement getBlockEntryNode(BlockContext block) {
 		return getNodeFromContext(block.statementList().statement(0));
+	}
+
+	private Statement getForEntryNode(ForStmtContext forStmt) {
+
+		if (forStmt.forClause() != null) {
+
+			if (hasInitStmt(forStmt))
+				return getNodeFromContext(forStmt.forClause().simpleStmt(0));
+
+			if (hasCondition(forStmt))
+				return getNodeFromContext(forStmt.forClause().expression());
+
+			if (hasPostStmt(forStmt))
+				if (hasInitStmt(forStmt))
+					return getNodeFromContext(forStmt.forClause().simpleStmt(1));
+				else
+					return getNodeFromContext(forStmt.forClause().simpleStmt(0));
+
+		}
+
+		throw new UnsupportedOperationException("Unsupported translation: " + forStmt.getText());
+	}
+
+	private boolean hasInitStmt(ForStmtContext ctx) {
+		return ctx.forClause().simpleStmt(0) != null && getCol(ctx.forClause().simpleStmt(0)) < getCol(ctx.forClause().SEMI(0).getSymbol()); 
+	}
+
+	private boolean hasCondition(ForStmtContext ctx) {
+		return  ctx.forClause().expression() != null;
+	}
+
+	private boolean hasPostStmt(ForStmtContext ctx) {
+		return ctx.forClause().simpleStmt(1) != null ||
+				(ctx.forClause().simpleStmt(0) != null &&  
+				getCol(ctx.forClause().simpleStmt(0)) > getCol(ctx.forClause().SEMI(1).getSymbol()));
 	}
 }

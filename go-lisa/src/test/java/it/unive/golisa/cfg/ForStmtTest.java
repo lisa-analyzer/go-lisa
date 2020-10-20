@@ -1,0 +1,143 @@
+package it.unive.golisa.cfg;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.Collection;
+
+import org.junit.Test;
+
+import it.unive.golisa.cfg.calls.binary.GoLess;
+import it.unive.golisa.cfg.calls.binary.GoSum;
+import it.unive.golisa.cfg.custom.GoAssignment;
+import it.unive.golisa.cfg.custom.GoVariableDeclaration;
+import it.unive.golisa.cfg.literals.GoInteger;
+import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.CFGDescriptor;
+import it.unive.lisa.cfg.edge.FalseEdge;
+import it.unive.lisa.cfg.edge.SequentialEdge;
+import it.unive.lisa.cfg.edge.TrueEdge;
+import it.unive.lisa.cfg.statement.NoOp;
+import it.unive.lisa.cfg.statement.Variable;
+
+public class ForStmtTest {
+	String path = "src/test/resources/go-tutorial/simple-for/";
+	
+	@Test
+	public void simpleForLoop() throws IOException {
+		
+		String file = path + "for001.go";
+		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		
+		// Check number of generated cfgs
+		assertEquals(cfgs.size(), 1);
+		
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		
+		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
+		expectedCfg.addNode(sum);
+
+		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 0));
+		expectedCfg.addNode(init);
+		
+		GoLess cond = new GoLess(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 10));
+		expectedCfg.addNode(cond);
+		
+		GoAssignment post = new GoAssignment(expectedCfg, new Variable(expectedCfg, "i"), 
+				new GoSum(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1)));
+		expectedCfg.addNode(post);
+		
+		GoAssignment body = new GoAssignment(expectedCfg, new Variable(expectedCfg, "sum"), 
+				new GoSum(expectedCfg, new Variable(expectedCfg, "sum"), new Variable(expectedCfg, "i")));
+		expectedCfg.addNode(body);
+
+		NoOp exitFor = new NoOp(expectedCfg);
+		expectedCfg.addNode(exitFor);
+
+		expectedCfg.addEdge(new SequentialEdge(sum, init));
+		expectedCfg.addEdge(new SequentialEdge(init, cond));
+		expectedCfg.addEdge(new TrueEdge(cond, body));
+		expectedCfg.addEdge(new FalseEdge(cond, exitFor));
+		expectedCfg.addEdge(new SequentialEdge(body, post));
+		expectedCfg.addEdge(new SequentialEdge(post, cond));
+			
+		CFG cfg = cfgs.iterator().next();		
+		assertTrue(expectedCfg.isEqualTo(cfg));
+	}
+	
+	@Test
+	public void simpleForLoopWithoutInitialization() throws IOException {
+		
+		String file = path + "for002.go";
+		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		
+		// Check number of generated cfgs
+		assertEquals(cfgs.size(), 1);
+		
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		
+		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
+		expectedCfg.addNode(sum);
+		
+		GoLess cond = new GoLess(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 10));
+		expectedCfg.addNode(cond);
+		
+		GoAssignment post = new GoAssignment(expectedCfg, new Variable(expectedCfg, "i"), 
+				new GoSum(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1)));
+		expectedCfg.addNode(post);
+		
+		GoAssignment body = new GoAssignment(expectedCfg, new Variable(expectedCfg, "sum"), 
+				new GoSum(expectedCfg, new Variable(expectedCfg, "sum"), new Variable(expectedCfg, "i")));
+		expectedCfg.addNode(body);
+
+		NoOp exitFor = new NoOp(expectedCfg);
+		expectedCfg.addNode(exitFor);
+
+		expectedCfg.addEdge(new SequentialEdge(sum, cond));
+		expectedCfg.addEdge(new TrueEdge(cond, body));
+		expectedCfg.addEdge(new FalseEdge(cond, exitFor));
+		expectedCfg.addEdge(new SequentialEdge(body, post));
+		expectedCfg.addEdge(new SequentialEdge(post, cond));
+			
+		CFG cfg = cfgs.iterator().next();	
+		assertTrue(expectedCfg.isEqualTo(cfg));
+	}
+	
+	@Test
+	public void simpleForLoopWithoutPostStmt() throws IOException {
+		
+		String file = path + "for003.go";
+		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		
+		// Check number of generated cfgs
+		assertEquals(cfgs.size(), 1);
+		
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		
+		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 0));
+		expectedCfg.addNode(init);
+		
+		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
+		expectedCfg.addNode(sum);
+		
+		GoLess cond = new GoLess(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 10));
+		expectedCfg.addNode(cond);
+				
+		GoAssignment body = new GoAssignment(expectedCfg, new Variable(expectedCfg, "sum"), 
+				new GoSum(expectedCfg, new Variable(expectedCfg, "sum"), new Variable(expectedCfg, "i")));
+		expectedCfg.addNode(body);
+
+		NoOp exitFor = new NoOp(expectedCfg);
+		expectedCfg.addNode(exitFor);
+
+		expectedCfg.addEdge(new SequentialEdge(sum, init));
+		expectedCfg.addEdge(new SequentialEdge(init, cond));
+		expectedCfg.addEdge(new TrueEdge(cond, body));
+		expectedCfg.addEdge(new FalseEdge(cond, exitFor));
+		expectedCfg.addEdge(new SequentialEdge(body, cond));
+			
+		CFG cfg = cfgs.iterator().next();	
+		assertTrue(expectedCfg.isEqualTo(cfg));
+	}
+}

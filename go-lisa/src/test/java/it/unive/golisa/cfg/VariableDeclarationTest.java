@@ -80,17 +80,21 @@ public class VariableDeclarationTest {
 		
 		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
 		
-		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
-		expectedCfg.addNode(xAsg);
+		GoVariableDeclaration iAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
+		expectedCfg.addNode(iAsg);
 
-		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j"), new GoInteger(expectedCfg, 2));
-		expectedCfg.addNode(yAsg);
+		GoVariableDeclaration jAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j"), new GoInteger(expectedCfg, 2));
+		expectedCfg.addNode(jAsg);
 
 		GoVariableDeclaration kAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "k"), new GoString(expectedCfg, "abc"));
 		expectedCfg.addNode(kAsg);
 
-		expectedCfg.addEdge(new SequentialEdge(xAsg, yAsg));
-		expectedCfg.addEdge(new SequentialEdge(yAsg, kAsg));
+		GoVariableDeclaration lAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "l"), new GoString(expectedCfg, "def"));
+		expectedCfg.addNode(lAsg);
+		
+		expectedCfg.addEdge(new SequentialEdge(iAsg, jAsg));
+		expectedCfg.addEdge(new SequentialEdge(jAsg, kAsg));
+		expectedCfg.addEdge(new SequentialEdge(kAsg, lAsg));
 			
 		CFG cfg = cfgs.iterator().next();		
 		assertTrue(expectedCfg.isEqualTo(cfg));

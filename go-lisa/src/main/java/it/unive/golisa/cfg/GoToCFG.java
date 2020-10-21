@@ -205,16 +205,16 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitConstDecl(ConstDeclContext ctx) {
-		Statement previousStmt = null;
+		Statement lastStmt = null;
 		for (ConstSpecContext constSpec : ctx.constSpec()) {
-			Statement lastStmt = visitConstSpec(constSpec);
-
-			if (previousStmt != null)
-				currentCFG.addEdge(new SequentialEdge(previousStmt, lastStmt));
-			previousStmt = lastStmt;
+			Statement currStmt = visitConstSpec(constSpec);
+			
+			if (lastStmt != null)
+				currentCFG.addEdge(new SequentialEdge(lastStmt, getEntryNode(constSpec)));
+			lastStmt = currStmt;
 		}
-		
-		return previousStmt;
+
+		return lastStmt;
 	}
 
 	@Override
@@ -226,10 +226,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
-			Expression exp = (Expression) visitExpression(exps.expression(i));
+			Expression exp = visitExpression(exps.expression(i));
 
-			int line = getLine(ctx);
-			int col = getCol(ctx);
+			int line = getLine(ids.IDENTIFIER(i).getSymbol());
+			int col = getCol(exps.expression(i));
 
 			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
@@ -314,7 +314,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			Statement currStmt = visitVarSpec(varSpec);
 			
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, currStmt));
+				currentCFG.addEdge(new SequentialEdge(lastStmt, getEntryNode(varSpec)));
 			lastStmt = currStmt;
 		}
 
@@ -332,9 +332,9 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
 			Expression exp = (Expression) visitExpression(exps.expression(i));
 
-			int line = getLine(ctx);
-			int col = getCol(ctx);
-
+			int line = getLine(ids.IDENTIFIER(i).getSymbol());
+			int col = getCol(exps.expression(i));
+			
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
@@ -1143,6 +1143,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private int getCol(Token ctx) {
 		return ctx.getCharPositionInLine();
 	} 
+	
+	private int getLine(Token ctx) {
+		return ctx.getLine();
+	} 
 
 	private Statement getEntryNode(ParserRuleContext ctx) {
 		if (ctx instanceof BlockContext)
@@ -1157,15 +1161,25 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		}
 
 		if (ctx instanceof StatementContext) {
-			if (((StatementContext) ctx).ifStmt() != null)
-				return getEntryNode(((StatementContext) ctx).ifStmt());
+			StatementContext stmt = (StatementContext) ctx;
+			if (stmt.ifStmt() != null)
+				return getEntryNode(stmt.ifStmt());
 
-			if  (((StatementContext) ctx).forStmt() != null) {
-				return getForEntryNode(((StatementContext) ctx).forStmt());
+			if  (stmt.forStmt() != null) {
+				return getForEntryNode(stmt.forStmt());
 			}
-
 		}
-
+		
+		if (ctx instanceof VarSpecContext) {
+			return getNodeAt(getLine(((VarSpecContext) ctx).identifierList().IDENTIFIER(0).getSymbol()), 
+					getCol(((VarSpecContext) ctx).expressionList().expression(0)));
+		}
+		
+		if (ctx instanceof ConstSpecContext) {
+			return getNodeAt(getLine(((ConstSpecContext) ctx).identifierList().IDENTIFIER(0).getSymbol()), 
+					getCol(((ConstSpecContext) ctx).expressionList().expression(0)));
+		}
+		
 		// If ctx is a simple statement (not composite) return this
 		return getNodeFromContext(ctx);
 	}
@@ -1178,11 +1192,37 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		throw new IllegalStateException("Cannot find the node " + ctx.getText() + " in cfg.");
 	}
+	
+	/**
+	 * Returns the node in currentCFG at a given position (line, column).
+	 * 
+	 * @param line	line where to find the node
+	 * @param col	column where to search the node
+	 * @return		the node at the position (line, column)
+	 */
+	private Statement getNodeAt(int line, int col) {
+		for (Statement node : currentCFG.getNodes()) {
+			if (node.getLine() == line && node.getCol() == col)
+				return node;
+		}
 
+		throw new IllegalStateException("Cannot find the node at " + line + ":" + col);
+	}
+	
+	/**
+	 * Returns the entry node of a block statement.
+	 * @param block 	the block statement
+	 * @return 			the entry node of block
+	 */
 	private Statement getBlockEntryNode(BlockContext block) {
 		return getNodeFromContext(block.statementList().statement(0));
 	}
 
+	/**
+	 * Returns the entry node of a for statement.
+	 * @param block 	the for statement
+	 * @return 			the entry node of the for statement
+	 */
 	private Statement getForEntryNode(ForStmtContext forStmt) {
 
 		if (forStmt.forClause() != null) {
@@ -1198,7 +1238,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 					return getNodeFromContext(forStmt.forClause().simpleStmt(1));
 				else
 					return getNodeFromContext(forStmt.forClause().simpleStmt(0));
-
 		}
 
 		throw new UnsupportedOperationException("Unsupported translation: " + forStmt.getText());

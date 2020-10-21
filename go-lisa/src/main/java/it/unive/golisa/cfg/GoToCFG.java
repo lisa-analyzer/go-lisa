@@ -101,7 +101,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private CFG currentCFG;
 
 	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/simple-for/for001.go";
+		String file = "src/test/resources/go-tutorial/decl/go003.go";
 		GoToCFG translator = new GoToCFG(file);
 		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
 	}
@@ -309,11 +309,16 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitVarDecl(VarDeclContext ctx) {
-		Statement lastStatement = null;
-		for (VarSpecContext varSpec : ctx.varSpec()) 
-			lastStatement = visitVarSpec(varSpec);
+		Statement lastStmt = null;
+		for (VarSpecContext varSpec : ctx.varSpec()) {
+			Statement currStmt = visitVarSpec(varSpec);
+			
+			if (lastStmt != null)
+				currentCFG.addEdge(new SequentialEdge(lastStmt, currStmt));
+			lastStmt = currStmt;
+		}
 
-		return lastStatement;
+		return lastStmt;
 	}
 
 	@Override
@@ -1199,14 +1204,32 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		throw new UnsupportedOperationException("Unsupported translation: " + forStmt.getText());
 	}
 
+	/**
+	 * Checks if the for statement has the initialization statement.
+	 * 
+	 * @param ctx 	the for statement context
+	 * @return true	if the for statement has the initialization statement, false otherwise
+	 */
 	private boolean hasInitStmt(ForStmtContext ctx) {
 		return ctx.forClause().simpleStmt(0) != null && getCol(ctx.forClause().simpleStmt(0)) < getCol(ctx.forClause().SEMI(0).getSymbol()); 
 	}
 
+	/**
+	 * Checks if the for statement has the guard expression.
+	 * 
+	 * @param ctx 	the for statement context
+	 * @return true	if the for statement has the guard expression, false otherwise
+	 */
 	private boolean hasCondition(ForStmtContext ctx) {
 		return  ctx.forClause().expression() != null;
 	}
 
+	/**
+	 * Checks if the for statement has the post statement.
+	 * 
+	 * @param ctx 	the for statement context
+	 * @return true	if the for statement has the post statement, false otherwise
+	 */
 	private boolean hasPostStmt(ForStmtContext ctx) {
 		return ctx.forClause().simpleStmt(1) != null ||
 				(ctx.forClause().simpleStmt(0) != null &&  

@@ -21,4 +21,9 @@ public class GoString extends Literal {
 	public GoString(CFG cfg, String value) {
 		super(cfg, value);
 	}
+	
+	@Override
+	public String toString() {
+		return "\"" + getValue() + "\"";
+	}
 }

@@ -20,4 +20,9 @@ public class GoNil extends NullLiteral {
 	public GoNil(CFG cfg) {
 		super(cfg);
 	}
+	
+	@Override
+	public String toString() {
+		return "nil";
+	}
 }

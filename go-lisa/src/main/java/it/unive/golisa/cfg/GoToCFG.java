@@ -208,7 +208,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		Statement lastStmt = null;
 		for (ConstSpecContext constSpec : ctx.constSpec()) {
 			Statement currStmt = visitConstSpec(constSpec);
-			
+
 			if (lastStmt != null)
 				currentCFG.addEdge(new SequentialEdge(lastStmt, getEntryNode(constSpec)));
 			lastStmt = currStmt;
@@ -312,7 +312,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		Statement lastStmt = null;
 		for (VarSpecContext varSpec : ctx.varSpec()) {
 			Statement currStmt = visitVarSpec(varSpec);
-			
+
 			if (lastStmt != null)
 				currentCFG.addEdge(new SequentialEdge(lastStmt, getEntryNode(varSpec)));
 			lastStmt = currStmt;
@@ -334,7 +334,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
 			int col = getCol(exps.expression(i));
-			
+
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
@@ -432,11 +432,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			Expression lhs = visitExpression(ids.expression(i));
 
 			// For the moment, we only support assignment where the left-hand side operand is an identifier
-			// and there is no assignment operand (e.g., += not supported)
-			if (!(lhs instanceof Variable) && ctx.assign_op() != null)
+			if (!(lhs instanceof Variable))
 				throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 
-			Expression exp = (Expression) visitExpression(exps.expression(i));
+			Expression exp = buildExpressionFromAssignment((Variable) lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
 			int line = getLine(ctx);
 			int col = getCol(ctx);
@@ -450,6 +449,54 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		}
 
 		return prev;
+	}
+
+	private Expression buildExpressionFromAssignment(Variable lhs, Assign_opContext op, Expression exp) {
+
+		// +=
+		if (op.PLUS() != null)
+			return new GoSum(currentCFG, lhs, exp);
+		// -=	
+		if (op.MINUS() != null)
+			return new GoSubtraction(currentCFG, lhs, exp);
+
+		// *=
+		if (op.STAR() != null)
+			return new GoMul(currentCFG, lhs, exp);
+
+		// /=
+		if (op.DIV() != null)
+			return new GoDiv(currentCFG, lhs, exp);
+
+		// %=
+		if (op.MOD() != null)
+			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+
+		// >>=
+		if (op.RSHIFT() != null)
+			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+
+		// <<=
+		if (op.LSHIFT() != null)
+			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+
+		// &^=
+		if (op.BIT_CLEAR() != null)
+			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+
+		// ^=
+		if (op.CARET() != null)
+			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+
+		// &=
+		if (op.AMPERSAND() != null)
+			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+
+		// |=
+		if (op.OR() != null)
+			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+
+		return exp;
 	}
 
 
@@ -990,8 +1037,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (ctx.HEX_LIT() != null)
 			throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 
-
-
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());	
 	}
 
@@ -1143,7 +1188,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private int getCol(Token ctx) {
 		return ctx.getCharPositionInLine();
 	} 
-	
+
 	private int getLine(Token ctx) {
 		return ctx.getLine();
 	} 
@@ -1169,17 +1214,17 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 				return getForEntryNode(stmt.forStmt());
 			}
 		}
-		
+
 		if (ctx instanceof VarSpecContext) {
 			return getNodeAt(getLine(((VarSpecContext) ctx).identifierList().IDENTIFIER(0).getSymbol()), 
 					getCol(((VarSpecContext) ctx).expressionList().expression(0)));
 		}
-		
+
 		if (ctx instanceof ConstSpecContext) {
 			return getNodeAt(getLine(((ConstSpecContext) ctx).identifierList().IDENTIFIER(0).getSymbol()), 
 					getCol(((ConstSpecContext) ctx).expressionList().expression(0)));
 		}
-		
+
 		// If ctx is a simple statement (not composite) return this
 		return getNodeFromContext(ctx);
 	}
@@ -1192,7 +1237,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		throw new IllegalStateException("Cannot find the node " + ctx.getText() + " in cfg.");
 	}
-	
+
 	/**
 	 * Returns the node in currentCFG at a given position (line, column).
 	 * 
@@ -1208,7 +1253,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		throw new IllegalStateException("Cannot find the node at " + line + ":" + col);
 	}
-	
+
 	/**
 	 * Returns the entry node of a block statement.
 	 * @param block 	the block statement

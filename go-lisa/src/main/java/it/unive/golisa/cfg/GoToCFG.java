@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -26,6 +27,7 @@ import it.unive.golisa.cfg.calls.unary.*;
 import it.unive.golisa.cfg.calls.binary.*;
 import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoConstantDeclaration;
+import it.unive.golisa.cfg.custom.GoReturn;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literals.*;
 import it.unive.lisa.cfg.CFG;
@@ -33,6 +35,7 @@ import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.FalseEdge;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.edge.TrueEdge;
+import it.unive.lisa.cfg.statement.CFGCall;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NoOp;
 import it.unive.lisa.cfg.statement.Statement;
@@ -101,7 +104,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private CFG currentCFG;
 
 	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/decl/go003.go";
+		String file = "src/test/resources/go-tutorial/func-decl/fun001.go";
 		GoToCFG translator = new GoToCFG(file);
 		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
 	}
@@ -167,11 +170,56 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		//TODO: we skip, for the moment package information and imports
 		Statement lastStatement = null;
 
-		// Visit of each @FunctionDeclContext appearing in the source code
-		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations")) 
-			lastStatement = visitFunctionDecl(funcDecl);
+		// Visit of each FunctionDeclContext appearing in the source code
+		// and creating the corresponding CFG object (we do this to handle CFG calls)
+		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations"))
+			cfgs.add(new CFG(buildCFGDescriptor(funcDecl)));
+
+		// Visit of each FunctionDeclContext populating the corresponding cfg
+		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {
+			currentCFG = getCFGByName(funcDecl.IDENTIFIER().getText());
+			visitFunctionDecl(funcDecl);
+		}
 
 		return lastStatement;
+	}
+	
+	/**
+	 * Retrieve a cfg given its name.
+	 * 
+	 * @param name	the name
+	 * @return	the cfg named name
+	 */
+	private CFG getCFGByName(String name) {
+		for (CFG cfg : cfgs)
+			if (cfg.getDescriptor().getName().equals(name))
+				return cfg;
+
+		throw new IllegalStateException("CFG not found: " + name);
+	}
+
+	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl) {
+		String funcName = funcDecl.IDENTIFIER().getText();
+		SignatureContext signature = funcDecl.signature();
+		ParametersContext formalPars = signature.parameters();
+
+		int line = signature.getStart().getLine();
+		int col = signature.getStop().getStopIndex();
+
+		int size = 0;
+		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
+			size += paramCxt.identifierList().IDENTIFIER().size();
+
+		String[] cfgArgs = new String[size];
+
+		int i = 0;
+
+		//TODO: for the moment, we skip the formal parameter type
+		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
+			for (ParseTree v : paramCxt.identifierList().IDENTIFIER())
+				cfgArgs[i++] = v.getText();
+
+		return new CFGDescriptor(filePath, line, col, funcName, cfgArgs);
 	}
 
 	@Override
@@ -267,31 +315,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitFunctionDecl(FunctionDeclContext ctx) {
-		String funcName = ctx.IDENTIFIER().getText();
-		SignatureContext signature = ctx.signature();
-		ParametersContext formalPars = signature.parameters();
-
-		int line = signature.getStart().getLine();
-		int col = signature.getStop().getStopIndex();
-
-		int size = 0;
-		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
-			size += paramCxt.identifierList().IDENTIFIER().size();
-
-		String[] cfgArgs = new String[size];
-
-		int i = 0;
-
-		//TODO: for the moment, we skip the formal parameter type
-		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
-			for (ParseTree v : paramCxt.identifierList().IDENTIFIER())
-				cfgArgs[i++] = v.getText();
-
-		CFG cfg = new CFG(new CFGDescriptor(filePath, line, col, funcName, cfgArgs));
-		log.info(cfg);
-		cfgs.add(cfg);
-
-		currentCFG = cfg;
 		return visitBlock(ctx.block());		
 	}
 
@@ -326,7 +349,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
 
-		Statement prev = null;
+		Statement prevStmt = null;
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
@@ -338,12 +361,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
-			if (prev != null)
-				currentCFG.addEdge(new SequentialEdge(prev, asg));
-			prev = asg;
+			if (prevStmt != null)
+				currentCFG.addEdge(new SequentialEdge(prevStmt, asg));
+			prevStmt = asg;
 		}
 
-		return prev;
+		return prevStmt;
 	}
 
 	@Override
@@ -414,7 +437,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			currentCFG.addNode(asg);
 			return asg;
 		}
-
 
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
@@ -553,8 +575,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitReturnStmt(ReturnStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		if (ctx.expressionList().expression().size() == 1)
+			return new GoReturn(currentCFG, visitExpression(ctx.expressionList().expression(0)));
+
+		throw new UnsupportedOperationException("Return of tuples not supported: " + ctx.getText());
 	}
 
 	@Override
@@ -961,6 +985,21 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitPrimaryExpr(PrimaryExprContext ctx) {
+
+		// Function call (e.g., f(1,2,3) )
+		if (ctx.primaryExpr() != null && ctx.arguments() != null) {
+			Expression func = visitPrimaryExpr(ctx.primaryExpr());
+			List<ExpressionContext> argsCtx = ctx.arguments().expressionList().expression();
+			
+			int i = 0;
+			Expression[] cfgArgs = new Expression[argsCtx.size()];
+			for (ExpressionContext arg : argsCtx) 
+				cfgArgs[i++] = visitExpression(arg);
+			
+			if (func instanceof Variable) 
+				return new CFGCall(currentCFG, getCFGByName(((Variable) func).getName()), cfgArgs);
+		}
+
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");

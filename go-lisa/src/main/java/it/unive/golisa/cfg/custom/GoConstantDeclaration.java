@@ -5,7 +5,14 @@ import it.unive.lisa.cfg.statement.Assignment;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.Variable;
 
+/**
+ * Go constant declaration class (e.g., const Num int = 5).
+ * TODO: at the moment, we skip the variable type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ */
 public class GoConstantDeclaration extends Assignment {
+	
 	/**
 	 * Builds a Go constant declaration, declaring {@code var} 
 	 * having constant value {@code expression} 

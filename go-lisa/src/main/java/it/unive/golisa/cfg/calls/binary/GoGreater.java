@@ -5,12 +5,11 @@ import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
- * Go less native function class.
+ * Go greater native function class.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoLess extends NativeCall {
-	
+public class GoGreater extends NativeCall {
 	/**
 	 * Builds a Go less expression. 
 	 * The location where this expression appears is unknown 
@@ -20,12 +19,12 @@ public class GoLess extends NativeCall {
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoLess(CFG cfg, Expression exp1, Expression exp2) {
+	public GoGreater(CFG cfg, Expression exp1, Expression exp2) {
 		super(cfg, null, -1, -1, "<", exp1, exp2);
 	}
-	
+
 	/**
-	 * Builds a Go less expression at a given location in the program.
+	 * Builds a Go greater expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
 	 * @param sourceFile    the source file where this expression happens. If
@@ -37,7 +36,7 @@ public class GoLess extends NativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoLess(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "<", exp1, exp2);
+	public GoGreater(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, sourceFile, line, col, ">", exp1, exp2);
 	}
 }

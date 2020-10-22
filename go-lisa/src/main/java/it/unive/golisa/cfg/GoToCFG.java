@@ -183,7 +183,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		return lastStatement;
 	}
-	
+
 	/**
 	 * Retrieve a cfg given its name.
 	 * 
@@ -659,7 +659,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			}
 		}
 
-
+		// Check whether the if-statement has an intial statement
+		// e.g., if x := y; z < x block 
 		if (ctx.simpleStmt() != null) {
 			Statement initialStatement = visitSimpleStmt(ctx.simpleStmt());
 			currentCFG.addNode(initialStatement);
@@ -971,10 +972,17 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (ctx.EQUALS() != null)
 			return new GoEquals(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
-		// Go equals (==)
+		// Go less (<)
 		if (ctx.LESS() != null)
 			return new GoLess(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
+		// Go greater (>)
+		if (ctx.GREATER() != null)
+			return new GoGreater(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go module (%)
+		if (ctx.MOD() != null)
+			return new GoModule(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -990,12 +998,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (ctx.primaryExpr() != null && ctx.arguments() != null) {
 			Expression func = visitPrimaryExpr(ctx.primaryExpr());
 			List<ExpressionContext> argsCtx = ctx.arguments().expressionList().expression();
-			
+
 			int i = 0;
 			Expression[] cfgArgs = new Expression[argsCtx.size()];
 			for (ExpressionContext arg : argsCtx) 
 				cfgArgs[i++] = visitExpression(arg);
-			
+
 			if (func instanceof Variable) 
 				return new CFGCall(currentCFG, getCFGByName(((Variable) func).getName()), cfgArgs);
 		}
@@ -1015,6 +1023,9 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		if (ctx.MINUS() != null)
 			return new GoMinus(currentCFG, visitExpression(ctx.expression()));
+
+		if (ctx.EXCLAMATION() != null)
+			return new GoNot(currentCFG, visitExpression(ctx.expression()));
 
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}

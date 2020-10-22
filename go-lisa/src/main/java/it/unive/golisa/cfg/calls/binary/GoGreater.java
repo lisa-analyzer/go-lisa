@@ -10,6 +10,7 @@ import it.unive.lisa.cfg.statement.NativeCall;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoGreater extends NativeCall {
+	
 	/**
 	 * Builds a Go less expression. 
 	 * The location where this expression appears is unknown 

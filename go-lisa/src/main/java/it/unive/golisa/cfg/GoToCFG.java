@@ -203,8 +203,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		SignatureContext signature = funcDecl.signature();
 		ParametersContext formalPars = signature.parameters();
 
-		int line = signature.getStart().getLine();
-		int col = signature.getStop().getStopIndex();
+		int line = getLine(signature);
+		int col = getCol(signature);
 
 		int size = 0;
 		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
@@ -613,8 +613,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitIfStmt(IfStmtContext ctx) {
-
-		// Visit If statement Boolean Guard
+		// Visit if statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
 		currentCFG.addNode(booleanGuard);
 
@@ -659,7 +658,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			}
 		}
 
-		// Check whether the if-statement has an intial statement
+		// Check whether the if-statement has an initial statement
 		// e.g., if x := y; z < x block 
 		if (ctx.simpleStmt() != null) {
 			Statement initialStatement = visitSimpleStmt(ctx.simpleStmt());
@@ -931,14 +930,14 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitParameters(ParametersContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// This method should never be visited
+		throw new IllegalStateException("visitParameters should never be visited.");
 	}
 
 	@Override
 	public Statement visitParameterDecl(ParameterDeclContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// This method should never be visited
+		throw new IllegalStateException("visitParameterDecl should never be visited.");
 	}
 
 	@Override
@@ -1275,7 +1274,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 					getCol(((ConstSpecContext) ctx).expressionList().expression(0)));
 		}
 
-		// If ctx is a simple statement (not composite) return this
+		// If ctx is a simple statement (not composite) return the node corresponding to ctx
 		return getNodeFromContext(ctx);
 	}
 

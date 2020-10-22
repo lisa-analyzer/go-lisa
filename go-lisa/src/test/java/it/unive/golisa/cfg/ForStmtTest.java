@@ -35,7 +35,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 		
 		GoConstantDeclaration constantA = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "A"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(constantA);
@@ -89,7 +89,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 		
 		GoConstantDeclaration constantBig = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "Big"), new GoInteger(expectedCfg, 100));
 		expectedCfg.addNode(constantBig);
@@ -135,7 +135,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 		
 		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(init);

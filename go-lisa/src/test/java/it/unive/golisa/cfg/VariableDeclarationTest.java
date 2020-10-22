@@ -28,7 +28,7 @@ public class VariableDeclarationTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 		
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xAsg);
@@ -38,7 +38,7 @@ public class VariableDeclarationTest {
 
 		expectedCfg.addEdge(new SequentialEdge(xAsg, yAsg));
 			
-		CFG cfg = cfgs.iterator().next();		
+		CFG cfg = cfgs.iterator().next();	
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
 	
@@ -51,7 +51,7 @@ public class VariableDeclarationTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 		
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xAsg);
@@ -78,7 +78,7 @@ public class VariableDeclarationTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 		
 		GoVariableDeclaration iAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(iAsg);

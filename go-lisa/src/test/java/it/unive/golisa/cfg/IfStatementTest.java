@@ -31,7 +31,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xAsg);
@@ -66,7 +66,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 100));
 		expectedCfg.addNode(xAsg);
@@ -97,7 +97,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 
 		GoEquals guard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(guard);
@@ -135,7 +135,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 
 		GoEquals firstGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(firstGuard);
@@ -181,7 +181,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 
 		GoVariableDeclaration xDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xDecl);
@@ -241,7 +241,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 38, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
 
 		GoVariableDeclaration xDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xDecl);

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -492,15 +493,15 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		// %=
 		if (op.MOD() != null)
-			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+			return new GoModule(currentCFG, lhs, exp);
 
 		// >>=
 		if (op.RSHIFT() != null)
-			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+			return new GoRightShift(currentCFG, lhs, exp);
 
 		// <<=
 		if (op.LSHIFT() != null)
-			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+			return new GoLeftShift(currentCFG, lhs, exp);
 
 		// &^=
 		if (op.BIT_CLEAR() != null)
@@ -508,16 +509,17 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		// ^=
 		if (op.CARET() != null)
-			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+			return new GoXOr(currentCFG, lhs, exp);
 
 		// &=
 		if (op.AMPERSAND() != null)
-			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+			return new GoAnd(currentCFG, lhs, exp);
 
 		// |=
 		if (op.OR() != null)
-			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+			return new GoOr(currentCFG, lhs, exp);
 
+		// Return exp if the assignment operator is null
 		return exp;
 	}
 
@@ -544,7 +546,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
-			Expression exp = (Expression) visitExpression(exps.expression(i));
+			Expression exp = visitExpression(exps.expression(i));
 
 			int line = getLine(ctx);
 			int col = getCol(ctx);
@@ -961,11 +963,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
-			return new GoAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
-			return new GoOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go equals (==)
 		if (ctx.EQUALS() != null)
@@ -982,6 +984,26 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		// Go module (%)
 		if (ctx.MOD() != null)
 			return new GoModule(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go right shift (>>)
+		if (ctx.RSHIFT() != null)
+			return new GoRightShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go left shift (<<)
+		if (ctx.LSHIFT() != null)
+			return new GoLeftShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go XOR (^)
+		if (ctx.CARET() != null)
+			return new GoXOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go or (|)
+		if (ctx.OR() != null)
+			return new GoOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go and (&)
+		if (ctx.AMPERSAND() != null)
+			return new GoAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))

@@ -31,6 +31,10 @@ import it.unive.golisa.cfg.custom.GoReturn;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.*;
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoInt16Type;
+import it.unive.golisa.cfg.type.GoInt32Type;
+import it.unive.golisa.cfg.type.GoInt64Type;
+import it.unive.golisa.cfg.type.GoInt8Type;
 import it.unive.golisa.cfg.type.GoIntType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.cfg.CFG;
@@ -1447,10 +1451,17 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			TypeNameContext typeName = ctx.typeName();
 
 			if (typeName.IDENTIFIER() != null) {
-
 				switch(typeName.IDENTIFIER().getText()) { 
 				case "int": 
 					return GoIntType.INSTANCE;
+				case "int8": 
+					return GoInt8Type.INSTANCE;
+				case "int16": 
+					return GoInt16Type.INSTANCE;
+				case "int32": 
+					return GoInt32Type.INSTANCE;
+				case "int64": 
+					return GoInt64Type.INSTANCE; 
 				case "string": 
 					return GoStringType.INSTANCE;
 				case "bool": 

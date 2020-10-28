@@ -3,33 +3,31 @@ package it.unive.golisa.cfg.type;
 import it.unive.lisa.cfg.type.NumericType;
 
 /**
- * Go int type. The int type, in Go, is a machine dependent type 
- * since his size (32 or 64 bits) depends on the type of architecture that it is used.
+ * Go 64 bits int type. 
  * 
  * It implements the singleton design pattern, that is 
  * the instances of this type are unique. The unique instance of
- * this type can be retrieved by {@link GoIntType#INSTANCE}.
+ * this type can be retrieved by {@link GoInt64Type#INSTANCE}.
  * 
- * @link https://www.golang-book.com/books/intro/3
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoIntType implements NumericType {
+public class GoInt64Type implements NumericType {
 
 	/**
-	 * Unique instance of GoInt type. 
+	 * Unique instance of GoInt64 type. 
 	 */
-	public static final GoIntType INSTANCE = new GoIntType();
+	public static final GoInt64Type INSTANCE = new GoInt64Type();
 	
-	private GoIntType() {}
+	private GoInt64Type() {}
 
 	@Override
 	public String toString() {
-		return "int";
+		return "int64";
 	}
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoIntType;
+		return other instanceof GoInt32Type;
 	}
 	
 	@Override
@@ -44,14 +42,12 @@ public class GoIntType implements NumericType {
 
 	@Override
 	public boolean is32Bits() {
-		// TODO the format depends on the type of architecture that it is used.
 		return false;
 	}
 
 	@Override
 	public boolean is64its() {
-		// TODO the format depends on the type of architecture that it is used.
-		return false;
+		return true;
 	}
 
 	@Override

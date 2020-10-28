@@ -185,8 +185,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	/**
 	 * Retrieve a cfg given its name.
 	 * 
-	 * @param name	the name
-	 * @return	the cfg named name
+	 * @param name	the cfg name
+	 * @return the cfg named name
 	 */
 	private CFG getCFGByName(String name) {
 		for (CFG cfg : cfgs)
@@ -219,13 +219,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		return new CFGDescriptor(filePath, line, col, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
 	}
 
-
 	/**
 	 * Given a parameter declaration context, parse the context and 
-	 * returns an array of the corresponding {@link Parameter}.
+	 * returns an array of the corresponding {@link Parameter}s.
 	 * 
 	 * @param paramCtx	the parameter context
-	 * @return an array of {@link Parameter}, c
+	 * @return an array of {@link Parameter}
 	 */
 	private Parameter[] getParameters(ParameterDeclContext paramCtx) {
 		Parameter[] args = new Parameter[paramCtx.identifierList().IDENTIFIER().size()];
@@ -235,6 +234,13 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		return args;
 	}
 
+	/**
+	 * Given a signature context, returns the Go type 
+	 * corresponding to the return type of the signature.
+	 * 
+	 * @param signature the signature context
+	 * @return the Go type corresponding to the return type of {@code signature}
+	 */
 	private Type getGoReturnType(SignatureContext signature) {
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
@@ -293,9 +299,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		ExpressionListContext exps = ctx.expressionList();
 
 		Statement prev = null;
+		Type type = getGoType(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
+			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			Expression exp = visitExpression(exps.expression(i));
 
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
@@ -569,7 +576,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Expression exp = visitExpression(exps.expression(i));
 			
-			// The type of the variable is implict and should be retrieved from the type of exp
+			// The type of the variable is implicit and it is retrieved from the type of exp
 			Type type = exp.getStaticType();
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
@@ -685,7 +692,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			}
 		}
 
-		// Check whether the if-statement has an initial statement
+		// Checks whether the if-statement has an initial statement
 		// e.g., if x := y; z < x block 
 		if (ctx.simpleStmt() != null) {
 			Statement initialStatement = visitSimpleStmt(ctx.simpleStmt());
@@ -1425,6 +1432,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		return str.substring(1, str.length()-1);
 	}
 
+	/**
+	 * Given a type context, returns the corresponding Go type.
+	 * 
+	 * @param ctx the type context
+	 * @return the Go type corresponding to {@ctx}
+	 */
 	private Type getGoType(Type_Context ctx) {
 		// The type context is absent, Untyped type is returned
 		if (ctx == null)

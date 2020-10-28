@@ -5,6 +5,10 @@ import it.unive.lisa.cfg.type.BooleanType;
 /**
  * Boolean type of Go. This is the only Boolean type available for Go.
  * 
+ * It implements the singleton design pattern, that is 
+ * the instances of this type are unique. The unique instance of
+ * this type can be retrieved by {@link GoBoolType#INSTANCE}.
+ * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoBoolType implements BooleanType {

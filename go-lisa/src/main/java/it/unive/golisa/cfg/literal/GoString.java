@@ -1,11 +1,13 @@
 package it.unive.golisa.cfg.literal;
 
+import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Literal;
 
 /**
  * A Go string value.
+ * The static type of a Go string value is {@link GoStringType}.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
@@ -15,6 +17,7 @@ public class GoString extends Literal {
 	 * Builds a Go string value. The location where 
 	 * this Go string value appears is unknown 
 	 * (i.e. no source file/line/column is available).
+	 * The static type of a Go string value is {@link GoBoolType}.
 	 * 
 	 * @param cfg	the cfg that this Go string belongs to
 	 * @param value the string value

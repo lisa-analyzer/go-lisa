@@ -5,7 +5,7 @@ import it.unive.lisa.cfg.statement.Assignment;
 import it.unive.lisa.cfg.statement.Expression;
 
 /**
- * Go assignment class (e.g., x = 5).
+ * A Go assignment (e.g., x = 5).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */

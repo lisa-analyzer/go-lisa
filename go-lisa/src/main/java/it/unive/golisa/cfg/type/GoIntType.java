@@ -6,6 +6,10 @@ import it.unive.lisa.cfg.type.NumericType;
  * Go int type. The int type, in Go, is a machine dependent type 
  * since his size (32 or 64 bits) depends on the type of architecture that it is used.
  * 
+ * It implements the singleton design pattern, that is 
+ * the instances of this type are unique. The unique instance of
+ * this type can be retrieved by {@link GoIntType#INSTANCE}.
+ * 
  * @link https://www.golang-book.com/books/intro/3
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
@@ -32,6 +36,7 @@ public class GoIntType implements NumericType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
+	
 	@Override
 	public boolean is8Bits() {
 		return false;
@@ -39,13 +44,13 @@ public class GoIntType implements NumericType {
 
 	@Override
 	public boolean is32Bits() {
-		// TODO Auto-generated method stub
+		// TODO the format depends on the type of architecture that it is used.
 		return false;
 	}
 
 	@Override
 	public boolean is64its() {
-		// TODO Auto-generated method stub
+		// TODO the format depends on the type of architecture that it is used.
 		return false;
 	}
 

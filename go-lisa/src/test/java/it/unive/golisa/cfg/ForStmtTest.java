@@ -22,10 +22,8 @@ import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.FalseEdge;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.edge.TrueEdge;
-import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NoOp;
 import it.unive.lisa.cfg.statement.Parameter;
-import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
 import it.unive.lisa.cfg.type.Untyped;
 
@@ -43,10 +41,10 @@ public class ForStmtTest {
 		
 		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
 		
-		GoConstantDeclaration constantA = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "A"), new GoInteger(expectedCfg, 1));
+		GoConstantDeclaration constantA = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "A", GoIntType.INSTANCE), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(constantA);
 		
-		GoConstantDeclaration constantB = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "B"), new GoInteger(expectedCfg, 2));
+		GoConstantDeclaration constantB = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "B", GoIntType.INSTANCE), new GoInteger(expectedCfg, 2));
 		expectedCfg.addNode(constantB);
 		
 		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum", GoIntType.INSTANCE), 
@@ -86,11 +84,6 @@ public class ForStmtTest {
 		expectedCfg.addEdge(new SequentialEdge(exitFor, res));
 			
 		CFG cfg = cfgs.iterator().next();	
-		
-		for (Statement st : cfg.getNodes())
-			if (st instanceof GoVariableDeclaration) {
-				System.err.println(st + " " + ((GoVariableDeclaration) st).getTarget().getStaticType());
-			}
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
 	

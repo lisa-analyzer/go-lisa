@@ -6,8 +6,7 @@ import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.Variable;
 
 /**
- * Go constant declaration class (e.g., const Num int = 5).
- * TODO: at the moment, we skip the variable type.
+ * A Go constant declaration class (e.g., const x int = 5).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */

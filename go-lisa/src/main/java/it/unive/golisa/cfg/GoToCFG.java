@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -30,7 +29,10 @@ import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoConstantDeclaration;
 import it.unive.golisa.cfg.custom.GoReturn;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
-import it.unive.golisa.cfg.literals.*;
+import it.unive.golisa.cfg.literal.*;
+import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoIntType;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.FalseEdge;
@@ -39,8 +41,11 @@ import it.unive.lisa.cfg.edge.TrueEdge;
 import it.unive.lisa.cfg.statement.CFGCall;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NoOp;
+import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.cfg.type.Untyped;
 import it.unive.lisa.logging.IterationLogger;
 
 /**
@@ -56,7 +61,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	/**
 	 * Go program file path.
 	 */
-	private String filePath;
+	private final String filePath;
 
 	/**
 	 * Collection of CFGs collected into the Go program at filePath.
@@ -81,14 +86,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 */
 	public String getFilePath() {
 		return filePath;
-	}
-
-	/**
-	 * Set the file path
-	 * @param filePath the file path
-	 */
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
 	}
 
 	/**
@@ -211,16 +208,40 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
 			size += paramCxt.identifierList().IDENTIFIER().size();
 
-		String[] cfgArgs = new String[size];
+		Parameter[] cfgArgs = new Parameter[size];
 
 		int i = 0;
 
-		//TODO: for the moment, we skip the formal parameter type
 		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
-			for (ParseTree v : paramCxt.identifierList().IDENTIFIER())
-				cfgArgs[i++] = v.getText();
+			for (Parameter p : getParameters(paramCxt)) 
+				cfgArgs[i++] = p;
 
-		return new CFGDescriptor(filePath, line, col, funcName, cfgArgs);
+		return new CFGDescriptor(filePath, line, col, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
+	}
+
+
+	/**
+	 * Given a parameter declaration context, parse the context and 
+	 * returns an array of the corresponding {@link Parameter}.
+	 * 
+	 * @param paramCtx	the parameter context
+	 * @return an array of {@link Parameter}, c
+	 */
+	private Parameter[] getParameters(ParameterDeclContext paramCtx) {
+		Parameter[] args = new Parameter[paramCtx.identifierList().IDENTIFIER().size()];
+		Type argType = getGoType(paramCtx.type_());
+		for (int i = 0; i < paramCtx.identifierList().IDENTIFIER().size(); i++)
+			args[i] = new Parameter(paramCtx.identifierList().IDENTIFIER(i).getText(), argType);
+		return args;
+	}
+
+	private Type getGoReturnType(SignatureContext signature) {
+		if (signature.result() == null)
+			return Untyped.INSTANCE;
+		else if (signature.result().type_() != null)
+			return getGoType(signature.result().type_());
+
+		throw new UnsupportedOperationException("Unsupported return type: " + signature.getText());
 	}
 
 	@Override
@@ -351,9 +372,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		ExpressionListContext exps = ctx.expressionList();
 
 		Statement prevStmt = null;
-
+		Type type = getGoType(ctx.type_());
+		
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
+			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			Expression exp = (Expression) visitExpression(exps.expression(i));
 
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
@@ -545,8 +567,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		Statement prev = null;
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText());
 			Expression exp = visitExpression(exps.expression(i));
+			
+			// The type of the variable is implict and should be retrieved from the type of exp
+			Type type = exp.getStaticType();
+			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
 			int line = getLine(ctx);
 			int col = getCol(ctx);
@@ -1113,8 +1138,13 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitOperandName(OperandNameContext ctx) {
-		if (ctx.IDENTIFIER() != null) 
-			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
+		if (ctx.IDENTIFIER() != null) {
+			// Boolean values (true, false) are matched as identifiers
+			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
+				return new GoBoolean(currentCFG, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
+			else
+				return new Variable(currentCFG, ctx.IDENTIFIER().getText());
+		}
 
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1337,7 +1367,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	/**
 	 * Returns the entry node of a for statement.
 	 * @param block 	the for statement
-	 * @return 			the entry node of the for statement
+	 * @return the entry node of the for statement
 	 */
 	private Statement getForEntryNode(ForStmtContext forStmt) {
 
@@ -1363,7 +1393,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * Checks if the for statement has the initialization statement.
 	 * 
 	 * @param ctx 	the for statement context
-	 * @return true	if the for statement has the initialization statement, false otherwise
+	 * @return {@code true}	if the for statement has the initialization statement, {@code false} otherwise
 	 */
 	private boolean hasInitStmt(ForStmtContext ctx) {
 		return ctx.forClause().simpleStmt(0) != null && getCol(ctx.forClause().simpleStmt(0)) < getCol(ctx.forClause().SEMI(0).getSymbol()); 
@@ -1373,7 +1403,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * Checks if the for statement has the guard expression.
 	 * 
 	 * @param ctx 	the for statement context
-	 * @return true	if the for statement has the guard expression, false otherwise
+	 * @return {@code true}	if the for statement has the guard expression, {@code false} otherwise
 	 */
 	private boolean hasCondition(ForStmtContext ctx) {
 		return  ctx.forClause().expression() != null;
@@ -1383,7 +1413,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * Checks if the for statement has the post statement.
 	 * 
 	 * @param ctx 	the for statement context
-	 * @return true	if the for statement has the post statement, false otherwise
+	 * @return {@code true}	if the for statement has the post statement; {@code false} otherwise
 	 */
 	private boolean hasPostStmt(ForStmtContext ctx) {
 		return ctx.forClause().simpleStmt(1) != null ||
@@ -1393,5 +1423,34 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	private String removeQuotes(String str) {
 		return str.substring(1, str.length()-1);
+	}
+
+	private Type getGoType(Type_Context ctx) {
+		// The type context is absent, Untyped type is returned
+		if (ctx == null)
+			return Untyped.INSTANCE;
+		
+		if (ctx.typeName() != null) {
+			TypeNameContext typeName = ctx.typeName();
+
+			if (typeName.IDENTIFIER() != null) {
+
+				switch(typeName.IDENTIFIER().getText()) { 
+				case "int": 
+					return GoIntType.INSTANCE;
+				case "string": 
+					return GoStringType.INSTANCE;
+				case "bool": 
+					return GoBoolType.INSTANCE;
+				default: 
+					throw new UnsupportedOperationException("Unsupported basic type: " + ctx.getText());
+				} 
+			}
+
+			if (typeName.qualifiedIdent() != null)
+				throw new UnsupportedOperationException("Unsupported type: " + ctx.getText());
+		}
+
+		throw new UnsupportedOperationException("Unsupported type: " + ctx.getText());
 	}
 }

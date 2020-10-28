@@ -5,7 +5,7 @@ import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
- * Go Boolean or native function class.
+ * Go Boolean logical or native function class (e1 || e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */

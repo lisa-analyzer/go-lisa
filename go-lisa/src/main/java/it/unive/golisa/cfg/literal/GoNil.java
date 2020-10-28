@@ -1,10 +1,10 @@
-package it.unive.golisa.cfg.literals;
+package it.unive.golisa.cfg.literal;
 
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.NullLiteral;
 
 /**
- * Go nil class.
+ * A Go nil value.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */

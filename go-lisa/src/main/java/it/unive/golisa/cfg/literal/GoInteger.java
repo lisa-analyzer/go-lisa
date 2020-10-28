@@ -1,5 +1,6 @@
-package it.unive.golisa.cfg.literals;
+package it.unive.golisa.cfg.literal;
 
+import it.unive.golisa.cfg.type.GoIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Literal;
 
@@ -19,6 +20,6 @@ public class GoInteger extends Literal {
 	 * @param value the integer value
 	 */
 	public GoInteger(CFG cfg, Integer value) {
-		super(cfg, value);
+		super(cfg, value, GoIntType.INSTANCE);
 	}
 }

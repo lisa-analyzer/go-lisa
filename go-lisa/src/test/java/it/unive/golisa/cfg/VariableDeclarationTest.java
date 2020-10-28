@@ -8,94 +8,107 @@ import java.util.Collection;
 import org.junit.Test;
 
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
-import it.unive.golisa.cfg.literals.GoInteger;
-import it.unive.golisa.cfg.literals.GoString;
+import it.unive.golisa.cfg.literal.GoInteger;
+import it.unive.golisa.cfg.literal.GoString;
+import it.unive.golisa.cfg.type.GoIntType;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;
+import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
+import it.unive.lisa.cfg.type.Untyped;
 
 public class VariableDeclarationTest {
 
 	String path = "src/test/resources/go-tutorial/decl/";
-	
+
 	@Test
 	public void singleVariableDeclaration() throws IOException {
-		
+
 		String file = path + "go001.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
-		
+
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
-		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
-		
-		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
+
+		Parameter[] args = new Parameter[] {new Parameter("x", GoIntType.INSTANCE), new Parameter("y", GoIntType.INSTANCE)};
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 20, "main", GoIntType.INSTANCE, args));
+
+		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xAsg);
 
-		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j"), new GoInteger(expectedCfg, 2));
+		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j", GoIntType.INSTANCE), new GoInteger(expectedCfg, 2));
 		expectedCfg.addNode(yAsg);
 
 		expectedCfg.addEdge(new SequentialEdge(xAsg, yAsg));
-			
+
 		CFG cfg = cfgs.iterator().next();	
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
-	
+
 	@Test
 	public void multipleVariableDeclarations() throws IOException {
-		
+
 		String file = path + "go002.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
-		
+
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
-		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
-		
-		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
+
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+
+		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xAsg);
 
-		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j"), new GoInteger(expectedCfg, 2));
+		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 2));
 		expectedCfg.addNode(yAsg);
 
-		GoVariableDeclaration kAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "k"), new GoInteger(expectedCfg, 3));
+		GoVariableDeclaration kAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "k", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 3));
 		expectedCfg.addNode(kAsg);
 
 		expectedCfg.addEdge(new SequentialEdge(xAsg, yAsg));
 		expectedCfg.addEdge(new SequentialEdge(yAsg, kAsg));
-			
+
 		CFG cfg = cfgs.iterator().next();		
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
-	
+
 	@Test
 	public void multipleVariableDeclarations2() throws IOException {
-		
+
 		String file = path + "go003.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
-		
+
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
-		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
-		
-		GoVariableDeclaration iAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 1));
+
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+
+		GoVariableDeclaration iAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(iAsg);
 
-		GoVariableDeclaration jAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j"), new GoInteger(expectedCfg, 2));
+		GoVariableDeclaration jAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 2));
 		expectedCfg.addNode(jAsg);
 
-		GoVariableDeclaration kAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "k"), new GoString(expectedCfg, "abc"));
+		GoVariableDeclaration kAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "k", GoStringType.INSTANCE), 
+				new GoString(expectedCfg, "abc"));
 		expectedCfg.addNode(kAsg);
 
-		GoVariableDeclaration lAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "l"), new GoString(expectedCfg, "def"));
+		GoVariableDeclaration lAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "l", GoStringType.INSTANCE), 
+				new GoString(expectedCfg, "def"));
 		expectedCfg.addNode(lAsg);
-		
+
 		expectedCfg.addEdge(new SequentialEdge(iAsg, jAsg));
 		expectedCfg.addEdge(new SequentialEdge(jAsg, kAsg));
 		expectedCfg.addEdge(new SequentialEdge(kAsg, lAsg));
-			
+
 		CFG cfg = cfgs.iterator().next();		
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}

@@ -5,14 +5,14 @@ import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
- * Go greater native function class.
+ * Go greater native function class (e1 > e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoGreater extends NativeCall {
 	
 	/**
-	 * Builds a Go less expression. 
+	 * Builds a Go greater expression. 
 	 * The location where this expression appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 

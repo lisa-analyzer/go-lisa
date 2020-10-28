@@ -13,15 +13,21 @@ import it.unive.golisa.cfg.calls.binary.GoSum;
 import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoConstantDeclaration;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
-import it.unive.golisa.cfg.literals.GoInteger;
-import it.unive.golisa.cfg.literals.GoString;
+import it.unive.golisa.cfg.literal.GoInteger;
+import it.unive.golisa.cfg.literal.GoString;
+import it.unive.golisa.cfg.type.GoIntType;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.FalseEdge;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.edge.TrueEdge;
+import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NoOp;
+import it.unive.lisa.cfg.statement.Parameter;
+import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
+import it.unive.lisa.cfg.type.Untyped;
 
 public class ForStmtTest {
 	String path = "src/test/resources/go-tutorial/simple-for/";
@@ -35,7 +41,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
 		
 		GoConstantDeclaration constantA = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "A"), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(constantA);
@@ -43,10 +49,12 @@ public class ForStmtTest {
 		GoConstantDeclaration constantB = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "B"), new GoInteger(expectedCfg, 2));
 		expectedCfg.addNode(constantB);
 		
-		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
+		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(sum);
 
-		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 0));
+		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(init);
 		
 		GoLess cond = new GoLess(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 10));
@@ -60,7 +68,8 @@ public class ForStmtTest {
 				new GoSum(expectedCfg, new Variable(expectedCfg, "sum"), new Variable(expectedCfg, "i")));
 		expectedCfg.addNode(body);
 
-		GoVariableDeclaration res = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "res"), new GoString(expectedCfg, "Hello"));
+		GoVariableDeclaration res = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "res", GoStringType.INSTANCE), 
+				new GoString(expectedCfg, "Hello"));
 		expectedCfg.addNode(res);
 		
 		NoOp exitFor = new NoOp(expectedCfg);
@@ -77,6 +86,11 @@ public class ForStmtTest {
 		expectedCfg.addEdge(new SequentialEdge(exitFor, res));
 			
 		CFG cfg = cfgs.iterator().next();	
+		
+		for (Statement st : cfg.getNodes())
+			if (st instanceof GoVariableDeclaration) {
+				System.err.println(st + " " + ((GoVariableDeclaration) st).getTarget().getStaticType());
+			}
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
 	
@@ -89,7 +103,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
 		
 		GoConstantDeclaration constantBig = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "Big"), new GoInteger(expectedCfg, 100));
 		expectedCfg.addNode(constantBig);
@@ -97,7 +111,8 @@ public class ForStmtTest {
 		GoConstantDeclaration constantSmall = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "Small"), new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(constantSmall);
 		
-		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
+		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum", GoIntType.INSTANCE),
+				new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(sum);
 		
 		GoLess cond = new GoLess(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 10));
@@ -135,12 +150,14 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new String[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
 		
-		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 0));
+		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(init);
 		
-		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum"), new GoInteger(expectedCfg, 0));
+		GoVariableDeclaration sum = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "sum", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 0));
 		expectedCfg.addNode(sum);
 		
 		GoLess cond = new GoLess(expectedCfg, new Variable(expectedCfg, "i"), new GoInteger(expectedCfg, 10));

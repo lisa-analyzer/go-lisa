@@ -1,10 +1,11 @@
-package it.unive.golisa.cfg.literals;
+package it.unive.golisa.cfg.literal;
 
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Literal;
 
 /**
- * Go string value class.
+ * A Go string value.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
@@ -19,7 +20,7 @@ public class GoString extends Literal {
 	 * @param value the string value
 	 */
 	public GoString(CFG cfg, String value) {
-		super(cfg, value);
+		super(cfg, value, GoStringType.INSTANCE);
 	}
 	
 	@Override

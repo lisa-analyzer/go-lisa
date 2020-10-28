@@ -5,7 +5,7 @@ import it.unive.lisa.cfg.statement.NativeCall;
 import it.unive.lisa.cfg.statement.Expression;
 
 /**
- * Go numerical subtraction native function class.
+ * Go numerical subtraction native function class (e1 - e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */

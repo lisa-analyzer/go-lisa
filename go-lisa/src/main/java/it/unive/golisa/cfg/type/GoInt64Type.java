@@ -27,7 +27,7 @@ public class GoInt64Type implements NumericType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoInt32Type;
+		return other instanceof GoInt64Type;
 	}
 	
 	@Override

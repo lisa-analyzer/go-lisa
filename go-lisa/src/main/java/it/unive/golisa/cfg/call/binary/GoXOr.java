@@ -1,18 +1,19 @@
-package it.unive.golisa.cfg.calls.binary;
+package it.unive.golisa.cfg.call.binary;
 
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
- * A Go Boolean logical and function call (e1 && e2).
+ * A Go XOR function call. 
+ * e1 ^ e2 copies the bit if it is set in one operand but not both.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoLogicalAnd extends NativeCall {
+public class GoXOr extends NativeCall {
 	
 	/**
-	 * Builds a Go and expression. 
+	 * Builds a Go XOR expression. 
 	 * The location where this expression appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
@@ -20,12 +21,12 @@ public class GoLogicalAnd extends NativeCall {
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoLogicalAnd(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "&&", exp1, exp2);
+	public GoXOr(CFG cfg, Expression exp1, Expression exp2) {
+		super(cfg, null, -1, -1, "^", exp1, exp2);
 	}
 	
 	/**
-	 * Builds a Go and expression at a given location in the program.
+	 * Builds a Go XOR expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
 	 * @param sourceFile    the source file where this expression happens. If
@@ -37,7 +38,7 @@ public class GoLogicalAnd extends NativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoLogicalAnd(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "&&", exp1, exp2);
+	public GoXOr(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, sourceFile, line, col, "^", exp1, exp2);
 	}
 }

@@ -1,11 +1,13 @@
-package it.unive.golisa.cfg.calls.binary;
+package it.unive.golisa.cfg.call.binary;
 
+import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
  * A Go equals function call (e1 == e2).
+ * The static type of this expression is definitely {@link GoBoolType}.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
@@ -21,7 +23,7 @@ public class GoEquals extends NativeCall {
 	 * @param exp2 	right-hand side operand 
 	 */
 	public GoEquals(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "==", exp1, exp2);
+		super(cfg, null, -1, -1, "==", GoBoolType.INSTANCE, exp1, exp2);
 	}
 	
 	/**
@@ -38,6 +40,6 @@ public class GoEquals extends NativeCall {
 	 * @param exp2		    right-hand side operand
 	 */
 	public GoEquals(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "==", exp1, exp2);
+		super(cfg, sourceFile, line, col, "==", GoBoolType.INSTANCE, exp1, exp2);
 	}
 }

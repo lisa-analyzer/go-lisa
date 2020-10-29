@@ -1,31 +1,33 @@
-package it.unive.golisa.cfg.calls.binary;
+package it.unive.golisa.cfg.call.binary;
 
+import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
- * A Go module function call (e1 % e2).
+ * A Go Boolean logical or function call (e1 || e2).
+ * The static type of this expression is definitely {@link GoBoolType}.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoModule extends NativeCall {
+public class GoLogicalOr extends NativeCall {
 	
 	/**
-	 * Builds a Go module expression. 
+	 * Builds a Go or expression. 
 	 * The location where this expression appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
-	 * @param cfg	the cfg that this expression belongs to
+	 * @param cfg	the cfg that this  expression belongs to
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoModule(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "%", exp1, exp2);
+	public GoLogicalOr(CFG cfg, Expression exp1, Expression exp2) {
+		super(cfg, null, -1, -1, "||", GoBoolType.INSTANCE, exp1, exp2);
 	}
 	
 	/**
-	 * Builds a Go module expression at a given location in the program.
+	 * Builds a Go or expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
 	 * @param sourceFile    the source file where this expression happens. If
@@ -37,7 +39,7 @@ public class GoModule extends NativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoModule(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "%", exp1, exp2);
+	public GoLogicalOr(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, sourceFile, line, col, "||", GoBoolType.INSTANCE, exp1, exp2);
 	}
 }

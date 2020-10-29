@@ -9,5 +9,4 @@ func main() {
 	var x4 int32 = 4
 	var x5 int64 = 5
 	var x6 bool = true
-
 }

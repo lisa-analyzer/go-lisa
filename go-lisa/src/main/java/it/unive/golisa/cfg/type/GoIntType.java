@@ -43,13 +43,18 @@ public class GoIntType implements NumericType {
 	}
 
 	@Override
+	public boolean is16Bits() {
+		return false;
+	}
+
+	@Override
 	public boolean is32Bits() {
 		// TODO the format depends on the type of architecture that it is used.
 		return false;
 	}
 
 	@Override
-	public boolean is64its() {
+	public boolean is64Bits() {
 		// TODO the format depends on the type of architecture that it is used.
 		return false;
 	}

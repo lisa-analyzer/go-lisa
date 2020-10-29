@@ -39,6 +39,11 @@ public class GoInt8Type implements NumericType {
 	public boolean is8Bits() {
 		return true;
 	}
+	
+	@Override
+	public boolean is16Bits() {
+		return false;
+	}
 
 	@Override
 	public boolean is32Bits() {
@@ -46,7 +51,7 @@ public class GoInt8Type implements NumericType {
 	}
 
 	@Override
-	public boolean is64its() {
+	public boolean is64Bits() {
 		return false;
 	}
 

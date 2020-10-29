@@ -21,7 +21,6 @@ import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.statement.Parameter;
-import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
 import it.unive.lisa.cfg.type.Untyped;
 
@@ -39,7 +38,7 @@ public class TypeTest {
 		assertEquals(cfgs.size(), 1);
 
 		Parameter[] args = new Parameter[] {};
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, args));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", args));
 
 		GoVariableDeclaration x1Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x1", GoIntType.INSTANCE), 
 				new GoInteger(expectedCfg, 1));

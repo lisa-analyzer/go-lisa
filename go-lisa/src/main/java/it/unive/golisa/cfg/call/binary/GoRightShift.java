@@ -1,18 +1,18 @@
-package it.unive.golisa.cfg.calls.binary;
+package it.unive.golisa.cfg.call.binary;
 
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 
 /**
- * A Go left shift function call (e1 << e2).
+ * A Go right shift function call (e.g., e1 >> e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoLeftShift extends NativeCall {
+public class GoRightShift extends NativeCall {
 	
 	/**
-	 * Builds a Go left shift expression. 
+	 * Builds a Go right shift expression. 
 	 * The location where this expression appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
@@ -20,12 +20,12 @@ public class GoLeftShift extends NativeCall {
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoLeftShift(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "<<", exp1, exp2);
+	public GoRightShift(CFG cfg, Expression exp1, Expression exp2) {
+		super(cfg, null, -1, -1, ">>", exp1, exp2);
 	}
 	
 	/**
-	 * Builds a Go left shift expression at a given location in the program.
+	 * Builds a Go right shift expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
 	 * @param sourceFile    the source file where this expression happens. If
@@ -37,7 +37,7 @@ public class GoLeftShift extends NativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoLeftShift(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "<<", exp1, exp2);
+	public GoRightShift(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, sourceFile, line, col, ">>", exp1, exp2);
 	}
 }

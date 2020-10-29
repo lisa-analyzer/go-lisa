@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import it.unive.golisa.cfg.calls.binary.*;
+import it.unive.golisa.cfg.call.binary.GoEquals;
 import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.GoInteger;
@@ -21,7 +21,6 @@ import it.unive.lisa.cfg.edge.TrueEdge;
 import it.unive.lisa.cfg.statement.NoOp;
 import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
-import it.unive.lisa.cfg.type.Untyped;
 
 public class IfStatementTest {
 	String path = "src/test/resources/go-tutorial/if/";
@@ -34,7 +33,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
 				new GoInteger(expectedCfg, 1));
@@ -72,7 +71,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x", GoIntType.INSTANCE),
 				new GoInteger(expectedCfg, 100));
@@ -105,7 +104,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoEquals guard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(guard);
@@ -147,7 +146,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoEquals firstGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(firstGuard);
@@ -197,7 +196,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoVariableDeclaration xDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x", GoIntType.INSTANCE), 
 				new GoInteger(expectedCfg, 1));
@@ -261,7 +260,7 @@ public class IfStatementTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoVariableDeclaration xDecl = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x", GoIntType.INSTANCE), 
 				new GoInteger(expectedCfg, 1));

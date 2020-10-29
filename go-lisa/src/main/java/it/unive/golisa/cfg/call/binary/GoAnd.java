@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.calls.binary;
+package it.unive.golisa.cfg.call.binary;
 
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;

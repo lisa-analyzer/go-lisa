@@ -8,8 +8,8 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import it.unive.golisa.cfg.calls.binary.GoLess;
-import it.unive.golisa.cfg.calls.binary.GoSum;
+import it.unive.golisa.cfg.call.binary.GoLess;
+import it.unive.golisa.cfg.call.binary.GoSum;
 import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoConstantDeclaration;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
@@ -39,7 +39,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 		
 		GoConstantDeclaration constantA = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "A", GoIntType.INSTANCE), new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(constantA);
@@ -96,7 +96,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 		
 		GoConstantDeclaration constantBig = new GoConstantDeclaration(expectedCfg, new Variable(expectedCfg, "Big"), new GoInteger(expectedCfg, 100));
 		expectedCfg.addNode(constantBig);
@@ -143,7 +143,7 @@ public class ForStmtTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 		
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 		
 		GoVariableDeclaration init = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
 				new GoInteger(expectedCfg, 0));

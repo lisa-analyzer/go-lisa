@@ -41,12 +41,17 @@ public class GoInt16Type implements NumericType {
 	}
 
 	@Override
+	public boolean is16Bits() {
+		return true;
+	}
+	
+	@Override
 	public boolean is32Bits() {
 		return false;
 	}
 
 	@Override
-	public boolean is64its() {
+	public boolean is64Bits() {
 		return false;
 	}
 

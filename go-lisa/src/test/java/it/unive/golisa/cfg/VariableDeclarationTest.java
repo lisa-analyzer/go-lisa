@@ -57,7 +57,7 @@ public class VariableDeclarationTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
 				new GoInteger(expectedCfg, 1));
@@ -87,7 +87,7 @@ public class VariableDeclarationTest {
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
 
-		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", Untyped.INSTANCE, new Parameter[0]));
+		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
 		GoVariableDeclaration iAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "i", GoIntType.INSTANCE), 
 				new GoInteger(expectedCfg, 1));

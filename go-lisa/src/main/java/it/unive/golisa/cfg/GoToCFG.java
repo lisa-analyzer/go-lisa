@@ -1518,10 +1518,14 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 					return GoInt64Type.INSTANCE; 
 				case "uint": 
 					return GoUIntType.INSTANCE;
+				// byte is an alias for int8
+				case "byte": 
 				case "uint8": 
 					return GoUInt8Type.INSTANCE;
 				case "uint16": 
 					return GoUInt16Type.INSTANCE;
+				// rune is an alias for int32
+				case "rune":
 				case "uint32": 
 					return GoUInt32Type.INSTANCE;
 				case "uint64": 

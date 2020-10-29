@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.type.numeric.unsigned;
 import it.unive.lisa.cfg.type.NumericType;
 
 /**
- * Go 8 bits int type. 
+ * Go 8 bits unsigned int type. 
  * 
  * It implements the singleton design pattern, that is 
  * the instances of this type are unique. The unique instance of

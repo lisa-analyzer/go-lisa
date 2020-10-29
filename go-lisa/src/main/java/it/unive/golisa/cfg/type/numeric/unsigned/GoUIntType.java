@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.type.numeric.unsigned;
 import it.unive.lisa.cfg.type.NumericType;
 
 /**
- * Go int type. The int type, in Go, is a machine dependent type 
+ * Go unsigned int type. The unsigned int type, in Go, is a machine dependent type 
  * since his size (32 or 64 bits) depends on the type of architecture that it is used.
  * 
  * It implements the singleton design pattern, that is 

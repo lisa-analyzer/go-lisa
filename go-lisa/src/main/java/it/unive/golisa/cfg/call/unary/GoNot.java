@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.call.unary;
 
+import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
@@ -21,6 +22,6 @@ public class GoNot extends NativeCall {
 	 * @param exp	operand
 	 */
 	public GoNot(CFG cfg, Expression exp) {
-		super(cfg, null, -1, -1, "!", exp);
+		super(cfg, null, -1, -1, "!", GoBoolType.INSTANCE, exp);
 	}
 }

@@ -210,7 +210,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 */
 	private CFG getCFGByName(String name) {
 		for (CFG cfg : cfgs)
-			if (cfg.getDescriptor().getName().equals(name))
+			if (cfg.getDescriptor().getName().equals(name)) 
 				return cfg;
 
 		throw new IllegalStateException("CFG not found: " + name);
@@ -257,6 +257,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	/**
 	 * Given a signature context, returns the Go type 
 	 * corresponding to the return type of the signature.
+	 * If the result type is missing (i.e. null) then
+	 * the {@link Untyped} typed is returned. 
 	 * 
 	 * @param signature the signature context
 	 * @return the Go type corresponding to the return type of {@code signature}
@@ -400,7 +402,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		Statement prevStmt = null;
 		Type type = getGoType(ctx.type_());
-		
+
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			Expression exp = (Expression) visitExpression(exps.expression(i));
@@ -582,7 +584,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Statement visitShortVarDecl(ShortVarDeclContext ctx) {
 		/*
-		 * The short variable declaration in only
+		 * The short variable declaration is only
 		 * syntactic sugar for variable declaration
 		 * (e.g., x := 5 corresponds to var x int = 5).
 		 * Hence, the translation is identical to the one
@@ -595,7 +597,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Expression exp = visitExpression(exps.expression(i));
-			
+
 			// The type of the variable is implicit and it is retrieved from the type of exp
 			Type type = exp.getStaticType();
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
@@ -629,8 +631,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitReturnStmt(ReturnStmtContext ctx) {
-		if (ctx.expressionList().expression().size() == 1)
-			return new GoReturn(currentCFG, visitExpression(ctx.expressionList().expression(0)));
+		if (ctx.expressionList().expression().size() == 1) {
+			GoReturn ret =  new GoReturn(currentCFG, visitExpression(ctx.expressionList().expression(0)));
+			currentCFG.addNode(ret);
+			return ret;
+		}
 
 		throw new UnsupportedOperationException("Return of tuples not supported: " + ctx.getText());
 	}
@@ -1067,18 +1072,26 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	@Override
 	public Expression visitPrimaryExpr(PrimaryExprContext ctx) {
 
-		// Function call (e.g., f(1,2,3) )
+		// Function call (e.g., f(1,2,3), f() )
 		if (ctx.primaryExpr() != null && ctx.arguments() != null) {
 			Expression func = visitPrimaryExpr(ctx.primaryExpr());
-			List<ExpressionContext> argsCtx = ctx.arguments().expressionList().expression();
+			Expression[] cfgArgs;
 
-			int i = 0;
-			Expression[] cfgArgs = new Expression[argsCtx.size()];
-			for (ExpressionContext arg : argsCtx) 
-				cfgArgs[i++] = visitExpression(arg);
+			// Check if the function call has arguments
+			if (ctx.arguments().expressionList() == null)
+				cfgArgs = new Expression[] {};
+			else {
+				List<ExpressionContext> argsCtx = ctx.arguments().expressionList().expression();
+				cfgArgs = new Expression[argsCtx.size()];
 
-			if (func instanceof Variable) 
+				int i = 0;
+				for (ExpressionContext arg : argsCtx) 
+					cfgArgs[i++] = visitExpression(arg);	
+			}
+
+			if (func instanceof Variable) {
 				return new CFGCall(currentCFG, getCFGByName(((Variable) func).getName()), cfgArgs);
+			}
 		}
 
 		Statement child = visitChildren(ctx);
@@ -1462,7 +1475,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		// The type context is absent, Untyped type is returned
 		if (ctx == null)
 			return Untyped.INSTANCE;
-		
+
 		if (ctx.typeName() != null) {
 			TypeNameContext typeName = ctx.typeName();
 

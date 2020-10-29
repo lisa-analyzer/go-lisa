@@ -25,7 +25,6 @@ import it.unive.lisa.cfg.edge.TrueEdge;
 import it.unive.lisa.cfg.statement.NoOp;
 import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
-import it.unive.lisa.cfg.type.Untyped;
 
 public class ForStmtTest {
 	String path = "src/test/resources/go-tutorial/simple-for/";

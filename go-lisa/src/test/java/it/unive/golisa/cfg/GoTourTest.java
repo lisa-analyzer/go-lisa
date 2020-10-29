@@ -17,6 +17,7 @@ import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.statement.CFGCall;
 import it.unive.lisa.cfg.statement.Expression;
+import it.unive.lisa.cfg.statement.OpenCall;
 import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
 
@@ -25,7 +26,6 @@ public class GoTourTest {
 
 	@Test
 	public void goTourTest001() throws IOException {
-
 		String file = path + "go001.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 
@@ -44,7 +44,6 @@ public class GoTourTest {
 
 	@Test
 	public void goTourTest002() throws IOException {
-
 		String file = path + "go002.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 
@@ -63,7 +62,6 @@ public class GoTourTest {
 
 	@Test
 	public void goTourTest003() throws IOException {
-
 		String file = path + "go003.go";
 		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
 
@@ -85,6 +83,39 @@ public class GoTourTest {
 
 		GoVariableDeclaration aAsg = new GoVariableDeclaration(mainExpCFG, new Variable(mainExpCFG, "a", GoIntType.INSTANCE), 
 				new CFGCall(mainExpCFG, sumCfg, new Expression[] {
+						new GoInteger(mainExpCFG, 1),
+						new GoInteger(mainExpCFG, 2),
+				}));
+		mainExpCFG.addNode(aAsg);
+
+		CFG mainCfg = cfgs.stream().filter(x -> x.getDescriptor().getName().equals("main")).findFirst().get();
+		
+		assertTrue(mainExpCFG.isEqualTo(mainCfg));
+	}
+	
+	@Test
+	public void goTourTest004() throws IOException {
+		String file = path + "go004.go";
+		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+
+		// Check number of generated cfgs
+		assertEquals(cfgs.size(), 2);
+
+		// Checking sum CFG
+		Parameter[] args = new Parameter[]{new Parameter("x", GoIntType.INSTANCE), new Parameter("y", GoIntType.INSTANCE)};
+		CFG sumExpCFG = new CFG(new CFGDescriptor(file, 5, 19, "sum", GoIntType.INSTANCE, args));
+
+		GoReturn ret = new GoReturn(sumExpCFG, new GoSum(sumExpCFG, new Variable(sumExpCFG, "x"), new Variable(sumExpCFG, "y")));
+		sumExpCFG.addNode(ret);
+
+		CFG sumCfg = cfgs.stream().filter(x -> x.getDescriptor().getName().equals("sum")).findFirst().get();
+		assertTrue(sumExpCFG.isEqualTo(sumCfg));
+		
+		// Checking main CFG
+		CFG mainExpCFG = new CFG(new CFGDescriptor(file, 9, 10, "main", new Parameter[] {}));
+
+		GoVariableDeclaration aAsg = new GoVariableDeclaration(mainExpCFG, new Variable(mainExpCFG, "a"), 
+				new OpenCall(mainExpCFG, "open", new Expression[] {
 						new GoInteger(mainExpCFG, 1),
 						new GoInteger(mainExpCFG, 2),
 				}));

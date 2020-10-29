@@ -61,6 +61,7 @@ import it.unive.lisa.cfg.edge.TrueEdge;
 import it.unive.lisa.cfg.statement.CFGCall;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NoOp;
+import it.unive.lisa.cfg.statement.OpenCall;
 import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
@@ -122,7 +123,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	private CFG currentCFG;
 
 	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/func-decl/fun001.go";
+		String file = "src/test/resources/go-tutorial/go-tour/go004.go";
 		GoToCFG translator = new GoToCFG(file);
 		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
 	}
@@ -203,7 +204,19 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	/**
-	 * Retrieve a cfg given its name.
+	 * Checks if a cfg named name is contained in cfgs.
+	 * 
+	 * @param name	the cfg name to be searched
+	 * @return {@code true} if there exists a cfg named name; {@code false} othewise
+	 */
+	private boolean containsCFG(String name) {
+		return cfgs.stream().anyMatch(cfg -> cfg.getDescriptor().getName().equals(name));
+	}
+
+	/**
+	 * Retrieve a cfg given its name, assuming that the cfg is contained in cfgs.
+	 * Hence, before calling this function, check the presence of cfg by using
+	 * the function {@link GoToCFG#containsCFG}.
 	 * 
 	 * @param name	the cfg name
 	 * @return the cfg named name
@@ -1090,7 +1103,14 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			}
 
 			if (func instanceof Variable) {
-				return new CFGCall(currentCFG, getCFGByName(((Variable) func).getName()), cfgArgs);
+				String funName = ((Variable) func).getName();
+				/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
+				 * otherwise it is an {@link OpenCall}.
+				 */
+				if (containsCFG(funName))
+					return new CFGCall(currentCFG, getCFGByName(funName), cfgArgs);
+				else
+					return new OpenCall(currentCFG, funName, cfgArgs);
 			}
 		}
 

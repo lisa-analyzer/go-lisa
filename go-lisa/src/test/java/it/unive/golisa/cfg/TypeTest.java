@@ -22,7 +22,6 @@ import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
-import it.unive.lisa.cfg.type.Untyped;
 
 public class TypeTest {
 

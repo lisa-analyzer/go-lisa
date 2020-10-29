@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.type;
+package it.unive.golisa.cfg.type.numeric.unsigned;
 
 import it.unive.lisa.cfg.type.NumericType;
 
@@ -8,28 +8,28 @@ import it.unive.lisa.cfg.type.NumericType;
  * 
  * It implements the singleton design pattern, that is 
  * the instances of this type are unique. The unique instance of
- * this type can be retrieved by {@link GoIntType#INSTANCE}.
+ * this type can be retrieved by {@link GoUIntType#INSTANCE}.
  * 
  * @link https://www.golang-book.com/books/intro/3
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoIntType implements NumericType {
+public class GoUIntType implements NumericType {
 
 	/**
 	 * Unique instance of GoInt type. 
 	 */
-	public static final GoIntType INSTANCE = new GoIntType();
+	public static final GoUIntType INSTANCE = new GoUIntType();
 	
-	private GoIntType() {}
+	private GoUIntType() {}
 
 	@Override
 	public String toString() {
-		return "int";
+		return "uint";
 	}
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoIntType;
+		return other instanceof GoUIntType;
 	}
 	
 	@Override
@@ -61,6 +61,6 @@ public class GoIntType implements NumericType {
 
 	@Override
 	public boolean isUnsigned() {
-		return false;
+		return true;
 	}
 }

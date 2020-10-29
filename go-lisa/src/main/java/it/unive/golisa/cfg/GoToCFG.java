@@ -47,12 +47,17 @@ import it.unive.golisa.cfg.custom.GoReturn;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.*;
 import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.golisa.cfg.type.GoInt16Type;
-import it.unive.golisa.cfg.type.GoInt32Type;
-import it.unive.golisa.cfg.type.GoInt64Type;
-import it.unive.golisa.cfg.type.GoInt8Type;
-import it.unive.golisa.cfg.type.GoIntType;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.FalseEdge;
@@ -1511,6 +1516,16 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 					return GoInt32Type.INSTANCE;
 				case "int64": 
 					return GoInt64Type.INSTANCE; 
+				case "uint": 
+					return GoUIntType.INSTANCE;
+				case "uint8": 
+					return GoUInt8Type.INSTANCE;
+				case "uint16": 
+					return GoUInt16Type.INSTANCE;
+				case "uint32": 
+					return GoUInt32Type.INSTANCE;
+				case "uint64": 
+					return GoUInt64Type.INSTANCE; 
 				case "string": 
 					return GoStringType.INSTANCE;
 				case "bool": 

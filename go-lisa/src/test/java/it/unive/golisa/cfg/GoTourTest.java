@@ -12,7 +12,7 @@ import it.unive.golisa.cfg.call.binary.GoSum;
 import it.unive.golisa.cfg.custom.GoReturn;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.GoInteger;
-import it.unive.golisa.cfg.type.GoIntType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.statement.CFGCall;

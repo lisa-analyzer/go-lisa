@@ -12,11 +12,16 @@ import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.GoBoolean;
 import it.unive.golisa.cfg.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.golisa.cfg.type.GoInt16Type;
-import it.unive.golisa.cfg.type.GoInt32Type;
-import it.unive.golisa.cfg.type.GoInt64Type;
-import it.unive.golisa.cfg.type.GoInt8Type;
-import it.unive.golisa.cfg.type.GoIntType;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;
@@ -63,11 +68,36 @@ public class TypeTest {
 				new GoBoolean(expectedCfg, true));
 		expectedCfg.addNode(x6Asg);
 		
+		GoVariableDeclaration u1Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "u1", GoUIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 1));
+		expectedCfg.addNode(u1Asg);
+		
+		GoVariableDeclaration u2Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "u2", GoUInt8Type.INSTANCE), 
+				new GoInteger(expectedCfg, 2));
+		expectedCfg.addNode(u2Asg);
+		
+		GoVariableDeclaration u3Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "u3", GoUInt16Type.INSTANCE), 
+				new GoInteger(expectedCfg, 3));
+		expectedCfg.addNode(u3Asg);
+		
+		GoVariableDeclaration u4Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "u4", GoUInt32Type.INSTANCE), 
+				new GoInteger(expectedCfg, 4));
+		expectedCfg.addNode(u4Asg);
+		
+		GoVariableDeclaration u5Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "u5", GoUInt64Type.INSTANCE), 
+				new GoInteger(expectedCfg, 5));
+		expectedCfg.addNode(u5Asg);
+		
 		expectedCfg.addEdge(new SequentialEdge(x1Asg, x2Asg));
 		expectedCfg.addEdge(new SequentialEdge(x2Asg, x3Asg));
 		expectedCfg.addEdge(new SequentialEdge(x3Asg, x4Asg));
 		expectedCfg.addEdge(new SequentialEdge(x4Asg, x5Asg));
 		expectedCfg.addEdge(new SequentialEdge(x5Asg, x6Asg));
+		expectedCfg.addEdge(new SequentialEdge(x6Asg, u1Asg));
+		expectedCfg.addEdge(new SequentialEdge(u1Asg, u2Asg));
+		expectedCfg.addEdge(new SequentialEdge(u2Asg, u3Asg));
+		expectedCfg.addEdge(new SequentialEdge(u3Asg, u4Asg));
+		expectedCfg.addEdge(new SequentialEdge(u4Asg, u5Asg));
 
 		CFG cfg = cfgs.iterator().next();	
 		assertTrue(expectedCfg.isEqualTo(cfg));

@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.literal;
 
-import it.unive.golisa.cfg.type.GoIntType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Literal;
 

@@ -1,33 +1,33 @@
-package it.unive.golisa.cfg.type;
+package it.unive.golisa.cfg.type.numeric.signed;
 
 import it.unive.lisa.cfg.type.NumericType;
 
 /**
- * Go 32 bits int type. 
+ * Go 16 bits int type. 
  * 
  * It implements the singleton design pattern, that is 
  * the instances of this type are unique. The unique instance of
- * this type can be retrieved by {@link GoInt32Type#INSTANCE}.
+ * this type can be retrieved by {@link GoInt16Type#INSTANCE}.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoInt32Type implements NumericType {
+public class GoInt16Type implements NumericType {
 
 	/**
-	 * Unique instance of GoInt32 type. 
+	 * Unique instance of GoInt16 type. 
 	 */
-	public static final GoInt32Type INSTANCE = new GoInt32Type();
+	public static final GoInt16Type INSTANCE = new GoInt16Type();
 	
-	private GoInt32Type() {}
+	private GoInt16Type() {}
 
 	@Override
 	public String toString() {
-		return "int32";
+		return "int16";
 	}
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoInt32Type;
+		return other instanceof GoInt16Type;
 	}
 	
 	@Override
@@ -39,15 +39,15 @@ public class GoInt32Type implements NumericType {
 	public boolean is8Bits() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean is16Bits() {
-		return false;
+		return true;
 	}
 	
 	@Override
 	public boolean is32Bits() {
-		return true;
+		return false;
 	}
 
 	@Override

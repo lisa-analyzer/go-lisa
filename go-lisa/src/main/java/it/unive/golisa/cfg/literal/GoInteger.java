@@ -6,7 +6,7 @@ import it.unive.lisa.cfg.statement.Literal;
 
 /**
  * Go integer value class.
- * The static type of a Go Boolean value is {@link GoBoolInt}.
+ * The static type of a Go integer value is {@link GoBoolInt}.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */

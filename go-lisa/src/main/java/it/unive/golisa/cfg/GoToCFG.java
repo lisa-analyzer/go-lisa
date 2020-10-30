@@ -48,6 +48,8 @@ import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.*;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
@@ -282,10 +284,23 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * @return the Go type corresponding to the return type of {@code signature}
 	 */
 	private Type getGoReturnType(SignatureContext signature) {
+		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		else if (signature.result().type_() != null)
+		
+		// The return type is specified
+		if (signature.result().type_() != null)
 			return getGoType(signature.result().type_());
+		
+		// The return type and the variable returned are specified specified
+		if (signature.result().parameters() != null) {
+			/* TODO: a tuple of (variabile, type) can be returned
+			 * e.g. (x int, y int, z string) 
+			 * Not sure if the returned variables must be tracked in the CFG descriptor
+			 * since on a typed function a return statement is required.
+			 * Probably, a tuple of types is enough as return type, in this case
+			 */
+		}
 
 		throw new UnsupportedOperationException("Unsupported return type: " + signature.getText());
 	}
@@ -917,8 +932,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Statement visitType_(Type_Context ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		throw new IllegalStateException("Type_ shold never be visited.");
 	}
 
 	@Override
@@ -1175,6 +1189,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (ctx.NIL_LIT() != null)
 			return new GoNil(currentCFG);
 
+		// Go float value
+		if (ctx.FLOAT_LIT() != null) 
+			return new GoFloat(currentCFG, Double.parseDouble(ctx.FLOAT_LIT().getText()));
+		
 		Statement child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
@@ -1530,6 +1548,10 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 					return GoUInt32Type.INSTANCE;
 				case "uint64": 
 					return GoUInt64Type.INSTANCE; 
+				case "float32": 
+					return GoFloat32Type.INSTANCE;
+				case "float64": 
+					return GoFloat64Type.INSTANCE; 
 				case "string": 
 					return GoStringType.INSTANCE;
 				case "bool": 

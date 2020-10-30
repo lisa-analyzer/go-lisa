@@ -15,7 +15,7 @@ public class GoNil extends NullLiteral {
 	 * this literal appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
-	 * @param cfg	the cfg that this literal belongs to
+	 * @param cfg the cfg that this literal belongs to
 	 */
 	public GoNil(CFG cfg) {
 		super(cfg);

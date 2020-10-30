@@ -10,8 +10,11 @@ import org.junit.Test;
 
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.GoBoolean;
+import it.unive.golisa.cfg.literal.GoFloat;
 import it.unive.golisa.cfg.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
@@ -88,6 +91,16 @@ public class TypeTest {
 				new GoInteger(expectedCfg, 5));
 		expectedCfg.addNode(u5Asg);
 		
+		GoVariableDeclaration f1Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "f1", GoFloat32Type.INSTANCE), 
+				new GoFloat(expectedCfg, 1.1));
+		expectedCfg.addNode(f1Asg);
+		GoVariableDeclaration f2Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "f2", GoFloat64Type.INSTANCE), 
+				new GoFloat(expectedCfg, 2.2));
+		expectedCfg.addNode(f2Asg);
+		GoVariableDeclaration f3Asg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "f3", GoFloat64Type.INSTANCE), 
+				new GoFloat(expectedCfg, 3.3));
+		expectedCfg.addNode(f3Asg);
+		
 		expectedCfg.addEdge(new SequentialEdge(x1Asg, x2Asg));
 		expectedCfg.addEdge(new SequentialEdge(x2Asg, x3Asg));
 		expectedCfg.addEdge(new SequentialEdge(x3Asg, x4Asg));
@@ -98,6 +111,9 @@ public class TypeTest {
 		expectedCfg.addEdge(new SequentialEdge(u2Asg, u3Asg));
 		expectedCfg.addEdge(new SequentialEdge(u3Asg, u4Asg));
 		expectedCfg.addEdge(new SequentialEdge(u4Asg, u5Asg));
+		expectedCfg.addEdge(new SequentialEdge(u5Asg, f1Asg));
+		expectedCfg.addEdge(new SequentialEdge(f1Asg, f2Asg));
+		expectedCfg.addEdge(new SequentialEdge(f2Asg, f3Asg));
 
 		CFG cfg = cfgs.iterator().next();	
 		assertTrue(expectedCfg.isEqualTo(cfg));

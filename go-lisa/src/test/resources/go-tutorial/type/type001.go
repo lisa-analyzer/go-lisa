@@ -14,4 +14,7 @@ func main() {
 	var u3 uint16 = 3
 	var u4 uint32 = 4
 	var u5 uint64 = 5
+	var f1 float32 = 1.1
+	var f2 float64 = 2.2
+	f3 := 3.3
 }

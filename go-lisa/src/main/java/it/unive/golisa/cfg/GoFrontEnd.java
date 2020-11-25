@@ -46,12 +46,15 @@ import it.unive.golisa.cfg.call.unary.GoMinus;
 import it.unive.golisa.cfg.call.unary.GoNot;
 import it.unive.golisa.cfg.call.unary.GoPlus;
 import it.unive.golisa.cfg.custom.GoAssignment;
+import it.unive.golisa.cfg.custom.GoCollectionAccess;
 import it.unive.golisa.cfg.custom.GoConstantDeclaration;
 import it.unive.golisa.cfg.custom.GoReturn;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.*;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoAliasType;
+import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -304,9 +307,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (signature.result().type_() != null)
 			return visitType_(signature.result().type_());
 
-		// The return type and the variable returned are specified specified
+		// The return type and the variable returned are specified 
 		if (signature.result().parameters() != null) {
-			/* TODO: a tuple of (variabile, type) can be returned
+			/* TODO: a tuple of (variable, type) can be returned
 			 * e.g. (x int, y int, z string) 
 			 * Not sure if the returned variables must be tracked in the CFG descriptor
 			 * since on a typed function a return statement is required.
@@ -382,17 +385,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			Expression exp = visitExpression(exps.expression(i));
 
-			int line = getLine(ids.IDENTIFIER(i).getSymbol());
-			int col = getCol(exps.expression(i));
-
-			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, filePath, line, col, target, exp);
+			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, target, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
 				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
 			else
 				entryNode = asg;
-
 			lastStmt = asg;
 		}
 
@@ -423,9 +422,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		String typeName = ctx.IDENTIFIER().getText();
 
-		if (ctx.ASSIGN() == null) {
-			Type type = visitType_(ctx.type_());
+		Type type = visitType_(ctx.type_());
 
+
+		if (ctx.ASSIGN() == null) {
 			if (type instanceof GoStructType)
 				GoStructType.addtStructType(typeName, (GoStructType) type);
 			else
@@ -433,6 +433,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		} else {
 			// Alias type
+			GoAliasType.addAlias(typeName, new GoAliasType(typeName, type));
 		}
 
 		return null;
@@ -485,12 +486,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
+			//TODO: check if exp is null
 			Expression exp = (Expression) visitExpression(exps.expression(i));
 
-			int line = getLine(ids.IDENTIFIER(i).getSymbol());
-			int col = getCol(exps.expression(i));
-
-			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, target, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -566,30 +565,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitIncDecStmt(IncDecStmtContext ctx) {
 
 		Expression exp = visitExpression(ctx.expression());
+		Statement asg = null;
 
-		if (exp instanceof Variable) {
-			// TODO: at the moment, we support only increment and decrement of single variable
-			// e.g., x++, x--
-			int line = getLine(ctx);
-			int col = getCol(ctx);
+		// increment and decrement statements are syntactic sugar
+		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
+		if (ctx.PLUS_PLUS() != null)
+			asg = new GoAssignment(currentCFG, exp, 
+					new GoSum(currentCFG,  exp,  new GoInteger(currentCFG, 1)));		
+		else
+			asg = new GoAssignment(currentCFG, exp, 
+					new GoSubtraction(currentCFG, exp,  new GoInteger(currentCFG, 1)));
 
-			Statement asg = null;
-
-			// increment and decrement statements are syntactic sugar
-			// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
-			if (ctx.PLUS_PLUS() != null)
-				asg = new GoAssignment(currentCFG, filePath, line, col, (Variable) exp, 
-						new GoSum(currentCFG, (Variable) exp,  new GoInteger(currentCFG, 1)));		
-			else
-				asg = new GoAssignment(currentCFG, filePath, line, col, (Variable) exp, 
-						new GoSubtraction(currentCFG, (Variable) exp,  new GoInteger(currentCFG, 1)));
-
-			currentCFG.addNode(asg);
-			return Pair.of(asg, asg);
-		}
-
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		currentCFG.addNode(asg);
+		return Pair.of(asg, asg);
 	}
 
 	@Override
@@ -603,17 +591,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (int i = 0; i < ids.expression().size(); i++) {
 
 			Expression lhs = visitExpression(ids.expression(i));
+			Expression exp = buildExpressionFromAssignment(lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
-			// For the moment, we only support assignment where the left-hand side operand is an identifier
-			if (!(lhs instanceof Variable))
-				throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-
-			Expression exp = buildExpressionFromAssignment((Variable) lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
-
-			int line = getLine(ctx);
-			int col = getCol(ctx);
-
-			GoAssignment asg = new GoAssignment(currentCFG, filePath, line, col, lhs, exp);
+			GoAssignment asg = new GoAssignment(currentCFG, lhs, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -626,7 +606,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return Pair.of(entryNode, lastStmt);
 	}
 
-	private Expression buildExpressionFromAssignment(Variable lhs, Assign_opContext op, Expression exp) {
+	private Expression buildExpressionFromAssignment(Expression lhs, Assign_opContext op, Expression exp) {
 
 		// +=
 		if (op.PLUS() != null)
@@ -704,10 +684,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Type type = exp.getStaticType();
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
-			int line = getLine(ctx);
-			int col = getCol(ctx);
-
-			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, target, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -1029,15 +1006,20 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitArrayType(ArrayTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitArrayType(ArrayTypeContext ctx) {
+		Type contentType = visitElementType(ctx.elementType());
+		GoInteger length = visitArrayLength(ctx.arrayLength());
+		return new GoArrayType(contentType, length);
 	}
 
 	@Override
-	public Statement visitArrayLength(ArrayLengthContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public GoInteger visitArrayLength(ArrayLengthContext ctx) {
+		Expression length = visitExpression(ctx.expression());
+
+		if (!(length instanceof GoInteger))
+			throw new IllegalStateException("Go error: non-constant array bound");
+		else 
+			return (GoInteger) length;
 	}
 
 	@Override
@@ -1129,47 +1111,47 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
-			return new GoLogicalAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
-			return new GoLogicalOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go equals (==)
 		if (ctx.EQUALS() != null)
-			return new GoEquals(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoEquals(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go less (<)
 		if (ctx.LESS() != null)
-			return new GoLess(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLess(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go greater (>)
 		if (ctx.GREATER() != null)
-			return new GoGreater(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoGreater(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go module (%)
 		if (ctx.MOD() != null)
-			return new GoModule(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoModule(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go right shift (>>)
 		if (ctx.RSHIFT() != null)
-			return new GoRightShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoRightShift(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go left shift (<<)
 		if (ctx.LSHIFT() != null)
-			return new GoLeftShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLeftShift(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go XOR (^)
 		if (ctx.CARET() != null)
-			return new GoXOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoXOr(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go or (|)
 		if (ctx.OR() != null)
-			return new GoOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&)
 		if (ctx.AMPERSAND() != null)
-			return new GoAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1181,32 +1163,41 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Expression visitPrimaryExpr(PrimaryExprContext ctx) {
 
-		// Function call (e.g., f(1,2,3), f() )
-		if (ctx.primaryExpr() != null && ctx.arguments() != null) {
-			Expression func = visitPrimaryExpr(ctx.primaryExpr());
-			Expression[] cfgArgs;
+		if (ctx.primaryExpr() != null) {
+			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
-			// Check if the function call has arguments
-			if (ctx.arguments().expressionList() == null)
-				cfgArgs = new Expression[] {};
-			else {
-				List<ExpressionContext> argsCtx = ctx.arguments().expressionList().expression();
-				cfgArgs = new Expression[argsCtx.size()];
+			// Function call (e.g., f(1,2,3), f() )
+			if (ctx.arguments() != null) {
+				Expression[] cfgArgs;
 
-				int i = 0;
-				for (ExpressionContext arg : argsCtx) 
-					cfgArgs[i++] = visitExpression(arg);	
+				// Check if the function call has arguments
+				if (ctx.arguments().expressionList() == null)
+					cfgArgs = new Expression[] {};
+				else {
+					List<ExpressionContext> argsCtx = ctx.arguments().expressionList().expression();
+					cfgArgs = new Expression[argsCtx.size()];
+
+					int i = 0;
+					for (ExpressionContext arg : argsCtx) 
+						cfgArgs[i++] = visitExpression(arg);	
+				}
+
+				if (primary instanceof Variable) {
+					String funName = ((Variable) primary).getName();
+					/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
+					 * otherwise it is an {@link OpenCall}.
+					 */
+					if (containsCFG(funName))
+						return new CFGCall(currentCFG, "", getCFGByName(funName), cfgArgs);
+					else
+						return new OpenCall(currentCFG, funName, cfgArgs);
+				}
 			}
 
-			if (func instanceof Variable) {
-				String funName = ((Variable) func).getName();
-				/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
-				 * otherwise it is an {@link OpenCall}.
-				 */
-				if (containsCFG(funName))
-					return new CFGCall(currentCFG, "X", getCFGByName(funName), cfgArgs);
-				else
-					return new OpenCall(currentCFG, funName, cfgArgs);
+			// Array/slice/map access e1[e2]
+			else if (ctx.index() != null) {
+				Expression index = visitIndex(ctx.index());
+				return new GoCollectionAccess(currentCFG, primary, index);
 			}
 		}
 
@@ -1324,10 +1315,16 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Type type = visitLiteralType(ctx.literalType());
 		Map<Expression, Expression> raw = visitLiteralValue(ctx.literalValue());
-		
+
 		if (type instanceof GoStructType)
 			return new GoStructLiteral(currentCFG, raw, (GoStructType) type);
-		
+
+		if (type instanceof GoMapType)
+			return new GoMapLiteral(currentCFG, raw, (GoMapType) type);
+
+		if (type instanceof GoArrayType)
+			return new GoArrayLiteral(currentCFG, raw, (GoArrayType) type);
+
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
@@ -1348,13 +1345,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Map<Expression, Expression> visitElementList(ElementListContext ctx) {
-		
+
 		// All keyed or all without key
 		Map<Expression, Expression> result = new HashMap<Expression, Expression>();
 
 		for (KeyedElementContext keyedEl : ctx.keyedElement()) 
 			result.put(visitKey(keyedEl.key()), visitElement(keyedEl.element()));
-	
+
 		return result;
 	}
 
@@ -1366,10 +1363,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitKey(KeyContext ctx) {
-		
+
 		if (ctx.IDENTIFIER() != null)
 			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
-		
+
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
@@ -1429,9 +1426,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitIndex(IndexContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Expression visitIndex(IndexContext ctx) {
+		return visitExpression(ctx.expression());
 	}
 
 	@Override
@@ -1482,10 +1478,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return ctx.getCharPositionInLine();
 	} 
 
-	private int getLine(Token ctx) {
-		return ctx.getLine();
-	} 
-
 	/**
 	 * Checks if the for statement has the initialization statement.
 	 * 
@@ -1529,9 +1521,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * @return the Go type corresponding to {@ctx}
 	 */
 	private Type getGoType(TypeNameContext ctx) {
-		// The type context is absent, Untyped type is returned
-		if (ctx == null)
-			return Untyped.INSTANCE;
 
 		if (ctx.IDENTIFIER() != null) {
 			switch(ctx.IDENTIFIER().getText()) { 

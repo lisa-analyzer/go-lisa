@@ -82,7 +82,7 @@ public class GoTourTest {
 		CFG mainExpCFG = new CFG(new CFGDescriptor(file, 9, 10, "main", new Parameter[] {}));
 
 		GoVariableDeclaration aAsg = new GoVariableDeclaration(mainExpCFG, new Variable(mainExpCFG, "a", GoIntType.INSTANCE), 
-				new CFGCall(mainExpCFG, file, sumCfg, new Expression[] {
+				new CFGCall(mainExpCFG, "", sumCfg, new Expression[] {
 						new GoInteger(mainExpCFG, 1),
 						new GoInteger(mainExpCFG, 2),
 				}));

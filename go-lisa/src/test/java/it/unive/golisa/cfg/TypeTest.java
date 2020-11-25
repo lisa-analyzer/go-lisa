@@ -115,7 +115,7 @@ public class TypeTest {
 		expectedCfg.addEdge(new SequentialEdge(f1Asg, f2Asg));
 		expectedCfg.addEdge(new SequentialEdge(f2Asg, f3Asg));
 
-		CFG cfg = cfgs.iterator().next();	
+		CFG cfg = cfgs.iterator().next();
 		assertTrue(expectedCfg.isEqualTo(cfg));
 	}
 }

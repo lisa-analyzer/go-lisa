@@ -16,6 +16,7 @@ import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.Parameter;
+import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
 
 public class VariableDeclarationTest {
@@ -38,13 +39,14 @@ public class VariableDeclarationTest {
 				new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xAsg);
 
-		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j", GoIntType.INSTANCE), new GoInteger(expectedCfg, 2));
+		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "j", GoIntType.INSTANCE), 
+				new GoInteger(expectedCfg, 2));
 		expectedCfg.addNode(yAsg);
 
 		expectedCfg.addEdge(new SequentialEdge(xAsg, yAsg));
 
-		CFG cfg = cfgs.iterator().next();	
-		assertTrue(expectedCfg.isEqualTo(cfg));
+		CFG cfg = cfgs.iterator().next();
+		assertTrue(expectedCfg.isEqualTo(cfg)); 
 	}
 
 	@Test

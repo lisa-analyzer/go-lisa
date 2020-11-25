@@ -15,7 +15,6 @@ import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -48,7 +47,9 @@ import it.unive.golisa.cfg.call.unary.GoPlus;
 import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoCollectionAccess;
 import it.unive.golisa.cfg.custom.GoConstantDeclaration;
+import it.unive.golisa.cfg.custom.GoFieldAccess;
 import it.unive.golisa.cfg.custom.GoReturn;
+import it.unive.golisa.cfg.custom.GoTypeConversion;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.*;
 import it.unive.golisa.cfg.type.GoBoolType;
@@ -173,16 +174,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return cfgs;
 	}
 
-	@Override
-	public Statement visit(ParseTree tree) {
-
-		if (tree instanceof SourceFileContext)
-			return visitSourceFile((SourceFileContext) tree);
-		else {
-			return visit(((RuleContext) tree));
-		}
-	}
-
+//	@Override
+//	public Statement visit(ParseTree tree) {
+//
+//		if (tree instanceof SourceFileContext)
+//			return visitSourceFile((SourceFileContext) tree);
+//		else {
+//			return visit(((RuleContext) tree));
+//		}
+//	}
 	//	@Override 
 	//	public Expression visitChildren(RuleNode node) {
 	//				throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
@@ -191,23 +191,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	//	@Override
 	//	public Statement visitTerminal(TerminalNode node) {
-	//		// TODO Auto-generated method stub
 	//		throw new UnsupportedOperationException("Unsupported translation: " + node.getText());
 	//
 	//	}
 	//
 	//	@Override
 	//	public Statement visitErrorNode(ErrorNode node) {
-	//		// TODO Auto-generated method stub
 	//		throw new UnsupportedOperationException("Unsupported translation: " + node.getText());
 	//	}
 
 	@Override
-	public Statement visitSourceFile(SourceFileContext ctx) {
-		//TODO: we skip, for the moment package information and imports
-		Statement lastStatement = null;
-
-
+	public Collection<CFG> visitSourceFile(SourceFileContext ctx) {
+		
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations"))
 			visitDeclaration(decl);
 
@@ -222,7 +217,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			visitFunctionDecl(funcDecl);
 		}
 
-		return lastStatement;
+		return cfgs;
 	}
 
 	/**
@@ -611,6 +606,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// +=
 		if (op.PLUS() != null)
 			return new GoSum(currentCFG, lhs, exp);
+		
 		// -=	
 		if (op.MINUS() != null)
 			return new GoSubtraction(currentCFG, lhs, exp);
@@ -1199,6 +1195,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Expression index = visitIndex(ctx.index());
 				return new GoCollectionAccess(currentCFG, primary, index);
 			}
+
+			// Field access x.f
+			else if (ctx.IDENTIFIER() != null) {
+				// TODO: create Identifier class
+				Variable index = new Variable(currentCFG, ctx.IDENTIFIER().getText());
+				return new GoFieldAccess(currentCFG, primary, index);
+			}
 		}
 
 		Object child = visitChildren(ctx);
@@ -1224,9 +1227,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitConversion(ConversionContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Expression visitConversion(ConversionContext ctx) {
+		Type type = visitType_(ctx.type_());
+		Expression exp = visitExpression(ctx.expression());
+		return new GoTypeConversion(currentCFG, type, exp);
 	}
 
 	@Override

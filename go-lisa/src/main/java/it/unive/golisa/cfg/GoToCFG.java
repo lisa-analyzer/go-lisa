@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -82,7 +83,7 @@ import it.unive.lisa.logging.IterationLogger;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoToCFG extends GoParserBaseVisitor<Statement> {
+public class GoToCFG extends GoParserBaseVisitor<Object> {
 
 	private static final Logger log = LogManager.getLogger(GoToCFG.class); 
 
@@ -95,7 +96,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	 * Collection of CFGs collected into the Go program at filePath.
 	 */
 	private Collection<CFG> cfgs;
-
 
 	/**
 	 * Builds an instance of @GoToCFG for a given Go program
@@ -287,11 +287,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		
+
 		// The return type is specified
 		if (signature.result().type_() != null)
 			return getGoType(signature.result().type_());
-		
+
 		// The return type and the variable returned are specified specified
 		if (signature.result().parameters() != null) {
 			/* TODO: a tuple of (variabile, type) can be returned
@@ -330,30 +330,40 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitDeclaration(DeclarationContext ctx) {
-		return visitChildren(ctx);
+	public Pair<Statement, Statement> visitDeclaration(DeclarationContext ctx) {
+		Object result = visitChildren(ctx);
+		if (!(result instanceof Pair<?,?>))
+			throw new IllegalStateException("Pair of Statements expected");
+		else 
+			return (Pair<Statement, Statement>) result;	
 	}
 
 	@Override
-	public Statement visitConstDecl(ConstDeclContext ctx) {
+	public Pair<Statement, Statement> visitConstDecl(ConstDeclContext ctx) {
 		Statement lastStmt = null;
+		Statement entryNode = null;
+
 		for (ConstSpecContext constSpec : ctx.constSpec()) {
-			Statement currStmt = visitConstSpec(constSpec);
+			Pair<Statement, Statement> currStmt = visitConstSpec(constSpec);
 
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, getEntryNode(constSpec)));
-			lastStmt = currStmt;
+				currentCFG.addEdge(new SequentialEdge(lastStmt, currStmt.getLeft()));
+			else
+				entryNode = currStmt.getRight();
+
+			lastStmt = currStmt.getRight();
 		}
 
-		return lastStmt;
+		return Pair.of(entryNode, lastStmt);
 	}
 
 	@Override
-	public Statement visitConstSpec(ConstSpecContext ctx) {
+	public Pair<Statement, Statement> visitConstSpec(ConstSpecContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
 
-		Statement prev = null;
+		Statement lastStmt = null;
+		Statement entryNode = null;
 		Type type = getGoType(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
@@ -365,12 +375,16 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
-			if (prev != null)
-				currentCFG.addEdge(new SequentialEdge(prev, asg));
-			prev = asg;
+
+			if (lastStmt != null)
+				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+			else
+				entryNode = asg;
+
+			lastStmt = asg;
 		}
 
-		return prev;
+		return Pair.of(entryNode, lastStmt);
 	}
 
 	@Override
@@ -398,7 +412,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitFunctionDecl(FunctionDeclContext ctx) {
+	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 		return visitBlock(ctx.block());		
 	}
 
@@ -415,25 +429,31 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitVarDecl(VarDeclContext ctx) {
+	public Pair<Statement, Statement> visitVarDecl(VarDeclContext ctx) {
 		Statement lastStmt = null;
+		Statement entryNode = null;
+
 		for (VarSpecContext varSpec : ctx.varSpec()) {
-			Statement currStmt = visitVarSpec(varSpec);
+			Pair<Statement, Statement> currStmt = visitVarSpec(varSpec);
 
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, getEntryNode(varSpec)));
-			lastStmt = currStmt;
+				currentCFG.addEdge(new SequentialEdge(lastStmt, currStmt.getLeft()));
+			else
+				entryNode = currStmt.getLeft();
+
+			lastStmt = currStmt.getRight();
 		}
 
-		return lastStmt;
+		return Pair.of(entryNode, lastStmt);
 	}
 
 	@Override
-	public Statement visitVarSpec(VarSpecContext ctx) {
+	public Pair<Statement, Statement> visitVarSpec(VarSpecContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
 
-		Statement prevStmt = null;
+		Statement lastStmt = null;
+		Statement entryNode = null;
 		Type type = getGoType(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
@@ -446,49 +466,67 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
-			if (prevStmt != null)
-				currentCFG.addEdge(new SequentialEdge(prevStmt, asg));
-			prevStmt = asg;
+			if (lastStmt != null)
+				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+			else
+				entryNode = asg;
+			lastStmt = asg;
 		}
 
-		return prevStmt;
+		return Pair.of(entryNode, lastStmt);
 	}
 
 	@Override
-	public Statement visitBlock(BlockContext ctx) {
+	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
 		// Visit the statement list inside the block
 		return visitStatementList(ctx.statementList());
 	}
 
 	@Override
-	public Statement visitStatementList(StatementListContext ctx) {
+	public Pair<Statement, Statement> visitStatementList(StatementListContext ctx) {
 
-		Statement previousStmt = null;
+		Statement lastStmt = null;
+		Statement entryNode = null;
 
 		for (int i = 0; i < ctx.statement().size(); i++)  {
-			Statement currentStmt = visitStatement(ctx.statement(i));
+			Pair<Statement, Statement> currentStmt = visitStatement(ctx.statement(i));
 
-			if (previousStmt != null) 
-				currentCFG.addEdge(new SequentialEdge(previousStmt, getEntryNode(ctx.statement(i))));
-			previousStmt = currentStmt;
+			if (lastStmt != null) 
+				currentCFG.addEdge(new SequentialEdge(lastStmt, currentStmt.getLeft()));
+			else
+				entryNode = currentStmt.getLeft();
+
+			lastStmt = currentStmt.getRight();
 		}
 
-		return previousStmt;
+		return Pair.of(entryNode, lastStmt);
 	}
 
 	@Override
-	public Statement visitStatement(StatementContext ctx) {
-		return visitChildren(ctx);
+	public Pair<Statement, Statement> visitStatement(StatementContext ctx) {
+		Object result = visitChildren(ctx);
+		if (!(result instanceof Pair<?,?>))
+			throw new IllegalStateException("Pair of Statements expected");
+		else 
+			return (Pair<Statement, Statement>) result;
 	}
 
 	@Override
-	public Statement visitSimpleStmt(SimpleStmtContext ctx) {
-		return visitChildren(ctx);
+	public Pair<Statement, Statement>  visitSimpleStmt(SimpleStmtContext ctx) {
+		Object result = visitChildren(ctx);
+		if (!(result instanceof Pair<?,?>))
+			throw new IllegalStateException("Pair of Statements expected");
+		else 
+			return (Pair<Statement, Statement>) result;	
 	}
 
 	@Override
-	public Statement visitExpressionStmt(ExpressionStmtContext ctx) {
-		return visitChildren(ctx);
+	public Pair<Statement, Statement> visitExpressionStmt(ExpressionStmtContext ctx) {
+		Object result = visitChildren(ctx);
+		if (!(result instanceof Pair<?,?>))
+			throw new IllegalStateException("Pair of Statements expected");
+		else 
+			return (Pair<Statement, Statement>) result;		
 	}
 
 	@Override
@@ -498,7 +536,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitIncDecStmt(IncDecStmtContext ctx) {
+	public Pair<Statement, Statement> visitIncDecStmt(IncDecStmtContext ctx) {
 
 		Expression exp = visitExpression(ctx.expression());
 
@@ -520,7 +558,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 						new GoSubtraction(currentCFG, (Variable) exp,  new GoInteger(currentCFG, 1)));
 
 			currentCFG.addNode(asg);
-			return asg;
+			return Pair.of(asg, asg);
 		}
 
 		// TODO Auto-generated method stub
@@ -528,11 +566,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitAssignment(AssignmentContext ctx) {		
+	public Pair<Statement, Statement> visitAssignment(AssignmentContext ctx) {		
 		ExpressionListContext ids = ctx.expressionList(0);
 		ExpressionListContext exps = ctx.expressionList(1);
 
-		Statement prev = null;
+		Statement lastStmt = null;
+		Statement entryNode = null;
 
 		for (int i = 0; i < ids.expression().size(); i++) {
 
@@ -550,12 +589,14 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			GoAssignment asg = new GoAssignment(currentCFG, filePath, line, col, lhs, exp);
 			currentCFG.addNode(asg);
 
-			if (prev != null)
-				currentCFG.addEdge(new SequentialEdge(prev, asg));
-			prev = asg;
+			if (lastStmt != null)
+				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+			else
+				entryNode = asg;
+			lastStmt = asg;
 		}
 
-		return prev;
+		return Pair.of(entryNode, lastStmt);
 	}
 
 	private Expression buildExpressionFromAssignment(Variable lhs, Assign_opContext op, Expression exp) {
@@ -615,7 +656,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitShortVarDecl(ShortVarDeclContext ctx) {
+	public Pair<Statement, Statement> visitShortVarDecl(ShortVarDeclContext ctx) {
 		/*
 		 * The short variable declaration is only
 		 * syntactic sugar for variable declaration
@@ -626,7 +667,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
 
-		Statement prev = null;
+		Statement lastStmt = null;
+		Statement entryNode = null;
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Expression exp = visitExpression(exps.expression(i));
@@ -641,13 +683,15 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
-			if (prev != null)
-				currentCFG.addEdge(new SequentialEdge(prev, asg));
-			prev = asg;
+			if (lastStmt != null)
+				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+			else
+				entryNode = asg;
+			lastStmt = asg;
 
 		}
 
-		return prev;
+		return Pair.of(entryNode, lastStmt);
 	}
 
 	@Override
@@ -663,11 +707,12 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitReturnStmt(ReturnStmtContext ctx) {
+	public Pair<Statement, Statement> visitReturnStmt(ReturnStmtContext ctx) {
+
 		if (ctx.expressionList().expression().size() == 1) {
 			GoReturn ret =  new GoReturn(currentCFG, visitExpression(ctx.expressionList().expression(0)));
 			currentCFG.addNode(ret);
-			return ret;
+			return Pair.of(ret, ret);
 		}
 
 		throw new UnsupportedOperationException("Return of tuples not supported: " + ctx.getText());
@@ -704,7 +749,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitIfStmt(IfStmtContext ctx) {
+	public Pair<Statement, Statement> visitIfStmt(IfStmtContext ctx) {
+
 		// Visit if statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
 		currentCFG.addNode(booleanGuard);
@@ -712,22 +758,21 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		NoOp ifExitNode = new NoOp(currentCFG);
 		currentCFG.addNode(ifExitNode);
 
+		Pair<Statement, Statement> trueBlock = visitBlock(ctx.block(0));
+		Statement exitStatementTrueBranch = trueBlock.getRight();
+		Statement entryStatementTrueBranch = trueBlock.getLeft();
+
 		if (ctx.ELSE() == null) {
 			// If statement without else branch
-			Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
-			Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
-
 			currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));			
 			currentCFG.addEdge(new FalseEdge(booleanGuard, ifExitNode));			
 			currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
 		} else {
 			if (ctx.block(1) != null) {
 				// If statement with else branch with no other if statements 
-				Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
-				Statement exitStatementFalseBranch = visitBlock(ctx.block(1));
-
-				Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
-				Statement entryStatementFalseBranch = getEntryNode(ctx.block(1));
+				Pair<Statement, Statement> falseBlock = visitBlock(ctx.block(1));
+				Statement exitStatementFalseBranch = falseBlock.getRight();
+				Statement entryStatementFalseBranch = falseBlock.getLeft();
 
 				currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
 				currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
@@ -736,11 +781,9 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 				currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
 			} else {
 				// If statement with else branch with other if statements 
-				Statement exitStatementTrueBranch = visitBlock(ctx.block(0));
-				Statement exitStatementFalseBranch = visitIfStmt(ctx.ifStmt());
-
-				Statement entryStatementTrueBranch = getEntryNode(ctx.block(0));
-				Statement entryStatementFalseBranch = getEntryNode(ctx.ifStmt());
+				Pair<Statement, Statement> falseBlock = visitIfStmt(ctx.ifStmt());
+				Statement exitStatementFalseBranch = falseBlock.getRight();
+				Statement entryStatementFalseBranch = falseBlock.getLeft();
 
 				currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
 				currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
@@ -752,13 +795,14 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 		// Checks whether the if-statement has an initial statement
 		// e.g., if x := y; z < x block 
+		Statement entryNode = booleanGuard;
 		if (ctx.simpleStmt() != null) {
-			Statement initialStatement = visitSimpleStmt(ctx.simpleStmt());
-			currentCFG.addNode(initialStatement);
-			currentCFG.addEdge(new SequentialEdge(initialStatement, booleanGuard));
-		}
+			Pair<Statement, Statement> initialStmt = visitSimpleStmt(ctx.simpleStmt());
+			entryNode = initialStmt.getLeft();
+			currentCFG.addEdge(new SequentialEdge(initialStmt.getRight(), booleanGuard));
+		} 
 
-		return ifExitNode;
+		return Pair.of(entryNode, ifExitNode);
 	}
 
 	@Override
@@ -840,7 +884,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitForStmt(ForStmtContext ctx) {
+	public Pair<Statement, Statement> visitForStmt(ForStmtContext ctx) {
 
 		// Simple for (without range and first expression)
 		// e.g., for i := 0; i < 10; i++ block
@@ -851,10 +895,11 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			boolean hasPostStmt = hasPostStmt(ctx);
 
 			// Checking if initialization is missing
-			Statement init = null;
+			Pair<Statement, Statement> init = null;
+			Statement entryNode = null;
 			if (hasInitStmt) {
 				init = visitSimpleStmt(ctx.forClause().simpleStmt(0));
-				currentCFG.addNode(init);
+				currentCFG.addNode(entryNode = init.getLeft());
 			}
 
 			// Checking if condition is missing
@@ -866,15 +911,16 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 
 			// Checking if post statement is missing
-			Statement post = null;
+			Pair<Statement, Statement> post = null;
 			if (hasPostStmt) {
 				post = visitSimpleStmt(hasInitStmt ? ctx.forClause().simpleStmt(1) : ctx.forClause().simpleStmt(0));
-				currentCFG.addNode(post);
+				currentCFG.addNode(post.getLeft());
 			}
 
 			// TODO: at the moment, we suppose that the block is non-empty
-			Statement lastStmtOfBlock = visitBlock(ctx.block());
-			Statement entryNodeOfBlock = getEntryNode(ctx.block());
+			Pair<Statement, Statement> block = visitBlock(ctx.block());
+			Statement exitNodeBlock = block.getRight();
+			Statement entryNodeOfBlock = block.getLeft();
 			Statement exitNode = new NoOp(currentCFG);
 
 			currentCFG.addNode(exitNode);
@@ -883,28 +929,30 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 				currentCFG.addEdge(new TrueEdge(cond, entryNodeOfBlock));
 				currentCFG.addEdge(new FalseEdge(cond, exitNode));
 
-				if (hasInitStmt)
-					currentCFG.addEdge(new SequentialEdge(init, cond));
+				if (hasInitStmt) 
+					currentCFG.addEdge(new SequentialEdge(init.getRight(), cond));
+				else
+					entryNode = cond; 
 
 				if (hasPostStmt) {
-					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, post));
-					currentCFG.addEdge(new SequentialEdge(post, cond));
+					currentCFG.addEdge(new SequentialEdge(exitNodeBlock, post.getRight()));
+					currentCFG.addEdge(new SequentialEdge(post.getLeft(), cond));
 				} else {
-					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, cond));
+					currentCFG.addEdge(new SequentialEdge(exitNodeBlock, cond));
 				}
 			} else {
 				if (hasInitStmt)
-					currentCFG.addEdge(new SequentialEdge(init, entryNodeOfBlock));
+					currentCFG.addEdge(new SequentialEdge(init.getRight(), entryNodeOfBlock));
 
 				if (hasPostStmt) {
-					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, post));
-					currentCFG.addEdge(new SequentialEdge(post, entryNodeOfBlock));
+					currentCFG.addEdge(new SequentialEdge(exitNodeBlock, post.getLeft()));
+					currentCFG.addEdge(new SequentialEdge(post.getRight(), entryNodeOfBlock));
 				} else {
-					currentCFG.addEdge(new SequentialEdge(lastStmtOfBlock, entryNodeOfBlock));
+					currentCFG.addEdge(new SequentialEdge(exitNodeBlock, entryNodeOfBlock));
 				}
 			}
 
-			return exitNode;
+			return Pair.of(entryNode, exitNode);
 		}
 
 
@@ -1039,7 +1087,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			return new GoSum(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go multiplication (*)
-		if (ctx.STAR() != null)
+		if (ctx.STAR() != null) 
 			return new GoMul(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go division (/)
@@ -1094,7 +1142,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		if (ctx.AMPERSAND() != null)
 			return new GoAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
-		Statement child = visitChildren(ctx);
+		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
@@ -1133,7 +1181,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 			}
 		}
 
-		Statement child = visitChildren(ctx);
+		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
@@ -1141,7 +1189,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 	}
 
 	@Override
-	public Statement visitUnaryExpr(UnaryExprContext ctx) {
+	public Expression visitUnaryExpr(UnaryExprContext ctx) {
 
 		if (ctx.PLUS() != null)
 			return new GoPlus(currentCFG, visitExpression(ctx.expression()));
@@ -1163,7 +1211,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitOperand(OperandContext ctx) {
-		Statement child = visitChildren(ctx);
+		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
@@ -1172,7 +1220,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 
 	@Override
 	public Expression visitLiteral(LiteralContext ctx) {
-		Statement child = visitChildren(ctx);
+		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
@@ -1192,8 +1240,8 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		// Go float value
 		if (ctx.FLOAT_LIT() != null) 
 			return new GoFloat(currentCFG, Double.parseDouble(ctx.FLOAT_LIT().getText()));
-		
-		Statement child = visitChildren(ctx);
+
+		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
@@ -1229,7 +1277,7 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 				return new Variable(currentCFG, ctx.IDENTIFIER().getText());
 		}
 
-		Statement child = visitChildren(ctx);
+		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
@@ -1377,101 +1425,6 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 		return ctx.getLine();
 	} 
 
-	private Statement getEntryNode(ParserRuleContext ctx) {
-		if (ctx instanceof BlockContext)
-			return getBlockEntryNode((BlockContext) ctx);
-
-		if (ctx instanceof IfStmtContext) {
-			IfStmtContext ifStmt = (IfStmtContext) ctx;
-			if (ifStmt.simpleStmt() != null)
-				return getEntryNode(ifStmt.simpleStmt());
-			else
-				return getEntryNode(ifStmt.expression());
-		}
-
-		if (ctx instanceof StatementContext) {
-			StatementContext stmt = (StatementContext) ctx;
-			if (stmt.ifStmt() != null)
-				return getEntryNode(stmt.ifStmt());
-
-			if  (stmt.forStmt() != null) {
-				return getForEntryNode(stmt.forStmt());
-			}
-		}
-
-		if (ctx instanceof VarSpecContext) {
-			return getNodeAt(getLine(((VarSpecContext) ctx).identifierList().IDENTIFIER(0).getSymbol()), 
-					getCol(((VarSpecContext) ctx).expressionList().expression(0)));
-		}
-
-		if (ctx instanceof ConstSpecContext) {
-			return getNodeAt(getLine(((ConstSpecContext) ctx).identifierList().IDENTIFIER(0).getSymbol()), 
-					getCol(((ConstSpecContext) ctx).expressionList().expression(0)));
-		}
-
-		// If ctx is a simple statement (not composite) return the node corresponding to ctx
-		return getNodeFromContext(ctx);
-	}
-
-	private Statement getNodeFromContext(ParserRuleContext ctx) {
-		for (Statement node : currentCFG.getNodes()) {
-			if (node.getLine() == getLine(ctx) && node.getCol() == getCol(ctx))
-				return node;
-		}
-
-		throw new IllegalStateException("Cannot find the node " + ctx.getText() + " in cfg.");
-	}
-
-	/**
-	 * Returns the node in currentCFG at a given position (line, column).
-	 * 
-	 * @param line	line where to find the node
-	 * @param col	column where to search the node
-	 * @return		the node at the position (line, column)
-	 */
-	private Statement getNodeAt(int line, int col) {
-		for (Statement node : currentCFG.getNodes()) {
-			if (node.getLine() == line && node.getCol() == col)
-				return node;
-		}
-
-		throw new IllegalStateException("Cannot find the node at " + line + ":" + col);
-	}
-
-	/**
-	 * Returns the entry node of a block statement.
-	 * @param block 	the block statement
-	 * @return 			the entry node of block
-	 */
-	private Statement getBlockEntryNode(BlockContext block) {
-		return getNodeFromContext(block.statementList().statement(0));
-	}
-
-	/**
-	 * Returns the entry node of a for statement.
-	 * @param block 	the for statement
-	 * @return the entry node of the for statement
-	 */
-	private Statement getForEntryNode(ForStmtContext forStmt) {
-
-		if (forStmt.forClause() != null) {
-
-			if (hasInitStmt(forStmt))
-				return getNodeFromContext(forStmt.forClause().simpleStmt(0));
-
-			if (hasCondition(forStmt))
-				return getNodeFromContext(forStmt.forClause().expression());
-
-			if (hasPostStmt(forStmt))
-				if (hasInitStmt(forStmt))
-					return getNodeFromContext(forStmt.forClause().simpleStmt(1));
-				else
-					return getNodeFromContext(forStmt.forClause().simpleStmt(0));
-		}
-
-		throw new UnsupportedOperationException("Unsupported translation: " + forStmt.getText());
-	}
-
 	/**
 	 * Checks if the for statement has the initialization statement.
 	 * 
@@ -1536,13 +1489,13 @@ public class GoToCFG extends GoParserBaseVisitor<Statement> {
 					return GoInt64Type.INSTANCE; 
 				case "uint": 
 					return GoUIntType.INSTANCE;
-				// byte is an alias for int8
+					// byte is an alias for int8
 				case "byte": 
 				case "uint8": 
 					return GoUInt8Type.INSTANCE;
 				case "uint16": 
 					return GoUInt16Type.INSTANCE;
-				// rune is an alias for int32
+					// rune is an alias for int32
 				case "rune":
 				case "uint32": 
 					return GoUInt32Type.INSTANCE;

@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.type.numeric.signed;
 
 import it.unive.lisa.cfg.type.NumericType;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.cfg.type.Untyped;
 
 /**
  * Go 8 bits int type. 
@@ -58,5 +60,15 @@ public class GoInt8Type implements NumericType {
 	@Override
 	public boolean isUnsigned() {
 		return false;
+	}
+	
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other instanceof GoInt8Type || other.isUntyped();
+	}
+
+	@Override
+	public Type commonSupertype(Type other) {
+		return other instanceof GoInt8Type ? this : Untyped.INSTANCE;
 	}
 }

@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.type;
 
 import it.unive.lisa.cfg.type.StringType;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.cfg.type.Untyped;
 
 /**
  * String type of Go. This is the only string type available for Go.
@@ -33,5 +35,16 @@ public class GoStringType implements StringType {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+	
+
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other instanceof GoStringType || other.isUntyped();
+	}
+
+	@Override
+	public Type commonSupertype(Type other) {
+		return other instanceof GoStringType ? this : Untyped.INSTANCE;
 	}
 }

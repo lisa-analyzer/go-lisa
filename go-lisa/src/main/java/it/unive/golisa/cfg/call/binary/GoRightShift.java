@@ -1,8 +1,14 @@
 package it.unive.golisa.cfg.call.binary;
 
+import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.HeapDomain;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
+import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * A Go right shift function call (e.g., e1 >> e2).
@@ -39,5 +45,13 @@ public class GoRightShift extends NativeCall {
 	 */
 	public GoRightShift(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
 		super(cfg, sourceFile, line, col, ">>", exp1, exp2);
+	}
+
+	@Override
+	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
+			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression[] params)
+			throws SemanticException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

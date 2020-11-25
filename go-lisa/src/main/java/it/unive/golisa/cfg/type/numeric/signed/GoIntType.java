@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.type.numeric.signed;
 
 import it.unive.lisa.cfg.type.NumericType;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.cfg.type.Untyped;
 
 /**
  * Go int type. The int type, in Go, is a machine dependent type 
@@ -62,5 +64,15 @@ public class GoIntType implements NumericType {
 	@Override
 	public boolean isUnsigned() {
 		return false;
+	}
+	
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other instanceof GoIntType || other.isUntyped();
+	}
+
+	@Override
+	public Type commonSupertype(Type other) {
+		return other instanceof GoIntType ? this : Untyped.INSTANCE;
 	}
 }

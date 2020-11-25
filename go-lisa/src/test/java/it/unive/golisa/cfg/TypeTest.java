@@ -28,7 +28,7 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;
-import it.unive.lisa.cfg.statement.Parameter;
+import it.unive.lisa.cfg.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
 
 public class TypeTest {
@@ -39,7 +39,7 @@ public class TypeTest {
 	public void singleVariableDeclaration() throws IOException {
 
 		String file = path + "type001.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);

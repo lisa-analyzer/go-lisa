@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.type.numeric.unsigned;
 
 import it.unive.lisa.cfg.type.NumericType;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.cfg.type.Untyped;
 
 /**
  * Go 16 bits unsigned int type. 
@@ -58,5 +60,15 @@ public class GoUInt16Type implements NumericType {
 	@Override
 	public boolean isUnsigned() {
 		return true;
+	}
+	
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other instanceof GoUInt16Type || other.isUntyped();
+	}
+
+	@Override
+	public Type commonSupertype(Type other) {
+		return other instanceof GoUInt16Type ? this : Untyped.INSTANCE;
 	}
 }

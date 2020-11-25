@@ -7,8 +7,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -16,6 +18,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +52,10 @@ import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.*;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoMapType;
+import it.unive.golisa.cfg.type.composite.GoPointerType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
@@ -63,6 +70,7 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
+import it.unive.lisa.cfg.Parameter;
 import it.unive.lisa.cfg.edge.FalseEdge;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.edge.TrueEdge;
@@ -70,7 +78,6 @@ import it.unive.lisa.cfg.statement.CFGCall;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NoOp;
 import it.unive.lisa.cfg.statement.OpenCall;
-import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Statement;
 import it.unive.lisa.cfg.statement.Variable;
 import it.unive.lisa.cfg.type.Type;
@@ -83,9 +90,9 @@ import it.unive.lisa.logging.IterationLogger;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoToCFG extends GoParserBaseVisitor<Object> {
+public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
-	private static final Logger log = LogManager.getLogger(GoToCFG.class); 
+	private static final Logger log = LogManager.getLogger(GoFrontEnd.class); 
 
 	/**
 	 * Go program file path.
@@ -103,7 +110,7 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	 *  
 	 * @param filePath file path to a Go program.
 	 */
-	public GoToCFG(String filePath) {
+	public GoFrontEnd(String filePath) {
 		this.cfgs = new HashSet<CFG>();
 		this.filePath = filePath;
 	}
@@ -130,9 +137,10 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	private CFG currentCFG;
 
 	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/go-tour/go004.go";
-		GoToCFG translator = new GoToCFG(file);
+		String file = "src/test/resources/go-tutorial/type/type002.go";
+		GoFrontEnd translator = new GoFrontEnd(file);
 		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
+		System.err.println(GoStructType.structTypes);
 	}
 
 	/**
@@ -196,6 +204,10 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 		//TODO: we skip, for the moment package information and imports
 		Statement lastStatement = null;
 
+
+		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations"))
+			visitDeclaration(decl);
+
 		// Visit of each FunctionDeclContext appearing in the source code
 		// and creating the corresponding CFG object (we do this to handle CFG calls)
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations"))
@@ -223,7 +235,7 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	/**
 	 * Retrieve a cfg given its name, assuming that the cfg is contained in cfgs.
 	 * Hence, before calling this function, check the presence of cfg by using
-	 * the function {@link GoToCFG#containsCFG}.
+	 * the function {@link GoFrontEnd#containsCFG}.
 	 * 
 	 * @param name	the cfg name
 	 * @return the cfg named name
@@ -268,7 +280,7 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	 */
 	private Parameter[] getParameters(ParameterDeclContext paramCtx) {
 		Parameter[] args = new Parameter[paramCtx.identifierList().IDENTIFIER().size()];
-		Type argType = getGoType(paramCtx.type_());
+		Type argType = visitType_(paramCtx.type_());
 		for (int i = 0; i < paramCtx.identifierList().IDENTIFIER().size(); i++)
 			args[i] = new Parameter(paramCtx.identifierList().IDENTIFIER(i).getText(), argType);
 		return args;
@@ -290,7 +302,7 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 
 		// The return type is specified
 		if (signature.result().type_() != null)
-			return getGoType(signature.result().type_());
+			return visitType_(signature.result().type_());
 
 		// The return type and the variable returned are specified specified
 		if (signature.result().parameters() != null) {
@@ -332,10 +344,10 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitDeclaration(DeclarationContext ctx) {
 		Object result = visitChildren(ctx);
-		if (!(result instanceof Pair<?,?>))
-			throw new IllegalStateException("Pair of Statements expected");
-		else 
+		if ((result instanceof Pair<?,?>))
 			return (Pair<Statement, Statement>) result;	
+		else 
+			return null;
 	}
 
 	@Override
@@ -364,7 +376,7 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 
 		Statement lastStmt = null;
 		Statement entryNode = null;
-		Type type = getGoType(ctx.type_());
+		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
@@ -401,14 +413,29 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitTypeDecl(TypeDeclContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		for (TypeSpecContext typeSpec : ctx.typeSpec())
+			visitTypeSpec(typeSpec);
+		return null;
 	}
 
 	@Override
 	public Statement visitTypeSpec(TypeSpecContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+
+		String typeName = ctx.IDENTIFIER().getText();
+
+		if (ctx.ASSIGN() == null) {
+			Type type = visitType_(ctx.type_());
+
+			if (type instanceof GoStructType)
+				GoStructType.addtStructType(typeName, (GoStructType) type);
+			else
+				throw new UnsupportedOperationException("Unsupported type translation: " + ctx.getText());
+
+		} else {
+			// Alias type
+		}
+
+		return null;
 	}
 
 	@Override
@@ -454,7 +481,7 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 
 		Statement lastStmt = null;
 		Statement entryNode = null;
-		Type type = getGoType(ctx.type_());
+		Type type = visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
@@ -979,20 +1006,26 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitType_(Type_Context ctx) {
-		throw new IllegalStateException("Type_ shold never be visited.");
+	public Type visitType_(Type_Context ctx) {
+		Object result = visitChildren(ctx);
+		if (!(result instanceof Type))
+			throw new IllegalStateException("Pair of Statements expected");
+		else 
+			return (Type) result;		
 	}
 
 	@Override
-	public Statement visitTypeName(TypeNameContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitTypeName(TypeNameContext ctx) {
+		return getGoType(ctx);
 	}
 
 	@Override
-	public Statement visitTypeLit(TypeLitContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitTypeLit(TypeLitContext ctx) {
+		Object result = visitChildren(ctx);
+		if (!(result instanceof Type))
+			throw new IllegalStateException("Pair of Statements expected");
+		else 
+			return (Type) result;
 	}
 
 	@Override
@@ -1008,15 +1041,13 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitElementType(ElementTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitElementType(ElementTypeContext ctx) {
+		return visitType_(ctx.type_());
 	}
 
 	@Override
-	public Statement visitPointerType(PointerTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitPointerType(PointerTypeContext ctx) {
+		return new GoPointerType(visitType_(ctx.type_()));
 	}
 
 	@Override
@@ -1026,15 +1057,13 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitSliceType(SliceTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitSliceType(SliceTypeContext ctx) {
+		return new GoSliceType(visitElementType(ctx.elementType()));
 	}
 
 	@Override
-	public Statement visitMapType(MapTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitMapType(MapTypeContext ctx) {
+		return new GoMapType(visitType_(ctx.type_()), visitElementType(ctx.elementType()));
 	}
 
 	@Override
@@ -1175,7 +1204,7 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 				 * otherwise it is an {@link OpenCall}.
 				 */
 				if (containsCFG(funName))
-					return new CFGCall(currentCFG, getCFGByName(funName), cfgArgs);
+					return new CFGCall(currentCFG, "X", getCFGByName(funName), cfgArgs);
 				else
 					return new OpenCall(currentCFG, funName, cfgArgs);
 			}
@@ -1292,26 +1321,41 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
+
+		Type type = visitLiteralType(ctx.literalType());
+		Map<Expression, Expression> raw = visitLiteralValue(ctx.literalValue());
+		
+		if (type instanceof GoStructType)
+			return new GoStructLiteral(currentCFG, raw, (GoStructType) type);
+		
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
-	public Statement visitLiteralType(LiteralTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Type visitLiteralType(LiteralTypeContext ctx) {
+		Object child = visitChildren(ctx);
+		if (!(child instanceof Type))
+			throw new IllegalStateException("Type expected");
+		else
+			return (Type) child;
 	}
 
 	@Override
-	public Statement visitLiteralValue(LiteralValueContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Map<Expression, Expression> visitLiteralValue(LiteralValueContext ctx) {
+		return visitElementList(ctx.elementList());
 	}
 
 	@Override
-	public Statement visitElementList(ElementListContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Map<Expression, Expression> visitElementList(ElementListContext ctx) {
+		
+		// All keyed or all without key
+		Map<Expression, Expression> result = new HashMap<Expression, Expression>();
+
+		for (KeyedElementContext keyedEl : ctx.keyedElement()) 
+			result.put(visitKey(keyedEl.key()), visitElement(keyedEl.element()));
+	
+		return result;
 	}
 
 	@Override
@@ -1321,21 +1365,38 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitKey(KeyContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Expression visitKey(KeyContext ctx) {
+		
+		if (ctx.IDENTIFIER() != null)
+			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
+		
+		Object child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
-	public Statement visitElement(ElementContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Expression visitElement(ElementContext ctx) {	
+		Object child = visitChildren(ctx);
+		if (!(child instanceof Expression))
+			throw new IllegalStateException("Expression expected, found Statement instead");
+		else
+			return (Expression) child;
 	}
 
 	@Override
-	public Statement visitStructType(StructTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public GoStructType visitStructType(StructTypeContext ctx) {
+		Map<String, Type> fields = new HashMap<String, Type>();
+
+		for (FieldDeclContext field : ctx.fieldDecl()) {
+			Type fieldType = visitType_(field.type_());
+			for (TerminalNode f : field.identifierList().IDENTIFIER())
+				fields.put(f.getText(), fieldType);
+		}
+
+		return new GoStructType(fields);
 	}
 
 	@Override
@@ -1467,55 +1528,49 @@ public class GoToCFG extends GoParserBaseVisitor<Object> {
 	 * @param ctx the type context
 	 * @return the Go type corresponding to {@ctx}
 	 */
-	private Type getGoType(Type_Context ctx) {
+	private Type getGoType(TypeNameContext ctx) {
 		// The type context is absent, Untyped type is returned
 		if (ctx == null)
 			return Untyped.INSTANCE;
 
-		if (ctx.typeName() != null) {
-			TypeNameContext typeName = ctx.typeName();
-
-			if (typeName.IDENTIFIER() != null) {
-				switch(typeName.IDENTIFIER().getText()) { 
-				case "int": 
-					return GoIntType.INSTANCE;
-				case "int8": 
-					return GoInt8Type.INSTANCE;
-				case "int16": 
-					return GoInt16Type.INSTANCE;
-				case "int32": 
-					return GoInt32Type.INSTANCE;
-				case "int64": 
-					return GoInt64Type.INSTANCE; 
-				case "uint": 
-					return GoUIntType.INSTANCE;
-					// byte is an alias for int8
-				case "byte": 
-				case "uint8": 
-					return GoUInt8Type.INSTANCE;
-				case "uint16": 
-					return GoUInt16Type.INSTANCE;
-					// rune is an alias for int32
-				case "rune":
-				case "uint32": 
-					return GoUInt32Type.INSTANCE;
-				case "uint64": 
-					return GoUInt64Type.INSTANCE; 
-				case "float32": 
-					return GoFloat32Type.INSTANCE;
-				case "float64": 
-					return GoFloat64Type.INSTANCE; 
-				case "string": 
-					return GoStringType.INSTANCE;
-				case "bool": 
-					return GoBoolType.INSTANCE;
-				default: 
+		if (ctx.IDENTIFIER() != null) {
+			switch(ctx.IDENTIFIER().getText()) { 
+			case "int": 
+				return GoIntType.INSTANCE;
+			case "int8": 
+				return GoInt8Type.INSTANCE;
+			case "int16": 
+				return GoInt16Type.INSTANCE;
+			case "int32": 
+				return GoInt32Type.INSTANCE;
+			case "int64": 
+				return GoInt64Type.INSTANCE; 
+			case "uint": 
+				return GoUIntType.INSTANCE;
+			case "byte": // byte is an alias for int8
+			case "uint8": 
+				return GoUInt8Type.INSTANCE;
+			case "uint16": 
+				return GoUInt16Type.INSTANCE;
+			case "rune": // rune is an alias for int32
+			case "uint32": 
+				return GoUInt32Type.INSTANCE;
+			case "uint64": 
+				return GoUInt64Type.INSTANCE; 
+			case "float32": 
+				return GoFloat32Type.INSTANCE;
+			case "float64": 
+				return GoFloat64Type.INSTANCE; 
+			case "string": 
+				return GoStringType.INSTANCE;
+			case "bool": 
+				return GoBoolType.INSTANCE;	
+			default: 
+				if (GoStructType.structTypes.containsKey(ctx.IDENTIFIER().getText()))
+					return GoStructType.structTypes.get(ctx.IDENTIFIER().getText());
+				else
 					throw new UnsupportedOperationException("Unsupported basic type: " + ctx.getText());
-				} 
-			}
-
-			if (typeName.qualifiedIdent() != null)
-				throw new UnsupportedOperationException("Unsupported type: " + ctx.getText());
+			} 
 		}
 
 		throw new UnsupportedOperationException("Unsupported type: " + ctx.getText());

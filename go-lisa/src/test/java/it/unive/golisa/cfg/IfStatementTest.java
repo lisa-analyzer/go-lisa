@@ -19,7 +19,7 @@ import it.unive.lisa.cfg.edge.FalseEdge;
 import it.unive.lisa.cfg.edge.SequentialEdge;
 import it.unive.lisa.cfg.edge.TrueEdge;
 import it.unive.lisa.cfg.statement.NoOp;
-import it.unive.lisa.cfg.statement.Parameter;
+import it.unive.lisa.cfg.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
 
 public class IfStatementTest {
@@ -28,7 +28,7 @@ public class IfStatementTest {
 	@Test
 	public void simpleIfElseStmt() throws IOException {
 		String file = path + "if001.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -66,7 +66,7 @@ public class IfStatementTest {
 	@Test
 	public void ifStmtWithoutElse() throws IOException {
 		String file = path + "if002.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -99,7 +99,7 @@ public class IfStatementTest {
 	@Test
 	public void ifElseTest() throws IOException {
 		String file = path + "if003.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -141,7 +141,7 @@ public class IfStatementTest {
 	@Test
 	public void nestedIfTest() throws IOException {
 		String file = path + "if004.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -191,7 +191,7 @@ public class IfStatementTest {
 	@Test
 	public void nestedIfTestWithAssignments() throws IOException {
 		String file = path + "if005.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -255,7 +255,7 @@ public class IfStatementTest {
 	@Test
 	public void nestedIfTestWithoutElse() throws IOException {
 		String file = path + "if006.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);

@@ -15,10 +15,10 @@ import it.unive.golisa.cfg.literal.GoInteger;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
+import it.unive.lisa.cfg.Parameter;
 import it.unive.lisa.cfg.statement.CFGCall;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.OpenCall;
-import it.unive.lisa.cfg.statement.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
 
 public class GoTourTest {
@@ -27,7 +27,7 @@ public class GoTourTest {
 	@Test
 	public void goTourTest001() throws IOException {
 		String file = path + "go001.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -45,7 +45,7 @@ public class GoTourTest {
 	@Test
 	public void goTourTest002() throws IOException {
 		String file = path + "go002.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -63,7 +63,7 @@ public class GoTourTest {
 	@Test
 	public void goTourTest003() throws IOException {
 		String file = path + "go003.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 2);
@@ -82,7 +82,7 @@ public class GoTourTest {
 		CFG mainExpCFG = new CFG(new CFGDescriptor(file, 9, 10, "main", new Parameter[] {}));
 
 		GoVariableDeclaration aAsg = new GoVariableDeclaration(mainExpCFG, new Variable(mainExpCFG, "a", GoIntType.INSTANCE), 
-				new CFGCall(mainExpCFG, sumCfg, new Expression[] {
+				new CFGCall(mainExpCFG, file, sumCfg, new Expression[] {
 						new GoInteger(mainExpCFG, 1),
 						new GoInteger(mainExpCFG, 2),
 				}));
@@ -96,7 +96,7 @@ public class GoTourTest {
 	@Test
 	public void goTourTest004() throws IOException {
 		String file = path + "go004.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 2);

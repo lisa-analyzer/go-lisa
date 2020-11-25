@@ -1,9 +1,15 @@
 package it.unive.golisa.cfg.call.unary;
 
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.HeapDomain;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
+import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * Go unary not native function class (e.g., !(x > y)).
@@ -23,5 +29,13 @@ public class GoNot extends NativeCall {
 	 */
 	public GoNot(CFG cfg, Expression exp) {
 		super(cfg, null, -1, -1, "!", GoBoolType.INSTANCE, exp);
+	}
+
+	@Override
+	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
+			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression[] params)
+			throws SemanticException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

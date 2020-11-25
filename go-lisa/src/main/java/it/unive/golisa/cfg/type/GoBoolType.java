@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.type;
 
 import it.unive.lisa.cfg.type.BooleanType;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.cfg.type.Untyped;
 
 /**
  * Boolean type of Go. This is the only Boolean type available for Go.
@@ -33,5 +35,15 @@ public class GoBoolType implements BooleanType {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other instanceof GoBoolType || other.isUntyped();
+	}
+
+	@Override
+	public Type commonSupertype(Type other) {
+		return other instanceof GoBoolType ? this : Untyped.INSTANCE;
 	}
 }

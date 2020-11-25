@@ -15,7 +15,7 @@ import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;
-import it.unive.lisa.cfg.statement.Parameter;
+import it.unive.lisa.cfg.Parameter;
 import it.unive.lisa.cfg.statement.Variable;
 
 public class VariableDeclarationTest {
@@ -26,7 +26,7 @@ public class VariableDeclarationTest {
 	public void singleVariableDeclaration() throws IOException {
 
 		String file = path + "go001.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -51,7 +51,7 @@ public class VariableDeclarationTest {
 	public void multipleVariableDeclarations() throws IOException {
 
 		String file = path + "go002.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);
@@ -81,7 +81,7 @@ public class VariableDeclarationTest {
 	public void multipleVariableDeclarations2() throws IOException {
 
 		String file = path + "go003.go";
-		Collection<CFG> cfgs = new GoToCFG(file).toLiSACFG();
+		Collection<CFG> cfgs = new GoFrontEnd(file).toLiSACFG();
 
 		// Check number of generated cfgs
 		assertEquals(cfgs.size(), 1);

@@ -1,6 +1,9 @@
 package it.unive.golisa.cfg.type.numeric.floating;
 
+import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
 import it.unive.lisa.cfg.type.NumericType;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.cfg.type.Untyped;
 
 /**
  * Go 32 bits float type. 
@@ -58,5 +61,15 @@ public class GoFloat32Type implements NumericType {
 	@Override
 	public boolean isUnsigned() {
 		return false;
+	}
+	
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return other instanceof GoFloat32Type || other.isUntyped();
+	}
+
+	@Override
+	public Type commonSupertype(Type other) {
+		return other instanceof GoFloat32Type ? this : Untyped.INSTANCE;
 	}
 }

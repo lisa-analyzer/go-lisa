@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.type;
 
+import it.unive.golisa.cfg.literal.GoBoolean;
+import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.type.BooleanType;
 import it.unive.lisa.cfg.type.Type;
 import it.unive.lisa.cfg.type.Untyped;
@@ -13,7 +16,7 @@ import it.unive.lisa.cfg.type.Untyped;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoBoolType implements BooleanType {
+public class GoBoolType implements BooleanType, GoType {
 	
 	/**
 	 * Unique instance of GoBoolean type. 
@@ -45,5 +48,10 @@ public class GoBoolType implements BooleanType {
 	@Override
 	public Type commonSupertype(Type other) {
 		return other instanceof GoBoolType ? this : Untyped.INSTANCE;
+	}
+
+	@Override
+	public Expression defaultValue(CFG cfg) {
+		return new GoBoolean(cfg, false);
 	}
 }

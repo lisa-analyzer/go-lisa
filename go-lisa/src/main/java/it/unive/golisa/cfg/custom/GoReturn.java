@@ -21,5 +21,4 @@ public class GoReturn extends Return {
 	public GoReturn(CFG cfg, Expression expression) {
 		super(cfg, expression);
 	}
-
 }

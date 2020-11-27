@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import it.unive.golisa.cfg.call.binary.GoEquals;
+import it.unive.golisa.cfg.call.binary.GoEqual;
 import it.unive.golisa.cfg.custom.GoAssignment;
 import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.GoInteger;
@@ -39,7 +39,7 @@ public class IfStatementTest {
 				new GoInteger(expectedCfg, 1));
 		expectedCfg.addNode(xAsg);
 
-		GoEquals guard = new GoEquals(expectedCfg, new Variable(expectedCfg, "i"),  new GoInteger(expectedCfg, 2)); 
+		GoEqual guard = new GoEqual(expectedCfg, new Variable(expectedCfg, "i"),  new GoInteger(expectedCfg, 2)); 
 		expectedCfg.addNode(guard);
 
 		GoVariableDeclaration aAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "a", GoIntType.INSTANCE), 
@@ -77,7 +77,7 @@ public class IfStatementTest {
 				new GoInteger(expectedCfg, 100));
 		expectedCfg.addNode(xAsg);
 
-		GoEquals guard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		GoEqual guard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(guard);
 
 		GoVariableDeclaration yAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "y", GoIntType.INSTANCE), 
@@ -106,7 +106,7 @@ public class IfStatementTest {
 
 		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
-		GoEquals guard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		GoEqual guard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(guard);
 
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x", GoIntType.INSTANCE), 
@@ -148,9 +148,9 @@ public class IfStatementTest {
 
 		CFG expectedCfg = new CFG(new CFGDescriptor(file, 5, 10, "main", new Parameter[0]));
 
-		GoEquals firstGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		GoEqual firstGuard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(firstGuard);
-		GoEquals secondGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
+		GoEqual secondGuard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
 		expectedCfg.addNode(secondGuard);
 
 		GoVariableDeclaration xAsg = new GoVariableDeclaration(expectedCfg, new Variable(expectedCfg, "x", GoIntType.INSTANCE), 
@@ -211,9 +211,9 @@ public class IfStatementTest {
 				new GoInteger(expectedCfg, 4));
 		expectedCfg.addNode(zDecl);
 
-		GoEquals firstGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		GoEqual firstGuard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(firstGuard);
-		GoEquals secondGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
+		GoEqual secondGuard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
 		expectedCfg.addNode(secondGuard);
 
 		GoAssignment xAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));
@@ -272,9 +272,9 @@ public class IfStatementTest {
 				new GoInteger(expectedCfg, 3));
 		expectedCfg.addNode(zDecl);
 
-		GoEquals firstGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
+		GoEqual firstGuard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 100)); 
 		expectedCfg.addNode(firstGuard);
-		GoEquals secondGuard = new GoEquals(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
+		GoEqual secondGuard = new GoEqual(expectedCfg, new Variable(expectedCfg, "x"),  new GoInteger(expectedCfg, 99)); 
 		expectedCfg.addNode(secondGuard);
 
 		GoAssignment xAsg = new GoAssignment(expectedCfg, new Variable(expectedCfg, "x"), new GoInteger(expectedCfg, 1));

@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.call.binary;
 
+import java.util.Collection;
+
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
@@ -50,10 +52,9 @@ public class GoLogicalOr extends NativeCall {
 	}
 
 	@Override
-	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression[] params)
+	public <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
+			AnalysisState<H, V> current, CallGraph callGraph, Collection<SymbolicExpression>[] params)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Semantics not supported yet");
 	}
 }

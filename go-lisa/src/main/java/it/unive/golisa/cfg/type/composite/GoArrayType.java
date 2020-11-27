@@ -1,14 +1,32 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import it.unive.golisa.cfg.literal.GoArrayLiteral;
 import it.unive.golisa.cfg.literal.GoInteger;
+import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.type.Type;
 
-public class GoArrayType implements Type {
+public class GoArrayType implements GoType {
 
-	private Type contentType;
+	private GoType contentType;
 	private GoInteger length;
-	
-	public GoArrayType(Type contentType, GoInteger length) {
+
+	private static final Set<GoArrayType> arrayTypes = new HashSet<>();
+
+	public static GoArrayType lookup(GoArrayType type)  {
+		if (!arrayTypes.contains(type))
+			arrayTypes.add(type);
+
+		return arrayTypes.stream().filter(x -> x.equals(type)).findFirst().get();
+	}
+
+	public GoArrayType(GoType contentType, GoInteger length) {
 		this.contentType = contentType;
 		this.length = length;
 	}
@@ -16,7 +34,7 @@ public class GoArrayType implements Type {
 	public Type getContentType() {
 		return contentType;
 	}
-	
+
 	public GoInteger getLength() {
 		return length;
 	}
@@ -67,5 +85,14 @@ public class GoArrayType implements Type {
 		} else if (!length.equals(other.length))
 			return false;
 		return true;
+	}
+
+	@Override
+	public Expression defaultValue(CFG cfg) {
+		List<Expression> result = new ArrayList<>();
+		for (int i = 0; i < (Integer) length.getValue(); i++)
+			result.add(contentType.defaultValue(cfg));
+		
+		return new GoArrayLiteral(cfg, result, this);
 	}
 }

@@ -41,5 +41,4 @@ public class GoAssignment extends Assignment {
 	public GoAssignment(CFG cfg, String sourceFile, int line, int col, Expression target, Expression expression) {
 		super(cfg, sourceFile, line, col, target, expression);
 	}
-
 }

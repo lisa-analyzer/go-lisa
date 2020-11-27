@@ -23,4 +23,8 @@ public class GoInteger extends Literal {
 	public GoInteger(CFG cfg, Integer value) {
 		super(cfg, value, GoIntType.INSTANCE);
 	}
+	
+	public GoInteger(CFG cfg, String sourceFile, int line, int col, Integer value) {
+		super(cfg, sourceFile, line, col, value, GoIntType.INSTANCE);
+	}
 }

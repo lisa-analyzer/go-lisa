@@ -28,7 +28,7 @@ import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.call.binary.GoAnd;
 import it.unive.golisa.cfg.call.binary.GoDiv;
-import it.unive.golisa.cfg.call.binary.GoEquals;
+import it.unive.golisa.cfg.call.binary.GoEqual;
 import it.unive.golisa.cfg.call.binary.GoGreater;
 import it.unive.golisa.cfg.call.binary.GoLeftShift;
 import it.unive.golisa.cfg.call.binary.GoLess;
@@ -54,6 +54,7 @@ import it.unive.golisa.cfg.custom.GoVariableDeclaration;
 import it.unive.golisa.cfg.literal.*;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
@@ -72,6 +73,9 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
+import it.unive.lisa.AnalysisException;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.analysis.nonrelational.typeInference.TypeInference;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.Parameter;
@@ -141,10 +145,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private CFG currentCFG;
 
 	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/type/type002.go";
+		String file = "src/test/resources/go-tutorial/type/type003.go";
 		GoFrontEnd translator = new GoFrontEnd(file);
-		System.err.println(translator.toLiSACFG().iterator().next().getEdges());
-		System.err.println(GoStructType.structTypes);
+		LiSA lisa = new LiSA();
+		Collection<CFG> cfgs = translator.toLiSACFG();
+
+		cfgs.forEach(lisa::addCFG);
+		
+		lisa.addNonRelationalValueDomain(new TypeInference());
+		try {
+			lisa.run();
+		} catch (AnalysisException e) {
+			System.err.println(e);
+		}
 	}
 
 	/**
@@ -170,35 +183,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		ParseTree tree = parser.sourceFile();
 		visit(tree);
 		stream.close();
-
+		
 		return cfgs;
 	}
-
-//	@Override
-//	public Statement visit(ParseTree tree) {
-//
-//		if (tree instanceof SourceFileContext)
-//			return visitSourceFile((SourceFileContext) tree);
-//		else {
-//			return visit(((RuleContext) tree));
-//		}
-//	}
-	//	@Override 
-	//	public Expression visitChildren(RuleNode node) {
-	//				throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-
-	//	}
-
-	//	@Override
-	//	public Statement visitTerminal(TerminalNode node) {
-	//		throw new UnsupportedOperationException("Unsupported translation: " + node.getText());
-	//
-	//	}
-	//
-	//	@Override
-	//	public Statement visitErrorNode(ErrorNode node) {
-	//		throw new UnsupportedOperationException("Unsupported translation: " + node.getText());
-	//	}
 
 	@Override
 	public Collection<CFG> visitSourceFile(SourceFileContext ctx) {
@@ -208,13 +195,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Visit of each FunctionDeclContext appearing in the source code
 		// and creating the corresponding CFG object (we do this to handle CFG calls)
-		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations"))
+		for (FunctionDeclContext funcDecl : 
+			IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations")) 
 			cfgs.add(new CFG(buildCFGDescriptor(funcDecl)));
-
+		
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {
 			currentCFG = getCFGByName(funcDecl.IDENTIFIER().getText());
-			visitFunctionDecl(funcDecl);
+			visitFunctionDecl(funcDecl);			
 		}
 
 		return cfgs;
@@ -417,18 +405,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		String typeName = ctx.IDENTIFIER().getText();
 
-		Type type = visitType_(ctx.type_());
+		GoType type = visitType_(ctx.type_());
 
 
 		if (ctx.ASSIGN() == null) {
 			if (type instanceof GoStructType)
-				GoStructType.addtStructType(typeName, (GoStructType) type);
+				GoStructType.lookup(typeName, (GoStructType) type);
 			else
 				throw new UnsupportedOperationException("Unsupported type translation: " + ctx.getText());
 
 		} else {
 			// Alias type
-			GoAliasType.addAlias(typeName, new GoAliasType(typeName, type));
+			GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
 		}
 
 		return null;
@@ -436,7 +424,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
-		return visitBlock(ctx.block());		
+		Pair<Statement, Statement> result = visitBlock(ctx.block());	
+		currentCFG.getEntrypoints().add(result.getLeft());
+		return result;
 	}
 
 	@Override
@@ -477,14 +467,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Statement lastStmt = null;
 		Statement entryNode = null;
-		Type type = visitType_(ctx.type_());
+		GoType type = visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
+			
+			int line = getLine(ids.IDENTIFIER(i).getSymbol());
+			int col = getCol(exps.expression(i));
+			
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			//TODO: check if exp is null
-			Expression exp = (Expression) visitExpression(exps.expression(i));
+			Expression exp = exps.expression(i) == null ? type.defaultValue(currentCFG) : visitExpression(exps.expression(i));
 
-			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, target, exp);
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -512,11 +506,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (int i = 0; i < ctx.statement().size(); i++)  {
 			Pair<Statement, Statement> currentStmt = visitStatement(ctx.statement(i));
 
-			if (lastStmt != null) 
+			if (lastStmt != null) {
 				currentCFG.addEdge(new SequentialEdge(lastStmt, currentStmt.getLeft()));
-			else
+			}
+			else {
 				entryNode = currentStmt.getLeft();
-
+			}
+			
 			lastStmt = currentStmt.getRight();
 		}
 
@@ -562,14 +558,17 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Expression exp = visitExpression(ctx.expression());
 		Statement asg = null;
 
+		int line = getLine(ctx.expression());
+		int col = getCol(ctx.expression());
+		
 		// increment and decrement statements are syntactic sugar
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
-			asg = new GoAssignment(currentCFG, exp, 
-					new GoSum(currentCFG,  exp,  new GoInteger(currentCFG, 1)));		
+			asg = new GoAssignment(currentCFG, filePath, line, col,  exp, 
+					new GoSum(currentCFG,  exp,  new GoInteger(currentCFG, filePath, line, col, 1)));		
 		else
-			asg = new GoAssignment(currentCFG, exp, 
-					new GoSubtraction(currentCFG, exp,  new GoInteger(currentCFG, 1)));
+			asg = new GoAssignment(currentCFG, filePath, line, col, exp, 
+					new GoSubtraction(currentCFG, exp,  new GoInteger(currentCFG, filePath, line, col, 1)));
 
 		currentCFG.addNode(asg);
 		return Pair.of(asg, asg);
@@ -584,11 +583,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Statement entryNode = null;
 
 		for (int i = 0; i < ids.expression().size(); i++) {
-
+			
+			int line = getLine(ids.expression(i));
+			int col = getLine(exps.expression(i));
+			
 			Expression lhs = visitExpression(ids.expression(i));
 			Expression exp = buildExpressionFromAssignment(lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
-			GoAssignment asg = new GoAssignment(currentCFG, lhs, exp);
+			GoAssignment asg = new GoAssignment(currentCFG, filePath, line, col, lhs, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -676,11 +678,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			Expression exp = visitExpression(exps.expression(i));
 
+			int line = getLine(ids.IDENTIFIER(i).getSymbol());
+			int col = getCol(exps.expression(i));
+			
 			// The type of the variable is implicit and it is retrieved from the type of exp
 			Type type = exp.getStaticType();
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
-			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, target, exp);
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -979,12 +984,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Type visitType_(Type_Context ctx) {
+	public GoType visitType_(Type_Context ctx) {
 		Object result = visitChildren(ctx);
 		if (!(result instanceof Type))
 			throw new IllegalStateException("Pair of Statements expected");
 		else 
-			return (Type) result;		
+			return (GoType) result;		
 	}
 
 	@Override
@@ -1002,10 +1007,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Type visitArrayType(ArrayTypeContext ctx) {
-		Type contentType = visitElementType(ctx.elementType());
+	public GoType visitArrayType(ArrayTypeContext ctx) {
+		GoType contentType = visitElementType(ctx.elementType());
 		GoInteger length = visitArrayLength(ctx.arrayLength());
-		return new GoArrayType(contentType, length);
+		return GoArrayType.lookup(new GoArrayType(contentType, length));
 	}
 
 	@Override
@@ -1019,13 +1024,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Type visitElementType(ElementTypeContext ctx) {
+	public GoType visitElementType(ElementTypeContext ctx) {
 		return visitType_(ctx.type_());
 	}
 
 	@Override
-	public Type visitPointerType(PointerTypeContext ctx) {
-		return new GoPointerType(visitType_(ctx.type_()));
+	public GoType visitPointerType(PointerTypeContext ctx) {
+		return  GoPointerType.lookup(new GoPointerType(visitType_(ctx.type_())));
 	}
 
 	@Override
@@ -1035,13 +1040,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Type visitSliceType(SliceTypeContext ctx) {
-		return new GoSliceType(visitElementType(ctx.elementType()));
+	public GoType visitSliceType(SliceTypeContext ctx) {
+		return GoSliceType.lookup(new GoSliceType(visitElementType(ctx.elementType())));
 	}
 
 	@Override
-	public Type visitMapType(MapTypeContext ctx) {
-		return new GoMapType(visitType_(ctx.type_()), visitElementType(ctx.elementType()));
+	public GoType visitMapType(MapTypeContext ctx) {
+		return GoMapType.lookup(new GoMapType(visitType_(ctx.type_()), visitElementType(ctx.elementType())));
 	}
 
 	@Override
@@ -1107,23 +1112,23 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
-			return new GoLogicalAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
-			return new GoLogicalOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go equals (==)
 		if (ctx.EQUALS() != null)
-			return new GoEquals(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go less (<)
 		if (ctx.LESS() != null)
-			return new GoLess(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLess(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go greater (>)
 		if (ctx.GREATER() != null)
-			return new GoGreater(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoGreater(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go module (%)
 		if (ctx.MOD() != null)
@@ -1274,13 +1279,16 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitInteger(IntegerContext ctx) {
+		int line = getLine(ctx);
+		int col = getCol(ctx);
+		
 		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
 		if (ctx.DECIMAL_LIT() != null)
-			return new GoInteger(currentCFG, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
+			return new GoInteger(currentCFG, filePath, line, col, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 
 		// TODO: 0 matched as octacl literal and not decimal literal
 		if (ctx.OCTAL_LIT() != null)
-			return new GoInteger(currentCFG, Integer.parseInt(ctx.OCTAL_LIT().getText()));
+			return new GoInteger(currentCFG, filePath, line, col, Integer.parseInt(ctx.OCTAL_LIT().getText()));
 
 		if (ctx.IMAGINARY_LIT() != null)
 			throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
@@ -1321,16 +1329,31 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Map<Expression, Expression> raw = visitLiteralValue(ctx.literalValue());
 
 		if (type instanceof GoStructType)
-			return new GoStructLiteral(currentCFG, raw, (GoStructType) type);
+			return new GoStructLiteral(currentCFG, asStructLiteral(raw), (GoStructType) type);
 
 		if (type instanceof GoMapType)
 			return new GoMapLiteral(currentCFG, raw, (GoMapType) type);
 
 		if (type instanceof GoArrayType)
-			return new GoArrayLiteral(currentCFG, raw, (GoArrayType) type);
+			return new GoArrayLiteral(currentCFG, asArrayLiteral(raw), (GoArrayType) type);
 
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+	
+	
+	private Map<String, Expression> asStructLiteral(Map<Expression, Expression> raw) {
+		Map<String, Expression> result = new HashMap<>();
+		for (Expression k: raw.keySet())
+			result.put(k.toString(), raw.get(k));
+		return result;
+	}
+	
+	private List<Expression> asArrayLiteral(Map<Expression, Expression> raw) {
+		List<Expression> result = new ArrayList<>();
+		for (Expression k: raw.keySet())
+			result.add(raw.get(k));
+		return result;
 	}
 
 	@Override
@@ -1389,10 +1412,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoStructType visitStructType(StructTypeContext ctx) {
-		Map<String, Type> fields = new HashMap<String, Type>();
+		Map<String, GoType> fields = new HashMap<String, GoType>();
 
 		for (FieldDeclContext field : ctx.fieldDecl()) {
-			Type fieldType = visitType_(field.type_());
+			GoType fieldType = visitType_(field.type_());
 			for (TerminalNode f : field.identifierList().IDENTIFIER())
 				fields.put(f.getText(), fieldType);
 		}
@@ -1482,6 +1505,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return ctx.getCharPositionInLine();
 	} 
 
+	private int getLine(Token ctx) {
+		return ctx.getLine();
+	} 
+
 	/**
 	 * Checks if the for statement has the initialization statement.
 	 * 
@@ -1524,7 +1551,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * @param ctx the type context
 	 * @return the Go type corresponding to {@ctx}
 	 */
-	private Type getGoType(TypeNameContext ctx) {
+	private GoType getGoType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
 			switch(ctx.IDENTIFIER().getText()) { 
@@ -1559,8 +1586,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			case "bool": 
 				return GoBoolType.INSTANCE;	
 			default: 
-				if (GoStructType.structTypes.containsKey(ctx.IDENTIFIER().getText()))
-					return GoStructType.structTypes.get(ctx.IDENTIFIER().getText());
+				if (GoStructType.hasStructType(ctx.IDENTIFIER().getText()))
+					return GoStructType.get(ctx.IDENTIFIER().getText());
 				else
 					throw new UnsupportedOperationException("Unsupported basic type: " + ctx.getText());
 			} 

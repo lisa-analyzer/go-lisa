@@ -9,7 +9,7 @@ import it.unive.lisa.cfg.statement.Literal;
 
 public class GoStructLiteral extends Literal {
 	
-	public GoStructLiteral(CFG cfg, Map<Expression, Expression> value, GoStructType staticType) {
+	public GoStructLiteral(CFG cfg, Map<String, Expression> value, GoStructType staticType) {
 		super(cfg, value, staticType);
 	}
 }

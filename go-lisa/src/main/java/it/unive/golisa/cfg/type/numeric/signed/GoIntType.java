@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.type.numeric.signed;
 
+import it.unive.golisa.cfg.literal.GoInteger;
+import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.type.NumericType;
 import it.unive.lisa.cfg.type.Type;
 import it.unive.lisa.cfg.type.Untyped;
@@ -15,7 +19,7 @@ import it.unive.lisa.cfg.type.Untyped;
  * @link https://www.golang-book.com/books/intro/3
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoIntType implements NumericType {
+public class GoIntType implements NumericType, GoType {
 
 	/**
 	 * Unique instance of GoInt type. 
@@ -74,5 +78,10 @@ public class GoIntType implements NumericType {
 	@Override
 	public Type commonSupertype(Type other) {
 		return other instanceof GoIntType ? this : Untyped.INSTANCE;
+	}
+	
+	@Override
+	public Expression defaultValue(CFG cfg) {
+		return new GoInteger(cfg, 0);
 	}
 }

@@ -1,6 +1,9 @@
 package it.unive.golisa.cfg.type.numeric.floating;
 
-import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
+import it.unive.golisa.cfg.literal.GoFloat;
+import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.type.NumericType;
 import it.unive.lisa.cfg.type.Type;
 import it.unive.lisa.cfg.type.Untyped;
@@ -14,7 +17,7 @@ import it.unive.lisa.cfg.type.Untyped;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoFloat32Type implements NumericType {
+public class GoFloat32Type implements NumericType , GoType {
 
 	/**
 	 * Unique instance of Float32Type type. 
@@ -71,5 +74,10 @@ public class GoFloat32Type implements NumericType {
 	@Override
 	public Type commonSupertype(Type other) {
 		return other instanceof GoFloat32Type ? this : Untyped.INSTANCE;
+	}
+	
+	@Override
+	public Expression defaultValue(CFG cfg) {
+		return new GoFloat(cfg, 0.0);
 	}
 }

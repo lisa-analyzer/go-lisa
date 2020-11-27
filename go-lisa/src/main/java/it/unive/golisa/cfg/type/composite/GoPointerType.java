@@ -1,11 +1,25 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.type.PointerType;
 import it.unive.lisa.cfg.type.Type;
 
-public class GoPointerType implements PointerType {
+public class GoPointerType implements PointerType, GoType {
 
 	private Type baseType;
+	
+	private static final Set<GoPointerType> pointerTypes = new HashSet<>();
+
+	public static GoPointerType lookup(GoPointerType type)  {
+		if (!pointerTypes.contains(type))
+			pointerTypes.add(type);
+		return pointerTypes.stream().filter(x -> x.equals(type)).findFirst().get();
+	}
 	
 	public GoPointerType(Type baseType) {
 		this.baseType = baseType;
@@ -40,5 +54,11 @@ public class GoPointerType implements PointerType {
 	@Override
 	public boolean equals(Object other) {
 		return other instanceof GoPointerType && baseType.equals(((GoPointerType) other).getBaseType());
+	}
+
+	@Override
+	public Expression defaultValue(CFG cfg) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.call.binary;
 
+import java.util.Collection;
+
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
@@ -10,6 +12,8 @@ import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.BinaryOperator;
 
 /**
  * A Go equals function call (e1 == e2).
@@ -17,7 +21,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoEquals extends NativeCall {
+public class GoEqual extends NativeCall {
 	
 	/**
 	 * Builds a Go equals expression. 
@@ -28,7 +32,7 @@ public class GoEquals extends NativeCall {
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoEquals(CFG cfg, Expression exp1, Expression exp2) {
+	public GoEqual(CFG cfg, Expression exp1, Expression exp2) {
 		super(cfg, null, -1, -1, "==", GoBoolType.INSTANCE, exp1, exp2);
 	}
 	
@@ -45,15 +49,25 @@ public class GoEquals extends NativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoEquals(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+	public GoEqual(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
 		super(cfg, sourceFile, line, col, "==", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
 	@Override
-	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression[] params)
+	public <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
+			AnalysisState<H, V> computedState, CallGraph callGraph, Collection<SymbolicExpression>[] params)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		AnalysisState<H, V> result = null;
+		for (SymbolicExpression expr1 : params[0])
+			for (SymbolicExpression expr2 : params[1]) {
+				AnalysisState<H, V> tmp = new AnalysisState<H, V>(computedState.getState(),
+						new BinaryExpression(GoBoolType.INSTANCE, expr1, expr2, BinaryOperator.COMPARISON_EQ));
+				if (result == null)
+					result = tmp;
+				else
+					result = result.lub(tmp);
+			}
+		return result;
 	}
 }

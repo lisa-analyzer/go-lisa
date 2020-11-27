@@ -48,12 +48,27 @@ public class GoSliceType implements GoType {
 
 	@Override
 	public int hashCode() {
-		return contentType.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((contentType == null) ? 0 : contentType.hashCode());
+		return result;
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		return other instanceof GoSliceType && contentType.equals(((GoSliceType) other).getContentType());
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GoSliceType other = (GoSliceType) obj;
+		if (contentType == null) {
+			if (other.contentType != null)
+				return false;
+		} else if (!contentType.equals(other.contentType))
+			return false;
+		return true;
 	}
 
 	@Override

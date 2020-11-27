@@ -12,6 +12,7 @@ import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cli.GoFrontEnd;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.edge.SequentialEdge;

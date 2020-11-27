@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg;
+package it.unive.golisa.cli;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -470,7 +470,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Statement lastStmt = null;
 		Statement entryNode = null;
-		GoType type = visitType_(ctx.type_());
+		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 			
@@ -479,7 +479,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			//TODO: check if exp is null
-			Expression exp = exps.expression(i) == null ? type.defaultValue(currentCFG) : visitExpression(exps.expression(i));
+			Expression exp = exps.expression(i) == null && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
 
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);

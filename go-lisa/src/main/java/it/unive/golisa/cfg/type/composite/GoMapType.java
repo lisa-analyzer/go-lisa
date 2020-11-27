@@ -56,16 +56,31 @@ public class GoMapType implements GoType {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((keyType == null) ? 0 : keyType.hashCode());
 		result = prime * result + ((elementType == null) ? 0 : elementType.hashCode());
+		result = prime * result + ((keyType == null) ? 0 : keyType.hashCode());
 		return result;
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		return other instanceof GoMapType 
-				&& keyType.equals(((GoMapType) other).getKeyType())
-				&& elementType.equals(((GoMapType) other).getElementType());
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GoMapType other = (GoMapType) obj;
+		if (elementType == null) {
+			if (other.elementType != null)
+				return false;
+		} else if (!elementType.equals(other.elementType))
+			return false;
+		if (keyType == null) {
+			if (other.keyType != null)
+				return false;
+		} else if (!keyType.equals(other.keyType))
+			return false;
+		return true;
 	}
 
 	@Override

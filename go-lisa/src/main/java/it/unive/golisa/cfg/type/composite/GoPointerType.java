@@ -48,12 +48,27 @@ public class GoPointerType implements PointerType, GoType {
 	
 	@Override
 	public int hashCode() {
-		return baseType.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((baseType == null) ? 0 : baseType.hashCode());
+		return result;
 	}
-	
+
 	@Override
-	public boolean equals(Object other) {
-		return other instanceof GoPointerType && baseType.equals(((GoPointerType) other).getBaseType());
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GoPointerType other = (GoPointerType) obj;
+		if (baseType == null) {
+			if (other.baseType != null)
+				return false;
+		} else if (!baseType.equals(other.baseType))
+			return false;
+		return true;
 	}
 
 	@Override

@@ -26,37 +26,40 @@ import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.call.binary.GoAnd;
-import it.unive.golisa.cfg.call.binary.GoDiv;
-import it.unive.golisa.cfg.call.binary.GoEqual;
-import it.unive.golisa.cfg.call.binary.GoGreater;
-import it.unive.golisa.cfg.call.binary.GoLeftShift;
-import it.unive.golisa.cfg.call.binary.GoLess;
-import it.unive.golisa.cfg.call.binary.GoLogicalAnd;
-import it.unive.golisa.cfg.call.binary.GoLogicalOr;
-import it.unive.golisa.cfg.call.binary.GoModule;
-import it.unive.golisa.cfg.call.binary.GoMul;
-import it.unive.golisa.cfg.call.binary.GoOr;
-import it.unive.golisa.cfg.call.binary.GoRightShift;
-import it.unive.golisa.cfg.call.binary.GoSubtraction;
-import it.unive.golisa.cfg.call.binary.GoSum;
-import it.unive.golisa.cfg.call.binary.GoXOr;
-import it.unive.golisa.cfg.call.unary.GoMinus;
-import it.unive.golisa.cfg.call.unary.GoNot;
-import it.unive.golisa.cfg.call.unary.GoPlus;
-import it.unive.golisa.cfg.custom.GoAssignment;
-import it.unive.golisa.cfg.custom.GoCollectionAccess;
-import it.unive.golisa.cfg.custom.GoConstantDeclaration;
-import it.unive.golisa.cfg.custom.GoFieldAccess;
-import it.unive.golisa.cfg.custom.GoReturn;
-import it.unive.golisa.cfg.custom.GoTypeConversion;
-import it.unive.golisa.cfg.custom.GoVariableDeclaration;
-import it.unive.golisa.cfg.literal.*;
+import it.unive.golisa.cfg.expression.binary.GoAnd;
+import it.unive.golisa.cfg.expression.binary.GoDiv;
+import it.unive.golisa.cfg.expression.binary.GoEqual;
+import it.unive.golisa.cfg.expression.binary.GoGreater;
+import it.unive.golisa.cfg.expression.binary.GoLeftShift;
+import it.unive.golisa.cfg.expression.binary.GoLess;
+import it.unive.golisa.cfg.expression.binary.GoLogicalAnd;
+import it.unive.golisa.cfg.expression.binary.GoLogicalOr;
+import it.unive.golisa.cfg.expression.binary.GoModule;
+import it.unive.golisa.cfg.expression.binary.GoMul;
+import it.unive.golisa.cfg.expression.binary.GoOr;
+import it.unive.golisa.cfg.expression.binary.GoRightShift;
+import it.unive.golisa.cfg.expression.binary.GoSubtraction;
+import it.unive.golisa.cfg.expression.binary.GoSum;
+import it.unive.golisa.cfg.expression.binary.GoXOr;
+import it.unive.golisa.cfg.expression.literal.*;
+import it.unive.golisa.cfg.expression.unary.GoDeref;
+import it.unive.golisa.cfg.expression.unary.GoMinus;
+import it.unive.golisa.cfg.expression.unary.GoNot;
+import it.unive.golisa.cfg.expression.unary.GoPlus;
+import it.unive.golisa.cfg.expression.unary.GoRef;
+import it.unive.golisa.cfg.statement.GoAssignment;
+import it.unive.golisa.cfg.statement.GoCollectionAccess;
+import it.unive.golisa.cfg.statement.GoConstantDeclaration;
+import it.unive.golisa.cfg.statement.GoFieldAccess;
+import it.unive.golisa.cfg.statement.GoReturn;
+import it.unive.golisa.cfg.statement.GoTypeConversion;
+import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.composite.GoChannelType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -1050,9 +1053,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitChannelType(ChannelTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public GoType visitChannelType(ChannelTypeContext ctx) {
+		GoType contentType = visitElementType(ctx.elementType());
+		if (ctx.RECEIVE() == null)
+			return GoChannelType.lookup(new GoChannelType(contentType));
+		else if (getCol(ctx.CHAN().getSymbol()) < getCol(ctx.RECEIVE().getSymbol()))
+			return GoChannelType.lookup(new GoChannelType(contentType, true, false));
+		
+		return GoChannelType.lookup(new GoChannelType(contentType, false, true));
 	}
 
 	@Override
@@ -1218,16 +1226,25 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitUnaryExpr(UnaryExprContext ctx) {
-
+		if (ctx.primaryExpr() != null)
+			return visitPrimaryExpr(ctx.primaryExpr());
+		
+		Expression exp = visitExpression(ctx.expression());
 		if (ctx.PLUS() != null)
-			return new GoPlus(currentCFG, visitExpression(ctx.expression()));
+			return new GoPlus(currentCFG, exp);
 
 		if (ctx.MINUS() != null)
-			return new GoMinus(currentCFG, visitExpression(ctx.expression()));
+			return new GoMinus(currentCFG, exp);
 
 		if (ctx.EXCLAMATION() != null)
-			return new GoNot(currentCFG, visitExpression(ctx.expression()));
+			return new GoNot(currentCFG, exp);
 
+		if (ctx.STAR() != null)
+			return new GoRef(currentCFG, exp);
+		
+		if (ctx.AMPERSAND() != null)
+			return new GoDeref(currentCFG, exp);
+				
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1588,8 +1605,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			default: 
 				if (GoStructType.hasStructType(ctx.IDENTIFIER().getText()))
 					return GoStructType.get(ctx.IDENTIFIER().getText());
-				else
-					throw new UnsupportedOperationException("Unsupported basic type: " + ctx.getText());
+				else if (GoAliasType.hasAliasType(ctx.IDENTIFIER().getText()))
+					return GoAliasType.get(ctx.IDENTIFIER().getText());
 			} 
 		}
 

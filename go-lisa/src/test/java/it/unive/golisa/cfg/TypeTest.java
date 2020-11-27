@@ -8,10 +8,10 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import it.unive.golisa.cfg.custom.GoVariableDeclaration;
-import it.unive.golisa.cfg.literal.GoBoolean;
-import it.unive.golisa.cfg.literal.GoFloat;
-import it.unive.golisa.cfg.literal.GoInteger;
+import it.unive.golisa.cfg.expression.literal.GoBoolean;
+import it.unive.golisa.cfg.expression.literal.GoFloat;
+import it.unive.golisa.cfg.expression.literal.GoInteger;
+import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;

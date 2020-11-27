@@ -8,10 +8,10 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import it.unive.golisa.cfg.call.binary.GoEqual;
-import it.unive.golisa.cfg.custom.GoAssignment;
-import it.unive.golisa.cfg.custom.GoVariableDeclaration;
-import it.unive.golisa.cfg.literal.GoInteger;
+import it.unive.golisa.cfg.expression.binary.GoEqual;
+import it.unive.golisa.cfg.expression.literal.GoInteger;
+import it.unive.golisa.cfg.statement.GoAssignment;
+import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;

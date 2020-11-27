@@ -11,7 +11,7 @@ import it.unive.lisa.cfg.type.Type;
 
 public class GoPointerType implements PointerType, GoType {
 
-	private Type baseType;
+	private GoType baseType;
 	
 	private static final Set<GoPointerType> pointerTypes = new HashSet<>();
 
@@ -21,7 +21,7 @@ public class GoPointerType implements PointerType, GoType {
 		return pointerTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 	
-	public GoPointerType(Type baseType) {
+	public GoPointerType(GoType baseType) {
 		this.baseType = baseType;
 	}
 	

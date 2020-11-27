@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import it.unive.golisa.cfg.literal.GoArrayLiteral;
-import it.unive.golisa.cfg.literal.GoInteger;
+import it.unive.golisa.cfg.expression.literal.GoArrayLiteral;
+import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;

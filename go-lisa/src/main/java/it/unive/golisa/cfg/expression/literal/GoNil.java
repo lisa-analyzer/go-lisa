@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.literal;
+package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.NullLiteral;

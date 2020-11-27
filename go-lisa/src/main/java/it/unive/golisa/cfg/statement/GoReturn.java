@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.custom;
+package it.unive.golisa.cfg.statement;
 
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;

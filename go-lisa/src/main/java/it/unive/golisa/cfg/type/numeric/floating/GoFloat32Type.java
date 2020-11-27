@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.type.numeric.floating;
 
-import it.unive.golisa.cfg.literal.GoFloat;
+import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;

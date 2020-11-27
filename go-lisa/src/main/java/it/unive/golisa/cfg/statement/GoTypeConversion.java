@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.custom;
+package it.unive.golisa.cfg.statement;
 
 import java.util.Collection;
 

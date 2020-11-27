@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.type;
 
-import it.unive.golisa.cfg.literal.GoBoolean;
+import it.unive.golisa.cfg.expression.literal.GoBoolean;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.type.BooleanType;

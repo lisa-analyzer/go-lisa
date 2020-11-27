@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.type.composite;
 import java.util.HashSet;
 import java.util.Set;
 
-import it.unive.golisa.cfg.literal.GoNil;
+import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;

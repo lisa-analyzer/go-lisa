@@ -8,13 +8,13 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import it.unive.golisa.cfg.call.binary.GoLess;
-import it.unive.golisa.cfg.call.binary.GoSum;
-import it.unive.golisa.cfg.custom.GoAssignment;
-import it.unive.golisa.cfg.custom.GoConstantDeclaration;
-import it.unive.golisa.cfg.custom.GoVariableDeclaration;
-import it.unive.golisa.cfg.literal.GoInteger;
-import it.unive.golisa.cfg.literal.GoString;
+import it.unive.golisa.cfg.expression.binary.GoLess;
+import it.unive.golisa.cfg.expression.binary.GoSum;
+import it.unive.golisa.cfg.expression.literal.GoInteger;
+import it.unive.golisa.cfg.expression.literal.GoString;
+import it.unive.golisa.cfg.statement.GoAssignment;
+import it.unive.golisa.cfg.statement.GoConstantDeclaration;
+import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.cfg.CFG;

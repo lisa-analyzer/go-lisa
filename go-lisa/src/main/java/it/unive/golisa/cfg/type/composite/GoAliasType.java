@@ -18,6 +18,14 @@ public class GoAliasType implements GoType {
 		return aliases.get(name);
 	}
 		
+	public static boolean hasAliasType(String alias) {
+		return aliases.containsKey(alias);
+	}
+	
+	public static GoAliasType get(String alias) {
+		return aliases.get(alias);
+	}
+	
 	private final String alias;
 	private final GoType baseType;
 	

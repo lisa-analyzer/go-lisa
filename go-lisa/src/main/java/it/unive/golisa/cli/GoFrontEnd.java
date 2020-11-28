@@ -52,6 +52,7 @@ import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.statement.GoAssignment;
 import it.unive.golisa.cfg.statement.GoCollectionAccess;
 import it.unive.golisa.cfg.statement.GoConstantDeclaration;
+import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFieldAccess;
 import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.GoTypeConversion;
@@ -764,9 +765,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitDeferStmt(DeferStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Statement, Statement> visitDeferStmt(DeferStmtContext ctx) {
+		GoDefer defer = new GoDefer(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression()));
+		currentCFG.addNode(defer);
+		return Pair.of(defer, defer);
 	}
 
 	@Override

@@ -22,6 +22,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
@@ -54,12 +56,15 @@ import it.unive.golisa.cfg.statement.GoFieldAccess;
 import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.GoTypeConversion;
 import it.unive.golisa.cfg.statement.GoVariableDeclaration;
+import it.unive.golisa.cfg.statement.method.GoMethod;
+import it.unive.golisa.cfg.statement.method.GoReceiver;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
+import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -76,9 +81,6 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.analysis.nonrelational.typeInference.TypeInference;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.Parameter;
@@ -90,6 +92,7 @@ import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NoOp;
 import it.unive.lisa.cfg.statement.OpenCall;
 import it.unive.lisa.cfg.statement.Statement;
+import it.unive.lisa.cfg.statement.UnresolvedCall;
 import it.unive.lisa.cfg.statement.Variable;
 import it.unive.lisa.cfg.type.Type;
 import it.unive.lisa.cfg.type.Untyped;
@@ -150,17 +153,23 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public static void main(String[] args) throws IOException {
 		String file = "src/test/resources/go-tutorial/type/type003.go";
 		GoFrontEnd translator = new GoFrontEnd(file);
-		LiSA lisa = new LiSA();
-		Collection<CFG> cfgs = translator.toLiSACFG();
 
-		cfgs.forEach(lisa::addCFG);
-		
-		lisa.addNonRelationalValueDomain(new TypeInference());
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
+		for (CFG cfg : translator.toLiSACFG()) {
+			System.err.println(cfg);
+			System.err.println(cfg.getEdges());
 		}
+
+		//		LiSA lisa = new LiSA();
+		//		Collection<CFG> cfgs = translator.toLiSACFG();
+		//
+		//		cfgs.forEach(lisa::addCFG);
+		//
+		//		lisa.addNonRelationalValueDomain(new TypeInference());
+		//		try {
+		//			lisa.run();
+		//		} catch (AnalysisException e) {
+		//			System.err.println(e);
+		//		}
 	}
 
 	/**
@@ -186,22 +195,25 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		ParseTree tree = parser.sourceFile();
 		visit(tree);
 		stream.close();
-		
+
 		return cfgs;
 	}
 
 	@Override
 	public Collection<CFG> visitSourceFile(SourceFileContext ctx) {
-		
+
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations"))
 			visitDeclaration(decl);
+
+		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
+			visitMethodDecl(decl);
 
 		// Visit of each FunctionDeclContext appearing in the source code
 		// and creating the corresponding CFG object (we do this to handle CFG calls)
 		for (FunctionDeclContext funcDecl : 
 			IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations")) 
 			cfgs.add(new CFG(buildCFGDescriptor(funcDecl)));
-		
+
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {
 			currentCFG = getCFGByName(funcDecl.IDENTIFIER().getText());
@@ -245,34 +257,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		int line = getLine(signature);
 		int col = getCol(signature);
 
-		int size = 0;
-		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
-			size += paramCxt.identifierList().IDENTIFIER().size();
+		Parameter[] cfgArgs = new Parameter[]{};
 
-		Parameter[] cfgArgs = new Parameter[size];
-
-		int i = 0;
-
-		for (ParameterDeclContext paramCxt : formalPars.parameterDecl()) 
-			for (Parameter p : getParameters(paramCxt)) 
-				cfgArgs[i++] = p;
+		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
+			ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
 		return new CFGDescriptor(filePath, line, col, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
-	}
-
-	/**
-	 * Given a parameter declaration context, parse the context and 
-	 * returns an array of the corresponding {@link Parameter}s.
-	 * 
-	 * @param paramCtx	the parameter context
-	 * @return an array of {@link Parameter}
-	 */
-	private Parameter[] getParameters(ParameterDeclContext paramCtx) {
-		Parameter[] args = new Parameter[paramCtx.identifierList().IDENTIFIER().size()];
-		Type argType = visitType_(paramCtx.type_());
-		for (int i = 0; i < paramCtx.identifierList().IDENTIFIER().size(); i++)
-			args[i] = new Parameter(paramCtx.identifierList().IDENTIFIER(i).getText(), argType);
-		return args;
 	}
 
 	/**
@@ -330,6 +320,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Pair<Statement, Statement> visitDeclaration(DeclarationContext ctx) {
 		Object result = visitChildren(ctx);
@@ -385,15 +376,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitIdentifierList(IdentifierListContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Variable[] visitIdentifierList(IdentifierListContext ctx) {
+		Variable[] result = new Variable[] {};
+		for (int i = 0; i < ctx.IDENTIFIER().size(); i++)
+			result = ArrayUtils.addAll(result, new Variable(currentCFG, ctx.IDENTIFIER(i).getText()));
+		return result;
 	}
 
 	@Override
-	public Statement visitExpressionList(ExpressionListContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Expression[] visitExpressionList(ExpressionListContext ctx) {
+		Expression[] result = new Expression[] {};
+		for (int i = 0; i < ctx.expression().size(); i++)
+			result = ArrayUtils.addAll(result, visitExpression(ctx.expression(i)));
+		return result;
 	}
 
 	@Override
@@ -404,18 +399,17 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitTypeSpec(TypeSpecContext ctx) {
+	public GoType visitTypeSpec(TypeSpecContext ctx) {
 
 		String typeName = ctx.IDENTIFIER().getText();
 
 		GoType type = visitType_(ctx.type_());
 
-
 		if (ctx.ASSIGN() == null) {
 			if (type instanceof GoStructType)
 				GoStructType.lookup(typeName, (GoStructType) type);
-			else
-				throw new UnsupportedOperationException("Unsupported type translation: " + ctx.getText());
+			else 
+				GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
 
 		} else {
 			// Alias type
@@ -433,15 +427,33 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitMethodDecl(MethodDeclContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public GoMethod visitMethodDecl(MethodDeclContext ctx) {
+		int line = getLine(ctx);
+		int col = getCol(ctx);
+
+		GoReceiver receiver = visitReceiver(ctx.receiver());
+		String name = ctx.IDENTIFIER().getText();
+		Parameter[] params = visitParameters(ctx.signature().parameters());
+		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
+
+		CFGDescriptor desc = new CFGDescriptor(filePath, line, col, name, returnType, params);
+		GoMethod method = new GoMethod(desc, receiver);
+		cfgs.add(method);
+		currentCFG = method;
+		Pair<Statement, Statement> body = visitBlock(ctx.block());
+
+		currentCFG.getEntrypoints().add(body.getLeft());
+		currentCFG.simplify();
+		return method;
 	}
 
 	@Override
-	public Statement visitReceiver(ReceiverContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public GoReceiver visitReceiver(ReceiverContext ctx) {
+		Parameter[] params = visitParameters(ctx.parameters());
+		if (params.length != 1)
+			throw new IllegalStateException("Go receiver must have a single parameter");
+
+		return new GoReceiver(params[0].getName(), (GoType) params[0].getStaticType());
 	}
 
 	@Override
@@ -473,10 +485,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-			
+
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
 			int col = getCol(exps.expression(i));
-			
+
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			//TODO: check if exp is null
 			Expression exp = exps.expression(i) == null && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
@@ -496,7 +508,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
-		// Visit the statement list inside the block
 		return visitStatementList(ctx.statementList());
 	}
 
@@ -515,13 +526,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			else {
 				entryNode = currentStmt.getLeft();
 			}
-			
+
 			lastStmt = currentStmt.getRight();
 		}
 
 		return Pair.of(entryNode, lastStmt);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Pair<Statement, Statement> visitStatement(StatementContext ctx) {
 		Object result = visitChildren(ctx);
@@ -531,6 +543,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			return (Pair<Statement, Statement>) result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Pair<Statement, Statement>  visitSimpleStmt(SimpleStmtContext ctx) {
 		Object result = visitChildren(ctx);
@@ -540,6 +553,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			return (Pair<Statement, Statement>) result;	
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Pair<Statement, Statement> visitExpressionStmt(ExpressionStmtContext ctx) {
 		Object result = visitChildren(ctx);
@@ -551,7 +565,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitSendStmt(SendStmtContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: send statement
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -563,7 +577,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		int line = getLine(ctx.expression());
 		int col = getCol(ctx.expression());
-		
+
 		// increment and decrement statements are syntactic sugar
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
@@ -586,10 +600,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Statement entryNode = null;
 
 		for (int i = 0; i < ids.expression().size(); i++) {
-			
+
 			int line = getLine(ids.expression(i));
 			int col = getLine(exps.expression(i));
-			
+
 			Expression lhs = visitExpression(ids.expression(i));
 			Expression exp = buildExpressionFromAssignment(lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
@@ -611,7 +625,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// +=
 		if (op.PLUS() != null)
 			return new GoSum(currentCFG, lhs, exp);
-		
+
 		// -=	
 		if (op.MINUS() != null)
 			return new GoSubtraction(currentCFG, lhs, exp);
@@ -659,8 +673,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitAssign_op(Assign_opContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// This method should never be visited
+		throw new UnsupportedOperationException("Assign_op should never be visited");
 	}
 
 	@Override
@@ -683,7 +697,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
 			int col = getCol(exps.expression(i));
-			
+
 			// The type of the variable is implicit and it is retrieved from the type of exp
 			Type type = exp.getStaticType();
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
@@ -704,13 +718,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitEmptyStmt(EmptyStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		return new NoOp(currentCFG, filePath, getLine(ctx), getCol(ctx));
 	}
 
 	@Override
 	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: labeled statements
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -925,8 +938,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				currentCFG.addNode(post.getLeft());
 			}
 
-			// TODO: at the moment, we suppose that the block is non-empty
-			Pair<Statement, Statement> block = visitBlock(ctx.block());
+			Pair<Statement, Statement> block;
+
+			if (ctx.block() == null) {
+				NoOp emptyBlock = new NoOp(currentCFG);
+				block = Pair.of(emptyBlock, emptyBlock);
+			} else
+				block = visitBlock(ctx.block());
+
 			Statement exitNodeBlock = block.getRight();
 			Statement entryNodeOfBlock = block.getLeft();
 			Statement exitNode = new NoOp(currentCFG);
@@ -963,8 +982,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			return Pair.of(entryNode, exitNode);
 		}
 
-
-		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1038,7 +1055,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitInterfaceType(InterfaceTypeContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: interface type
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1059,44 +1076,55 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			return GoChannelType.lookup(new GoChannelType(contentType));
 		else if (getCol(ctx.CHAN().getSymbol()) < getCol(ctx.RECEIVE().getSymbol()))
 			return GoChannelType.lookup(new GoChannelType(contentType, true, false));
-		
+
 		return GoChannelType.lookup(new GoChannelType(contentType, false, true));
 	}
 
 	@Override
 	public Statement visitMethodSpec(MethodSpecContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: method specification
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
-	public Statement visitFunctionType(FunctionTypeContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public GoType visitFunctionType(FunctionTypeContext ctx) {
+		SignatureContext sign = ctx.signature();
+		Type returnType = visitResult(sign.result()); 
+		Parameter[] params = visitParameters(sign.parameters());
+
+		return GoFunctionType.lookup(new GoFunctionType(params, returnType));
 	}
 
 	@Override
 	public Statement visitSignature(SignatureContext ctx) {
-		// TODO Auto-generated method stub
+		// This method shold never be visited
+		throw new UnsupportedOperationException("Signature should never be visited");
+	}
+
+	@Override
+	public Type visitResult(ResultContext ctx) {
+		if (ctx.type_() != null)
+			return visitType_(ctx.type_());
+
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
-	public Statement visitResult(ResultContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Parameter[] visitParameters(ParametersContext ctx) {
+		Parameter[] result = new Parameter[]{};
+		for (int i = 0; i < ctx.parameterDecl().size(); i++) 
+			result = ArrayUtils.addAll(result, visitParameterDecl(ctx.parameterDecl(i)));
+
+		return result;
 	}
 
 	@Override
-	public Statement visitParameters(ParametersContext ctx) {
-		// This method should never be visited
-		throw new IllegalStateException("visitParameters should never be visited.");
-	}
-
-	@Override
-	public Statement visitParameterDecl(ParameterDeclContext ctx) {
-		// This method should never be visited
-		throw new IllegalStateException("visitParameterDecl should never be visited.");
+	public Parameter[] visitParameterDecl(ParameterDeclContext ctx) {
+		Parameter[] result = new Parameter[ctx.identifierList().IDENTIFIER().size()];
+		GoType type = visitType_(ctx.type_());
+		for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++)
+			result[i] = new Parameter(ctx.identifierList().IDENTIFIER(i).getText(), type);
+		return result;
 	}
 
 	@Override
@@ -1172,35 +1200,28 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Expression visitPrimaryExpr(PrimaryExprContext ctx) {
 
+		if (ctx.conversion() != null) 
+			return visitConversion(ctx.conversion());
+
 		if (ctx.primaryExpr() != null) {
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
-			// Function call (e.g., f(1,2,3), f() )
+			// Function call (e.g., f(1,2,3), x.f() )
 			if (ctx.arguments() != null) {
-				Expression[] cfgArgs;
 
-				// Check if the function call has arguments
-				if (ctx.arguments().expressionList() == null)
-					cfgArgs = new Expression[] {};
-				else {
-					List<ExpressionContext> argsCtx = ctx.arguments().expressionList().expression();
-					cfgArgs = new Expression[argsCtx.size()];
-
-					int i = 0;
-					for (ExpressionContext arg : argsCtx) 
-						cfgArgs[i++] = visitExpression(arg);	
-				}
-
+				Expression[] args = visitArguments(ctx.arguments());
 				if (primary instanceof Variable) {
 					String funName = ((Variable) primary).getName();
 					/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
 					 * otherwise it is an {@link OpenCall}.
 					 */
 					if (containsCFG(funName))
-						return new CFGCall(currentCFG, "", getCFGByName(funName), cfgArgs);
+						return new CFGCall(currentCFG, "", getCFGByName(funName), args);
 					else
-						return new OpenCall(currentCFG, funName, cfgArgs);
+						return new OpenCall(currentCFG, funName, args);
 				}
+
+				return new UnresolvedCall(currentCFG, primary.toString(), args);
 			}
 
 			// Array/slice/map access e1[e2]
@@ -1228,7 +1249,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Expression visitUnaryExpr(UnaryExprContext ctx) {
 		if (ctx.primaryExpr() != null)
 			return visitPrimaryExpr(ctx.primaryExpr());
-		
+
 		Expression exp = visitExpression(ctx.expression());
 		if (ctx.PLUS() != null)
 			return new GoPlus(currentCFG, exp);
@@ -1241,10 +1262,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (ctx.STAR() != null)
 			return new GoRef(currentCFG, exp);
-		
+
 		if (ctx.AMPERSAND() != null)
 			return new GoDeref(currentCFG, exp);
-				
+
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1298,7 +1319,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Expression visitInteger(IntegerContext ctx) {
 		int line = getLine(ctx);
 		int col = getCol(ctx);
-		
+
 		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
 		if (ctx.DECIMAL_LIT() != null)
 			return new GoInteger(currentCFG, filePath, line, col, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
@@ -1335,7 +1356,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitQualifiedIdent(QualifiedIdentContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: qualified identifier
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1357,15 +1378,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
-	
-	
+
+
 	private Map<String, Expression> asStructLiteral(Map<Expression, Expression> raw) {
 		Map<String, Expression> result = new HashMap<>();
 		for (Expression k: raw.keySet())
 			result.put(k.toString(), raw.get(k));
 		return result;
 	}
-	
+
 	private List<Expression> asArrayLiteral(Map<Expression, Expression> raw) {
 		List<Expression> result = new ArrayList<>();
 		for (Expression k: raw.keySet())
@@ -1393,16 +1414,17 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// All keyed or all without key
 		Map<Expression, Expression> result = new HashMap<Expression, Expression>();
 
-		for (KeyedElementContext keyedEl : ctx.keyedElement()) 
-			result.put(visitKey(keyedEl.key()), visitElement(keyedEl.element()));
+		for (KeyedElementContext keyedEl : ctx.keyedElement()) {
+			Pair<Expression, Expression> keyed = visitKeyedElement(keyedEl);
+			result.put(keyed.getLeft(), keyed.getRight());
+		}
 
 		return result;
 	}
 
 	@Override
-	public Statement visitKeyedElement(KeyedElementContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Expression, Expression> visitKeyedElement(KeyedElementContext ctx) {
+		return Pair.of(visitKey(ctx.key()), visitElement(ctx.element()));
 	}
 
 	@Override
@@ -1442,8 +1464,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitFieldDecl(FieldDeclContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// This method should never be visited
+		throw new UnsupportedOperationException("Field declaration should never be visited");
 	}
 
 	@Override
@@ -1459,13 +1481,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitAnonymousField(AnonymousFieldContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: anonymous field
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitFunctionLit(FunctionLitContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: function literal
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1476,38 +1498,40 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitSlice(SliceContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: slice
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitTypeAssertion(TypeAssertionContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: type assertion
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
-	public Statement visitArguments(ArgumentsContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Expression[] visitArguments(ArgumentsContext ctx) {
+		Expression[] exps = new Expression[]{};
+		for (int i = 0; i < ctx.expressionList().expression().size(); i++)
+			exps = ArrayUtils.addAll(exps, visitExpression(ctx.expressionList().expression(i)));
+		return exps;
 	}
 
 	@Override
 	public Statement visitMethodExpr(MethodExprContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: method expression
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitReceiverType(ReceiverTypeContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO: receiver type
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitEos(EosContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// This method should never be visited
+		throw new UnsupportedOperationException("Eos should never be visited");
 	}
 
 	private int getLine(ParserRuleContext ctx) {

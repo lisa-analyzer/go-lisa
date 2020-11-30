@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.statement;
+package it.unive.golisa.cfg.expression;
 
 import java.util.Collection;
 
@@ -12,14 +12,14 @@ import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
-public class GoCollectionAccess extends NativeCall {
-
-	public GoCollectionAccess(CFG cfg, Expression container, Expression index) {
+public class GoFieldAccess extends NativeCall {
+	
+	public GoFieldAccess(CFG cfg, Expression container, Expression index) {
 		this(cfg, "", -1, -1, container, index);
 	}
 	
-	public GoCollectionAccess(CFG cfg, String sourceFile, int line, int col, Expression container, Expression index) {
-		super(cfg, sourceFile, line, col, "[]", new Expression[] { container, index});
+	public GoFieldAccess(CFG cfg, String sourceFile, int line, int col, Expression container, Expression index) {
+		super(cfg, sourceFile, line, col, ".", new Expression[] { container, index });
 	}
 
 	@Override

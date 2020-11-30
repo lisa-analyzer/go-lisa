@@ -1,5 +1,6 @@
 package it.unive.golisa.cli;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,6 +29,10 @@ import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
+import it.unive.golisa.cfg.expression.GoCollectionAccess;
+import it.unive.golisa.cfg.expression.GoFieldAccess;
+import it.unive.golisa.cfg.expression.GoNew;
+import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoAnd;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
@@ -50,12 +55,9 @@ import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
 import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.statement.GoAssignment;
-import it.unive.golisa.cfg.statement.GoCollectionAccess;
 import it.unive.golisa.cfg.statement.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.GoDefer;
-import it.unive.golisa.cfg.statement.GoFieldAccess;
 import it.unive.golisa.cfg.statement.GoReturn;
-import it.unive.golisa.cfg.statement.GoTypeConversion;
 import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.method.GoMethod;
 import it.unive.golisa.cfg.statement.method.GoReceiver;
@@ -66,7 +68,9 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
+import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
+import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoRawType;
@@ -179,11 +183,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * Stack of loop exit points (used for break statements)
 	 */
 	private List<Statement> exitPoints = new ArrayList<Statement>();
-	
+
 	/**
 	 * Stack of loop entry points (used for continues statements)
 	 */
 	private List<Statement> entryPoints = new ArrayList<Statement>();
+
+
+
+	private SourceFileContext source;
 
 	/**
 	 * Returns the collection of @CFG in a Go program at filePath.
@@ -206,6 +214,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
 		ParseTree tree = parser.sourceFile();
+
 		visit(tree);
 		stream.close();
 
@@ -214,6 +223,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Collection<CFG> visitSourceFile(SourceFileContext ctx) {
+		source = ctx;
 
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
 			visitDeclaration(decl);
@@ -548,9 +558,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitExpressionStmt(ExpressionStmtContext ctx) {
 		Object result = visitChildren(ctx);
-		if (!(result instanceof Pair<?,?>))
+		if (result instanceof Expression) {
+			currentCFG.addNode((Expression) result);
+			return Pair.of((Expression) result, (Expression) result);
+		} else if (!(result instanceof Pair<?,?>)) {
 			throw new IllegalStateException("Pair of Statements expected");
-		else 
+		} else 
 			return (Pair<Statement, Statement>) result;		
 	}
 
@@ -686,6 +699,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			GoRawValue left = new GoRawValue(currentCFG, visitIdentifierList(ctx.identifierList()));
 			Expression right = visitExpression(exps.expression(0));
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, left, right);
+			currentCFG.addNode(asg);
 			return Pair.of(asg, asg);
 		} else {
 
@@ -883,9 +897,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitSelectStmt(SelectStmtContext ctx) {
+	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		Statement noop = new NoOp(currentCFG);
+		currentCFG.addNode(noop);
+		return Pair.of(noop, noop);
 	}
 
 	@Override
@@ -995,22 +1011,27 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public GoType visitType_(Type_Context ctx) {
 		Object result = visitChildren(ctx);
-		if (!(result instanceof Type))
-			throw new IllegalStateException("Pair of Statements expected");
+		if (!(result instanceof GoType))
+			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
 		else 
 			return (GoType) result;		
 	}
 
 	@Override
 	public GoType visitTypeName(TypeNameContext ctx) {
-		return getGoType(ctx);
+		if (ctx.IDENTIFIER() != null)
+			return getGoType(ctx);
+		else {
+			Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
+			return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
+		}
 	}
 
 	@Override
 	public GoType visitTypeLit(TypeLitContext ctx) {
 		Object result = visitChildren(ctx);
-		if (!(result instanceof Type))
-			throw new IllegalStateException("Pair of Statements expected");
+		if (!(result instanceof GoType))
+			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
 		else 
 			return (GoType) result;
 	}
@@ -1039,12 +1060,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitPointerType(PointerTypeContext ctx) {
-		return  GoPointerType.lookup(new GoPointerType(visitType_(ctx.type_())));
+		return GoPointerType.lookup(new GoPointerType(visitType_(ctx.type_())));
 	}
 
 	@Override
-	public Statement visitInterfaceType(InterfaceTypeContext ctx) {
-		// TODO: interface type
+	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
+		if (ctx.methodSpec().isEmpty())
+			return GoInterfaceType.EMPTY_INTERFACE;
+
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1109,10 +1132,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Parameter[] visitParameterDecl(ParameterDeclContext ctx) {
-		Parameter[] result = new Parameter[ctx.identifierList().IDENTIFIER().size()];
+		Parameter[] result = new Parameter[]{};
 		GoType type = visitType_(ctx.type_());
-		for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++)
-			result[i] = new Parameter(ctx.identifierList().IDENTIFIER(i).getText(), type);
+
+		if (ctx.identifierList() == null)
+			result = ArrayUtils.add(result, new Parameter("_", type));
+		else 
+			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) 
+				result = ArrayUtils.addAll(result, new Parameter(ctx.identifierList().IDENTIFIER(i).getText(), type));
+
 		return result;
 	}
 
@@ -1193,11 +1221,22 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			return visitConversion(ctx.conversion());
 
 		if (ctx.primaryExpr() != null) {
+
+			// Check built-in functions
+			if (ctx.primaryExpr().getText().equals("new")) {
+				// new requires a type as input
+				if (ctx.arguments().type_() != null)
+					return new GoNew(currentCFG, visitType_(ctx.arguments().type_()));
+				else {
+					// TODO: this is a workaround...
+					return new GoNew(currentCFG, parseType(ctx.arguments().expressionList().getText()));
+				}
+			}
+
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
 			// Function call (e.g., f(1,2,3), x.f() )
 			if (ctx.arguments() != null) {
-
 				Expression[] args = visitArguments(ctx.arguments());
 				if (primary instanceof Variable) {
 					String funName = ((Variable) primary).getName();
@@ -1372,6 +1411,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Object visitLiteralValue(LiteralValueContext ctx) {
+		if (ctx.elementList() == null)
+			return new HashMap<Expression, Expression>();
 		return visitElementList(ctx.elementList());
 	}
 
@@ -1480,9 +1521,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitFunctionLit(FunctionLitContext ctx) {
+	public Expression visitFunctionLit(FunctionLitContext ctx) {
 		// TODO: function literal
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		return new GoInteger(currentCFG, 1);
 	}
 
 	@Override
@@ -1505,8 +1546,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Expression[] visitArguments(ArgumentsContext ctx) {
 		Expression[] exps = new Expression[]{};
-		for (int i = 0; i < ctx.expressionList().expression().size(); i++)
-			exps = ArrayUtils.addAll(exps, visitExpression(ctx.expressionList().expression(i)));
+		if (ctx.expressionList() != null)
+			for (int i = 0; i < ctx.expressionList().expression().size(); i++)
+				exps = ArrayUtils.addAll(exps, visitExpression(ctx.expressionList().expression(i)));
 		return exps;
 	}
 
@@ -1620,15 +1662,54 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				return GoStringType.INSTANCE;
 			case "bool": 
 				return GoBoolType.INSTANCE;	
+			case "error":
+				return GoErrorType.INSTANCE;
 			default: 
 				if (GoStructType.hasStructType(ctx.IDENTIFIER().getText()))
 					return GoStructType.get(ctx.IDENTIFIER().getText());
 				else if (GoAliasType.hasAliasType(ctx.IDENTIFIER().getText()))
 					return GoAliasType.get(ctx.IDENTIFIER().getText());
+				else {
+					parseTypeDeclaration(ctx.IDENTIFIER().getText());
+					return getGoType(ctx);
+				}
 			} 
 		} 
 
 		Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
 		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
+	}
+
+	private void parseTypeDeclaration(String id) {
+		for (DeclarationContext d : source.declaration())
+			if (d.typeDecl() != null) {
+				for (TypeSpecContext ts : d.typeDecl().typeSpec())
+					if (ts.IDENTIFIER().getText().equals(id))
+						visitTypeSpec(ts);
+			}
+	}
+
+	private GoType parseType(String type) {
+		InputStream stream = new ByteArrayInputStream(type.getBytes());
+		GoLexer lexer = null;
+
+		try {
+			lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		GoParser parser = new GoParser(new CommonTokenStream(lexer));
+		ParseTree tree = parser.type_();
+
+		GoType t = visitType_((Type_Context) tree);
+		try {
+			stream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return t;
 	}
 }

@@ -1,7 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;

@@ -23,7 +23,7 @@ public class GoVariableDeclaration extends Assignment {
 	 * @param var     the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoVariableDeclaration(CFG cfg, Variable var, Expression expression) {
+	public GoVariableDeclaration(CFG cfg, Expression var, Expression expression) {
 		super(cfg, var, expression);
 	}
 
@@ -42,7 +42,7 @@ public class GoVariableDeclaration extends Assignment {
 	 * @param var	     the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Variable var, Expression expression) {
+	public GoVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Expression var, Expression expression) {
 		super(cfg, sourceFile, line, col, var, expression);
 	}
 }

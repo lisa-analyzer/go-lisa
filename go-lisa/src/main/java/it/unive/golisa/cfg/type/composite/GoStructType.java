@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.type.composite;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.unive.golisa.cfg.expression.literal.GoStructLiteral;
+import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
@@ -82,6 +82,6 @@ public class GoStructType implements GoType {
 		for (String key: fields.keySet())
 			defaultFields.put(key, fields.get(key).defaultValue(cfg));
 		
-		return new GoStructLiteral(cfg, defaultFields, this);
+		return new GoKeyedLiteral(cfg, defaultFields, this);
 	}
 }

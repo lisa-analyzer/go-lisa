@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import it.unive.golisa.cfg.expression.literal.GoArrayLiteral;
+import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.cfg.CFG;
@@ -93,6 +93,6 @@ public class GoArrayType implements GoType {
 		for (int i = 0; i < (Integer) length.getValue(); i++)
 			result.add(contentType.defaultValue(cfg));
 		
-		return new GoArrayLiteral(cfg, result, this);
+		return new GoNonKeyedLiteral(cfg, result, this);
 	}
 }

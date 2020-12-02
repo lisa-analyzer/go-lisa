@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -60,6 +61,7 @@ import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.method.GoMethod;
+import it.unive.golisa.cfg.statement.method.GoMethodSpecification;
 import it.unive.golisa.cfg.statement.method.GoReceiver;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoQualifiedType;
@@ -162,8 +164,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		GoFrontEnd translator = new GoFrontEnd(file);
 
 		for (CFG cfg : translator.toLiSACFG()) {
-			System.err.println(cfg);
-			System.err.println(cfg.getEdges());
+			//			System.err.println(cfg);
+			//			System.err.println(cfg.getEdges());
 		}
 
 		//		LiSA lisa = new LiSA();
@@ -414,6 +416,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (ctx.ASSIGN() == null) {
 			if (type instanceof GoStructType)
 				GoStructType.lookup(typeName, (GoStructType) type);
+			else if (type instanceof GoInterfaceType)
+				GoInterfaceType.lookup(typeName, (GoInterfaceType) type);
 			else 
 				GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
 
@@ -1067,8 +1071,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
 		if (ctx.methodSpec().isEmpty())
 			return GoInterfaceType.EMPTY_INTERFACE;
-
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		else {
+			Set<GoMethodSpecification> specs = new HashSet<>();
+			for (MethodSpecContext methSpec : ctx.methodSpec())
+				specs.add(visitMethodSpec(methSpec));
+			
+			return new GoInterfaceType(specs);				
+		}
 	}
 
 	@Override
@@ -1093,9 +1102,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitMethodSpec(MethodSpecContext ctx) {
-		// TODO: method specification
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public GoMethodSpecification visitMethodSpec(MethodSpecContext ctx) {
+		if (ctx.typeName() == null) {
+			Type returnType = ctx.result() == null? Untyped.INSTANCE : visitResult(ctx.result());
+			String name = ctx.IDENTIFIER().getText();
+			Parameter[] params = visitParameters(ctx.parameters());
+			return new GoMethodSpecification(name, returnType, params);
+		} 
+		
+		throw new UnsupportedOperationException("Method specification not supported yet:  " + ctx.getText());
 	}
 
 	@Override
@@ -1110,7 +1125,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Statement visitSignature(SignatureContext ctx) {
 		// This method shold never be visited
-		throw new UnsupportedOperationException("Signature should never be visited");
+		throw new IllegalStateException("Signature should never be visited");
 	}
 
 	@Override
@@ -1631,7 +1646,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private GoType getGoType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
-			switch(ctx.IDENTIFIER().getText()) { 
+			
+			String type = ctx.IDENTIFIER().getText();
+			switch(type) { 
 			case "int": 
 				return GoIntType.INSTANCE;
 			case "int8": 
@@ -1665,12 +1682,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			case "error":
 				return GoErrorType.INSTANCE;
 			default: 
-				if (GoStructType.hasStructType(ctx.IDENTIFIER().getText()))
-					return GoStructType.get(ctx.IDENTIFIER().getText());
-				else if (GoAliasType.hasAliasType(ctx.IDENTIFIER().getText()))
-					return GoAliasType.get(ctx.IDENTIFIER().getText());
+				if (GoStructType.hasStructType(type))
+					return GoStructType.get(type);
+				else if (GoAliasType.hasAliasType(type))
+					return GoAliasType.get(type);
+				else if (GoInterfaceType.hasStructType(type))
+					return GoInterfaceType.get(type);
 				else {
-					parseTypeDeclaration(ctx.IDENTIFIER().getText());
+					parseTypeDeclaration(type);
 					return getGoType(ctx);
 				}
 			} 

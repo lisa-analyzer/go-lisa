@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.unive.golisa.cfg.statement.method.GoMethod;
+import it.unive.golisa.cfg.statement.method.GoMethodSpecification;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
@@ -13,7 +14,7 @@ import it.unive.lisa.cfg.type.Type;
 
 public class GoInterfaceType implements GoType {
 
-	private final Set<GoMethod> methods;
+	private final Set<GoMethodSpecification> methods;
 
 	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
@@ -25,7 +26,7 @@ public class GoInterfaceType implements GoType {
 		return interfaces.get(name);
 	}
 
-	public GoInterfaceType(Set<GoMethod> methods) {
+	public GoInterfaceType(Set<GoMethodSpecification> methods) {
 		this.methods = methods;
 	}
 

@@ -20,15 +20,14 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.apache.commons.lang3.ArrayUtils;
-
-import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
+import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoFieldAccess;
@@ -49,7 +48,14 @@ import it.unive.golisa.cfg.expression.binary.GoRightShift;
 import it.unive.golisa.cfg.expression.binary.GoSubtraction;
 import it.unive.golisa.cfg.expression.binary.GoSum;
 import it.unive.golisa.cfg.expression.binary.GoXOr;
-import it.unive.golisa.cfg.expression.literal.*;
+import it.unive.golisa.cfg.expression.literal.GoBoolean;
+import it.unive.golisa.cfg.expression.literal.GoFloat;
+import it.unive.golisa.cfg.expression.literal.GoInteger;
+import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
+import it.unive.golisa.cfg.expression.literal.GoNil;
+import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
+import it.unive.golisa.cfg.expression.literal.GoRawValue;
+import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.expression.unary.GoDeref;
 import it.unive.golisa.cfg.expression.unary.GoMinus;
 import it.unive.golisa.cfg.expression.unary.GoNot;
@@ -90,8 +96,6 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.Parameter;
@@ -135,7 +139,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 *  
 	 * @param filePath file path to a Go program.
 	 */
-	public GoFrontEnd(String filePath) {
+	private GoFrontEnd(String filePath) {
 		this.cfgs = new HashSet<CFG>();
 		this.filePath = filePath;
 	}
@@ -161,28 +165,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 */
 	private CFG currentCFG;
 
-	public static void main(String[] args) throws IOException {
-		String file = "src/test/resources/go-tutorial/type/type003.go";
-		GoFrontEnd translator = new GoFrontEnd(file);
-
-		for (CFG cfg : translator.toLiSACFG()) {
-			//			System.err.println(cfg);
-			System.err.println(cfg.getEdges());
-		}
-
-		LiSA lisa = new LiSA();
-		Collection<CFG> cfgs = translator.toLiSACFG();
-
-		cfgs.forEach(lisa::addCFG);
-		lisa.setDumpCFGs(true);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-		}
-	}
-
 	/**
 	 * Stack of loop exit points (used for break statements)
 	 */
@@ -193,18 +175,21 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 */
 	private List<Statement> entryPoints = new ArrayList<Statement>();
 
-
-
 	private SourceFileContext source;
 
+	
+	public static Collection<CFG> processFile(String filePath) throws IOException {
+		return new GoFrontEnd(filePath).toLiSACFG();
+	}
+	
 	/**
 	 * Returns the collection of @CFG in a Go program at filePath.
 	 * 
 	 * @return collection of @CFG in file
 	 * @throws IOException if {@code stream} to file cannot be written to or closed
 	 */
-	public Collection<CFG> toLiSACFG() throws IOException {
-		log.info("GoToCFG setup...");
+	private Collection<CFG> toLiSACFG() throws IOException {
+		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
 
 		InputStream stream;

@@ -90,6 +90,8 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
+import it.unive.lisa.AnalysisException;
+import it.unive.lisa.LiSA;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.CFGDescriptor;
 import it.unive.lisa.cfg.Parameter;
@@ -165,20 +167,20 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		for (CFG cfg : translator.toLiSACFG()) {
 			//			System.err.println(cfg);
-			//			System.err.println(cfg.getEdges());
+			System.err.println(cfg.getEdges());
 		}
 
-		//		LiSA lisa = new LiSA();
-		//		Collection<CFG> cfgs = translator.toLiSACFG();
-		//
-		//		cfgs.forEach(lisa::addCFG);
-		//
-		//		lisa.addNonRelationalValueDomain(new TypeInference());
-		//		try {
-		//			lisa.run();
-		//		} catch (AnalysisException e) {
-		//			System.err.println(e);
-		//		}
+		LiSA lisa = new LiSA();
+		Collection<CFG> cfgs = translator.toLiSACFG();
+
+		cfgs.forEach(lisa::addCFG);
+		lisa.setDumpCFGs(true);
+
+		try {
+			lisa.run();
+		} catch (AnalysisException e) {
+			System.err.println(e);
+		}
 	}
 
 	/**
@@ -846,16 +848,56 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return Pair.of(entryNode, ifExitNode);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Statement visitSwitchStmt(SwitchStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Statement, Statement> visitSwitchStmt(SwitchStmtContext ctx) {
+		Object result = visitChildren(ctx);
+		if (!(result instanceof Pair<?,?>))
+			throw new IllegalStateException("Pair of Statements expected");
+		else 
+			return (Pair<Statement, Statement>) result;	
 	}
 
 	@Override
-	public Statement visitExprSwitchStmt(ExprSwitchStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Statement, Statement> visitExprSwitchStmt(ExprSwitchStmtContext ctx) {
+
+		Expression switchGuard = ctx.expression() == null ? new GoBoolean(currentCFG, true) :  visitExpression(ctx.expression());
+		NoOp exitNode = new NoOp(currentCFG);		
+
+		currentCFG.addNode(switchGuard);
+		currentCFG.addNode(exitNode);
+
+		for (int i = 0; i < ctx.exprCaseClause().size(); i++)  {
+			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
+			// Need to check if it is default/case
+			Pair<Statement, Statement> caseBlock = visitStatementList(switchCase.statementList());
+			Expression[] expsCase = visitExpressionList(switchCase.exprSwitchCase().expressionList());
+
+			Expression caseBooleanGuard = null;
+
+			for (int j = 0; j < expsCase.length; j++) {
+				if (caseBooleanGuard == null)
+					caseBooleanGuard = new GoEqual(currentCFG, expsCase[j], switchGuard);
+				else
+					caseBooleanGuard = new GoLogicalOr(currentCFG, caseBooleanGuard, new GoEqual(currentCFG, expsCase[j], switchGuard));
+			}
+
+			currentCFG.addNode(caseBooleanGuard);
+
+			currentCFG.addEdge(new SequentialEdge(switchGuard, caseBooleanGuard));
+			currentCFG.addEdge(new SequentialEdge(caseBooleanGuard, caseBlock.getLeft()));
+			currentCFG.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+		}
+
+		Statement entryNode = switchGuard;
+		if (ctx.simpleStmt() != null) {
+			Pair<Statement, Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
+			currentCFG.addEdge(new SequentialEdge(simpleStmt.getRight(), switchGuard));
+			entryNode = simpleStmt.getLeft();
+		}
+
+
+		return Pair.of(entryNode, exitNode);
 	}
 
 	@Override
@@ -1075,7 +1117,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Set<GoMethodSpecification> specs = new HashSet<>();
 			for (MethodSpecContext methSpec : ctx.methodSpec())
 				specs.add(visitMethodSpec(methSpec));
-			
+
 			return new GoInterfaceType(specs);				
 		}
 	}
@@ -1109,7 +1151,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Parameter[] params = visitParameters(ctx.parameters());
 			return new GoMethodSpecification(name, returnType, params);
 		} 
-		
+
 		throw new UnsupportedOperationException("Method specification not supported yet:  " + ctx.getText());
 	}
 
@@ -1646,7 +1688,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private GoType getGoType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
-			
+
 			String type = ctx.IDENTIFIER().getText();
 			switch(type) { 
 			case "int": 

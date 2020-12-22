@@ -6,7 +6,8 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.callgraph.CallGraph;
+import it.unive.lisa.analysis.impl.types.TypeEnvironment;
+import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
@@ -24,8 +25,19 @@ public class GoCollectionAccess extends NativeCall {
 
 	@Override
 	public <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
-			AnalysisState<H, V> current, CallGraph callGraph, Collection<SymbolicExpression>[] params)
+			AnalysisState<H, V> computedState, CallGraph callGraph, Collection<SymbolicExpression>[] params)
 			throws SemanticException {
-		throw new UnsupportedOperationException("Semantics not supported yet");
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	@Override
+	public <H extends HeapDomain<H>> AnalysisState<H, TypeEnvironment> callTypeInference(
+			AnalysisState<H, TypeEnvironment> computedState, CallGraph callGraph,
+			Collection<SymbolicExpression>[] params) throws SemanticException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

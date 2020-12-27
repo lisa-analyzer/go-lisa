@@ -229,7 +229,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {
 			currentCFG = getCFGByName(funcDecl.IDENTIFIER().getText());
-			visitFunctionDecl(funcDecl);			
+			visitFunctionDecl(funcDecl);
 		}
 
 		return cfgs;

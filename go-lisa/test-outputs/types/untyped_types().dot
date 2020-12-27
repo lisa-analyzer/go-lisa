@@ -1,0 +1,36 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<x1 = 1>];
+	"node1" [shape="rect",color="gray",label=<u2 = 2>];
+	"node2" [shape="rect",color="gray",label=<x5 = 5>];
+	"node3" [shape="rect",color="gray",label=<f3 = 3.3>];
+	"node4" [shape="rect",color="gray",label=<x6 = true>];
+	"node5" [shape="rect",color="gray",label=<f1 = 1.1>];
+	"node6" [shape="rect",color="gray",label=<x3 = 3>];
+	"node7" [shape="rect",color="gray",label=<u3 = 3>];
+	"node8" [shape="rect",color="gray",label=<u5 = 5>];
+	"node9" [shape="rect",color="gray",label=<x2 = 2>];
+	"node10" [shape="rect",color="gray",label=<x4 = 4>];
+	"node11" [shape="rect",color="gray",label=<u1 = 1>];
+	"node12" [shape="rect",color="gray",label=<u4 = 4>];
+	"node13" [shape="rect",color="gray",label=<f2 = 2.2>];
+	"node1" -> "node7" [color="black"];
+	"node2" -> "node4" [color="black"];
+	"node4" -> "node11" [color="black"];
+	"node5" -> "node13" [color="black"];
+	"node6" -> "node10" [color="black"];
+	"node7" -> "node12" [color="black"];
+	"node8" -> "node5" [color="black"];
+	"node0" -> "node9" [color="black"];
+	"node9" -> "node6" [color="black"];
+	"node10" -> "node2" [color="black"];
+	"node11" -> "node1" [color="black"];
+	"node12" -> "node8" [color="black"];
+	"node13" -> "node3" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

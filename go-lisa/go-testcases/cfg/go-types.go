@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func main() {
+func types() {
 	var x1 int = 1
 	var x2 int8 = 2
 	var x3 int16 = 3

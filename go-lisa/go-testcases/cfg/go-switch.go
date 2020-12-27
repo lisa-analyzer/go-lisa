@@ -18,3 +18,17 @@ func noGuard(x, y int) {
 		case x == 4: f3()
 	}
 }
+
+func noGuardWithAsg() {
+	switch x := f(); {  // missing switch expression means "true"
+		case x < 0: y = -x
+		case x >= 0: y =  x
+	}
+}
+
+func multiExps(tag int) {
+	switch tag {
+		case 0, 1, 2, 3: s1()
+		case 4, 5, 6, 7: s2()
+	}
+}

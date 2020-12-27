@@ -183,15 +183,15 @@ public class CFGTest {
 			fail("Analysis terminated with errors");
 		}
 
-//		File actFile = new File(tmpDir + "report.json");
-//		File expFile = new File(expDumpPath + "switch/report.json");
-//		JsonReport expected = JsonReport.read(new FileReader(expFile));
-//		JsonReport actual = JsonReport.read(new FileReader(actFile));
-//		assertTrue("Results are different",
-//				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-//
-//		for (File f : actFile.getParentFile().listFiles())
-//			f.delete();
-//		actFile.getParentFile().delete();
+		File actFile = new File(tmpDir + "report.json");
+		File expFile = new File(expDumpPath + "switch/report.json");
+		JsonReport expected = JsonReport.read(new FileReader(expFile));
+		JsonReport actual = JsonReport.read(new FileReader(actFile));
+		assertTrue("Results are different",
+				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
+
+		for (File f : actFile.getParentFile().listFiles())
+			f.delete();
+		actFile.getParentFile().delete();
 	}
 }

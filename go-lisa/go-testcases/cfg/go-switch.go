@@ -11,6 +11,15 @@ func simpleSwitch(x int) {
 	}
 }
 
+func simpleSwitchWithFt(x int) {
+	y = 0;
+	switch x {
+		case 1: y + 1; fallthrough
+		case 2: y + 2; fallthrough
+		case 3: y + 3; fallthrough
+	}
+}
+
 func simpleSwitchWithDefault(x int) {
 	y = 0;
 	switch x {

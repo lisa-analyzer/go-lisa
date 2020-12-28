@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_multiExps().dot", "untyped_noGuard().dot", "untyped_noGuardWithAsg().dot", "untyped_simpleSwitch().dot", "untyped_simpleSwitchWithDefault().dot", "untyped_simpleSwitchWithDefault2().dot" ]
+  "files" : [ "untyped_multiExps().dot", "untyped_noGuard().dot", "untyped_noGuardWithAsg().dot", "untyped_simpleSwitch().dot", "untyped_simpleSwitchWithDefault().dot", "untyped_simpleSwitchWithDefault2().dot", "untyped_simpleSwitchWithFt().dot" ]
 }

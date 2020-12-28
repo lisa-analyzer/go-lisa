@@ -64,6 +64,7 @@ import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.statement.GoAssignment;
 import it.unive.golisa.cfg.statement.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.GoDefer;
+import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.method.GoMethod;
@@ -764,9 +765,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitFallthroughStmt(FallthroughStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Statement, Statement> visitFallthroughStmt(FallthroughStmtContext ctx) {
+		GoFallThrough ft = new GoFallThrough(currentCFG);
+		currentCFG.addNode(ft);
+		return Pair.of(ft, ft);
 	}
 
 	@Override
@@ -851,12 +853,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Statement entryNode = null;
 		Statement previousGuard = null;
 		Pair<Statement, Statement> defaultBlock = null;
-		
+		Pair<Statement, Statement> lastCaseBlock = null;
 		currentCFG.addNode(exitNode);
 
 		for (int i = 0; i < ctx.exprCaseClause().size(); i++)  {
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
-			// Need to check if it is default/case
 			Pair<Statement, Statement> caseBlock = visitStatementList(switchCase.statementList());
 			Expression caseBooleanGuard = null;
 
@@ -868,10 +869,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 						caseBooleanGuard = new GoEqual(currentCFG, expsCase[j], switchGuard);
 					else
 						caseBooleanGuard = new GoLogicalOr(currentCFG, caseBooleanGuard, new GoEqual(currentCFG, expsCase[j], switchGuard));
-			
+
 				currentCFG.addNode(caseBooleanGuard);
 				currentCFG.addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
-				currentCFG.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+				if (lastCaseBlock == null)
+					currentCFG.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+				else
+					currentCFG.addEdge(new SequentialEdge(lastCaseBlock.getRight(), caseBlock.getLeft()));
 
 				if (entryNode == null) {
 					entryNode = caseBooleanGuard;
@@ -879,15 +883,25 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 					currentCFG.addEdge(new FalseEdge(previousGuard, caseBooleanGuard));
 				}
 				previousGuard = caseBooleanGuard;
+
+				if (caseBlock.getRight() instanceof GoFallThrough)
+					lastCaseBlock = caseBlock;
+				else
+					lastCaseBlock = null;
 			} else {
 				defaultBlock = caseBlock;
 			}
 		}
+
+		if (lastCaseBlock != null)
+			currentCFG.addEdge(new SequentialEdge(lastCaseBlock.getRight(), exitNode));
+
 		
 		if (defaultBlock != null) {
 			currentCFG.addEdge(new FalseEdge(previousGuard, defaultBlock.getRight()));
 			currentCFG.addEdge(new SequentialEdge(defaultBlock.getLeft(), exitNode));
 		} else {
+			System.err.println(new FalseEdge(previousGuard, exitNode));
 			currentCFG.addEdge(new FalseEdge(previousGuard, exitNode));
 		}
 
@@ -897,20 +911,17 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
-
 		return Pair.of(entryNode, exitNode);
 	}
 
 	@Override
 	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		throw new IllegalStateException("exprCaseClause should never be visited.");
 	}
 
 	@Override
 	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		throw new IllegalStateException("exprSwitchCase should never be visited.");
 	}
 
 	@Override

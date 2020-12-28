@@ -167,7 +167,7 @@ public class CFGTest {
 	}
 	
 	@Test
-	public void testGoSwitch() throws IOException {
+	public void testSwitch() throws IOException {
 		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "go-switch.go");
 		LiSA lisa = new LiSA();
 

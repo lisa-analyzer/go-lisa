@@ -1,26 +1,27 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Collection;
-
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.impl.types.TypeEnvironment;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.NativeCall;
+import it.unive.lisa.cfg.type.Type;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.util.collections.ExternalSet;
 
 /**
  * A Go numerical sum function call (e1 + e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoSum extends NativeCall {
+public class GoSum extends BinaryNativeCall {
 
 	/**
 	 * Builds a Go sum expression. The location where 
@@ -36,18 +37,26 @@ public class GoSum extends NativeCall {
 	}
 
 	@Override
-	public <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, Collection<SymbolicExpression>[] params)
+	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> binarySemantics(
+			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression left, SymbolicExpression right)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		BinaryOperator op;
+		ExternalSet<Type> types;
+		
+		if (left.getDynamicType().isStringType() && right.getDynamicType().isStringType()) {
+			op = BinaryOperator.STRING_CONCAT;
+			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
+		} else if ((left.getDynamicType().isNumericType() || left.getDynamicType().isUntyped())
+				&& (right.getDynamicType().isNumericType() || right.getDynamicType().isUntyped())) {
+			op = BinaryOperator.NUMERIC_ADD;
+			types = Caches.types().mkSingletonSet(left.getDynamicType());
+		} else
+			return computedState.bottom();
+
+		return computedState
+				.smallStepSemantics(new BinaryExpression(types, left, right, op));
 	}
 
-	@Override
-	public <H extends HeapDomain<H>> AnalysisState<H, TypeEnvironment> callTypeInference(
-			AnalysisState<H, TypeEnvironment> computedState, CallGraph callGraph,
-			Collection<SymbolicExpression>[] params) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

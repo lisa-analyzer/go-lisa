@@ -1,15 +1,13 @@
 package it.unive.golisa.cfg.type;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.type.Type;
 
-public class GoQualifiedType implements GoType{
+public class GoQualifiedType implements GoType {
 	
 	
 	public static final Set<GoQualifiedType> qualTypes = new HashSet<>();
@@ -76,5 +74,10 @@ public class GoQualifiedType implements GoType{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	@Override
+	public boolean isIntegerType() {
+		// TODO: need to resolve qualified type
+		return false;
+	}
 }

@@ -2,23 +2,30 @@ package it.unive.golisa.cfg.expression.unary;
 
 import java.util.Collection;
 
+import it.unive.golisa.cfg.expression.literal.GoInteger;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
 import it.unive.lisa.analysis.impl.types.TypeEnvironment;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.cfg.statement.NativeCall;
+import it.unive.lisa.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.Constant;
 
 /**
  * Go unary minus native function class (e.g., -(5 + 3), -5).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoMinus extends NativeCall {
+public class GoMinus extends UnaryNativeCall {
 
 	/**
 	 * Builds a Go unary minus expression. The location where 
@@ -33,18 +40,14 @@ public class GoMinus extends NativeCall {
 	}
 
 	@Override
-	public <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, Collection<SymbolicExpression>[] params)
-			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> unarySemantics(
+			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression expr) throws SemanticException {
 
-	@Override
-	public <H extends HeapDomain<H>> AnalysisState<H, TypeEnvironment> callTypeInference(
-			AnalysisState<H, TypeEnvironment> computedState, CallGraph callGraph,
-			Collection<SymbolicExpression>[] params) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
+			return computedState.bottom();
+
+		Constant zero = new Constant(GoIntType.INSTANCE, new GoInteger(getCFG(), 0));
+		return computedState.smallStepSemantics(
+				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_SUB));
 	}
 }

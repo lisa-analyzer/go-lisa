@@ -76,4 +76,9 @@ public class GoSliceType implements GoType {
 		return new GoNil(cfg);
 	}
 	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
+	
 }

@@ -7,4 +7,6 @@ import it.unive.lisa.cfg.type.Type;
 public interface GoType extends Type {
 
 	public Expression defaultValue(CFG cfg);
+	
+	public boolean isIntegerType();
 }

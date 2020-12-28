@@ -54,4 +54,9 @@ public class GoBoolType implements BooleanType, GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoBoolean(cfg, false);
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

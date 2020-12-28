@@ -87,4 +87,9 @@ public class GoMapType implements GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoNil(cfg);
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

@@ -48,4 +48,9 @@ public class GoRawType extends ArrayList<Parameter> implements GoType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

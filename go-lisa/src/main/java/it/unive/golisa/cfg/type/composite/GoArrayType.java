@@ -95,4 +95,9 @@ public class GoArrayType implements GoType {
 		
 		return new GoNonKeyedLiteral(cfg, result, this);
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

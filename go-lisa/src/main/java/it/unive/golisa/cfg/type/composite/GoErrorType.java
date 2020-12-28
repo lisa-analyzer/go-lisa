@@ -47,4 +47,8 @@ public class GoErrorType implements GoType {
 		return null;
 	}
 
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

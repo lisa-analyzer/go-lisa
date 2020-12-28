@@ -55,4 +55,9 @@ public class GoInterfaceType implements GoType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

@@ -50,5 +50,9 @@ public class GoAliasType implements GoType {
 	public Expression defaultValue(CFG cfg) {
 		return baseType.defaultValue(cfg);
 	}
-
+	
+	@Override
+	public boolean isIntegerType() {
+		return baseType.isIntegerType();
+	}
 }

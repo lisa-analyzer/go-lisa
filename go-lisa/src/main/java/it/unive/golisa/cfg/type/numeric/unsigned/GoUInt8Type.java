@@ -80,4 +80,9 @@ public class GoUInt8Type implements NumericType, GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoInteger(cfg, 0);
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return true;
+	}
 }

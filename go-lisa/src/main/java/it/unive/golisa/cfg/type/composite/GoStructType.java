@@ -84,4 +84,9 @@ public class GoStructType implements GoType {
 		
 		return new GoKeyedLiteral(cfg, defaultFields, this);
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

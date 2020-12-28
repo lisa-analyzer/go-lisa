@@ -1,24 +1,26 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Collection;
 
+import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.impl.types.TypeEnvironment;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.BinaryOperator;
 
 /**
  * A Go module function call (e1 % e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoModule extends NativeCall {
+public class GoModule extends BinaryNativeCall {
 	
 	/**
 	 * Builds a Go module expression. 
@@ -51,18 +53,21 @@ public class GoModule extends NativeCall {
 	}
 
 	@Override
-	public <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, Collection<SymbolicExpression>[] params)
+	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> binarySemantics(
+			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression left, SymbolicExpression right)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		
+		if ((!(left.getDynamicType() instanceof GoType) || !((GoType) left.getDynamicType()).isIntegerType()) && !left.getDynamicType().isUntyped())
+			return computedState.bottom();
+
+		if ((!(right.getDynamicType() instanceof GoType) || !((GoType) right.getDynamicType()).isIntegerType()) && !right.getDynamicType().isUntyped())
+			return computedState.bottom();
+
+
+		return computedState
+				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(left.getDynamicType()), left, right,
+						BinaryOperator.NUMERIC_MOD));
 	}
 
-	@Override
-	public <H extends HeapDomain<H>> AnalysisState<H, TypeEnvironment> callTypeInference(
-			AnalysisState<H, TypeEnvironment> computedState, CallGraph callGraph,
-			Collection<SymbolicExpression>[] params) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

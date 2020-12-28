@@ -177,11 +177,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	private SourceFileContext source;
 
-	
+
 	public static Collection<CFG> processFile(String filePath) throws IOException {
 		return new GoFrontEnd(filePath).toLiSACFG();
 	}
-	
+
 	/**
 	 * Returns the collection of @CFG in a Go program at filePath.
 	 * 
@@ -848,36 +848,52 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Expression switchGuard = ctx.expression() == null ? new GoBoolean(currentCFG, true) :  visitExpression(ctx.expression());
 		NoOp exitNode = new NoOp(currentCFG);		
-
-		currentCFG.addNode(switchGuard);
+		Statement entryNode = null;
+		Statement previousGuard = null;
+		Pair<Statement, Statement> defaultBlock = null;
+		
 		currentCFG.addNode(exitNode);
 
 		for (int i = 0; i < ctx.exprCaseClause().size(); i++)  {
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
 			// Need to check if it is default/case
 			Pair<Statement, Statement> caseBlock = visitStatementList(switchCase.statementList());
-			Expression[] expsCase = visitExpressionList(switchCase.exprSwitchCase().expressionList());
-
 			Expression caseBooleanGuard = null;
 
-			for (int j = 0; j < expsCase.length; j++) {
-				if (caseBooleanGuard == null)
-					caseBooleanGuard = new GoEqual(currentCFG, expsCase[j], switchGuard);
-				else
-					caseBooleanGuard = new GoLogicalOr(currentCFG, caseBooleanGuard, new GoEqual(currentCFG, expsCase[j], switchGuard));
+			// Check if the switch case is not the default case
+			if (switchCase.exprSwitchCase().expressionList() != null) {
+				Expression[] expsCase = visitExpressionList(switchCase.exprSwitchCase().expressionList());
+				for (int j = 0; j < expsCase.length; j++) 
+					if (caseBooleanGuard == null)
+						caseBooleanGuard = new GoEqual(currentCFG, expsCase[j], switchGuard);
+					else
+						caseBooleanGuard = new GoLogicalOr(currentCFG, caseBooleanGuard, new GoEqual(currentCFG, expsCase[j], switchGuard));
+			
+				currentCFG.addNode(caseBooleanGuard);
+				currentCFG.addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
+				currentCFG.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+
+				if (entryNode == null) {
+					entryNode = caseBooleanGuard;
+				} else {
+					currentCFG.addEdge(new FalseEdge(previousGuard, caseBooleanGuard));
+				}
+				previousGuard = caseBooleanGuard;
+			} else {
+				defaultBlock = caseBlock;
 			}
-
-			currentCFG.addNode(caseBooleanGuard);
-
-			currentCFG.addEdge(new SequentialEdge(switchGuard, caseBooleanGuard));
-			currentCFG.addEdge(new SequentialEdge(caseBooleanGuard, caseBlock.getLeft()));
-			currentCFG.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+		}
+		
+		if (defaultBlock != null) {
+			currentCFG.addEdge(new FalseEdge(previousGuard, defaultBlock.getRight()));
+			currentCFG.addEdge(new SequentialEdge(defaultBlock.getLeft(), exitNode));
+		} else {
+			currentCFG.addEdge(new FalseEdge(previousGuard, exitNode));
 		}
 
-		Statement entryNode = switchGuard;
 		if (ctx.simpleStmt() != null) {
 			Pair<Statement, Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
-			currentCFG.addEdge(new SequentialEdge(simpleStmt.getRight(), switchGuard));
+			currentCFG.addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode));
 			entryNode = simpleStmt.getLeft();
 		}
 

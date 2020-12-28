@@ -80,4 +80,9 @@ public class GoFloat64Type implements NumericType, GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoFloat(cfg, 0.0);
 	}
+
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

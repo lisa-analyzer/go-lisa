@@ -76,4 +76,9 @@ public class GoPointerType implements PointerType, GoType {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public boolean isIntegerType() {
+		return false;
+	}
 }

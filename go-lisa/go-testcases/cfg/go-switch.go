@@ -64,7 +64,7 @@ func multiExps(tag int) {
 
 func mixed(tag int) {
 	switch tag {
-		case 0: s0();
+		case (0): s0();
 		case 1: s1();
 		case 2: s2(); fallthrough
 		case 3: s3();

@@ -1375,11 +1375,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitOperand(OperandContext ctx) {
-		Object child = visitChildren(ctx);
-		if (!(child instanceof Expression))
-			throw new IllegalStateException("Expression expected, found Statement instead");
-		else
-			return (Expression) child;
+		if (ctx.expression() != null)
+			return visitExpression(ctx.expression());
+		
+		if (ctx.literal() != null)
+			return visitLiteral(ctx.literal());
+		
+		if (ctx.operandName() != null)
+			return visitOperandName(ctx.operandName());
+		
+		if (ctx.methodExpr() != null)
+			return visitMethodExpr(ctx.methodExpr());
+		
+		throw new IllegalStateException("Illegal state: operand rule has no other productions.");
 	}
 
 	@Override
@@ -1622,7 +1630,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitMethodExpr(MethodExprContext ctx) {
+	public Expression visitMethodExpr(MethodExprContext ctx) {
 		// TODO: method expression
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}

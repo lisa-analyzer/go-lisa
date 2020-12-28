@@ -18,7 +18,6 @@ digraph {
 	"node5" -> "node3" [color="blue",style="dashed"];
 	"node5" -> "node10" [color="red",style="dashed"];
 	"node6" -> "node3" [color="black"];
-	"node6" -> "node9" [color="black"];
 	"node7" -> "node4" [color="black"];
 	"node8" -> "node9" [color="black"];
 	"node0" -> "node2" [color="black"];

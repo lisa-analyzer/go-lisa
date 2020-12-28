@@ -872,9 +872,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 				currentCFG.addNode(caseBooleanGuard);
 				currentCFG.addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
-				if (lastCaseBlock == null)
+
+				if (!(caseBlock.getRight() instanceof GoFallThrough))
 					currentCFG.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
-				else
+
+				if (lastCaseBlock != null)
 					currentCFG.addEdge(new SequentialEdge(lastCaseBlock.getRight(), caseBlock.getLeft()));
 
 				if (entryNode == null) {
@@ -883,25 +885,23 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 					currentCFG.addEdge(new FalseEdge(previousGuard, caseBooleanGuard));
 				}
 				previousGuard = caseBooleanGuard;
-
-				if (caseBlock.getRight() instanceof GoFallThrough)
-					lastCaseBlock = caseBlock;
-				else
-					lastCaseBlock = null;
-			} else {
+			} else {				
 				defaultBlock = caseBlock;
 			}
+
+			if (caseBlock.getRight() instanceof GoFallThrough)
+				lastCaseBlock = caseBlock;
+			else
+				lastCaseBlock = null;
 		}
 
 		if (lastCaseBlock != null)
 			currentCFG.addEdge(new SequentialEdge(lastCaseBlock.getRight(), exitNode));
 
-		
 		if (defaultBlock != null) {
 			currentCFG.addEdge(new FalseEdge(previousGuard, defaultBlock.getRight()));
 			currentCFG.addEdge(new SequentialEdge(defaultBlock.getLeft(), exitNode));
 		} else {
-			System.err.println(new FalseEdge(previousGuard, exitNode));
 			currentCFG.addEdge(new FalseEdge(previousGuard, exitNode));
 		}
 

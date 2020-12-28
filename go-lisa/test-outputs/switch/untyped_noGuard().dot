@@ -1,21 +1,20 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<true>];
+	"node0" [shape="rect",color="black",label=<==(&lt;(x, y), true)>];
 	"node1" [shape="rect",color="gray",label=<==(&lt;(x, z), true)>];
 	"node2" [shape="rect",color="gray",label=<==(==(x, 4), true)>];
 	"node3" [shape="rect",color="gray",label=<[open call]f3()>];
 	"node4" [shape="rect",color="gray",label=<no-op>];
 	"node5" [shape="rect",color="gray",label=<[open call]f2()>];
-	"node6" [shape="rect",color="gray",label=<==(&lt;(x, y), true)>];
-	"node7" [shape="rect",color="gray",label=<[open call]f1()>];
-	"node1" -> "node5" [color="black"];
-	"node2" -> "node3" [color="black"];
-	"node0" -> "node1" [color="black"];
-	"node0" -> "node2" [color="black"];
-	"node0" -> "node6" [color="black"];
+	"node6" [shape="rect",color="gray",label=<[open call]f1()>];
+	"node1" -> "node2" [color="red",style="dashed"];
+	"node1" -> "node5" [color="blue",style="dashed"];
+	"node2" -> "node3" [color="blue",style="dashed"];
+	"node2" -> "node4" [color="red",style="dashed"];
+	"node0" -> "node1" [color="red",style="dashed"];
+	"node0" -> "node6" [color="blue",style="dashed"];
 	"node3" -> "node4" [color="black"];
 	"node5" -> "node4" [color="black"];
-	"node6" -> "node7" [color="black"];
-	"node7" -> "node4" [color="black"];
+	"node6" -> "node4" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

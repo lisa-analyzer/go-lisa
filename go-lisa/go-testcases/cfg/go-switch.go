@@ -11,6 +11,26 @@ func simpleSwitch(x int) {
 	}
 }
 
+func simpleSwitchWithDefault(x int) {
+	y = 0;
+	switch x {
+		case 1: y + 1; 
+		case 2: y + 2;
+		case 3: y + 3;
+		default: y + 4;
+	}
+}
+
+func simpleSwitchWithDefault2(x int) {
+	y = 0;
+	switch x {
+		default: y + 4;
+		case 1: y + 1; 
+		case 2: y + 2;
+		case 3: y + 3;
+	}
+}
+
 func noGuard(x, y int) {
 	switch {
 		case x < y: f1()

@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.expression.unary;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
@@ -36,15 +37,15 @@ public class GoPlus extends UnaryNativeCall {
 	}
 
 	@Override
-	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> unarySemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression expr) throws SemanticException {
-
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> exprState,
+			SymbolicExpression expr) throws SemanticException {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
-			return computedState.bottom();
+			return entryState.bottom();
 
 		Constant zero = new Constant(GoIntType.INSTANCE, new GoInteger(getCFG(), 0));
 
-		return computedState.smallStepSemantics(
+		return entryState.smallStepSemantics(
 				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_ADD));
 	}
 

@@ -3,7 +3,6 @@ package it.unive.golisa.cfg.statement;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Assignment;
 import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.Variable;
 
 /**
  * Go variable declaration class (e.g., var x int = 5).

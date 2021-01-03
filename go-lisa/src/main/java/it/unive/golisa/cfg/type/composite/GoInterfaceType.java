@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import it.unive.golisa.cfg.statement.method.GoMethod;
 import it.unive.golisa.cfg.statement.method.GoMethodSpecification;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.cfg.CFG;
@@ -57,7 +56,7 @@ public class GoInterfaceType implements GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return false;
 	}
 }

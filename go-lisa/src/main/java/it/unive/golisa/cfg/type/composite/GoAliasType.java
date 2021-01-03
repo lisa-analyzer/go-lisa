@@ -52,7 +52,7 @@ public class GoAliasType implements GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
-		return baseType.isIntegerType();
+	public boolean isGoInteger() {
+		return baseType.isGoInteger();
 	}
 }

@@ -488,7 +488,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			//TODO: check if exp is null
 			Expression exp = exps.expression(i) == null && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
-
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 			currentCFG.addNode(asg);
 
@@ -705,6 +704,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Type type = exp.getStaticType();
 				Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
+				// TODO: fix types
 				GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 				currentCFG.addNode(asg);
 

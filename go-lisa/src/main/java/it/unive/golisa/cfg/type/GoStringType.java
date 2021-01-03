@@ -57,7 +57,7 @@ public class GoStringType implements StringType, GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return false;
 	}
 }

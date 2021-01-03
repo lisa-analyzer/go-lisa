@@ -56,7 +56,7 @@ public class GoBoolType implements BooleanType, GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return false;
 	}
 }

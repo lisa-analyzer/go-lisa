@@ -82,7 +82,7 @@ public class GoUInt64Type implements NumericType, GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return true;
 	}
 }

@@ -111,7 +111,7 @@ public class GoChannelType implements GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return false;
 	}
 }

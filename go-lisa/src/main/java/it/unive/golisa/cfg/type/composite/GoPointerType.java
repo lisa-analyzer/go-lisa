@@ -78,7 +78,7 @@ public class GoPointerType implements PointerType, GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return false;
 	}
 }

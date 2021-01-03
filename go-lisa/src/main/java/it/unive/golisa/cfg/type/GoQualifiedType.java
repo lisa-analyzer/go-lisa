@@ -76,7 +76,7 @@ public class GoQualifiedType implements GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		// TODO: need to resolve qualified type
 		return false;
 	}

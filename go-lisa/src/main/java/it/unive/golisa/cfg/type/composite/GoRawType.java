@@ -50,7 +50,7 @@ public class GoRawType extends ArrayList<Parameter> implements GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return false;
 	}
 }

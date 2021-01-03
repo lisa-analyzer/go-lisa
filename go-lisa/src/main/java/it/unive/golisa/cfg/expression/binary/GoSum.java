@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.expression.binary;
 
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
@@ -21,7 +22,7 @@ import it.unive.lisa.util.collections.ExternalSet;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoSum extends BinaryNativeCall {
+public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperation {
 
 	/**
 	 * Builds a Go sum expression. The location where 
@@ -37,26 +38,24 @@ public class GoSum extends BinaryNativeCall {
 	}
 
 	@Override
-	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> binarySemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression left, SymbolicExpression right)
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
+			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 			throws SemanticException {
-		
 		BinaryOperator op;
 		ExternalSet<Type> types;
 		
-		if (left.getDynamicType().isStringType() && right.getDynamicType().isStringType()) {
+		if (leftExp.getDynamicType().isStringType() && leftExp.getDynamicType().isStringType()) {
 			op = BinaryOperator.STRING_CONCAT;
 			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
-		} else if ((left.getDynamicType().isNumericType() || left.getDynamicType().isUntyped())
-				&& (right.getDynamicType().isNumericType() || right.getDynamicType().isUntyped())) {
+		} else if (leftExp.getDynamicType().isNumericType() && leftExp.getDynamicType().isNumericType()) {
 			op = BinaryOperator.NUMERIC_ADD;
-			types = Caches.types().mkSingletonSet(left.getDynamicType());
+			types = resultType(leftExp, rightExp);
 		} else
-			return computedState.bottom();
+			return entryState.bottom();
 
-		return computedState
-				.smallStepSemantics(new BinaryExpression(types, left, right, op));
+		return entryState
+				.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op));
 	}
-
 	
 }

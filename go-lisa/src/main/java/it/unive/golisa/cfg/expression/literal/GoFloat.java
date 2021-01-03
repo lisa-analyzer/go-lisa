@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
+import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Literal;
 
@@ -21,6 +22,6 @@ public class GoFloat extends Literal {
 	 * @param value the float value
 	 */
 	public GoFloat(CFG cfg, Double value) {
-		super(cfg, value, GoFloat64Type.INSTANCE);
+		super(cfg, value, GoUntypedFloat.INSTANCE);
 	}
 }

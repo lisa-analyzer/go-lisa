@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.expression.unary;
 
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
@@ -16,12 +17,12 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
 
 /**
  * Go unary not native function class (e.g., !(x > y)).
- * The static type of this expression is definite {@link GoBoolType}.
- * 
+ * The static type of this expression is definite {@link GoBoolType}
+ * and its operand must be instance of {@link GoBoolType}.
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoNot extends UnaryNativeCall {
-	
+
 	/**
 	 * Builds a Go unary not expression. The location where 
 	 * this expression appears is unknown 
@@ -35,13 +36,14 @@ public class GoNot extends UnaryNativeCall {
 	}
 
 	@Override
-	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> unarySemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression expr) throws SemanticException {
-		
-		if (!expr.getDynamicType().isBooleanType() && !expr.getDynamicType().isUntyped())
-			return computedState.bottom();
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> exprState,
+			SymbolicExpression expr) throws SemanticException {
 
-		return computedState.smallStepSemantics(
+		if (!expr.getDynamicType().isBooleanType() && !expr.getDynamicType().isUntyped())
+			return entryState.bottom();
+
+		return exprState.smallStepSemantics(
 				new UnaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), expr, UnaryOperator.LOGICAL_NOT));
 	}
 

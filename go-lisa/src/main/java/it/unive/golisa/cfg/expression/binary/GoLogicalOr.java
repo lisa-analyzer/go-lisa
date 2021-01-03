@@ -1,26 +1,30 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Collection;
-
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.impl.types.TypeEnvironment;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.BinaryOperator;
 
 /**
  * A Go Boolean logical or function call (e1 || e2).
- * The static type of this expression is definitely {@link GoBoolType}.
+ * The static type of this expression is definitely {@link GoBoolType}
+ * and both operands must be instances of {@link GoBoolType}.
+ * The semantics of a Go logical or implements a short-circuit logics.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoLogicalOr extends NativeCall {
+public class GoLogicalOr extends BinaryNativeCall {
 	
 	/**
 	 * Builds a Go or expression. 
@@ -52,19 +56,26 @@ public class GoLogicalOr extends NativeCall {
 		super(cfg, sourceFile, line, col, "||", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
+	
+	
 	@Override
-	public <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> callSemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, Collection<SymbolicExpression>[] params)
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
+			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <H extends HeapDomain<H>> AnalysisState<H, TypeEnvironment> callTypeInference(
-			AnalysisState<H, TypeEnvironment> computedState, CallGraph callGraph,
-			Collection<SymbolicExpression>[] params) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if (!leftExp.getDynamicType().isBooleanType() && !leftExp.getDynamicType().isUntyped())
+			return entryState.bottom();
+		if (!rightExp.getDynamicType().isBooleanType() && !rightExp.getDynamicType().isUntyped())
+			return entryState.bottom();
+		
+		if (leftState.satisfies(leftExp) == Satisfiability.SATISFIED) 
+			return leftState;
+		else if (leftState.satisfies(leftExp) == Satisfiability.NOT_SATISFIED) 
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR));
+		else if (leftState.satisfies(leftExp) == Satisfiability.UNKNOWN) 
+			return leftState.lub(rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR)));
+		else 
+			return entryState.bottom();
 	}
 }

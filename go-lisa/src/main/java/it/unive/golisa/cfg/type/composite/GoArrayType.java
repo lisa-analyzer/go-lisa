@@ -97,7 +97,7 @@ public class GoArrayType implements GoType {
 	}
 	
 	@Override
-	public boolean isIntegerType() {
+	public boolean isGoInteger() {
 		return false;
 	}
 }

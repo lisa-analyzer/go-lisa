@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.binary;
 
+import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
@@ -34,19 +35,19 @@ public class GoSubtraction extends BinaryNativeCall {
 	}
 
 	@Override
-	protected <H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<H, V> binarySemantics(
-			AnalysisState<H, V> computedState, CallGraph callGraph, SymbolicExpression left, SymbolicExpression right)
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
+			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 			throws SemanticException {
-		
-		if (!left.getDynamicType().isNumericType() && !left.getDynamicType().isUntyped())
-			return computedState.bottom();
-		if (!right.getDynamicType().isNumericType() && !right.getDynamicType().isUntyped())
-			return computedState.bottom();
 
-		return computedState
-				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(left.getDynamicType()), left, right,
+		if (!leftExp.getDynamicType().isNumericType() && !leftExp.getDynamicType().isUntyped())
+			return entryState.bottom();
+		if (!rightExp.getDynamicType().isNumericType() && !rightExp.getDynamicType().isUntyped())
+			return entryState.bottom();
+
+		return rightState
+				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftExp.getDynamicType()), leftExp, rightExp,
 						BinaryOperator.NUMERIC_SUB));
 	}
-	
-	
+
 }

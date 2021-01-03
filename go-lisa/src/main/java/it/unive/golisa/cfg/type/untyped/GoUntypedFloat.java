@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.type.numeric.floating;
+package it.unive.golisa.cfg.type.untyped;
 
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
@@ -8,37 +8,38 @@ import it.unive.lisa.cfg.type.NumericType;
 import it.unive.lisa.cfg.type.Type;
 import it.unive.lisa.cfg.type.Untyped;
 
-/**
- * Go 32 bits float type. 
- * 
- * It implements the singleton design pattern, that is 
- * the instances of this type are unique. The unique instance of
- * this type can be retrieved by {@link GoFloat32Type#INSTANCE}.
- * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
- */
-public class GoFloat32Type implements NumericType , GoType {
+public class GoUntypedFloat implements GoType, NumericType  {
 
 	/**
-	 * Unique instance of Float32Type type. 
+	 * Unique instance of GoUntypedInt type. 
 	 */
-	public static final GoFloat32Type INSTANCE = new GoFloat32Type();
+	public static final GoUntypedFloat INSTANCE = new GoUntypedFloat();
 
-	private GoFloat32Type() {}
+	private GoUntypedFloat() {}
 
 	@Override
 	public String toString() {
-		return "float32";
+		return "float(untyped)";
 	}
 
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoFloat32Type;
+		return other instanceof GoUntypedFloat;
 	}
 
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+
+	@Override
+	public boolean canBeAssignedTo(Type other) {
+		return (other instanceof GoType && ((GoType) other).isGoFloat()) || other.isUntyped() ? true : false;
+	}
+
+	@Override
+	public Type commonSupertype(Type other) {
+		return other instanceof GoType && ((GoType) other).isGoFloat() ? other : Untyped.INSTANCE;
 	}
 
 	@Override
@@ -65,17 +66,7 @@ public class GoFloat32Type implements NumericType , GoType {
 	public boolean isUnsigned() {
 		return false;
 	}
-	
-	@Override
-	public boolean canBeAssignedTo(Type other) {
-		return other instanceof GoFloat32Type || other.isUntyped();
-	}
 
-	@Override
-	public Type commonSupertype(Type other) {
-		return other instanceof GoFloat32Type ? this : Untyped.INSTANCE;
-	}
-	
 	@Override
 	public Expression defaultValue(CFG cfg) {
 		return new GoFloat(cfg, 0.0);
@@ -85,4 +76,5 @@ public class GoFloat32Type implements NumericType , GoType {
 	public boolean isGoInteger() {
 		return false;
 	}
+
 }

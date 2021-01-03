@@ -19,7 +19,7 @@ public class CFGTest {
 
 	private String tmpDir = "tmp/";
 	private String sourcePath = "go-testcases/cfg/";
-	private String expDumpPath = "test-outputs/";
+	private String expDumpPath = "test-outputs/cfg/";
 
 	@Test
 	public void testDeclaration() throws IOException {

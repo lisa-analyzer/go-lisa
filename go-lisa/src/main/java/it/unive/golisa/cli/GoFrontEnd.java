@@ -488,7 +488,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			//TODO: check if exp is null
 			Expression exp = exps.expression(i) == null && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
-			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, type, target, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -689,7 +689,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 			GoRawValue left = new GoRawValue(currentCFG, visitIdentifierList(ctx.identifierList()));
 			Expression right = visitExpression(exps.expression(0));
-			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, left, right);
+			
+			//TODO fix types
+			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, Untyped.INSTANCE, left, right);
 			currentCFG.addNode(asg);
 			return Pair.of(asg, asg);
 		} else {
@@ -705,7 +707,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
 				// TODO: fix types
-				GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, target, exp);
+				GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, Untyped.INSTANCE, target, exp);
 				currentCFG.addNode(asg);
 
 				if (lastStmt != null)

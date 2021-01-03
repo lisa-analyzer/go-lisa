@@ -1,8 +1,20 @@
 package it.unive.golisa.cfg.statement;
 
+import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.HeapDomain;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.impl.types.TypeEnvironment;
+import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.Assignment;
 import it.unive.lisa.cfg.statement.Expression;
+import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
 
 /**
  * Go variable declaration class (e.g., var x int = 5).
@@ -11,6 +23,8 @@ import it.unive.lisa.cfg.statement.Expression;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoVariableDeclaration extends Assignment {
+
+	private final Type type;
 
 	/**
 	 * Builds a Go variable declaration with initialization,
@@ -22,8 +36,9 @@ public class GoVariableDeclaration extends Assignment {
 	 * @param var     the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoVariableDeclaration(CFG cfg, Expression var, Expression expression) {
+	public GoVariableDeclaration(CFG cfg, Type type, Expression var, Expression expression) {
 		super(cfg, var, expression);
+		this.type = type;
 	}
 
 	/**
@@ -41,7 +56,47 @@ public class GoVariableDeclaration extends Assignment {
 	 * @param var	     the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Expression var, Expression expression) {
+	public GoVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Type type, Expression var, Expression expression) {
 		super(cfg, sourceFile, line, col, var, expression);
+		this.type = type;
+	}
+
+	@Override
+	public <A extends AbstractState<A, H, TypeEnvironment>,
+	H extends HeapDomain<H>> AnalysisState<A, H, TypeEnvironment> typeInference(
+			AnalysisState<A, H, TypeEnvironment> entryState, CallGraph callGraph,
+			StatementStore<A, H, TypeEnvironment> expressions) throws SemanticException {
+		AnalysisState<A, H, TypeEnvironment> right = getRight().typeInference(entryState, callGraph, expressions);
+		AnalysisState<A, H, TypeEnvironment> left = getLeft().typeInference(right, callGraph, expressions);
+		expressions.put(getRight(), right);
+		expressions.put(getLeft(), left);
+
+		AnalysisState<A, H, TypeEnvironment> result = null;
+		for (SymbolicExpression expr1 : left.getComputedExpressions())
+			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
+				Type rightType = expr2.getDynamicType();
+				AnalysisState<A, H, TypeEnvironment> tmp = null;
+
+				if (rightType instanceof GoType) 
+					if (!((GoType) rightType).canBeAssignedTo(type))
+						tmp = entryState.bottom();
+					else {
+						// TODO: this is a work-around for the type conversion
+						tmp = left.assign((Identifier) expr1, new Constant(type, 0));
+					}
+
+				if (result == null)
+					result = tmp;
+				else
+					result = result.lub(tmp);
+			}
+
+		if (!getRight().getMetaVariables().isEmpty())
+			result = result.forgetIdentifiers(getRight().getMetaVariables());
+		if (!getLeft().getMetaVariables().isEmpty())
+			result = result.forgetIdentifiers(getLeft().getMetaVariables());
+
+		setRuntimeTypes(result.getState().getValueState().getLastComputedTypes().getRuntimeTypes());
+		return result;
 	}
 }

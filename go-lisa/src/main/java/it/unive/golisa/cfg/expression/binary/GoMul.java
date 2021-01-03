@@ -5,7 +5,6 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.cfg.statement.BinaryNativeCall;
@@ -19,7 +18,7 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoMul extends BinaryNativeCall {
+public class GoMul extends BinaryNativeCall implements GoBinaryNumericalOperation {
 
 	/**
 	 * Builds a Go multiplication expression. 
@@ -45,7 +44,7 @@ public class GoMul extends BinaryNativeCall {
 			return entryState.bottom();
 
 		return rightState
-				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftExp.getDynamicType()), leftExp, rightExp,
+				.smallStepSemantics(new BinaryExpression(resultType(leftExp, rightExp), leftExp, rightExp,
 						BinaryOperator.NUMERIC_MUL));
 	}
 }

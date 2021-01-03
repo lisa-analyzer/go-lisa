@@ -5,21 +5,20 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.BinaryNativeCall;
+import it.unive.lisa.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
-import it.unive.lisa.cfg.statement.BinaryNativeCall;
-import it.unive.lisa.cfg.statement.Expression;
 
 /**
  * A Go numerical subtraction function call (e1 - e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoSubtraction extends BinaryNativeCall {
+public class GoSubtraction extends BinaryNativeCall implements GoBinaryNumericalOperation {
 
 	/**
 	 * Builds a Go subtraction expression. 
@@ -46,7 +45,7 @@ public class GoSubtraction extends BinaryNativeCall {
 			return entryState.bottom();
 
 		return rightState
-				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftExp.getDynamicType()), leftExp, rightExp,
+				.smallStepSemantics(new BinaryExpression(resultType(leftExp, rightExp), leftExp, rightExp,
 						BinaryOperator.NUMERIC_SUB));
 	}
 

@@ -66,6 +66,7 @@ import it.unive.golisa.cfg.statement.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
+import it.unive.golisa.cfg.statement.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.method.GoMethod;
 import it.unive.golisa.cfg.statement.method.GoMethodSpecification;
@@ -689,9 +690,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 			GoRawValue left = new GoRawValue(currentCFG, visitIdentifierList(ctx.identifierList()));
 			Expression right = visitExpression(exps.expression(0));
-			
-			//TODO fix types
-			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, Untyped.INSTANCE, left, right);
+
+			GoShortVariableDeclaration asg = new GoShortVariableDeclaration(currentCFG, filePath, line, col, left, right);
 			currentCFG.addNode(asg);
 			return Pair.of(asg, asg);
 		} else {
@@ -706,8 +706,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Type type = exp.getStaticType();
 				Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
-				// TODO: fix types
-				GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, Untyped.INSTANCE, target, exp);
+				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 				currentCFG.addNode(asg);
 
 				if (lastStmt != null)
@@ -1242,10 +1241,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (ctx.LOGICAL_OR() != null)
 			return new GoLogicalOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
-		// Go equals (==)
+		// Go equal (==)
 		if (ctx.EQUALS() != null)
 			return new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
+		// Go not equal (!=)
+		if (ctx.NOT_EQUALS() != null)
+			return new GoNot(currentCFG, new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
+		
 		// Go less (<)
 		if (ctx.LESS() != null)
 			return new GoLess(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));

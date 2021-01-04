@@ -1,27 +1,29 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Collection;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.impl.types.TypeEnvironment;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.cfg.CFG;
+import it.unive.lisa.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.BinaryOperator;
 
 /**
- * A Go equals function call (e1 == e2).
+ * A Go equal function call (e1 == e2).
  * The static type of this expression is definitely {@link GoBoolType}.
+ * The semantics of Go equal expression follows the Golang specification:
+ * {@link https://golang.org/ref/spec#Comparison_operators}
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoEqual extends NativeCall {
+public class GoEqual extends BinaryNativeCall {
 	
 	/**
 	 * Builds a Go equals expression. 
@@ -54,20 +56,19 @@ public class GoEqual extends NativeCall {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> callSemantics(
-			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V>[] computedStates,
-			Collection<SymbolicExpression>[] params) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <A extends AbstractState<A, H, TypeEnvironment>, H extends HeapDomain<H>> AnalysisState<A, H, TypeEnvironment> callTypeInference(
-			AnalysisState<A, H, TypeEnvironment> entryState, CallGraph callGraph,
-			AnalysisState<A, H, TypeEnvironment>[] computedStates, Collection<SymbolicExpression>[] params)
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
+			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		// following the Golang specification:
+		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
+		if (!(rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) && !(leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType())))
+			return entryState.bottom();
+		
+		// TODO: not covering composite types (e.g., channels, arrays, structs...)
+		return rightState
+				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp,
+						BinaryOperator.COMPARISON_EQ));
 	}
-
 }

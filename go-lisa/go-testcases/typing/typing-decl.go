@@ -12,6 +12,15 @@ func simpleTyping(x, y int) int {
 
 }
 
+func comparisonTyping(x,y int) {
+	a := x == y
+	b := 2 == 2
+	var d int = 2 + 2
+	e := d == 2
+	c := 2 != 2
+}
+
+
 func typeError1(x, y int) int {
 	var i int = 1 + 1.2
 }

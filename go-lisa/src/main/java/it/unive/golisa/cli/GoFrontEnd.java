@@ -56,7 +56,9 @@ import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoRawValue;
 import it.unive.golisa.cfg.expression.literal.GoString;
+import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
 import it.unive.golisa.cfg.expression.unary.GoDeref;
+import it.unive.golisa.cfg.expression.unary.GoLength;
 import it.unive.golisa.cfg.expression.unary.GoMinus;
 import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
@@ -1306,6 +1308,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 					return new GoNew(currentCFG, parseType(ctx.arguments().expressionList().getText()));
 				}
 			}
+			
+			else if (ctx.primaryExpr().getText().equals("len")) {
+				Expression[] args = visitArguments(ctx.arguments());
+				return new GoLength(currentCFG, args[0]);
+			}
 
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
@@ -1337,6 +1344,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				// TODO: create Identifier class
 				Variable index = new Variable(currentCFG, ctx.IDENTIFIER().getText());
 				return new GoFieldAccess(currentCFG, primary, index);
+			}
+			
+			// Simple slice expression a[l:h]
+			else if (ctx.slice() != null) {
+				Pair<Expression, Expression> args = visitSlice(ctx.slice());
+				return new GoSimpleSlice(currentCFG, primary, args.getLeft(), args.getRight());
 			}
 		}
 
@@ -1614,9 +1627,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitSlice(SliceContext ctx) {
-		// TODO: slice
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Expression, Expression> visitSlice(SliceContext ctx) {
+		return Pair.of(visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 	}
 
 	@Override

@@ -9,6 +9,8 @@ func simpleTyping(x, y int) int {
 	var d float32 = 2 - 2
 	var e float32 =  +d
 	var x string = "a" + "b"
+	var l int = len(x)
+	var subs string = x[1:3]
 
 }
 
@@ -28,3 +30,4 @@ func typeError1(x, y int) int {
 func typeError2(x, y int) int {
 	var i int = "a" + "b"
 }
+

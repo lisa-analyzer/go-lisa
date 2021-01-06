@@ -34,10 +34,14 @@ import it.unive.golisa.cfg.expression.GoFieldAccess;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoAnd;
+import it.unive.golisa.cfg.expression.binary.GoContains;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
 import it.unive.golisa.cfg.expression.binary.GoGreater;
 import it.unive.golisa.cfg.expression.binary.GoGreaterOrEqual;
+import it.unive.golisa.cfg.expression.binary.GoHasPrefix;
+import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
+import it.unive.golisa.cfg.expression.binary.GoIndexOf;
 import it.unive.golisa.cfg.expression.binary.GoLeftShift;
 import it.unive.golisa.cfg.expression.binary.GoLess;
 import it.unive.golisa.cfg.expression.binary.GoLessOrEqual;
@@ -58,6 +62,7 @@ import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoRawValue;
 import it.unive.golisa.cfg.expression.literal.GoString;
+import it.unive.golisa.cfg.expression.ternary.GoReplace;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
 import it.unive.golisa.cfg.expression.unary.GoDeref;
 import it.unive.golisa.cfg.expression.unary.GoLength;
@@ -1252,7 +1257,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// Go not equal (!=)
 		if (ctx.NOT_EQUALS() != null)
 			return new GoNot(currentCFG, new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
-		
+
 		// Go less (<)
 		if (ctx.LESS() != null)
 			return new GoLess(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
@@ -1268,7 +1273,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// Go less or equals (>=)
 		if (ctx.LESS_OR_EQUALS() != null)
 			return new GoLessOrEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
-		
+
 		// Go module (%)
 		if (ctx.MOD() != null)
 			return new GoModule(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
@@ -1318,7 +1323,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 					return new GoNew(currentCFG, parseType(ctx.arguments().expressionList().getText()));
 				}
 			}
-			
+
 			else if (ctx.primaryExpr().getText().equals("len")) {
 				Expression[] args = visitArguments(ctx.arguments());
 				return new GoLength(currentCFG, args[0]);
@@ -1340,7 +1345,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 						return new OpenCall(currentCFG, funName, args);
 				}
 
-				return new UnresolvedCall(currentCFG, primary.toString(), args);
+				return resolveCall(primary, args);
 			}
 
 			// Array/slice/map access e1[e2]
@@ -1355,7 +1360,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Variable index = new Variable(currentCFG, ctx.IDENTIFIER().getText());
 				return new GoFieldAccess(currentCFG, primary, index);
 			}
-			
+
 			// Simple slice expression a[l:h]
 			else if (ctx.slice() != null) {
 				Pair<Expression, Expression> args = visitSlice(ctx.slice());
@@ -1368,6 +1373,26 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
 			return (Expression) child;
+	}
+
+	private Expression resolveCall(Expression primary, Expression[] args) {
+
+		if (primary.toString().equals(".(strings, Contains)"))
+			return new GoContains(currentCFG, args[0], args[1]);
+		
+		if (primary.toString().equals(".(strings, HasPrefix)"))
+			return new GoHasPrefix(currentCFG, args[0], args[1]);
+
+		if (primary.toString().equals(".(strings, HasSuffix)"))
+			return new GoHasSuffix(currentCFG, args[0], args[1]);
+
+		if (primary.toString().equals(".(strings, Index)"))
+			return new GoIndexOf(currentCFG, args[0], args[1]);
+
+		if (primary.toString().equals(".(strings, Replace)"))
+			return new GoReplace(currentCFG, args[0], args[1], args[2]);
+		
+		return new UnresolvedCall(currentCFG, primary.toString(), args);
 	}
 
 	@Override
@@ -1405,16 +1430,16 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Expression visitOperand(OperandContext ctx) {
 		if (ctx.expression() != null)
 			return visitExpression(ctx.expression());
-		
+
 		if (ctx.literal() != null)
 			return visitLiteral(ctx.literal());
-		
+
 		if (ctx.operandName() != null)
 			return visitOperandName(ctx.operandName());
-		
+
 		if (ctx.methodExpr() != null)
 			return visitMethodExpr(ctx.methodExpr());
-		
+
 		throw new IllegalStateException("Illegal state: operand rule has no other productions.");
 	}
 

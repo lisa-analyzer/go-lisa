@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "typing___int_simpleTyping().dot", "typing___int_typeError1().dot", "typing___int_typeError2().dot", "typing___untyped_comparisonTyping().dot", "typing___untyped_relTyping().dot" ]
+  "files" : [ "typing___int_simpleTyping().dot", "typing___int_typeError1().dot", "typing___int_typeError2().dot", "typing___untyped_comparisonTyping().dot", "typing___untyped_relTyping().dot", "typing___untyped_strings().dot" ]
 }

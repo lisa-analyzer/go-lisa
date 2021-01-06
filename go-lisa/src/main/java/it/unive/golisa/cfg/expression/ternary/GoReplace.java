@@ -18,10 +18,10 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.TernaryOperator;
 
-public class GoSimpleSlice extends NativeCall {
+public class GoReplace extends NativeCall {
 
-	public GoSimpleSlice(CFG cfg, Expression left, Expression middle, Expression right) {
-		super(cfg, "slice", left, middle, right);
+	public GoReplace(CFG cfg, Expression left, Expression middle, Expression right) {
+		super(cfg, "strings.Replace", left, middle, right);
 	}
 
 	@Override
@@ -70,16 +70,16 @@ public class GoSimpleSlice extends NativeCall {
 			AnalysisState<A, H, V> leftState, SymbolicExpression left,
 			AnalysisState<A, H, V> middleState, SymbolicExpression middle,
 			AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
-		
+
 		if (!left.getDynamicType().isStringType() && ! left.getDynamicType().isUntyped())
 			return entryState.bottom();
 
-		if (!middle.getDynamicType().isNumericType() && ! middle.getDynamicType().isUntyped())
+		if (!middle.getDynamicType().isStringType() && ! middle.getDynamicType().isUntyped())
 			return entryState.bottom();
 
-		if (!right.getDynamicType().isNumericType() && ! right.getDynamicType().isUntyped())
+		if (!right.getDynamicType().isStringType() && ! right.getDynamicType().isUntyped())
 			return entryState.bottom();
-		
-		return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING));
+
+		return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_REPLACE));
 	}
 }

@@ -22,6 +22,15 @@ func comparisonTyping(x,y int) {
 	c := 2 != 2
 }
 
+func relTyping(x,y int) {
+	x = 5
+	y = 7
+	var a bool = x < y
+	b := x < 2
+	c := 2.2
+	d := c < 2.3
+}
+
 
 func typeError1(x, y int) int {
 	var i int = 1 + 1.2

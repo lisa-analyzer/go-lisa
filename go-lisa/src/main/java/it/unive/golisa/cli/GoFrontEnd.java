@@ -37,8 +37,10 @@ import it.unive.golisa.cfg.expression.binary.GoAnd;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
 import it.unive.golisa.cfg.expression.binary.GoGreater;
+import it.unive.golisa.cfg.expression.binary.GoGreaterOrEqual;
 import it.unive.golisa.cfg.expression.binary.GoLeftShift;
 import it.unive.golisa.cfg.expression.binary.GoLess;
+import it.unive.golisa.cfg.expression.binary.GoLessOrEqual;
 import it.unive.golisa.cfg.expression.binary.GoLogicalAnd;
 import it.unive.golisa.cfg.expression.binary.GoLogicalOr;
 import it.unive.golisa.cfg.expression.binary.GoModule;
@@ -1259,6 +1261,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (ctx.GREATER() != null)
 			return new GoGreater(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
+		// Go greater or equals (>=)
+		if (ctx.GREATER_OR_EQUALS() != null)
+			return new GoGreaterOrEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
+		// Go less or equals (>=)
+		if (ctx.LESS_OR_EQUALS() != null)
+			return new GoLessOrEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+		
 		// Go module (%)
 		if (ctx.MOD() != null)
 			return new GoModule(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));

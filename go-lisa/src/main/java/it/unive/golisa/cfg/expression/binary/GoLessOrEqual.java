@@ -15,18 +15,19 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 
+
 /**
- * A Go less function call (e1 < e2).
+ * A Go less or equal function call (e1 < e2).
  * The static type of this expression is definitely {@link GoBoolType}.
- * The semantics of Go less expression follows the Golang specification:
+ * The semantics of Go less or equal expression follows the Golang specification:
  * {@link https://golang.org/ref/spec#Comparison_operators}
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoLess extends BinaryNativeCall {
-	
+public class GoLessOrEqual extends BinaryNativeCall {
+
 	/**
-	 * Builds a Go less expression. 
+	 * Builds a Go less or equal expression. 
 	 * The location where this expression appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
@@ -34,12 +35,12 @@ public class GoLess extends BinaryNativeCall {
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoLess(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "<", GoBoolType.INSTANCE, exp1, exp2);
+	public GoLessOrEqual(CFG cfg, Expression exp1, Expression exp2) {
+		super(cfg, null, -1, -1, "<=", GoBoolType.INSTANCE, exp1, exp2);
 	}
-	
+
 	/**
-	 * Builds a Go less expression at a given location in the program.
+	 * Builds a Go less or equal expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
 	 * @param sourceFile    the source file where this expression happens. If
@@ -51,25 +52,25 @@ public class GoLess extends BinaryNativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoLess(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "<", GoBoolType.INSTANCE, exp1, exp2);
+	public GoLessOrEqual(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, sourceFile, line, col, "<=", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
 	@Override
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
-		
+					throws SemanticException {
+
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
 		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) {
 			// only, integer, floating point values, strings are ordered
 			if (leftExp.getDynamicType().isNumericType() && leftExp.getDynamicType().isNumericType())
-				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LT));
+				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LE));
 			//TODO: string comparisong: missing lexicographical order in LiSa binary operator
 		}
-	
+
 		return entryState.bottom();
 	}
 }

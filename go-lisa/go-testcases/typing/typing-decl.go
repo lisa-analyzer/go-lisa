@@ -31,6 +31,16 @@ func relTyping(x,y int) {
 	d := c < 2.3
 }
 
+func strings(x,y string) {
+	a = "abc"
+	b = "b"
+	x := strings.Contains(a,b)
+	y := strings.HasPrefix(a,b)
+	z := strings.HasSuffix(a,b)
+	w := strings.Index(a,b)
+	j := strings.Replace(a,b,b)
+}
+
 
 func typeError1(x, y int) int {
 	var i int = 1 + 1.2

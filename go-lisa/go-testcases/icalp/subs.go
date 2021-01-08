@@ -4,7 +4,7 @@ import "fmt"
 
 
 func strings(x,y string) {
-	a = "abc"
-	b = "b"
-	c = a + b + strings.Replace(a,b,b)
+	var a string = "abc"
+	var b string = "b"
+	a = a + b
 }

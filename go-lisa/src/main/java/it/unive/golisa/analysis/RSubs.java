@@ -24,7 +24,7 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 	public RSubs() {
 		this(new StringUpperBound(), null);
 	}
-	
+
 	protected RSubs(StringUpperBound lattice, Map<Identifier, StringUpperBound> function) {
 		super(lattice, function);
 	}
@@ -56,8 +56,42 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 			func = new HashMap<>();
 		else
 			func = new HashMap<>(function);
-		func.put(id, getRelations(expression));
-		return new RSubs(lattice, func);
+
+		// Remove phase
+		for (Identifier x : func.keySet())
+			for (ValueExpression xRel : func.get(x))
+				if (appersIn(xRel, id))
+					func.put(x, func.get(x).removeRelation(id));
+		
+		if (!appearsAtTopLevel(expression, id))
+			func.remove(id);
+		
+		// Add phase
+		func.put(id, func.get(id) == null ? getRelations(expression) : func.get(id).merge(getRelations(expression)));
+		
+		// Inter-asg phase
+		for (Identifier y : func.keySet())
+			if (!y.equals(id) && func.get(y).contains(func.get(id)))
+				func.put(y, func.get(y).addRelation(id));
+
+		// Closure phase
+		return new RSubs(lattice, func).closure();
+	}
+	
+	private RSubs closure() {
+		if (isTop() || isBottom())
+			return new RSubs(lattice, function);
+
+	
+		Map<Identifier, StringUpperBound>  clos = new HashMap<>(function);
+
+
+		for (Identifier x : clos.keySet())
+			for (Identifier y : clos.keySet())
+				for (Identifier z : clos.keySet())
+					if (clos.get(y).contains(x) && clos.get(z).contains(y))
+						clos.put(z, clos.get(z).addRelation(x));
+		return new RSubs(lattice, clos);
 	}
 
 	@Override
@@ -146,7 +180,6 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 			}
 		}
 
-		System.err.println(expression + " " + result);
 		return new StringUpperBound(result);
 	} 
 
@@ -160,4 +193,21 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 		return res;
 	}
 
+	private boolean appersIn(ValueExpression expression, ValueExpression search) {
+		HashSet<ValueExpression> singleton = new HashSet<>();
+		singleton.add(search);
+		return getRelations(expression).contains(new StringUpperBound(singleton));
+	}
+	
+	private boolean appearsAtTopLevel(ValueExpression expression, Identifier id) {
+		if (expression.equals(id))
+			return true;
+
+		if (expression instanceof BinaryExpression && ((BinaryExpression) expression).getOperator() == BinaryOperator.STRING_CONCAT) {
+			BinaryExpression binary = (BinaryExpression) expression;
+			return appearsAtTopLevel((ValueExpression) binary.getLeft(), id) || appearsAtTopLevel((ValueExpression) binary.getRight(), id);
+		}
+		
+		return false;
+	}
 }

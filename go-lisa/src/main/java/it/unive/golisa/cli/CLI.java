@@ -21,6 +21,7 @@ public class CLI {
 
 		cfgs.forEach(lisa::addCFG);		
 		lisa.setJsonOutput(true);
+		lisa.setInferTypes(true);
 		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RSubs()));
 		lisa.setDumpAnalysis(true);
 		lisa.setWorkdir("tmp/");

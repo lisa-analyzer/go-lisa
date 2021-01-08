@@ -45,10 +45,10 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 		BinaryOperator op;
 		ExternalSet<Type> types;
 		
-		if (leftExp.getDynamicType().isStringType() && leftExp.getDynamicType().isStringType()) {
+		if (leftExp.getDynamicType().isStringType() && rightExp.getDynamicType().isStringType()) {
 			op = BinaryOperator.STRING_CONCAT;
 			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
-		} else if (leftExp.getDynamicType().isNumericType() && leftExp.getDynamicType().isNumericType()) {
+		} else if (leftExp.getDynamicType().isNumericType() && rightExp.getDynamicType().isNumericType()) {
 			op = BinaryOperator.NUMERIC_ADD;
 			types = resultType(leftExp, rightExp);
 		} else

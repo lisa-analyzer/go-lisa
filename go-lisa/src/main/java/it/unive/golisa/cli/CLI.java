@@ -16,7 +16,7 @@ import it.unive.lisa.cfg.CFG;
 public class CLI {
 
 	public static void main(String[] args) throws IOException, AnalysisSetupException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile("go-testcases/ictac/subs.go");
+		Collection<CFG> cfgs = GoFrontEnd.processFile("go-testcases/icalp/subs.go");
 		LiSA lisa = new LiSA();
 
 		cfgs.forEach(lisa::addCFG);		

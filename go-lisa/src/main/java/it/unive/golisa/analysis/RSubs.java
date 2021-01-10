@@ -50,6 +50,22 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 	}
 
 	@Override
+	public RSubs lubAux(RSubs other) throws SemanticException {
+		Map<Identifier, StringUpperBound> func = new HashMap<>();
+
+		for (Identifier x : getKeys())
+			if (other.function.containsKey(x))
+				func.put(x, getState(x).lub(other.getState(x)));
+
+		return new RSubs(lattice, func);
+	}
+
+
+	private RSubs glb(RSubs other) throws SemanticException {
+		return super.lub(other);
+	}
+
+	@Override
 	public RSubs assign(Identifier id, ValueExpression expression) throws SemanticException {
 		Map<Identifier, StringUpperBound> func;
 		if (function == null)
@@ -62,13 +78,13 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 			for (ValueExpression xRel : func.get(x))
 				if (appersIn(xRel, id))
 					func.put(x, func.get(x).removeRelation(id));
-		
+
 		if (!appearsAtTopLevel(expression, id))
 			func.remove(id);
-		
+
 		// Add phase
 		func.put(id, func.get(id) == null ? getRelations(expression) : func.get(id).merge(getRelations(expression)));
-		
+
 		// Inter-asg phase
 		for (Identifier y : func.keySet())
 			if (!y.equals(id) && func.get(y).contains(func.get(id)))
@@ -77,12 +93,12 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 		// Closure phase
 		return new RSubs(lattice, func).closure();
 	}
-	
+
 	private RSubs closure() {
 		if (isTop() || isBottom())
 			return new RSubs(lattice, function);
 
-	
+
 		Map<Identifier, StringUpperBound>  clos = new HashMap<>(function);
 
 
@@ -96,13 +112,72 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 
 	@Override
 	public RSubs smallStepSemantics(ValueExpression expression) throws SemanticException {
-		// TODO: to be refined
 		return new RSubs(lattice, function);
 	}
 
 	@Override
 	public RSubs assume(ValueExpression expression) throws SemanticException {
-		// TODO: to be refined
+		// rsubs can assume contains, equals, and & or expressions (all binary expressions)
+
+		if (isBottom())
+			return bottom();
+
+		HashMap<Identifier, StringUpperBound> func;
+		if (function == null)
+			func = new HashMap<>();
+		else
+			func = new HashMap<>(function);
+
+		if (expression instanceof BinaryExpression) {
+			BinaryExpression binary = (BinaryExpression) expression;
+			RSubs left = smallStepSemantics((ValueExpression) binary.getLeft());
+			RSubs right = smallStepSemantics((ValueExpression) binary.getRight());
+
+			switch(binary.getOperator()) {
+			case COMPARISON_EQ:
+				break;
+			case COMPARISON_GE:
+				break;
+			case COMPARISON_GT:
+				break;
+			case COMPARISON_LE:
+				break;
+			case COMPARISON_LT:
+				break;
+			case COMPARISON_NE:
+				break;
+			case LOGICAL_AND:
+				return left.lub(right);
+			case LOGICAL_OR:
+				return left.glb(right);
+			case STRING_STARTS_WITH: // can be assumed but not integrated in the paper
+			case STRING_ENDS_WITH: // can be assumed but not integrated in the paper
+			case STRING_CONTAINS:
+				if (binary.getLeft() instanceof Identifier) {
+					Identifier x = (Identifier) binary.getLeft();
+					StringUpperBound rels = getRelations((ValueExpression) binary.getRight());
+					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					return new RSubs(lattice, func);
+				}
+			case STRING_EQUALS:
+				if (binary.getLeft() instanceof Identifier) {
+					Identifier x = (Identifier) binary.getLeft();
+					StringUpperBound rels = getRelations((ValueExpression) binary.getRight());
+					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					return new RSubs(lattice, func);
+				}
+
+				if (binary.getRight() instanceof Identifier) {
+					Identifier x = (Identifier) binary.getRight();
+					StringUpperBound rels = getRelations((ValueExpression) binary.getLeft());
+					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					return new RSubs(lattice, func);
+				}
+			default:
+				return new RSubs(lattice, function);
+			}
+		}
+
 		return new RSubs(lattice, function);
 	}
 
@@ -120,7 +195,49 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression) throws SemanticException {
-		// TODO: to be refined
+		// rsubs can satisfy contains, equals, and & or expressions (all binary expressions)
+
+		if (isTop())
+			return Satisfiability.UNKNOWN;
+		if (isBottom())
+			return Satisfiability.BOTTOM;
+		
+		if (expression instanceof BinaryExpression) {
+			BinaryExpression binary = (BinaryExpression) expression;
+
+			switch(binary.getOperator()) {
+			case COMPARISON_EQ:
+				break;
+			case COMPARISON_GE:
+				break;
+			case COMPARISON_GT:
+				break;
+			case COMPARISON_LE:
+				break;
+			case COMPARISON_LT:
+				break;
+			case COMPARISON_NE:
+				break;
+			case LOGICAL_AND:
+				return satisfies((ValueExpression) binary.getLeft()).and(satisfies((ValueExpression) binary.getRight()));
+			case LOGICAL_OR:
+				return satisfies((ValueExpression) binary.getLeft()).or(satisfies((ValueExpression) binary.getRight()));
+			case STRING_CONTAINS:
+				if (binary.getLeft() instanceof Identifier) {
+					Identifier x = (Identifier) binary.getLeft();
+					return getState(x).contains((ValueExpression) binary.getRight()) ? Satisfiability.SATISFIED : Satisfiability.NOT_SATISFIED;
+				}
+			case STRING_EQUALS:
+				if (binary.getLeft() instanceof Identifier && binary.getRight() instanceof Identifier) {
+					Identifier x = (Identifier) binary.getLeft();
+					Identifier y = (Identifier) binary.getRight();
+					return getState(x).contains(y) && getState(y).contains(x) ? Satisfiability.SATISFIED : Satisfiability.NOT_SATISFIED;
+				}
+			default:
+				return Satisfiability.UNKNOWN;
+			}
+		}
+
 		return Satisfiability.UNKNOWN;
 	}
 
@@ -198,7 +315,7 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 		singleton.add(search);
 		return getRelations(expression).contains(new StringUpperBound(singleton));
 	}
-	
+
 	private boolean appearsAtTopLevel(ValueExpression expression, Identifier id) {
 		if (expression.equals(id))
 			return true;
@@ -207,7 +324,7 @@ public class RSubs extends FunctionalLattice<RSubs, Identifier, StringUpperBound
 			BinaryExpression binary = (BinaryExpression) expression;
 			return appearsAtTopLevel((ValueExpression) binary.getLeft(), id) || appearsAtTopLevel((ValueExpression) binary.getRight(), id);
 		}
-		
+
 		return false;
 	}
 }

@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.statement.method;
 
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CFGDescriptor;
 
 public class GoMethod extends CFG {
 

@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Literal;
 
 /**
  * A Go Boolean value.

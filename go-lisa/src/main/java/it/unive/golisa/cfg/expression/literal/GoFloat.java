@@ -2,8 +2,8 @@ package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Literal;
 
 /**
  * Go float value class.

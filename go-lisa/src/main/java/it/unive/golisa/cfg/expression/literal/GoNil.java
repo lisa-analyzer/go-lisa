@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.NullLiteral;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.NullLiteral;
 
 /**
  * A Go nil value.

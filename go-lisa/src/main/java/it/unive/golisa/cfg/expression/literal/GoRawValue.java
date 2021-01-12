@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.expression.literal;
 
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.Literal;
-import it.unive.lisa.cfg.type.Untyped;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Literal;
+import it.unive.lisa.type.Untyped;
 
 public class GoRawValue extends Literal {
 	

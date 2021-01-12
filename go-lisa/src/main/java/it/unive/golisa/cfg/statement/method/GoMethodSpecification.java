@@ -2,8 +2,8 @@ package it.unive.golisa.cfg.statement.method;
 
 import java.util.Arrays;
 
-import it.unive.lisa.cfg.Parameter;
-import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.type.Type;
 
 public class GoMethodSpecification {
 	private String name;

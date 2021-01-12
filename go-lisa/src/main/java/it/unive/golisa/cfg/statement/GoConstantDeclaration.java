@@ -1,9 +1,10 @@
 package it.unive.golisa.cfg.statement;
 
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Assignment;
-import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.Variable;
+
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Assignment;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 
 /**
  * A Go constant declaration class (e.g., const x int = 5).
@@ -22,7 +23,7 @@ public class GoConstantDeclaration extends Assignment {
 	 * @param target     the variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoConstantDeclaration(CFG cfg, Variable target, Expression expression) {
+	public GoConstantDeclaration(CFG cfg, VariableRef target, Expression expression) {
 		super(cfg, target, expression);
 	}
 	
@@ -40,7 +41,7 @@ public class GoConstantDeclaration extends Assignment {
 	 * @param var	     the variable of the constant declaration
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoConstantDeclaration(CFG cfg, String sourceFile, int line, int col, Variable target, Expression expression) {
+	public GoConstantDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef target, Expression expression) {
 		super(cfg, sourceFile, line, col, target, expression);
 	}
 }

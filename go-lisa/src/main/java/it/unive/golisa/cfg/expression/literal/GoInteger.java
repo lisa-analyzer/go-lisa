@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Literal;
 
 /**
  * Go integer value class.

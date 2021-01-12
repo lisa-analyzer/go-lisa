@@ -1,14 +1,16 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.Parameter;
-import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.type.Type;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.Type;
 
 public class GoFunctionType implements GoType {
 
@@ -79,5 +81,10 @@ public class GoFunctionType implements GoType {
 	@Override
 	public boolean isGoInteger() {
 		return false;
+	}
+	
+	@Override
+	public Collection<Type> allInstances() {
+		return Collections.singleton(this);
 	}
 }

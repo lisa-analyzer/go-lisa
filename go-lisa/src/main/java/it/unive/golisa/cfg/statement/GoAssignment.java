@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.statement;
 
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Assignment;
-import it.unive.lisa.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Assignment;
+import it.unive.lisa.program.cfg.statement.Expression;
 
 /**
  * A Go assignment (e.g., x = 5).

@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.statement;
 
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.statement.Return;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Return;
 
 /**
  * Go return statement class (e.g., var x int = 5).

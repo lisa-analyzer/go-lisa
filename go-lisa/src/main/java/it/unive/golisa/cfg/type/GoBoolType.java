@@ -1,11 +1,14 @@
 package it.unive.golisa.cfg.type;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.type.BooleanType;
-import it.unive.lisa.cfg.type.Type;
-import it.unive.lisa.cfg.type.Untyped;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.BooleanType;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 /**
  * Boolean type of Go. This is the only Boolean type available for Go.
@@ -58,5 +61,10 @@ public class GoBoolType implements BooleanType, GoType {
 	@Override
 	public boolean isGoInteger() {
 		return false;
+	}
+	
+	@Override
+	public Collection<Type> allInstances() {
+		return Collections.singleton(this);
 	}
 }

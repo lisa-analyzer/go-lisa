@@ -1,11 +1,15 @@
 package it.unive.golisa.cfg.type;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import it.unive.golisa.cfg.expression.literal.GoString;
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.type.StringType;
-import it.unive.lisa.cfg.type.Type;
-import it.unive.lisa.cfg.type.Untyped;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.StringType;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
+
 
 /**
  * String type of Go. This is the only string type available for Go.
@@ -59,5 +63,10 @@ public class GoStringType implements StringType, GoType {
 	@Override
 	public boolean isGoInteger() {
 		return false;
+	}
+	
+	@Override
+	public Collection<Type> allInstances() {
+		return Collections.singleton(this);
 	}
 }

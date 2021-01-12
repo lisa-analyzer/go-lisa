@@ -1,12 +1,15 @@
 package it.unive.golisa.cfg.type.untyped;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.cfg.CFG;
-import it.unive.lisa.cfg.statement.Expression;
-import it.unive.lisa.cfg.type.NumericType;
-import it.unive.lisa.cfg.type.Type;
-import it.unive.lisa.cfg.type.Untyped;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.NumericType;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoUntypedFloat implements GoType, NumericType  {
 
@@ -76,5 +79,9 @@ public class GoUntypedFloat implements GoType, NumericType  {
 	public boolean isGoInteger() {
 		return false;
 	}
-
+	
+	@Override
+	public Collection<Type> allInstances() {
+		return Collections.singleton(this);
+	}
 }

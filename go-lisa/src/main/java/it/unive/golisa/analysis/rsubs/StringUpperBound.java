@@ -1,4 +1,4 @@
-package it.unive.golisa.analysis;
+package it.unive.golisa.analysis.rsubs;
 
 import java.util.HashSet;
 import java.util.Iterator;

@@ -4,16 +4,15 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.junit.Test;
 
 import it.unive.golisa.cli.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.outputs.JsonReport;
 import it.unive.lisa.outputs.compare.JsonReportComparer;
+import it.unive.lisa.program.Program;
 
 public class TypingTest {
 
@@ -23,10 +22,10 @@ public class TypingTest {
 
 	@Test
 	public void testTypingDeclaration() throws IOException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "typing-decl.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "typing-decl.go");
 		LiSA lisa = new LiSA();
 
-		cfgs.forEach(lisa::addCFG);		
+		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setInferTypes(true);
 		lisa.setDumpTypeInference(true);

@@ -108,18 +108,20 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.lisa.logging.IterationLogger;
+import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
-import it.unive.lisa.program.cfg.statement.CFGCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
-import it.unive.lisa.program.cfg.statement.OpenCall;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnresolvedCall;
+import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
@@ -138,10 +140,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 */
 	private final String filePath;
 
-	/**
-	 * Collection of CFGs collected into the Go program at filePath.
-	 */
-	private Collection<CFG> cfgs;
+	private final Program program;
+
 
 	/**
 	 * Builds an instance of @GoToCFG for a given Go program
@@ -150,8 +150,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * @param filePath file path to a Go program.
 	 */
 	private GoFrontEnd(String filePath) {
-		this.cfgs = new HashSet<CFG>();
 		this.filePath = filePath;
+		this.program = new Program();
 	}
 
 	/**
@@ -160,14 +160,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 */
 	public String getFilePath() {
 		return filePath;
-	}
-
-	/**
-	 * Returns the parsed CFGs
-	 * @return the parsed CFGs
-	 */
-	public Collection<CFG> getCFGs() {
-		return cfgs;
 	}
 
 	/**
@@ -188,8 +180,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private SourceFileContext source;
 
 
-	public static Collection<CFG> processFile(String filePath) throws IOException {
-		return new GoFrontEnd(filePath).toLiSACFG();
+
+	public static Program processFile(String filePath) throws IOException {
+		return new GoFrontEnd(filePath).toLiSAProgram();
 	}
 
 	/**
@@ -198,7 +191,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * @return collection of @CFG in file
 	 * @throws IOException if {@code stream} to file cannot be written to or closed
 	 */
-	private Collection<CFG> toLiSACFG() throws IOException {
+	private Program toLiSAProgram() throws IOException {
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
 
@@ -207,68 +200,51 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			stream = new FileInputStream(getFilePath());
 		} catch (FileNotFoundException e) {
 			System.err.println(filePath + " does not exist. Exiting.");
-			return new ArrayList<>();
+			return null;
 		}
 
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
 		ParseTree tree = parser.sourceFile();
 
-		visit(tree);
+		Program result = visitSourceFile((SourceFileContext) tree);
 		stream.close();
 
-		return cfgs;
+		return result;
 	}
 
 	@Override
-	public Collection<CFG> visitSourceFile(SourceFileContext ctx) {
+	public Program visitSourceFile(SourceFileContext ctx) {
 		source = ctx;
 
-		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
-			visitDeclaration(decl);
+		String packageName = visitPackageClause(ctx.packageClause());
 
-		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
-			visitMethodDecl(decl);
+		CompilationUnit packageUnit = new CompilationUnit(filePath, 0, 0, packageName, false);
+		program.addCompilationUnit(packageUnit);
 
 		// Visit of each FunctionDeclContext appearing in the source code
 		// and creating the corresponding CFG object (we do this to handle CFG calls)
 		for (FunctionDeclContext funcDecl : 
 			IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations")) 
-			cfgs.add(new CFG(buildCFGDescriptor(funcDecl)));
+			packageUnit.addCFG(new CFG(buildCFGDescriptor(funcDecl)));
 
 		// Visit of each FunctionDeclContext populating the corresponding cfg
-		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {
-			currentCFG = getCFGByName(funcDecl.IDENTIFIER().getText());
+		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {					
+			currentCFG = packageUnit.getCFGsByName(funcDecl.IDENTIFIER().getText()).stream().findFirst().get();
 			visitFunctionDecl(funcDecl);
 		}
 
-		return cfgs;
-	}
+		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) {
+			if (decl.typeDecl() != null) {
+				for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
+					program.addCompilationUnit(unit);
+			}
+		}
 
-	/**
-	 * Checks if a cfg named name is contained in cfgs.
-	 * 
-	 * @param name	the cfg name to be searched
-	 * @return {@code true} if there exists a cfg named name; {@code false} othewise
-	 */
-	private boolean containsCFG(String name) {
-		return cfgs.stream().anyMatch(cfg -> cfg.getDescriptor().getName().equals(name));
-	}
+		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
+			visitMethodDecl(decl);
 
-	/**
-	 * Retrieve a cfg given its name, assuming that the cfg is contained in cfgs.
-	 * Hence, before calling this function, check the presence of cfg by using
-	 * the function {@link GoFrontEnd#containsCFG}.
-	 * 
-	 * @param name	the cfg name
-	 * @return the cfg named name
-	 */
-	private CFG getCFGByName(String name) {
-		for (CFG cfg : cfgs)
-			if (cfg.getDescriptor().getName().equals(name)) 
-				return cfg;
-
-		throw new IllegalStateException("CFG not found: " + name);
+		return program;
 	}
 
 	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl) {
@@ -284,7 +260,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 			ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
-		return new CFGDescriptor(filePath, line, col, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
+		return new CFGDescriptor(filePath, line, col, program, true, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
 	}
 
 	/**
@@ -304,9 +280,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitPackageClause(PackageClauseContext ctx) {
-		// TODO: package clause
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public String visitPackageClause(PackageClauseContext ctx) {
+		return ctx.IDENTIFIER().getText();
 	}
 
 	@Override
@@ -366,7 +341,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
+			VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			Expression exp = visitExpression(exps.expression(i));
 
 			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, target, exp);
@@ -384,9 +359,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression[] visitIdentifierList(IdentifierListContext ctx) {
-		Variable[] result = new Variable[] {};
+		VariableRef[] result = new VariableRef[] {};
 		for (int i = 0; i < ctx.IDENTIFIER().size(); i++)
-			result = ArrayUtils.addAll(result, new Variable(currentCFG, ctx.IDENTIFIER(i).getText()));
+			result = ArrayUtils.addAll(result, new VariableRef(currentCFG, ctx.IDENTIFIER(i).getText()));
 		return result;
 	}
 
@@ -399,10 +374,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitTypeDecl(TypeDeclContext ctx) {
-		for (TypeSpecContext typeSpec : ctx.typeSpec())
-			visitTypeSpec(typeSpec);
-		return null;
+	public Collection<CompilationUnit> visitTypeDecl(TypeDeclContext ctx) {
+		HashSet<CompilationUnit> units = new HashSet<>();
+		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
+			GoType type = visitTypeSpec(typeSpec);
+			units.add(new CompilationUnit(filePath, getLine(typeSpec), getCol(typeSpec), type.toString(), false));
+		}
+		return units;
 	}
 
 	@Override
@@ -435,17 +413,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoMethod visitMethodDecl(MethodDeclContext ctx) {
-		int line = getLine(ctx);
-		int col = getCol(ctx);
-
 		GoReceiver receiver = visitReceiver(ctx.receiver());
 		String name = ctx.IDENTIFIER().getText();
 		Parameter[] params = visitParameters(ctx.signature().parameters());
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
-		CFGDescriptor desc = new CFGDescriptor(filePath, line, col, name, returnType, params);
-		GoMethod method = new GoMethod(desc, receiver);
-		cfgs.add(method);
+		CompilationUnit unit = program.getUnit(receiver.getName());
+		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), unit, true, name, returnType, params), receiver);
 		currentCFG = method;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
 
@@ -494,7 +468,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
 			int col = getCol(exps.expression(i));
 
-			Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
+			VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			//TODO: check if exp is null
 			Expression exp = exps.expression(i) == null && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, type, target, exp);
@@ -712,7 +686,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from the type of exp
 				Type type = exp.getStaticType();
-				Variable target = new Variable(currentCFG, ids.IDENTIFIER(i).getText(), type);
+				VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
 
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 				currentCFG.addNode(asg);
@@ -1333,15 +1307,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			// Function call (e.g., f(1,2,3), x.f() )
 			if (ctx.arguments() != null) {
 				Expression[] args = visitArguments(ctx.arguments());
-				if (primary instanceof Variable) {
-					String funName = ((Variable) primary).getName();
-					/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
-					 * otherwise it is an {@link OpenCall}.
-					 */
-					if (containsCFG(funName))
-						return new CFGCall(currentCFG, "", getCFGByName(funName), args);
-					else
-						return new OpenCall(currentCFG, funName, args);
+				if (primary instanceof VariableRef) {
+					String funName = ((VariableRef) primary).getName();
+//					/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
+//					 * otherwise it is an {@link OpenCall}.
+//					 */
+//					if (containsCFG(funName))
+//						return new CFGCall(currentCFG, "", getCFGByName(funName), args);
+//					else
+//						return new OpenCall(currentCFG, funName, args);
 				}
 
 				return resolveCall(primary, args);
@@ -1356,7 +1330,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			// Field access x.f
 			else if (ctx.IDENTIFIER() != null) {
 				// TODO: create Identifier class
-				Variable index = new Variable(currentCFG, ctx.IDENTIFIER().getText());
+				VariableRef index = new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
 				return new GoFieldAccess(currentCFG, primary, index);
 			}
 
@@ -1378,7 +1352,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (primary.toString().equals(".(strings, Contains)"))
 			return new GoContains(currentCFG, args[0], args[1]);
-		
+
 		if (primary.toString().equals(".(strings, HasPrefix)"))
 			return new GoHasPrefix(currentCFG, args[0], args[1]);
 
@@ -1390,8 +1364,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (primary.toString().equals(".(strings, Replace)"))
 			return new GoReplace(currentCFG, args[0], args[1], args[2]);
-		
-		return new UnresolvedCall(currentCFG, primary.toString(), args);
+
+		return new UnresolvedCall(currentCFG, ResolutionStrategy.STATIC_TYPES, false, primary.toString(), args);
 	}
 
 	@Override
@@ -1501,7 +1475,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
 				return new GoBoolean(currentCFG, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
 			else
-				return new Variable(currentCFG, ctx.IDENTIFIER().getText());
+				return new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
 		}
 
 		Object child = visitChildren(ctx);
@@ -1586,7 +1560,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Expression visitKey(KeyContext ctx) {
 
 		if (ctx.IDENTIFIER() != null)
-			return new Variable(currentCFG, ctx.IDENTIFIER().getText());
+			return new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))

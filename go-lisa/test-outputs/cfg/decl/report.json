@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_simpleDecl().dot", "untyped_multDecl().dot", "untyped_multDecls().dot" ]
+  "files" : [ "int_~LiSAProgram.simpleDecl().dot", "untyped_~LiSAProgram.multDecl().dot", "untyped_~LiSAProgram.multDecls().dot" ]
 }

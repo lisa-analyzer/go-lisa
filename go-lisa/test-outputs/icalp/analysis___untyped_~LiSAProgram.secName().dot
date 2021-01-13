@@ -1,0 +1,26 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<strings.HasPrefix(javaName, pr1)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ TOP ]]<BR/>}} -&gt; [vid$javaName strstarts vid$pr1]>];
+	"node1" [shape="rect",color="gray",label=<res = +(pr2, slice(javaName, 4, 8))<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$javaName: [vid$pr1]<BR/>vid$res: [vid$javaName substr(4, 8), vid$pr2, vid$pr2 strcat vid$javaName substr(4, 8)] ]]<BR/>}} -&gt; [vid$res]>];
+	"node2" [shape="rect",color="black",peripheries="2",label=<return res<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$ret_value@secName: [vid$res]<BR/>vid$res: [vid$javaName substr(4, 8)] ]]<BR/>}} -&gt; [vid$ret_value@secName]>];
+	"node3" [shape="rect",color="gray",label=<strings.HasPrefix(javaName, pr2)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ TOP ]]<BR/>}} -&gt; [vid$javaName strstarts vid$pr2]>];
+	"node4" [shape="rect",color="gray",label=<no-op<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$res: [vid$javaName substr(4, 8)] ]]<BR/>}} -&gt; [skip]>];
+	"node5" [shape="rect",color="gray",label=<no-op<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$res: [vid$javaName substr(4, 8)] ]]<BR/>}} -&gt; [skip]>];
+	"node6" [shape="rect",color="gray",label=<res = +(pr1, slice(javaName, 4, 8))<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$javaName: [vid$pr2]<BR/>vid$res: [vid$javaName substr(4, 8), vid$pr1, vid$pr1 strcat vid$javaName substr(4, 8)] ]]<BR/>}} -&gt; [vid$res]>];
+	"node7" [shape="rect",color="gray",label=<res = slice(javaName, 4, 8)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$res: [vid$javaName substr(4, 8)] ]]<BR/>}} -&gt; [vid$res]>];
+	"node1" -> "node4" [color="black"];
+	"node0" -> "node1" [color="blue",style="dashed"];
+	"node0" -> "node3" [color="red",style="dashed"];
+	"node3" -> "node6" [color="blue",style="dashed"];
+	"node3" -> "node7" [color="red",style="dashed"];
+	"node4" -> "node2" [color="black"];
+	"node5" -> "node4" [color="black"];
+	"node6" -> "node5" [color="black"];
+	"node7" -> "node5" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

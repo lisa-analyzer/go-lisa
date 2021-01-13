@@ -4,16 +4,15 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.junit.Test;
 
 import it.unive.golisa.cli.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.cfg.CFG;
 import it.unive.lisa.outputs.JsonReport;
 import it.unive.lisa.outputs.compare.JsonReportComparer;
+import it.unive.lisa.program.Program;
 
 public class CFGTest {
 
@@ -23,10 +22,10 @@ public class CFGTest {
 
 	@Test
 	public void testDeclaration() throws IOException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "go-decl.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "go-decl.go");
 		LiSA lisa = new LiSA();
 
-		cfgs.forEach(lisa::addCFG);		
+		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setDumpCFGs(true);
 		lisa.setWorkdir(tmpDir);
@@ -52,10 +51,10 @@ public class CFGTest {
 	
 	@Test
 	public void testIf() throws IOException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "go-if.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "go-if.go");
 		LiSA lisa = new LiSA();
 
-		cfgs.forEach(lisa::addCFG);		
+		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setDumpCFGs(true);
 		lisa.setWorkdir(tmpDir);
@@ -81,10 +80,10 @@ public class CFGTest {
 	
 	@Test
 	public void testFor() throws IOException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "go-for.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "go-for.go");
 		LiSA lisa = new LiSA();
 
-		cfgs.forEach(lisa::addCFG);		
+		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setDumpCFGs(true);
 		lisa.setWorkdir(tmpDir);
@@ -110,10 +109,10 @@ public class CFGTest {
 	
 	@Test
 	public void testGoTypes() throws IOException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "go-types.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "go-types.go");
 		LiSA lisa = new LiSA();
 
-		cfgs.forEach(lisa::addCFG);		
+		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setDumpCFGs(true);
 		lisa.setWorkdir(tmpDir);
@@ -139,10 +138,10 @@ public class CFGTest {
 	
 	@Test
 	public void testGoTour() throws IOException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "go-tour.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "go-tour.go");
 		LiSA lisa = new LiSA();
 
-		cfgs.forEach(lisa::addCFG);		
+		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setDumpCFGs(true);
 		lisa.setWorkdir(tmpDir);
@@ -168,10 +167,10 @@ public class CFGTest {
 	
 	@Test
 	public void testSwitch() throws IOException {
-		Collection<CFG> cfgs = GoFrontEnd.processFile(sourcePath + "go-switch.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "go-switch.go");
 		LiSA lisa = new LiSA();
 
-		cfgs.forEach(lisa::addCFG);		
+		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setDumpCFGs(true);
 		lisa.setWorkdir(tmpDir);

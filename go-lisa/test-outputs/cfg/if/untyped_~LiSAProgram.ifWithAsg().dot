@@ -1,5 +1,12 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<a = [1 targets](1, 2)>];
+	"node0" [shape="rect",color="black",label=<x = 100>];
+	"node1" [shape="rect",color="gray",label=<==(x, 100)>];
+	"node2" [shape="rect",color="gray",label=<no-op>];
+	"node3" [shape="rect",color="gray",label=<y = 5>];
+	"node1" -> "node3" [color="blue",style="dashed"];
+	"node1" -> "node2" [color="red",style="dashed"];
+	"node3" -> "node2" [color="black"];
+	"node0" -> "node1" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_add1().dot", "int_add2().dot", "int_sum().dot", "untyped_main().dot" ]
+  "files" : [ "int_~LiSAProgram.add1().dot", "int_~LiSAProgram.add2().dot", "int_~LiSAProgram.sum().dot", "untyped_~LiSAProgram.main().dot" ]
 }

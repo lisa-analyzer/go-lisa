@@ -14,9 +14,17 @@ version = '0.1'
 mainClassName = 'it.unive.golisa.cli.CLI'
 
 dependencies {
-    implementation project(':lisa')
+    compile project(':lisa')
     antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'it.unive.golisa.cli.CLI'
+        )
+    }
 }
 
 generateGrammarSource {

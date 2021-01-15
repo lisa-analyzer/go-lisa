@@ -6,72 +6,217 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
 import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.ValueEnvironment;
+import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.NullConstant;
+import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.Skip;
+import it.unive.lisa.symbolic.value.TernaryExpression;
+import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 	private static final RSubs TOP = new RSubs(true, false);
 	private static final RSubs BOTTOM = new RSubs(false, false);
-	
+
 	private final RelationalSubstringDomain string;
 	private final ValueEnvironment<Interval> num;
-	
+
 	private final boolean isTop;
 	private final boolean isBottom;
-	
-	
+
+
 	public RSubs() {
 		this(new RelationalSubstringDomain(), new ValueEnvironment<Interval>(new Interval()), true, false);
 	}
-	
+
 	private RSubs(boolean isTop, boolean isBottom) {
 		this(new RelationalSubstringDomain(), new ValueEnvironment<Interval>(new Interval()), isTop, isBottom);
 	}
-		
+
 	private RSubs(RelationalSubstringDomain string, ValueEnvironment<Interval> num) {
 		this(string, num, false, false);
 	}
-	
+
 	private RSubs(RelationalSubstringDomain string, ValueEnvironment<Interval> num, boolean isTop, boolean isBottom) {
 		this.string = string;
 		this.num = num;
 		this.isTop = isTop;
 		this.isBottom = isBottom;
 	}
-	
+
 	@Override
 	public RSubs assign(Identifier id, ValueExpression expression) throws SemanticException {
-		ValueEnvironment<Interval> numResult = num.assign(id, expression);
-		RelationalSubstringDomain stringResult = string.assign(id, expression);
+		if (processableByStringDomain(expression))
+			return new RSubs(string.assign(id, expression), num);
+
+		if (processableByNumericalDomain(expression))
+			return new RSubs(string, num.assign(id, expression));
 		
-		if (numResult.isTop() && stringResult.isTop())
-			return TOP;
-		if (numResult.isTop())
-			return new RSubs(stringResult, num.bottom());
-		else
-			return new RSubs(string.bottom(), numResult);
-	
+		return new RSubs(string, num.top());
 	}
 
-	private boolean processableByNumericalDomain(ValueExpression exp) {
-		//TODO: look at environment for identifier case
+
+	private boolean processableByNumericalDomain(ValueExpression expression) {
+
+		if (expression instanceof Identifier) {
+			Identifier id = (Identifier) expression;
+			return num.getState(id).isBottom() ? false : true;
+		}
+
+		if (expression instanceof NullConstant)
+			return false;
+
+		if (expression instanceof Constant) {
+			Constant c = (Constant) expression;
+			return c.getValue() instanceof Integer ? true : false;
+		}
+
+		if (expression instanceof Skip)
+			return false;
+
+		if (expression instanceof PushAny)
+			return true;
+
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression unary = (UnaryExpression) expression;
+
+			switch(unary.getOperator()) {
+			case LOGICAL_NOT:
+				return false;
+			case NUMERIC_NEG:
+				return processableByNumericalDomain((ValueExpression) unary.getExpression());
+			case STRING_LENGTH:
+				return false;
+			case TYPEOF:
+				return false;
+			default:
+				break;
+			}
+		}
+
+		if (expression instanceof BinaryExpression) {
+			BinaryExpression binary = (BinaryExpression) expression;
+			SymbolicExpression left = binary.getLeft();
+			SymbolicExpression right = binary.getRight();
+
+			switch (binary.getOperator()) {
+			case NUMERIC_ADD:
+			case NUMERIC_DIV:
+			case NUMERIC_MOD:
+			case NUMERIC_MUL:
+			case NUMERIC_SUB:
+				return processableByNumericalDomain((ValueExpression) left) && processableByNumericalDomain((ValueExpression) right);
+			case COMPARISON_EQ:
+			case COMPARISON_GE:
+			case COMPARISON_GT:
+			case COMPARISON_LE:
+			case COMPARISON_LT:
+			case COMPARISON_NE:
+			case LOGICAL_AND:
+			case LOGICAL_OR:
+			case STRING_CONCAT:
+			case STRING_CONTAINS:
+			case STRING_ENDS_WITH:
+			case STRING_EQUALS:
+			case STRING_INDEX_OF:
+			case STRING_STARTS_WITH:
+			case TYPE_CAST:
+			case TYPE_CHECK:
+			default:
+				return false;
+			}
+		}
+
+		if (expression instanceof TernaryExpression) {
+			return false;
+		}
+
 		return false;
 	}
 
-	private boolean processableByStringDomain(ValueExpression exp) {
-		//TODO: look at environment for identifier case
+
+	private boolean processableByStringDomain(ValueExpression expression) {
+
+		if (expression instanceof Identifier) {
+			Identifier id = (Identifier) expression;
+			return string.getState(id).isBottom() ? false : true;
+		}
+
+		if (expression instanceof NullConstant)
+			return false;
+
+		if (expression instanceof Constant) {
+			Constant c = (Constant) expression;
+			return c.getValue() instanceof String ? true : false;
+		}
+
+		if (expression instanceof Skip)
+			return false;
+
+		if (expression instanceof PushAny)
+			return true;
+
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression unary = (UnaryExpression) expression;
+
+			switch(unary.getOperator()) {
+			case LOGICAL_NOT:
+				return false;
+			case NUMERIC_NEG:
+				return false;
+			case STRING_LENGTH:
+				return false;
+			case TYPEOF:
+				return false;
+			default:
+				break;
+			}
+		}
+
+		if (expression instanceof BinaryExpression) {
+			BinaryExpression binary = (BinaryExpression) expression;
+
+			switch (binary.getOperator()) {
+			case COMPARISON_EQ:
+			case COMPARISON_GE:
+			case COMPARISON_GT:
+			case COMPARISON_LE:
+			case COMPARISON_LT:
+			case COMPARISON_NE:
+			case LOGICAL_AND:
+			case LOGICAL_OR:
+			case NUMERIC_ADD:
+			case NUMERIC_DIV:
+			case NUMERIC_MOD:
+			case NUMERIC_MUL:
+			case NUMERIC_SUB:
+				return false;
+			case STRING_CONCAT:
+				return true;
+			case STRING_CONTAINS:
+			case STRING_ENDS_WITH:
+			case STRING_EQUALS:
+			case STRING_INDEX_OF:
+			case STRING_STARTS_WITH:
+			case TYPE_CAST:
+			case TYPE_CHECK:
+			default:
+				return false;
+
+			}
+		}
+
+		if (expression instanceof TernaryExpression) {
+			return true;
+		}
+
 		return false;
 	}
 
-	private boolean isString() {
-		return !string.isBottom() && num.isBottom();
-	}
-	
-	private boolean isNumeric() {
-		return string.isBottom() && !num.isBottom();
-	}
-	
 	@Override
 	public RSubs smallStepSemantics(ValueExpression expression) throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
@@ -92,6 +237,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression) throws SemanticException {
+		// TODO satisfies
 		return Satisfiability.UNKNOWN;
 	}
 
@@ -101,10 +247,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			return "TOP";
 		if (isBottom())
 			return "BOTTOM";
-		if (isNumeric())
-			return num.toString();
-		else
-			return string.toString();
+		return "(" + string.toString() + ", " + num.toString() + ")";
 	}
 
 	@Override
@@ -119,32 +262,18 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 	@Override
 	protected RSubs lubAux(RSubs other) throws SemanticException {
-		if (isNumeric() && other.isNumeric())
-			return new RSubs(string, num.lub(other.num));
-		if (isString() && other.isString())
-			return new RSubs(string.lub(other.string), num);
-		
-		return TOP;
+		return new RSubs(string.lub(other.string), num.lub(other.num));
 	}
 
 	@Override
 	protected RSubs wideningAux(RSubs other) throws SemanticException {
-		if (isNumeric() && other.isNumeric())
-			return new RSubs(string, num.widening(other.num));
-		if (isString() && other.isString())
-			return new RSubs(string.widening(other.string), num);
-		
-		return TOP;
+		return new RSubs(string.widening(other.string), num.widening(other.num));
+
 	}
 
 	@Override
 	protected boolean lessOrEqualAux(RSubs other) throws SemanticException {
-		if (isNumeric() && other.isNumeric())
-			return num.lessOrEqual(other.num);
-		if (isString() && other.isString())
-			return string.lessOrEqual(other.string);
-		
-		return false;
+		return string.lessOrEqual(other.string) && num.lessOrEqual(other.num);
 	}
 
 	@Override
@@ -153,7 +282,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			return 1;
 		if (isBottom())
 			return 2;
-		
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (isBottom ? 1231 : 1237);

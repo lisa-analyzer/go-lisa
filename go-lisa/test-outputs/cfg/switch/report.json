@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_~LiSAProgram.mixed().dot", "untyped_~LiSAProgram.multiExps().dot", "untyped_~LiSAProgram.noGuard().dot", "untyped_~LiSAProgram.noGuardWithAsg().dot", "untyped_~LiSAProgram.simpleSwitch().dot", "untyped_~LiSAProgram.simpleSwitchWithDefault().dot", "untyped_~LiSAProgram.simpleSwitchWithDefault2().dot", "untyped_~LiSAProgram.simpleSwitchWithFt().dot" ]
+  "files" : [ "untyped_~LiSAProgram.mixed(int_tag).dot", "untyped_~LiSAProgram.multiExps(int_tag).dot", "untyped_~LiSAProgram.noGuard(int_x,_int_y).dot", "untyped_~LiSAProgram.noGuardWithAsg().dot", "untyped_~LiSAProgram.simpleSwitch(int_x).dot", "untyped_~LiSAProgram.simpleSwitchWithDefault(int_x).dot", "untyped_~LiSAProgram.simpleSwitchWithDefault2(int_x).dot", "untyped_~LiSAProgram.simpleSwitchWithFt(int_x).dot" ]
 }

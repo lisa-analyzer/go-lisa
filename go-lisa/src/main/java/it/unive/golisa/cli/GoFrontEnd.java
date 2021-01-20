@@ -258,7 +258,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Parameter[] cfgArgs = new Parameter[]{};
 
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
-			ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
+			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
 		return new CFGDescriptor(filePath, line, col, program, true, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
 	}

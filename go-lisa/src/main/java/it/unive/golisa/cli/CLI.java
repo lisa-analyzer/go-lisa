@@ -4,7 +4,7 @@ import static it.unive.lisa.LiSAFactory.getDefaultFor;
 
 import java.io.IOException;
 
-import it.unive.golisa.analysis.RSubs;
+import it.unive.golisa.analysis.Tarsis;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
@@ -22,7 +22,7 @@ public class CLI {
 		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RSubs()));
+		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Tarsis()));
 		lisa.setDumpAnalysis(true);
 		lisa.setWorkdir("tmp");
 

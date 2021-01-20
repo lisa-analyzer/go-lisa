@@ -4,7 +4,7 @@ import static it.unive.lisa.LiSAFactory.getDefaultFor;
 
 import java.io.IOException;
 
-import it.unive.golisa.analysis.Tarsis;
+import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;

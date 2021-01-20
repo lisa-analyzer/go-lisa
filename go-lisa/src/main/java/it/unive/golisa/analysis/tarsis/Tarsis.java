@@ -1,9 +1,8 @@
-package it.unive.golisa.analysis;
+package it.unive.golisa.analysis.tarsis;
 
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.ValueEnvironment;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -20,27 +19,29 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.tarsis.AutomatonString;
 import it.unive.tarsis.automata.Automata;
+import it.unive.tarsis.automata.Automaton;
 
 
 public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDomain<Tarsis> {
 
 	private static final Tarsis TOP = new Tarsis();
-	private static final Tarsis BOTTOM = new Tarsis(new AutomatonString(), new Interval(), false, true);
+	private static final Tarsis BOTTOM = new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), new TarsisIntv(null, null, false, true) , false, true);
 
 	private final AutomatonString stringValue;
-	private final Interval intValue;
+	private final TarsisIntv intValue;
+	
 	private final boolean isTop;
 	private final boolean isBottom;
 
 	public Tarsis() {
-		this(new AutomatonString(), new Interval(), true, false);
+		this(new AutomatonString(), new TarsisIntv(), true, false);
 	}	
 
-	private Tarsis(AutomatonString stringValue, Interval intValue) {
+	private Tarsis(AutomatonString stringValue, TarsisIntv intValue) {
 		this(stringValue, intValue, stringValue.getAutomaton().equals(Automata.mkEmptyLanguage()) && intValue.isTop(), stringValue.isEqualTo(BOTTOM.stringValue) && intValue.isTop());
 	}
 
-	private Tarsis(AutomatonString stringValue, Interval intValue, boolean isTop, boolean isBottom) {
+	private Tarsis(AutomatonString stringValue, TarsisIntv intValue, boolean isTop, boolean isBottom) {
 		this.stringValue = stringValue;
 		this.intValue = intValue;
 		this.isBottom = isBottom;
@@ -65,6 +66,10 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	@Override
 	public Tarsis bottom() {
 		return BOTTOM;
+	}
+
+	private AutomatonString bottomString() {
+		return new AutomatonString(Automata.mkEmptyLanguage());
 	}
 
 	@Override
@@ -151,16 +156,27 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		if (constant.getValue() instanceof Integer) {
 			return new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), intValue.eval(constant, null), false, false);
 		}
-		
+
 		return top();
 	}
 
 	protected Tarsis evalUnaryExpression(UnaryOperator operator, Tarsis arg) {
-		return top();
-	}
+		switch(operator) {
+		case NUMERIC_NEG:
+			return new Tarsis(bottomString(), arg.intValue.mul(new TarsisIntv(-1,-1)));
+		case STRING_LENGTH:
+			it.unive.tarsis.AutomatonString.Interval result = arg.stringValue.length();
+			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
+		default:
+			return top();
+		}
+	} 
 
 	protected Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right) {
 		switch(operator) {
+		case STRING_INDEX_OF:
+			it.unive.tarsis.AutomatonString.Interval result = left.stringValue.indexOf(right.stringValue);
+			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
 		case NUMERIC_ADD:
 			return new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), left.intValue.plus(right.intValue));
 		case STRING_CONCAT:
@@ -174,6 +190,22 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		switch(operator) {
 		case STRING_REPLACE:
 			return new Tarsis(left.stringValue.replace(middle.stringValue, right.stringValue), intValue.bottom());
+		case STRING_SUBSTRING:
+			TarsisIntv iIntv = middle.intValue;
+			TarsisIntv jIntv = right.intValue;
+			
+			AutomatonString result = new AutomatonString(Automata.mkEmptyLanguage());
+			
+			if (iIntv.isFinite() && jIntv.isFinite()) {
+				for (int i = iIntv.getLow(); i <= iIntv.getHigh(); i++)
+					for (int j = jIntv.getLow(); j <= jIntv.getHigh(); j++)
+						if (i <= j)
+							result = result.lub(left.stringValue.substring(i, j));
+				return new Tarsis(result, intValue.bottom());
+							
+			}
+			
+			return new Tarsis(new AutomatonString(Automata.factors(left.stringValue.getAutomaton())), intValue.bottom());
 		default:
 			return top();
 		}
@@ -196,6 +228,9 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	}
 
 	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right) {
+		if (left.isTop() || right.isTop())
+			return Satisfiability.UNKNOWN;
+		
 		switch(operator) {
 		case COMPARISON_EQ:
 			break;
@@ -249,14 +284,14 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	@Override
 	protected Tarsis lubAux(Tarsis other) throws SemanticException {
 		AutomatonString stringLub = stringValue.lub(other.stringValue);
-		Interval intLub = intValue.lub(other.intValue);
+		TarsisIntv intLub = intValue.lub(other.intValue);
 		return new Tarsis(stringLub, intLub);
 	}
 
 	@Override
 	protected Tarsis wideningAux(Tarsis other) throws SemanticException {
 		AutomatonString stringWid = stringValue.widen(other.stringValue);
-		Interval intWid = intValue.widening(other.intValue);
+		TarsisIntv intWid = intValue.widening(other.intValue);
 		return new Tarsis(stringWid, intWid);
 	}
 

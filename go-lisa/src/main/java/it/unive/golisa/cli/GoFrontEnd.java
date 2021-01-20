@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -205,6 +206,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
+		parser.setErrorHandler(new BailErrorStrategy());
+
 		ParseTree tree = parser.sourceFile();
 
 		Program result = visitSourceFile((SourceFileContext) tree);

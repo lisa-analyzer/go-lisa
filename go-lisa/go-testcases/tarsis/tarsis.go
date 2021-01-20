@@ -16,3 +16,13 @@ func loop(value string, nondet bool) {
 		res = res + value
 	}
 }
+
+func ex(value string, nondet bool) {
+	var x string = value
+	
+	if nondet {
+		x = x + " pass"
+	} else {
+		x = x + " fail"
+	}
+}

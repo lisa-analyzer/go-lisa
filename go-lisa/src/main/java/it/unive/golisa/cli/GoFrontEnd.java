@@ -2,7 +2,6 @@ package it.unive.golisa.cli;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -196,14 +195,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
 
-		InputStream stream;
-		try {
-			stream = new FileInputStream(getFilePath());
-		} catch (FileNotFoundException e) {
-			System.err.println(filePath + " does not exist. Exiting.");
-			return null;
-		}
-
+		InputStream stream = new FileInputStream(getFilePath());
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
 		parser.setErrorHandler(new BailErrorStrategy());

@@ -11,8 +11,8 @@ import javax.xml.bind.Marshaller;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
-
 import it.unive.golisa.analysis.ICALPResult;
+import it.unive.golisa.analysis.RSubs;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
@@ -23,31 +23,53 @@ import it.unive.lisa.program.Program;
 
 public class CLI {
 
-	public static void main(String[] args) throws  AnalysisSetupException, IOException {
+	public static void main(String[] args) throws  AnalysisSetupException {
 
-		String outputDir = "tmp";
-		String filePath = "go-testcases/tarsis/tarsis.go";
+		if (args == null || args[0] == null) {
+			System.err.println("Input file is missing. Exiting.");
+			return;
+		}
+
+		String filePath = args[0];
+
+		if (args.length < 1) {
+			System.err.println("Output directory missing. Exiting.");
+			return;
+		}
+
+		String outputDir = args[1];
+
 		Program program = null;
 		boolean cfgCreated = true;
 		boolean analyzedByTarsis = true;
 		boolean analyzedByRSubs = false;
-		
+
 		try {
 			program = GoFrontEnd.processFile(filePath);
 		} catch (ParseCancellationException e) {
 			// a parsing  error occurred 
 			dumpXml(filePath, outputDir, false, false, false, false);
 			return;
+		} catch (IOException e) {
+			System.err.println("File " + filePath + " does not exists. Exiting");
+			return;
 		} 
-		
+
 		LiSA lisa = new LiSA();
 
 		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
-		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Tarsis()));
-		lisa.setDumpAnalysis(true);
 		lisa.setWorkdir(outputDir);
+
+		if (args.length < 3) {
+			lisa.setDumpCFGs(true);
+			analyzedByTarsis = false;
+			analyzedByRSubs = false;
+		} else {
+			lisa.setInferTypes(true);
+			lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), args[2].equals("-tarsis") ? new Tarsis() : new RSubs()));
+			lisa.setDumpAnalysis(true);
+		}
 
 		try {
 			lisa.run();
@@ -62,7 +84,7 @@ public class CLI {
 			analyzedByTarsis = false;
 			analyzedByRSubs = false;
 		}	
-		
+
 		dumpXml(filePath, outputDir, true, cfgCreated, analyzedByTarsis, analyzedByRSubs);
 	}
 
@@ -75,9 +97,12 @@ public class CLI {
 		analysisResult.setCfgCreated(cfgCreated);
 		analysisResult.setFilePath(filePath);
 
+
+		String fileName = filePath.substring(filePath.lastIndexOf("\\")+1, filePath.lastIndexOf("."));
+
 		try {
 
-			File file = new File(outputDir + "/analysis-result.xml");
+			File file = new File(outputDir + "/" + fileName + ".xml");
 			JAXBContext jaxbContext = JAXBContext.newInstance(ICALPResult.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 

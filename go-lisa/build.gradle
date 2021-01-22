@@ -11,7 +11,7 @@ repositories {
 
 group = 'it.unive'
 version = '0.1'
-mainClassName = 'it.unive.golisa.cli.CLI'
+mainClassName = 'it.unive.golisa.cli.ICALPEvaluation'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'lib')
@@ -27,7 +27,7 @@ compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
 jar {
     manifest {
         attributes(
-                'Main-Class': 'it.unive.golisa.cli.CLI'
+                'Main-Class': 'it.unive.golisa.cli.ICALPEvaluation'
         )
     }
 }

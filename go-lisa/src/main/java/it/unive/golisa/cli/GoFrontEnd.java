@@ -118,6 +118,7 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
+import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
@@ -385,11 +386,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (ctx.ASSIGN() == null) {
 			if (type instanceof GoStructType)
-				GoStructType.lookup(typeName, (GoStructType) type);
+				return GoStructType.lookup(typeName, (GoStructType) type);
 			else if (type instanceof GoInterfaceType)
-				GoInterfaceType.lookup(typeName, (GoInterfaceType) type);
+				return GoInterfaceType.lookup(typeName, (GoInterfaceType) type);
 			else 
-				GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
+				return GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
 
 		} else {
 			// Alias type
@@ -413,7 +414,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Parameter[] params = visitParameters(ctx.signature().parameters());
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
-		CompilationUnit unit = program.getUnit(receiver.getName());
+		CompilationUnit unit = program.getUnit(receiver.getStaticType().toString());
 		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), unit, true, name, returnType, params), receiver);
 		currentCFG = method;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
@@ -709,15 +710,21 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Pair<Statement, Statement> visitReturnStmt(ReturnStmtContext ctx) {
-		GoReturn ret;
-		if (ctx.expressionList().expression().size() == 1) 
-			ret =  new GoReturn(currentCFG, visitExpression(ctx.expressionList().expression(0)));
-		else
-			ret =  new GoReturn(currentCFG, new GoRawValue(currentCFG, visitExpressionList(ctx.expressionList())));
+	public Pair<Statement, Statement> visitReturnStmt(ReturnStmtContext ctx) {		
+		if (ctx.expressionList() != null) {
+			GoReturn ret;
+			if (ctx.expressionList().expression().size() == 1) 
+				ret =  new GoReturn(currentCFG, visitExpression(ctx.expressionList().expression(0)));
+			else
+				ret =  new GoReturn(currentCFG, new GoRawValue(currentCFG, visitExpressionList(ctx.expressionList())));
 
-		currentCFG.addNode(ret);
-		return Pair.of(ret, ret);
+			currentCFG.addNode(ret);
+			return Pair.of(ret, ret);
+		} else {
+			Ret ret = new Ret(currentCFG);
+			currentCFG.addNode(ret);
+			return Pair.of(ret, ret);
+		}
 	}
 
 	@Override
@@ -1304,13 +1311,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Expression[] args = visitArguments(ctx.arguments());
 				if (primary instanceof VariableRef) {
 					String funName = ((VariableRef) primary).getName();
-//					/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
-//					 * otherwise it is an {@link OpenCall}.
-//					 */
-//					if (containsCFG(funName))
-//						return new CFGCall(currentCFG, "", getCFGByName(funName), args);
-//					else
-//						return new OpenCall(currentCFG, funName, args);
+					//					/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
+					//					 * otherwise it is an {@link OpenCall}.
+					//					 */
+					//					if (containsCFG(funName))
+					//						return new CFGCall(currentCFG, "", getCFGByName(funName), args);
+					//					else
+					//						return new OpenCall(currentCFG, funName, args);
 				}
 
 				return resolveCall(primary, args);

@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ICALPResult {
 	
 	String filePath;
+	String unsupportedOp;
 	boolean parsed;
 	boolean cfgCreated;
 	boolean analyzedByTarsis;
@@ -57,5 +58,14 @@ public class ICALPResult {
 	@XmlAttribute
 	public void setParsed(boolean parsed) {
 		this.parsed = parsed;
+	}
+
+	public String getUnsupportedOp() {
+		return unsupportedOp;
+	}
+
+	@XmlElement
+	public void setUnsupportedOp(String unsupportedOp) {
+		this.unsupportedOp = unsupportedOp;
 	}
 }

@@ -61,7 +61,7 @@ public class GoShortVariableDeclaration extends Assignment {
 		AnalysisState<A, H, TypeEnvironment> result = null;
 		for (SymbolicExpression expr1 : left.getComputedExpressions())
 			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
-				//TODO: need to check if the type of expr2 is an untyped type: in sucha a case
+				//TODO: need to check if the type of expr2 is an untyped type: in such a case
 				// should be converted to a type (e.g., intuntyped -> int, floatuntyped -> float32)
 				AnalysisState<A, H, TypeEnvironment> tmp = left.assign((Identifier) expr1, expr2);
 				if (result == null)

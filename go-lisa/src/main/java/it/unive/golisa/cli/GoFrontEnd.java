@@ -1002,8 +1002,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			currentCFG.addNode(exitNode);
 
 			Pair<Statement, Statement> block;
-			if (ctx.block() == null) {
+			if (ctx.block() == null || ctx.block().statementList() == null) {
 				NoOp emptyBlock = new NoOp(currentCFG);
+				currentCFG.addNode(emptyBlock);
 				block = Pair.of(emptyBlock, emptyBlock);
 			} else
 				block = visitBlock(ctx.block());
@@ -1061,7 +1062,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitTypeName(TypeNameContext ctx) {
+	public Type visitTypeName(TypeNameContext ctx) {
 		if (ctx.IDENTIFIER() != null)
 			return getGoType(ctx);
 		else {
@@ -1339,7 +1340,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			// Simple slice expression a[l:h]
 			else if (ctx.slice() != null) {
 				Pair<Expression, Expression> args = visitSlice(ctx.slice());
-				return new GoSimpleSlice(currentCFG, primary, args.getLeft(), args.getRight());
+
+				if (args.getRight() == null)
+					return new GoSimpleSlice(currentCFG, primary, args.getLeft(),new GoLength(currentCFG, primary));
+				else
+					return new GoSimpleSlice(currentCFG, primary, args.getLeft(), args.getRight());
 			}
 		}
 
@@ -1501,8 +1506,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (raw instanceof Map<?, ?>)
 			return new GoKeyedLiteral(currentCFG, (Map<String, Expression>) raw,  type);
-		else
-			return new GoNonKeyedLiteral(currentCFG, (List<Expression>) raw, type);
+		else {
+			Expression[] exps = new Expression[((List<Expression>) raw).size()];
+			exps = ((List<Expression>) raw).toArray(exps);
+			return new GoNonKeyedLiteral(currentCFG, exps, type);
+		}
 	}
 
 	@Override
@@ -1582,18 +1590,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoStructType visitStructType(StructTypeContext ctx) {
-		Map<String, GoType> fields = new HashMap<String, GoType>();
+		Map<String, Type> fields = new HashMap<String, Type>();
 
 		for (FieldDeclContext field : ctx.fieldDecl()) 
-			for (Pair<String, GoType> fd : visitFieldDecl(field))
+			for (Pair<String, Type> fd : visitFieldDecl(field))
 				fields.put(fd.getLeft(), fd.getRight());
 
 		return new GoStructType(fields);
 	}
 
 	@Override
-	public List<Pair<String, GoType>> visitFieldDecl(FieldDeclContext ctx) {
-		List<Pair<String, GoType>> result = new ArrayList<>();
+	public List<Pair<String, Type>> visitFieldDecl(FieldDeclContext ctx) {
+		List<Pair<String, Type>> result = new ArrayList<>();
 
 		if (ctx.anonymousField() != null)
 			result.add(visitAnonymousField(ctx.anonymousField()));
@@ -1618,8 +1626,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Pair<String, GoType> visitAnonymousField(AnonymousFieldContext ctx) {
-		GoType type = visitTypeName(ctx.typeName());
+	public Pair<String, Type> visitAnonymousField(AnonymousFieldContext ctx) {
+		Type type = visitTypeName(ctx.typeName());
 		if (ctx.STAR() != null)
 			type = new GoPointerType(type);
 		return Pair.of(ctx.typeName().getText(), type);
@@ -1638,6 +1646,23 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Expression, Expression> visitSlice(SliceContext ctx) {
+
+		// [:]
+		if (ctx.expression(0) == null) {
+			return Pair.of(new GoInteger(currentCFG, 0), null);
+		} 
+
+		// [n:] or [:n]
+		if (ctx.expression(1) == null) {
+			Expression n = visitExpression(ctx.expression(0));
+
+			if (getCol(ctx.expression(0)) < getCol(ctx.COLON(0).getSymbol()))
+				return Pair.of(n, null);
+			else
+				return Pair.of(new GoInteger(currentCFG, 0), n);
+
+		} 
+
 		return Pair.of(visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 	}
 
@@ -1732,7 +1757,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * @param ctx the type context
 	 * @return the Go type corresponding to {@ctx}
 	 */
-	private GoType getGoType(TypeNameContext ctx) {
+	private Type getGoType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
 
@@ -1778,8 +1803,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				else if (GoInterfaceType.hasStructType(type))
 					return GoInterfaceType.get(type);
 				else {
-					parseTypeDeclaration(type);
-					return getGoType(ctx);
+
+					return parseTypeDeclaration(type) ? getGoType(ctx) : Untyped.INSTANCE;
 				}
 			} 
 		} 
@@ -1788,13 +1813,16 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
 	}
 
-	private void parseTypeDeclaration(String id) {
+	private boolean parseTypeDeclaration(String id) {
 		for (DeclarationContext d : source.declaration())
 			if (d.typeDecl() != null) {
 				for (TypeSpecContext ts : d.typeDecl().typeSpec())
-					if (ts.IDENTIFIER().getText().equals(id))
+					if (ts.IDENTIFIER().getText().equals(id)) {
 						visitTypeSpec(ts);
+						return true;
+					}
 			}
+		return false;
 	}
 
 	private GoType parseType(String type) {

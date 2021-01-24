@@ -63,6 +63,11 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		public TarsisIntv bottom() {
 			return BOTTOM;
 		}
+		
+		@Override
+		public boolean isBottom() {
+			return isBottom;
+		}
 
 		@Override
 		public String representation() {

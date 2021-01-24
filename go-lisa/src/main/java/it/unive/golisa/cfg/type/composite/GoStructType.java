@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -13,7 +12,7 @@ import it.unive.lisa.type.Type;
 
 public class GoStructType implements GoType {
 
-	private final Map<String, GoType> fields;
+	private final Map<String, Type> fields;
 	
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
@@ -23,7 +22,7 @@ public class GoStructType implements GoType {
 		return structTypes.get(name);
 	}
 	
-	public GoStructType(Map<String, GoType> fields) {
+	public GoStructType(Map<String, Type> fields) {
 		this.fields = fields;
 	}
 
@@ -79,12 +78,13 @@ public class GoStructType implements GoType {
 
 	@Override
 	public Expression defaultValue(CFG cfg) {
-		Map<String, Expression> defaultFields = new HashMap<>();
-		
-		for (String key: fields.keySet())
-			defaultFields.put(key, fields.get(key).defaultValue(cfg));
-		
-		return new GoKeyedLiteral(cfg, defaultFields, this);
+		return null;
+//		Map<String, Expression> defaultFields = new HashMap<>();
+//		
+//		for (String key: fields.keySet())
+//			defaultFields.put(key, fields.get(key).defaultValue(cfg));
+//		
+//		return new GoKeyedLiteral(cfg, defaultFields, this);
 	}
 	
 	@Override

@@ -54,7 +54,7 @@ public class ICALPEvaluation {
 			program = GoFrontEnd.processFile(filePath);
 		} catch (ParseCancellationException e) {
 			// a parsing  error occurred 
-			dumpXml(filePath, outputDir, false, false, false, false);
+			dumpXml(filePath, outputDir, e + " " + e.getStackTrace()[0].toString(), false, false, false, false);
 			return;
 		} catch (IOException e) {
 			// the file does not exists
@@ -91,8 +91,6 @@ public class ICALPEvaluation {
 
 		cfgCreated = true;
 
-
-
 		lisa.setWorkdir(outputDir + "/tarsis");
 
 		lisa.setInferTypes(true);
@@ -101,10 +99,12 @@ public class ICALPEvaluation {
 
 		try {
 			lisa.run();
-		} catch (AnalysisException e) {
+		} catch (Exception e) {
 			// an error occurred during the analysis
 			e.printStackTrace();
 			analyzedByTarsis = false;
+			dumpXml(filePath, outputDir, e + " " + e.getStackTrace()[0].toString(), true, cfgCreated, false, false);
+			return;
 		} 
 
 		lisa.setWorkdir(outputDir + "/rsubs");
@@ -113,18 +113,22 @@ public class ICALPEvaluation {
 
 		try {
 			lisa.run();
-		} catch (AnalysisException e) {
+		} catch (Exception e) {
 			// an error occurred during the analysis
 			e.printStackTrace();
 			analyzedByRSubs = false;
+			dumpXml(filePath, outputDir, e + " " + e.getStackTrace()[0].toString(), true, cfgCreated, analyzedByTarsis, analyzedByRSubs);
+			return;
 		} 
 
-		dumpXml(filePath, outputDir, true, cfgCreated, analyzedByTarsis, analyzedByRSubs);
+		dumpXml(filePath, outputDir, null, true, cfgCreated, analyzedByTarsis, analyzedByRSubs);
 	}
 
-	public static void dumpXml(String filePath, String outputDir, boolean parsed, boolean cfgCreated, boolean analyzedByTarsis, boolean analyzedByRSubs) {
+	public static void dumpXml(String filePath, String outputDir, String error, boolean parsed, boolean cfgCreated, boolean analyzedByTarsis, boolean analyzedByRSubs) {
 
 		ICALPResult analysisResult = new ICALPResult();
+		if (error != null)
+			analysisResult.setError(error);
 		analysisResult.setParsed(parsed);
 		analysisResult.setAnalyzedByRSub(analyzedByRSubs);
 		analysisResult.setAnalyzedByTarsis(analyzedByTarsis);

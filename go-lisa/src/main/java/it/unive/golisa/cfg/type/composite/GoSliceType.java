@@ -10,6 +10,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoSliceType implements GoType {
 	
@@ -33,14 +34,12 @@ public class GoSliceType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
-		return false;
+		return (other instanceof GoSliceType &&  ((GoSliceType) other).contentType.canBeAssignedTo(contentType)) || other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		return (other instanceof GoSliceType &&  ((GoSliceType) other).contentType.equals(contentType)) ? this : Untyped.INSTANCE;
 	}
 
 	@Override

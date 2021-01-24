@@ -95,7 +95,7 @@ public class GoArrayType implements GoType {
 		for (int i = 0; i < (Integer) length.getValue(); i++)
 			result.add(contentType.defaultValue(cfg));
 		
-		return new GoNonKeyedLiteral(cfg, result, this);
+		return new GoNonKeyedLiteral(cfg, (Expression[]) result.toArray(), this);
 	}
 	
 	@Override

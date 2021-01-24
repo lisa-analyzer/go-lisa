@@ -9,6 +9,7 @@ public class ICALPResult {
 	
 	String filePath;
 	String unsupportedOp;
+	String error;
 	boolean parsed;
 	boolean cfgCreated;
 	boolean analyzedByTarsis;
@@ -23,6 +24,15 @@ public class ICALPResult {
 		this.filePath = filePath;
 	}
 
+
+	public String getError() {
+		return error;
+	}
+	
+	@XmlElement
+	public void setError(String error) {
+		this.error = error;
+	}
 
 	public boolean isCfgCreated() {
 		return cfgCreated;

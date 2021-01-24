@@ -13,16 +13,27 @@ func substring (nondet bool) {
 func loop(value string, nondet bool) {
 	var res string = "Repeat: "
 	for ; nondet ; {
-		res = res + value
+		res = res + value + "!"
 	}
 }
 
-func ex(value string, nondet bool) {
-	var x string = value
+
+func toString(names []string) {
+	res := "People: {"
 	
-	if nondet {
-		x = x + " pass"
-	} else {
-		x = x + " fail"
+	for i := 0; i < len(names); i++ {
+		res = res + names[i] // names[i] not right type
+		if i != len(names) -1 {
+			res = res + ","
+		}
 	}
+	
+	res = res + "}"
+	return res
+}
+
+func main() {
+	var helloWorld = "hello world!"
+	var hello = helloWorld[:5]
+	var world = helloWorld[5:]
 }

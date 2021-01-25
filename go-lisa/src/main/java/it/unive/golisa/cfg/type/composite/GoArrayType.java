@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
@@ -17,7 +16,7 @@ import it.unive.lisa.type.Type;
 public class GoArrayType implements GoType {
 
 	private GoType contentType;
-	private GoInteger length;
+	private Integer length;
 
 	private static final Set<GoArrayType> arrayTypes = new HashSet<>();
 
@@ -28,7 +27,7 @@ public class GoArrayType implements GoType {
 		return arrayTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoArrayType(GoType contentType, GoInteger length) {
+	public GoArrayType(GoType contentType, Integer length) {
 		this.contentType = contentType;
 		this.length = length;
 	}
@@ -37,7 +36,7 @@ public class GoArrayType implements GoType {
 		return contentType;
 	}
 
-	public GoInteger getLength() {
+	public Integer getLength() {
 		return length;
 	}
 
@@ -92,7 +91,7 @@ public class GoArrayType implements GoType {
 	@Override
 	public Expression defaultValue(CFG cfg) {
 		List<Expression> result = new ArrayList<>();
-		for (int i = 0; i < (Integer) length.getValue(); i++)
+		for (int i = 0; i < length; i++)
 			result.add(contentType.defaultValue(cfg));
 		
 		return new GoNonKeyedLiteral(cfg, (Expression[]) result.toArray(), this);

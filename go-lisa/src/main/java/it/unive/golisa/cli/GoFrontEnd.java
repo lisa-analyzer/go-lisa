@@ -109,6 +109,7 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
@@ -116,6 +117,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
+import it.unive.lisa.program.cfg.statement.AccessUnitGlobal;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
@@ -385,9 +387,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		GoType type = visitType_(ctx.type_());
 
 		if (ctx.ASSIGN() == null) {
-			if (type instanceof GoStructType)
+			if (type instanceof GoStructType) {
+				((GoStructType) type).setName(typeName);
 				return GoStructType.lookup(typeName, (GoStructType) type);
-			else if (type instanceof GoInterfaceType)
+			} else if (type instanceof GoInterfaceType)
 				return GoInterfaceType.lookup(typeName, (GoInterfaceType) type);
 			else 
 				return GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
@@ -414,7 +417,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Parameter[] params = visitParameters(ctx.signature().parameters());
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
-		CompilationUnit unit = program.getUnit(receiver.getStaticType().toString());
+
+		CompilationUnit unit = program.getUnit(receiver.getStaticType().isPointerType() ? ((GoPointerType)receiver.getStaticType()).getBaseType().toString() : receiver.getStaticType().toString());
 		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), unit, true, name, returnType, params), receiver);
 		currentCFG = method;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
@@ -461,12 +465,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
+
+			Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
+
+
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
-			int col = getCol(exps.expression(i));
+			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i).getSymbol()) : getCol(exps.expression(i));
 
 			VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
 			//TODO: check if exp is null
-			Expression exp = exps.expression(i) == null && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, type, target, exp);
 			currentCFG.addNode(asg);
 
@@ -967,7 +974,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitForStmt(ForStmtContext ctx) {
-		// TODO: for ... range
+		NoOp exitNode = new NoOp(currentCFG);
+		currentCFG.addNode(exitNode);
+		exitPoints.add(exitNode);
+
 		if (ctx.forClause() != null) {
 			boolean hasInitStmt = hasInitStmt(ctx);
 			boolean hasCondition = hasCondition(ctx);
@@ -997,9 +1007,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				currentCFG.addNode(post.getLeft());
 			}
 
-			Statement exitNode = new NoOp(currentCFG);
-			exitPoints.add(exitNode);
-			currentCFG.addNode(exitNode);
 
 			Pair<Statement, Statement> block;
 			if (ctx.block() == null || ctx.block().statementList() == null) {
@@ -1031,7 +1038,50 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			return Pair.of(entryNode, exitNode);
 		}
 
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		if (ctx.rangeClause() != null) {
+			// TODO: SUPER UNSOUND
+			NoOp entry = new NoOp(currentCFG);
+			currentCFG.addNode(entry);
+			entryPoints.add(entry);
+
+			Pair<Statement, Statement> block = visitBlock(ctx.block());
+			currentCFG.addEdge(new SequentialEdge(entry, block.getLeft()));
+			currentCFG.addEdge(new SequentialEdge(block.getLeft(), exitNode));
+			
+			entryPoints.remove(entryPoints.size()-1);
+			exitPoints.remove(exitPoints.size()-1);
+			return Pair.of(entry, exitNode);
+		}
+
+		// for i < n (corresponding to the classical while loop)
+		if (ctx.expression() != null) {
+			Expression guard = visitExpression(ctx.expression());
+			entryPoints.add(guard);
+			currentCFG.addNode(guard);
+			
+			Pair<Statement, Statement> block = visitBlock(ctx.block());
+			currentCFG.addEdge(new SequentialEdge(guard, block.getLeft()));
+			currentCFG.addEdge(new SequentialEdge(guard, exitNode));
+			currentCFG.addEdge(new SequentialEdge(block.getRight(), guard));
+			
+			entryPoints.remove(entryPoints.size()-1);
+			exitPoints.remove(exitPoints.size()-1);
+			return Pair.of(guard, exitNode);		
+		}
+
+		// for { }
+		NoOp entry = new NoOp(currentCFG);
+		currentCFG.addNode(entry);
+		entryPoints.add(entry);
+
+		Pair<Statement, Statement> block = visitBlock(ctx.block());
+		currentCFG.addEdge(new SequentialEdge(block.getRight(), block.getLeft()));
+		currentCFG.addEdge(new SequentialEdge(entry, block.getLeft()));
+		currentCFG.addEdge(new SequentialEdge(block.getLeft(), exitNode));
+		
+		entryPoints.remove(entryPoints.size()-1);
+		exitPoints.remove(exitPoints.size()-1);
+		return Pair.of(entry, exitNode);
 	}
 
 	@Override
@@ -1083,18 +1133,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public GoType visitArrayType(ArrayTypeContext ctx) {
 		GoType contentType = visitElementType(ctx.elementType());
-		GoInteger length = visitArrayLength(ctx.arrayLength());
+		Integer length = visitArrayLength(ctx.arrayLength());
 		return GoArrayType.lookup(new GoArrayType(contentType, length));
 	}
 
 	@Override
-	public GoInteger visitArrayLength(ArrayLengthContext ctx) {
-		Expression length = visitExpression(ctx.expression());
-
-		if (!(length instanceof GoInteger))
-			throw new IllegalStateException("Go error: non-constant array bound");
-		else 
-			return (GoInteger) length;
+	public Integer visitArrayLength(ArrayLengthContext ctx) {
+		// The array length must be an integer value, not required to be an expression.
+		try {
+			return Integer.parseInt(ctx.expression().getText());
+		} catch (NumberFormatException e) {
+			throw new IllegalStateException("Go error: non-constant array bound " + ctx.getText());
+		}
 	}
 
 	@Override
@@ -1332,9 +1382,17 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 			// Field access x.f
 			else if (ctx.IDENTIFIER() != null) {
-				// TODO: create Identifier class
-				VariableRef index = new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
-				return new GoFieldAccess(currentCFG, primary, index);
+
+				String f = ctx.IDENTIFIER().getText();
+				if (f.equals("Contains") || f.equals("HasPrefix") || f.equals("HasSuffix") || f.equals("Index") || f.equals("Replace")) {
+					VariableRef index = new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
+					return new GoFieldAccess(currentCFG, primary, index);
+				} else {
+					int line = getLine(ctx.IDENTIFIER().getSymbol());
+					int col = getCol(ctx.IDENTIFIER().getSymbol());
+					Global index = new Global(filePath, line, col, ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
+					return new AccessUnitGlobal(currentCFG, primary, index);
+				}
 			}
 
 			// Simple slice expression a[l:h]

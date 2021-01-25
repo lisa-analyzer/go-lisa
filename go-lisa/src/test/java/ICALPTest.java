@@ -38,7 +38,7 @@ public class ICALPTest {
 		lisa.setDumpAnalysis(true);
 		lisa.setWorkdir(tmpDir);
 
-		try {
+ 		try {
 			lisa.run();
 		} catch (AnalysisException e) {
 			System.err.println(e);

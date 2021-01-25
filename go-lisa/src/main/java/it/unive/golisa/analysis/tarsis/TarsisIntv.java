@@ -99,6 +99,8 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 
 			switch (operator) {
 			case NUMERIC_NEG:
+				if (arg.getHigh().equals(arg.getLow())) 
+					return new TarsisIntv(-arg.getLow(),-arg.getLow());
 				return arg.mul(new TarsisIntv(-1, -1));
 			case STRING_LENGTH:
 				return new TarsisIntv(0, null);

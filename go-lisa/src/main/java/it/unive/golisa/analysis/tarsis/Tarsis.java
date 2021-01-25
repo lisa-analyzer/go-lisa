@@ -28,7 +28,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 
 	private final AutomatonString stringValue;
 	private final TarsisIntv intValue;
-	
+
 	private final boolean isTop;
 	private final boolean isBottom;
 
@@ -152,9 +152,8 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			return new Tarsis(new AutomatonString(str), intValue.bottom(), false, false);
 		}
 
-		if (constant.getValue() instanceof Integer) {
+		if (constant.getValue() instanceof Integer) 
 			return new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), intValue.eval(constant, null), false, false);
-		}
 
 		return top();
 	}
@@ -162,7 +161,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	protected Tarsis evalUnaryExpression(UnaryOperator operator, Tarsis arg) {
 		switch(operator) {
 		case NUMERIC_NEG:
-			return new Tarsis(bottomString(), arg.intValue.mul(new TarsisIntv(-1,-1)));
+			return new Tarsis(bottomString(), intValue.evalUnaryExpression(UnaryOperator.NUMERIC_NEG, arg.intValue));
 		case STRING_LENGTH:
 			it.unive.tarsis.AutomatonString.Interval result = arg.stringValue.length();
 			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
@@ -192,18 +191,18 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		case STRING_SUBSTRING:
 			TarsisIntv iIntv = middle.intValue;
 			TarsisIntv jIntv = right.intValue;
-			
+
 			AutomatonString result = new AutomatonString(Automata.mkEmptyLanguage());
-			
+
 			if (iIntv.isFinite() && jIntv.isFinite()) {
 				for (int i = iIntv.getLow(); i <= iIntv.getHigh(); i++)
 					for (int j = jIntv.getLow(); j <= jIntv.getHigh(); j++)
 						if (i <= j)
 							result = result.lub(left.stringValue.substring(i, j));
 				return new Tarsis(result, intValue.bottom());
-							
+
 			}
-			
+
 			return new Tarsis(new AutomatonString(Automata.factors(left.stringValue.getAutomaton())), intValue.bottom());
 		default:
 			return top();
@@ -229,7 +228,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right) {
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
-		
+
 		switch(operator) {
 		case COMPARISON_EQ:
 			break;

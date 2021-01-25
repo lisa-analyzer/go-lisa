@@ -12,8 +12,9 @@ import it.unive.lisa.type.Type;
 
 public class GoStructType implements GoType {
 
+	private String name;
 	private final Map<String, Type> fields;
-	
+
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
 	public static GoStructType lookup(String name, GoStructType type)  {
@@ -21,23 +22,41 @@ public class GoStructType implements GoType {
 			structTypes.put(name, type);
 		return structTypes.get(name);
 	}
-	
+
 	public GoStructType(Map<String, Type> fields) {
+		this.name = "";
+		this.fields = fields;
+	}
+	
+	public GoStructType(String name, Map<String, Type> fields) {
+		this.name = name;
 		this.fields = fields;
 	}
 
 	public static boolean hasStructType(String structType) {
 		return structTypes.containsKey(structType);
 	}
-	
+
 	public static GoStructType get(String structType) {
 		return structTypes.get(structType);
 	}
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
-		return false;
+
+		if (other instanceof GoStructType) 
+			return fields.equals(((GoStructType) other).fields);
+
+		return other.isUntyped();
+
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
@@ -45,17 +64,18 @@ public class GoStructType implements GoType {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "struct {" + fields.toString() + "}";
+		return name;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
@@ -73,25 +93,30 @@ public class GoStructType implements GoType {
 				return false;
 		} else if (!fields.equals(other.fields))
 			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
 		return true;
 	}
 
 	@Override
 	public Expression defaultValue(CFG cfg) {
 		return null;
-//		Map<String, Expression> defaultFields = new HashMap<>();
-//		
-//		for (String key: fields.keySet())
-//			defaultFields.put(key, fields.get(key).defaultValue(cfg));
-//		
-//		return new GoKeyedLiteral(cfg, defaultFields, this);
+		//		Map<String, Expression> defaultFields = new HashMap<>();
+		//		
+		//		for (String key: fields.keySet())
+		//			defaultFields.put(key, fields.get(key).defaultValue(cfg));
+		//		
+		//		return new GoKeyedLiteral(cfg, defaultFields, this);
 	}
-	
+
 	@Override
 	public boolean isGoInteger() {
 		return false;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

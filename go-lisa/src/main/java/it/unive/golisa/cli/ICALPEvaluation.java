@@ -24,7 +24,7 @@ import it.unive.lisa.program.Program;
 public class ICALPEvaluation {
 
 
-	public static void main(String[] args) throws AnalysisSetupException {
+	public static void main(String[] args) throws AnalysisSetupException, IOException {
 		if (args == null || args[0] == null) {
 			System.err.println("Input file is missing. Exiting.");
 			return;
@@ -74,7 +74,6 @@ public class ICALPEvaluation {
 
 
 		LiSA lisa = new LiSA();
-
 		lisa.setProgram(program);
 		lisa.setJsonOutput(true);
 
@@ -90,12 +89,13 @@ public class ICALPEvaluation {
 		} 
 
 		cfgCreated = true;
-
+		program = GoFrontEnd.processFile(filePath);
+		lisa.setProgram(program);
 		lisa.setWorkdir(outputDir + "/tarsis");
-
 		lisa.setInferTypes(true);
 		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Tarsis()));
 		lisa.setDumpAnalysis(true);
+	
 
 		try {
 			lisa.run();
@@ -107,8 +107,12 @@ public class ICALPEvaluation {
 			return;
 		} 
 
+		program = GoFrontEnd.processFile(filePath);
+		lisa.setProgram(program);
 		lisa.setWorkdir(outputDir + "/rsubs");
+		lisa.setInferTypes(true);
 		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RSubs()));
+		lisa.setDumpAnalysis(true);
 
 
 		try {

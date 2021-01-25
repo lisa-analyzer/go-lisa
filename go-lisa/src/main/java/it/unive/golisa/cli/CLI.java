@@ -15,7 +15,7 @@ import it.unive.lisa.program.Program;
 public class CLI {
 
 	public static void main(String[] args) throws  AnalysisSetupException, IOException {
-		String filePath = "go-testcases/tarsis/tarsis.go";
+		String filePath = "go-testcases/strings.go";
 		String outputDir = "tmp";
 
 		Program program = GoFrontEnd.processFile(filePath);
@@ -28,6 +28,7 @@ public class CLI {
 		lisa.setInferTypes(true);
 		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Tarsis()));
 		lisa.setDumpAnalysis(true);
+		lisa.setDumpTypeInference(true);
 
 
 		try {

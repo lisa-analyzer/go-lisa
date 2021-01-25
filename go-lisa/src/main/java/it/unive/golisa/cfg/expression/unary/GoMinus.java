@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.unary;
 
-import it.unive.golisa.cfg.expression.literal.GoInteger;
-import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
@@ -13,9 +11,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
-import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.UnaryOperator;
 
 /**
  * Go unary minus native function class (e.g., -(5 + 3), -5).
@@ -43,8 +40,7 @@ public class GoMinus extends UnaryNativeCall {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 
-		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), 0));
 		return exprState.smallStepSemantics(
-				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_SUB));
+				new UnaryExpression(Caches.types().mkSingletonSet(expr.getDynamicType()), expr, UnaryOperator.NUMERIC_NEG));
 	}
 }

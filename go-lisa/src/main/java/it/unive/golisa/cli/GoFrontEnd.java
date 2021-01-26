@@ -33,7 +33,7 @@ import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoFieldAccess;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
-import it.unive.golisa.cfg.expression.binary.GoAnd;
+import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoContains;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
@@ -49,11 +49,11 @@ import it.unive.golisa.cfg.expression.binary.GoLogicalAnd;
 import it.unive.golisa.cfg.expression.binary.GoLogicalOr;
 import it.unive.golisa.cfg.expression.binary.GoModule;
 import it.unive.golisa.cfg.expression.binary.GoMul;
-import it.unive.golisa.cfg.expression.binary.GoOr;
+import it.unive.golisa.cfg.expression.binary.GoBitwiseOr;
 import it.unive.golisa.cfg.expression.binary.GoRightShift;
 import it.unive.golisa.cfg.expression.binary.GoSubtraction;
 import it.unive.golisa.cfg.expression.binary.GoSum;
-import it.unive.golisa.cfg.expression.binary.GoXOr;
+import it.unive.golisa.cfg.expression.binary.GoBitwiseXOr;
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
@@ -61,9 +61,11 @@ import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoRawValue;
+import it.unive.golisa.cfg.expression.literal.GoRune;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.expression.ternary.GoReplace;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
+import it.unive.golisa.cfg.expression.unary.GoBitwiseNot;
 import it.unive.golisa.cfg.expression.unary.GoDeref;
 import it.unive.golisa.cfg.expression.unary.GoLength;
 import it.unive.golisa.cfg.expression.unary.GoMinus;
@@ -637,15 +639,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// ^=
 		if (op.CARET() != null)
-			return new GoXOr(currentCFG, lhs, exp);
+			return new GoBitwiseXOr(currentCFG, lhs, exp);
 
 		// &=
 		if (op.AMPERSAND() != null)
-			return new GoAnd(currentCFG, lhs, exp);
+			return new GoBitwiseAnd(currentCFG, lhs, exp);
 
 		// |=
 		if (op.OR() != null)
-			return new GoOr(currentCFG, lhs, exp);
+			return new GoBitwiseOr(currentCFG, lhs, exp);
 
 		// Return exp if the assignment operator is null
 		return exp;
@@ -738,7 +740,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitBreakStmt(BreakStmtContext ctx) {
 		NoOp breakSt = new NoOp(currentCFG);
 		currentCFG.addNode(breakSt);
-		currentCFG.addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size())));
+		currentCFG.addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size() -1)));
 		return Pair.of(breakSt, breakSt);
 	}
 
@@ -746,7 +748,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitContinueStmt(ContinueStmtContext ctx) {		
 		NoOp continueSt = new NoOp(currentCFG);
 		currentCFG.addNode(continueSt);
-		currentCFG.addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size())));
+		currentCFG.addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size() -1)));
 		return Pair.of(continueSt, continueSt);
 	}
 
@@ -1047,7 +1049,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
 			currentCFG.addEdge(new SequentialEdge(entry, block.getLeft()));
 			currentCFG.addEdge(new SequentialEdge(block.getLeft(), exitNode));
-			
+
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
 			return Pair.of(entry, exitNode);
@@ -1056,14 +1058,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// for i < n (corresponding to the classical while loop)
 		if (ctx.expression() != null) {
 			Expression guard = visitExpression(ctx.expression());
-			entryPoints.add(guard);
 			currentCFG.addNode(guard);
-			
+
+			entryPoints.add(guard);
+
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
 			currentCFG.addEdge(new SequentialEdge(guard, block.getLeft()));
 			currentCFG.addEdge(new SequentialEdge(guard, exitNode));
 			currentCFG.addEdge(new SequentialEdge(block.getRight(), guard));
-			
+
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
 			return Pair.of(guard, exitNode);		
@@ -1078,7 +1081,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		currentCFG.addEdge(new SequentialEdge(block.getRight(), block.getLeft()));
 		currentCFG.addEdge(new SequentialEdge(entry, block.getLeft()));
 		currentCFG.addEdge(new SequentialEdge(block.getLeft(), exitNode));
-		
+
 		entryPoints.remove(entryPoints.size()-1);
 		exitPoints.remove(exitPoints.size()-1);
 		return Pair.of(entry, exitNode);
@@ -1314,15 +1317,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go XOR (^)
 		if (ctx.CARET() != null)
-			return new GoXOr(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseXOr(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go or (|)
 		if (ctx.OR() != null)
-			return new GoOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&)
 		if (ctx.AMPERSAND() != null)
-			return new GoAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1357,7 +1360,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
-			// Function call (e.g., f(1,2,3), x.f() )
+			// Function call (e.g., f(1,2,3), x.f())
 			if (ctx.arguments() != null) {
 				Expression[] args = visitArguments(ctx.arguments());
 				if (primary instanceof VariableRef) {
@@ -1384,10 +1387,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			else if (ctx.IDENTIFIER() != null) {
 
 				String f = ctx.IDENTIFIER().getText();
-				if (f.equals("Contains") || f.equals("HasPrefix") || f.equals("HasSuffix") || f.equals("Index") || f.equals("Replace")) {
-					VariableRef index = new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
-					return new GoFieldAccess(currentCFG, primary, index);
-				} else {
+				if (!f.equals("Contains") && !f.equals("HasPrefix") && !f.equals("HasSuffix") && !f.equals("Index") && !f.equals("Replace")) {
 					int line = getLine(ctx.IDENTIFIER().getSymbol());
 					int col = getCol(ctx.IDENTIFIER().getSymbol());
 					Global index = new Global(filePath, line, col, ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
@@ -1415,19 +1415,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	private Expression resolveCall(Expression primary, Expression[] args) {
 
-		if (primary.toString().equals(".(strings, Contains)"))
+		if (primary.toString().equals("Contains"))
 			return new GoContains(currentCFG, args[0], args[1]);
 
-		if (primary.toString().equals(".(strings, HasPrefix)"))
+		if (primary.toString().equals("HasPrefix"))
 			return new GoHasPrefix(currentCFG, args[0], args[1]);
 
-		if (primary.toString().equals(".(strings, HasSuffix)"))
+		if (primary.toString().equals("HasSuffix"))
 			return new GoHasSuffix(currentCFG, args[0], args[1]);
 
-		if (primary.toString().equals(".(strings, Index)"))
+		if (primary.toString().equals("Index"))
 			return new GoIndexOf(currentCFG, args[0], args[1]);
 
-		if (primary.toString().equals(".(strings, Replace)"))
+		if (primary.toString().equals("Replace"))
 			return new GoReplace(currentCFG, args[0], args[1], args[2]);
 
 		return new UnresolvedCall(currentCFG, ResolutionStrategy.STATIC_TYPES, false, primary.toString(), args);
@@ -1453,6 +1453,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (ctx.AMPERSAND() != null)
 			return new GoDeref(currentCFG, exp);
+
+		if (ctx.CARET() != null)
+			return new GoBitwiseNot(currentCFG, exp);
 
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
@@ -1523,6 +1526,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// TODO: 0 matched as octacl literal and not decimal literal
 		if (ctx.OCTAL_LIT() != null)
 			return new GoInteger(currentCFG, filePath, line, col, Integer.parseInt(ctx.OCTAL_LIT().getText()));
+
+		if (ctx.RUNE_LIT() != null) 
+			return new GoRune(currentCFG, filePath, line, col, removeQuotes(ctx.getText()));
 
 		if (ctx.IMAGINARY_LIT() != null)
 			throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());

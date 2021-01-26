@@ -15,7 +15,6 @@ import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.HeapDomain;
-import it.unive.lisa.analysis.impl.numeric.Sign;
 import it.unive.lisa.outputs.JsonReport;
 import it.unive.lisa.outputs.compare.JsonReportComparer;
 import it.unive.lisa.program.Program;

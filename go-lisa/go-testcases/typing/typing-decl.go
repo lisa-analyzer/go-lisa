@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "strings"
 
 func simpleTyping(x, y int) int {
 	var a int = 1 + 1
@@ -34,11 +35,11 @@ func relTyping(x,y int) {
 func strings(x,y string) {
 	a = "abc"
 	b = "b"
-	x := strings.Contains(a,b)
-	y := strings.HasPrefix(a,b)
-	z := strings.HasSuffix(a,b)
-	w := strings.Index(a,b)
-	j := strings.Replace(a,b,b)
+	x := Contains(a,b)
+	y := HasPrefix(a,b)
+	z := HasSuffix(a,b)
+	w := Index(a,b)
+	j := Replace(a,b,b)
 }
 
 

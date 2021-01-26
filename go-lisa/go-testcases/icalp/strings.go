@@ -233,7 +233,7 @@ func LastIndexByte(s string, c byte) int {
 
 // Generic split: splits after each instance of sep,
 // including sepSave bytes of sep in the subarrays.
-/*func genSplit(s, sep string, sepSave, n int) []string {
+func genSplit(s, sep string, sepSave, n int) []string {
 	if n == 0 {
 		return nil
 	}
@@ -258,7 +258,7 @@ func LastIndexByte(s string, c byte) int {
 	}
 	a[i] = s
 	return a[:i+1]
-}*/
+}
 
 // SplitN slices s into substrings separated by sep and returns a slice of
 // the substrings between those separators.
@@ -366,6 +366,11 @@ func Fields(s string) []string {
 	return a
 }
 
+	type span struct {
+		start int
+		end   int
+	}
+
 // FieldsFunc splits the string s at each run of Unicode code points c satisfying f(c)
 // and returns an array of slices of s. If all code points in s satisfy f(c) or the
 // string is empty, an empty slice is returned.
@@ -375,10 +380,7 @@ func Fields(s string) []string {
 func FieldsFunc(s string, f func(rune) bool) []string {
 	// A span is used to record a slice of s of the form s[start:end].
 	// The start index is inclusive and the end index is exclusive.
-	type span struct {
-		start int
-		end   int
-	}
+
 	spans := make([]span, 0, 32)
 
 	// Find the field start and end indices.

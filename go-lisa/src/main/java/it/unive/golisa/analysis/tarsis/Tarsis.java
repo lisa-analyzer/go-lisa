@@ -173,6 +173,12 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	protected Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right) {
 		switch(operator) {
 		case STRING_INDEX_OF:
+			// Checking top cases
+			if (left.stringValue.getAutomaton().equals(Automata.mkTopAutomaton()))
+				return new Tarsis(bottomString(), new TarsisIntv(-1, null));
+			if (right.stringValue.getAutomaton().equals(Automata.mkTopAutomaton()))
+				return new Tarsis(bottomString(), new TarsisIntv(-1, left.stringValue.length().getUpper()));
+	
 			it.unive.tarsis.AutomatonString.Interval result = left.stringValue.indexOf(right.stringValue);
 			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
 		case NUMERIC_ADD:

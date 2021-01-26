@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.binary;
 
+import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
@@ -10,17 +11,18 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * A Go XOR function call. 
- * e1 ^ e2 copies the bit if it is set in one operand but not both.
+ * A Go and function call.
+ * e1 | e2 copies a bit if it exists in either operand.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoXOr extends BinaryNativeCall {
-	
+public class GoBitwiseOr extends BinaryNativeCall implements GoBinaryNumericalOperation {
+
 	/**
-	 * Builds a Go XOR expression. 
+	 * Builds a Go or expression. 
 	 * The location where this expression appears is unknown 
 	 * (i.e. no source file/line/column is available).
 	 * 
@@ -28,12 +30,12 @@ public class GoXOr extends BinaryNativeCall {
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoXOr(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "^", exp1, exp2);
+	public GoBitwiseOr(CFG cfg, Expression exp1, Expression exp2) {
+		super(cfg, null, -1, -1, "|", exp1, exp2);
 	}
-	
+
 	/**
-	 * Builds a Go XOR expression at a given location in the program.
+	 * Builds a Go or expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
 	 * @param sourceFile    the source file where this expression happens. If
@@ -45,16 +47,23 @@ public class GoXOr extends BinaryNativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoXOr(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "^", exp1, exp2);
+	public GoBitwiseOr(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, sourceFile, line, col, "|", exp1, exp2);
 	}
 
 	@Override
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+			SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
+					throws SemanticException {
+
+		if (!left.getDynamicType().isUntyped() && (left.getDynamicType() instanceof GoType && !((GoType) left.getDynamicType()).isGoInteger()))
+			return entryState.bottom();
+
+		if (!right.getDynamicType().isUntyped() && (right.getDynamicType() instanceof GoType && !((GoType) right.getDynamicType()).isGoInteger()))
+			return entryState.bottom();
+		
+		// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
+		return rightState.smallStepSemantics(new PushAny(resultType(left, right)));	
 	}
 }

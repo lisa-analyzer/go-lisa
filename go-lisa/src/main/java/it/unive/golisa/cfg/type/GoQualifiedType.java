@@ -8,6 +8,7 @@ import java.util.Set;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoQualifiedType implements GoType {
 	
@@ -29,14 +30,12 @@ public class GoQualifiedType implements GoType {
 	
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
-		return false;
+		return equals(other) || other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		return equals(other) ? other : Untyped.INSTANCE;
 	}
 	
 	@Override

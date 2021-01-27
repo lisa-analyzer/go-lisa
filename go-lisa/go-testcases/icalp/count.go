@@ -20,3 +20,24 @@ func Count(s, substr string) int {
 	
 	return res
 }
+
+
+func copy(rep, pref string) {
+	a := pref;
+	b := pref;
+	
+	for true {
+		a = a + rep
+		b =  b + rep
+	}
+	
+	return a, b
+}
+
+func bultan1(x1, x2 string) {
+	if x1 == x2 {
+		x1 = x2 + c;
+	} else {
+		x1 = x1 + c;
+	}
+}

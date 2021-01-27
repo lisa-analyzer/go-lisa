@@ -234,7 +234,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			visitFunctionDecl(funcDecl);
 		}
 
-
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) {
 			if (decl.typeDecl() != null) {
 				for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))

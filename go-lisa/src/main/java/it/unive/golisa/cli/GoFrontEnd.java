@@ -30,10 +30,11 @@ import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.*;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
-import it.unive.golisa.cfg.expression.GoFieldAccess;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
+import it.unive.golisa.cfg.expression.binary.GoBitwiseOr;
+import it.unive.golisa.cfg.expression.binary.GoBitwiseXOr;
 import it.unive.golisa.cfg.expression.binary.GoContains;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
@@ -49,11 +50,9 @@ import it.unive.golisa.cfg.expression.binary.GoLogicalAnd;
 import it.unive.golisa.cfg.expression.binary.GoLogicalOr;
 import it.unive.golisa.cfg.expression.binary.GoModule;
 import it.unive.golisa.cfg.expression.binary.GoMul;
-import it.unive.golisa.cfg.expression.binary.GoBitwiseOr;
 import it.unive.golisa.cfg.expression.binary.GoRightShift;
 import it.unive.golisa.cfg.expression.binary.GoSubtraction;
 import it.unive.golisa.cfg.expression.binary.GoSum;
-import it.unive.golisa.cfg.expression.binary.GoBitwiseXOr;
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
@@ -116,6 +115,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
@@ -234,6 +234,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			visitFunctionDecl(funcDecl);
 		}
 
+
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) {
 			if (decl.typeDecl() != null) {
 				for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
@@ -321,7 +322,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Pair<Statement, Statement> currStmt = visitConstSpec(constSpec);
 
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, currStmt.getLeft()));
+				addEdge(new SequentialEdge(lastStmt, currStmt.getLeft()));
 			else
 				entryNode = currStmt.getRight();
 
@@ -348,7 +349,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+				addEdge(new SequentialEdge(lastStmt, asg));
 			else
 				entryNode = asg;
 			lastStmt = asg;
@@ -448,7 +449,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Pair<Statement, Statement> currStmt = visitVarSpec(varSpec);
 
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, currStmt.getLeft()));
+				addEdge(new SequentialEdge(lastStmt, currStmt.getLeft()));
 			else
 				entryNode = currStmt.getLeft();
 			lastStmt = currStmt.getRight();
@@ -480,7 +481,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+				addEdge(new SequentialEdge(lastStmt, asg));
 			else
 				entryNode = asg;
 			lastStmt = asg;
@@ -503,7 +504,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Pair<Statement, Statement> currentStmt = visitStatement(ctx.statement(i));
 
 			if (lastStmt != null) 
-				currentCFG.addEdge(new SequentialEdge(lastStmt, currentStmt.getLeft()));	
+				addEdge(new SequentialEdge(lastStmt, currentStmt.getLeft()));	
 			else 
 				entryNode = currentStmt.getLeft();
 
@@ -594,7 +595,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
-				currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+				addEdge(new SequentialEdge(lastStmt, asg));
 			else
 				entryNode = asg;
 			lastStmt = asg;
@@ -697,7 +698,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				currentCFG.addNode(asg);
 
 				if (lastStmt != null)
-					currentCFG.addEdge(new SequentialEdge(lastStmt, asg));
+					addEdge(new SequentialEdge(lastStmt, asg));
 				else
 					entryNode = asg;
 				lastStmt = asg;
@@ -740,7 +741,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitBreakStmt(BreakStmtContext ctx) {
 		NoOp breakSt = new NoOp(currentCFG);
 		currentCFG.addNode(breakSt);
-		currentCFG.addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size() -1)));
+		addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size() -1)));
 		return Pair.of(breakSt, breakSt);
 	}
 
@@ -748,7 +749,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitContinueStmt(ContinueStmtContext ctx) {		
 		NoOp continueSt = new NoOp(currentCFG);
 		currentCFG.addNode(continueSt);
-		currentCFG.addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size() -1)));
+		addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size() -1)));
 		return Pair.of(continueSt, continueSt);
 	}
 
@@ -788,9 +789,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (ctx.ELSE() == null) {
 			// If statement without else branch
-			currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));			
-			currentCFG.addEdge(new FalseEdge(booleanGuard, ifExitNode));			
-			currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+			addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));			
+			addEdge(new FalseEdge(booleanGuard, ifExitNode));			
+			addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
 		} else {
 			if (ctx.block(1) != null) {
 				// If statement with else branch with no other if statements 
@@ -798,22 +799,22 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Statement exitStatementFalseBranch = falseBlock.getRight();
 				Statement entryStatementFalseBranch = falseBlock.getLeft();
 
-				currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
-				currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
+				addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
+				addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
 
-				currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
-				currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
+				addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+				addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
 			} else {
 				// If statement with else branch with other if statements 
 				Pair<Statement, Statement> falseBlock = visitIfStmt(ctx.ifStmt());
 				Statement exitStatementFalseBranch = falseBlock.getRight();
 				Statement entryStatementFalseBranch = falseBlock.getLeft();
 
-				currentCFG.addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
-				currentCFG.addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
+				addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));
+				addEdge(new FalseEdge(booleanGuard, entryStatementFalseBranch));
 
-				currentCFG.addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
-				currentCFG.addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
+				addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
+				addEdge(new SequentialEdge(exitStatementFalseBranch, ifExitNode));
 			}
 		}
 
@@ -823,10 +824,20 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (ctx.simpleStmt() != null) {
 			Pair<Statement, Statement> initialStmt = visitSimpleStmt(ctx.simpleStmt());
 			entryNode = initialStmt.getLeft();
-			currentCFG.addEdge(new SequentialEdge(initialStmt.getRight(), booleanGuard));
+			addEdge(new SequentialEdge(initialStmt.getRight(), booleanGuard));
 		} 
 
 		return Pair.of(entryNode, ifExitNode);
+	}
+
+
+	private boolean isReturnStmt(Statement stmt) {
+		return stmt instanceof GoReturn || stmt instanceof Ret;
+	}
+
+	private void addEdge(Edge edge) {
+		if (!isReturnStmt(edge.getSource()))
+			currentCFG.addEdge(edge);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -865,18 +876,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 						caseBooleanGuard = new GoLogicalOr(currentCFG, caseBooleanGuard, new GoEqual(currentCFG, expsCase[j], switchGuard));
 
 				currentCFG.addNode(caseBooleanGuard);
-				currentCFG.addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
+				addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
 
 				if (!(caseBlock.getRight() instanceof GoFallThrough))
-					currentCFG.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+					addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
 
 				if (lastCaseBlock != null)
-					currentCFG.addEdge(new SequentialEdge(lastCaseBlock.getRight(), caseBlock.getLeft()));
+					addEdge(new SequentialEdge(lastCaseBlock.getRight(), caseBlock.getLeft()));
 
 				if (entryNode == null) {
 					entryNode = caseBooleanGuard;
 				} else {
-					currentCFG.addEdge(new FalseEdge(previousGuard, caseBooleanGuard));
+					addEdge(new FalseEdge(previousGuard, caseBooleanGuard));
 				}
 				previousGuard = caseBooleanGuard;
 			} else {				
@@ -890,18 +901,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		}
 
 		if (lastCaseBlock != null)
-			currentCFG.addEdge(new SequentialEdge(lastCaseBlock.getRight(), exitNode));
+			addEdge(new SequentialEdge(lastCaseBlock.getRight(), exitNode));
 
 		if (defaultBlock != null) {
-			currentCFG.addEdge(new FalseEdge(previousGuard, defaultBlock.getRight()));
-			currentCFG.addEdge(new SequentialEdge(defaultBlock.getLeft(), exitNode));
+			addEdge(new FalseEdge(previousGuard, defaultBlock.getRight()));
+			addEdge(new SequentialEdge(defaultBlock.getLeft(), exitNode));
 		} else {
-			currentCFG.addEdge(new FalseEdge(previousGuard, exitNode));
+			addEdge(new FalseEdge(previousGuard, exitNode));
 		}
 
 		if (ctx.simpleStmt() != null) {
 			Pair<Statement, Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
-			currentCFG.addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode));
+			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode));
 			entryNode = simpleStmt.getLeft();
 		}
 
@@ -1021,19 +1032,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Statement exitNodeBlock = block.getRight();
 			Statement entryNodeOfBlock = block.getLeft();
 
-			currentCFG.addEdge(new TrueEdge(cond, entryNodeOfBlock));
-			currentCFG.addEdge(new FalseEdge(cond, exitNode));
+			addEdge(new TrueEdge(cond, entryNodeOfBlock));
+			addEdge(new FalseEdge(cond, exitNode));
 
 			if (hasInitStmt) 
-				currentCFG.addEdge(new SequentialEdge(init.getRight(), cond));
+				addEdge(new SequentialEdge(init.getRight(), cond));
 			else
 				entryNode = cond; 
 
 			if (hasPostStmt) {
-				currentCFG.addEdge(new SequentialEdge(exitNodeBlock, post.getRight()));
-				currentCFG.addEdge(new SequentialEdge(post.getLeft(), cond));
+				addEdge(new SequentialEdge(exitNodeBlock, post.getRight()));
+				addEdge(new SequentialEdge(post.getLeft(), cond));
 			} else 
-				currentCFG.addEdge(new SequentialEdge(exitNodeBlock, cond));
+				addEdge(new SequentialEdge(exitNodeBlock, cond));
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
@@ -1047,8 +1058,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			entryPoints.add(entry);
 
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
-			currentCFG.addEdge(new SequentialEdge(entry, block.getLeft()));
-			currentCFG.addEdge(new SequentialEdge(block.getLeft(), exitNode));
+			addEdge(new SequentialEdge(entry, block.getLeft()));
+			addEdge(new SequentialEdge(block.getLeft(), exitNode));
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
@@ -1063,9 +1074,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			entryPoints.add(guard);
 
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
-			currentCFG.addEdge(new SequentialEdge(guard, block.getLeft()));
-			currentCFG.addEdge(new SequentialEdge(guard, exitNode));
-			currentCFG.addEdge(new SequentialEdge(block.getRight(), guard));
+			addEdge(new SequentialEdge(guard, block.getLeft()));
+			addEdge(new SequentialEdge(guard, exitNode));
+			addEdge(new SequentialEdge(block.getRight(), guard));
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
@@ -1078,9 +1089,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		entryPoints.add(entry);
 
 		Pair<Statement, Statement> block = visitBlock(ctx.block());
-		currentCFG.addEdge(new SequentialEdge(block.getRight(), block.getLeft()));
-		currentCFG.addEdge(new SequentialEdge(entry, block.getLeft()));
-		currentCFG.addEdge(new SequentialEdge(block.getLeft(), exitNode));
+		addEdge(new SequentialEdge(block.getRight(), block.getLeft()));
+		addEdge(new SequentialEdge(entry, block.getLeft()));
+		addEdge(new SequentialEdge(block.getLeft(), exitNode));
 
 		entryPoints.remove(entryPoints.size()-1);
 		exitPoints.remove(exitPoints.size()-1);

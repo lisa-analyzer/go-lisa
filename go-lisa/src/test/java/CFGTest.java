@@ -193,4 +193,33 @@ public class CFGTest {
 			f.delete();
 		actFile.getParentFile().delete();
 	}
+	
+	@Test
+	public void testReturn() throws IOException {
+		Program program = GoFrontEnd.processFile(sourcePath + "go-return.go");
+		LiSA lisa = new LiSA();
+
+		lisa.setProgram(program);
+		lisa.setJsonOutput(true);
+		lisa.setDumpCFGs(true);
+		lisa.setWorkdir(tmpDir);
+
+		try {
+			lisa.run();
+		} catch (AnalysisException e) {
+			System.err.println(e);
+			fail("Analysis terminated with errors");
+		}
+
+		File actFile = new File(tmpDir + "report.json");
+		File expFile = new File(expDumpPath + "return/report.json");
+		JsonReport expected = JsonReport.read(new FileReader(expFile));
+		JsonReport actual = JsonReport.read(new FileReader(actFile));
+		assertTrue("Results are different",
+				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
+
+		for (File f : actFile.getParentFile().listFiles())
+			f.delete();
+		actFile.getParentFile().delete();
+	}
 }

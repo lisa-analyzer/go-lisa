@@ -12,7 +12,7 @@ import javax.xml.bind.Marshaller;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import it.unive.golisa.analysis.ICALPResult;
-import it.unive.golisa.analysis.RSubs;
+import it.unive.golisa.analysis.composition.RelTarsis;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
@@ -43,7 +43,6 @@ public class ICALPEvaluation {
 		boolean cfgCreated = true;
 		boolean analyzedByTarsis = true;
 		boolean analyzedByRSubs = true;
-
 
 		File theDir = new File(outputDir);
 		if (!theDir.exists())
@@ -79,7 +78,7 @@ public class ICALPEvaluation {
 
 		lisa.setWorkdir(outputDir + "/cfg");
 		lisa.setDumpCFGs(true);
-
+		
 		try {
 			lisa.run();
 		} catch (AnalysisException e) {
@@ -111,7 +110,7 @@ public class ICALPEvaluation {
 		lisa.setProgram(program);
 		lisa.setWorkdir(outputDir + "/rsubs");
 		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RSubs()));
+		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()));
 		lisa.setDumpAnalysis(true);
 
 
@@ -158,7 +157,6 @@ public class ICALPEvaluation {
 		}
 
 	}
-
 
 	public static void dumpXml(String filePath, String outputDir, String unsupportedOp) {
 

@@ -13,10 +13,12 @@ import it.unive.lisa.analysis.FunctionalLattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
 import it.unive.lisa.caches.Caches;
+import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubstringDomain, Identifier, StringUpperBound> implements ValueDomain<RelationalSubstringDomain> {
@@ -73,6 +75,10 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		else
 			func = new HashMap<>(function);
 
+		if (expression instanceof PushAny)
+			return new RelationalSubstringDomain(lattice, func);
+
+		
 		// Remove phase
 		for (Identifier x : func.keySet())
 			for (ValueExpression xRel : func.get(x))
@@ -130,12 +136,43 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
-			RelationalSubstringDomain left = smallStepSemantics((ValueExpression) binary.getLeft());
-			RelationalSubstringDomain right = smallStepSemantics((ValueExpression) binary.getRight());
+			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft());
+			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight());
 
 			switch(binary.getOperator()) {
+			
 			case COMPARISON_EQ:
-				break;
+				ValueExpression left = (ValueExpression) binary.getLeft();
+				ValueExpression right = (ValueExpression) binary.getRight();
+				
+				if (!left.getDynamicType().isStringType() || !right.getDynamicType().isStringType())
+					break;
+
+				if (left instanceof Identifier && right instanceof Identifier) {
+					Identifier x = (Identifier) left;
+					Identifier y = (Identifier) right;
+					
+					StringUpperBound relsForX = getRelations(y);
+					StringUpperBound relsForY = getRelations(x);
+					
+					func.put(x, func.get(x) == null ? relsForX : func.get(x).merge(relsForX));
+					func.put(y, func.get(y) == null ? relsForY : func.get(y).merge(relsForY));
+					return new RelationalSubstringDomain(lattice, func);
+				}
+				
+				if (left instanceof Identifier) {
+					Identifier x = (Identifier) left;
+					StringUpperBound rels = getRelations(right);
+					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					return new RelationalSubstringDomain(lattice, func);
+				}
+
+				if (right instanceof Identifier) {
+					Identifier x = (Identifier) right;
+					StringUpperBound rels = getRelations(left);
+					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					return new RelationalSubstringDomain(lattice, func);
+				}
 			case COMPARISON_GE:
 				break;
 			case COMPARISON_GT:
@@ -147,9 +184,9 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			case COMPARISON_NE:
 				break;
 			case LOGICAL_AND:
-				return left.lub(right);
+				return leftState.lub(rightState);
 			case LOGICAL_OR:
-				return left.glb(right);
+				return leftState.glb(rightState);
 			case STRING_STARTS_WITH: // can be assumed but not integrated in the paper
 			case STRING_ENDS_WITH: // can be assumed but not integrated in the paper
 			case STRING_CONTAINS:

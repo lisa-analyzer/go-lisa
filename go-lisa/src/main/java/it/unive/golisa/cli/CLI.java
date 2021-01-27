@@ -4,7 +4,7 @@ import static it.unive.lisa.LiSAFactory.getDefaultFor;
 
 import java.io.IOException;
 
-import it.unive.golisa.analysis.tarsis.Tarsis;
+import it.unive.golisa.analysis.composition.RelTarsis;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
@@ -15,7 +15,7 @@ import it.unive.lisa.program.Program;
 public class CLI {
 
 	public static void main(String[] args) throws  AnalysisSetupException, IOException {
-		String filePath = "go-testcases/count.go";
+		String filePath = "go-testcases/icalp/count.go";
 		String outputDir = "tmp";
 
 		Program program = GoFrontEnd.processFile(filePath);
@@ -26,7 +26,7 @@ public class CLI {
 		lisa.setJsonOutput(true);
 		lisa.setWorkdir(outputDir);
 		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Tarsis()));
+		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()));
 		lisa.setDumpAnalysis(true);
 		lisa.setDumpTypeInference(true);
 

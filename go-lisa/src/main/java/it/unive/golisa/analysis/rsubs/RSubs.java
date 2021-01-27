@@ -1,6 +1,5 @@
-package it.unive.golisa.analysis;
+package it.unive.golisa.analysis.rsubs;
 
-import it.unive.golisa.analysis.rsubs.RelationalSubstringDomain;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;

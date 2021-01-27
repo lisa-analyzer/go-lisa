@@ -26,7 +26,7 @@ public class ICALPTest {
 	private String expDumpPath = "test-outputs/icalp/";
 
 	@Test
-	public void testDeclaration() throws IOException, AnalysisSetupException {
+	public void testICALP() throws IOException, AnalysisSetupException {
 		Program program = GoFrontEnd.processFile(sourcePath + "subs.go");
 		LiSA lisa = new LiSA();
 

@@ -35,7 +35,7 @@ public class GoKeyedLiteral extends NativeCall {
 		// parameters of this call
 		// (the semantics of this call does not need information about the
 		// intermediate analysis states)
-		AnalysisState<A, H, V> lastPostState = computedStates[computedStates.length - 1];
+		AnalysisState<A, H, V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()));
 
 		// TODO: at the moment, we are only allocating the object, without considering the paramters
@@ -51,7 +51,7 @@ public class GoKeyedLiteral extends NativeCall {
 		// parameters of this call
 		// (the semantics of this call does not need information about the
 		// intermediate analysis states)
-		AnalysisState<A, H, TypeEnvironment> lastPostState = computedStates[computedStates.length - 1];
+		AnalysisState<A, H, TypeEnvironment> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()));
 
 		// TODO: at the moment, we are only allocating the object, without considering the paramters

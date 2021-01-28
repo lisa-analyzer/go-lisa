@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -33,8 +34,12 @@ public class GoPointerType implements PointerType, GoType {
 	
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
-		return false;
+		if (other instanceof GoPointerType)
+			return baseType.canBeAssignedTo(((GoPointerType) other).baseType);
+		if (other instanceof GoInterfaceType)
+			return ((GoInterfaceType) other).isEmptyInterface();
+
+		return other.isUntyped();
 	}
 
 	@Override
@@ -75,8 +80,7 @@ public class GoPointerType implements PointerType, GoType {
 
 	@Override
 	public Expression defaultValue(CFG cfg) {
-		// TODO Auto-generated method stub
-		return null;
+		return new GoNil(cfg);
 	}
 	
 	@Override

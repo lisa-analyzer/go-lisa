@@ -5,32 +5,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.UnitType;
 
-public class GoStructType implements GoType {
-
-	private String name;
-	private final Map<String, Type> fields;
+public class GoStructType implements GoType, UnitType {
 
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
-	public static GoStructType lookup(String name, GoStructType type)  {
-		if (!structTypes.containsKey(name))
-			structTypes.put(name, type);
-		return structTypes.get(name);
+	public static GoStructType lookup(String name, CompilationUnit unit)  {
+		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
 	}
 
-	public GoStructType(Map<String, Type> fields) {
-		this.name = "";
-		this.fields = fields;
-	}
-	
-	public GoStructType(String name, Map<String, Type> fields) {
+	private final String name;
+	private final CompilationUnit unit;
+
+	public GoStructType(String name, CompilationUnit unit) {
 		this.name = name;
-		this.fields = fields;
+		this.unit = unit;
 	}
 
 	public static boolean hasStructType(String structType) {
@@ -43,20 +39,12 @@ public class GoStructType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-
-		if (other instanceof GoStructType) 
-			return fields.equals(((GoStructType) other).fields);
+		if (other instanceof GoStructType)
+			return ((GoStructType) other).name.equals(name);
+		if (other instanceof GoInterfaceType)
+			return ((GoInterfaceType) other).isEmptyInterface();
 
 		return other.isUntyped();
-
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	@Override
@@ -74,8 +62,8 @@ public class GoStructType implements GoType {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((unit == null) ? 0 : unit.hashCode());
 		return result;
 	}
 
@@ -88,28 +76,22 @@ public class GoStructType implements GoType {
 		if (getClass() != obj.getClass())
 			return false;
 		GoStructType other = (GoStructType) obj;
-		if (fields == null) {
-			if (other.fields != null)
-				return false;
-		} else if (!fields.equals(other.fields))
-			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
+			return false;
+		if (unit == null) {
+			if (other.unit != null)
+				return false;
+		} else if (!unit.equals(other.unit))
 			return false;
 		return true;
 	}
 
 	@Override
 	public Expression defaultValue(CFG cfg) {
-		return null;
-		//		Map<String, Expression> defaultFields = new HashMap<>();
-		//		
-		//		for (String key: fields.keySet())
-		//			defaultFields.put(key, fields.get(key).defaultValue(cfg));
-		//		
-		//		return new GoKeyedLiteral(cfg, defaultFields, this);
+		return new GoNil(cfg);
 	}
 
 	@Override
@@ -120,5 +102,10 @@ public class GoStructType implements GoType {
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public CompilationUnit getUnit() {
+		return unit;
 	}
 }

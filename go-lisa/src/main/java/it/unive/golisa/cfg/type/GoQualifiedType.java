@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
@@ -77,8 +78,7 @@ public class GoQualifiedType implements GoType {
 
 	@Override
 	public Expression defaultValue(CFG cfg) {
-		// TODO Auto-generated method stub
-		return null;
+		return new GoNil(cfg);
 	}
 	
 	@Override

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -79,7 +78,6 @@ import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.method.GoMethod;
-import it.unive.golisa.cfg.statement.method.GoMethodSpecification;
 import it.unive.golisa.cfg.statement.method.GoReceiver;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoQualifiedType;
@@ -173,6 +171,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private CFG currentCFG;
 
 	/**
+	 * Current compilation unit to parse
+	 */
+	private CompilationUnit currentUnit;
+
+	/**
 	 * Stack of loop exit points (used for break statements)
 	 */
 	private List<Statement> exitPoints = new ArrayList<Statement>();
@@ -183,8 +186,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private List<Statement> entryPoints = new ArrayList<Statement>();
 
 	private SourceFileContext source;
-
-
 
 	public static Program processFile(String filePath) throws IOException {
 		return new GoFrontEnd(filePath).toLiSAProgram();
@@ -216,33 +217,32 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Program visitSourceFile(SourceFileContext ctx) {
 		source = ctx;
-
 		String packageName = visitPackageClause(ctx.packageClause());
 
 		CompilationUnit packageUnit = new CompilationUnit(filePath, 0, 0, packageName, false);
 		program.addCompilationUnit(packageUnit);
 
-		// Visit of each FunctionDeclContext appearing in the source code
-		// and creating the corresponding CFG object (we do this to handle CFG calls)
-		for (FunctionDeclContext funcDecl : 
-			IterationLogger.iterate(log, ctx.functionDecl(), "Parsing function declarations...", "Function declarations")) 
-			packageUnit.addCFG(new CFG(buildCFGDescriptor(funcDecl)));
+		GoInterfaceType.lookup("EMPTY_INTERFACE", packageUnit);
 
-		// Visit of each FunctionDeclContext populating the corresponding cfg
-		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {					
-			currentCFG = packageUnit.getCFGsByName(funcDecl.IDENTIFIER().getText()).stream().findFirst().get();
-			visitFunctionDecl(funcDecl);
-		}
-
-		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) {
-			if (decl.typeDecl() != null) {
+		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
+			if (decl.typeDecl() != null) 
 				for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 					program.addCompilationUnit(unit);
-			}
-		}
 
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
 			visitMethodDecl(decl);
+
+
+
+
+
+		// Visit of each FunctionDeclContext populating the corresponding cfg
+		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {	
+			CFG cfg = new CFG(buildCFGDescriptor(funcDecl));
+			packageUnit.addCFG(cfg);
+			currentCFG = cfg;
+			visitFunctionDecl(funcDecl);
+		}
 
 		return program;
 	}
@@ -377,8 +377,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Collection<CompilationUnit> visitTypeDecl(TypeDeclContext ctx) {
 		HashSet<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
-			GoType type = visitTypeSpec(typeSpec);
-			units.add(new CompilationUnit(filePath, getLine(typeSpec), getCol(typeSpec), type.toString(), false));
+			String unitName = typeSpec.IDENTIFIER().getText();
+			CompilationUnit unit = new CompilationUnit(filePath, getLine(typeSpec), getCol(typeSpec), unitName, false);
+			units.add(unit);
+			currentUnit = unit;
+			visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
@@ -389,11 +392,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		GoType type = visitType_(ctx.type_());
 
 		if (ctx.ASSIGN() == null) {
-			if (type instanceof GoStructType) {
-				((GoStructType) type).setName(typeName);
-				return GoStructType.lookup(typeName, (GoStructType) type);
-			} else if (type instanceof GoInterfaceType)
-				return GoInterfaceType.lookup(typeName, (GoInterfaceType) type);
+			if (type instanceof GoStructType) 
+				return GoStructType.lookup(typeName, currentUnit);
+			else if (type instanceof GoInterfaceType)
+				return GoInterfaceType.lookup(typeName, currentUnit);
 			else 
 				return GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
 
@@ -475,7 +477,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i).getSymbol()) : getCol(exps.expression(i));
 
 			VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
-			//TODO: check if exp is null
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, type, target, exp);
 			currentCFG.addNode(asg);
 
@@ -491,11 +492,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
+		if (ctx.statementList() == null) 
+			return Pair.of(new NoOp(currentCFG), new NoOp(currentCFG));
 		return visitStatementList(ctx.statementList());
 	}
 
 	@Override
-	public Pair<Statement, Statement> visitStatementList(StatementListContext ctx) {
+	public Pair<Statement, Statement> visitStatementList(StatementListContext ctx) {		
 		Statement lastStmt = null;
 		Statement entryNode = null;
 
@@ -1117,15 +1120,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitType_(Type_Context ctx) {
-		Object result = visitChildren(ctx);
-		if (!(result instanceof GoType))
-			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
-		else 
-			return (GoType) result;		
+
+		if (ctx.typeName() != null)
+			return visitTypeName(ctx.typeName());
+
+		if (ctx.typeLit() != null)
+			return visitTypeLit(ctx.typeLit());
+
+		return (GoType) visitChildren(ctx);
 	}
 
 	@Override
-	public Type visitTypeName(TypeNameContext ctx) {
+	public GoType visitTypeName(TypeNameContext ctx) {
 		if (ctx.IDENTIFIER() != null)
 			return getGoType(ctx);
 		else {
@@ -1173,14 +1179,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
 		if (ctx.methodSpec().isEmpty())
-			return GoInterfaceType.EMPTY_INTERFACE;
-		else {
-			Set<GoMethodSpecification> specs = new HashSet<>();
+			return GoInterfaceType.getEmptyInterface();
+		else 
 			for (MethodSpecContext methSpec : ctx.methodSpec())
-				specs.add(visitMethodSpec(methSpec));
+				currentUnit.addCFG(new CFG(visitMethodSpec(methSpec)));
 
-			return new GoInterfaceType(specs);				
-		}
+		return GoInterfaceType.lookup(currentUnit.getName(), currentUnit);
 	}
 
 	@Override
@@ -1205,12 +1209,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoMethodSpecification visitMethodSpec(MethodSpecContext ctx) {
+	public CFGDescriptor visitMethodSpec(MethodSpecContext ctx) {
 		if (ctx.typeName() == null) {
 			Type returnType = ctx.result() == null? Untyped.INSTANCE : visitResult(ctx.result());
 			String name = ctx.IDENTIFIER().getText();
 			Parameter[] params = visitParameters(ctx.parameters());
-			return new GoMethodSpecification(name, returnType, params);
+			//			return new GoMethodSpecification(name, returnType, params);
+
+			return new CFGDescriptor(currentUnit, false, name, returnType, params);
 		} 
 
 		throw new UnsupportedOperationException("Method specification not supported yet:  " + ctx.getText());
@@ -1373,17 +1379,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			// Function call (e.g., f(1,2,3), x.f())
 			if (ctx.arguments() != null) {
 				Expression[] args = visitArguments(ctx.arguments());
-				if (primary instanceof VariableRef) {
-					String funName = ((VariableRef) primary).getName();
-					//					/* If the function name is found in cfgs, this call corresponds to a {@link CFGCall}
-					//					 * otherwise it is an {@link OpenCall}.
-					//					 */
-					//					if (containsCFG(funName))
-					//						return new CFGCall(currentCFG, "", getCFGByName(funName), args);
-					//					else
-					//						return new OpenCall(currentCFG, funName, args);
-				}
-
 				return resolveCall(primary, args);
 			}
 
@@ -1395,14 +1390,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 			// Field access x.f
 			else if (ctx.IDENTIFIER() != null) {
-
-				String f = ctx.IDENTIFIER().getText();
-				if (!f.equals("Contains") && !f.equals("HasPrefix") && !f.equals("HasSuffix") && !f.equals("Index") && !f.equals("Replace")) {
-					int line = getLine(ctx.IDENTIFIER().getSymbol());
-					int col = getCol(ctx.IDENTIFIER().getSymbol());
-					Global index = new Global(filePath, line, col, ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
-					return new AccessUnitGlobal(currentCFG, primary, index);
-				}
+				int line = getLine(ctx.IDENTIFIER().getSymbol());
+				int col = getCol(ctx.IDENTIFIER().getSymbol());
+				Global index = new Global(filePath, line, col, ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
+				return new AccessUnitGlobal(currentCFG, primary, index);
 			}
 
 			// Simple slice expression a[l:h]
@@ -1415,6 +1406,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 					return new GoSimpleSlice(currentCFG, primary, args.getLeft(), args.getRight());
 			}
 		}
+
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1663,14 +1655,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoStructType visitStructType(StructTypeContext ctx) {
-		Map<String, Type> fields = new HashMap<String, Type>();
-
+	public GoStructType visitStructType(StructTypeContext ctx) {		
 		for (FieldDeclContext field : ctx.fieldDecl()) 
 			for (Pair<String, Type> fd : visitFieldDecl(field))
-				fields.put(fd.getLeft(), fd.getRight());
+				currentUnit.addGlobal(new Global(fd.getLeft(), fd.getRight()));
 
-		return new GoStructType(fields);
+		return GoStructType.lookup(currentUnit.getName(), currentUnit);
 	}
 
 	@Override
@@ -1831,7 +1821,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * @param ctx the type context
 	 * @return the Go type corresponding to {@ctx}
 	 */
-	private Type getGoType(TypeNameContext ctx) {
+	private GoType getGoType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
 
@@ -1878,7 +1868,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 					return GoInterfaceType.get(type);
 				else {
 
-					return parseTypeDeclaration(type) ? getGoType(ctx) : Untyped.INSTANCE;
+					if (parseTypeDeclaration(type))
+						return getGoType(ctx);
+					else {
+						CompilationUnit unit = new CompilationUnit(filePath, getLine(ctx), getCol(ctx), type, false);
+						return GoStructType.lookup(type, unit);
+					}
 				}
 			} 
 		} 

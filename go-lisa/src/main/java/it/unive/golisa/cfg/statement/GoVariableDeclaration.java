@@ -14,6 +14,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.NullConstant;
 import it.unive.lisa.type.Type;
 
 /**
@@ -71,19 +72,23 @@ public class GoVariableDeclaration extends Assignment {
 		expressions.put(getRight(), right);
 		expressions.put(getLeft(), left);
 
+
 		AnalysisState<A, H, TypeEnvironment> result = null;
 		for (SymbolicExpression expr1 : left.getComputedExpressions())
 			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
 				Type rightType = expr2.getDynamicType();
 				AnalysisState<A, H, TypeEnvironment> tmp = null;
 
-				if (rightType instanceof GoType) 
+				if (rightType instanceof GoType) {
 					if (!((GoType) rightType).canBeAssignedTo(type))
 						tmp = entryState.bottom();
 					else {
 						// TODO: this is a work-around for the type conversion
 						tmp = left.assign((Identifier) expr1, new Constant(type, 0));
 					}
+				} else {
+					tmp = left.assign((Identifier) expr1, NullConstant.INSTANCE);
+				}
 
 				if (result == null)
 					result = tmp;

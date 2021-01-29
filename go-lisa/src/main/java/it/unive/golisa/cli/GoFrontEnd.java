@@ -232,10 +232,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
 			visitMethodDecl(decl);
 
-
-
-
-
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations")) {	
 			CFG cfg = new CFG(buildCFGDescriptor(funcDecl));
@@ -417,18 +413,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public GoMethod visitMethodDecl(MethodDeclContext ctx) {
 		GoReceiver receiver = visitReceiver(ctx.receiver());
-		String name = ctx.IDENTIFIER().getText();
+		String methodName = ctx.IDENTIFIER().getText();
 		Parameter[] params = visitParameters(ctx.signature().parameters());
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
-
-		CompilationUnit unit = program.getUnit(receiver.getStaticType().isPointerType() ? ((GoPointerType)receiver.getStaticType()).getBaseType().toString() : receiver.getStaticType().toString());
-		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), unit, true, name, returnType, params), receiver);
+		String unitName = receiver.getStaticType().isPointerType() ? ((GoPointerType)receiver.getStaticType()).getBaseType().toString() : receiver.getStaticType().toString();
+		CompilationUnit unit = program.getUnit(unitName);
+		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), unit, true, methodName, returnType, params), receiver);
 		currentCFG = method;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
 
 		currentCFG.getEntrypoints().add(body.getLeft());
 		currentCFG.simplify();
+		unit.addInstanceCFG(method);
 		return method;
 	}
 
@@ -1658,7 +1655,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public GoStructType visitStructType(StructTypeContext ctx) {		
 		for (FieldDeclContext field : ctx.fieldDecl()) 
 			for (Pair<String, Type> fd : visitFieldDecl(field))
-				currentUnit.addGlobal(new Global(fd.getLeft(), fd.getRight()));
+				currentUnit.addInstanceGlobal(new Global(fd.getLeft(), fd.getRight()));
 
 		return GoStructType.lookup(currentUnit.getName(), currentUnit);
 	}

@@ -70,7 +70,7 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 		if (isBottom())
 			return "BOTTOM";
 
-		return  rsubs.representation();
+		return tarsis.representation() + " " + rsubs.representation();
 	}
 
 	@Override

@@ -14,6 +14,7 @@ public class ICALPResult {
 	boolean cfgCreated;
 	boolean analyzedByTarsis;
 	boolean analyzedByRSub;
+	long time;
 
 	public String getFilePath() {
 		return filePath;
@@ -72,6 +73,15 @@ public class ICALPResult {
 
 	public String getUnsupportedOp() {
 		return unsupportedOp;
+	}
+
+	public long getTime() {
+		return time;
+	}
+	
+	@XmlElement
+	public void setTime(long time) {
+		this.time = time;
 	}
 
 	@XmlElement

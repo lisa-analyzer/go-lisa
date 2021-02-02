@@ -11,7 +11,7 @@ repositories {
 
 group = 'it.unive'
 version = '0.1'
-mainClassName = 'it.unive.golisa.cli.ICALPEvaluation'
+mainClassName = 'it.unive.golisa.cli.TarsisEval'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'lib')

@@ -13,7 +13,6 @@ import it.unive.lisa.analysis.FunctionalLattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
 import it.unive.lisa.caches.Caches;
-import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
@@ -77,7 +76,6 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		if (expression instanceof PushAny)
 			return new RelationalSubstringDomain(lattice, func);
-
 		
 		// Remove phase
 		for (Identifier x : func.keySet())

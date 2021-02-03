@@ -13,6 +13,7 @@ import it.unive.lisa.analysis.FunctionalLattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
 import it.unive.lisa.caches.Caches;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
@@ -67,7 +68,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 	}
 
 	@Override
-	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression) throws SemanticException {
+	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		Map<Identifier, StringUpperBound> func;
 		if (function == null)
 			func = new HashMap<>();
@@ -115,12 +116,12 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 	}
 
 	@Override
-	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression) throws SemanticException {
+	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		return new RelationalSubstringDomain(lattice, function);
 	}
 
 	@Override
-	public RelationalSubstringDomain assume(ValueExpression expression) throws SemanticException {
+	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// rsubs can assume contains, equals, and & or expressions (all binary expressions)
 
 		if (isBottom())
@@ -134,8 +135,8 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
-			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft());
-			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight());
+			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft(), pp);
+			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight(), pp);
 
 			switch(binary.getOperator()) {
 			
@@ -229,7 +230,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// rsubs can satisfy contains, equals, and & or expressions (all binary expressions)
 
 		if (isTop())
@@ -254,9 +255,9 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			case COMPARISON_NE:
 				break;
 			case LOGICAL_AND:
-				return satisfies((ValueExpression) binary.getLeft()).and(satisfies((ValueExpression) binary.getRight()));
+				return satisfies((ValueExpression) binary.getLeft(), pp).and(satisfies((ValueExpression) binary.getRight(), pp));
 			case LOGICAL_OR:
-				return satisfies((ValueExpression) binary.getLeft()).or(satisfies((ValueExpression) binary.getRight()));
+				return satisfies((ValueExpression) binary.getLeft(), pp).or(satisfies((ValueExpression) binary.getRight(), pp));
 			case STRING_CONTAINS:
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();

@@ -3,8 +3,9 @@ package it.unive.golisa.analysis.tarsis;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.nonrelational.NonRelationalValueDomain;
-import it.unive.lisa.analysis.nonrelational.ValueEnvironment;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
@@ -19,7 +20,6 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.tarsis.AutomatonString;
 import it.unive.tarsis.automata.Automata;
-import it.unive.tarsis.automata.algorithms.PathExtractor;
 
 
 public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDomain<Tarsis> {
@@ -81,8 +81,8 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		return stringValue.getAutomaton().equals(Automata.mkEmptyLanguage()) ? intValue.representation() : stringValue.toString();
 	}
 
-	@Override
-	public Tarsis eval(ValueExpression expression, ValueEnvironment<Tarsis> environment) {
+	
+	public Tarsis eval(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) {
 		if (expression instanceof Identifier)
 			return environment.getState((Identifier) expression);
 
@@ -90,7 +90,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			return evalNullConstant();
 
 		if (expression instanceof Constant)
-			return evalNonNullConstant((Constant) expression);
+			return evalNonNullConstant((Constant) expression, pp);
 
 		if (expression instanceof Skip)
 			return bottom();
@@ -101,39 +101,39 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 
-			Tarsis arg = eval((ValueExpression) unary.getExpression(), environment);
+			Tarsis arg = eval((ValueExpression) unary.getExpression(), environment, pp);
 			if (arg.isTop() || arg.isBottom())
 				return arg;
 
-			return evalUnaryExpression(unary.getOperator(), arg);
+			return evalUnaryExpression(unary.getOperator(), arg, pp);
 		}
 
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
 
-			Tarsis left = eval((ValueExpression) binary.getLeft(), environment);
+			Tarsis left = eval((ValueExpression) binary.getLeft(), environment, pp);
 			if (left.isBottom())
 				return left;
 
-			Tarsis right = eval((ValueExpression) binary.getRight(), environment);
+			Tarsis right = eval((ValueExpression) binary.getRight(), environment, pp);
 			if (right.isBottom())
 				return right;
 
-			return evalBinaryExpression(binary.getOperator(), left, right);
+			return evalBinaryExpression(binary.getOperator(), left, right, pp);
 		}
 
 		if (expression instanceof TernaryExpression) {
 			TernaryExpression ternary = (TernaryExpression) expression;
 
-			Tarsis left = eval((ValueExpression) ternary.getLeft(), environment);
+			Tarsis left = eval((ValueExpression) ternary.getLeft(), environment, pp);
 			if (left.isBottom())
 				return left;
 
-			Tarsis middle = eval((ValueExpression) ternary.getMiddle(), environment);
+			Tarsis middle = eval((ValueExpression) ternary.getMiddle(), environment, pp);
 			if (middle.isBottom())
 				return middle;
 
-			Tarsis right = eval((ValueExpression) ternary.getRight(), environment);
+			Tarsis right = eval((ValueExpression) ternary.getRight(), environment, pp);
 			if (right.isBottom())
 				return right;
 
@@ -147,22 +147,22 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		return top();
 	}
 
-	protected Tarsis evalNonNullConstant(Constant constant) {
+	protected Tarsis evalNonNullConstant(Constant constant, ProgramPoint pp) {
 		if (constant.getValue() instanceof String) {
 			String str = (String) constant.getValue();
 			return new Tarsis(new AutomatonString(str), intValue.bottom(), false, false);
 		}
 
 		if (constant.getValue() instanceof Integer) 
-			return new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), intValue.eval(constant, null), false, false);
+			return new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), intValue.eval(constant, null, pp), false, false);
 
 		return top();
 	}
 
-	protected Tarsis evalUnaryExpression(UnaryOperator operator, Tarsis arg) {
+	protected Tarsis evalUnaryExpression(UnaryOperator operator, Tarsis arg, ProgramPoint pp) {
 		switch(operator) {
 		case NUMERIC_NEG:
-			return new Tarsis(bottomString(), intValue.evalUnaryExpression(UnaryOperator.NUMERIC_NEG, arg.intValue));
+			return new Tarsis(bottomString(), intValue.evalUnaryExpression(UnaryOperator.NUMERIC_NEG, arg.intValue, pp));
 		case STRING_LENGTH:
 			it.unive.tarsis.AutomatonString.Interval result = arg.stringValue.length();
 			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
@@ -171,7 +171,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		}
 	} 
 
-	protected Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right) {
+	protected Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right, ProgramPoint pp) {
 		switch(operator) {
 		case STRING_INDEX_OF:
 			// Checking top cases
@@ -345,8 +345,13 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ValueEnvironment<Tarsis> environment) {
+	public Satisfiability satisfies(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return representation();
 	}
 }

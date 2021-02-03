@@ -69,12 +69,12 @@ public class GoLogicalOr extends BinaryNativeCall {
 		if (!rightExp.getDynamicType().isBooleanType() && !rightExp.getDynamicType().isUntyped())
 			return entryState.bottom();
 		
-		if (leftState.satisfies(leftExp) == Satisfiability.SATISFIED) 
+		if (leftState.satisfies(leftExp, this) == Satisfiability.SATISFIED) 
 			return leftState;
-		else if (leftState.satisfies(leftExp) == Satisfiability.NOT_SATISFIED) 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR));
-		else if (leftState.satisfies(leftExp) == Satisfiability.UNKNOWN) 
-			return leftState.lub(rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR)));
+		else if (leftState.satisfies(leftExp, this) == Satisfiability.NOT_SATISFIED) 
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR), this);
+		else if (leftState.satisfies(leftExp, this) == Satisfiability.UNKNOWN) 
+			return leftState.lub(rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR), this));
 		else 
 			return entryState.bottom();
 	}

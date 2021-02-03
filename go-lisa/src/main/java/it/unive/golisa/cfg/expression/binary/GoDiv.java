@@ -45,6 +45,6 @@ public class GoDiv extends BinaryNativeCall implements GoBinaryNumericalOperatio
 
 		return rightState
 				.smallStepSemantics(new BinaryExpression(resultType(leftExp, rightExp), leftExp, rightExp,
-						BinaryOperator.NUMERIC_DIV));
+						BinaryOperator.NUMERIC_DIV), this);
 	}
 }

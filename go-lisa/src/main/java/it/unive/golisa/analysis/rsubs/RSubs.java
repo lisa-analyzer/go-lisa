@@ -4,7 +4,8 @@ import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
 import it.unive.lisa.analysis.impl.numeric.Interval;
-import it.unive.lisa.analysis.nonrelational.ValueEnvironment;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -48,12 +49,12 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	public RSubs assign(Identifier id, ValueExpression expression) throws SemanticException {
+	public RSubs assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		if (processableByStringDomain(expression))
-			return new RSubs(string.assign(id, expression), num);
+			return new RSubs(string.assign(id, expression, pp), num);
 
 		if (processableByNumericalDomain(expression))
-			return new RSubs(string, num.assign(id, expression));
+			return new RSubs(string, num.assign(id, expression, pp));
 		
 		return new RSubs(string, num.top());
 	}
@@ -217,12 +218,12 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	public RSubs smallStepSemantics(ValueExpression expression) throws SemanticException {
+	public RSubs smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
 	}
 
 	@Override
-	public RSubs assume(ValueExpression expression) throws SemanticException {
+	public RSubs assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
 	}
 
@@ -235,7 +236,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// TODO satisfies
 		return Satisfiability.UNKNOWN;
 	}
@@ -315,5 +316,10 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		} else if (!string.equals(other.string))
 			return false;
 		return isTop && other.isTop;
+	}
+
+	@Override
+	public String toString() {
+		return representation();
 	}
 }

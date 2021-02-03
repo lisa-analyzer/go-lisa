@@ -46,7 +46,7 @@ public class GoSubtraction extends BinaryNativeCall implements GoBinaryNumerical
 
 		return rightState
 				.smallStepSemantics(new BinaryExpression(resultType(leftExp, rightExp), leftExp, rightExp,
-						BinaryOperator.NUMERIC_SUB));
+						BinaryOperator.NUMERIC_SUB), this);
 	}
 
 }

@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.binary;
 
+import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
@@ -10,6 +11,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * A Go XOR function call. 
@@ -17,7 +19,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoBitwiseXOr extends BinaryNativeCall {
+public class GoBitwiseXOr extends BinaryNativeCall implements GoBinaryNumericalOperation  {
 	
 	/**
 	 * Builds a Go XOR expression. 
@@ -52,9 +54,16 @@ public class GoBitwiseXOr extends BinaryNativeCall {
 	@Override
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+			SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
 			throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if (!left.getDynamicType().isUntyped() && (left.getDynamicType() instanceof GoType && !((GoType) left.getDynamicType()).isGoInteger()))
+			return entryState.bottom();
+
+		if (!right.getDynamicType().isUntyped() && (right.getDynamicType() instanceof GoType && !((GoType) right.getDynamicType()).isGoInteger()))
+			return entryState.bottom();
+		
+		// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
+		return rightState.smallStepSemantics(new PushAny(resultType(left, right)), this);	
 	}
 }

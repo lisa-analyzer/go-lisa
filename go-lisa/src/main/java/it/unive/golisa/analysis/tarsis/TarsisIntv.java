@@ -5,8 +5,9 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
-import it.unive.lisa.analysis.nonrelational.BaseNonRelationalValueDomain;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.TernaryOperator;
@@ -80,12 +81,12 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		}
 
 		@Override
-		protected TarsisIntv evalNullConstant() {
+		protected TarsisIntv evalNullConstant(ProgramPoint pp) {
 			return top();
 		}
 
 		@Override
-		protected TarsisIntv evalNonNullConstant(Constant constant) {
+		protected TarsisIntv evalNonNullConstant(Constant constant, ProgramPoint pp) {
 			if (constant.getValue() instanceof Integer) {
 				Integer i = (Integer) constant.getValue();
 				return new TarsisIntv(i, i);
@@ -95,7 +96,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		}
 
 		@Override
-		protected TarsisIntv evalUnaryExpression(UnaryOperator operator, TarsisIntv arg) {
+		protected TarsisIntv evalUnaryExpression(UnaryOperator operator, TarsisIntv arg, ProgramPoint pp) {
 
 			switch (operator) {
 			case NUMERIC_NEG:
@@ -110,7 +111,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		}
 
 		@Override
-		protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right) {
+		protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right, ProgramPoint pp) {
 			switch (operator) {
 			case NUMERIC_ADD:
 				return left.plus(right);
@@ -128,7 +129,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		}
 
 		@Override
-		protected TarsisIntv evalTernaryExpression(TernaryOperator operator, TarsisIntv left, TarsisIntv middle, TarsisIntv right) {
+		protected TarsisIntv evalTernaryExpression(TernaryOperator operator, TarsisIntv left, TarsisIntv middle, TarsisIntv right, ProgramPoint pp) {
 			return top();
 		}
 
@@ -161,33 +162,33 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		}
 
 		@Override
-		protected Satisfiability satisfiesAbstractValue(TarsisIntv value) {
+		protected Satisfiability satisfiesAbstractValue(TarsisIntv value, ProgramPoint pp) {
 			return Satisfiability.UNKNOWN;
 		}
 
 		@Override
-		protected Satisfiability satisfiesNullConstant() {
+		protected Satisfiability satisfiesNullConstant(ProgramPoint pp) {
 			return Satisfiability.UNKNOWN;
 		}
 
 		@Override
-		protected Satisfiability satisfiesNonNullConstant(Constant constant) {
+		protected Satisfiability satisfiesNonNullConstant(Constant constant, ProgramPoint pp) {
 			return Satisfiability.UNKNOWN;
 		}
 
 		@Override
-		protected Satisfiability satisfiesUnaryExpression(UnaryOperator operator, TarsisIntv arg) {
+		protected Satisfiability satisfiesUnaryExpression(UnaryOperator operator, TarsisIntv arg, ProgramPoint pp) {
 			return Satisfiability.UNKNOWN;
 		}
 
 		@Override
-		protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right) {
+		protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right, ProgramPoint pp) {
 			return Satisfiability.UNKNOWN;
 		}
 
 		@Override
 		protected Satisfiability satisfiesTernaryExpression(TernaryOperator operator, TarsisIntv left, TarsisIntv middle,
-				TarsisIntv right) {
+				TarsisIntv right, ProgramPoint pp) {
 			return Satisfiability.UNKNOWN;
 		}
 

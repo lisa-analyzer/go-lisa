@@ -64,6 +64,6 @@ public class GoBitwiseOr extends BinaryNativeCall implements GoBinaryNumericalOp
 			return entryState.bottom();
 		
 		// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
-		return rightState.smallStepSemantics(new PushAny(resultType(left, right)));	
+		return rightState.smallStepSemantics(new PushAny(resultType(left, right)), this);	
 	}
 }

@@ -41,7 +41,7 @@ public class GoCollectionAccess extends BinaryNativeCall {
 				|| left.getDynamicType() instanceof GoMapType
 				|| left.getDynamicType() instanceof GoSliceType
 				|| left.getDynamicType() instanceof Untyped)
-			return rightState.smallStepSemantics(new AccessChild(getRuntimeTypes(), left, right));
+			return rightState.smallStepSemantics(new AccessChild(getRuntimeTypes(), left, right), this);
 
 		return entryState.bottom();
 	}

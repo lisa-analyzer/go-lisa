@@ -59,6 +59,6 @@ public class GoContains extends BinaryNativeCall {
 		if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 			return entryState.bottom();
 		
-		return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_CONTAINS));
+		return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_CONTAINS), this);
 	}
 }

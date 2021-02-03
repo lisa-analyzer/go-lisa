@@ -67,7 +67,7 @@ public class GoGreaterOrEqual extends BinaryNativeCall {
 		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) {
 			// only, integer, floating point values, strings are ordered
 			if (leftExp.getDynamicType().isNumericType() && leftExp.getDynamicType().isNumericType())
-				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_GE));
+				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_GE), this);
 			//TODO: string comparisong: missing lexicographical order in LiSa binary operator
 		}
 

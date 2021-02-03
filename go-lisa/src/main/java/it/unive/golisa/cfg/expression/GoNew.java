@@ -8,7 +8,6 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.impl.types.TypeEnvironment;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.program.cfg.CFG;
@@ -31,19 +30,6 @@ public class GoNew extends NativeCall {
 		// The new built-in function allocates memory. The first argument is a type, not a value, 
 		// and the value returned is a pointer to a newly allocated zero value of that type.
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet((Type) getParameters()[0]));
-		return entryState.smallStepSemantics(created);
-	}
-
-	@Override
-	public <A extends AbstractState<A, H, TypeEnvironment>, H extends HeapDomain<H>> AnalysisState<A, H, TypeEnvironment> callTypeInference(
-			AnalysisState<A, H, TypeEnvironment> entryState, CallGraph callGraph,
-			AnalysisState<A, H, TypeEnvironment>[] computedStates, Collection<SymbolicExpression>[] params)
-			throws SemanticException {
-
-		// Following the Golang reference:
-		// The new built-in function allocates memory. The first argument is a type, not a value, 
-		// and the value returned is a pointer to a newly allocated zero value of that type.
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet((Type) getParameters()[0]));
-		return entryState.smallStepSemantics(created);
+		return entryState.smallStepSemantics(created, this);
 	}
 }

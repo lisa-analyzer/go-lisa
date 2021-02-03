@@ -33,13 +33,13 @@ public class GoLength extends UnaryNativeCall {
 		
 		if (expr.getDynamicType().isArrayType() || expr.getDynamicType() instanceof GoSliceType) {
 			ExternalSet<Type> type = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-			return exprState.smallStepSemantics(new PushAny(type));
+			return exprState.smallStepSemantics(new PushAny(type), this);
 		}
 				
 		if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 		
 		
-		return exprState.smallStepSemantics(new UnaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), expr, UnaryOperator.STRING_LENGTH));
+		return exprState.smallStepSemantics(new UnaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), expr, UnaryOperator.STRING_LENGTH), this);
 	}
 }

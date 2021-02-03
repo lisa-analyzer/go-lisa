@@ -45,6 +45,6 @@ public class GoMul extends BinaryNativeCall implements GoBinaryNumericalOperatio
 
 		return rightState
 				.smallStepSemantics(new BinaryExpression(resultType(leftExp, rightExp), leftExp, rightExp,
-						BinaryOperator.NUMERIC_MUL));
+						BinaryOperator.NUMERIC_MUL), this);
 	}
 }

@@ -5,7 +5,8 @@ import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.nonrelational.ValueEnvironment;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
@@ -32,19 +33,19 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	}
 
 	@Override
-	public RelTarsis assign(Identifier id, ValueExpression expression) throws SemanticException {
-		return new RelTarsis(tarsis.assign(id, expression), rsubs.assign(id, expression));
+	public RelTarsis assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+		return new RelTarsis(tarsis.assign(id, expression, pp), rsubs.assign(id, expression, pp));
 	}
 
 	@Override
-	public RelTarsis smallStepSemantics(ValueExpression expression) throws SemanticException {
-		return new RelTarsis(tarsis.smallStepSemantics(expression), rsubs.smallStepSemantics(expression));
+	public RelTarsis smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+		return new RelTarsis(tarsis.smallStepSemantics(expression, pp), rsubs.smallStepSemantics(expression, pp));
 	}
 
 	@Override
-	public RelTarsis assume(ValueExpression expression) throws SemanticException {
+	public RelTarsis assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// TODO Auto-generated method stub
-		return new RelTarsis(tarsis.assume(expression), rsubs.assume(expression));
+		return new RelTarsis(tarsis.assume(expression, pp), rsubs.assume(expression, pp));
 	}
 
 	@Override
@@ -53,11 +54,11 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression) throws SemanticException {
-		if (tarsis.satisfies(expression) == Satisfiability.SATISFIED || rsubs.satisfies(expression) == Satisfiability.SATISFIED)
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+		if (tarsis.satisfies(expression, pp) == Satisfiability.SATISFIED || rsubs.satisfies(expression, pp) == Satisfiability.SATISFIED)
 			return Satisfiability.SATISFIED;
 
-		if (tarsis.satisfies(expression) == Satisfiability.NOT_SATISFIED && rsubs.satisfies(expression) == Satisfiability.NOT_SATISFIED)
+		if (tarsis.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED && rsubs.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED)
 			return Satisfiability.NOT_SATISFIED;
 
 		return Satisfiability.UNKNOWN;
@@ -148,5 +149,10 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 		} else if (!tarsis.equals(other.tarsis))
 			return false;
 		return isTop && other.isTop;
+	}
+
+	@Override
+	public String toString() {
+		return representation();
 	}
 }

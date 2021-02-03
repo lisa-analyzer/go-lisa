@@ -418,14 +418,20 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
 		String unitName = receiver.getStaticType().isPointerType() ? ((GoPointerType)receiver.getStaticType()).getBaseType().toString() : receiver.getStaticType().toString();
-		CompilationUnit unit = program.getUnit(unitName);
-		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), unit, true, methodName, returnType, params), receiver);
+
+		if (program.getUnit(unitName) == null) 
+			// TODO: unknown unit
+			currentUnit = new CompilationUnit(filePath, getLine(ctx), getCol(ctx), unitName, false);
+		else
+			currentUnit = program.getUnit(unitName);
+
+		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), currentUnit, true, methodName, returnType, params), receiver);
 		currentCFG = method;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
 
 		currentCFG.getEntrypoints().add(body.getLeft());
 		currentCFG.simplify();
-		unit.addInstanceCFG(method);
+		currentUnit.addInstanceCFG(method);
 		return method;
 	}
 

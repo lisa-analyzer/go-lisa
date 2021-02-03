@@ -12,7 +12,6 @@ import javax.xml.bind.Marshaller;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import it.unive.golisa.analysis.ICALPResult;
-import it.unive.golisa.analysis.composition.RelTarsis;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
@@ -56,11 +55,13 @@ public class TarsisEval {
 			return;
 		} catch (UnsupportedOperationException e1) {
 			// an unsupported operations has been encountered
+			dumpXml(filePath, outputDir, e1 + " " + e1.getStackTrace()[0].toString(), true, true, false, false, 0);
 			e1.printStackTrace();
 			return;
 		} catch (Exception e2) {
 			// other exception
 			e2.printStackTrace();
+			dumpXml(filePath, outputDir, e2 + " " + e2.getStackTrace()[0].toString(), true, true, false, false, 0);
 			return;
 		}
 
@@ -68,8 +69,8 @@ public class TarsisEval {
 		lisa.setProgram(program);
 		lisa.setWorkdir(outputDir);
 		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()));
-		lisa.setDumpAnalysis(true);
+		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Tarsis()));
+		lisa.setDumpAnalysis(false);
 
 		try {
 			lisa.run();
@@ -81,7 +82,6 @@ public class TarsisEval {
 		} 
 		
 		long end = System.currentTimeMillis(); 
-
 		dumpXml(filePath, outputDir, "", true, true, true, true, end - start);
 	}
 
@@ -115,6 +115,5 @@ public class TarsisEval {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-
 	}
 }

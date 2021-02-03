@@ -6,7 +6,6 @@ import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.ValueDomain;
-import it.unive.lisa.analysis.impl.types.TypeEnvironment;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -52,47 +51,6 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 		super(cfg, sourceFile, line, col, var, expression);
 	}
 
-	@Override
-	public <A extends AbstractState<A, H, TypeEnvironment>,
-	H extends HeapDomain<H>> AnalysisState<A, H, TypeEnvironment> typeInference(
-			AnalysisState<A, H, TypeEnvironment> entryState, CallGraph callGraph,
-			StatementStore<A, H, TypeEnvironment> expressions) throws SemanticException {
-		AnalysisState<A, H, TypeEnvironment> right = getRight().typeInference(entryState, callGraph, expressions);
-		AnalysisState<A, H, TypeEnvironment> left = getLeft().typeInference(right, callGraph, expressions);
-		expressions.put(getRight(), right);
-		expressions.put(getLeft(), left);
-
-		AnalysisState<A, H, TypeEnvironment> result = null;
-		for (SymbolicExpression expr1 : left.getComputedExpressions())
-			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
-				AnalysisState<A, H, TypeEnvironment> tmp = null;
-
-				if (expr1 instanceof Constant && ((Constant) expr1).getValue() instanceof VariableRef[]) {
-					// TODO: multi-variable declarations assigned to top
-					VariableRef[] vars = (VariableRef[]) ((Constant) expr1).getValue();
-					tmp = left;
-					for (VariableRef v : vars) 
-						tmp.assign((Identifier) v.getVariable(), new PushAny(v.getRuntimeTypes()));
-				} else {
-					// TODO: need to check if the type of expr2 is an untyped type: in such a case
-					// should be converted to a type (e.g., intuntyped -> int, floatuntyped -> float32)
-					tmp = left.assign((Identifier) expr1, expr2);
-				}
-
-				if (result == null)
-					result = tmp;
-				else
-					result = result.lub(tmp);
-			}
-
-		if (!getRight().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getRight().getMetaVariables());
-		if (!getLeft().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-
-		setRuntimeTypes(result.getState().getValueState().getLastComputedTypes().getRuntimeTypes());
-		return result;
-	}
 
 	@Override
 	public String toString() {
@@ -120,11 +78,11 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 					VariableRef[] vars = (VariableRef[]) ((Constant) expr1).getValue();
 					tmp = left;
 					for (VariableRef v : vars) 
-						tmp = tmp.assign((Identifier) v.getVariable(), new PushAny(v.getRuntimeTypes()));
+						tmp = tmp.assign((Identifier) v.getVariable(), new PushAny(v.getRuntimeTypes()), this);
 				} else {
 					// TODO: need to check if the type of expr2 is an untyped type: in such a case
 					// should be converted to a type (e.g., intuntyped -> int, floatuntyped -> float32)
-					tmp = left.assign((Identifier) expr1, expr2);
+					tmp = left.assign((Identifier) expr1, expr2, this);
 				}
 				if (result == null)
 					result = tmp;

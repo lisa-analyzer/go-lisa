@@ -46,7 +46,7 @@ public class GoPlus extends UnaryNativeCall {
 		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), 0));
 
 		return entryState.smallStepSemantics(
-				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_ADD));
+				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_ADD), this);
 	}
 
 }

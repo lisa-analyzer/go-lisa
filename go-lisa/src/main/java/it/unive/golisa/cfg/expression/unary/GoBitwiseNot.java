@@ -25,12 +25,11 @@ public class GoBitwiseNot extends UnaryNativeCall {
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> exprState,
 			SymbolicExpression expr) throws SemanticException {
 		
-		
 		if (!expr.getDynamicType().isUntyped() && (expr.getDynamicType() instanceof GoType && !((GoType) expr.getDynamicType()).isGoInteger()))
 			return entryState.bottom();
 		
 		// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
-		return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(expr.getDynamicType())));	
+		return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(expr.getDynamicType())), this);	
 	}
 
 }

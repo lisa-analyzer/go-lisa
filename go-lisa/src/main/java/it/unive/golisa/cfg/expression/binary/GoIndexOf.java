@@ -58,6 +58,6 @@ public class GoIndexOf extends BinaryNativeCall{
 		if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 			return entryState.bottom();
 		
-		return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_INDEX_OF));
+		return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_INDEX_OF), this);
 	}
 }

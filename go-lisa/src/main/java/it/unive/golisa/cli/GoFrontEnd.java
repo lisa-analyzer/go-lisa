@@ -52,6 +52,7 @@ import it.unive.golisa.cfg.expression.binary.GoMul;
 import it.unive.golisa.cfg.expression.binary.GoRightShift;
 import it.unive.golisa.cfg.expression.binary.GoSubtraction;
 import it.unive.golisa.cfg.expression.binary.GoSum;
+import it.unive.golisa.cfg.expression.binary.GoTypeAssertion;
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
@@ -1408,6 +1409,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				else
 					return new GoSimpleSlice(currentCFG, primary, args.getLeft(), args.getRight());
 			}
+			
+			else if (ctx.typeAssertion() != null) {
+				return new GoTypeAssertion(currentCFG, primary, visitType_(ctx.typeAssertion().type_()));
+			}
 		}
 
 
@@ -1735,8 +1740,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitTypeAssertion(TypeAssertionContext ctx) {
-		// TODO: type assertion
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// This method should never be visited
+		throw new UnsupportedOperationException("Type assertion should never be visited");
 	}
 
 	@Override

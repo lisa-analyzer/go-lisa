@@ -11,11 +11,12 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoPointerType implements PointerType, GoType {
 
 	private Type baseType;
-	
+
 	private static final Set<GoPointerType> pointerTypes = new HashSet<>();
 
 	public static GoPointerType lookup(GoPointerType type)  {
@@ -23,15 +24,15 @@ public class GoPointerType implements PointerType, GoType {
 			pointerTypes.add(type);
 		return pointerTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
-	
+
 	public GoPointerType(Type baseType) {
 		this.baseType = baseType;
 	}
-	
+
 	public Type getBaseType() {
 		return baseType;
 	}
-	
+
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		if (other instanceof GoPointerType)
@@ -44,15 +45,19 @@ public class GoPointerType implements PointerType, GoType {
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		if (other instanceof GoPointerType)
+			return baseType.canBeAssignedTo(((GoPointerType) other).baseType) ? other : Untyped.INSTANCE;
+		if (other instanceof GoInterfaceType)
+			return ((GoInterfaceType) other).isEmptyInterface() ?  other : Untyped.INSTANCE;
+
+		return Untyped.INSTANCE;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "*" + baseType.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -82,12 +87,12 @@ public class GoPointerType implements PointerType, GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoNil(cfg);
 	}
-	
+
 	@Override
 	public boolean isGoInteger() {
 		return false;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

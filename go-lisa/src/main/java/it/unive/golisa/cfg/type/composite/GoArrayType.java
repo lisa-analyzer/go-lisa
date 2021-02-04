@@ -12,6 +12,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoArrayType implements GoType {
 
@@ -42,14 +43,17 @@ public class GoArrayType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
+		if (other instanceof GoArrayType)
+			return contentType.canBeAssignedTo(((GoArrayType) other).contentType) && length.equals(((GoArrayType) other).length);
 		return false;
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		if (other instanceof GoArrayType)
+			if (contentType.canBeAssignedTo(((GoArrayType) other).contentType) && length.equals(((GoArrayType) other).length))
+				return other;
+		return Untyped.INSTANCE;
 	}
 
 	@Override
@@ -93,15 +97,15 @@ public class GoArrayType implements GoType {
 		List<Expression> result = new ArrayList<>();
 		for (int i = 0; i < length; i++)
 			result.add(contentType.defaultValue(cfg));
-		
+
 		return new GoNonKeyedLiteral(cfg, (Expression[]) result.toArray(), this);
 	}
-	
+
 	@Override
 	public boolean isGoInteger() {
 		return false;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

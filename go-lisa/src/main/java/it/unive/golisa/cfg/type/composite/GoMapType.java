@@ -10,6 +10,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoMapType implements GoType {
 
@@ -39,14 +40,17 @@ public class GoMapType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
-		return false;
+		if (other instanceof GoMapType) 
+			return keyType.canBeAssignedTo(((GoMapType) other).keyType) && elementType.canBeAssignedTo(((GoMapType) other).elementType);
+		return other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		if (other instanceof GoMapType) 
+			if (keyType.canBeAssignedTo(((GoMapType) other).keyType) && elementType.canBeAssignedTo(((GoMapType) other).elementType))
+				return other;
+		return Untyped.INSTANCE;
 	}
 
 	@Override
@@ -89,7 +93,7 @@ public class GoMapType implements GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoNil(cfg);
 	}
-	
+
 	@Override
 	public boolean isGoInteger() {
 		return false;

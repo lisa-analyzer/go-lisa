@@ -14,6 +14,7 @@ import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 public class GoCollectionAccess extends BinaryNativeCall {
@@ -36,11 +37,12 @@ public class GoCollectionAccess extends BinaryNativeCall {
 		// resolving it. we rely on the rewriting that will happen inside heap
 		// domain to translate this into a variable that will have its correct
 		// type
-		if (left.getDynamicType() instanceof GoSliceType 
-				|| left.getDynamicType() instanceof GoArrayType
-				|| left.getDynamicType() instanceof GoMapType
-				|| left.getDynamicType() instanceof GoSliceType
-				|| left.getDynamicType() instanceof Untyped)
+		Type leftType = left.getDynamicType();
+		if (leftType instanceof GoSliceType 
+				|| leftType instanceof GoArrayType
+				|| leftType instanceof GoMapType
+				|| leftType instanceof GoSliceType
+				|| leftType instanceof Untyped)
 			return rightState.smallStepSemantics(new AccessChild(getRuntimeTypes(), left, right), this);
 
 		return entryState.bottom();

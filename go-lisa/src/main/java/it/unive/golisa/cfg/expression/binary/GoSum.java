@@ -34,7 +34,11 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 	 * @param exp2 	right-hand side operand 
 	 */
 	public GoSum(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "+", exp1, exp2);
+		this(cfg, null, -1, -1, exp1, exp2);
+	}
+	
+	public GoSum(CFG cfg, String filePath, int line, int col, Expression exp1, Expression exp2) {
+		super(cfg, filePath, line, col, "+", exp1, exp2);
 	}
 
 	@Override

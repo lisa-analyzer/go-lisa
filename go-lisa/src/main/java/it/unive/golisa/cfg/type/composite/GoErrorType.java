@@ -8,6 +8,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoErrorType implements GoType {
 
@@ -35,14 +36,12 @@ public class GoErrorType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
-		return false;
+		return other instanceof GoErrorType || other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		return other instanceof GoErrorType || other.isUntyped() ? other : Untyped.INSTANCE;
 	}
 
 	@Override

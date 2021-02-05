@@ -12,6 +12,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
+import it.unive.lisa.type.Untyped;
 
 public class GoStructType implements GoType, UnitType {
 
@@ -49,8 +50,11 @@ public class GoStructType implements GoType, UnitType {
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		if (other instanceof GoStructType)
+			return ((GoStructType) other).name.equals(name) ? other : Untyped.INSTANCE;
+		
+		// TODO: how to treat interfaces?
+		return Untyped.INSTANCE;
 	}
 
 	@Override

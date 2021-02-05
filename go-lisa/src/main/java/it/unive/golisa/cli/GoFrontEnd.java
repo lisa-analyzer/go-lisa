@@ -496,8 +496,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
-		if (ctx.statementList() == null) 
-			return Pair.of(new NoOp(currentCFG), new NoOp(currentCFG));
+		if (ctx.statementList() == null) {
+			NoOp entry = new NoOp(currentCFG);
+			NoOp exit = new NoOp(currentCFG);
+			currentCFG.addNode(entry);
+			currentCFG.addNode(exit);
+			addEdge(new SequentialEdge(entry, exit));
+			return Pair.of(entry, exit);
+		}
 		return visitStatementList(ctx.statementList());
 	}
 
@@ -1243,6 +1249,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Type visitResult(ResultContext ctx) {
+		if (ctx == null)
+			return Untyped.INSTANCE;
 		if (ctx.type_() != null)
 			return visitType_(ctx.type_());
 		else
@@ -1277,7 +1285,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go sum (+)
 		if (ctx.PLUS() != null)
-			return new GoSum(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoSum(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go multiplication (*)
 		if (ctx.STAR() != null) 

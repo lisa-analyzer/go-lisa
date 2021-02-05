@@ -70,7 +70,6 @@ public class TarsisEval {
 		lisa.setWorkdir(outputDir);
 		lisa.setInferTypes(true);
 		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Tarsis()));
-		lisa.setDumpAnalysis(false);
 
 		try {
 			lisa.run();
@@ -80,7 +79,7 @@ public class TarsisEval {
 			dumpXml(filePath, outputDir, e + " " + e.getStackTrace()[0].toString(), true, true, false, false, 0);
 			return;
 		} 
-		
+
 		long end = System.currentTimeMillis(); 
 		dumpXml(filePath, outputDir, "", true, true, true, true, end - start);
 	}
@@ -99,7 +98,7 @@ public class TarsisEval {
 		analysisResult.setTime(time);
 
 		String fileName = filePath.substring(filePath.lastIndexOf("/")+1, filePath.lastIndexOf("."));
-		
+
 		try {
 
 			File file = new File(outputDir + "/" + fileName + ".xml");

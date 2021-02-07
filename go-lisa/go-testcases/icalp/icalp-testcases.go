@@ -1,27 +1,5 @@
 package str
 
-func Count(s, substr string) int {
-	
-	var res string;
-	
-	s := "abcabc"
-	substr := "b"
-
-	n := 0
-	for {
-		i := Index(s, substr)
-		if i == -1 {
-			res = n
-			break;
-		}
-		n++
-		s = s[i+len(substr):]
-	}
-	
-	return res
-}
-
-
 func copy(rep, pref string) {
 	a := pref;
 	b := pref;
@@ -52,6 +30,29 @@ func ingnore(expr, location, pref string) {
 			return true
 		}
 	}
+}
+
+
+func strings(x,y string) {
+	var y string = "b";
+	if (Contains(x, "abc")) {
+		y = y + "a";
+	} else {
+		y = y + "a";
+	}
+}
+
+
+func secName(pr1, pr2, javaName string) {
+	if HasPrefix(javaName, pr1) {
+	  	res = pr2 + javaName[4: 8]
+	 } else if HasPrefix(javaName, pr2)  {
+ 		res = pr1 + javaName[4 : 8]
+	 } else {
+  		res = javaName[4 : 8]
+ 	}
+
+	return res
 }
 
 func SanitizePhoneNumber(phoneNumber string, pref string) string {

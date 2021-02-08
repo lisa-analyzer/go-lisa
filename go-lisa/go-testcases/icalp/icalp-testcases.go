@@ -20,6 +20,7 @@ func bultan1(x1, x2 string) {
 	}
 }
 
+
 // From https://github.com/viant/afs/blob/fc60e2906d0a042a04ce644f6dff7557193f72b9/matcher/ignore.go
 func ingnore(expr, location, pref string) {
 	if HasPrefix(expr, pref) {
@@ -31,7 +32,6 @@ func ingnore(expr, location, pref string) {
 		}
 	}
 }
-
 
 func strings(x,y string) {
 	var y string = "b";
@@ -53,6 +53,22 @@ func secName(pr1, pr2, javaName string) {
  	}
 
 	return res
+}
+
+func substring (nondet bool) {
+	var res string = "substring test"
+	if (nondet) {
+		res = res + " passed"
+	} else {
+		res = res + " failed"
+	}
+}
+
+func rep(value string, nondet bool) {
+	var res string = "Repeat: "
+	for ; nondet ; {
+		res = res + value + "!"
+	}
 }
 
 func SanitizePhoneNumber(phoneNumber string, pref string) string {

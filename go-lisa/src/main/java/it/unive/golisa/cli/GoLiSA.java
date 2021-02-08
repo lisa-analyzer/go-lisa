@@ -25,7 +25,7 @@ public class GoLiSA {
 
 		String filePath = args[0];
 
-		if (args.length < 1) {
+		if (args.length < 2) {
 			System.err.println("Output directory is missing. Exiting.");
 			return;
 		}
@@ -64,7 +64,7 @@ public class GoLiSA {
 		lisa.setProgram(program);
 		lisa.setWorkdir(outputDir);
 		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), args[2] == null || args[2].equals("-tarsis") ? new Tarsis() : new RelTarsis()));
+		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), args.length < 3 || args[2].equals("-tarsis") ? new Tarsis() : new RelTarsis()));
 		lisa.setDumpAnalysis(true);
 
 		try {

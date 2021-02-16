@@ -9,6 +9,8 @@ func simpleSwitch(x int) {
 		case 2: y + 2;
 		case 3: y + 3;
 	}
+	
+	return
 }
 
 func simpleSwitchWithFt(x int) {
@@ -18,6 +20,8 @@ func simpleSwitchWithFt(x int) {
 		case 2: y + 2; fallthrough
 		case 3: y + 3; fallthrough
 	}
+	
+	return
 }
 
 func simpleSwitchWithDefault(x int) {
@@ -28,6 +32,8 @@ func simpleSwitchWithDefault(x int) {
 		case 3: y + 3;
 		default: y + 4;
 	}
+	
+	return
 }
 
 func simpleSwitchWithDefault2(x int) {
@@ -46,6 +52,8 @@ func noGuard(x, y int) {
 		case x < z: f2()
 		case x == 4: f3()
 	}
+	
+	return
 }
 
 func noGuardWithAsg() {
@@ -53,6 +61,8 @@ func noGuardWithAsg() {
 		case x < 0: y = -x
 		case x >= 0: y =  x
 	}
+	
+	return
 }
 
 func multiExps(tag int) {
@@ -60,6 +70,8 @@ func multiExps(tag int) {
 		case 0, 1, 2, 3: s1()
 		case 4, 5, 6, 7: s2()
 	}
+	
+	return
 }
 
 func mixed(tag int) {
@@ -71,4 +83,6 @@ func mixed(tag int) {
 		default: def();
 		case 4: s4();
 	}
+	
+	return
 }

@@ -31,6 +31,8 @@ func ingnore(expr, location, pref string) {
 			return true
 		}
 	}
+	
+	return false
 }
 
 func strings(x,y string) {
@@ -69,6 +71,7 @@ func rep(value string, nondet bool) {
 	for ; nondet ; {
 		res = res + value + "!"
 	}
+	return res
 }
 
 func SanitizePhoneNumber(phoneNumber string, pref string) string {

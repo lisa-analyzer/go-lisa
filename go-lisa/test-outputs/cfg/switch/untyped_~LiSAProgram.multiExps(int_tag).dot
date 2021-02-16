@@ -3,7 +3,7 @@ digraph {
 	"node1" [shape="rect",color="gray",label=<[unresolved]s2()>];
 	"node2" [shape="rect",color="gray",label=<||(||(||(==(4, tag), ==(5, tag)), ==(6, tag)), ==(7, tag))>];
 	"node3" [shape="rect",color="gray",label=<[unresolved]s1()>];
-	"node4" [shape="rect",color="gray",label=<no-op>];
+	"node4" [shape="rect",color="black",peripheries="2",label=<ret>];
 	"node1" -> "node4" [color="black"];
 	"node2" -> "node1" [color="blue",style="dashed"];
 	"node2" -> "node4" [color="red",style="dashed"];

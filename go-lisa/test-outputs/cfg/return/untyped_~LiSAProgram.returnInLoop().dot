@@ -1,15 +1,14 @@
 digraph {
 	"node0" [shape="rect",color="black",label=<i = 0>];
-	"node1" [shape="rect",color="black",peripheries="2",label=<return i>];
-	"node2" [shape="rect",color="black",peripheries="2",label=<return i>];
-	"node3" [shape="rect",color="gray",label=<&lt;(i, 10)>];
-	"node4" [shape="rect",color="gray",label=<no-op>];
-	"node5" [shape="rect",color="gray",label=<i = +(i, 1)>];
-	"node3" -> "node1" [color="blue",style="dashed"];
-	"node3" -> "node4" [color="red",style="dashed"];
-	"node4" -> "node2" [color="black"];
-	"node0" -> "node3" [color="black"];
-	"node5" -> "node3" [color="black"];
+	"node1" [shape="rect",color="gray",label=<i = +(i, 1)>];
+	"node2" [shape="rect",color="gray",label=<&lt;(i, 10)>];
+	"node3" [shape="rect",color="gray",label=<i = -(i, 1)>];
+	"node4" [shape="rect",color="black",peripheries="2",label=<return i>];
+	"node1" -> "node2" [color="black"];
+	"node2" -> "node3" [color="blue",style="dashed"];
+	"node2" -> "node4" [color="red",style="dashed"];
+	"node0" -> "node2" [color="black"];
+	"node3" -> "node1" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

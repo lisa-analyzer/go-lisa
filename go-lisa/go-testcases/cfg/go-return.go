@@ -2,17 +2,10 @@ package main
 
 import "fmt"
 
-
-func returns() {
-	return 1
-	return 2
-	return 3
-}
-
 func returnInLoop() {
 	
 	for i := 0; i < 10; i++ {
-		return i
+		i = i - 1;
 	}
 	
 	return i;
@@ -24,8 +17,6 @@ func returnInIfStmt1(i int) {
 	} else {
 		return 2
 	}
-	
-	return 3
 }
 
 func returnInIfStmt2(i int) {
@@ -36,6 +27,4 @@ func returnInIfStmt2(i int) {
 		i--
 		return 2
 	}
-	
-	return 3
 }

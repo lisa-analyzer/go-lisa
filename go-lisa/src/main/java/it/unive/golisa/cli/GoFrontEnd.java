@@ -239,6 +239,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			packageUnit.addCFG(cfg);
 			currentCFG = cfg;
 			visitFunctionDecl(funcDecl);
+			currentCFG.simplify();
 		}
 
 		return program;
@@ -320,7 +321,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, currStmt.getLeft()));
 			else
-				entryNode = currStmt.getRight();
+				entryNode = currStmt.getLeft();
 
 			lastStmt = currStmt.getRight();
 		}

@@ -25,6 +25,8 @@ func noInitFor() {
 	for ; i < 10 ; i++ {
 		sum = sum + i
 	}
+	
+	return sum
 }
 
 func noIncFor() {
@@ -32,4 +34,6 @@ func noIncFor() {
 	for i := 0 ; i < 10 ; {
 		sum = sum + i
 	}
+	
+	return sum
 }

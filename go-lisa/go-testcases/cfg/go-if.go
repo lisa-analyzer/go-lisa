@@ -10,12 +10,16 @@ func simpleIf() {
 	} else {
 		var b int = 2
 	}
+	
+	return 
 }
 
 func ifWithAsg() {
 	if x := 100; x == 100 {
 		y := 5
 	}
+	
+	return 
 }
 func asgs() {
 	if x == 100 {
@@ -25,6 +29,8 @@ func asgs() {
 		w := 3
 		z := 4
 	}	
+
+	return
 }
 
 func elseIf() {
@@ -36,6 +42,8 @@ func elseIf() {
 	} else {
 		w := 4
 	}
+	
+	return
 }
 
 func elseIfAsgs() {
@@ -49,6 +57,8 @@ func elseIfAsgs() {
 	} else {
 		w = 4
 	}
+	
+	return
 }
 
 func ifWithoutElse() {
@@ -60,4 +70,6 @@ func ifWithoutElse() {
 	} else if x == 99 {
 		z = 3
 	} 
+	
+	return
 }

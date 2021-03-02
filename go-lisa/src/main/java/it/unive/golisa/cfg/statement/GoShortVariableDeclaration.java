@@ -1,20 +1,28 @@
 package it.unive.golisa.cfg.statement;
 
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
+import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeTokenType;
 
 public class GoShortVariableDeclaration extends BinaryExpression {
 
@@ -63,6 +71,7 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 	V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, StatementStore<A, H, V> expressions)
 					throws SemanticException {
+
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, callGraph, expressions);
 		AnalysisState<A, H, V> left = getLeft().semantics(right, callGraph, expressions);
 		expressions.put(getRight(), right);
@@ -80,9 +89,18 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 					for (VariableRef v : vars) 
 						tmp = tmp.assign((Identifier) v.getVariable(), new PushAny(v.getRuntimeTypes()), this);
 				} else {
-					// TODO: need to check if the type of expr2 is an untyped type: in such a case
-					// should be converted to a type (e.g., intuntyped -> int, floatuntyped -> float32)
-					tmp = left.assign((Identifier) expr1, expr2, this);
+					Type varType = expr2.getDynamicType();
+					if (expr2.getDynamicType() instanceof GoUntypedInt)
+						varType = GoIntType.INSTANCE;
+
+					if (expr2.getDynamicType() instanceof GoUntypedFloat)
+						varType = GoFloat32Type.INSTANCE;
+					
+					Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(varType)), varType);
+					it.unive.lisa.symbolic.value.BinaryExpression rhsCasted = new it.unive.lisa.symbolic.value.BinaryExpression(Caches.types().mkSingletonSet(expr1.getDynamicType()), expr2, typeCast, BinaryOperator.TYPE_CAST);
+					
+					tmp = left.assign((Identifier) expr1, rhsCasted, this);
+					
 				}
 				if (result == null)
 					result = tmp;

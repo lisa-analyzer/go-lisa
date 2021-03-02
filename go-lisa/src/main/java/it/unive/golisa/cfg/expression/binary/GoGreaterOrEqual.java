@@ -64,12 +64,8 @@ public class GoGreaterOrEqual extends BinaryNativeCall {
 
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
-		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) {
-			// only, integer, floating point values, strings are ordered
-			if (leftExp.getDynamicType().isNumericType() && leftExp.getDynamicType().isNumericType())
-				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_GE), this);
-			//TODO: string comparisong: missing lexicographical order in LiSa binary operator
-		}
+		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) 
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_GE), this);
 
 		return entryState.bottom();
 	}

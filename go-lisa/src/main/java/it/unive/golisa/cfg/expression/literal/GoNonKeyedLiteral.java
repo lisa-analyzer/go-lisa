@@ -3,6 +3,7 @@ package it.unive.golisa.cfg.expression.literal;
 import java.util.Collection;
 
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.HeapDomain;
@@ -10,11 +11,18 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.ValueIdentifier;
 
 public class GoNonKeyedLiteral extends NativeCall {
 
@@ -33,7 +41,41 @@ public class GoNonKeyedLiteral extends NativeCall {
 		AnalysisState<A, H, V> lastPostState = computedStates[computedStates.length - 1];
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()));
 		
-		// TODO: at the moment, we are only allocating the object, without considering the paramters
-		return lastPostState.smallStepSemantics(created, this);
+		// Allocates the new heap allocation 
+		AnalysisState<A, H, V> result = lastPostState.smallStepSemantics(created, this);
+		
+		if (getStaticType() instanceof GoStructType) {
+
+			// Retrieve the struct type (that is a compilation unit)
+			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
+			int i = 0;
+			for (Global field : structUnit.getAllGlobals()) {
+				AccessChild accessChild = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), created, getVariable(field));
+
+				AnalysisState<A, H, V> tmp = result.smallStepSemantics(accessChild, this);
+				AnalysisState<A, H, V> tmpField = null;
+				
+				for (SymbolicExpression id : tmp.getComputedExpressions()) 
+					for (SymbolicExpression exp : params[i])
+						if (tmpField == null)
+							tmpField = tmp.assign((Identifier) id, exp, this);
+						else
+							tmpField = tmpField.lub(tmp.assign((Identifier) id, exp, this));
+				
+				result = tmpField;
+				i++;
+			}
+		}
+
+		return result.smallStepSemantics(new HeapReference(created.getTypes(), created.toString()), this);
+	}
+
+	private SymbolicExpression getVariable(Global global) {
+		SymbolicExpression expr;
+		if (global.getStaticType().isPointerType())
+			expr = new HeapReference(Caches.types().mkSingletonSet(global.getStaticType()), global.getName());
+		else
+			expr = new ValueIdentifier(Caches.types().mkSingletonSet(global.getStaticType()), global.getName());
+		return expr;
 	}
 }

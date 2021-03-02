@@ -1,9 +1,22 @@
 package it.unive.golisa.cfg.statement;
 
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.HeapDomain;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.caches.Caches;
+import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Assignment;
+import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeTokenType;
 
 /**
  * Go variable declaration class (e.g., var x int = 5).
@@ -11,7 +24,7 @@ import it.unive.lisa.type.Type;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoVariableDeclaration extends Assignment {
+public class GoVariableDeclaration extends BinaryExpression {
 
 	private final Type type;
 
@@ -48,5 +61,39 @@ public class GoVariableDeclaration extends Assignment {
 	public GoVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Type type, Expression var, Expression expression) {
 		super(cfg, sourceFile, line, col, var, expression);
 		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "var " + getLeft() + " " + type + " = " + getRight();
+	}
+
+	@Override
+	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+			AnalysisState<A, H, V> entryState, CallGraph callGraph, StatementStore<A, H, V> expressions)
+			throws SemanticException {
+		
+		AnalysisState<A, H, V> right = getRight().semantics(entryState, callGraph, expressions);
+		AnalysisState<A, H, V> left = getLeft().semantics(right, callGraph, expressions);
+		expressions.put(getRight(), right);
+		expressions.put(getLeft(), left);
+
+		AnalysisState<A, H, V> result = null;
+		for (SymbolicExpression expr1 : left.getComputedExpressions())
+			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
+				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(type)), type);
+				it.unive.lisa.symbolic.value.BinaryExpression rhsCasted = new it.unive.lisa.symbolic.value.BinaryExpression(Caches.types().mkSingletonSet(type), expr2, typeCast, BinaryOperator.TYPE_CAST);
+				AnalysisState<A, H, V> tmp = left.assign((Identifier) expr1, rhsCasted, this);
+				if (result == null)
+					result = tmp;
+				else
+					result = result.lub(tmp);
+			}
+
+		if (!getRight().getMetaVariables().isEmpty())
+			result = result.forgetIdentifiers(getRight().getMetaVariables());
+		if (!getLeft().getMetaVariables().isEmpty())
+			result = result.forgetIdentifiers(getLeft().getMetaVariables());
+		return result;
 	}
 }

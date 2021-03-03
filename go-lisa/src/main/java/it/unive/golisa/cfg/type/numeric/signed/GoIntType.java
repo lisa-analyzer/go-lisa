@@ -59,7 +59,7 @@ public class GoIntType implements NumericType, GoType {
 	@Override
 	public boolean is32Bits() {
 		// TODO the format depends on the type of architecture that it is used.
-		return false;
+		return true;
 	}
 
 	@Override

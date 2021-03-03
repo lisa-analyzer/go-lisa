@@ -102,6 +102,7 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 					tmp = left.assign((Identifier) expr1, rhsCasted, this);
 					
 				}
+				
 				if (result == null)
 					result = tmp;
 				else

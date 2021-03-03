@@ -1,7 +1,7 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<i = 1>];
-	"node1" [shape="rect",color="gray",label=<j = 2>];
-	"node2" [shape="rect",color="gray",label=<k = 3>];
+	"node0" [shape="rect",color="black",label=<var i int = 1>];
+	"node1" [shape="rect",color="gray",label=<var j int = 2>];
+	"node2" [shape="rect",color="gray",label=<var k int = 3>];
 	"node0" -> "node1" [color="black"];
 	"node1" -> "node2" [color="black"];
 subgraph cluster_legend {

@@ -1,0 +1,22 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<a = &quot;abc&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$a: [string]<BR/>[inferred: [string], state: _|_] ]]<BR/>}} -&gt; [vid$a]>];
+	"node1" [shape="rect",color="gray",label=<y = strings.HasPrefix(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$a: [string]<BR/>vid$y: [bool]<BR/>vid$b: [string]<BR/>vid$x: [bool]<BR/>[inferred: [bool], state: _|_] ]]<BR/>}} -&gt; [vid$y]>];
+	"node2" [shape="rect",color="gray",label=<z = strings.HasSuffix(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$a: [string]<BR/>vid$y: [bool]<BR/>vid$b: [string]<BR/>vid$z: [bool]<BR/>vid$x: [bool]<BR/>[inferred: [bool], state: _|_] ]]<BR/>}} -&gt; [vid$z]>];
+	"node3" [shape="rect",color="gray",label=<w = strings.Index(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$a: [string]<BR/>vid$y: [bool]<BR/>vid$b: [string]<BR/>vid$z: [bool]<BR/>vid$w: [int]<BR/>vid$x: [bool]<BR/>[inferred: [int], state: _|_] ]]<BR/>}} -&gt; [vid$w]>];
+	"node4" [shape="rect",color="gray",label=<x = strings.Contains(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$a: [string]<BR/>vid$b: [string]<BR/>vid$x: [bool]<BR/>[inferred: [bool], state: _|_] ]]<BR/>}} -&gt; [vid$x]>];
+	"node5" [shape="rect",color="gray",label=<b = &quot;bcd&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$a: [string]<BR/>vid$b: [string]<BR/>[inferred: [string], state: _|_] ]]<BR/>}} -&gt; [vid$b]>];
+	"node6" [shape="rect",color="gray",label=<j = strings.Replace(a, b, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ vid$a: [string]<BR/>vid$b: [string]<BR/>vid$w: [int]<BR/>vid$x: [bool]<BR/>vid$y: [bool]<BR/>vid$z: [bool]<BR/>vid$j: [string]<BR/>[inferred: [string], state: _|_] ]]<BR/>}} -&gt; [vid$j]>];
+	"node0" -> "node5" [color="black"];
+	"node1" -> "node2" [color="black"];
+	"node2" -> "node3" [color="black"];
+	"node3" -> "node6" [color="black"];
+	"node4" -> "node1" [color="black"];
+	"node5" -> "node4" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

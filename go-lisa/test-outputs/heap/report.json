@@ -1,0 +1,4 @@
+{
+  "warnings" : [ ],
+  "files" : [ "analysis___float64_Vertex.Abs().dot", "analysis___untyped_~LiSAProgram.alloc().dot", "analysis___untyped_~LiSAProgram.forAlloc(int_x,_int_y).dot", "analysis___untyped_~LiSAProgram.ifAlloc(int_x,_int_y).dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+}

@@ -89,18 +89,23 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 					for (VariableRef v : vars) 
 						tmp = tmp.assign((Identifier) v.getVariable(), new PushAny(v.getRuntimeTypes()), this);
 				} else {
-					Type varType = expr2.getDynamicType();
-					if (expr2.getDynamicType() instanceof GoUntypedInt)
-						varType = GoIntType.INSTANCE;
-
-					if (expr2.getDynamicType() instanceof GoUntypedFloat)
-						varType = GoFloat32Type.INSTANCE;
 					
-					Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(varType)), varType);
-					it.unive.lisa.symbolic.value.BinaryExpression rhsCasted = new it.unive.lisa.symbolic.value.BinaryExpression(Caches.types().mkSingletonSet(expr1.getDynamicType()), expr2, typeCast, BinaryOperator.TYPE_CAST);
-					
-					tmp = left.assign((Identifier) expr1, rhsCasted, this);
-					
+					if (expr2.getDynamicType() instanceof GoUntypedInt) {
+						Type varType = GoIntType.INSTANCE;
+						Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(varType)), varType);
+						it.unive.lisa.symbolic.value.BinaryExpression rhsCasted = new it.unive.lisa.symbolic.value.BinaryExpression(Caches.types().mkSingletonSet(expr1.getDynamicType()), expr2, typeCast, BinaryOperator.TYPE_CAST);
+						
+						tmp = left.assign((Identifier) expr1, rhsCasted, this);
+						
+					} else if (expr2.getDynamicType() instanceof GoUntypedFloat) {
+						Type varType = GoFloat32Type.INSTANCE;
+						Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(varType)), varType);
+						it.unive.lisa.symbolic.value.BinaryExpression rhsCasted = new it.unive.lisa.symbolic.value.BinaryExpression(Caches.types().mkSingletonSet(expr1.getDynamicType()), expr2, typeCast, BinaryOperator.TYPE_CAST);
+						
+						tmp = left.assign((Identifier) expr1, rhsCasted, this);
+					} else if (expr2.getDynamicType().canBeAssignedTo(expr1.getDynamicType())) {
+						tmp = left.assign((Identifier) expr1, expr2, this);
+					}
 				}
 				
 				if (result == null)

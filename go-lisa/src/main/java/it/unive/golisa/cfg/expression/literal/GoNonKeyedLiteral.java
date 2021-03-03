@@ -20,8 +20,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.value.HeapIdentifier;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueIdentifier;
 
 public class GoNonKeyedLiteral extends NativeCall {
@@ -43,6 +43,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 		
 		// Allocates the new heap allocation 
 		AnalysisState<A, H, V> result = lastPostState.smallStepSemantics(created, this);
+		HeapIdentifier hid = (HeapIdentifier) result.getComputedExpressions().iterator().next();
 		
 		if (getStaticType() instanceof GoStructType) {
 
@@ -50,7 +51,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
 			int i = 0;
 			for (Global field : structUnit.getAllGlobals()) {
-				AccessChild accessChild = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), created, getVariable(field));
+				AccessChild accessChild = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), hid, getVariable(field));
 
 				AnalysisState<A, H, V> tmp = result.smallStepSemantics(accessChild, this);
 				AnalysisState<A, H, V> tmpField = null;
@@ -67,7 +68,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 			}
 		}
 
-		return result.smallStepSemantics(new HeapReference(created.getTypes(), created.toString()), this);
+		return result.smallStepSemantics(new HeapReference(hid.getTypes(), hid.toString()), this);
 	}
 
 	private SymbolicExpression getVariable(Global global) {

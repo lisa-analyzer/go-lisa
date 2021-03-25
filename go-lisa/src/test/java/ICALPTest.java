@@ -15,9 +15,9 @@ import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.program.Program;
 
 public class ICALPTest {
-	private String tmpDir = "tmp/";
+	private String tmpDir = "go-outputs/icalp";
 	private String sourcePath = "go-testcases/icalp/";
-
+	
 	@Test
 	public void codotaTest() throws IOException, AnalysisSetupException {
 		Program program = GoFrontEnd.processFile(sourcePath + "codota.go");

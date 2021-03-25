@@ -1,225 +1,41 @@
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
 import org.junit.Test;
 
-import it.unive.golisa.cli.GoFrontEnd;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.outputs.JsonReport;
-import it.unive.lisa.outputs.compare.JsonReportComparer;
-import it.unive.lisa.program.Program;
+import it.unive.lisa.AnalysisSetupException;
 
-public class CFGTest {
-
-	private String tmpDir = "tmp/";
-	private String sourcePath = "go-testcases/cfg/";
-	private String expDumpPath = "test-outputs/cfg/";
+public class CFGTest extends AnalysisTest {
 
 	@Test
-	public void testDeclaration() throws IOException {
-		Program program = GoFrontEnd.processFile(sourcePath + "go-decl.go");
-		LiSA lisa = new LiSA();
-
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setDumpCFGs(true);
-		lisa.setWorkdir(tmpDir);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-			fail("Analysis terminated with errors");
-		}
-
-		File actFile = new File(tmpDir + "report.json");
-		File expFile = new File(expDumpPath + "decl/report.json");
-		JsonReport expected = JsonReport.read(new FileReader(expFile));
-		JsonReport actual = JsonReport.read(new FileReader(actFile));
-		assertTrue("Results are different",
-				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-
-		for (File f : actFile.getParentFile().listFiles())
-			f.delete();
-		actFile.getParentFile().delete();
+	public void testDeclaration() throws AnalysisSetupException {
+		perform("cfg/decl", "go-decl.go", false, false, true, null);
 	}
 	
 	@Test
-	public void testIf() throws IOException {
-		Program program = GoFrontEnd.processFile(sourcePath + "go-if.go");
-		LiSA lisa = new LiSA();
-
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setDumpCFGs(true);
-		lisa.setWorkdir(tmpDir);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-			fail("Analysis terminated with errors");
-		}
-
-		File actFile = new File(tmpDir + "report.json");
-		File expFile = new File(expDumpPath + "if/report.json");
-		JsonReport expected = JsonReport.read(new FileReader(expFile));
-		JsonReport actual = JsonReport.read(new FileReader(actFile));
-		assertTrue("Results are different",
-				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-
-		for (File f : actFile.getParentFile().listFiles())
-			f.delete();
-		actFile.getParentFile().delete();
+	public void testIf() throws AnalysisSetupException {
+		perform("cfg/if", "go-if.go", false, false, true, null);
 	}
 	
 	@Test
-	public void testFor() throws IOException {
-		Program program = GoFrontEnd.processFile(sourcePath + "go-for.go");
-		LiSA lisa = new LiSA();
-
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setDumpCFGs(true);
-		lisa.setWorkdir(tmpDir);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-			fail("Analysis terminated with errors");
-		}
-
-		File actFile = new File(tmpDir + "report.json");
-		File expFile = new File(expDumpPath + "for/report.json");
-		JsonReport expected = JsonReport.read(new FileReader(expFile));
-		JsonReport actual = JsonReport.read(new FileReader(actFile));
-		assertTrue("Results are different",
-				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-
-		for (File f : actFile.getParentFile().listFiles())
-			f.delete();
-		actFile.getParentFile().delete();
+	public void testFor() throws AnalysisSetupException {
+		perform("cfg/for", "go-for.go", false, false, true, null);
 	}
 	
 	@Test
-	public void testGoTypes() throws IOException {
-		Program program = GoFrontEnd.processFile(sourcePath + "go-types.go");
-		LiSA lisa = new LiSA();
-
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setDumpCFGs(true);
-		lisa.setWorkdir(tmpDir);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-			fail("Analysis terminated with errors");
-		}
-
-		File actFile = new File(tmpDir + "report.json");
-		File expFile = new File(expDumpPath + "types/report.json");
-		JsonReport expected = JsonReport.read(new FileReader(expFile));
-		JsonReport actual = JsonReport.read(new FileReader(actFile));
-		assertTrue("Results are different",
-				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-
-		for (File f : actFile.getParentFile().listFiles())
-			f.delete();
-		actFile.getParentFile().delete();
+	public void testTypes() throws AnalysisSetupException {
+		perform("cfg/types", "go-types.go", false, false, true, null);
+	}
+		
+	@Test
+	public void testTour() throws AnalysisSetupException {
+		perform("cfg/tour", "go-tour.go", false, false, true, null);
 	}
 	
 	@Test
-	public void testGoTour() throws IOException {
-		Program program = GoFrontEnd.processFile(sourcePath + "go-tour.go");
-		LiSA lisa = new LiSA();
-
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setDumpCFGs(true);
-		lisa.setWorkdir(tmpDir);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-			fail("Analysis terminated with errors");
-		}
-
-		File actFile = new File(tmpDir + "report.json");
-		File expFile = new File(expDumpPath + "tour/report.json");
-		JsonReport expected = JsonReport.read(new FileReader(expFile));
-		JsonReport actual = JsonReport.read(new FileReader(actFile));
-		assertTrue("Results are different",
-				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-
-		for (File f : actFile.getParentFile().listFiles())
-			f.delete();
-		actFile.getParentFile().delete();
+	public void testSwitch() throws AnalysisSetupException {
+		perform("cfg/switch", "go-switch.go", false, false, true, null);
 	}
 	
 	@Test
-	public void testSwitch() throws IOException {
-		Program program = GoFrontEnd.processFile(sourcePath + "go-switch.go");
-		LiSA lisa = new LiSA();
-
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setDumpCFGs(true);
-		lisa.setWorkdir(tmpDir);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-			fail("Analysis terminated with errors");
-		}
-
-		File actFile = new File(tmpDir + "report.json");
-		File expFile = new File(expDumpPath + "switch/report.json");
-		JsonReport expected = JsonReport.read(new FileReader(expFile));
-		JsonReport actual = JsonReport.read(new FileReader(actFile));
-		assertTrue("Results are different",
-				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-
-		for (File f : actFile.getParentFile().listFiles())
-			f.delete();
-		actFile.getParentFile().delete();
-	}
-	
-	@Test
-	public void testReturn() throws IOException {
-		Program program = GoFrontEnd.processFile(sourcePath + "go-return.go");
-		LiSA lisa = new LiSA();
-
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setDumpCFGs(true);
-		lisa.setWorkdir(tmpDir);
-
-		try {
-			lisa.run();
-		} catch (AnalysisException e) {
-			System.err.println(e);
-			fail("Analysis terminated with errors");
-		}
-
-		File actFile = new File(tmpDir + "report.json");
-		File expFile = new File(expDumpPath + "return/report.json");
-		JsonReport expected = JsonReport.read(new FileReader(expFile));
-		JsonReport actual = JsonReport.read(new FileReader(actFile));
-		assertTrue("Results are different",
-				JsonReportComparer.compare(expected, actual, expFile.getParentFile(), actFile.getParentFile()));
-
-		for (File f : actFile.getParentFile().listFiles())
-			f.delete();
-		actFile.getParentFile().delete();
+	public void testReturn() throws AnalysisSetupException {
+		perform("cfg/return", "go-return.go", false, false, true, null);
 	}
 }

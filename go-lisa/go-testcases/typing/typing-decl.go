@@ -24,9 +24,6 @@ func simpleTyping() int {
 	var subs string = x[1:3]
 }
 
-
-
-
 func typeError1(x, y int) int {
 	var i int = 1 + 1.2
 }

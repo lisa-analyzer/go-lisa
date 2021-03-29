@@ -111,6 +111,7 @@ import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
@@ -220,7 +221,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		source = ctx;
 		String packageName = visitPackageClause(ctx.packageClause());
 
-		CompilationUnit packageUnit = new CompilationUnit(filePath, 0, 0, packageName, false);
+		CompilationUnit packageUnit = new CompilationUnit(new SourceCodeLocation(filePath, 0, 0), packageName, false);
 		program.addCompilationUnit(packageUnit);
 
 		GoInterfaceType.lookup("EMPTY_INTERFACE", packageUnit);
@@ -258,7 +259,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
-		return new CFGDescriptor(filePath, line, col, program, true, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
+		return new CFGDescriptor(new SourceCodeLocation(filePath, line, col), program, true, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
 	}
 
 	/**
@@ -376,7 +377,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		HashSet<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
-			CompilationUnit unit = new CompilationUnit(filePath, getLine(typeSpec), getCol(typeSpec), unitName, false);
+			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
 			currentUnit = unit;
 			visitTypeSpec(typeSpec);
@@ -423,11 +424,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (program.getUnit(unitName) == null) 
 			// TODO: unknown unit
-			currentUnit = new CompilationUnit(filePath, getLine(ctx), getCol(ctx), unitName, false);
+			currentUnit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), unitName, false);
 		else
 			currentUnit = program.getUnit(unitName);
 
-		GoMethod method = new GoMethod(new CFGDescriptor(filePath, getLine(ctx), getCol(ctx), currentUnit, true, methodName, returnType, params), receiver);
+		GoMethod method = new GoMethod(new CFGDescriptor(new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), currentUnit, true, methodName, returnType, params), receiver);
 		currentCFG = method;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
 
@@ -723,7 +724,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitEmptyStmt(EmptyStmtContext ctx) {
-		return new NoOp(currentCFG, filePath, getLine(ctx), getCol(ctx));
+		return new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 	}
 
 	@Override
@@ -1290,15 +1291,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go multiplication (*)
 		if (ctx.STAR() != null) 
-			return new GoMul(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoMul(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go division (/)
 		if (ctx.DIV() != null)
-			return new GoDiv(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoDiv(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go minus (-)
 		if (ctx.MINUS() != null)
-			return new GoSubtraction(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoSubtraction(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
@@ -1334,27 +1335,27 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go module (%)
 		if (ctx.MOD() != null)
-			return new GoModule(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoModule(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go right shift (>>)
 		if (ctx.RSHIFT() != null)
-			return new GoRightShift(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoRightShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go left shift (<<)
 		if (ctx.LSHIFT() != null)
-			return new GoLeftShift(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLeftShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go XOR (^)
 		if (ctx.CARET() != null)
-			return new GoBitwiseXOr(currentCFG,  visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseXOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go or (|)
 		if (ctx.OR() != null)
-			return new GoBitwiseOr(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&)
 		if (ctx.AMPERSAND() != null)
-			return new GoBitwiseAnd(currentCFG, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1375,16 +1376,16 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			if (ctx.primaryExpr().getText().equals("new")) {
 				// new requires a type as input
 				if (ctx.arguments().type_() != null)
-					return new GoNew(currentCFG, visitType_(ctx.arguments().type_()));
+					return new GoNew(currentCFG, filePath, getLine(ctx.primaryExpr()), getCol(ctx.primaryExpr()), visitType_(ctx.arguments().type_()));
 				else {
 					// TODO: this is a workaround...
-					return new GoNew(currentCFG, parseType(ctx.arguments().expressionList().getText()));
+					return new GoNew(currentCFG, filePath, getLine(ctx.primaryExpr()), getCol(ctx.primaryExpr()), parseType(ctx.arguments().expressionList().getText()));
 				}
 			}
 
 			else if (ctx.primaryExpr().getText().equals("len")) {
 				Expression[] args = visitArguments(ctx.arguments());
-				return new GoLength(currentCFG, args[0]);
+				return new GoLength(currentCFG, filePath, getLine(ctx.primaryExpr()), getCol(ctx.primaryExpr()), args[0]);
 			}
 
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
@@ -1405,7 +1406,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			else if (ctx.IDENTIFIER() != null) {
 				int line = getLine(ctx.IDENTIFIER().getSymbol());
 				int col = getCol(ctx.IDENTIFIER().getSymbol());
-				Global index = new Global(filePath, line, col, ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
+				Global index = new Global(new SourceCodeLocation(filePath, line, col), ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
 				return new AccessUnitGlobal(currentCFG, primary, index);
 			}
 
@@ -1459,19 +1460,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Expression exp = visitExpression(ctx.expression());
 		if (ctx.PLUS() != null)
-			return new GoPlus(currentCFG, exp);
+			return new GoPlus(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
 
 		if (ctx.MINUS() != null)
-			return new GoMinus(currentCFG, exp);
+			return new GoMinus(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
 
 		if (ctx.EXCLAMATION() != null)
-			return new GoNot(currentCFG, exp);
+			return new GoNot(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
 
 		if (ctx.STAR() != null)
-			return new GoRef(currentCFG, exp);
+			return new GoRef(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
 
 		if (ctx.AMPERSAND() != null)
-			return new GoDeref(currentCFG, exp);
+			return new GoDeref(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
 
 		if (ctx.CARET() != null)
 			return new GoBitwiseNot(currentCFG, exp);
@@ -1888,7 +1889,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 					if (parseTypeDeclaration(type))
 						return getGoType(ctx);
 					else {
-						CompilationUnit unit = new CompilationUnit(filePath, getLine(ctx), getCol(ctx), type, false);
+						CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), type, false);
 						return GoStructType.lookup(type, unit);
 					}
 				}

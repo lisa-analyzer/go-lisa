@@ -1,20 +1,21 @@
 package it.unive.golisa.cfg.expression.binary;
 
 
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.type.Type;
 
 /**
  * A Go module function call (e1 % e2).
@@ -33,7 +34,7 @@ public class GoModule extends BinaryNativeCall {
 	 * @param exp2 	right-hand side operand 
 	 */
 	public GoModule(CFG cfg, Expression exp1, Expression exp2) {
-		super(cfg, null, -1, -1, "%", exp1, exp2);
+		this(cfg, null, -1, -1, exp1, exp2);
 	}
 	
 	/**
@@ -50,7 +51,7 @@ public class GoModule extends BinaryNativeCall {
 	 * @param exp2		    right-hand side operand
 	 */
 	public GoModule(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, sourceFile, line, col, "%", exp1, exp2);
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), "%", exp1, exp2);
 	}
 
 	@Override
@@ -59,15 +60,17 @@ public class GoModule extends BinaryNativeCall {
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 			throws SemanticException {
 		
-		if ((!(leftExp.getDynamicType() instanceof GoType) || !((GoType) leftExp.getDynamicType()).isGoInteger()) && !leftExp.getDynamicType().isUntyped())
+		Type leftType = leftExp.getDynamicType();
+		if (!(leftType.isNumericType() && leftType.asNumericType().isIntegral()) && !leftType.isUntyped())
 			return entryState.bottom();
 
-		if ((!(rightExp.getDynamicType() instanceof GoType) || !((GoType) rightExp.getDynamicType()).isGoInteger()) && !rightExp.getDynamicType().isUntyped())
+		Type rightType = rightExp.getDynamicType();
+		if (!(rightType.isNumericType() && rightType.asNumericType().isIntegral()) && !rightType.isUntyped())
 			return entryState.bottom();
 
 
 		return rightState
-				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftExp.getDynamicType()), leftExp, rightExp,
+				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftType), leftExp, rightExp,
 						BinaryOperator.NUMERIC_MOD), this);
 	}
 

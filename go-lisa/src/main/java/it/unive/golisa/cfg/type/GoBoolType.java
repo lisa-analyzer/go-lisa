@@ -57,12 +57,7 @@ public class GoBoolType implements BooleanType, GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoBoolean(cfg, false);
 	}
-	
-	@Override
-	public boolean isGoInteger() {
-		return false;
-	}
-	
+		
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

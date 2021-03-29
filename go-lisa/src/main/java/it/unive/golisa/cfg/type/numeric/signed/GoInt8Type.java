@@ -85,7 +85,7 @@ public class GoInt8Type implements NumericType, GoType {
 	}
 	
 	@Override
-	public boolean isGoInteger() {
+	public boolean isIntegral() {
 		return true;
 	}
 	

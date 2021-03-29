@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.heap.PointBasedHeap;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.impl.numeric.Interval;
 
 public class HeapTest extends AnalysisTest {

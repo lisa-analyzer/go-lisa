@@ -2,21 +2,22 @@ import static it.unive.lisa.outputs.compare.JsonReportComparer.compare;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import it.unive.golisa.cli.GoFrontEnd;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.outputs.JsonReport;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.test.imp.IMPFrontend;
-import it.unive.lisa.test.imp.ParsingException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.apache.commons.io.FileUtils;
+
+import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.lisa.AnalysisException;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.outputs.JsonReport;
+import it.unive.lisa.program.Program;
 
 public abstract class AnalysisTest {
 
@@ -57,8 +58,6 @@ public abstract class AnalysisTest {
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, folder);
 		Path target = Paths.get(expectedPath.toString(), source);
 
-		LiSA lisa = new LiSA();
-
 		Program program = null;
 		try {
 			program = GoFrontEnd.processFile(target.toString());
@@ -66,16 +65,15 @@ public abstract class AnalysisTest {
 			e.printStackTrace(System.err);
 			fail("Exception while parsing '" + target + "': " + e.getMessage());
 		}
-
-		lisa.setProgram(program);
-		lisa.setInferTypes(dumpTypes);
-		lisa.setDumpCFGs(dumpCFGs);
-		lisa.setDumpTypeInference(dumpTypes);
-		lisa.setJsonOutput(true);
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setInferTypes(dumpTypes)
+			.setDumpCFGs(dumpCFGs)
+			.setDumpTypeInference(dumpTypes)
+			.setJsonOutput(true);
 
 		if (state != null) {
-			lisa.setAbstractState(state);
-			lisa.setDumpAnalysis(true);
+			conf.setAbstractState(state);
+			conf.setDumpAnalysis(true);
 		}
 
 		File workdir = actualPath.toFile();
@@ -88,10 +86,12 @@ public abstract class AnalysisTest {
 				fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
 			}
 		}
-		lisa.setWorkdir(workdir.toString());
+		
+		conf.setWorkdir(workdir.toString());
 
+		LiSA lisa = new LiSA(conf);
 		try {
-			lisa.run();
+			lisa.run(program);
 		} catch (AnalysisException e) {
 			e.printStackTrace(System.err);
 			fail("Analysis terminated with errors");

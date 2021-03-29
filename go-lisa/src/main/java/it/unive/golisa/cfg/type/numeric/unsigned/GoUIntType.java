@@ -89,7 +89,7 @@ public class GoUIntType implements NumericType, GoType {
 	}
 	
 	@Override
-	public boolean isGoInteger() {
+	public boolean isIntegral() {
 		return true;
 	}
 	

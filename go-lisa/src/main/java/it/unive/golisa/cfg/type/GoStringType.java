@@ -59,12 +59,7 @@ public class GoStringType implements StringType, GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoString(cfg, "");
 	}
-	
-	@Override
-	public boolean isGoInteger() {
-		return false;
-	}
-	
+		
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

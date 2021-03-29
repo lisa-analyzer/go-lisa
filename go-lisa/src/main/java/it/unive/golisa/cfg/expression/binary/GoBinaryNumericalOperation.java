@@ -4,7 +4,7 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.ExternalSet;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public interface GoBinaryNumericalOperation {
 

@@ -55,11 +55,6 @@ public class GoAliasType implements GoType {
 	}
 
 	@Override
-	public boolean isGoInteger() {
-		return baseType.isGoInteger();
-	}
-
-	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
 	}

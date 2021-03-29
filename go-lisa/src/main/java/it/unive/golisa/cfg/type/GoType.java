@@ -6,15 +6,12 @@ import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 
 public interface GoType extends Type {
 
 	public Expression defaultValue(CFG cfg);
-	
-	public boolean isGoInteger();
-	
+		
 	public default boolean isGoUntyped() {
 		return this instanceof GoUntypedFloat || this instanceof GoUntypedInt;
 	}
@@ -24,10 +21,10 @@ public interface GoType extends Type {
 	}
 	
 	public default boolean isGoUnsignedInteger() {
-		return this.isGoInteger() && ((NumericType) this).isUnsigned();
+		return isNumericType() && asNumericType().isIntegral() && asNumericType().isUnsigned();
 	}
 	
 	public default boolean isGoSignedInteger() {
-		return this.isGoInteger() && ((NumericType) this).isSigned();
+		return isNumericType() && asNumericType().isIntegral() && asNumericType().isSigned();
 	}
 }

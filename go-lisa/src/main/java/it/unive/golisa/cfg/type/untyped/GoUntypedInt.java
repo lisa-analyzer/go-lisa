@@ -51,7 +51,7 @@ public class GoUntypedInt implements GoType, NumericType {
 	}
 
 	@Override
-	public boolean isGoInteger() {
+	public boolean isIntegral() {
 		return true;
 	}
 

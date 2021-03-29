@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.statement;
 
 
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Assignment;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -24,7 +25,7 @@ public class GoConstantDeclaration extends Assignment {
 	 * @param expression the expression to assign to {@code var}
 	 */
 	public GoConstantDeclaration(CFG cfg, VariableRef target, Expression expression) {
-		super(cfg, target, expression);
+		this(cfg, null, -1, -1, target, expression);
 	}
 	
 	/**
@@ -42,6 +43,6 @@ public class GoConstantDeclaration extends Assignment {
 	 * @param expression the expression to assign to {@code var}
 	 */
 	public GoConstantDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef target, Expression expression) {
-		super(cfg, sourceFile, line, col, target, expression);
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), target, expression);
 	}
 }

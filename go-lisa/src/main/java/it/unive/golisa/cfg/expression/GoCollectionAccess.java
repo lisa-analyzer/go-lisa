@@ -5,10 +5,11 @@ import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -20,11 +21,11 @@ import it.unive.lisa.type.Untyped;
 public class GoCollectionAccess extends BinaryNativeCall {
 
 	public GoCollectionAccess(CFG cfg, Expression container, Expression index) {
-		this(cfg, "", -1, -1, container, index);
+		this(cfg, null, -1, -1, container, index);
 	}
 
 	public GoCollectionAccess(CFG cfg, String sourceFile, int line, int col, Expression container, Expression index) {
-		super(cfg, sourceFile, line, col, "[]", container, index);
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), "[]", container, index);
 	}
 
 	@Override

@@ -82,12 +82,6 @@ public class GoQualifiedType implements GoType {
 	}
 	
 	@Override
-	public boolean isGoInteger() {
-		// TODO: need to resolve qualified type
-		return false;
-	}
-	
-	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
 	}

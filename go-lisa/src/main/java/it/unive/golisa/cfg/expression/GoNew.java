@@ -5,11 +5,12 @@ import java.util.Collection;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -19,7 +20,11 @@ import it.unive.lisa.type.Type;
 public class GoNew extends NativeCall {
 
 	public GoNew(CFG cfg, GoType type) {
-		super(cfg, "new", type);
+		this(cfg, null, -1, -1, type);
+	}
+	
+	public GoNew(CFG cfg, String sourceFile, int line, int col, GoType type) {
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), "new", type);
 	}
 
 	@Override

@@ -95,11 +95,6 @@ public class GoInterfaceType implements GoType, UnitType {
 	}
 
 	@Override
-	public boolean isGoInteger() {
-		return false;
-	}
-
-	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
 	}

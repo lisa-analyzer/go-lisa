@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Literal;
 
@@ -21,10 +22,10 @@ public class GoInteger extends Literal {
 	 * @param value the integer value
 	 */
 	public GoInteger(CFG cfg, Integer value) {
-		super(cfg, value, GoUntypedInt.INSTANCE);
+		this(cfg, null, -1, -1 , value);
 	}
 	
 	public GoInteger(CFG cfg, String sourceFile, int line, int col, Integer value) {
-		super(cfg, sourceFile, line, col, value, GoUntypedInt.INSTANCE);
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), value, GoUntypedInt.INSTANCE);
 	}
 }

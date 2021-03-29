@@ -9,9 +9,9 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.lisa.analysis.FunctionalLattice;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.lattices.FunctionalLattice;
+import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;

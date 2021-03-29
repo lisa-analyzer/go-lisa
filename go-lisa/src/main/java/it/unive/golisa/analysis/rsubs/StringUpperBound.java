@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import it.unive.lisa.analysis.InverseSetLattice;
+import it.unive.lisa.analysis.lattices.InverseSetLattice;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class StringUpperBound extends InverseSetLattice<StringUpperBound, ValueExpression> implements Iterable<ValueExpression> {

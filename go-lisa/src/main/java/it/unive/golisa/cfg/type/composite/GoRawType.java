@@ -49,12 +49,7 @@ public class GoRawType extends ArrayList<Parameter> implements GoType {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	@Override
-	public boolean isGoInteger() {
-		return false;
-	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

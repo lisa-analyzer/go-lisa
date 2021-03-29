@@ -11,8 +11,9 @@ import it.unive.golisa.analysis.composition.RelTarsis;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
+import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.HeapDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.program.Program;
 
 public class GoLiSA {
@@ -60,15 +61,15 @@ public class GoLiSA {
 			return;
 		}
 
-		LiSA lisa = new LiSA();
-		lisa.setProgram(program);
-		lisa.setWorkdir(outputDir);
-		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), args.length < 3 || args[2].equals("-tarsis") ? new Tarsis() : new RelTarsis()));
-		lisa.setDumpAnalysis(true);
+		LiSAConfiguration conf = new LiSAConfiguration();
+		
+		LiSA lisa = new LiSA(conf);
+		conf.setWorkdir(outputDir).setInferTypes(true)
+			.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), args.length < 3 || args[2].equals("-tarsis") ? new Tarsis() : new RelTarsis()))
+			.setDumpAnalysis(true);
 
 		try {
-			lisa.run();
+			lisa.run(program);
 		} catch (Exception e) {
 			// an error occurred during the analysis
 			e.printStackTrace();

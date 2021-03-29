@@ -4,11 +4,12 @@ import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
@@ -33,7 +34,11 @@ public class GoPlus extends UnaryNativeCall {
 	 * @param exp	operand
 	 */
 	public GoPlus(CFG cfg, Expression exp) {
-		super(cfg, null, -1, -1, "+", exp);
+		this(cfg, null, -1, -1, exp);
+	}
+	
+	public GoPlus(CFG cfg, String sourceFile, int line, int col, Expression exp) {
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), "+", exp);
 	}
 
 	@Override

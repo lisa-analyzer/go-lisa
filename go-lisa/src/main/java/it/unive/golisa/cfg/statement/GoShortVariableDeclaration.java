@@ -6,12 +6,13 @@ import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -56,7 +57,7 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 	 * @param expression the expression to assign to {@code var}
 	 */
 	public GoShortVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Expression var, Expression expression) {
-		super(cfg, sourceFile, line, col, var, expression);
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), var, expression);
 	}
 
 

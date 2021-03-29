@@ -3,11 +3,12 @@ package it.unive.golisa.cfg.expression.binary;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.HeapDomain;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.ValueDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -15,7 +16,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.ExternalSet;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
  * A Go numerical sum function call (e1 + e2).
@@ -38,7 +39,7 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 	}
 	
 	public GoSum(CFG cfg, String filePath, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, filePath, line, col, "+", exp1, exp2);
+		super(cfg, new SourceCodeLocation(filePath, line, col), "+", exp1, exp2);
 	}
 
 	@Override

@@ -83,14 +83,14 @@ public class GoFloat32Type implements NumericType , GoType {
 	public Expression defaultValue(CFG cfg) {
 		return new GoFloat(cfg, 0.0);
 	}
-
-	@Override
-	public boolean isGoInteger() {
-		return false;
-	}
 	
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public boolean isIntegral() {
+		return false;
 	}
 }

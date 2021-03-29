@@ -76,7 +76,7 @@ public class GoUntypedFloat implements GoType, NumericType  {
 	}
 
 	@Override
-	public boolean isGoInteger() {
+	public boolean isIntegral() {
 		return false;
 	}
 	

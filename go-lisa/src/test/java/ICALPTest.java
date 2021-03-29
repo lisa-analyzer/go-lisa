@@ -10,8 +10,9 @@ import it.unive.golisa.cli.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
+import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.HeapDomain;
+import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.program.Program;
 
 public class ICALPTest {
@@ -21,17 +22,17 @@ public class ICALPTest {
 	@Test
 	public void codotaTest() throws IOException, AnalysisSetupException {
 		Program program = GoFrontEnd.processFile(sourcePath + "codota.go");
-		LiSA lisa = new LiSA();
 
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()));
-		lisa.setDumpAnalysis(true);
-		lisa.setWorkdir(tmpDir);
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+			.setInferTypes(true)
+			.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()))
+			.setDumpAnalysis(true)
+			.setWorkdir(tmpDir);
 
+		LiSA lisa = new LiSA(conf);
 		try {
-			lisa.run();
+			lisa.run(program);
 		} catch (AnalysisException e) {
 			System.err.println(e);
 			fail("Analysis terminated with errors");
@@ -41,17 +42,17 @@ public class ICALPTest {
 	@Test
 	public void commonLangTest() throws IOException, AnalysisSetupException {
 		Program program = GoFrontEnd.processFile(sourcePath + "common-lang.go");
-		LiSA lisa = new LiSA();
 
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()));
-		lisa.setDumpAnalysis(true);
-		lisa.setWorkdir(tmpDir);
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+			.setInferTypes(true)
+			.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()))
+			.setDumpAnalysis(true)
+			.setWorkdir(tmpDir);
 
+		LiSA lisa = new LiSA(conf);
 		try {
-			lisa.run();
+			lisa.run(program);
 		} catch (AnalysisException e) {
 			System.err.println(e);
 			fail("Analysis terminated with errors");
@@ -61,17 +62,17 @@ public class ICALPTest {
 	@Test
 	public void icalpTestCases() throws IOException, AnalysisSetupException {
 		Program program = GoFrontEnd.processFile(sourcePath + "icalp-testcases.go");
-		LiSA lisa = new LiSA();
 
-		lisa.setProgram(program);
-		lisa.setJsonOutput(true);
-		lisa.setInferTypes(true);
-		lisa.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()));
-		lisa.setDumpAnalysis(true);
-		lisa.setWorkdir(tmpDir);
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+			.setInferTypes(true)
+			.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()))
+			.setDumpAnalysis(true)
+			.setWorkdir(tmpDir);
 
+		LiSA lisa = new LiSA(conf);
 		try {
-			lisa.run();
+			lisa.run(program);
 		} catch (AnalysisException e) {
 			System.err.println(e);
 			fail("Analysis terminated with errors");

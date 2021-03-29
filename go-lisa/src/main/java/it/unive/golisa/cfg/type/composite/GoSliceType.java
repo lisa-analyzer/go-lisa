@@ -78,11 +78,6 @@ public class GoSliceType implements GoType {
 	}
 	
 	@Override
-	public boolean isGoInteger() {
-		return false;
-	}
-	
-	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
 	}

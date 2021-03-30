@@ -13,6 +13,7 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NativeCall;
@@ -27,9 +28,13 @@ import it.unive.lisa.symbolic.value.ValueIdentifier;
 public class GoNonKeyedLiteral extends NativeCall {
 
 	public GoNonKeyedLiteral(CFG cfg, Expression[] value, GoType staticType) {
-		super(cfg, "nonKeyedLit("+ staticType + ")", staticType, value);
+		this(cfg, null, -1, -1, value, staticType);
 	}
 
+	public GoNonKeyedLiteral(CFG cfg, String sourceLocation, int line, int column, Expression[] value, GoType staticType) {
+		super(cfg, new SourceCodeLocation(sourceLocation, line, column), "nonKeyedLit("+ staticType + ")", staticType, value);
+	}
+	
 	@Override
 	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> callSemantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V>[] computedStates,
@@ -66,9 +71,9 @@ public class GoNonKeyedLiteral extends NativeCall {
 				result = tmpField;
 				i++;
 			}
-		}
-
-		return result.smallStepSemantics(new HeapReference(hid.getTypes(), hid.toString()), this);
+		} 
+		
+		return result.smallStepSemantics(new HeapReference(hid.getTypes(), hid.getName()), this);
 	}
 
 	private SymbolicExpression getVariable(Global global) {

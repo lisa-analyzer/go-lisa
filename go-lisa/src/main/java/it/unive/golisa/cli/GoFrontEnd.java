@@ -1589,11 +1589,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Object raw = visitLiteralValue(ctx.literalValue());
 
 		if (raw instanceof Map<?, ?>)
-			return new GoKeyedLiteral(currentCFG, (Map<String, Expression>) raw,  type);
+			return new GoKeyedLiteral(currentCFG, filePath, getLine(ctx), getCol(ctx), (Map<String, Expression>) raw,  type);
 		else {
 			Expression[] exps = new Expression[((List<Expression>) raw).size()];
 			exps = ((List<Expression>) raw).toArray(exps);
-			return new GoNonKeyedLiteral(currentCFG, exps, type);
+			return new GoNonKeyedLiteral(currentCFG, filePath, getLine(ctx), getCol(ctx), exps, type);
 		}
 	}
 

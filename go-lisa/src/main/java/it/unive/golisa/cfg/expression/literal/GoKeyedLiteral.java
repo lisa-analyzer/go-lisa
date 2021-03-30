@@ -11,6 +11,7 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NativeCall;
@@ -22,7 +23,11 @@ public class GoKeyedLiteral extends NativeCall {
 	private final Map<String, Expression> keyedValues;
 	
 	public GoKeyedLiteral(CFG cfg, Map<String, Expression> keyedValues, GoType staticType) {
-		super(cfg, "keyedLiteral(" + staticType + ")", staticType, new Expression[]{});
+		this(cfg, null, -1 , -1, keyedValues, staticType);
+	}
+	
+	public GoKeyedLiteral(CFG cfg, String sourceFile, int line, int col, Map<String, Expression> keyedValues, GoType staticType) {
+		super(cfg, new SourceCodeLocation(sourceFile, line, col), "keyedLiteral(" + staticType + ")", staticType, new Expression[]{});
 		this.keyedValues = keyedValues;
 	}
 

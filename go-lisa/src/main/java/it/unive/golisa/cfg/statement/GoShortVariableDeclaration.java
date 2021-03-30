@@ -60,7 +60,6 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 		super(cfg, new SourceCodeLocation(sourceFile, line, col), var, expression);
 	}
 
-
 	@Override
 	public String toString() {
 		return getLeft() + " = " + getRight();
@@ -104,7 +103,7 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 						it.unive.lisa.symbolic.value.BinaryExpression rhsCasted = new it.unive.lisa.symbolic.value.BinaryExpression(Caches.types().mkSingletonSet(expr1.getDynamicType()), expr2, typeCast, BinaryOperator.TYPE_CAST);
 						
 						tmp = left.assign((Identifier) expr1, rhsCasted, this);
-					} else if (expr2.getDynamicType().canBeAssignedTo(expr1.getDynamicType())) {
+					} else  {
 						tmp = left.assign((Identifier) expr1, expr2, this);
 					}
 				}

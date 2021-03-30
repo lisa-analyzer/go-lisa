@@ -23,6 +23,7 @@ import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.HeapIdentifier;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueIdentifier;
 
 public class GoNonKeyedLiteral extends NativeCall {
@@ -34,7 +35,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 	public GoNonKeyedLiteral(CFG cfg, String sourceLocation, int line, int column, Expression[] value, GoType staticType) {
 		super(cfg, new SourceCodeLocation(sourceLocation, line, column), "nonKeyedLit("+ staticType + ")", staticType, value);
 	}
-	
+
 	@Override
 	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> callSemantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V>[] computedStates,
@@ -43,37 +44,47 @@ public class GoNonKeyedLiteral extends NativeCall {
 		// parameters of this call
 		// (the semantics of this call does not need information about the
 		// intermediate analysis states)
-		AnalysisState<A, H, V> lastPostState = computedStates[computedStates.length - 1];
+		AnalysisState<A, H, V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()));
-		
-		// Allocates the new heap allocation 
-		AnalysisState<A, H, V> result = lastPostState.smallStepSemantics(created, this);
-		HeapIdentifier hid = (HeapIdentifier) result.getComputedExpressions().iterator().next();
-		
-		if (getStaticType() instanceof GoStructType) {
 
+		// Allocates the new heap allocation 
+		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
+		Collection<SymbolicExpression> containerExps = containerState.getComputedExpressions();
+
+		if (getStaticType() instanceof GoStructType) {
 			// Retrieve the struct type (that is a compilation unit)
 			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
-			int i = 0;
-			for (Global field : structUnit.getAllGlobals()) {
-				AccessChild accessChild = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), hid, getVariable(field));
 
-				AnalysisState<A, H, V> tmp = result.smallStepSemantics(accessChild, this);
-				AnalysisState<A, H, V> tmpField = null;
+			AnalysisState<A, H, V> result = containerState;
+
+			for (SymbolicExpression containerExp : containerExps) {
+				if (!(containerExp instanceof HeapIdentifier))
+					continue;
+				HeapIdentifier hid = (HeapIdentifier) containerExp;
 				
-				for (SymbolicExpression id : tmp.getComputedExpressions()) 
-					for (SymbolicExpression exp : params[i])
-						if (tmpField == null)
-							tmpField = tmp.assign((Identifier) id, exp, this);
-						else
-							tmpField = tmpField.lub(tmp.assign((Identifier) id, exp, this));
-				
-				result = tmpField;
-				i++;
+				// Initialize the hid identifier to top
+				AnalysisState<A, H, V> hidState = containerState.assign((Identifier) hid, new PushAny(hid.getTypes()), getParentStatement());
+				int i = 0;
+				AnalysisState<A, H, V> tmp = hidState;
+				for (Global field : structUnit.getInstanceGlobals(true)) {
+					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), hid, getVariable(field));
+					AnalysisState<A, H, V> fieldState = tmp.smallStepSemantics(
+							access, this);
+					for (SymbolicExpression id : fieldState.getComputedExpressions()) 
+						for (SymbolicExpression exp : params[i])
+								tmp = tmp.assign((Identifier) id, exp, this);
+					i++;
+				}
+
+				HeapReference expression = new HeapReference(hid.getTypes(), hid.getName());
+				result = result.lub(tmp.smallStepSemantics(expression, this));
 			}
+
+			return result;
 		} 
-		
-		return result.smallStepSemantics(new HeapReference(hid.getTypes(), hid.getName()), this);
+
+		// TODO: to handle the other cases (maps, array...)
+		return entryState.top();
 	}
 
 	private SymbolicExpression getVariable(Global global) {
@@ -83,5 +94,5 @@ public class GoNonKeyedLiteral extends NativeCall {
 		else
 			expr = new ValueIdentifier(Caches.types().mkSingletonSet(global.getStaticType()), global.getName());
 		return expr;
-	}
+	}	
 }

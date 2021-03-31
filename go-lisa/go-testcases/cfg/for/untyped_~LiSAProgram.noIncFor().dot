@@ -1,8 +1,8 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<sum = 0>];
+	"node0" [shape="rect",color="black",label=<sum := 0>];
 	"node1" [shape="rect",color="black",peripheries="2",label=<return sum>];
 	"node2" [shape="rect",color="gray",label=<sum = +(sum, i)>];
-	"node3" [shape="rect",color="gray",label=<i = 0>];
+	"node3" [shape="rect",color="gray",label=<i := 0>];
 	"node4" [shape="rect",color="gray",label=<&lt;(i, 10)>];
 	"node0" -> "node3" [color="black"];
 	"node2" -> "node4" [color="black"];

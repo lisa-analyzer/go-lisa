@@ -2,11 +2,11 @@ digraph {
 	"node0" [shape="rect",color="black",label=<A = 1>];
 	"node1" [shape="rect",color="gray",label=<sum = +(sum, i)>];
 	"node2" [shape="rect",color="gray",label=<B = 2>];
-	"node3" [shape="rect",color="gray",label=<i = 0>];
+	"node3" [shape="rect",color="gray",label=<i := 0>];
 	"node4" [shape="rect",color="gray",label=<i = +(i, 1)>];
 	"node5" [shape="rect",color="gray",label=<&lt;(i, 10)>];
-	"node6" [shape="rect",color="gray",label=<sum = 0>];
-	"node7" [shape="rect",color="gray",label=<res = &quot;Hello&quot;>];
+	"node6" [shape="rect",color="gray",label=<sum := 0>];
+	"node7" [shape="rect",color="gray",label=<res := &quot;Hello&quot;>];
 	"node1" -> "node4" [color="black"];
 	"node0" -> "node2" [color="black"];
 	"node2" -> "node6" [color="black"];

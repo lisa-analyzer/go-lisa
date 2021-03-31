@@ -1,5 +1,5 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<a = [unresolved]sum(1, 2)>];
+	"node0" [shape="rect",color="black",label=<a := [unresolved]sum(1, 2)>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

@@ -8,7 +8,7 @@ digraph {
 	"node6" [shape="rect",color="gray",label=<var u5 uint64 = 5>];
 	"node7" [shape="rect",color="gray",label=<var f2 float64 = 2.2>];
 	"node8" [shape="rect",color="gray",label=<var u1 uint = 1>];
-	"node9" [shape="rect",color="gray",label=<f3 = 3.3>];
+	"node9" [shape="rect",color="gray",label=<f3 := 3.3>];
 	"node10" [shape="rect",color="gray",label=<var u2 uint8 = 2>];
 	"node11" [shape="rect",color="gray",label=<var x4 int32 = 4>];
 	"node12" [shape="rect",color="gray",label=<var u3 uint16 = 3>];

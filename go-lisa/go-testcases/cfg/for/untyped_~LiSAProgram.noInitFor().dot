@@ -5,7 +5,7 @@ digraph {
 	"node3" [shape="rect",color="gray",label=<i = +(i, 1)>];
 	"node4" [shape="rect",color="gray",label=<Small = 0>];
 	"node5" [shape="rect",color="gray",label=<sum = +(sum, i)>];
-	"node6" [shape="rect",color="gray",label=<sum = 0>];
+	"node6" [shape="rect",color="gray",label=<sum := 0>];
 	"node0" -> "node4" [color="black"];
 	"node1" -> "node2" [color="red",style="dashed"];
 	"node1" -> "node5" [color="blue",style="dashed"];

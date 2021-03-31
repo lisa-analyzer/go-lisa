@@ -90,7 +90,6 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 						new it.unive.lisa.symbolic.value.BinaryExpression(intType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
 
 				tmp = right.assign(id, exp, this);
-
 			} else if (rightExp.getDynamicType() instanceof GoUntypedFloat) {
 				ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
 				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE);

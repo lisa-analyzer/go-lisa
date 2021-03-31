@@ -10,11 +10,12 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 
-public class GoStructType implements GoType, UnitType {
+public class GoStructType implements GoType, UnitType, PointerType {
 
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
@@ -101,6 +102,11 @@ public class GoStructType implements GoType, UnitType {
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
+	}
+	
+	@Override
+	public boolean isPointerType() {
+		return true;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<v1 = nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [hid$nonKeyedLit(Vertex)(3, 4)] ]]<BR/>value [[ vid$v1: #TOP# ]]<BR/>}} -&gt; [vid$v1]>];
-	"node1" [shape="rect",color="gray",label=<v2 = nonKeyedLit(Vertex)(10, 11)<BR/>{{<BR/>heap [[ [hid$nonKeyedLit(Vertex)(3, 4), hid$nonKeyedLit(Vertex)(10, 11)] ]]<BR/>value [[ vid$v1: #TOP#<BR/>hid$nonKeyedLit(Vertex)(10, 11): [10, 11]<BR/>vid$v2: #TOP# ]]<BR/>}} -&gt; [vid$v2]>];
+	"node0" [shape="rect",color="black",label=<v1 := nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [hid$pp@'go-testcases/heap/field-sensitive/go-structs.go':20:17] ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [vid$v1]>];
+	"node1" [shape="rect",color="gray",label=<v2 := nonKeyedLit(Vertex)(10, 11)<BR/>{{<BR/>heap [[ [hid$pp@'go-testcases/heap/field-sensitive/go-structs.go':20:17, hid$pp@'go-testcases/heap/field-sensitive/go-structs.go':21:19] ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [vid$v2]>];
 	"node0" -> "node1" [color="black"];
 subgraph cluster_legend {
 	label="Legend";

@@ -354,4 +354,9 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	public String toString() {
 		return representation();
 	}
+
+	@Override
+	public boolean tracksIdentifiers(Identifier id) {
+		return !id.getDynamicType().isPointerType();
+	}
 }

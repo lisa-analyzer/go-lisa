@@ -687,13 +687,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Statement entryNode = null;
 
 		if (sizeIds != sizeExps) {
+			// FIXME: how to handle multi-assignment? not handled up to now
+			// need to create a custom class
 			int line = getLine(ids.IDENTIFIER(0).getSymbol());
 			int col = getCol(exps.expression(0));
 
 			GoRawValue left = new GoRawValue(currentCFG, visitIdentifierList(ctx.identifierList()));
 			Expression right = visitExpression(exps.expression(0));
 
-			GoShortVariableDeclaration asg = new GoShortVariableDeclaration(currentCFG, filePath, line, col, left, right);
+			GoShortVariableDeclaration asg = null;//new GoShortVariableDeclaration(currentCFG, filePath, line, col, left, right);
 			currentCFG.addNode(asg);
 			return Pair.of(asg, asg);
 		} else {

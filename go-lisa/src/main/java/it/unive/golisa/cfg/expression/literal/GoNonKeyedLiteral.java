@@ -23,7 +23,6 @@ import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.HeapIdentifier;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueIdentifier;
 
 public class GoNonKeyedLiteral extends NativeCall {
@@ -50,20 +49,20 @@ public class GoNonKeyedLiteral extends NativeCall {
 		// Allocates the new heap allocation 
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
 		Collection<SymbolicExpression> containerExps = containerState.getComputedExpressions();
-
+		//
 		if (getStaticType() instanceof GoStructType) {
 			// Retrieve the struct type (that is a compilation unit)
 			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
 
-			AnalysisState<A, H, V> result = containerState;
+			AnalysisState<A, H, V> result = null;
 
 			for (SymbolicExpression containerExp : containerExps) {
 				if (!(containerExp instanceof HeapIdentifier))
 					continue;
 				HeapIdentifier hid = (HeapIdentifier) containerExp;
-				
+
 				// Initialize the hid identifier to top
-				AnalysisState<A, H, V> hidState = containerState.assign((Identifier) hid, new PushAny(hid.getTypes()), getParentStatement());
+				AnalysisState<A, H, V> hidState = containerState;
 				int i = 0;
 				AnalysisState<A, H, V> tmp = hidState;
 				for (Global field : structUnit.getInstanceGlobals(true)) {
@@ -72,15 +71,17 @@ public class GoNonKeyedLiteral extends NativeCall {
 							access, this);
 					for (SymbolicExpression id : fieldState.getComputedExpressions()) 
 						for (SymbolicExpression exp : params[i])
-								tmp = tmp.assign((Identifier) id, exp, this);
+							tmp = tmp.assign((Identifier) id, exp, this);
 					i++;
 				}
 
-				HeapReference expression = new HeapReference(hid.getTypes(), hid.getName());
-				result = result.lub(tmp.smallStepSemantics(expression, this));
+				if (result == null)
+					result = tmp;
+				else
+					result = result.lub(tmp);
 			}
 
-			return result;
+			return result.smallStepSemantics(created, getParentStatement());
 		} 
 
 		// TODO: to handle the other cases (maps, array...)

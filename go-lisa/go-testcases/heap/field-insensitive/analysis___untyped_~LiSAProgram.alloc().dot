@@ -1,5 +1,7 @@
 digraph {
-	"node0" [shape="rect",color="black",peripheries="2",label=<return +(*(v::X, v::X), *(v::Y, v::Y))<BR/>{{<BR/>heap [[ [] ]]<BR/>value [[ vid$ret_value@Abs: _|_ ]]<BR/>}} -&gt; [vid$ret_value@Abs]>];
+	"node0" [shape="rect",color="black",label=<v1 := nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17] ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [vid$v1]>];
+	"node1" [shape="rect",color="gray",label=<v2 := nonKeyedLit(Vertex)(10, 11)<BR/>{{<BR/>heap [[ [hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17, hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':21:19] ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [vid$v2]>];
+	"node0" -> "node1" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

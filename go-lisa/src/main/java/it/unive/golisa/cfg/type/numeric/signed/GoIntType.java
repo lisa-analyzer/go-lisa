@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
@@ -80,7 +81,7 @@ public class GoIntType implements NumericType, GoType {
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoIntType ? this : Untyped.INSTANCE;
+		return other instanceof GoIntType  || other instanceof GoUntypedInt ? this : Untyped.INSTANCE;
 	}
 	
 	@Override

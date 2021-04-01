@@ -40,9 +40,10 @@ public class GoUntypedFloat implements GoType, NumericType  {
 		return (other instanceof GoType && ((GoType) other).isGoFloat()) || other.isUntyped() ? true : false;
 	}
 
+
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoType && ((GoType) other).isGoFloat() ? other : Untyped.INSTANCE;
+		return other instanceof GoType && ((GoType) other).isGoFloat() || other instanceof GoUntypedFloat ? other : Untyped.INSTANCE;
 	}
 
 	@Override

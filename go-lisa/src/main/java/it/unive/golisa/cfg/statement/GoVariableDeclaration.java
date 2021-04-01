@@ -6,7 +6,6 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -14,12 +13,9 @@ import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.ValueIdentifier;
+import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeTokenType;
 
 /**
  * Go variable declaration class (e.g., var x int = 5).
@@ -77,13 +73,11 @@ public class GoVariableDeclaration extends BinaryExpression {
 		expressions.put(getRight(), right);
 		expressions.put(getLeft(), right);
 
-		Identifier id = new ValueIdentifier(((VariableRef) getLeft()).getRuntimeTypes(), ((VariableRef) getLeft()).getName());
+		Identifier id = new Variable(((VariableRef) getLeft()).getRuntimeTypes(), ((VariableRef) getLeft()).getName());
 
 		AnalysisState<A, H, V> result = null;
 		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-			Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(type)), type);
-			it.unive.lisa.symbolic.value.BinaryExpression rhsCasted = new it.unive.lisa.symbolic.value.BinaryExpression(Caches.types().mkSingletonSet(type), rightExp, typeCast, BinaryOperator.TYPE_CONV);
-			AnalysisState<A, H, V> tmp = right.assign((Identifier) id, rhsCasted, this);
+			AnalysisState<A, H, V> tmp = right.assign((Identifier) id, rightExp, this);
 			if (result == null)
 				result = tmp;
 			else

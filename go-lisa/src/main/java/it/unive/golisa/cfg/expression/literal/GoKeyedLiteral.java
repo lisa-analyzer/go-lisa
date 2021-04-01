@@ -19,8 +19,7 @@ import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
-import it.unive.lisa.symbolic.heap.HeapReference;
-import it.unive.lisa.symbolic.value.HeapIdentifier;
+import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 
@@ -56,9 +55,9 @@ public class GoKeyedLiteral extends NativeCall {
 			AnalysisState<A, H, V> result = containerState;
 
 			for (SymbolicExpression containerExp : containerExps) {
-				if (!(containerExp instanceof HeapIdentifier))
+				if (!(containerExp instanceof HeapLocation))
 					continue;
-				HeapIdentifier hid = (HeapIdentifier) containerExp;
+				HeapLocation hid = (HeapLocation) containerExp;
 
 				// Initialize the hid identifier to top
 				AnalysisState<A, H, V> hidState = containerState.assign((Identifier) hid, new PushAny(hid.getTypes()), getParentStatement());
@@ -85,7 +84,7 @@ public class GoKeyedLiteral extends NativeCall {
 					}
 				}
 
-				result = result.lub(tmp.smallStepSemantics(new HeapReference(hid.getTypes(), hid.getName()), this));
+				result = result.lub(tmp.smallStepSemantics(hid, this));
 			}
 
 			return result;

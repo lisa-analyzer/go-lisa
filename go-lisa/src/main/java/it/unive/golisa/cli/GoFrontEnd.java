@@ -71,7 +71,6 @@ import it.unive.golisa.cfg.expression.unary.GoMinus;
 import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
 import it.unive.golisa.cfg.expression.unary.GoRef;
-import it.unive.golisa.cfg.statement.GoAssignment;
 import it.unive.golisa.cfg.statement.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
@@ -120,6 +119,7 @@ import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.AccessUnitGlobal;
+import it.unive.lisa.program.cfg.statement.Assignment;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
@@ -579,10 +579,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// increment and decrement statements are syntactic sugar
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
-			asg = new GoAssignment(currentCFG, filePath, line, col,  exp, 
+			asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), exp, 
 					new GoSum(currentCFG,  exp,  new GoInteger(currentCFG, filePath, line, col, 1)));		
 		else
-			asg = new GoAssignment(currentCFG, filePath, line, col, exp, 
+			asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), exp, 
 					new GoSubtraction(currentCFG, exp,  new GoInteger(currentCFG, filePath, line, col, 1)));
 
 		currentCFG.addNode(asg);
@@ -605,7 +605,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Expression lhs = visitExpression(ids.expression(i));
 			Expression exp = buildExpressionFromAssignment(lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
-			GoAssignment asg = new GoAssignment(currentCFG, filePath, line, col, lhs, exp);
+			Assignment asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)

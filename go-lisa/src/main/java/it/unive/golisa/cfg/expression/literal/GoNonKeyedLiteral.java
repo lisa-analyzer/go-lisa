@@ -20,10 +20,9 @@ import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
-import it.unive.lisa.symbolic.heap.HeapReference;
-import it.unive.lisa.symbolic.value.HeapIdentifier;
+import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.ValueIdentifier;
+import it.unive.lisa.symbolic.value.Variable;
 
 public class GoNonKeyedLiteral extends NativeCall {
 
@@ -57,9 +56,9 @@ public class GoNonKeyedLiteral extends NativeCall {
 			AnalysisState<A, H, V> result = null;
 
 			for (SymbolicExpression containerExp : containerExps) {
-				if (!(containerExp instanceof HeapIdentifier))
+				if (!(containerExp instanceof HeapLocation))
 					continue;
-				HeapIdentifier hid = (HeapIdentifier) containerExp;
+				HeapLocation hid = (HeapLocation) containerExp;
 
 				// Initialize the hid identifier to top
 				AnalysisState<A, H, V> hidState = containerState;
@@ -89,11 +88,6 @@ public class GoNonKeyedLiteral extends NativeCall {
 	}
 
 	private SymbolicExpression getVariable(Global global) {
-		SymbolicExpression expr;
-		if (global.getStaticType().isPointerType())
-			expr = new HeapReference(Caches.types().mkSingletonSet(global.getStaticType()), global.getName());
-		else
-			expr = new ValueIdentifier(Caches.types().mkSingletonSet(global.getStaticType()), global.getName());
-		return expr;
+		return new Variable(Caches.types().mkSingletonSet(global.getStaticType()), global.getName());
 	}	
 }

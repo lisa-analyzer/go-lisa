@@ -26,6 +26,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.type.Untyped;
 
 public class GoNonKeyedLiteral extends NativeCall {
 
@@ -89,15 +90,41 @@ public class GoNonKeyedLiteral extends NativeCall {
 		if (getStaticType() instanceof GoArrayType) {
 			AnalysisState<A, H, V> result = null;
 			GoArrayType arrayType = (GoArrayType) getStaticType();
+			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
 				if (!(containerExp instanceof HeapLocation))
 					continue;
+				
 				HeapLocation hid = (HeapLocation) containerExp;
 
+				// Assign the len property to this hid
+				Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len");
+				AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), hid, lenProperty);
+				AnalysisState<A, H, V> lenState = containerState.smallStepSemantics(lenAccess, this);
+
+				AnalysisState<A, H, V> lenResult = null;
+				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+					if (lenResult == null)
+						lenResult = lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this);
+					else
+						lenResult = lenResult.lub(lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+
+				// Assign the cap property to this hid
+				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap");
+				AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), hid, capProperty);
+				AnalysisState<A, H, V> capState = lenResult.smallStepSemantics(capAccess, this);
+
+				AnalysisState<A, H, V> capResult = null;
+				for (SymbolicExpression lenId : capState.getComputedExpressions())
+					if (capResult == null)
+						capResult = capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this);
+					else
+						capResult = capResult.lub(capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+
 				// Allocate the heap location
-				AnalysisState<A, H, V> tmp = containerState;
-				for (int i = 0; i < arrayType.getLength(); i++) {
+				AnalysisState<A, H, V> tmp = capResult;
+				for (int i = 0; i < arrayLength; i++) {
 					AccessChild access = new AccessChild(getRuntimeTypes(), hid, new Constant(GoIntType.INSTANCE, i));
 					AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
 

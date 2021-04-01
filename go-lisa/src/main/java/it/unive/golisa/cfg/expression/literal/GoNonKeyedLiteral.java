@@ -3,7 +3,9 @@ package it.unive.golisa.cfg.expression.literal;
 import java.util.Collection;
 
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,6 +22,7 @@ import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.Variable;
@@ -80,8 +83,40 @@ public class GoNonKeyedLiteral extends NativeCall {
 					result = result.lub(tmp);
 			}
 
-			return result.smallStepSemantics(created, getParentStatement());
+			return result.smallStepSemantics(created, this);
 		} 
+
+		if (getStaticType() instanceof GoArrayType) {
+			AnalysisState<A, H, V> result = null;
+			GoArrayType arrayType = (GoArrayType) getStaticType();
+
+			for (SymbolicExpression containerExp : containerExps) {
+				if (!(containerExp instanceof HeapLocation))
+					continue;
+				HeapLocation hid = (HeapLocation) containerExp;
+
+				// Allocate the heap location
+				AnalysisState<A, H, V> tmp = containerState;
+				for (int i = 0; i < arrayType.getLength(); i++) {
+					AccessChild access = new AccessChild(getRuntimeTypes(), hid, new Constant(GoIntType.INSTANCE, i));
+					AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
+
+					for (SymbolicExpression index : accessState.getComputedExpressions())
+						for (SymbolicExpression v : params[i])
+							if (tmp == null)
+								tmp = accessState.assign((Identifier) index, v, this);
+							else
+								tmp = tmp.lub(accessState.assign((Identifier) index, v, this));
+				}
+
+				if (result == null)
+					result = tmp;
+				else
+					result = result.lub(tmp.smallStepSemantics(hid, this));
+			}
+
+			return result.smallStepSemantics(created, this);
+		}
 
 		// TODO: to handle the other cases (maps, array...)
 		return entryState.top();

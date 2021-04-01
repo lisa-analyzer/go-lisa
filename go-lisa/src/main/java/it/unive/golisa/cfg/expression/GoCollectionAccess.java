@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.cfg.type.composite.GoArrayType;
-import it.unive.golisa.cfg.type.composite.GoMapType;
-import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,8 +12,6 @@ import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
 
 public class GoCollectionAccess extends BinaryNativeCall {
 
@@ -33,19 +28,9 @@ public class GoCollectionAccess extends BinaryNativeCall {
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
 			SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
 					throws SemanticException {
-
-		// it is not possible to detect the correct type of the field without
-		// resolving it. we rely on the rewriting that will happen inside heap
-		// domain to translate this into a variable that will have its correct
-		// type
-		Type leftType = left.getDynamicType();
-		if (leftType instanceof GoSliceType 
-				|| leftType instanceof GoArrayType
-				|| leftType instanceof GoMapType
-				|| leftType instanceof GoSliceType
-				|| leftType instanceof Untyped)
+		if (left.getDynamicType().isPointerType())
 			return rightState.smallStepSemantics(new AccessChild(getRuntimeTypes(), left, right), this);
-
-		return entryState.bottom();
+		else
+			return entryState.bottom();
 	}
 }

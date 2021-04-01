@@ -9,10 +9,11 @@ import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
-public class GoMapType implements GoType {
+public class GoMapType implements GoType, PointerType {
 
 	private GoType keyType;
 	private GoType elementType;
@@ -89,6 +90,11 @@ public class GoMapType implements GoType {
 		return true;
 	}
 
+	@Override
+	public boolean isPointerType() {
+		return true;
+	}
+	
 	@Override
 	public Expression defaultValue(CFG cfg) {
 		return new GoNil(cfg);

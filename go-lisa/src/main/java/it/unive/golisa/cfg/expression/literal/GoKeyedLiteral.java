@@ -52,7 +52,7 @@ public class GoKeyedLiteral extends NativeCall {
 		Collection<SymbolicExpression> containerExps = containerState.getComputedExpressions();
 
 		if (getStaticType() instanceof GoMapType) {
-			AnalysisState<A, H, V> result = containerState;
+			AnalysisState<A, H, V> result = null;
 
 			for (SymbolicExpression containerExp : containerExps) {
 				if (!(containerExp instanceof HeapLocation))
@@ -60,34 +60,41 @@ public class GoKeyedLiteral extends NativeCall {
 				HeapLocation hid = (HeapLocation) containerExp;
 
 				// Initialize the hid identifier to top
-				AnalysisState<A, H, V> hidState = containerState.assign((Identifier) hid, new PushAny(hid.getTypes()), getParentStatement());
+				AnalysisState<A, H, V> hidState = containerState.assign(hid, new PushAny(hid.getTypes()), getParentStatement());
 				AnalysisState<A, H, V> tmp = null;
-				
-				for (Expression key : keyedValues.keySet()) {
-					Expression value = keyedValues.get(key);
-					// Evaluate the key
-					AnalysisState<A, H, V> keyState = key.semantics(hidState, callGraph, null);
-					// Evaluate the value associated with the keuy
-					AnalysisState<A, H, V> mapEntryState = value.semantics(keyState, callGraph, null);
 
-					for (SymbolicExpression k : keyState.getComputedExpressions()) {
-						AnalysisState<A, H, V> accessState = mapEntryState.smallStepSemantics(
-								new AccessChild(Caches.types().mkSingletonSet(k.getDynamicType()), hid, k), this);
+				if (keyedValues.isEmpty())
+					tmp = hidState;
+				else {
+					for (Expression key : keyedValues.keySet()) {
+						Expression value = keyedValues.get(key);
+						// Evaluate the key
+						AnalysisState<A, H, V> keyState = key.semantics(hidState, callGraph, null);
+						// Evaluate the value associated with the keuy
+						AnalysisState<A, H, V> mapEntryState = value.semantics(keyState, callGraph, null);
 
-						for (SymbolicExpression access : accessState.getComputedExpressions()) {
-							for (SymbolicExpression v : mapEntryState.getComputedExpressions())
-								if (tmp == null)
-									tmp = mapEntryState.assign((Identifier) access, v, this);
-								else
-									tmp = tmp.lub(mapEntryState.assign((Identifier) access, v, this));
+						for (SymbolicExpression k : keyState.getComputedExpressions()) {
+							AnalysisState<A, H, V> accessState = mapEntryState.smallStepSemantics(
+									new AccessChild(Caches.types().mkSingletonSet(k.getDynamicType()), hid, k), this);
+
+							for (SymbolicExpression access : accessState.getComputedExpressions()) {
+								for (SymbolicExpression v : mapEntryState.getComputedExpressions())
+									if (tmp == null)
+										tmp = mapEntryState.assign((Identifier) access, v, this);
+									else
+										tmp = tmp.lub(mapEntryState.assign((Identifier) access, v, this));
+							}
 						}
 					}
 				}
 
-				result = result.lub(tmp.smallStepSemantics(hid, this));
+				if (result == null)
+					result = tmp;
+				else
+					result = result.lub(tmp.smallStepSemantics(hid, this));
 			}
 
-			return result;
+			return result.smallStepSemantics(created, this);
 		} 
 
 		// TODO: to handle the other cases (maps, array...)

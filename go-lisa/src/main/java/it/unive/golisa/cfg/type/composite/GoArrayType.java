@@ -11,10 +11,11 @@ import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
-public class GoArrayType implements GoType {
+public class GoArrayType implements GoType, PointerType {
 
 	private GoType contentType;
 	private Integer length;
@@ -99,6 +100,11 @@ public class GoArrayType implements GoType {
 			result.add(contentType.defaultValue(cfg));
 
 		return new GoNonKeyedLiteral(cfg, (Expression[]) result.toArray(), this);
+	}
+	
+	@Override
+	public boolean isPointerType() {
+		return true;
 	}
 
 	@Override

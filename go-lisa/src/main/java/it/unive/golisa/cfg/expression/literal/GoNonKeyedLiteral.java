@@ -86,8 +86,8 @@ public class GoNonKeyedLiteral extends NativeCall {
 				else
 					result = result.lub(tmp);
 			}
-
-			return result;
+			
+			return result.smallStepSemantics(created, this);
 		} 
 
 		if (getStaticType() instanceof GoArrayType) {
@@ -149,7 +149,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 					result = result.lub(tmp.smallStepSemantics(hid, this));
 			}
 
-			return result;
+			return result.smallStepSemantics(created, this);
 		}
 
 		// TODO: to handle the other cases (maps, array...)

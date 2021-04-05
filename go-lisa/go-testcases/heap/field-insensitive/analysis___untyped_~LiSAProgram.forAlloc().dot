@@ -1,18 +1,18 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<x := nonKeyedLit(Vertex)(0, 0)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]: [0, 0] ]]<BR/>}} -&gt; [vid$x]>];
-	"node1" [shape="rect",color="gray",label=<&lt;(i, 100)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [vid$i &lt; 100]>];
-	"node2" [shape="rect",color="gray",label=<x::Y = +(x::Y, 1)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]]>];
-	"node3" [shape="rect",color="gray",label=<i = +(i, 1)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]: [0, +Inf]<BR/>vid$i: [1, +Inf] ]]<BR/>}} -&gt; [vid$i]>];
-	"node4" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [skip]>];
-	"node5" [shape="rect",color="gray",label=<i := 0<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]: [0, 0]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [vid$i]>];
-	"node6" [shape="rect",color="gray",label=<x::X = +(x::X, 1)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [pp@'go-testcases/heap/field-insensitive/go-structs.go':36:16[w]]>];
-	"node1" -> "node4" [color="red",style="dashed"];
-	"node1" -> "node6" [color="blue",style="dashed"];
-	"node2" -> "node3" [color="black"];
-	"node3" -> "node1" [color="black"];
+	"node0" [shape="rect",color="black",label=<x := nonKeyedLit(Vertex)(0, 0)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]: [0, 0] ]]<BR/>}} -&gt; [vid$x]>];
+	"node1" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [skip]>];
+	"node2" [shape="rect",color="gray",label=<&lt;(i, 100)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [vid$i &lt; 100]>];
+	"node3" [shape="rect",color="gray",label=<x::X = +(x::X, 1)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]]>];
+	"node4" [shape="rect",color="gray",label=<i = +(i, 1)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]: [0, +Inf]<BR/>vid$i: [1, +Inf] ]]<BR/>}} -&gt; [vid$i]>];
+	"node5" [shape="rect",color="gray",label=<i := 0<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]: [0, 0]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [vid$i]>];
+	"node6" [shape="rect",color="gray",label=<x::Y = +(x::Y, 1)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]: [0, +Inf]<BR/>vid$i: [0, +Inf] ]]<BR/>}} -&gt; [pp@'go-testcases/heap/field-insensitive/go-structs.go':35:16[w]]>];
 	"node0" -> "node5" [color="black"];
-	"node5" -> "node1" [color="black"];
-	"node6" -> "node2" [color="black"];
+	"node2" -> "node1" [color="red",style="dashed"];
+	"node2" -> "node3" [color="blue",style="dashed"];
+	"node3" -> "node6" [color="black"];
+	"node4" -> "node2" [color="black"];
+	"node5" -> "node2" [color="black"];
+	"node6" -> "node4" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

@@ -10,7 +10,6 @@ type Vertex struct {
 }
 
 func main() {
-	i := 0
 	v := Vertex{3, 4}
 	v.X = 2
 	v.Y = 3

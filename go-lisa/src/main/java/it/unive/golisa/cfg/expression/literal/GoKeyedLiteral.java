@@ -90,7 +90,7 @@ public class GoKeyedLiteral extends NativeCall {
 						capResult = capResult.lub(capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
 				if (getParameters().length == 0)
-					return capResult;
+					return capResult.smallStepSemantics(created, this);
 			}
 		}
 

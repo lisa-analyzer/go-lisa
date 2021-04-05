@@ -14,10 +14,6 @@ public class CollectionsTest extends AnalysisTest {
 		perform("collections/struct", "struct.go", true, false, false, getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval()));
 	}
 	
-	@Test
-	public void mapTest() throws AnalysisSetupException {
-		perform("collections/map", "map.go", true, false, false, getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval()));
-	}
 	
 	@Test
 	public void arrayTest() throws AnalysisSetupException {

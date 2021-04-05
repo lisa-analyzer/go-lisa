@@ -22,9 +22,9 @@ func alloc() {
 
 }
 
-func ifAlloc(x,y int) {
+func ifAlloc(a,b int) {
 
-	if x == y {
+	if a == b {
 		x := Vertex{1,2}
 	} else {
 		x := Vertex{3,4}
@@ -32,7 +32,7 @@ func ifAlloc(x,y int) {
 	return x.X
 }
 
-func forAlloc(x,y int) {
+func forAlloc() {
 	x := Vertex{0,0}
 	for i := 0; i < 100; i++ {
 		x.X = x.X + 1

@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import it.unive.golisa.cfg.type.GoType;
-import it.unive.golisa.cfg.type.composite.GoMapType;
+import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -19,9 +20,11 @@ import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.type.Untyped;
 
 public class GoKeyedLiteral extends NativeCall {
 
@@ -51,53 +54,47 @@ public class GoKeyedLiteral extends NativeCall {
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
 		Collection<SymbolicExpression> containerExps = containerState.getComputedExpressions();
 
-		if (getStaticType() instanceof GoMapType) {
-			AnalysisState<A, H, V> result = null;
+		if (getStaticType() instanceof GoArrayType) {
+
+			GoArrayType arrayType = (GoArrayType) getStaticType();
+			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
 				if (!(containerExp instanceof HeapLocation))
 					continue;
+
 				HeapLocation hid = (HeapLocation) containerExp;
 
-				// Initialize the hid identifier to top
-				AnalysisState<A, H, V> hidState = containerState.assign(hid, new PushAny(hid.getTypes()), getParentStatement());
-				AnalysisState<A, H, V> tmp = null;
+				// Assign the len property to this hid
+				Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len");
+				AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), hid, lenProperty);
+				AnalysisState<A, H, V> lenState = containerState.smallStepSemantics(lenAccess, this);
 
-				if (keyedValues.isEmpty())
-					tmp = hidState;
-				else {
-					for (Expression key : keyedValues.keySet()) {
-						Expression value = keyedValues.get(key);
-						// Evaluate the key
-						AnalysisState<A, H, V> keyState = key.semantics(hidState, callGraph, null);
-						// Evaluate the value associated with the keuy
-						AnalysisState<A, H, V> mapEntryState = value.semantics(keyState, callGraph, null);
+				AnalysisState<A, H, V> lenResult = null;
+				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+					if (lenResult == null)
+						lenResult = lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this);
+					else
+						lenResult = lenResult.lub(lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
-						for (SymbolicExpression k : keyState.getComputedExpressions()) {
-							AnalysisState<A, H, V> accessState = mapEntryState.smallStepSemantics(
-									new AccessChild(Caches.types().mkSingletonSet(k.getDynamicType()), hid, k), this);
+				// Assign the cap property to this hid
+				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap");
+				AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), hid, capProperty);
+				AnalysisState<A, H, V> capState = lenResult.smallStepSemantics(capAccess, this);
 
-							for (SymbolicExpression access : accessState.getComputedExpressions()) {
-								for (SymbolicExpression v : mapEntryState.getComputedExpressions())
-									if (tmp == null)
-										tmp = mapEntryState.assign((Identifier) access, v, this);
-									else
-										tmp = tmp.lub(mapEntryState.assign((Identifier) access, v, this));
-							}
-						}
-					}
-				}
+				AnalysisState<A, H, V> capResult = null;
+				for (SymbolicExpression lenId : capState.getComputedExpressions())
+					if (capResult == null)
+						capResult = capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this);
+					else
+						capResult = capResult.lub(capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
-				if (result == null)
-					result = tmp;
-				else
-					result = result.lub(tmp.smallStepSemantics(hid, this));
+				if (getParameters().length == 0)
+					return capResult;
 			}
+		}
 
-			return result.smallStepSemantics(created, this);
-		} 
-
-		// TODO: to handle the other cases (maps, array...)
+		// TODO: to handle the other cases (maps...)
 		return entryState.top();
 	}
 }

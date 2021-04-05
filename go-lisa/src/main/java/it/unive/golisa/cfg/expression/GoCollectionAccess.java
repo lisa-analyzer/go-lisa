@@ -28,7 +28,7 @@ public class GoCollectionAccess extends BinaryNativeCall {
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
 			SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
 					throws SemanticException {
-		if (left.getDynamicType().isPointerType())
+		if (left.getDynamicType().isPointerType() || left.getDynamicType().isUntyped())
 			return rightState.smallStepSemantics(new AccessChild(getRuntimeTypes(), left, right), this);
 		else
 			return entryState.bottom();

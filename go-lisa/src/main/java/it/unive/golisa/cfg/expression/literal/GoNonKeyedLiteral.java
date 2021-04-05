@@ -26,6 +26,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 public class GoNonKeyedLiteral extends NativeCall {
@@ -52,7 +53,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 		// Allocates the new heap allocation 
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
 		Collection<SymbolicExpression> containerExps = containerState.getComputedExpressions();
-		//
+
 		if (getStaticType() instanceof GoStructType) {
 			// Retrieve the struct type (that is a compilation unit)
 			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
@@ -63,9 +64,11 @@ public class GoNonKeyedLiteral extends NativeCall {
 				if (!(containerExp instanceof HeapLocation))
 					continue;
 				HeapLocation hid = (HeapLocation) containerExp;
-
 				// Initialize the hid identifier to top
-				AnalysisState<A, H, V> hidState = containerState;
+				AnalysisState<A, H, V> hidState = containerState.smallStepSemantics(hid, this);
+				if (getParameters().length == 0)
+					return hidState;
+
 				int i = 0;
 				AnalysisState<A, H, V> tmp = hidState;
 				for (Global field : structUnit.getInstanceGlobals(true)) {
@@ -74,7 +77,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 							access, this);
 					for (SymbolicExpression id : fieldState.getComputedExpressions()) 
 						for (SymbolicExpression exp : params[i])
-							tmp = tmp.assign((Identifier) id, exp, this);
+							tmp = fieldState.assign((Identifier) id, exp, this);
 					i++;
 				}
 
@@ -84,18 +87,20 @@ public class GoNonKeyedLiteral extends NativeCall {
 					result = result.lub(tmp);
 			}
 
-			return result.smallStepSemantics(created, this);
+			return result;
 		} 
 
 		if (getStaticType() instanceof GoArrayType) {
 			AnalysisState<A, H, V> result = null;
+
 			GoArrayType arrayType = (GoArrayType) getStaticType();
+			Type contentType = arrayType.getContentType();
 			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
 				if (!(containerExp instanceof HeapLocation))
 					continue;
-				
+
 				HeapLocation hid = (HeapLocation) containerExp;
 
 				// Assign the len property to this hid
@@ -122,18 +127,20 @@ public class GoNonKeyedLiteral extends NativeCall {
 					else
 						capResult = capResult.lub(capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
+				if (getParameters().length == 0)
+					return capResult;
+
 				// Allocate the heap location
 				AnalysisState<A, H, V> tmp = capResult;
 				for (int i = 0; i < arrayLength; i++) {
-					AccessChild access = new AccessChild(getRuntimeTypes(), hid, new Constant(GoIntType.INSTANCE, i));
+					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(contentType), hid, new Constant(GoIntType.INSTANCE, i));
 					AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
 
 					for (SymbolicExpression index : accessState.getComputedExpressions())
 						for (SymbolicExpression v : params[i])
-							if (tmp == null)
-								tmp = accessState.assign((Identifier) index, v, this);
-							else
-								tmp = tmp.lub(accessState.assign((Identifier) index, v, this));
+
+							tmp = tmp.assign((Identifier) index, v, this);
+
 				}
 
 				if (result == null)
@@ -142,7 +149,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 					result = result.lub(tmp.smallStepSemantics(hid, this));
 			}
 
-			return result.smallStepSemantics(created, this);
+			return result;
 		}
 
 		// TODO: to handle the other cases (maps, array...)

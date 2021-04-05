@@ -1,11 +1,11 @@
 digraph {
 	"node0" [shape="rect",color="black",label=<i := 0<BR/>{{<BR/>heap [[ [] ]]<BR/>value [[ vid$i: [0, 0] ]]<BR/>}} -&gt; [vid$i]>];
-	"node1" [shape="rect",color="gray",label=<v := nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17] ]]<BR/>value [[ hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17: [3, 4]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [vid$v]>];
-	"node2" [shape="rect",color="gray",label=<v::Y = 3<BR/>{{<BR/>heap [[ [hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17] ]]<BR/>value [[ hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17: [2, 4]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17]>];
-	"node3" [shape="rect",color="gray",label=<v::X = 2<BR/>{{<BR/>heap [[ [hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17] ]]<BR/>value [[ hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17: [2, 4]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [hid$pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17]>];
+	"node1" [shape="rect",color="gray",label=<v := nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]: [3, 4]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [vid$v]>];
+	"node2" [shape="rect",color="gray",label=<v::Y = 3<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]: [2, 4]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]]>];
+	"node3" [shape="rect",color="gray",label=<v::X = 2<BR/>{{<BR/>heap [[ [pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]] ]]<BR/>value [[ pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]: [2, 4]<BR/>vid$i: [0, 0] ]]<BR/>}} -&gt; [pp@'go-testcases/heap/field-insensitive/go-structs.go':14:17[w]]>];
 	"node1" -> "node3" [color="black"];
-	"node3" -> "node2" [color="black"];
 	"node0" -> "node1" [color="black"];
+	"node3" -> "node2" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

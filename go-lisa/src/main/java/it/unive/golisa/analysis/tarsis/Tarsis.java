@@ -358,7 +358,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		return !id.getDynamicType().isPointerType();
+		return !id.getDynamicType().isPointerType() || id.getDynamicType().isUntyped();
 	}
 
 	@Override

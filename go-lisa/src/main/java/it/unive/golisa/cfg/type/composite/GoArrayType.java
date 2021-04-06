@@ -106,6 +106,11 @@ public class GoArrayType implements GoType, PointerType {
 	public boolean isPointerType() {
 		return true;
 	}
+	
+	@Override
+	public boolean isArrayType() {
+		return true;
+	}
 
 	@Override
 	public Collection<Type> allInstances() {

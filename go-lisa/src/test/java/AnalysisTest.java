@@ -66,7 +66,7 @@ public abstract class AnalysisTest {
 			fail("Exception while parsing '" + target + "': " + e.getMessage());
 		}
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setInferTypes(dumpTypes)
+		conf.setInferTypes(inferTypes)
 			.setDumpCFGs(dumpCFGs)
 			.setDumpTypeInference(dumpTypes)
 			.setJsonOutput(true);

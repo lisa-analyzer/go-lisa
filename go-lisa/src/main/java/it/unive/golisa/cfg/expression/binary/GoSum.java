@@ -56,10 +56,24 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 		} else if (leftExp.getDynamicType().isNumericType() || rightExp.getDynamicType().isNumericType()) {
 			op = BinaryOperator.NUMERIC_ADD;
 			types = resultType(leftExp, rightExp);
-		} else
-			return entryState.bottom();
-
-		return entryState
+		} else {
+			// Rewrite as string concatenation symbolic expression
+			op = BinaryOperator.STRING_CONCAT;
+			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
+			AnalysisState<A, H, V> stringConcat = rightState
+					.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this);
+			
+			// Rewrite as numeric add symbolic expression
+			op = BinaryOperator.NUMERIC_ADD;
+			types = resultType(leftExp, rightExp);
+			AnalysisState<A, H, V> numericAdd = rightState
+					.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this);
+			
+			// Least upper bound of the two results
+			return stringConcat.lub(numericAdd);
+		}
+		
+		return rightState
 				.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this);
 	}
 	

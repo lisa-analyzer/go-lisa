@@ -14,10 +14,13 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.UnaryOperator;
+import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoLength extends UnaryNativeCall {
@@ -35,16 +38,19 @@ public class GoLength extends UnaryNativeCall {
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> exprState,
 			SymbolicExpression expr) throws SemanticException {
 	
-		
+		ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
+
 		if (expr.getDynamicType().isArrayType() || expr.getDynamicType() instanceof GoSliceType) {
-			ExternalSet<Type> type = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-			return exprState.smallStepSemantics(new PushAny(type), this);
+			// When expr is an array or a slice, we access the len property
+			ExternalSet<Type> untypedType = Caches.types().mkSingletonSet(Untyped.INSTANCE);
+			AccessChild access = new AccessChild(intType, expr, new Variable(untypedType, "len"));
+			return exprState.smallStepSemantics(access, this);
 		}
 				
 		if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 		
 		
-		return exprState.smallStepSemantics(new UnaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), expr, UnaryOperator.STRING_LENGTH), this);
+		return exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH), this);
 	}
 }

@@ -50,10 +50,13 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 		BinaryOperator op;
 		ExternalSet<Type> types;
 		
-		if (leftExp.getDynamicType().isStringType() || rightExp.getDynamicType().isStringType()) {
+		Type leftType = leftExp.getDynamicType();
+		Type rightType = rightExp.getDynamicType();
+		
+		if (leftType.isStringType() || rightType.isStringType()) {
 			op = BinaryOperator.STRING_CONCAT;
 			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
-		} else if (leftExp.getDynamicType().isNumericType() || rightExp.getDynamicType().isNumericType()) {
+		} else if (leftType.isNumericType() || rightType.isNumericType()) {
 			op = BinaryOperator.NUMERIC_ADD;
 			types = resultType(leftExp, rightExp);
 		} else {
@@ -62,7 +65,6 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
 			AnalysisState<A, H, V> stringConcat = rightState
 					.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this);
-			
 			// Rewrite as numeric add symbolic expression
 			op = BinaryOperator.NUMERIC_ADD;
 			types = resultType(leftExp, rightExp);

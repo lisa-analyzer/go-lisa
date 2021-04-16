@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

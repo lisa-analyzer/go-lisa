@@ -365,4 +365,17 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	public boolean canProcess(SymbolicExpression expression) {
 		return !expression.getDynamicType().isPointerType();
 	}
+
+	@Override
+	public ValueEnvironment<Tarsis> assume(ValueEnvironment<Tarsis> environment, ValueExpression expression,
+			ProgramPoint pp) throws SemanticException {
+		// TODO put proper assume
+		return environment;
+	}
+
+	@Override
+	public Tarsis glb(Tarsis other) throws SemanticException {
+		// TODO put proper glb
+		return BOTTOM;
+	}
 }

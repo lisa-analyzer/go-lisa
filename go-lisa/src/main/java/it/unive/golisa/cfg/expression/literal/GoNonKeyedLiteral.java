@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.literal;
 
-import java.util.Collection;
-
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
@@ -10,6 +8,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
@@ -42,7 +41,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 	@Override
 	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> callSemantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V>[] computedStates,
-			Collection<SymbolicExpression>[] params) throws SemanticException {
+			ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
 		// it corresponds to the analysis state after the evaluation of all the
 		// parameters of this call
 		// (the semantics of this call does not need information about the
@@ -52,7 +51,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 
 		// Allocates the new heap allocation 
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
-		Collection<SymbolicExpression> containerExps = containerState.getComputedExpressions();
+		ExpressionSet<SymbolicExpression> containerExps = containerState.getComputedExpressions();
 
 		if (getStaticType() instanceof GoStructType) {
 			// Retrieve the struct type (that is a compilation unit)

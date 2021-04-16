@@ -3,7 +3,6 @@ package it.unive.golisa.analysis.composition;
 import it.unive.golisa.analysis.rsubs.RelationalSubstringDomain;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.analysis.BaseLattice;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.ValueDomain;

@@ -21,7 +21,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
@@ -74,36 +73,33 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 					throws SemanticException {
 
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, callGraph, expressions);
+		AnalysisState<A, H, V> left = getLeft().semantics(right, callGraph, expressions);
 		expressions.put(getRight(), right);
-		expressions.put(getLeft(), right);
+		expressions.put(getLeft(), left);
 
-		Variable id = new Variable(((VariableRef) getLeft()).getRuntimeTypes(), ((VariableRef) getLeft()).getName());
+		AnalysisState<A, H, V> result = entryState.bottom();
+		for (SymbolicExpression leftExp : left.getComputedExpressions()) 
+			for (SymbolicExpression rightExp : right.getComputedExpressions()) {
+				AnalysisState<A, H, V> tmp = null;
+				if (rightExp.getDynamicType() instanceof GoUntypedInt) {
+					ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
+					Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE);
+					it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
+							new it.unive.lisa.symbolic.value.BinaryExpression(intType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
 
-		AnalysisState<A, H, V> result = null;
-		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-			AnalysisState<A, H, V> tmp = null;
-			if (rightExp.getDynamicType() instanceof GoUntypedInt) {
-				ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE);
-				it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
-						new it.unive.lisa.symbolic.value.BinaryExpression(intType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
+					tmp = right.assign((Identifier) leftExp, rightConverted, this);
+				} else if (rightExp.getDynamicType() instanceof GoUntypedFloat) {
+					ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
+					Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE);
+					it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
+							new it.unive.lisa.symbolic.value.BinaryExpression(floatType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
 
-				tmp = right.assign((Identifier) id, rightConverted, this);
-			} else if (rightExp.getDynamicType() instanceof GoUntypedFloat) {
-				ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE);
-				it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
-						new it.unive.lisa.symbolic.value.BinaryExpression(floatType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
+					tmp = right.assign((Identifier) leftExp, rightConverted, this);
+				} else 
+					tmp = right.assign((Identifier) leftExp, rightExp, this);
 
-				tmp = right.assign((Identifier) id, rightConverted, this);
-			} else 
-				tmp = right.assign(id, rightExp, this);
-
-			if (result == null)
-				result = tmp;
-			else
 				result = result.lub(tmp);
-		}
+			}
 
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getRight().getMetaVariables());

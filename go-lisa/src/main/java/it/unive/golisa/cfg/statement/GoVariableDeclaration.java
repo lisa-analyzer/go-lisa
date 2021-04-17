@@ -77,21 +77,17 @@ public class GoVariableDeclaration extends BinaryExpression {
 		expressions.put(getRight(), right);
 		expressions.put(getLeft(), right);
 
-
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
 		Variable id = new Variable(idType, ((VariableRef) getLeft()).getName());
 
-		AnalysisState<A, H, V> result = null;
+		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
 			Constant typeCast = new Constant(new TypeTokenType(idType), type);
 			it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
 					new it.unive.lisa.symbolic.value.BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV);				
 
 			AnalysisState<A, H, V> tmp = right.assign(id, rightConverted, this);
-			if (result == null)
-				result = tmp;
-			else
-				result = result.lub(tmp);
+			result = result.lub(tmp);
 		}
 
 		if (!getRight().getMetaVariables().isEmpty())

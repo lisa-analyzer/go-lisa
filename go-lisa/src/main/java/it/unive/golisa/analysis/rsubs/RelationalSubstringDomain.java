@@ -88,7 +88,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			func.remove(id);
 
 		// Add phase
-		func.put(id, func.get(id) == null ? getRelations(expression) : func.get(id).merge(getRelations(expression)));
+		func.put(id, func.get(id) == null ? getRelations(expression) : func.get(id).glb(getRelations(expression)));
 
 		// Inter-asg phase
 		for (Identifier y : func.keySet())
@@ -153,22 +153,22 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 					UpperBound<ValueExpression> relsForX = getRelations(y);
 					UpperBound<ValueExpression> relsForY = getRelations(x);
 
-					func.put(x, func.get(x) == null ? relsForX : func.get(x).merge(relsForX));
-					func.put(y, func.get(y) == null ? relsForY : func.get(y).merge(relsForY));
+					func.put(x, func.get(x) == null ? relsForX : func.get(x).glb(relsForX));
+					func.put(y, func.get(y) == null ? relsForY : func.get(y).glb(relsForY));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 
 				if (left instanceof Identifier) {
 					Identifier x = (Identifier) left;
 					UpperBound<ValueExpression> rels = getRelations(right);
-					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 
 				if (right instanceof Identifier) {
 					Identifier x = (Identifier) right;
 					UpperBound<ValueExpression> rels = getRelations(left);
-					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 			case LOGICAL_AND:
@@ -181,21 +181,21 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					UpperBound<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
-					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 			case STRING_EQUALS:
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					UpperBound<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
-					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 
 				if (binary.getRight() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getRight();
 					UpperBound<ValueExpression> rels = getRelations((ValueExpression) binary.getLeft());
-					func.put(x, func.get(x) == null ? rels : func.get(x).merge(rels));
+					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 			default:

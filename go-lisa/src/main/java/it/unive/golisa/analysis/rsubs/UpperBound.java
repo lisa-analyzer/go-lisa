@@ -50,20 +50,7 @@ public class UpperBound<T extends SymbolicExpression> extends InverseSetLattice<
 	
 	@Override
 	protected UpperBound<T> mk(Set<T> set) {
-		return new UpperBound<T>(set, false);
-	}
-
-	public UpperBound<T> merge(UpperBound<T> other) {
-		if (other.isBottom())
-			return bottom();
-		if (other.isTop())
-			return this;
-		if (isTop())
-			return other;
-			
-		HashSet<T> result = new HashSet<>(this.elements);
-		result.addAll(other.elements);
-		return new UpperBound<T>(result);
+		return new UpperBound<T>(set);
 	}
 
 	public boolean contains(UpperBound<T> other) {

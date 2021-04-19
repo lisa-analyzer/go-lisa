@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.statement;
+package it.unive.golisa.cfg.statement.assignment;
 
 
 import it.unive.lisa.program.SourceCodeLocation;

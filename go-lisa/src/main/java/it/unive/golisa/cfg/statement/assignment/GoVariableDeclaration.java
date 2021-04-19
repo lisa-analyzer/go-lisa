@@ -1,9 +1,5 @@
-package it.unive.golisa.cfg.statement;
+package it.unive.golisa.cfg.statement.assignment;
 
-import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
-import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,12 +16,19 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class GoShortVariableDeclaration extends BinaryExpression {
+/**
+ * Go variable declaration class (e.g., var x int = 5).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ */
+public class GoVariableDeclaration extends BinaryExpression {
+
+	private final Type type;
 
 	/**
 	 * Builds a Go variable declaration with initialization,
@@ -37,8 +40,8 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 	 * @param var     the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoShortVariableDeclaration(CFG cfg, VariableRef var, Expression expression) {
-		super(cfg, var, expression);
+	public GoVariableDeclaration(CFG cfg, Type type, VariableRef var, Expression expression) {
+		this(cfg, null, -1, -1, type, var, expression);
 	}
 
 	/**
@@ -56,50 +59,36 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 	 * @param var	     the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoShortVariableDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef var, Expression expression) {
+	public GoVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Type type, VariableRef var, Expression expression) {
 		super(cfg, new SourceCodeLocation(sourceFile, line, col), var, expression);
+		this.type = type;
 	}
 
 	@Override
 	public String toString() {
-		return getLeft() + " := " + getRight();
+		return "var " + getLeft() + " " + type + " = " + getRight();
 	}
 
 	@Override
-	public final <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
 			AnalysisState<A, H, V> entryState, CallGraph callGraph, StatementStore<A, H, V> expressions)
 					throws SemanticException {
-
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, callGraph, expressions);
-		AnalysisState<A, H, V> left = getLeft().semantics(right, callGraph, expressions);
 		expressions.put(getRight(), right);
-		expressions.put(getLeft(), left);
+		expressions.put(getLeft(), right);
+
+		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
+		Variable id = new Variable(idType, ((VariableRef) getLeft()).getName());
 
 		AnalysisState<A, H, V> result = entryState.bottom();
-		for (SymbolicExpression leftExp : left.getComputedExpressions()) 
-			for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-				AnalysisState<A, H, V> tmp = null;
-				if (rightExp.getDynamicType() instanceof GoUntypedInt) {
-					ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-					Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE);
-					it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
-							new it.unive.lisa.symbolic.value.BinaryExpression(intType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
+		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
+			Constant typeCast = new Constant(new TypeTokenType(idType), type);
+			it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
+					new it.unive.lisa.symbolic.value.BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV);				
 
-					tmp = right.assign((Identifier) leftExp, rightConverted, this);
-				} else if (rightExp.getDynamicType() instanceof GoUntypedFloat) {
-					ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
-					Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE);
-					it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
-							new it.unive.lisa.symbolic.value.BinaryExpression(floatType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
-
-					tmp = right.assign((Identifier) leftExp, rightConverted, this);
-				} else 
-					tmp = right.assign((Identifier) leftExp, rightExp, this);
-
-				result = result.lub(tmp);
-			}
+			AnalysisState<A, H, V> tmp = right.assign(id, rightConverted, this);
+			result = result.lub(tmp);
+		}
 
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getRight().getMetaVariables());

@@ -71,12 +71,13 @@ import it.unive.golisa.cfg.expression.unary.GoMinus;
 import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
 import it.unive.golisa.cfg.expression.unary.GoRef;
-import it.unive.golisa.cfg.statement.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
-import it.unive.golisa.cfg.statement.GoShortVariableDeclaration;
-import it.unive.golisa.cfg.statement.GoVariableDeclaration;
+import it.unive.golisa.cfg.statement.assignment.GoConstantDeclaration;
+import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
+import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
+import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.method.GoMethod;
 import it.unive.golisa.cfg.statement.method.GoReceiver;
 import it.unive.golisa.cfg.type.GoBoolType;
@@ -357,7 +358,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Expression[] visitIdentifierList(IdentifierListContext ctx) {
+	public VariableRef[] visitIdentifierList(IdentifierListContext ctx) {
 		VariableRef[] result = new VariableRef[] {};
 		for (int i = 0; i < ctx.IDENTIFIER().size(); i++)
 			result = ArrayUtils.addAll(result, new VariableRef(currentCFG, ctx.IDENTIFIER(i).getText()));
@@ -679,23 +680,24 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitShortVarDecl(ShortVarDeclContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
-
+				
+		// Number of identifiers to be assigned
 		int sizeIds = ids.IDENTIFIER().size();
+		// Numbefr of expressions to be assigned
 		int sizeExps = exps.expression().size();
 
 		Statement lastStmt = null;
 		Statement entryNode = null;
 
+		// Multi variable short declaration
 		if (sizeIds != sizeExps) {
-			// FIXME: how to handle multi-assignment? not handled up to now
-			// need to create a custom class
-			int line = getLine(ids.IDENTIFIER(0).getSymbol());
-			int col = getCol(exps.expression(0));
+			int line = getLine(ctx);
+			int col = getCol(ctx);
 
-			GoRawValue left = new GoRawValue(currentCFG, visitIdentifierList(ctx.identifierList()));
+			VariableRef[] left = visitIdentifierList(ctx.identifierList());
 			Expression right = visitExpression(exps.expression(0));
 
-			GoShortVariableDeclaration asg = null;//new GoShortVariableDeclaration(currentCFG, filePath, line, col, left, right);
+			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(currentCFG, filePath, line, col, Untyped.INSTANCE, left, right);
 			currentCFG.addNode(asg);
 			return Pair.of(asg, asg);
 		} else {

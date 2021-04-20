@@ -55,19 +55,18 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 						if (c < 0) {
 
 							for (Identifier y_id : yUB)
-								xUB.addExpression(y_id);
-							xUB.addExpression(y);
+								xUB = xUB.addExpression(y_id);
+							xUB = xUB.addExpression(y);
 							func.put(id, xUB);
 
-							return new StrictUpperBounds(lattice, func);
+							return new StrictUpperBounds(lattice, func).closure();
 						}
 
 						if (c > 0) {
-							yUB.addExpression(id);
+							yUB = yUB.addExpression(id);
 							func.put(y, yUB);
 							StrictUpperBounds res = new StrictUpperBounds(lattice, func);
-							res = res.forgetIdentifier(id);
-							return res.closure();
+							return res.forgetIdentifier(id).closure();
 						}
 					}
 				}
@@ -91,19 +90,17 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 
 						if (c > 0) {
 							for (Identifier y_id : yUB)
-								xUB.addExpression(y_id);
-							xUB.addExpression(y);
+								xUB = xUB.addExpression(y_id);
+							xUB = xUB.addExpression(y);
 							func.put(id, xUB);
-
 							return new StrictUpperBounds(lattice, func).closure();
 						}
 
 						if (c < 0) {
-							yUB.addExpression(id);
+							yUB = yUB.addExpression(id);
 							func.put(y, yUB);
 							StrictUpperBounds res = new StrictUpperBounds(lattice, func);
-							res.forgetIdentifier(id);
-							return res.closure();
+							return res.forgetIdentifier(id).closure();
 						}
 					}
 				}

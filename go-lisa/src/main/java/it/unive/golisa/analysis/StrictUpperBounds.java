@@ -12,6 +12,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Identifier, ExpressionInverseSet<Identifier>> implements ValueDomain<StrictUpperBounds>{
@@ -146,8 +147,61 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// FIXME: too imprecise
-		return null;
+
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression unary = (UnaryExpression) expression;
+			switch(unary.getOperator()) {
+			case LOGICAL_NOT:
+				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
+			default:
+				return Satisfiability.UNKNOWN;
+			}
+		}
+
+		if (expression instanceof BinaryExpression) {
+
+			if (isTop())
+				return Satisfiability.UNKNOWN;
+			else if (isBottom())
+				return Satisfiability.BOTTOM;
+
+			BinaryExpression binary = (BinaryExpression) expression;
+
+			if (!(binary.getLeft() instanceof Identifier) || !(binary.getRight() instanceof Identifier))
+				return Satisfiability.UNKNOWN;
+
+			Identifier left = (Identifier) binary.getLeft();
+			Identifier right = (Identifier) binary.getRight();
+
+			switch(binary.getOperator()) {
+			case COMPARISON_EQ:
+				if (getState(right).contains(left) || getState(left).contains(right))
+					return Satisfiability.NOT_SATISFIED;
+				return Satisfiability.UNKNOWN;	
+			case COMPARISON_GE:
+			case COMPARISON_GT: // x > y or x >= y
+				if (getState(right).contains(left))
+					return Satisfiability.SATISFIED;
+				return Satisfiability.UNKNOWN;
+			case COMPARISON_LE:
+			case COMPARISON_LT: // x < y or x <= y
+				if (getState(left).contains(right))
+					return Satisfiability.SATISFIED;
+				return Satisfiability.UNKNOWN;
+			case COMPARISON_NE:
+				if (getState(right).contains(left) || getState(left).contains(right))
+					return Satisfiability.SATISFIED;
+				return Satisfiability.UNKNOWN;	
+			case LOGICAL_AND:
+				return satisfies(left, pp).and(satisfies(right, pp));
+			case LOGICAL_OR:
+				return satisfies(left, pp).or(satisfies(right, pp));
+			default:
+				break;
+			}
+		}
+
+		return Satisfiability.UNKNOWN;
 	}
 
 	@Override

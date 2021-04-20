@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
@@ -21,13 +22,13 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
-public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubstringDomain, Identifier, UpperBound<ValueExpression>> implements ValueDomain<RelationalSubstringDomain> {
+public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>> implements ValueDomain<RelationalSubstringDomain> {
 
 	public RelationalSubstringDomain() {
-		this(new UpperBound<ValueExpression>(), null);
+		this(new ExpressionInverseSet<ValueExpression>(), null);
 	}
 
-	protected RelationalSubstringDomain(UpperBound<ValueExpression> lattice, Map<Identifier, UpperBound<ValueExpression>> function) {
+	protected RelationalSubstringDomain(ExpressionInverseSet<ValueExpression> lattice, Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
 		super(lattice, function);
 	}
 
@@ -53,7 +54,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 	@Override
 	public RelationalSubstringDomain lubAux(RelationalSubstringDomain other) throws SemanticException {
-		Map<Identifier, UpperBound<ValueExpression>> func = new HashMap<>();
+		Map<Identifier, ExpressionInverseSet<ValueExpression>> func = new HashMap<>();
 
 		for (Identifier x : getKeys())
 			if (other.function.containsKey(x))
@@ -69,7 +70,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 	@Override
 	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		Map<Identifier, UpperBound<ValueExpression>> func;
+		Map<Identifier, ExpressionInverseSet<ValueExpression>> func;
 		if (function == null)
 			func = new HashMap<>();
 		else
@@ -104,7 +105,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			return new RelationalSubstringDomain(lattice, function);
 
 
-		Map<Identifier, UpperBound<ValueExpression>>  clos = new HashMap<>(function);
+		Map<Identifier, ExpressionInverseSet<ValueExpression>>  clos = new HashMap<>(function);
 
 		for (Identifier x : clos.keySet())
 			for (Identifier y : clos.keySet())
@@ -126,7 +127,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		if (isBottom())
 			return bottom();
 
-		HashMap<Identifier, UpperBound<ValueExpression>> func;
+		HashMap<Identifier, ExpressionInverseSet<ValueExpression>> func;
 		if (function == null)
 			func = new HashMap<>();
 		else
@@ -150,8 +151,8 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 					Identifier x = (Identifier) left;
 					Identifier y = (Identifier) right;
 
-					UpperBound<ValueExpression> relsForX = getRelations(y);
-					UpperBound<ValueExpression> relsForY = getRelations(x);
+					ExpressionInverseSet<ValueExpression> relsForX = getRelations(y);
+					ExpressionInverseSet<ValueExpression> relsForY = getRelations(x);
 
 					func.put(x, func.get(x) == null ? relsForX : func.get(x).glb(relsForX));
 					func.put(y, func.get(y) == null ? relsForY : func.get(y).glb(relsForY));
@@ -160,14 +161,14 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 				if (left instanceof Identifier) {
 					Identifier x = (Identifier) left;
-					UpperBound<ValueExpression> rels = getRelations(right);
+					ExpressionInverseSet<ValueExpression> rels = getRelations(right);
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 
 				if (right instanceof Identifier) {
 					Identifier x = (Identifier) right;
-					UpperBound<ValueExpression> rels = getRelations(left);
+					ExpressionInverseSet<ValueExpression> rels = getRelations(left);
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
@@ -180,21 +181,21 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			case STRING_CONTAINS:
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
-					UpperBound<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
+					ExpressionInverseSet<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 			case STRING_EQUALS:
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
-					UpperBound<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
+					ExpressionInverseSet<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
 
 				if (binary.getRight() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getRight();
-					UpperBound<ValueExpression> rels = getRelations((ValueExpression) binary.getLeft());
+					ExpressionInverseSet<ValueExpression> rels = getRelations((ValueExpression) binary.getLeft());
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
@@ -269,7 +270,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			return "BOTTOM";
 
 		StringBuilder builder = new StringBuilder();
-		for (Entry<Identifier, UpperBound<ValueExpression>> entry : function.entrySet())
+		for (Entry<Identifier, ExpressionInverseSet<ValueExpression>> entry : function.entrySet())
 			builder.append(entry.getKey()).append(": ").append(entry.getValue().toString()).append("\n");
 
 		return builder.toString().trim();
@@ -287,7 +288,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		return new ValueExpression[] {expression};
 	}
 
-	private UpperBound<ValueExpression> getRelations(ValueExpression expression) {
+	private ExpressionInverseSet<ValueExpression> getRelations(ValueExpression expression) {
 		ValueExpression[] exps = flat(expression);
 		Set<ValueExpression> result = new HashSet<ValueExpression>();
 
@@ -311,7 +312,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			}
 		}
 
-		return new UpperBound<ValueExpression>(result);
+		return new ExpressionInverseSet<ValueExpression>(result);
 	} 
 
 	private Set<Constant> getAllSubstrings(String str) {
@@ -327,7 +328,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 	private boolean appersIn(ValueExpression expression, ValueExpression search) {
 		HashSet<ValueExpression> singleton = new HashSet<>();
 		singleton.add(search);
-		return getRelations(expression).contains(new UpperBound<ValueExpression>(singleton));
+		return getRelations(expression).contains(new ExpressionInverseSet<ValueExpression>(singleton));
 	}
 
 	private boolean appearsAtTopLevel(ValueExpression expression, Identifier id) {

@@ -12,14 +12,8 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<RelTarsis> {
 
-	private final static RelTarsis TOP = new RelTarsis();
-	private final static RelTarsis BOTTOM = new RelTarsis();
-
 	private final ValueEnvironment<Tarsis> tarsis;
 	private final RelationalSubstringDomain rsubs;
-
-	private final boolean isTop;
-	private final boolean isBottom;
 
 	public RelTarsis() {
 		this(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain());
@@ -28,8 +22,6 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	private RelTarsis(ValueEnvironment<Tarsis> tarsis, RelationalSubstringDomain rsubs) {
 		this.tarsis = tarsis;
 		this.rsubs = rsubs;
-		this.isTop = tarsis.isTop() && rsubs.isTop();
-		this.isBottom = tarsis.isBottom() && rsubs.isBottom();
 	}
 
 	@Override
@@ -44,7 +36,6 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public RelTarsis assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// TODO Auto-generated method stub
 		return new RelTarsis(tarsis.assume(expression, pp), rsubs.assume(expression, pp));
 	}
 
@@ -76,22 +67,22 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public boolean isTop() {
-		return isTop;
+		return tarsis.isTop() && rsubs.isTop();	
 	}
 
 	@Override
 	public boolean isBottom() {
-		return isBottom;
+		return tarsis.isBottom() && rsubs.isBottom();
 	}
 
 	@Override
 	public RelTarsis top() {
-		return TOP;
+		return new RelTarsis(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain());
 	}
 
 	@Override
 	public RelTarsis bottom() {
-		return BOTTOM;
+		return new RelTarsis(tarsis.bottom(), rsubs.bottom());
 	}
 
 	@Override
@@ -111,15 +102,8 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public int hashCode() {
-		if (isTop())
-			return 1;
-		if (isBottom())
-			return 2;
-
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (isBottom ? 1231 : 1237);
-		result = prime * result + (isTop ? 1231 : 1237);
 		result = prime * result + ((rsubs == null) ? 0 : rsubs.hashCode());
 		result = prime * result + ((tarsis == null) ? 0 : tarsis.hashCode());
 		return result;
@@ -134,10 +118,6 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 		if (getClass() != obj.getClass())
 			return false;
 		RelTarsis other = (RelTarsis) obj;
-		if (isBottom != other.isBottom)
-			return false;
-		if (isTop != other.isTop)
-			return false;
 		if (rsubs == null) {
 			if (other.rsubs != null)
 				return false;
@@ -148,7 +128,7 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 				return false;
 		} else if (!tarsis.equals(other.tarsis))
 			return false;
-		return isTop && other.isTop;
+		return true;
 	}
 
 	@Override

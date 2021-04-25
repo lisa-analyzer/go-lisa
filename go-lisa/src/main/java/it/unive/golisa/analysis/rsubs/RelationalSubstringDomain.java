@@ -90,12 +90,17 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		// Add phase
 		func.put(id, func.get(id) == null ? getRelations(expression) : func.get(id).glb(getRelations(expression)));
-
+		
 		// Inter-asg phase
 		for (Identifier y : func.keySet())
 			if (!y.equals(id) && func.get(y).contains(func.get(id)))
 				func.put(y, func.get(y).addExpression(id));
 
+		// Improvement of add phase
+		for (ValueExpression idRel : func.get(id))
+			if (id instanceof Identifier) 
+				func.put(id, func.get(id) == null ? func.get(idRel) : func.get(id).glb(func.get(idRel)));
+		
 		// Closure phase
 		return new RelationalSubstringDomain(lattice, func).closure();
 	}

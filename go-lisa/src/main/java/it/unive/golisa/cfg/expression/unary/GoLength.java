@@ -23,10 +23,6 @@ import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoLength extends UnaryNativeCall {
-
-	public GoLength(CFG cfg, Expression exp) {
-		this(cfg, null, -1, -1, exp);
-	}
 	
 	public GoLength(CFG cfg, String sourceFile, int line, int col, Expression exp) {
 		super(cfg, new SourceCodeLocation(sourceFile, line, col), "len", exp);

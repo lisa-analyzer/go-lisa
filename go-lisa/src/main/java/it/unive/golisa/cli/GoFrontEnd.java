@@ -341,10 +341,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-			VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
+			int line = getLine(ids.IDENTIFIER(i).getSymbol());
+			int col = getCol(ids.IDENTIFIER(i).getSymbol());
+			
+			VariableRef target = new VariableRef(currentCFG, new SourceCodeLocation(filePath, line, col), ids.IDENTIFIER(i).getText(), type);
 			Expression exp = visitExpression(exps.expression(i));
 
-			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, target, exp);
+			GoConstantDeclaration asg = new GoConstantDeclaration(currentCFG, filePath, getLine(ctx), getCol(ctx), target, exp);
 			currentCFG.addNode(asg);
 
 			if (lastStmt != null)
@@ -360,8 +363,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public VariableRef[] visitIdentifierList(IdentifierListContext ctx) {
 		VariableRef[] result = new VariableRef[] {};
-		for (int i = 0; i < ctx.IDENTIFIER().size(); i++)
-			result = ArrayUtils.addAll(result, new VariableRef(currentCFG, ctx.IDENTIFIER(i).getText()));
+		for (int i = 0; i < ctx.IDENTIFIER().size(); i++) {
+			int line = getLine(ctx.IDENTIFIER(i).getSymbol());
+			int col = getCol(ctx.IDENTIFIER(i).getSymbol());
+			result = ArrayUtils.addAll(result, new VariableRef(currentCFG, new SourceCodeLocation(filePath, line, col), ctx.IDENTIFIER(i).getText()));
+		}
 		return result;
 	}
 
@@ -445,7 +451,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (params.length != 1)
 			throw new IllegalStateException("Go receiver must have a single parameter");
 
-		return new GoReceiver(params[0].getName(), (GoType) params[0].getStaticType());
+		int line = getLine(ctx);
+		int col = getLine(ctx);
+		return new GoReceiver(new SourceCodeLocation(filePath, line, col), params[0].getName(), (GoType) params[0].getStaticType());
 	}
 
 	@Override
@@ -477,13 +485,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 
-			Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG) : visitExpression(exps.expression(i));
+			Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped() ? ((GoType) type).defaultValue(currentCFG, new SourceCodeLocation(filePath, getLine(ids.IDENTIFIER(i).getSymbol()), getCol((ids.IDENTIFIER(i).getSymbol())))) : visitExpression(exps.expression(i));
 
 
 			int line = getLine(ids.IDENTIFIER(i).getSymbol());
 			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i).getSymbol()) : getCol(exps.expression(i));
 
-			VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
+			VariableRef target = new VariableRef(currentCFG, new SourceCodeLocation(filePath, line, col), ids.IDENTIFIER(i).getText(), type);
 			GoVariableDeclaration asg = new GoVariableDeclaration(currentCFG, filePath, line, col, type, target, exp);
 			currentCFG.addNode(asg);
 
@@ -500,8 +508,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
 		if (ctx.statementList() == null) {
-			NoOp entry = new NoOp(currentCFG);
-			NoOp exit = new NoOp(currentCFG);
+			NoOp entry = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
+			NoOp exit = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 			currentCFG.addNode(entry);
 			currentCFG.addNode(exit);
 			addEdge(new SequentialEdge(entry, exit));
@@ -581,10 +589,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
 			asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), exp, 
-					new GoSum(currentCFG,  exp,  new GoInteger(currentCFG, filePath, line, col, 1)));		
+					new GoSum(currentCFG,  filePath, line, col, exp,  new GoInteger(currentCFG, new SourceCodeLocation(filePath, line, col), 1)));		
 		else
 			asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), exp, 
-					new GoSubtraction(currentCFG, exp,  new GoInteger(currentCFG, filePath, line, col, 1)));
+					new GoSubtraction(currentCFG,  filePath, line, col, exp,  new GoInteger(currentCFG,  new SourceCodeLocation(filePath, line, col), 1)));
 
 		currentCFG.addNode(asg);
 		return Pair.of(asg, asg);
@@ -604,7 +612,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			int col = getLine(exps.expression(i));
 
 			Expression lhs = visitExpression(ids.expression(i));
-			Expression exp = buildExpressionFromAssignment(lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
+			Expression exp = buildExpressionFromAssignment(filePath, line, col, lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
 			Assignment asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 			currentCFG.addNode(asg);
@@ -619,15 +627,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return Pair.of(entryNode, lastStmt);
 	}
 
-	private Expression buildExpressionFromAssignment(Expression lhs, Assign_opContext op, Expression exp) {
+	private Expression buildExpressionFromAssignment(String filePath, int line, int col, Expression lhs, Assign_opContext op, Expression exp) {
 
 		// +=
 		if (op.PLUS() != null)
-			return new GoSum(currentCFG, lhs, exp);
+			return new GoSum(currentCFG, filePath, line, col, lhs, exp);
 
 		// -=	
 		if (op.MINUS() != null)
-			return new GoSubtraction(currentCFG, lhs, exp);
+			return new GoSubtraction(currentCFG, filePath, line, col, lhs, exp);
 
 		// *=
 		if (op.STAR() != null)
@@ -710,7 +718,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from the type of exp
 				Type type = exp.getStaticType();
-				VariableRef target = new VariableRef(currentCFG, ids.IDENTIFIER(i).getText(), type);
+				VariableRef target = new VariableRef(currentCFG, new SourceCodeLocation(filePath, getLine(ids.IDENTIFIER(i).getSymbol()), getCol(ids.IDENTIFIER(i).getSymbol())),ids.IDENTIFIER(i).getText(), type);
 
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(currentCFG, filePath, line, col, target, exp);
 				currentCFG.addNode(asg);
@@ -742,14 +750,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (ctx.expressionList() != null) {
 			GoReturn ret;
 			if (ctx.expressionList().expression().size() == 1) 
-				ret =  new GoReturn(currentCFG, visitExpression(ctx.expressionList().expression(0)));
+				ret =  new GoReturn(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), visitExpression(ctx.expressionList().expression(0)));
 			else
-				ret =  new GoReturn(currentCFG, new GoRawValue(currentCFG, visitExpressionList(ctx.expressionList())));
+				ret =  new GoReturn(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), new GoRawValue(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), visitExpressionList(ctx.expressionList())));
 
 			currentCFG.addNode(ret);
 			return Pair.of(ret, ret);
 		} else {
-			Ret ret = new Ret(currentCFG);
+			Ret ret = new Ret(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 			currentCFG.addNode(ret);
 			return Pair.of(ret, ret);
 		}
@@ -757,7 +765,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitBreakStmt(BreakStmtContext ctx) {
-		NoOp breakSt = new NoOp(currentCFG);
+		NoOp breakSt = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 		currentCFG.addNode(breakSt);
 		addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size() -1)));
 		return Pair.of(breakSt, breakSt);
@@ -765,7 +773,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitContinueStmt(ContinueStmtContext ctx) {		
-		NoOp continueSt = new NoOp(currentCFG);
+		NoOp continueSt = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 		currentCFG.addNode(continueSt);
 		addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size() -1)));
 		return Pair.of(continueSt, continueSt);
@@ -779,7 +787,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitFallthroughStmt(FallthroughStmtContext ctx) {
-		GoFallThrough ft = new GoFallThrough(currentCFG);
+		GoFallThrough ft = new GoFallThrough(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 		currentCFG.addNode(ft);
 		return Pair.of(ft, ft);
 	}
@@ -798,7 +806,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		Statement booleanGuard = visitExpression(ctx.expression());
 		currentCFG.addNode(booleanGuard);
 
-		NoOp ifExitNode = new NoOp(currentCFG);
+		NoOp ifExitNode = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 		currentCFG.addNode(ifExitNode);
 
 		Pair<Statement, Statement> trueBlock = visitBlock(ctx.block(0));
@@ -871,8 +879,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitExprSwitchStmt(ExprSwitchStmtContext ctx) {
 
-		Expression switchGuard = ctx.expression() == null ? new GoBoolean(currentCFG, true) :  visitExpression(ctx.expression());
-		NoOp exitNode = new NoOp(currentCFG);		
+		Expression switchGuard = ctx.expression() == null ? new GoBoolean(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), true) :  visitExpression(ctx.expression());
+		NoOp exitNode = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));		
 		Statement entryNode = null;
 		Statement previousGuard = null;
 		Pair<Statement, Statement> defaultBlock = null;
@@ -889,9 +897,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Expression[] expsCase = visitExpressionList(switchCase.exprSwitchCase().expressionList());
 				for (int j = 0; j < expsCase.length; j++) 
 					if (caseBooleanGuard == null)
-						caseBooleanGuard = new GoEqual(currentCFG, expsCase[j], switchGuard);
+						caseBooleanGuard = new GoEqual(currentCFG, filePath, ((SourceCodeLocation) expsCase[j].getLocation()).getLine(), ((SourceCodeLocation) expsCase[j].getLocation()).getCol(), expsCase[j], switchGuard);
 					else
-						caseBooleanGuard = new GoLogicalOr(currentCFG, caseBooleanGuard, new GoEqual(currentCFG, expsCase[j], switchGuard));
+						caseBooleanGuard = new GoLogicalOr(currentCFG, filePath, ((SourceCodeLocation) expsCase[j].getLocation()).getLine(), ((SourceCodeLocation) expsCase[j].getLocation()).getCol(), caseBooleanGuard, new GoEqual(currentCFG, filePath, ((SourceCodeLocation) expsCase[j].getLocation()).getLine(), ((SourceCodeLocation) expsCase[j].getLocation()).getCol(), expsCase[j], switchGuard));
 
 				currentCFG.addNode(caseBooleanGuard);
 				addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
@@ -980,7 +988,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
 		// TODO Auto-generated method stub
-		Statement noop = new NoOp(currentCFG);
+		Statement noop = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 		currentCFG.addNode(noop);
 		return Pair.of(noop, noop);
 	}
@@ -1005,7 +1013,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitForStmt(ForStmtContext ctx) {
-		NoOp exitNode = new NoOp(currentCFG);
+		NoOp exitNode = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 		currentCFG.addNode(exitNode);
 		exitPoints.add(exitNode);
 
@@ -1027,7 +1035,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			if (hasCondition) 
 				cond = visitExpression(ctx.forClause().expression());
 			else 
-				cond = new GoBoolean(currentCFG, true);
+				cond = new GoBoolean(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), true);
 			currentCFG.addNode(cond);
 			entryPoints.add(cond);
 
@@ -1041,7 +1049,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 			Pair<Statement, Statement> block;
 			if (ctx.block() == null || ctx.block().statementList() == null) {
-				NoOp emptyBlock = new NoOp(currentCFG);
+				NoOp emptyBlock = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 				currentCFG.addNode(emptyBlock);
 				block = Pair.of(emptyBlock, emptyBlock);
 			} else
@@ -1071,7 +1079,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		if (ctx.rangeClause() != null) {
 			// TODO: SUPER UNSOUND
-			NoOp entry = new NoOp(currentCFG);
+			NoOp entry = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 			currentCFG.addNode(entry);
 			entryPoints.add(entry);
 
@@ -1102,7 +1110,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		}
 
 		// for { }
-		NoOp entry = new NoOp(currentCFG);
+		NoOp entry = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
 		currentCFG.addNode(entry);
 		entryPoints.add(entry);
 
@@ -1232,7 +1240,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			Parameter[] params = visitParameters(ctx.parameters());
 			//			return new GoMethodSpecification(name, returnType, params);
 
-			return new CFGDescriptor(currentUnit, false, name, returnType, params);
+			return new CFGDescriptor(new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)) ,currentUnit, false, name, returnType, params);
 		} 
 
 		throw new UnsupportedOperationException("Method specification not supported yet:  " + ctx.getText());
@@ -1276,12 +1284,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Parameter[] visitParameterDecl(ParameterDeclContext ctx) {
 		Parameter[] result = new Parameter[]{};
 		GoType type = visitType_(ctx.type_());
-
+		
 		if (ctx.identifierList() == null)
-			result = ArrayUtils.add(result, new Parameter("_", type));
+			result = ArrayUtils.add(result, new Parameter(new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), "_", type));
 		else 
-			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) 
-				result = ArrayUtils.addAll(result, new Parameter(ctx.identifierList().IDENTIFIER(i).getText(), type));
+			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) { 
+				int line = getLine(ctx.identifierList().IDENTIFIER(i).getSymbol());
+				int col = getCol(ctx.identifierList().IDENTIFIER(i).getSymbol());
+				result = ArrayUtils.addAll(result, new Parameter(new SourceCodeLocation(filePath, line, col), ctx.identifierList().IDENTIFIER(i).getText(), type));
+			}
 
 		return result;
 	}
@@ -1319,7 +1330,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go not equal (!=)
 		if (ctx.NOT_EQUALS() != null)
-			return new GoNot(currentCFG, new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
+			return new GoNot(currentCFG, filePath, getLine(ctx), getCol(ctx), new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
 
 		// Go less (<)
 		if (ctx.LESS() != null)
@@ -1403,7 +1414,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			// Array/slice/map access e1[e2]
 			else if (ctx.index() != null) {
 				Expression index = visitIndex(ctx.index());
-				return new GoCollectionAccess(currentCFG, primary, index);
+				return new GoCollectionAccess(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), primary, index);
 			}
 
 			// Field access x.f
@@ -1411,7 +1422,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				int line = getLine(ctx.IDENTIFIER().getSymbol());
 				int col = getCol(ctx.IDENTIFIER().getSymbol());
 				Global index = new Global(new SourceCodeLocation(filePath, line, col), ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
-				return new AccessUnitGlobal(currentCFG, primary, index);
+				return new AccessUnitGlobal(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), primary, index);
 			}
 
 			// Simple slice expression a[l:h]
@@ -1419,9 +1430,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Pair<Expression, Expression> args = visitSlice(ctx.slice());
 
 				if (args.getRight() == null)
-					return new GoSimpleSlice(currentCFG, primary, args.getLeft(),new GoLength(currentCFG, primary));
+					return new GoSimpleSlice(currentCFG, filePath, getLine(ctx), getCol(ctx), primary, args.getLeft(), new GoLength(currentCFG, filePath, getLine(ctx), getCol(ctx), primary));
 				else
-					return new GoSimpleSlice(currentCFG, primary, args.getLeft(), args.getRight());
+					return new GoSimpleSlice(currentCFG, filePath, getLine(ctx), getCol(ctx), primary, args.getLeft(), args.getRight());
 			}
 			
 			else if (ctx.typeAssertion() != null) {
@@ -1440,21 +1451,21 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private Expression resolveCall(Expression primary, Expression[] args) {
 
 		if (primary.toString().equals("Contains"))
-			return new GoContains(currentCFG, args[0], args[1]);
+			return new GoContains(currentCFG, filePath, 0, 0, args[0], args[1]);
 
 		if (primary.toString().equals("HasPrefix"))
-			return new GoHasPrefix(currentCFG, args[0], args[1]);
+			return new GoHasPrefix(currentCFG, filePath, 0, 0, args[0], args[1]);
 
 		if (primary.toString().equals("HasSuffix"))
-			return new GoHasSuffix(currentCFG, args[0], args[1]);
+			return new GoHasSuffix(currentCFG, filePath, 0, 0,  args[0], args[1]);
 
 		if (primary.toString().equals("Index"))
-			return new GoIndexOf(currentCFG, args[0], args[1]);
+			return new GoIndexOf(currentCFG, filePath, 0, 0, args[0], args[1]);
 
 		if (primary.toString().equals("Replace"))
-			return new GoReplace(currentCFG, args[0], args[1], args[2]);
+			return new GoReplace(currentCFG, filePath, 0, 0, args[0], args[1], args[2]);
 
-		return new UnresolvedCall(currentCFG, ResolutionStrategy.STATIC_TYPES, false, primary.toString(), args);
+		return new UnresolvedCall(currentCFG, new SourceCodeLocation(filePath, 0, 0), ResolutionStrategy.STATIC_TYPES, false, primary.toString(), args);
 	}
 
 	@Override
@@ -1464,7 +1475,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Expression exp = visitExpression(ctx.expression());
 		if (ctx.PLUS() != null)
-			return new GoPlus(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
+			return new GoPlus(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), exp);
 
 		if (ctx.MINUS() != null)
 			return new GoMinus(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
@@ -1525,11 +1536,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// Go nil value
 		if (ctx.NIL_LIT() != null)
-			return new GoNil(currentCFG);
+			return new GoNil(currentCFG, new SourceCodeLocation(filePath, getLine(ctx.NIL_LIT().getSymbol()), getCol(ctx.NIL_LIT().getSymbol())));
 
 		// Go float value
 		if (ctx.FLOAT_LIT() != null) 
-			return new GoFloat(currentCFG, Double.parseDouble(ctx.FLOAT_LIT().getText()));
+			return new GoFloat(currentCFG,  new SourceCodeLocation(filePath, getLine(ctx.FLOAT_LIT().getSymbol()), getCol(ctx.FLOAT_LIT().getSymbol())), Double.parseDouble(ctx.FLOAT_LIT().getText()));
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1545,11 +1556,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
 		if (ctx.DECIMAL_LIT() != null)
-			return new GoInteger(currentCFG, filePath, line, col, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
+			return new GoInteger(currentCFG,  new SourceCodeLocation(filePath, line, col), Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 
 		// TODO: 0 matched as octacl literal and not decimal literal
 		if (ctx.OCTAL_LIT() != null)
-			return new GoInteger(currentCFG, filePath, line, col, Integer.parseInt(ctx.OCTAL_LIT().getText()));
+			return new GoInteger(currentCFG,  new SourceCodeLocation(filePath, line, col), Integer.parseInt(ctx.OCTAL_LIT().getText()));
 
 		if (ctx.RUNE_LIT() != null) 
 			return new GoRune(currentCFG, filePath, line, col, removeQuotes(ctx.getText()));
@@ -1568,9 +1579,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (ctx.IDENTIFIER() != null) {
 			// Boolean values (true, false) are matched as identifiers
 			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
-				return new GoBoolean(currentCFG, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
+				return new GoBoolean(currentCFG, new SourceCodeLocation(filePath, getLine(ctx.IDENTIFIER().getSymbol()), getCol(ctx.IDENTIFIER().getSymbol())), Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
 			else
-				return new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
+				return new VariableRef(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), ctx.IDENTIFIER().getText());
 		}
 
 		Object child = visitChildren(ctx);
@@ -1658,7 +1669,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Expression visitKey(KeyContext ctx) {
 
 		if (ctx.IDENTIFIER() != null)
-			return new VariableRef(currentCFG, ctx.IDENTIFIER().getText());
+			return new VariableRef(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), ctx.IDENTIFIER().getText());
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1680,7 +1691,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public GoStructType visitStructType(StructTypeContext ctx) {		
 		for (FieldDeclContext field : ctx.fieldDecl()) 
 			for (Pair<String, Type> fd : visitFieldDecl(field))
-				currentUnit.addInstanceGlobal(new Global(fd.getLeft(), fd.getRight()));
+				currentUnit.addInstanceGlobal(new Global(new SourceCodeLocation(filePath, getLine(field), getCol(field)), fd.getLeft(), fd.getRight()));
 
 		return GoStructType.lookup(currentUnit.getName(), currentUnit);
 	}
@@ -1703,10 +1714,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Expression visitString_(String_Context ctx) {
 		if (ctx.RAW_STRING_LIT() != null)
-			return new GoString(currentCFG, removeQuotes(ctx.RAW_STRING_LIT().getText()));
+			return new GoString(currentCFG, new SourceCodeLocation(filePath, getLine(ctx.RAW_STRING_LIT().getSymbol()), getCol(ctx.RAW_STRING_LIT().getSymbol())), removeQuotes(ctx.RAW_STRING_LIT().getText()));
 
 		if (ctx.INTERPRETED_STRING_LIT() != null)
-			return new GoString(currentCFG, removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
+			return new GoString(currentCFG, new SourceCodeLocation(filePath, getLine(ctx.INTERPRETED_STRING_LIT().getSymbol()), getCol(ctx.INTERPRETED_STRING_LIT().getSymbol())),removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
 
 		throw new IllegalStateException("Illegal state: string rule has no other productions.");
 	}
@@ -1722,7 +1733,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Expression visitFunctionLit(FunctionLitContext ctx) {
 		// TODO: function literal
-		return new GoInteger(currentCFG, 1);
+		throw new UnsupportedOperationException("Function literal not supported yet:  " + ctx.getText());
 	}
 
 	@Override
@@ -1735,7 +1746,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// [:]
 		if (ctx.expression(0) == null) {
-			return Pair.of(new GoInteger(currentCFG, 0), null);
+			return Pair.of(new GoInteger(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), 0), null);
 		} 
 
 		// [n:] or [:n]
@@ -1745,7 +1756,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			if (getCol(ctx.expression(0)) < getCol(ctx.COLON(0).getSymbol()))
 				return Pair.of(n, null);
 			else
-				return Pair.of(new GoInteger(currentCFG, 0), n);
+				return Pair.of(new GoInteger(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), 0), n);
 
 		} 
 

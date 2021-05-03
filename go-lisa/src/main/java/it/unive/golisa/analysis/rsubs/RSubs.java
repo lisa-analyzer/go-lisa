@@ -1,9 +1,13 @@
 package it.unive.golisa.analysis.rsubs;
 
 import it.unive.lisa.analysis.BaseLattice;
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -55,7 +59,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 		if (processableByNumericalDomain(expression))
 			return new RSubs(string, num.assign(id, expression, pp));
-		
+
 		return new RSubs(string, num.top());
 	}
 
@@ -242,12 +246,12 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	public String representation() {
+	public DomainRepresentation representation() {
 		if (isTop())
-			return "TOP";
+			return Lattice.TOP_REPR;
 		if (isBottom())
-			return "BOTTOM";
-		return "(" + string.toString() + ", " + num.toString() + ")";
+			return Lattice.BOTTOM_REPR;
+		return new PairRepresentation(string,  num, StringRepresentation::new, StringRepresentation::new);
 	}
 
 	@Override
@@ -320,6 +324,6 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 	@Override
 	public String toString() {
-		return representation();
+		return representation().toString();
 	}
 }

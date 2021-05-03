@@ -8,6 +8,7 @@ import java.util.Map;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
@@ -90,8 +91,8 @@ public class GoInterfaceType implements GoType, UnitType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg) {
-		return new GoNil(cfg);
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+		return new GoNil(cfg, location);
 	}
 
 	@Override

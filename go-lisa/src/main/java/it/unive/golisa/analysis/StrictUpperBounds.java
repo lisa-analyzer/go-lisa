@@ -2,10 +2,12 @@ package it.unive.golisa.analysis;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.MapRepresentation;
+import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -201,20 +203,20 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 		return Satisfiability.UNKNOWN;
 	}
 
-	@Override
-	public String representation() {
-		if (isTop())
-			return "TOP";
-
-		if (isBottom())
-			return "BOTTOM";
-
-		StringBuilder builder = new StringBuilder();
-		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : function.entrySet())
-			builder.append(entry.getKey()).append(" < ").append(entry.getValue().toString()).append("\n");
-
-		return builder.toString().trim();
-	}
+//	@Override
+//	public String representation() {
+//		if (isTop())
+//			return "TOP";
+//
+//		if (isBottom())
+//			return "BOTTOM";
+//
+//		StringBuilder builder = new StringBuilder();
+//		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : function.entrySet())
+//			builder.append(entry.getKey()).append(" < ").append(entry.getValue().toString()).append("\n");
+//
+//		return builder.toString().trim();
+//	}
 
 	@Override
 	public StrictUpperBounds top() {
@@ -263,5 +265,10 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 		} while (!previous.equals(closure));
 
 		return previous;
+	}
+
+	@Override
+	public DomainRepresentation representation() {
+		return new MapRepresentation(function, StringRepresentation::new, StringRepresentation::new);
 	}
 }

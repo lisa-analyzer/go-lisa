@@ -25,20 +25,7 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoEqual extends BinaryNativeCall {
-	
-	/**
-	 * Builds a Go equals expression. 
-	 * The location where this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp1	left-hand side operand
-	 * @param exp2 	right-hand side operand 
-	 */
-	public GoEqual(CFG cfg, Expression exp1, Expression exp2) {
-		this(cfg, null, -1, -1, exp1, exp2);
-	}
-	
+
 	/**
 	 * Builds a Go equals expression at a given location in the program.
 	 * 

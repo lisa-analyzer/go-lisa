@@ -6,6 +6,7 @@ import java.util.Collections;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
@@ -85,8 +86,8 @@ public class GoIntType implements NumericType, GoType {
 	}
 	
 	@Override
-	public Expression defaultValue(CFG cfg) {
-		return new GoInteger(cfg, 0);
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+		return new GoInteger(cfg, location, 0);
 	}
 	
 	@Override

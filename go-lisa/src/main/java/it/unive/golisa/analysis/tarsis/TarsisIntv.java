@@ -4,10 +4,13 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.TernaryOperator;
@@ -71,13 +74,13 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		}
 
 		@Override
-		public String representation() {
+		public DomainRepresentation representation() {
 			if (isTop())
-				return "TOP";
+				return Lattice.TOP_REPR;
 			else if (isBottom())
-				return "BOTTOM";
+				return Lattice.BOTTOM_REPR;
 
-			return "[" + (lowIsMinusInfinity() ? "-Inf" : low) + ", " + (highIsPlusInfinity() ? "+Inf" : high) + "]";
+			return new StringRepresentation("[" + (lowIsMinusInfinity() ? "-Inf" : low) + ", " + (highIsPlusInfinity() ? "+Inf" : high) + "]");
 		}
 
 		@Override

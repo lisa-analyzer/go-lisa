@@ -3,8 +3,11 @@ package it.unive.golisa.analysis.composition;
 import it.unive.golisa.analysis.rsubs.RelationalSubstringDomain;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.analysis.BaseLattice;
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.PairRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -56,13 +59,13 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	}
 
 	@Override
-	public String representation() {
+	public DomainRepresentation representation() {
 		if (isTop())
-			return "TOP";
+			return Lattice.TOP_REPR;
 		if (isBottom())
-			return "BOTTOM";
-
-		return tarsis.representation() + " " + rsubs.representation();
+			return Lattice.BOTTOM_REPR;
+		
+		return new PairRepresentation(tarsis.representation(), rsubs.representation());
 	}
 
 	@Override
@@ -133,6 +136,6 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public String toString() {
-		return representation();
+		return representation().toString();
 	}
 }

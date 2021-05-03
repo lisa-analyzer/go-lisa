@@ -19,19 +19,6 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
 public class GoHasPrefix extends BinaryNativeCall{
 
 	/**
-	 * Builds a Go hasPrefix (e.g., startsWith) expression. 
-	 * The location where this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp1	left-hand side operand
-	 * @param exp2 	right-hand side operand 
-	 */
-	public GoHasPrefix(CFG cfg, Expression exp1, Expression exp2) {
-		this(cfg, null, -1, -1, exp1, exp2);
-	}
-
-	/**
 	 * Builds a Go hasPrefix (e.g., startsWith) expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to

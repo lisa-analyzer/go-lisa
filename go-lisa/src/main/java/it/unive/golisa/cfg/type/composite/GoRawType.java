@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -45,7 +46,7 @@ public class GoRawType extends ArrayList<Parameter> implements GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg) {
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		// TODO Auto-generated method stub
 		return null;
 	}

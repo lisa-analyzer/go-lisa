@@ -8,6 +8,7 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.TernaryNativeCall;
@@ -17,8 +18,8 @@ import it.unive.lisa.symbolic.value.TernaryOperator;
 
 public class GoReplace extends TernaryNativeCall {
 
-	public GoReplace(CFG cfg, Expression left, Expression middle, Expression right) {
-		super(cfg, "strings.Replace", left, middle, right);
+	public GoReplace(CFG cfg, String filePath, int line, int col, Expression left, Expression middle, Expression right) {
+		super(cfg, new SourceCodeLocation(filePath, line, col), "strings.Replace", left, middle, right);
 	}
 
 	@Override

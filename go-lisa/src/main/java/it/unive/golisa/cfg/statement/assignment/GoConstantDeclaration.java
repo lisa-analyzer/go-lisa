@@ -15,20 +15,6 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 public class GoConstantDeclaration extends Assignment {
 	
 	/**
-	 * Builds a Go constant declaration, declaring {@code var} 
-	 * having constant value {@code expression} 
-	 * without make explicit the location (i.e. no source
-	 * file/line/column is available).
-	 * 
-	 * @param cfg        the cfg that this statement belongs to
-	 * @param target     the variable
-	 * @param expression the expression to assign to {@code var}
-	 */
-	public GoConstantDeclaration(CFG cfg, VariableRef target, Expression expression) {
-		this(cfg, null, -1, -1, target, expression);
-	}
-	
-	/**
 	 * Builds a Go assignment, assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
 	 * 

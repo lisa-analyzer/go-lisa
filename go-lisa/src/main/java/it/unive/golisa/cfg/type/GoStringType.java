@@ -58,7 +58,7 @@ public class GoStringType implements StringType, GoType {
 	
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoString(cfg, location.getSourceFile(), location.getLine(), location.getCol(), "");
+		return new GoString(cfg, location, "");
 	}
 		
 	@Override

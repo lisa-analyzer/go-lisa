@@ -31,8 +31,8 @@ public class GoHasPrefix extends BinaryNativeCall{
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoHasPrefix(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "strings.HasPrefix", GoBoolType.INSTANCE, exp1, exp2);
+	public GoHasPrefix(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "strings.HasPrefix", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class GoConstantDeclaration extends Assignment {
 	 * @param var	     the variable of the constant declaration
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoConstantDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef target, Expression expression) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), target, expression);
+	public GoConstantDeclaration(CFG cfg, SourceCodeLocation location, VariableRef target, Expression expression) {
+		super(cfg, location, target, expression);
 	}
 }

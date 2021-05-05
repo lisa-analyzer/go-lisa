@@ -18,8 +18,8 @@ import it.unive.lisa.symbolic.value.TernaryOperator;
 
 public class GoSimpleSlice extends TernaryNativeCall {
 
-	public GoSimpleSlice(CFG cfg, String filePath, int line, int col, Expression left, Expression middle, Expression right) {
-		super(cfg, new SourceCodeLocation(filePath, line, col), "slice", left, middle, right);
+	public GoSimpleSlice(CFG cfg, SourceCodeLocation location, Expression left, Expression middle, Expression right) {
+		super(cfg, location, "slice", left, middle, right);
 	}
 
 	@Override

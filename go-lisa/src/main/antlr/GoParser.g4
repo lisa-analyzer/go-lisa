@@ -272,7 +272,7 @@ forStmt
     ;
 
 forClause
-    : simpleStmt? ';' expression? ';' simpleStmt?
+    : init = simpleStmt? ';' guard = expression? ';' inc = simpleStmt?
     ;
 
 rangeClause

@@ -18,8 +18,8 @@ import it.unive.lisa.symbolic.value.TernaryOperator;
 
 public class GoReplace extends TernaryNativeCall {
 
-	public GoReplace(CFG cfg, String filePath, int line, int col, Expression left, Expression middle, Expression right) {
-		super(cfg, new SourceCodeLocation(filePath, line, col), "strings.Replace", left, middle, right);
+	public GoReplace(CFG cfg, SourceCodeLocation location, Expression left, Expression middle, Expression right) {
+		super(cfg, location, "strings.Replace", left, middle, right);
 	}
 
 	@Override

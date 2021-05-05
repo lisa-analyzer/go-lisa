@@ -24,8 +24,8 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoLength extends UnaryNativeCall {
 	
-	public GoLength(CFG cfg, String sourceFile, int line, int col, Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "len", exp);
+	public GoLength(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "len", exp);
 	}
 
 	@Override

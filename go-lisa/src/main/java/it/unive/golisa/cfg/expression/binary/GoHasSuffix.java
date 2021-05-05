@@ -19,19 +19,6 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
 public class GoHasSuffix extends BinaryNativeCall{
 
 	/**
-	 * Builds a Go hasSuffix (e.g., endsWith) expression. 
-	 * The location where this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp1	left-hand side operand
-	 * @param exp2 	right-hand side operand 
-	 */
-	public GoHasSuffix(CFG cfg, Expression exp1, Expression exp2) {
-		this(cfg, null, -1, -1, exp1, exp2);
-	}
-
-	/**
 	 * Builds a Go hasSuffix (e.g., endsWith) expression at a given location in the program.
 	 * 
 	 * @param cfg           the cfg that this expression belongs to
@@ -44,8 +31,8 @@ public class GoHasSuffix extends BinaryNativeCall{
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoHasSuffix(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "strings.HasSuffix", GoBoolType.INSTANCE, exp1, exp2);
+	public GoHasSuffix(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "strings.HasSuffix", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
 	@Override

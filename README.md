@@ -1,5 +1,5 @@
 # GoLiSA
-The Go static analyzer implementing the substring relational abstract domain (ICALP 2021), by Vincenzo Arceri, Martina Olliaro, Agostino Cortesi, and Pietro Ferrara.
+The Go static analyzer implementing the substring relational abstract domain (ATVA 2021), by Vincenzo Arceri, Martina Olliaro, Agostino Cortesi, and Pietro Ferrara.
 
 ## How to use the static analyzer
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/cli/GoLiSA.java) and it expects three paramaters:

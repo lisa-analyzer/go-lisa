@@ -32,20 +32,6 @@ public class GoVariableDeclaration extends BinaryExpression {
 
 	/**
 	 * Builds a Go variable declaration with initialization,
-	 * assigning {@code expression} to {@code var} 
-	 * without make explicit the location (i.e. no source
-	 * file/line/column is available).
-	 * 
-	 * @param cfg        the cfg that this declaration belongs to
-	 * @param var     the declared variable
-	 * @param expression the expression to assign to {@code var}
-	 */
-	public GoVariableDeclaration(CFG cfg, Type type, VariableRef var, Expression expression) {
-		this(cfg, null, -1, -1, type, var, expression);
-	}
-
-	/**
-	 * Builds a Go variable declaration with initialization,
 	 * assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
 	 * 
@@ -59,8 +45,8 @@ public class GoVariableDeclaration extends BinaryExpression {
 	 * @param var	     the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoVariableDeclaration(CFG cfg, String sourceFile, int line, int col, Type type, VariableRef var, Expression expression) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), var, expression);
+	public GoVariableDeclaration(CFG cfg, SourceCodeLocation location, Type type, VariableRef var, Expression expression) {
+		super(cfg, location, var, expression);
 		this.type = type;
 	}
 

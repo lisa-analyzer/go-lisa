@@ -18,8 +18,23 @@ import org.apache.logging.log4j.Logger;
 
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
-import it.unive.golisa.antlr.GoParser.*;
+import it.unive.golisa.antlr.GoParser.DeclarationContext;
+import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
+import it.unive.golisa.antlr.GoParser.ImportDeclContext;
+import it.unive.golisa.antlr.GoParser.ImportPathContext;
+import it.unive.golisa.antlr.GoParser.ImportSpecContext;
+import it.unive.golisa.antlr.GoParser.MethodDeclContext;
+import it.unive.golisa.antlr.GoParser.PackageClauseContext;
+import it.unive.golisa.antlr.GoParser.SourceFileContext;
+import it.unive.golisa.antlr.GoParser.String_Context;
+import it.unive.golisa.antlr.GoParser.TypeDeclContext;
+import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
+import it.unive.golisa.cfg.expression.binary.GoContains;
+import it.unive.golisa.cfg.expression.binary.GoHasPrefix;
+import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
+import it.unive.golisa.cfg.expression.binary.GoIndexOf;
+import it.unive.golisa.cfg.expression.ternary.GoReplace;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
@@ -27,6 +42,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
 
 /**
  * @GoFrontEnd manages the translation from a Go program to the
@@ -45,6 +61,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	private final Program program;
 
+	/**
+	 * The resolution strategy for Go calling expressions.
+	 */
+	public static final ResolutionStrategy CALL_STRATEGY = ResolutionStrategy.DYNAMIC_TYPES;
 
 	/**
 	 * Builds an instance of @GoToCFG for a given Go program
@@ -105,6 +125,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		GoInterfaceType.lookup("EMPTY_INTERFACE", packageUnit);
 
+		for (ImportDeclContext imp : ctx.importDecl())
+			visitImportDecl(imp);
+		
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
 			visitDeclarationContext(decl);
 
@@ -124,7 +147,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (decl.typeDecl() != null) 
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addCompilationUnit(unit);
-		
 	}
 	
 	@Override
@@ -157,20 +179,45 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitImportDecl(ImportDeclContext ctx) {
-		// TODO: import declaration
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		for (ImportSpecContext impSpec: ctx.importSpec())
+			visitImportSpec(impSpec);
+		return null;
 	}
-
+	
 	@Override
 	public Statement visitImportSpec(ImportSpecContext ctx) {
-		// TODO: import specification
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		return visitImportPath(ctx.importPath());
 	}
 
 	@Override
+	public String visitString_(String_Context ctx) {
+		return ctx.getText().substring(1, ctx.getText().length() -1);
+	}
+	
+	@Override
 	public Statement visitImportPath(ImportPathContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		String lib = visitString_(ctx.string_());
+		
+		if (lib.equals("strings")) 
+			loadGoStrings();
+		return null;
+	}
+
+	private void loadGoStrings() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		CompilationUnit str = new CompilationUnit(unknownLocation, "string", true);
+		str.addInstanceConstruct(new GoHasPrefix(unknownLocation, str, true));
+		str.addInstanceConstruct(new GoHasSuffix(unknownLocation, str, true));
+		str.addInstanceConstruct(new GoContains(unknownLocation, str, true));
+		str.addInstanceConstruct(new GoReplace(unknownLocation, str, true));
+		str.addInstanceConstruct(new GoIndexOf(unknownLocation, str, true));	
+
+		// We add the string methods also in package unit as non-instant cfgs
+		packageUnit.addInstanceConstruct(new GoHasPrefix(unknownLocation, str, false));
+		packageUnit.addInstanceConstruct(new GoHasSuffix(unknownLocation, str, false));
+		packageUnit.addInstanceConstruct(new GoContains(unknownLocation, str, false));
+		packageUnit.addInstanceConstruct(new GoReplace(unknownLocation, str, false));
+		packageUnit.addInstanceConstruct(new GoIndexOf(unknownLocation, str, false));
 	}
 
 	@Override

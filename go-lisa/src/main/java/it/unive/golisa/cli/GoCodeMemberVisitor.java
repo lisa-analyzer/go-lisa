@@ -122,14 +122,10 @@ import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseOr;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseXOr;
-import it.unive.golisa.cfg.expression.binary.GoContains;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
 import it.unive.golisa.cfg.expression.binary.GoGreater;
 import it.unive.golisa.cfg.expression.binary.GoGreaterOrEqual;
-import it.unive.golisa.cfg.expression.binary.GoHasPrefix;
-import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
-import it.unive.golisa.cfg.expression.binary.GoIndexOf;
 import it.unive.golisa.cfg.expression.binary.GoLeftShift;
 import it.unive.golisa.cfg.expression.binary.GoLess;
 import it.unive.golisa.cfg.expression.binary.GoLessOrEqual;
@@ -150,7 +146,6 @@ import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoRawValue;
 import it.unive.golisa.cfg.expression.literal.GoRune;
 import it.unive.golisa.cfg.expression.literal.GoString;
-import it.unive.golisa.cfg.expression.ternary.GoReplace;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
 import it.unive.golisa.cfg.expression.unary.GoBitwiseNot;
 import it.unive.golisa.cfg.expression.unary.GoDeref;
@@ -214,14 +209,13 @@ import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnresolvedCall;
-import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 
 /**
- * An {@link GoParserBaseVisitor} that will parse the code of an Go method 
+ * A {@link GoParserBaseVisitor} that will parse the code of an Go method 
  */
 public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
@@ -530,7 +524,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i)) : getCol(exps.expression(i));
 
 			VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
-			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, file, line, col, type, target, exp);
+			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col), type, target, exp);
 			cfg.addNode(asg);
 			
 //		 	if (visibleIds.containsKey(target.getName()))
@@ -1419,11 +1413,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
-			// Function call (e.g., f(1,2,3), x.f())
-			if (ctx.arguments() != null) {
-				Expression[] args = visitArguments(ctx.arguments());
-				return resolveCall(primary, args);
-			}
+			// Function/method call (e.g., f(1,2,3), x.f())
+			// TODO: need to check if it is instance or not
+			if (ctx.arguments() != null) 
+				return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, primary.toString(), visitArguments(ctx.arguments()));
 
 			// Array/slice/map access e1[e2]
 			else if (ctx.index() != null) {
@@ -1458,27 +1451,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
 			return (Expression) child;
-	}
-
-	private Expression resolveCall(Expression primary, Expression[] args) {
-
-		SourceCodeLocation location = new SourceCodeLocation(file, 0, 0);
-		if (primary.toString().equals("Contains"))
-			return new GoContains(cfg, location, args[0], args[1]);
-
-		if (primary.toString().equals("HasPrefix"))
-			return new GoHasPrefix(cfg, location, args[0], args[1]);
-
-		if (primary.toString().equals("HasSuffix"))
-			return new GoHasSuffix(cfg, location, args[0], args[1]);
-
-		if (primary.toString().equals("Index"))
-			return new GoIndexOf(cfg, location, args[0], args[1]);
-
-		if (primary.toString().equals("Replace"))
-			return new GoReplace(cfg, location, args[0], args[1], args[2]);
-
-		return new UnresolvedCall(cfg, location, ResolutionStrategy.STATIC_TYPES, false, primary.toString(), args);
 	}
 
 	@Override
@@ -1747,7 +1719,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 	
-
 	@Override
 	public Pair<String, Type> visitAnonymousField(AnonymousFieldContext ctx) {
 		Type type = visitTypeName(ctx.typeName());

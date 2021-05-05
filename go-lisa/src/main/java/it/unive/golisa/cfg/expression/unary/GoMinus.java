@@ -22,20 +22,9 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
  */
 public class GoMinus extends UnaryNativeCall {
 
-	/**
-	 * Builds a Go unary minus expression. The location where 
-	 * this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp	operand
-	 */
-	public GoMinus(CFG cfg, Expression exp) {
-		this(cfg, null, -1, -1, exp);
-	}
 	
-	public GoMinus(CFG cfg, String sourceFile, int line, int col,  Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col),  "-", exp);
+	public GoMinus(CFG cfg, SourceCodeLocation location,  Expression exp) {
+		super(cfg, location,  "-", exp);
 	}
 
 	@Override

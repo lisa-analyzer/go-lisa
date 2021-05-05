@@ -28,7 +28,7 @@ public class GoUntypedInt implements GoType, NumericType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoUntypedInt;
+		return this == other;
 	}
 	
 	@Override

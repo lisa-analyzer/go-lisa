@@ -25,11 +25,10 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.tarsis.AutomatonString;
 import it.unive.tarsis.automata.Automata;
 
-
 public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDomain<Tarsis> {
 
 	private static final Tarsis TOP = new Tarsis();
-	private static final Tarsis BOTTOM = new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), new TarsisIntv(null, null, false, true) , false, true);
+	private static final Tarsis BOTTOM = new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), new TarsisIntv().bottom() , false, true);
 
 	private final AutomatonString stringValue;
 	private final TarsisIntv intValue;
@@ -85,15 +84,15 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		
 		return stringValue.getAutomaton().equals(Automata.mkEmptyLanguage()) ? intValue.representation() : new StringRepresentation(stringValue.toString());
 	}
-
 	
+	@Override
 	public Tarsis eval(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) {
 		if (expression instanceof Identifier)
 			return environment.getState((Identifier) expression);
 
 		if (expression instanceof NullConstant)
-			return evalNullConstant();
-
+			return top();
+		
 		if (expression instanceof Constant)
 			return evalNonNullConstant((Constant) expression, pp);
 
@@ -148,10 +147,6 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		return bottom();
 	}
 
-	protected Tarsis evalNullConstant() {
-		return top();
-	}
-
 	protected Tarsis evalNonNullConstant(Constant constant, ProgramPoint pp) {
 		if (constant.getValue() instanceof String) {
 			String str = (String) constant.getValue();
@@ -193,7 +188,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			it.unive.tarsis.AutomatonString.Interval result = left.stringValue.indexOf(right.stringValue);
 			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
 		case NUMERIC_ADD:
-			return new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()), left.intValue.plus(right.intValue));
+			return new Tarsis(bottomString(), left.intValue.plus(right.intValue));
 		case STRING_CONCAT:
 			return new Tarsis(left.stringValue.concat(right.stringValue), intValue.bottom());
 		default:
@@ -217,7 +212,6 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 						if (i <= j)
 							result = result.lub(left.stringValue.substring(i, j));
 				return new Tarsis(result, intValue.bottom());
-
 			}
 
 			return new Tarsis(new AutomatonString(Automata.factors(left.stringValue.getAutomaton())), intValue.bottom());

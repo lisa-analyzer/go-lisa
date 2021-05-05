@@ -24,8 +24,8 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
  */
 public class GoNot extends UnaryNativeCall {
 
-	public GoNot(CFG cfg, String sourceFile, int line, int col, Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "!", GoBoolType.INSTANCE, exp);
+	public GoNot(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "!", GoBoolType.INSTANCE, exp);
 	}
 	
 	@Override

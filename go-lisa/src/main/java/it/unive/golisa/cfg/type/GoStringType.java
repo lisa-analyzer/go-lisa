@@ -37,7 +37,7 @@ public class GoStringType implements StringType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoStringType;
+		return this == other;
 	}
 	
 	@Override
@@ -58,7 +58,7 @@ public class GoStringType implements StringType, GoType {
 	
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoString(cfg, location, "");
+		return new GoString(cfg, location.getSourceFile(), location.getLine(), location.getCol(), "");
 	}
 		
 	@Override

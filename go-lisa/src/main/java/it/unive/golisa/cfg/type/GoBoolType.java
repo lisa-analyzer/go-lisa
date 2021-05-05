@@ -36,7 +36,7 @@ public class GoBoolType implements BooleanType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoBoolType;
+		return this == other;
 	}
 	
 	@Override

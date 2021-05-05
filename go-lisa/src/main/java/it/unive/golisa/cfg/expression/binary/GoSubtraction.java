@@ -21,8 +21,8 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
  */
 public class GoSubtraction extends BinaryNativeCall implements GoBinaryNumericalOperation {
 	
-	public GoSubtraction(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "-", exp1, exp2);
+	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "-", exp1, exp2);
 	}
 
 	@Override

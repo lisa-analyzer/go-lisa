@@ -37,7 +37,7 @@ public class GoFloat64Type implements NumericType, GoType {
 
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoFloat64Type;
+		return this == other;
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class GoInt16Type implements NumericType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoInt16Type;
+		return this == other;
 	}
 	
 	@Override

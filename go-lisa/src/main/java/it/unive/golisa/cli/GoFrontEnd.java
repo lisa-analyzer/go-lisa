@@ -587,12 +587,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// increment and decrement statements are syntactic sugar
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
+		SourceCodeLocation location = new SourceCodeLocation(filePath, line, col);
 		if (ctx.PLUS_PLUS() != null)
-			asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), exp, 
-					new GoSum(currentCFG,  filePath, line, col, exp,  new GoInteger(currentCFG, new SourceCodeLocation(filePath, line, col), 1)));		
+			asg = new Assignment(currentCFG, location, exp, 
+					new GoSum(currentCFG,  location, exp,  new GoInteger(currentCFG, location, 1)));		
 		else
-			asg = new Assignment(currentCFG, new SourceCodeLocation(filePath, line, col), exp, 
-					new GoSubtraction(currentCFG,  filePath, line, col, exp,  new GoInteger(currentCFG,  new SourceCodeLocation(filePath, line, col), 1)));
+			asg = new Assignment(currentCFG, location, exp, 
+					new GoSubtraction(currentCFG,  location, exp,  new GoInteger(currentCFG,  location, 1)));
 
 		currentCFG.addNode(asg);
 		return Pair.of(asg, asg);
@@ -631,31 +632,31 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// +=
 		if (op.PLUS() != null)
-			return new GoSum(currentCFG, filePath, line, col, lhs, exp);
+			return new GoSum(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// -=	
 		if (op.MINUS() != null)
-			return new GoSubtraction(currentCFG, filePath, line, col, lhs, exp);
+			return new GoSubtraction(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// *=
 		if (op.STAR() != null)
-			return new GoMul(currentCFG, lhs, exp);
+			return new GoMul(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// /=
 		if (op.DIV() != null)
-			return new GoDiv(currentCFG, lhs, exp);
+			return new GoDiv(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// %=
 		if (op.MOD() != null)
-			return new GoModule(currentCFG, lhs, exp);
+			return new GoModule(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// >>=
 		if (op.RSHIFT() != null)
-			return new GoRightShift(currentCFG, lhs, exp);
+			return new GoRightShift(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// <<=
 		if (op.LSHIFT() != null)
-			return new GoLeftShift(currentCFG, lhs, exp);
+			return new GoLeftShift(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// &^=
 		if (op.BIT_CLEAR() != null)
@@ -663,15 +664,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		// ^=
 		if (op.CARET() != null)
-			return new GoBitwiseXOr(currentCFG, lhs, exp);
+			return new GoBitwiseXOr(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// &=
 		if (op.AMPERSAND() != null)
-			return new GoBitwiseAnd(currentCFG, lhs, exp);
+			return new GoBitwiseAnd(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// |=
 		if (op.OR() != null)
-			return new GoBitwiseOr(currentCFG, lhs, exp);
+			return new GoBitwiseOr(currentCFG, new SourceCodeLocation(filePath, line, col), lhs, exp);
 
 		// Return exp if the assignment operator is null
 		return exp;
@@ -747,17 +748,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitReturnStmt(ReturnStmtContext ctx) {		
+		SourceCodeLocation returnLocation = new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx));
 		if (ctx.expressionList() != null) {
 			GoReturn ret;
 			if (ctx.expressionList().expression().size() == 1) 
-				ret =  new GoReturn(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), visitExpression(ctx.expressionList().expression(0)));
+				ret =  new GoReturn(currentCFG, returnLocation, visitExpression(ctx.expressionList().expression(0)));
 			else
-				ret =  new GoReturn(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), new GoRawValue(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), visitExpressionList(ctx.expressionList())));
+				ret =  new GoReturn(currentCFG, returnLocation, new GoRawValue(currentCFG, returnLocation, visitExpressionList(ctx.expressionList())));
 
 			currentCFG.addNode(ret);
 			return Pair.of(ret, ret);
 		} else {
-			Ret ret = new Ret(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));
+			Ret ret = new Ret(currentCFG, returnLocation);
 			currentCFG.addNode(ret);
 			return Pair.of(ret, ret);
 		}
@@ -880,7 +882,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitExprSwitchStmt(ExprSwitchStmtContext ctx) {
 
 		Expression switchGuard = ctx.expression() == null ? new GoBoolean(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), true) :  visitExpression(ctx.expression());
-		NoOp exitNode = new NoOp(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)));		
+		NoOp exitNode = new NoOp(currentCFG, new SourceCodeLocation(filePath, 0, 0));		
 		Statement entryNode = null;
 		Statement previousGuard = null;
 		Pair<Statement, Statement> defaultBlock = null;
@@ -897,9 +899,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 				Expression[] expsCase = visitExpressionList(switchCase.exprSwitchCase().expressionList());
 				for (int j = 0; j < expsCase.length; j++) 
 					if (caseBooleanGuard == null)
-						caseBooleanGuard = new GoEqual(currentCFG, filePath, ((SourceCodeLocation) expsCase[j].getLocation()).getLine(), ((SourceCodeLocation) expsCase[j].getLocation()).getCol(), expsCase[j], switchGuard);
+						caseBooleanGuard = new GoEqual(currentCFG, (SourceCodeLocation) expsCase[j].getLocation(), expsCase[j], switchGuard);
 					else
-						caseBooleanGuard = new GoLogicalOr(currentCFG, filePath, ((SourceCodeLocation) expsCase[j].getLocation()).getLine(), ((SourceCodeLocation) expsCase[j].getLocation()).getCol(), caseBooleanGuard, new GoEqual(currentCFG, filePath, ((SourceCodeLocation) expsCase[j].getLocation()).getLine(), ((SourceCodeLocation) expsCase[j].getLocation()).getCol(), expsCase[j], switchGuard));
+						caseBooleanGuard = new GoLogicalOr(currentCFG, (SourceCodeLocation) expsCase[j].getLocation(), caseBooleanGuard, new GoEqual(currentCFG, (SourceCodeLocation) expsCase[j].getLocation(), expsCase[j], switchGuard));
 
 				currentCFG.addNode(caseBooleanGuard);
 				addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
@@ -1299,78 +1301,78 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitExpression(ExpressionContext ctx) {	
-
+		SourceCodeLocation location = new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx));
 		// Go sum (+)
 		if (ctx.PLUS() != null)
-			return new GoSum(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoSum(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go multiplication (*)
 		if (ctx.STAR() != null) 
-			return new GoMul(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoMul(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go division (/)
 		if (ctx.DIV() != null)
-			return new GoDiv(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoDiv(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go minus (-)
 		if (ctx.MINUS() != null)
-			return new GoSubtraction(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoSubtraction(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
-			return new GoLogicalAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalAnd(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
-			return new GoLogicalOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalOr(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go equal (==)
 		if (ctx.EQUALS() != null)
-			return new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoEqual(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go not equal (!=)
 		if (ctx.NOT_EQUALS() != null)
-			return new GoNot(currentCFG, filePath, getLine(ctx), getCol(ctx), new GoEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
+			return new GoNot(currentCFG, location, new GoEqual(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
 
 		// Go less (<)
 		if (ctx.LESS() != null)
-			return new GoLess(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLess(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go greater (>)
 		if (ctx.GREATER() != null)
-			return new GoGreater(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoGreater(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go greater or equals (>=)
 		if (ctx.GREATER_OR_EQUALS() != null)
-			return new GoGreaterOrEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoGreaterOrEqual(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go less or equals (>=)
 		if (ctx.LESS_OR_EQUALS() != null)
-			return new GoLessOrEqual(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLessOrEqual(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go module (%)
 		if (ctx.MOD() != null)
-			return new GoModule(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoModule(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go right shift (>>)
 		if (ctx.RSHIFT() != null)
-			return new GoRightShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoRightShift(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go left shift (<<)
 		if (ctx.LSHIFT() != null)
-			return new GoLeftShift(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLeftShift(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go XOR (^)
 		if (ctx.CARET() != null)
-			return new GoBitwiseXOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseXOr(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go or (|)
 		if (ctx.OR() != null)
-			return new GoBitwiseOr(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseOr(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&)
 		if (ctx.AMPERSAND() != null)
-			return new GoBitwiseAnd(currentCFG, filePath, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseAnd(currentCFG, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1472,25 +1474,26 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Expression visitUnaryExpr(UnaryExprContext ctx) {
 		if (ctx.primaryExpr() != null)
 			return visitPrimaryExpr(ctx.primaryExpr());
-
+		SourceCodeLocation location = new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx));
 		Expression exp = visitExpression(ctx.expression());
-		if (ctx.PLUS() != null)
-			return new GoPlus(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), exp);
-
+		
+		if (ctx.PLUS() != null) 
+			return new GoPlus(currentCFG, location, exp);
+		
 		if (ctx.MINUS() != null)
-			return new GoMinus(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
+			return new GoMinus(currentCFG, location, exp);
 
 		if (ctx.EXCLAMATION() != null)
-			return new GoNot(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
+			return new GoNot(currentCFG, location, exp);
 
 		if (ctx.STAR() != null)
-			return new GoRef(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
+			return new GoRef(currentCFG, location, exp);
 
 		if (ctx.AMPERSAND() != null)
-			return new GoDeref(currentCFG, filePath, getLine(ctx), getCol(ctx), exp);
+			return new GoDeref(currentCFG, location, exp);
 
 		if (ctx.CARET() != null)
-			return new GoBitwiseNot(currentCFG, exp);
+			return new GoBitwiseNot(currentCFG, location, exp);
 
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
@@ -1576,12 +1579,16 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitOperandName(OperandNameContext ctx) {
-		if (ctx.IDENTIFIER() != null) {
+		// TODO: qualified identifier not handled
+		TerminalNode id = ctx.IDENTIFIER();
+		if (id != null) {
+			SourceCodeLocation location = new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx));
 			// Boolean values (true, false) are matched as identifiers
-			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
-				return new GoBoolean(currentCFG, new SourceCodeLocation(filePath, getLine(ctx.IDENTIFIER().getSymbol()), getCol(ctx.IDENTIFIER().getSymbol())), Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
-			else
-				return new VariableRef(currentCFG, new SourceCodeLocation(filePath, getLine(ctx), getCol(ctx)), ctx.IDENTIFIER().getText());
+			if (id.getText().equals("true") || id.getText().equals("false"))
+				return new GoBoolean(currentCFG, location, Boolean.parseBoolean(id.getText()));
+			else {
+				return new VariableRef(currentCFG, location, id.getText());
+			}
 		}
 
 		Object child = visitChildren(ctx);
@@ -1714,10 +1721,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Expression visitString_(String_Context ctx) {
 		if (ctx.RAW_STRING_LIT() != null)
-			return new GoString(currentCFG, new SourceCodeLocation(filePath, getLine(ctx.RAW_STRING_LIT().getSymbol()), getCol(ctx.RAW_STRING_LIT().getSymbol())), removeQuotes(ctx.RAW_STRING_LIT().getText()));
+			return new GoString(currentCFG, filePath, getLine(ctx.RAW_STRING_LIT().getSymbol()), getCol(ctx.RAW_STRING_LIT().getSymbol()), removeQuotes(ctx.RAW_STRING_LIT().getText()));
 
 		if (ctx.INTERPRETED_STRING_LIT() != null)
-			return new GoString(currentCFG, new SourceCodeLocation(filePath, getLine(ctx.INTERPRETED_STRING_LIT().getSymbol()), getCol(ctx.INTERPRETED_STRING_LIT().getSymbol())),removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
+			return new GoString(currentCFG, filePath, getLine(ctx.INTERPRETED_STRING_LIT().getSymbol()), getCol(ctx.INTERPRETED_STRING_LIT().getSymbol()),removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
 
 		throw new IllegalStateException("Illegal state: string rule has no other productions.");
 	}

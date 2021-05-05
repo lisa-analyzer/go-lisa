@@ -39,7 +39,7 @@ public class GoUIntType implements NumericType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoUIntType;
+		return this == other;
 	}
 	
 	@Override

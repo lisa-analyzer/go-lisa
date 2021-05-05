@@ -12,7 +12,7 @@ func copy(rep, pref string) {
 	return a, b
 }
 
-func bultan1(x1, x2 string) {
+func bultan1(x1, x2, c string) {
 	if x1 == x2 {
 		x1 = x1 + c;
 	} else {

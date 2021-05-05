@@ -14,12 +14,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 public class GoRef extends UnaryNativeCall {
 	
-	public GoRef(CFG cfg, Expression exp) {
-		this(cfg, null, -1, -1, exp);
-	}
-
-	public GoRef(CFG cfg, String sourceFile, int line, int col, Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "*", exp);
+	public GoRef(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "*", exp);
 	}
 
 	

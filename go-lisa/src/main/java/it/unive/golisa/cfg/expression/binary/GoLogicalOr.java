@@ -40,11 +40,9 @@ public class GoLogicalOr extends BinaryNativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoLogicalOr(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "||", GoBoolType.INSTANCE, exp1, exp2);
+	public GoLogicalOr(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "||", GoBoolType.INSTANCE, exp1, exp2);
 	}
-
-	
 	
 	@Override
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(

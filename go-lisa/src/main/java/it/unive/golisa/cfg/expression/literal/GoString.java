@@ -22,8 +22,8 @@ public class GoString extends Literal {
 	 * @param cfg	the cfg that this Go string belongs to
 	 * @param value the string value
 	 */
-	public GoString(CFG cfg, SourceCodeLocation location, String value) {
-		super(cfg, location, value, GoStringType.INSTANCE);
+	public GoString(CFG cfg, String filePath, int line, int col, String value) {
+		super(cfg, new SourceCodeLocation(filePath, line, col), value, GoStringType.INSTANCE);
 	}
 	
 	@Override

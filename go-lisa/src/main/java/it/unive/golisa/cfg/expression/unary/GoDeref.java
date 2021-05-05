@@ -14,12 +14,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 public class GoDeref extends UnaryNativeCall {
 	
-	public GoDeref(CFG cfg, Expression exp) {
-		this(cfg, null, -1, -1, exp);
-	}
-	
-	public GoDeref(CFG cfg, String sourceFile, int line, int col, Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "&", exp);
+	public GoDeref(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "&", exp);
 	}
 
 	@Override

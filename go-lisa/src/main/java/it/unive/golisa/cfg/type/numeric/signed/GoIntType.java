@@ -40,7 +40,7 @@ public class GoIntType implements NumericType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoIntType;
+		return this == other;
 	}
 	
 	@Override

@@ -25,8 +25,8 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  */
 public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperation {
 	
-	public GoSum(CFG cfg, String filePath, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(filePath, line, col), "+", exp1, exp2);
+	public GoSum(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "+", exp1, exp2);
 	}
 
 	@Override

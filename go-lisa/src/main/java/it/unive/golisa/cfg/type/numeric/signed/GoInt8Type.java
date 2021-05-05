@@ -37,7 +37,7 @@ public class GoInt8Type implements NumericType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoInt8Type;
+		return this == other;
 	}
 	
 	@Override

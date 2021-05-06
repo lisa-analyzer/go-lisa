@@ -25,8 +25,8 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
 
 public class GoHasSuffix extends NativeCFG {
 
-	public GoHasSuffix(SourceCodeLocation location, CompilationUnit stringUnit, boolean asInstance) {
-		super(new CFGDescriptor(location, stringUnit, asInstance, "HasSuffix", GoBoolType.INSTANCE,
+	public GoHasSuffix(SourceCodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "HasSuffix", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
 				HasSuffix.class);

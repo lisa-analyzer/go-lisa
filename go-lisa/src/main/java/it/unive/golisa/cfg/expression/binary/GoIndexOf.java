@@ -26,8 +26,8 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
 
 public class GoIndexOf extends NativeCFG {
 
-	public GoIndexOf(SourceCodeLocation location, CompilationUnit stringUnit, boolean asInstance) {
-		super(new CFGDescriptor(location, stringUnit, asInstance, "Index", GoBoolType.INSTANCE,
+	public GoIndexOf(SourceCodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "Index", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
 				IndexOf.class);

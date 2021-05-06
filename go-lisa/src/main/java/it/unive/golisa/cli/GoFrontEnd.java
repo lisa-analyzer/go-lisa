@@ -205,19 +205,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	private void loadGoStrings() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
-		CompilationUnit str = new CompilationUnit(unknownLocation, "string", true);
-		str.addInstanceConstruct(new GoHasPrefix(unknownLocation, str, true));
-		str.addInstanceConstruct(new GoHasSuffix(unknownLocation, str, true));
-		str.addInstanceConstruct(new GoContains(unknownLocation, str, true));
-		str.addInstanceConstruct(new GoReplace(unknownLocation, str, true));
-		str.addInstanceConstruct(new GoIndexOf(unknownLocation, str, true));	
+		CompilationUnit str = new CompilationUnit(unknownLocation, "string", false);
+		str.addInstanceConstruct(new GoHasPrefix(unknownLocation, str));
+		str.addInstanceConstruct(new GoHasSuffix(unknownLocation, str));
+		str.addInstanceConstruct(new GoContains(unknownLocation, str));
+		str.addInstanceConstruct(new GoReplace(unknownLocation, str));
+		str.addInstanceConstruct(new GoIndexOf(unknownLocation, str));	
 
 		// We add the string methods also in package unit as non-instant cfgs
-		packageUnit.addInstanceConstruct(new GoHasPrefix(unknownLocation, str, false));
-		packageUnit.addInstanceConstruct(new GoHasSuffix(unknownLocation, str, false));
-		packageUnit.addInstanceConstruct(new GoContains(unknownLocation, str, false));
-		packageUnit.addInstanceConstruct(new GoReplace(unknownLocation, str, false));
-		packageUnit.addInstanceConstruct(new GoIndexOf(unknownLocation, str, false));
+		packageUnit.addInstanceConstruct(new GoHasPrefix(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoHasSuffix(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoContains(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoReplace(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoIndexOf(unknownLocation, str));
 	}
 
 	@Override

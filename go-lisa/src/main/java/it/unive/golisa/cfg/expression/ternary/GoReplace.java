@@ -26,8 +26,8 @@ import it.unive.lisa.symbolic.value.TernaryOperator;
 
 public class GoReplace extends NativeCFG {
 
-	public GoReplace(SourceCodeLocation location, CompilationUnit stringUnit, boolean asInstance) {
-		super(new CFGDescriptor(location, stringUnit, asInstance, "Replace", GoBoolType.INSTANCE,
+	public GoReplace(SourceCodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "Replace", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "that", GoIntType.INSTANCE),
 				new Parameter(location, "other", GoIntType.INSTANCE)),

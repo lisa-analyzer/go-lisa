@@ -21,9 +21,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
 	public static GoStructType lookup(String name, CompilationUnit unit)  {
-		GoStructType a = structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
-		System.err.println(structTypes);
-		return a;
+		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
 	
 	}
 

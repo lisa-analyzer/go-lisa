@@ -566,7 +566,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return (Expression) child;
 	}
 
-	
+
 
 
 
@@ -808,11 +808,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Type type = exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 
-				//				if (visibleIds.containsKey(target.getName()))
-				//					throw new GoSyntaxException(
-				//							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
-				//
-				//				visibleIds.put(target.getName(), target);
+				if (visibleIds.containsKey(target.getName()))
+					throw new GoSyntaxException(
+							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
+
+				visibleIds.put(target.getName(), target);
 
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
 				cfg.addNode(asg);
@@ -1061,6 +1061,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Pair<Statement, Statement> init = null;
 			Statement entryNode = null;
 			if (hasInitStmt) {
+				// TODO: variables declared here should be only visible in the for block
 				init = visitSimpleStmt(ctx.forClause().simpleStmt(0));
 				cfg.addNode(entryNode = init.getLeft());
 			}
@@ -1640,7 +1641,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// This method should never be visited
 		throw new UnsupportedOperationException("Eos should never be visited");
 	}
-	
+
 	@Override
 	public Statement visitSignature(SignatureContext ctx) {
 		// This method shold never be visited

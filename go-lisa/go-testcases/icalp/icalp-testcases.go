@@ -78,14 +78,14 @@ func SanitizePhoneNumber(phoneNumber string, pref string) string {
 	ret := phoneNumber
 	
 	if strings.HasPrefix(phoneNumber, pref) {
-		ret := phoneNumber
+		ret = phoneNumber
 	}
 	
 	if strings.HasPrefix(phoneNumber, "08") {
-		ret := pref + phoneNumber[2:]
+		ret = pref + phoneNumber[2:]
 	}
 	if strings.HasPrefix(phoneNumber, "8") {
-		ret := pref + phoneNumber[1:]
+		ret = pref + phoneNumber[1:]
 	}
 	
 	return ret

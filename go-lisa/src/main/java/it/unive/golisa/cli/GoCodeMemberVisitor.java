@@ -466,11 +466,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col), type, target, exp);
 			cfg.addNode(asg);
 
-			//		 	if (visibleIds.containsKey(target.getName()))
-			//				throw new GoSyntaxException(
-			//						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
-			//
-			//			visibleIds.put(target.getName(), target);
+			if (visibleIds.containsKey(target.getName()))
+				throw new GoSyntaxException(
+						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
+
+			visibleIds.put(target.getName(), target);
 
 
 			if (lastStmt != null)

@@ -36,11 +36,11 @@ func ingnore(expr, location, pref string) {
 }
 
 func strings(x,y string) {
-	var y string = "b";
+	var z string = "b";
 	if (Contains(x, "abc")) {
-		y = y + "a";
+		z = z + "a";
 	} else {
-		y = y + "a";
+		z = z + "a";
 	}
 }
 

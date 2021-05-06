@@ -127,18 +127,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		for (ImportDeclContext imp : ctx.importDecl())
 			visitImportDecl(imp);
-		
+
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
 			visitDeclarationContext(decl);
 
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
 			visitMethodDecl(decl); 
-		
+
 		// method declaration must be linked to compilation unit of a declaration context, for the function declaration is not needed
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations"))	
 			visitFunctionDecl(funcDecl);
-		
+
 
 		return program;
 	}
@@ -148,7 +148,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addCompilationUnit(unit);
 	}
-	
+
 	@Override
 	public Collection<CompilationUnit> visitTypeDecl(TypeDeclContext ctx) {
 		HashSet<CompilationUnit> units = new HashSet<>();
@@ -156,22 +156,20 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			String unitName = typeSpec.IDENTIFIER().getText();
 			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
-			visitTypeSpec(typeSpec);
+			new GoTypeVisitor(filePath, unit).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
-
-
 	private int getLine(ParserRuleContext ctx) {
 		return ctx.getStart().getLine();
 	} 
 
-	
+
 	private int getCol(ParserRuleContext ctx) {
 		return ctx.getStop().getCharPositionInLine();
 	} 
 
-	
+
 	@Override
 	public String visitPackageClause(PackageClauseContext ctx) {
 		return ctx.IDENTIFIER().getText();
@@ -183,7 +181,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			visitImportSpec(impSpec);
 		return null;
 	}
-	
+
 	@Override
 	public Statement visitImportSpec(ImportSpecContext ctx) {
 		return visitImportPath(ctx.importPath());
@@ -193,11 +191,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public String visitString_(String_Context ctx) {
 		return ctx.getText().substring(1, ctx.getText().length() -1);
 	}
-	
+
 	@Override
 	public Statement visitImportPath(ImportPathContext ctx) {
 		String lib = visitString_(ctx.string_());
-		
+
 		if (lib.equals("strings")) 
 			loadGoStrings();
 		return null;
@@ -225,7 +223,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, source).visitFunctionDecl(ctx);
 	}
 
-	public CFG visitMethodDeclaration(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath,program, source).visitCodeMember(ctx);
+	@Override
+	public CFG visitMethodDecl(MethodDeclContext ctx) {
+		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, source).visitCodeMember(ctx);
 	}
+
 }

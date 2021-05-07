@@ -8,8 +8,6 @@ func copy(rep, pref string) {
 		a = a + rep
 		b =  b + rep
 	}
-	
-	return a, b
 }
 
 func bultan1(x1, x2, c string) {

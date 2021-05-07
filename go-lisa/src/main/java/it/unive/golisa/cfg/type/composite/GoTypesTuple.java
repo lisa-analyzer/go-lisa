@@ -13,30 +13,41 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 
-public class GoRawType extends ArrayList<Parameter> implements GoType {
+public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 
-	public static final Set<GoRawType> rawTypes = new HashSet<>();
+	public static final Set<GoTypesTuple> tupleTypes = new HashSet<>();
 
-	public static GoRawType lookup(GoRawType type)  {
-		if (!rawTypes.contains(type))
-			rawTypes.add(type);
-		return rawTypes.stream().filter(x -> x.equals(type)).findFirst().get();
+	public static GoTypesTuple lookup(GoTypesTuple type)  {
+		if (!tupleTypes.contains(type))
+			tupleTypes.add(type);
+		return tupleTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
-		
-	public static boolean hasRawType(GoRawType raw) {
-		return rawTypes.contains(raw);
+
+	public static boolean hasTupleType(GoTypesTuple raw) {
+		return tupleTypes.contains(raw);
 	}
-		
-	public GoRawType(Parameter[] pars) {
+
+	public GoTypesTuple(Parameter[] pars) {
 		super();
 		for (int i = 0; i < pars.length; i++)
 			this.add(pars[i]);
 	}
-	
+
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
-		return false;
+		if (other instanceof GoTypesTuple) {
+			GoTypesTuple that = (GoTypesTuple) other;
+
+			if (that.size() != size())
+				return false;
+			
+			for (int i = 0; i < size(); i++) 
+				if (!get(i).getStaticType().canBeAssignedTo(that.get(i).getStaticType()))
+					return false;
+			return true;
+		}
+		
+		return other.isUntyped();
 	}
 
 	@Override
@@ -54,5 +65,10 @@ public class GoRawType extends ArrayList<Parameter> implements GoType {
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public String toString() {
+		return super.toString();
 	}
 }

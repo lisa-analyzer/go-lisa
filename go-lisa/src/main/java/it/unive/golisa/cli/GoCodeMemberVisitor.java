@@ -127,7 +127,7 @@ import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
-import it.unive.golisa.cfg.expression.literal.GoRawValue;
+import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.expression.literal.GoRune;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
@@ -147,7 +147,7 @@ import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoRawType;
+import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
@@ -360,7 +360,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.type_() != null)
 			return visitType_(ctx.type_());
 		else
-			return new GoRawType(visitParameters(ctx.parameters()));
+			return new GoTypesTuple(visitParameters(ctx.parameters()));
 	}
 
 	@Override
@@ -850,7 +850,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (ctx.expressionList().expression().size() == 1) 
 				ret =  new GoReturn(cfg, location, visitExpression(ctx.expressionList().expression(0)));
 			else
-				ret =  new GoReturn(cfg, location, new GoRawValue(cfg, location, visitExpressionList(ctx.expressionList())));
+				ret =  new GoReturn(cfg, location, new GoExpressionsTuple(cfg, location, visitExpressionList(ctx.expressionList())));
 
 			cfg.addNode(ret);
 			return Pair.of(ret, ret);
@@ -1537,16 +1537,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
-		throw new IllegalStateException("exprCaseClause should never be visited.");
-	}
-
-	@Override
-	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
-		throw new IllegalStateException("exprSwitchCase should never be visited.");
-	}
-
-	@Override
 	public Statement visitTypeSwitchStmt(TypeSwitchStmtContext ctx) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
@@ -1601,20 +1591,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitForClause(ForClauseContext ctx) {
-		// TODO for clause
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
 	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
-		// TODO: labeled statements
+		// TODO: labeled statements (issue #9)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitRangeClause(RangeClauseContext ctx) {
-		// TODO range clause
+		// TODO range clause (issue #4)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1646,5 +1630,23 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitSignature(SignatureContext ctx) {
 		// This method shold never be visited
 		throw new IllegalStateException("Signature should never be visited");
+	}
+	
+	@Override
+	public Statement visitForClause(ForClauseContext ctx) {
+		// This method shold never be visited
+		throw new UnsupportedOperationException("For cluase should never be visited");
+	}
+	
+	@Override
+	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
+		// This method shold never be visited
+		throw new IllegalStateException("exprCaseClause should never be visited.");
+	}
+
+	@Override
+	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
+		// This method shold never be visited
+		throw new IllegalStateException("exprSwitchCase should never be visited.");
 	}
 }

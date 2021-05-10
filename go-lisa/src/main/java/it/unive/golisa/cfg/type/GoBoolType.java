@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.BooleanType;
@@ -35,7 +36,7 @@ public class GoBoolType implements BooleanType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoBoolType;
+		return this == other;
 	}
 	
 	@Override
@@ -54,8 +55,8 @@ public class GoBoolType implements BooleanType, GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg) {
-		return new GoBoolean(cfg, false);
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+		return new GoBoolean(cfg, location, false);
 	}
 		
 	@Override

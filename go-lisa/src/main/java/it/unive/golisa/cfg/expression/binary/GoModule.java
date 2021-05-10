@@ -23,20 +23,7 @@ import it.unive.lisa.type.Type;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoModule extends BinaryNativeCall {
-	
-	/**
-	 * Builds a Go module expression. 
-	 * The location where this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp1	left-hand side operand
-	 * @param exp2 	right-hand side operand 
-	 */
-	public GoModule(CFG cfg, Expression exp1, Expression exp2) {
-		this(cfg, null, -1, -1, exp1, exp2);
-	}
-	
+		
 	/**
 	 * Builds a Go module expression at a given location in the program.
 	 * 
@@ -50,8 +37,8 @@ public class GoModule extends BinaryNativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoModule(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "%", exp1, exp2);
+	public GoModule(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "%", exp1, exp2);
 	}
 
 	@Override

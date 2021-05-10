@@ -24,20 +24,8 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
  */
 public class GoNot extends UnaryNativeCall {
 
-	/**
-	 * Builds a Go unary not expression. The location where 
-	 * this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp	operand
-	 */
-	public GoNot(CFG cfg, Expression exp) {
-		this(cfg, null, -1, -1,  exp);
-	}
-
-	public GoNot(CFG cfg, String sourceFile, int line, int col, Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "!", GoBoolType.INSTANCE, exp);
+	public GoNot(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "!", GoBoolType.INSTANCE, exp);
 	}
 	
 	@Override

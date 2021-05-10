@@ -10,8 +10,11 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -90,12 +93,17 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		// Add phase
 		func.put(id, func.get(id) == null ? getRelations(expression) : func.get(id).glb(getRelations(expression)));
-
+		
 		// Inter-asg phase
 		for (Identifier y : func.keySet())
 			if (!y.equals(id) && func.get(y).contains(func.get(id)))
 				func.put(y, func.get(y).addExpression(id));
 
+		// Improvement of add phase
+		for (ValueExpression idRel : func.get(id))
+			if (id instanceof Identifier) 
+				func.put(id, func.get(id) == null ? func.get(idRel) : func.get(id).glb(func.get(idRel)));
+		
 		// Closure phase
 		return new RelationalSubstringDomain(lattice, func).closure();
 	}
@@ -257,23 +265,18 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 	}
 
 	@Override
-	public String toString() {
-		return representation();
-	}
-
-	@Override
-	public String representation() {
+	public DomainRepresentation representation() {
 		if (isTop())
-			return "TOP";
+			return Lattice.TOP_REPR;
 
 		if (isBottom())
-			return "BOTTOM";
+			return Lattice.BOTTOM_REPR;
 
 		StringBuilder builder = new StringBuilder();
 		for (Entry<Identifier, ExpressionInverseSet<ValueExpression>> entry : function.entrySet())
 			builder.append(entry.getKey()).append(": ").append(entry.getValue().toString()).append("\n");
 
-		return builder.toString().trim();
+		return new StringRepresentation(builder.toString().trim());
 	}
 
 	private ValueExpression[] flat(ValueExpression expression) {

@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Literal;
 
@@ -21,7 +22,7 @@ public class GoFloat extends Literal {
 	 * @param cfg   the cfg that this float value belongs to
 	 * @param value the float value
 	 */
-	public GoFloat(CFG cfg, Double value) {
-		super(cfg, value, GoUntypedFloat.INSTANCE);
+	public GoFloat(CFG cfg, SourceCodeLocation location, Double value) {
+		super(cfg, location, value, GoUntypedFloat.INSTANCE);
 	}
 }

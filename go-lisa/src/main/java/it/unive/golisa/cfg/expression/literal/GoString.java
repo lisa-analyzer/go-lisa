@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Literal;
 
@@ -21,8 +22,8 @@ public class GoString extends Literal {
 	 * @param cfg	the cfg that this Go string belongs to
 	 * @param value the string value
 	 */
-	public GoString(CFG cfg, String value) {
-		super(cfg, value, GoStringType.INSTANCE);
+	public GoString(CFG cfg, SourceCodeLocation location, String value) {
+		super(cfg, location, value, GoStringType.INSTANCE);
 	}
 	
 	@Override

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
@@ -94,10 +95,10 @@ public class GoArrayType implements GoType, PointerType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg) {
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		List<Expression> result = new ArrayList<>();
 		for (int i = 0; i < length; i++)
-			result.add(contentType.defaultValue(cfg));
+			result.add(contentType.defaultValue(cfg, location));
 
 		return new GoNonKeyedLiteral(cfg, (Expression[]) result.toArray(), this);
 	}

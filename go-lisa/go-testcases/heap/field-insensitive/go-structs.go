@@ -28,7 +28,6 @@ func ifAlloc(a,b int) {
 	} else {
 		x := Vertex{3,4}
 	}
-	return x.X
 }
 
 func forAlloc() {

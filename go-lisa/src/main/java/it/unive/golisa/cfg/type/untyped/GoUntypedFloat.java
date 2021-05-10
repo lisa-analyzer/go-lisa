@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
@@ -27,7 +28,7 @@ public class GoUntypedFloat implements GoType, NumericType  {
 
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoUntypedFloat;
+		return this == other;
 	}
 
 	@Override
@@ -72,8 +73,8 @@ public class GoUntypedFloat implements GoType, NumericType  {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg) {
-		return new GoFloat(cfg, 0.0);
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+		return new GoFloat(cfg, location, 0.0);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ func strings() {
 }
 
 
-func simpleTyping() int {
+func simpleTyping() {
 	var a int = 1 + 1
 	var b float32 = 2 + 2
 	var c int = a * a
@@ -24,11 +24,11 @@ func simpleTyping() int {
 	var subs string = x[1:3]
 }
 
-func typeError1(x, y int) int {
+func typeError1(x, y int) {
 	var i int = 1 + 1.2
 }
 
-func typeError2(x, y int) int {
+func typeError2(x, y int)  {
 	var i int = "a" + "b"
 }
 

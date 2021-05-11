@@ -21,7 +21,7 @@ func alloc() {
 
 }
 
-func ifAlloc(a,b int) {
+func ifAlloc(a,b int) float64 {
 
 	if a == b {
 		x := Vertex{1,2}

@@ -1,14 +1,14 @@
 package icalp
 
 // From: https://github.com/apache/commons-lang/blob/master/src/main/java/org/apache/commons/lang3/StringUtils.java
-func appendIfMissing(str, suffix string) {
+func appendIfMissing(str, suffix string) string {
 	if strings.HasSuffix(str, suffix) {
 		return str
 	} 
     return str + suffix; 
 }
 
-func mid(str string, pos, len int) {
+func mid(str string, pos, len int) string {
 	if len < 0 || pos > len(str) {
 		return ""
 	} else if ( len(str) < pos + len) {
@@ -18,14 +18,14 @@ func mid(str string, pos, len int) {
     return str[pos:pos+len]
 }
 
-func prependIfMissing(str, prefix string) {
+func prependIfMissing(str, prefix string) string {
 	if strings.HasPrefix(str, prefix) {
 		return str
       }  
 	return prefix + str 
 }
 
-func removeEnd(str, remove string) {
+func removeEnd(str, remove string) string {
 	if str == "" || remove == "" {
 		return str
 	} else if string.HasSuffix(str, remove) {
@@ -34,7 +34,7 @@ func removeEnd(str, remove string) {
         return str
 }
 
-func removeStart(str, remove string) {
+func removeStart(str, remove string) string {
 	if str == "" || remove == "" {
 		return str
 	} else if string.HasPrefix(str, remove) {
@@ -44,7 +44,7 @@ func removeStart(str, remove string) {
     return str
 }
 
-func right(str string, len int) {
+func right(str string, len int) string {
 	if len < 0 {
 	    return str
 	} else if (len(str) < len) {

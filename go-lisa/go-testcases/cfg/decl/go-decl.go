@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func simpleDecl(x, y int) int {
+func simpleDecl(x, y int) {
 	var i int = 1
 	var j int = 2
 }

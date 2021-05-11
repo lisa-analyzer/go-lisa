@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "typing___int_~LiSAProgram.simpleTyping().dot", "typing___int_~LiSAProgram.typeError1(int_x,_int_y).dot", "typing___int_~LiSAProgram.typeError2(int_x,_int_y).dot", "typing___untyped_~LiSAProgram.comparisonTyping(int_x,_int_y).dot", "typing___untyped_~LiSAProgram.relTyping().dot", "typing___untyped_~LiSAProgram.strings().dot" ]
+  "files" : [ "typing___untyped_~LiSAProgram.comparisonTyping(int_x,_int_y).dot", "typing___untyped_~LiSAProgram.relTyping().dot", "typing___untyped_~LiSAProgram.simpleTyping().dot", "typing___untyped_~LiSAProgram.strings().dot", "typing___untyped_~LiSAProgram.typeError1(int_x,_int_y).dot", "typing___untyped_~LiSAProgram.typeError2(int_x,_int_y).dot" ]
 }

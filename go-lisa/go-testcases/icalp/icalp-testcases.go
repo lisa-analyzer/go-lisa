@@ -1,6 +1,6 @@
 package str
 
-func copy(rep, pref string) {
+func copy(rep, pref string) (string, string){
 	a := pref;
 	b := pref;
 	
@@ -22,7 +22,7 @@ func bultan1(x1, x2 string) {
 
 
 // From https://github.com/viant/afs/blob/fc60e2906d0a042a04ce644f6dff7557193f72b9/matcher/ignore.go
-func ingnore(expr, location, pref string) {
+func ignore(expr, location, pref string) bool {
 	if HasPrefix(expr, pref) {
 		index := Index(expr, pref)
 		suffix := expr[index+3:]
@@ -35,7 +35,7 @@ func ingnore(expr, location, pref string) {
 	return false
 }
 
-func strings(x,y string) {
+func strings(x string) {
 	var y string = "b";
 	if (Contains(x, "abc")) {
 		y = y + "a";
@@ -45,7 +45,7 @@ func strings(x,y string) {
 }
 
 
-func secName(pr1, pr2, javaName string) {
+func secName(pr1, pr2, javaName string) string {
 	if HasPrefix(javaName, pr1) {
 	  	res = pr2 + javaName[4: 8]
 	 } else if HasPrefix(javaName, pr2)  {
@@ -66,7 +66,7 @@ func substring (nondet bool) {
 	}
 }
 
-func rep(value string, nondet bool) {
+func rep(value string, nondet bool) string {
 	var res string = "Repeat: "
 	for ; nondet ; {
 		res = res + value + "!"

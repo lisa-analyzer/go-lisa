@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -27,6 +28,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 
 /**
  * @GoFrontEnd manages the translation from a Go program to the
@@ -175,8 +177,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
-		
-		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, source).visitFunctionDecl(ctx);
+		GoFunctionVisitor visitor = new GoFunctionVisitor(ctx, packageUnit, filePath, program, source);
+
+		return visitor.visitFunctionDecl(ctx);
 	}
 	
 

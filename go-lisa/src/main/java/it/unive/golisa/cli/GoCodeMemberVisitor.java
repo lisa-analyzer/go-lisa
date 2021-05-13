@@ -95,6 +95,7 @@ import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
+import it.unive.golisa.cfg.VariableScoopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
@@ -236,7 +237,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	private final Map<String, VariableRef> visibleIds;
 
-	protected CFG cfg;
+	protected VariableScoopingCFG cfg;
 
 	protected CFGDescriptor descriptor;
 	
@@ -283,7 +284,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new CFG(descriptor, entrypoints, matrix);
+		cfg = new VariableScoopingCFG(descriptor, entrypoints, matrix);
 
 		visibleIds = new HashMap<>();
 		
@@ -433,8 +434,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.statementList() == null) {
 			NoOp entry = new NoOp(cfg);
 			NoOp exit = new NoOp(cfg);
-			cfg.addNode(entry);
-			cfg.addNode(exit);
+			cfg.addNode(entry, visibleIds);
+			cfg.addNode(exit, visibleIds);
 			addEdge(new SequentialEdge(entry, exit));
 			updateVisileIds(backup, exit);
 			
@@ -530,7 +531,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			VariableRef target = new VariableRef(cfg, ids.IDENTIFIER(i).getText(), type);
 			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, file, line, col, type, target, exp);
-			cfg.addNode(asg);
+			cfg.addNode(asg, visibleIds);
 			
 		 	if (visibleIds.containsKey(target.getName()))
 				throw new GoSyntaxException(
@@ -791,7 +792,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression exp = visitExpression(exps.expression(i));
 
 			GoConstantDeclaration asg = new GoConstantDeclaration(cfg, target, exp);
-			cfg.addNode(asg);
+			cfg.addNode(asg, visibleIds);
 			
 			if (visibleIds.containsKey(target.getName()))
 				throw new GoSyntaxException(
@@ -835,7 +836,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitExpressionStmt(ExpressionStmtContext ctx) {
 		Object result = visitChildren(ctx);
 		if (result instanceof Expression) {
-			cfg.addNode((Expression) result);
+			cfg.addNode((Expression) result, visibleIds);
 			return Pair.of((Expression) result, (Expression) result);
 		} else if (!(result instanceof Pair<?,?>)) {
 			throw new IllegalStateException("Pair of Statements expected");
@@ -862,7 +863,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			asg = new Assignment(cfg, new SourceCodeLocation(file, line, col), exp, 
 					new GoSubtraction(cfg, exp,  new GoInteger(cfg, file, line, col, 1)));
 
-		cfg.addNode(asg);
+		cfg.addNode(asg, visibleIds);
 		return Pair.of(asg, asg);
 	}
 
@@ -883,7 +884,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression exp = buildExpressionFromAssignment(lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
 			Assignment asg = new Assignment(cfg, new SourceCodeLocation(file, line, col), lhs, exp);
-			cfg.addNode(asg);
+			cfg.addNode(asg, visibleIds);
 
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
@@ -974,7 +975,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression right = visitExpression(exps.expression(0));
 
 			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, Untyped.INSTANCE, left, right);
-			cfg.addNode(asg);
+			cfg.addNode(asg, visibleIds);
 			return Pair.of(asg, asg);
 		} else {
 
@@ -988,14 +989,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Type type = exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, ids.IDENTIFIER(i).getText(), type);
 
-//				if (visibleIds.containsKey(target.getName()))
-//					throw new GoSyntaxException(
-//							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
-//
-//				visibleIds.put(target.getName(), target);
+				if (visibleIds.containsKey(target.getName()))
+					throw new GoSyntaxException(
+							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
+
+				visibleIds.put(target.getName(), target);
 				
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
-				cfg.addNode(asg);
+				cfg.addNode(asg, visibleIds);
 
 				if (lastStmt != null)
 					addEdge(new SequentialEdge(lastStmt, asg));
@@ -1030,11 +1031,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			else
 				ret =  new GoReturn(cfg, new GoRawValue(cfg, visitExpressionList(ctx.expressionList())));
 
-			cfg.addNode(ret);
+			cfg.addNode(ret, visibleIds);
 			return Pair.of(ret, ret);
 		} else {
 			Ret ret = new Ret(cfg);
-			cfg.addNode(ret);
+			cfg.addNode(ret, visibleIds);
 			return Pair.of(ret, ret);
 		}
 	}
@@ -1042,7 +1043,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitBreakStmt(BreakStmtContext ctx) {
 		NoOp breakSt = new NoOp(cfg);
-		cfg.addNode(breakSt);
+		cfg.addNode(breakSt, visibleIds);
 		addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size() -1)));
 		return Pair.of(breakSt, breakSt);
 	}
@@ -1050,7 +1051,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitContinueStmt(ContinueStmtContext ctx) {		
 		NoOp continueSt = new NoOp(cfg);
-		cfg.addNode(continueSt);
+		cfg.addNode(continueSt, visibleIds);
 		addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size() -1)));
 		return Pair.of(continueSt, continueSt);
 	}
@@ -1064,14 +1065,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitFallthroughStmt(FallthroughStmtContext ctx) {
 		GoFallThrough ft = new GoFallThrough(cfg);
-		cfg.addNode(ft);
+		cfg.addNode(ft, visibleIds);
 		return Pair.of(ft, ft);
 	}
 
 	@Override
 	public Pair<Statement, Statement> visitDeferStmt(DeferStmtContext ctx) {
 		GoDefer defer = new GoDefer(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression()));
-		cfg.addNode(defer);
+		cfg.addNode(defer, visibleIds);
 		return Pair.of(defer, defer);
 	}
 
@@ -1080,10 +1081,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// Visit if statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
-		cfg.addNode(booleanGuard);
+		cfg.addNode(booleanGuard, visibleIds);
 
 		NoOp ifExitNode = new NoOp(cfg);
-		cfg.addNode(ifExitNode);
+		cfg.addNode(ifExitNode, visibleIds);
 
 		Pair<Statement, Statement> trueBlock = visitBlock(ctx.block(0));
 		Statement exitStatementTrueBranch = trueBlock.getRight();
@@ -1161,7 +1162,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement previousGuard = null;
 		Pair<Statement, Statement> defaultBlock = null;
 		Pair<Statement, Statement> lastCaseBlock = null;
-		cfg.addNode(exitNode);
+		cfg.addNode(exitNode, visibleIds);
 
 		for (int i = 0; i < ctx.exprCaseClause().size(); i++)  {
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
@@ -1177,7 +1178,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					else
 						caseBooleanGuard = new GoLogicalOr(cfg, caseBooleanGuard, new GoEqual(cfg, expsCase[j], switchGuard));
 
-				cfg.addNode(caseBooleanGuard);
+				cfg.addNode(caseBooleanGuard, visibleIds);
 				addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
 
 				if (!(caseBlock.getRight() instanceof GoFallThrough))
@@ -1226,15 +1227,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
 		// TODO Auto-generated method stub
 		Statement noop = new NoOp(cfg);
-		cfg.addNode(noop);
+		cfg.addNode(noop, visibleIds);
 		return Pair.of(noop, noop);
 	}
 	
 
 	@Override
 	public Pair<Statement, Statement> visitForStmt(ForStmtContext ctx) {
+		Map<String, VariableRef> backup = new HashMap<>(visibleIds);
 		NoOp exitNode = new NoOp(cfg);
-		cfg.addNode(exitNode);
+		cfg.addNode(exitNode, visibleIds);
 		exitPoints.add(exitNode);
 
 		if (ctx.forClause() != null) {
@@ -1247,7 +1249,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Statement entryNode = null;
 			if (hasInitStmt) {
 				init = visitSimpleStmt(ctx.forClause().simpleStmt(0));
-				cfg.addNode(entryNode = init.getLeft());
+				cfg.addNode(entryNode = init.getLeft(), visibleIds);
 			}
 
 			// Checking if condition is missing: if so, true is the boolean guard
@@ -1256,27 +1258,29 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				cond = visitExpression(ctx.forClause().expression());
 			else 
 				cond = new GoBoolean(cfg, true);
-			cfg.addNode(cond);
+			cfg.addNode(cond, visibleIds);
 			entryPoints.add(cond);
 
+			//Map<String, VariableRef> backupForPost = new HashMap<>(visibleIds);
 			// Checking if post statement is missing
 			Pair<Statement, Statement> post = null;
 			if (hasPostStmt) {
 				post = visitSimpleStmt(hasInitStmt ? ctx.forClause().simpleStmt(1) : ctx.forClause().simpleStmt(0));
-				cfg.addNode(post.getLeft());
+				cfg.addNode(post.getLeft(), visibleIds);
 			}
-
 
 			Pair<Statement, Statement> block;
 			if (ctx.block() == null || ctx.block().statementList() == null) {
 				NoOp emptyBlock = new NoOp(cfg);
-				cfg.addNode(emptyBlock);
+				cfg.addNode(emptyBlock, visibleIds);
 				block = Pair.of(emptyBlock, emptyBlock);
 			} else
 				block = visitBlock(ctx.block());
 
 			Statement exitNodeBlock = block.getRight();
 			Statement entryNodeOfBlock = block.getLeft();
+			
+			restoreVisibleIdsAfterForLoop(backup);
 
 			addEdge(new TrueEdge(cond, entryNodeOfBlock));
 			addEdge(new FalseEdge(cond, exitNode));
@@ -1300,10 +1304,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.rangeClause() != null) {
 			// TODO: SUPER UNSOUND
 			NoOp entry = new NoOp(cfg);
-			cfg.addNode(entry);
+			cfg.addNode(entry, visibleIds);
 			entryPoints.add(entry);
 
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
+			
+			restoreVisibleIdsAfterForLoop(backup);
+			
 			addEdge(new SequentialEdge(entry, block.getLeft()));
 			addEdge(new SequentialEdge(block.getLeft(), exitNode));
 
@@ -1315,11 +1322,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// for i < n (corresponding to the classical while loop)
 		if (ctx.expression() != null) {
 			Expression guard = visitExpression(ctx.expression());
-			cfg.addNode(guard);
+			cfg.addNode(guard, visibleIds);
 
 			entryPoints.add(guard);
 
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
+			
+			restoreVisibleIdsAfterForLoop(backup);
+			
 			addEdge(new SequentialEdge(guard, block.getLeft()));
 			addEdge(new SequentialEdge(guard, exitNode));
 			addEdge(new SequentialEdge(block.getRight(), guard));
@@ -1331,10 +1341,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// for { }
 		NoOp entry = new NoOp(cfg);
-		cfg.addNode(entry);
+		cfg.addNode(entry, visibleIds);
 		entryPoints.add(entry);
+		
 
 		Pair<Statement, Statement> block = visitBlock(ctx.block());
+		
+		restoreVisibleIdsAfterForLoop(backup);
+		
 		addEdge(new SequentialEdge(block.getRight(), block.getLeft()));
 		addEdge(new SequentialEdge(entry, block.getLeft()));
 		addEdge(new SequentialEdge(block.getLeft(), exitNode));
@@ -1344,6 +1358,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Pair.of(entry, exitNode);
 	}
 
+	private void restoreVisibleIdsAfterForLoop(Map<String, VariableRef> backup) {
+		Collection<String> toRemove = new HashSet<>();
+		for (Entry<String, VariableRef> id : visibleIds.entrySet())
+			if (!backup.containsKey(id.getKey())) 
+				toRemove.add(id.getKey());
+
+		if (!toRemove.isEmpty())
+			toRemove.forEach(visibleIds::remove);
+
+	}
 	
 
 	@Override
@@ -1988,6 +2012,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitEos(EosContext ctx) {
 		// This method should never be visited
 		throw new UnsupportedOperationException("Eos should never be visited");
+	}
+	
+	public Map<String, VariableRef> getVisibleIds() {
+		return visibleIds;
 	}
 
 }

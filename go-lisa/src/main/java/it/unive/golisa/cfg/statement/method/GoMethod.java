@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.statement.method;
 
-import it.unive.lisa.program.cfg.CFG;
+import it.unive.golisa.cfg.VariableScoopingCFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 
-public class GoMethod extends CFG {
+public class GoMethod extends VariableScoopingCFG {
 
 	private GoReceiver receiver;
 	

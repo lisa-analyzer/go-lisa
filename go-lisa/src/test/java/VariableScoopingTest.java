@@ -1,0 +1,99 @@
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.golisa.cfg.VariableScoopingCFG;
+import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.ProgramValidationException;
+import it.unive.lisa.program.cfg.CFG;
+
+import org.junit.Test;
+
+public class VariableScoopingTest {
+
+	private static CompilationUnit findUnit(Program prog, String name) {
+		CompilationUnit unit = prog.getUnits().stream().filter(u -> u.getName().equals(name)).findFirst().get();
+		assertNotNull("'" + name + "' unit not found", unit);
+		return unit;
+	}
+
+	private static CFG findCFG(CompilationUnit unit, String name) {
+		CFG cfg = unit.getCFGs().stream().filter(c -> c.getDescriptor().getName().equals(name)).findFirst().get();
+		assertNotNull("'" + unit.getName() + "' unit does not contain cfg '" + name + "'", cfg);
+		return cfg;
+	}
+
+
+	@Test
+	public void testSingle() throws IOException, ProgramValidationException {
+		Program prog = GoFrontEnd.processFile("go-testcases/variablescooping/scooping.go");
+		prog.validateAndFinalize();
+		// we just check that no exception is thrown
+	}
+
+	
+	@Test
+	public void testForLoopVariableScooping() throws IOException, ProgramValidationException  {
+		assertTrue((new File("go-testcases/variablescooping/scooping.go")).exists());
+		Program prog = GoFrontEnd.processFile("go-testcases/variablescooping/scooping.go");
+		prog.validateAndFinalize();
+
+		CompilationUnit main = findUnit(prog, "main");
+
+		CFG test = findCFG(main, "test");
+		
+		assertTrue(test instanceof VariableScoopingCFG);
+		VariableScoopingCFG vscfg_test = (VariableScoopingCFG) test;
+		
+		Map<String, Set<String>> currentResults = new HashMap<>();
+		vscfg_test.getNodes().forEach(node -> currentResults.put(node.toString(), new HashSet<>(vscfg_test.getVisibleIds(node).keySet())));
+	
+		Map<String, Set<String>> expectedResult = expectedResultForLoopVariableScooping();
+		
+		assertTrue(compareResults(currentResults, expectedResult));
+	}
+
+	private Map<String, Set<String>> expectedResultForLoopVariableScooping() {
+		
+		Map<String, Set<String>> expectedResult = new HashMap<>();
+		
+		expectedResult.put("a := 0", Set.of("a", "b"));
+		expectedResult.put("sum := 0", Set.of("a", "b", "sum"));
+		expectedResult.put("i := 0", Set.of("a", "b", "sum", "i"));
+		expectedResult.put("<(i, 10)", Set.of("a", "b", "sum", "i"));
+		expectedResult.put("i = +(i, 1)", Set.of("a", "b", "sum", "i"));
+		expectedResult.put("sum = +(sum, i)", Set.of("a", "b", "sum", "i"));
+		expectedResult.put("b = +(b, 1)", Set.of("a", "b", "sum", "i"));
+		expectedResult.put("c := a", Set.of("a", "b", "sum", "i", "c"));
+		expectedResult.put("c = +(c, b)", Set.of("a", "b", "sum", "i", "c"));
+		expectedResult.put("a = +(a, b)", Set.of("a", "b", "sum", "i", "c"));
+		expectedResult.put("a = +(b, 2)", Set.of("a", "b", "sum"));
+		
+		
+		return expectedResult;
+	}
+	
+	private boolean compareResults(Map<String, Set<String>> currentResults, Map<String, Set<String>> expectedResult) {
+		
+		if(!currentResults.keySet().containsAll(expectedResult.keySet()) 
+				|| !expectedResult.keySet().containsAll(currentResults.keySet()))
+			return false;
+		
+		for(String key : currentResults.keySet())
+			if(!currentResults.get(key).containsAll(expectedResult.get(key)) 
+					|| !expectedResult.get(key).containsAll(currentResults.get(key)))
+				return false;
+			
+		return true;
+	}
+
+}

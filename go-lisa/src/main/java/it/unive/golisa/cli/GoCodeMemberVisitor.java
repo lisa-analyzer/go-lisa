@@ -1397,12 +1397,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Object raw = visitLiteralValue(ctx.literalValue());
 
 		if (raw instanceof Map<?, ?>)
-			return new GoKeyedLiteral(cfg, file, getLine(ctx), getCol(ctx), (Map<Expression, Expression>) raw,  type);
-		else {
-			Expression[] exps = new Expression[((List<Expression>) raw).size()];
-			exps = ((List<Expression>) raw).toArray(exps);
-			return new GoNonKeyedLiteral(cfg, file, getLine(ctx), getCol(ctx), exps, type);
-		}
+			return new GoKeyedLiteral(cfg, locationOf(ctx), (Map<Expression, Expression>) raw,  type);
+		else 
+			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw, type);
 	}
 
 	@Override
@@ -1430,13 +1427,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			return result;
 		} else {
-			List<Expression> result = new ArrayList<Expression>();
-			result.add((Expression) firstElement);
-			for (int i = 1; i < ctx.keyedElement().size(); i++) {
-				Expression elem = (Expression) visitKeyedElement(ctx.keyedElement(i));
-				result.add(elem);
-			}
-
+			Expression[] result = new Expression[ctx.keyedElement().size()];
+			result[0] = (Expression) firstElement;
+			for (int i = 1; i < ctx.keyedElement().size(); i++) 
+				result[i] = (Expression) visitKeyedElement(ctx.keyedElement(i));
+			
 			return result;
 		}
 	}

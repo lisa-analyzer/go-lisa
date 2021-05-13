@@ -30,12 +30,8 @@ import it.unive.lisa.type.Untyped;
 
 public class GoNonKeyedLiteral extends NativeCall {
 
-	public GoNonKeyedLiteral(CFG cfg, Expression[] value, GoType staticType) {
-		this(cfg, null, -1, -1, value, staticType);
-	}
-
-	public GoNonKeyedLiteral(CFG cfg, String sourceLocation, int line, int column, Expression[] value, GoType staticType) {
-		super(cfg, new SourceCodeLocation(sourceLocation, line, column), "nonKeyedLit("+ staticType + ")", staticType, value);
+	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] value, GoType staticType) {
+		super(cfg, location, "nonKeyedLit("+ staticType + ")", staticType, value);
 	}
 
 	@Override

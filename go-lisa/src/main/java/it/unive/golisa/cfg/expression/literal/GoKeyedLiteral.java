@@ -30,12 +30,8 @@ public class GoKeyedLiteral extends NativeCall {
 
 	private final Map<Expression, Expression> keyedValues;
 
-	public GoKeyedLiteral(CFG cfg, Map<Expression, Expression> keyedValues, GoType staticType) {
-		this(cfg, null, -1 , -1, keyedValues, staticType);
-	}
-
-	public GoKeyedLiteral(CFG cfg, String sourceFile, int line, int col, Map<Expression, Expression> keyedValues, GoType staticType) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "keyedLiteral(" + staticType + ")", staticType, new Expression[]{});
+	public GoKeyedLiteral(CFG cfg, SourceCodeLocation location, Map<Expression, Expression> keyedValues, GoType staticType) {
+		super(cfg, location, "keyedLiteral(" + staticType + ")", staticType, new Expression[]{});
 		this.keyedValues = keyedValues;
 	}
 

@@ -1,10 +1,8 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
@@ -96,11 +94,11 @@ public class GoArrayType implements GoType, PointerType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		List<Expression> result = new ArrayList<>();
+		Expression[] result = new Expression[length];
 		for (int i = 0; i < length; i++)
-			result.add(contentType.defaultValue(cfg, location));
+			result[i] = contentType.defaultValue(cfg, location);
 
-		return new GoNonKeyedLiteral(cfg, (Expression[]) result.toArray(), this);
+		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
 	
 	@Override

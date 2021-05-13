@@ -84,7 +84,6 @@ import it.unive.golisa.antlr.GoParser.ShortVarDeclContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
 import it.unive.golisa.antlr.GoParser.SimpleStmtContext;
 import it.unive.golisa.antlr.GoParser.SliceContext;
-import it.unive.golisa.antlr.GoParser.SourceFileContext;
 import it.unive.golisa.antlr.GoParser.StatementContext;
 import it.unive.golisa.antlr.GoParser.StatementListContext;
 import it.unive.golisa.antlr.GoParser.String_Context;
@@ -123,12 +122,12 @@ import it.unive.golisa.cfg.expression.binary.GoSubtraction;
 import it.unive.golisa.cfg.expression.binary.GoSum;
 import it.unive.golisa.cfg.expression.binary.GoTypeAssertion;
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
+import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
-import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.expression.literal.GoRune;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
@@ -195,7 +194,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	protected final Program program;
 
-	protected final SourceFileContext source;
+//	protected final SourceFileContext source;
 
 	/**
 	 * Stack of loop exit points (used for break statements)
@@ -214,10 +213,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected CompilationUnit currentUnit;
 
 
-	public GoCodeMemberVisitor(String file, Program program, SourceFileContext source) {
+	public GoCodeMemberVisitor(String file, Program program) {
 		this.file = file;
 		this.program = program;
-		this.source = source;
 		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
@@ -225,12 +223,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 
-	public GoCodeMemberVisitor(CompilationUnit packageUnit, MethodDeclContext ctx, String file, Program program,
-			SourceFileContext source) {
+	public GoCodeMemberVisitor(CompilationUnit packageUnit, MethodDeclContext ctx, String file, Program program) {
 		this.file = file;
 		this.descriptor = mkDescriptor(packageUnit,ctx);
 		this.program = program;
-		this.source = source;
 
 		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();

@@ -1,25 +1,24 @@
 package it.unive.golisa.cli;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionTypeContext;
 import it.unive.golisa.antlr.GoParser.ParametersContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
-import it.unive.golisa.antlr.GoParser.SourceFileContext;
+import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function
@@ -29,8 +28,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	
 	//side-effect su packageUnit
-	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program, SourceFileContext source) {
-		super(file, program, source);
+	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program) {
+		super(file, program);
 		this.descriptor = buildCFGDescriptor(funcDecl);
 		
 		this.currentUnit = packageUnit;

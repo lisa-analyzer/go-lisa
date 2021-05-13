@@ -85,8 +85,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return filePath;
 	}
 
-	private SourceFileContext source;
-
 	public static Program processFile(String filePath) throws IOException {
 		return new GoFrontEnd(filePath).toLiSAProgram();
 	}
@@ -117,7 +115,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	CompilationUnit packageUnit;
 	@Override
 	public Program visitSourceFile(SourceFileContext ctx) {
-		source = ctx;
 		String packageName = visitPackageClause(ctx.packageClause());
 
 		packageUnit = new CompilationUnit(new SourceCodeLocation(filePath, 0, 0), packageName, false);
@@ -138,7 +135,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations"))	
 			visitFunctionDecl(funcDecl);
-
 
 		return program;
 	}
@@ -220,12 +216,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {	
-		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, source).visitFunctionDecl(ctx);
+		return new GoFunctionVisitor(ctx, packageUnit, filePath, program).visitFunctionDecl(ctx);
 	}
 
 	@Override
 	public CFG visitMethodDecl(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, source).visitCodeMember(ctx);
+		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program).visitCodeMember(ctx);
 	}
 
 }

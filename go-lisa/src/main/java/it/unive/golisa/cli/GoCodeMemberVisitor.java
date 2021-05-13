@@ -1,15 +1,34 @@
 package it.unive.golisa.cli;
 
-import it.unive.golisa.antlr.GoParser.AnonymousFieldContext;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
+import it.unive.golisa.antlr.GoLexer;
+import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
-import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
-import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
 import it.unive.golisa.antlr.GoParser.Assign_opContext;
 import it.unive.golisa.antlr.GoParser.AssignmentContext;
 import it.unive.golisa.antlr.GoParser.BasicLitContext;
 import it.unive.golisa.antlr.GoParser.BlockContext;
 import it.unive.golisa.antlr.GoParser.BreakStmtContext;
-import it.unive.golisa.antlr.GoParser.ChannelTypeContext;
 import it.unive.golisa.antlr.GoParser.CommCaseContext;
 import it.unive.golisa.antlr.GoParser.CommClauseContext;
 import it.unive.golisa.antlr.GoParser.CompositeLitContext;
@@ -21,7 +40,6 @@ import it.unive.golisa.antlr.GoParser.DeclarationContext;
 import it.unive.golisa.antlr.GoParser.DeferStmtContext;
 import it.unive.golisa.antlr.GoParser.ElementContext;
 import it.unive.golisa.antlr.GoParser.ElementListContext;
-import it.unive.golisa.antlr.GoParser.ElementTypeContext;
 import it.unive.golisa.antlr.GoParser.EmptyStmtContext;
 import it.unive.golisa.antlr.GoParser.EosContext;
 import it.unive.golisa.antlr.GoParser.ExprCaseClauseContext;
@@ -31,7 +49,6 @@ import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.ExpressionListContext;
 import it.unive.golisa.antlr.GoParser.ExpressionStmtContext;
 import it.unive.golisa.antlr.GoParser.FallthroughStmtContext;
-import it.unive.golisa.antlr.GoParser.FieldDeclContext;
 import it.unive.golisa.antlr.GoParser.ForClauseContext;
 import it.unive.golisa.antlr.GoParser.ForStmtContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
@@ -42,14 +59,11 @@ import it.unive.golisa.antlr.GoParser.IfStmtContext;
 import it.unive.golisa.antlr.GoParser.IncDecStmtContext;
 import it.unive.golisa.antlr.GoParser.IndexContext;
 import it.unive.golisa.antlr.GoParser.IntegerContext;
-import it.unive.golisa.antlr.GoParser.InterfaceTypeContext;
 import it.unive.golisa.antlr.GoParser.KeyContext;
 import it.unive.golisa.antlr.GoParser.KeyedElementContext;
 import it.unive.golisa.antlr.GoParser.LabeledStmtContext;
 import it.unive.golisa.antlr.GoParser.LiteralContext;
-import it.unive.golisa.antlr.GoParser.LiteralTypeContext;
 import it.unive.golisa.antlr.GoParser.LiteralValueContext;
-import it.unive.golisa.antlr.GoParser.MapTypeContext;
 import it.unive.golisa.antlr.GoParser.MethodDeclContext;
 import it.unive.golisa.antlr.GoParser.MethodExprContext;
 import it.unive.golisa.antlr.GoParser.MethodSpecContext;
@@ -57,11 +71,10 @@ import it.unive.golisa.antlr.GoParser.OperandContext;
 import it.unive.golisa.antlr.GoParser.OperandNameContext;
 import it.unive.golisa.antlr.GoParser.ParameterDeclContext;
 import it.unive.golisa.antlr.GoParser.ParametersContext;
-import it.unive.golisa.antlr.GoParser.PointerTypeContext;
 import it.unive.golisa.antlr.GoParser.PrimaryExprContext;
 import it.unive.golisa.antlr.GoParser.QualifiedIdentContext;
 import it.unive.golisa.antlr.GoParser.RangeClauseContext;
-import it.unive.golisa.antlr.GoParser.ReceiverTypeContext;
+import it.unive.golisa.antlr.GoParser.ReceiverContext;
 import it.unive.golisa.antlr.GoParser.RecvStmtContext;
 import it.unive.golisa.antlr.GoParser.ResultContext;
 import it.unive.golisa.antlr.GoParser.ReturnStmtContext;
@@ -71,20 +84,14 @@ import it.unive.golisa.antlr.GoParser.ShortVarDeclContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
 import it.unive.golisa.antlr.GoParser.SimpleStmtContext;
 import it.unive.golisa.antlr.GoParser.SliceContext;
-import it.unive.golisa.antlr.GoParser.SliceTypeContext;
 import it.unive.golisa.antlr.GoParser.SourceFileContext;
 import it.unive.golisa.antlr.GoParser.StatementContext;
 import it.unive.golisa.antlr.GoParser.StatementListContext;
 import it.unive.golisa.antlr.GoParser.String_Context;
-import it.unive.golisa.antlr.GoParser.StructTypeContext;
 import it.unive.golisa.antlr.GoParser.SwitchStmtContext;
 import it.unive.golisa.antlr.GoParser.TypeAssertionContext;
 import it.unive.golisa.antlr.GoParser.TypeCaseClauseContext;
-import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeListContext;
-import it.unive.golisa.antlr.GoParser.TypeLitContext;
-import it.unive.golisa.antlr.GoParser.TypeNameContext;
-import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParser.TypeSwitchCaseContext;
 import it.unive.golisa.antlr.GoParser.TypeSwitchGuardContext;
 import it.unive.golisa.antlr.GoParser.TypeSwitchStmtContext;
@@ -92,8 +99,6 @@ import it.unive.golisa.antlr.GoParser.Type_Context;
 import it.unive.golisa.antlr.GoParser.UnaryExprContext;
 import it.unive.golisa.antlr.GoParser.VarDeclContext;
 import it.unive.golisa.antlr.GoParser.VarSpecContext;
-import it.unive.golisa.antlr.GoLexer;
-import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScoopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
@@ -102,14 +107,10 @@ import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseOr;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseXOr;
-import it.unive.golisa.cfg.expression.binary.GoContains;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
 import it.unive.golisa.cfg.expression.binary.GoGreater;
 import it.unive.golisa.cfg.expression.binary.GoGreaterOrEqual;
-import it.unive.golisa.cfg.expression.binary.GoHasPrefix;
-import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
-import it.unive.golisa.cfg.expression.binary.GoIndexOf;
 import it.unive.golisa.cfg.expression.binary.GoLeftShift;
 import it.unive.golisa.cfg.expression.binary.GoLess;
 import it.unive.golisa.cfg.expression.binary.GoLessOrEqual;
@@ -127,10 +128,9 @@ import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
-import it.unive.golisa.cfg.expression.literal.GoRawValue;
+import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.expression.literal.GoRune;
 import it.unive.golisa.cfg.expression.literal.GoString;
-import it.unive.golisa.cfg.expression.ternary.GoReplace;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
 import it.unive.golisa.cfg.expression.unary.GoBitwiseNot;
 import it.unive.golisa.cfg.expression.unary.GoDeref;
@@ -146,34 +146,9 @@ import it.unive.golisa.cfg.statement.assignment.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
-import it.unive.golisa.cfg.statement.method.GoMethod;
-import it.unive.golisa.cfg.statement.method.GoReceiver;
-import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.golisa.cfg.type.GoQualifiedType;
-import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.GoType;
-import it.unive.golisa.cfg.type.composite.GoAliasType;
-import it.unive.golisa.cfg.type.composite.GoArrayType;
-import it.unive.golisa.cfg.type.composite.GoChannelType;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoInterfaceType;
-import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoRawType;
-import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
-import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
-import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
+import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
@@ -195,35 +170,12 @@ import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.VariableRef;
-import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
 /**
- * An {@link GoParserBaseVisitor} that will parse the code of an Go method 
+ * A {@link GoParserBaseVisitor} that will parse the code of an Go method 
  */
 public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
@@ -240,11 +192,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected VariableScoopingCFG cfg;
 
 	protected CFGDescriptor descriptor;
-	
+
 	protected final Program program;
-	
+
 	protected final SourceFileContext source;
-	
+
 	/**
 	 * Stack of loop exit points (used for break statements)
 	 */
@@ -254,15 +206,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * Stack of loop entry points (used for continues statements)
 	 */
 	private List<Statement> entryPoints = new ArrayList<Statement>();
-	
+
 
 	/**
 	 * Current compilation unit to parse
 	 */
 	protected CompilationUnit currentUnit;
 
-	
-	GoCodeMemberVisitor(String file, Program program, SourceFileContext source) {
+
+	public GoCodeMemberVisitor(String file, Program program, SourceFileContext source) {
 		this.file = file;
 		this.program = program;
 		this.source = source;
@@ -271,7 +223,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfs = new LinkedList<>();
 		visibleIds = new HashMap<>();
 	}
-	
+
 
 	public GoCodeMemberVisitor(CompilationUnit packageUnit, MethodDeclContext ctx, String file, Program program,
 			SourceFileContext source) {
@@ -287,22 +239,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfg = new VariableScoopingCFG(descriptor, entrypoints, matrix);
 
 		visibleIds = new HashMap<>();
-		
-		initializeVisibleIds();
-		
+
+		initializeVisibleIds();	
 	}
-	
 
 	protected void initializeVisibleIds() {
 		for (VariableTableEntry par : descriptor.getVariables())
 			visibleIds.put(par.getName(), par.createReference(cfg));
 	}
-	
+
 	private CFGDescriptor mkDescriptor(CompilationUnit packageUnit, MethodDeclContext ctx) {
-		
-		return new CFGDescriptor(packageUnit, false, ctx.IDENTIFIER().getText(), visitParameters(ctx.signature().parameters() ));
+		return new CFGDescriptor(locationOf(ctx), packageUnit, false, ctx.IDENTIFIER().getText(), visitParameters(ctx.signature().parameters()));
 	}
-	
+
 	/**
 	 * Visits the code of a {@link BlockContext} representing the code block of
 	 * a method or constructor.
@@ -311,29 +260,32 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * 
 	 * @return the {@link CFG} built from the block
 	 */
-	CFG visitCodeMember(MethodDeclContext ctx) {
+	public CFG visitCodeMember(MethodDeclContext ctx) {
+		Parameter receiver = visitReceiver(ctx.receiver());
+		String unitName = receiver.getStaticType() instanceof GoPointerType ? 
+				((GoPointerType) receiver.getStaticType()).getBaseType().toString() : 
+					receiver.getStaticType().toString();
 
-			GoReceiver receiver = (GoReceiver) visitReceiver(ctx.receiver());
-			String methodName = ctx.IDENTIFIER().getText();
-			Parameter[] params = visitParameters(ctx.signature().parameters());
-			Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
+		SourceCodeLocation location = locationOf(ctx);
+		if (program.getUnit(unitName) == null) 
+			// TODO: unknown unit
+			currentUnit = new CompilationUnit(location, unitName, false);
+		else
+			currentUnit = program.getUnit(unitName);
 
-			String unitName = receiver.getStaticType().isPointerType() ? ((GoPointerType)receiver.getStaticType()).getBaseType().toString() : receiver.getStaticType().toString();
+		String methodName = ctx.IDENTIFIER().getText();
+		Parameter[] params = visitParameters(ctx.signature().parameters());
+		params = ArrayUtils.insert(0, params, receiver);
+		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
-			if (program.getUnit(unitName) == null) 
-				// TODO: unknown unit
-				currentUnit = new CompilationUnit(new SourceCodeLocation(file, getLine(ctx), getCol(ctx)), unitName, false);
-			else
-				currentUnit = program.getUnit(unitName);
+		VariableScoopingCFG method = new VariableScoopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
+		cfg = method;
+		Pair<Statement, Statement> body = visitBlock(ctx.block());
 
-			GoMethod method = new GoMethod(new CFGDescriptor(new SourceCodeLocation(file, getLine(ctx), getCol(ctx)), currentUnit, true, methodName, returnType, params), receiver);
-			cfg = method;
-			Pair<Statement, Statement> body = visitBlock(ctx.block());
-
-			cfg.getEntrypoints().add(body.getLeft());
-			cfg.simplify();
-			currentUnit.addInstanceCFG(method);
-			return method;
+		cfg.getEntrypoints().add(body.getLeft());
+		cfg.simplify();
+		currentUnit.addInstanceCFG(method);
+		return method;
 	}
 
 
@@ -341,17 +293,34 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return ctx.getStart().getLine();
 	} 
 
-	static protected int getLine(Token ctx) {
-		return ctx.getLine();
+	static protected int getLine(TerminalNode ctx) {
+		return ctx.getSymbol().getLine();
 	} 
-	
+
 	static protected int getCol(ParserRuleContext ctx) {
 		return ctx.getStop().getCharPositionInLine();
 	} 
-	
-	static protected int getCol(Token ctx) {
-		return ctx.getCharPositionInLine();
+
+	static protected int getCol(TerminalNode ctx) {
+		return ctx.getSymbol().getCharPositionInLine();
 	} 
+
+	protected SourceCodeLocation locationOf(ParserRuleContext ctx) {
+		return new SourceCodeLocation(file, getLine(ctx), getCol(ctx));
+	}
+
+	protected SourceCodeLocation locationOf(TerminalNode ctx) {
+		return new SourceCodeLocation(file, getLine(ctx), getCol(ctx));
+	}
+
+	@Override
+	public Parameter visitReceiver(ReceiverContext ctx) {
+		Parameter[] params = visitParameters(ctx.parameters());
+		if (params.length != 1)
+			throw new IllegalStateException("Go receiver must be a single parameter");
+
+		return params[0];
+	}
 
 	@Override
 	public Parameter[] visitParameters(ParametersContext ctx) {
@@ -361,59 +330,29 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return result;
 	}
-	
+
 	@Override
 	public Parameter[] visitParameterDecl(ParameterDeclContext ctx) {
 		Parameter[] result = new Parameter[]{};
 		GoType type = visitType_(ctx.type_());
 
 		if (ctx.identifierList() == null)
-			result = ArrayUtils.add(result, new Parameter("_", type));
+			result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
 		else 
 			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) 
-				result = ArrayUtils.addAll(result, new Parameter(ctx.identifierList().IDENTIFIER(i).getText(), type));
+				result = ArrayUtils.addAll(result, new Parameter(locationOf(ctx.identifierList().IDENTIFIER(i)), ctx.identifierList().IDENTIFIER(i).getText(), type));
 
 		return result;
 	}
-	
 
-	@Override
-	public GoType visitType_(Type_Context ctx) {
-
-		if (ctx.typeName() != null)
-			return visitTypeName(ctx.typeName());
-
-		if (ctx.typeLit() != null)
-			return visitTypeLit(ctx.typeLit());
-
-		return (GoType) visitChildren(ctx);
-	}
-
-	@Override
-	public GoType visitTypeName(TypeNameContext ctx) {
-		if (ctx.IDENTIFIER() != null)
-			return getGoType(ctx);
-		else {
-			Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
-			return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
-		}
-	}
 
 	@Override
 	public Pair<String, String> visitQualifiedIdent(QualifiedIdentContext ctx) {
 		return Pair.of(ctx.IDENTIFIER(0).getText(), ctx.IDENTIFIER(1).getText());
 	}
-	
-	@Override
-	public GoType visitTypeLit(TypeLitContext ctx) {
-		Object result = visitChildren(ctx);
-		if (!(result instanceof GoType))
-			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
-		else 
-			return (GoType) result;
-	}
 
-	
+
+
 	@Override
 	public Type visitResult(ResultContext ctx) {
 		if (ctx == null)
@@ -421,34 +360,32 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.type_() != null)
 			return visitType_(ctx.type_());
 		else
-			return new GoRawType(visitParameters(ctx.parameters()));
+			return new GoTypesTuple(visitParameters(ctx.parameters()));
 	}
-	
-	
 
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
 		Map<String, VariableRef> backup = new HashMap<>(visibleIds);
 
-		
 		if (ctx.statementList() == null) {
-			NoOp entry = new NoOp(cfg);
-			NoOp exit = new NoOp(cfg);
-			cfg.addNode(entry, visibleIds);
-			cfg.addNode(exit, visibleIds);
+			SourceCodeLocation location = locationOf(ctx);
+			NoOp entry = new NoOp(cfg, location);
+			NoOp exit = new NoOp(cfg, location);
+			cfg.addNode(entry);
+			cfg.addNode(exit);
 			addEdge(new SequentialEdge(entry, exit));
 			updateVisileIds(backup, exit);
-			
+
 			return Pair.of(entry, exit);
 		}
-		
+
 		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
-		
+
 		return res;
 	}
 	private void updateVisileIds(Map<String, VariableRef> backup,Statement last) {
-		
+
 		Collection<String> toRemove = new HashSet<>();
 		for (Entry<String, VariableRef> id : visibleIds.entrySet())
 			if (!backup.containsKey(id.getKey())) {
@@ -491,7 +428,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return (Pair<Statement, Statement>) result;
 	}
 
-
 	@Override
 	public Pair<Statement, Statement> visitVarDecl(VarDeclContext ctx) {
 		Statement lastStmt = null;
@@ -507,10 +443,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			lastStmt = currStmt.getRight();
 		}
 
-
 		return Pair.of(entryNode, lastStmt);
 	}
-	
 
 	@Override
 	public Pair<Statement, Statement> visitVarSpec(VarSpecContext ctx) {
@@ -523,23 +457,22 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 
-			Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped() ? ((GoType) type).defaultValue(cfg) : visitExpression(exps.expression(i));
+			Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped() ? ((GoType) type).defaultValue(cfg, locationOf(ctx)) : visitExpression(exps.expression(i));
 
+			int line = getLine(ids.IDENTIFIER(i));
+			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i)) : getCol(exps.expression(i));
 
-			int line = getLine(ids.IDENTIFIER(i).getSymbol());
-			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i).getSymbol()) : getCol(exps.expression(i));
-
-			VariableRef target = new VariableRef(cfg, ids.IDENTIFIER(i).getText(), type);
-			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, file, line, col, type, target, exp);
+			VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
+			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col), type, target, exp);
 			cfg.addNode(asg, visibleIds);
-			
-		 	if (visibleIds.containsKey(target.getName()))
+
+			if (visibleIds.containsKey(target.getName()))
 				throw new GoSyntaxException(
 						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 
 			visibleIds.put(target.getName(), target);
-			
 
+	
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
 			else
@@ -549,82 +482,82 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return Pair.of(entryNode, lastStmt);
 	}
-	
 
 	@Override
 	public Expression visitExpression(ExpressionContext ctx) {	
+		SourceCodeLocation location = locationOf(ctx);
 
 		// Go sum (+)
 		if (ctx.PLUS() != null)
-			return new GoSum(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoSum(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go multiplication (*)
 		if (ctx.STAR() != null) 
-			return new GoMul(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoMul(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go division (/)
 		if (ctx.DIV() != null)
-			return new GoDiv(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoDiv(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go minus (-)
 		if (ctx.MINUS() != null)
-			return new GoSubtraction(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoSubtraction(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&&)
 		if (ctx.LOGICAL_AND() != null) 
-			return new GoLogicalAnd(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalAnd(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (||)
 		if (ctx.LOGICAL_OR() != null)
-			return new GoLogicalOr(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLogicalOr(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go equal (==)
 		if (ctx.EQUALS() != null)
-			return new GoEqual(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoEqual(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go not equal (!=)
 		if (ctx.NOT_EQUALS() != null)
-			return new GoNot(cfg, new GoEqual(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
+			return new GoNot(cfg, location, new GoEqual(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
 
 		// Go less (<)
 		if (ctx.LESS() != null)
-			return new GoLess(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLess(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go greater (>)
 		if (ctx.GREATER() != null)
-			return new GoGreater(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoGreater(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go greater or equals (>=)
 		if (ctx.GREATER_OR_EQUALS() != null)
-			return new GoGreaterOrEqual(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoGreaterOrEqual(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go less or equals (>=)
 		if (ctx.LESS_OR_EQUALS() != null)
-			return new GoLessOrEqual(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLessOrEqual(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go module (%)
 		if (ctx.MOD() != null)
-			return new GoModule(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoModule(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go right shift (>>)
 		if (ctx.RSHIFT() != null)
-			return new GoRightShift(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoRightShift(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go left shift (<<)
 		if (ctx.LSHIFT() != null)
-			return new GoLeftShift(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoLeftShift(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go XOR (^)
 		if (ctx.CARET() != null)
-			return new GoBitwiseXOr(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseXOr(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go or (|)
 		if (ctx.OR() != null)
-			return new GoBitwiseOr(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseOr(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go and (&)
 		if (ctx.AMPERSAND() != null)
-			return new GoBitwiseAnd(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+			return new GoBitwiseAnd(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -633,121 +566,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return (Expression) child;
 	}
 
-	
 
-	/**
-	 * Given a type context, returns the corresponding Go type.
-	 * 
-	 * @param ctx the type context
-	 * @return the Go type corresponding to {@ctx}
-	 */
-	private GoType getGoType(TypeNameContext ctx) {
 
-		if (ctx.IDENTIFIER() != null) {
 
-			String type = ctx.IDENTIFIER().getText();
-			switch(type) { 
-			case "int": 
-				return GoIntType.INSTANCE;
-			case "int8": 
-				return GoInt8Type.INSTANCE;
-			case "int16": 
-				return GoInt16Type.INSTANCE;
-			case "int32": 
-				return GoInt32Type.INSTANCE;
-			case "int64": 
-				return GoInt64Type.INSTANCE; 
-			case "uint": 
-				return GoUIntType.INSTANCE;
-			case "byte": // byte is an alias for int8
-			case "uint8": 
-				return GoUInt8Type.INSTANCE;
-			case "uint16": 
-				return GoUInt16Type.INSTANCE;
-			case "rune": // rune is an alias for int32
-			case "uint32": 
-				return GoUInt32Type.INSTANCE;
-			case "uint64": 
-				return GoUInt64Type.INSTANCE; 
-			case "float32": 
-				return GoFloat32Type.INSTANCE;
-			case "float64": 
-				return GoFloat64Type.INSTANCE; 
-			case "string": 
-				return GoStringType.INSTANCE;
-			case "bool": 
-				return GoBoolType.INSTANCE;	
-			case "error":
-				return GoErrorType.INSTANCE;
-			default: 
-				if (GoStructType.hasStructType(type))
-					return GoStructType.get(type);
-				else if (GoAliasType.hasAliasType(type))
-					return GoAliasType.get(type);
-				else if (GoInterfaceType.hasStructType(type))
-					return GoInterfaceType.get(type);
-				else {
 
-					if (parseTypeDeclaration(type))
-						return getGoType(ctx);
-					else {
-						CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(file, getLine(ctx), getCol(ctx)), type, false);
-						return GoStructType.lookup(type, unit);
-					}
-				}
-			} 
-		} 
-
-		Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
-		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
-	}
-	
-	private boolean parseTypeDeclaration(String id) {
-		for (DeclarationContext d : source.declaration())
-			if (d.typeDecl() != null) {
-				for (TypeSpecContext ts : d.typeDecl().typeSpec())
-					if (ts.IDENTIFIER().getText().equals(id)) {
-						visitTypeSpec(ts);
-						return true;
-					}
-			}
-		return false;
-	}
-
-	@Override
-	public Collection<CompilationUnit> visitTypeDecl(TypeDeclContext ctx) {
-		HashSet<CompilationUnit> units = new HashSet<>();
-		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
-			String unitName = typeSpec.IDENTIFIER().getText();
-			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(file, getLine(typeSpec), getCol(typeSpec)), unitName, false);
-			units.add(unit);
-			currentUnit = unit;
-			visitTypeSpec(typeSpec);
-		}
-		return units;
-	}
-	
-	@Override
-	public GoType visitTypeSpec(TypeSpecContext ctx) {
-		String typeName = ctx.IDENTIFIER().getText();
-		GoType type = visitType_(ctx.type_());
-
-		if (ctx.ASSIGN() == null) {
-			if (type instanceof GoStructType) 
-				return GoStructType.lookup(typeName, currentUnit);
-			else if (type instanceof GoInterfaceType)
-				return GoInterfaceType.lookup(typeName, currentUnit);
-			else 
-				return GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
-
-		} else {
-			// Alias type
-			GoAliasType.lookup(typeName, new GoAliasType(typeName, type));
-		}
-
-		return null;
-	}
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public Pair<Statement, Statement> visitDeclaration(DeclarationContext ctx) {
@@ -757,7 +579,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		else 
 			return null;
 	}
-	
+
 
 	@Override
 	public Pair<Statement, Statement> visitConstDecl(ConstDeclContext ctx) {
@@ -787,19 +609,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement entryNode = null;
 		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
-		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-			VariableRef target = new VariableRef(cfg, ids.IDENTIFIER(i).getText(), type);
+		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {		
+			VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 			Expression exp = visitExpression(exps.expression(i));
 
-			GoConstantDeclaration asg = new GoConstantDeclaration(cfg, target, exp);
+			GoConstantDeclaration asg = new GoConstantDeclaration(cfg, locationOf(ctx), target, exp);
 			cfg.addNode(asg, visibleIds);
-			
+
 			if (visibleIds.containsKey(target.getName()))
 				throw new GoSyntaxException(
 						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 
 			visibleIds.put(target.getName(), target);
-			
+
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
 			else
@@ -818,7 +640,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return result;
 	}
 
-	
+
 
 
 	@SuppressWarnings("unchecked")
@@ -843,25 +665,23 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		} else 
 			return (Pair<Statement, Statement>) result;		
 	}
-	
+
 
 	@Override
 	public Pair<Statement, Statement> visitIncDecStmt(IncDecStmtContext ctx) {
 
 		Expression exp = visitExpression(ctx.expression());
+		SourceCodeLocation location = locationOf(ctx.expression());
 		Statement asg = null;
-
-		int line = getLine(ctx.expression());
-		int col = getCol(ctx.expression());
 
 		// increment and decrement statements are syntactic sugar
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
-			asg = new Assignment(cfg, new SourceCodeLocation(file, line, col), exp, 
-					new GoSum(cfg,  exp,  new GoInteger(cfg, file, line, col, 1)));		
+			asg = new Assignment(cfg, location, exp, 
+					new GoSum(cfg, location, exp,  new GoInteger(cfg, location, 1)));		
 		else
-			asg = new Assignment(cfg, new SourceCodeLocation(file, line, col), exp, 
-					new GoSubtraction(cfg, exp,  new GoInteger(cfg, file, line, col, 1)));
+			asg = new Assignment(cfg, location, exp, 
+					new GoSubtraction(cfg, location, exp, new GoInteger(cfg, location, 1)));
 
 		cfg.addNode(asg, visibleIds);
 		return Pair.of(asg, asg);
@@ -878,14 +698,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		for (int i = 0; i < ids.expression().size(); i++) {
 
 			int line = getLine(ids.expression(i));
-			int col = getLine(exps.expression(i));
+			int col = getCol(exps.expression(i));
 
 			Expression lhs = visitExpression(ids.expression(i));
-			Expression exp = buildExpressionFromAssignment(lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
+			Expression exp = buildExpressionFromAssignment(new SourceCodeLocation(file, line, col), lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
-			Assignment asg = new Assignment(cfg, new SourceCodeLocation(file, line, col), lhs, exp);
+			Assignment asg = new Assignment(cfg, locationOf(ctx), lhs, exp);
 			cfg.addNode(asg, visibleIds);
-
+		
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
 			else
@@ -896,35 +716,35 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Pair.of(entryNode, lastStmt);
 	}
 
-	private Expression buildExpressionFromAssignment(Expression lhs, Assign_opContext op, Expression exp) {
+	private Expression buildExpressionFromAssignment(SourceCodeLocation location, Expression lhs, Assign_opContext op, Expression exp) {
 
 		// +=
 		if (op.PLUS() != null)
-			return new GoSum(cfg, lhs, exp);
+			return new GoSum(cfg, location, lhs, exp);
 
 		// -=	
 		if (op.MINUS() != null)
-			return new GoSubtraction(cfg, lhs, exp);
+			return new GoSubtraction(cfg, location, lhs, exp);
 
 		// *=
 		if (op.STAR() != null)
-			return new GoMul(cfg, lhs, exp);
+			return new GoMul(cfg, location, lhs, exp);
 
 		// /=
 		if (op.DIV() != null)
-			return new GoDiv(cfg, lhs, exp);
+			return new GoDiv(cfg, location, lhs, exp);
 
 		// %=
 		if (op.MOD() != null)
-			return new GoModule(cfg, lhs, exp);
+			return new GoModule(cfg, location, lhs, exp);
 
 		// >>=
 		if (op.RSHIFT() != null)
-			return new GoRightShift(cfg, lhs, exp);
+			return new GoRightShift(cfg, location, lhs, exp);
 
 		// <<=
 		if (op.LSHIFT() != null)
-			return new GoLeftShift(cfg, lhs, exp);
+			return new GoLeftShift(cfg, location, lhs, exp);
 
 		// &^=
 		if (op.BIT_CLEAR() != null)
@@ -932,20 +752,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// ^=
 		if (op.CARET() != null)
-			return new GoBitwiseXOr(cfg, lhs, exp);
+			return new GoBitwiseXOr(cfg, location, lhs, exp);
 
 		// &=
 		if (op.AMPERSAND() != null)
-			return new GoBitwiseAnd(cfg, lhs, exp);
+			return new GoBitwiseAnd(cfg, location, lhs, exp);
 
 		// |=
 		if (op.OR() != null)
-			return new GoBitwiseOr(cfg, lhs, exp);
+			return new GoBitwiseOr(cfg, location, lhs, exp);
 
 		// Return exp if the assignment operator is null
 		return exp;
 	}
-
 
 	@Override
 	public Statement visitAssign_op(Assign_opContext ctx) {
@@ -957,7 +776,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitShortVarDecl(ShortVarDeclContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
-				
+
 		// Number of identifiers to be assigned
 		int sizeIds = ids.IDENTIFIER().size();
 		// Numbefr of expressions to be assigned
@@ -982,19 +801,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Expression exp = visitExpression(exps.expression(i));
 
-				int line = getLine(ids.IDENTIFIER(i).getSymbol());
+				int line = getLine(ids.IDENTIFIER(i));
 				int col = getCol(exps.expression(i));
 
 				// The type of the variable is implicit and it is retrieved from the type of exp
 				Type type = exp.getStaticType();
-				VariableRef target = new VariableRef(cfg, ids.IDENTIFIER(i).getText(), type);
+				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 
 				if (visibleIds.containsKey(target.getName()))
 					throw new GoSyntaxException(
 							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 
 				visibleIds.put(target.getName(), target);
-				
+			
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
 				cfg.addNode(asg, visibleIds);
 
@@ -1013,45 +832,51 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public VariableRef[] visitIdentifierList(IdentifierListContext ctx) {
 		VariableRef[] result = new VariableRef[] {};
 		for (int i = 0; i < ctx.IDENTIFIER().size(); i++)
-			result = ArrayUtils.addAll(result, new VariableRef(cfg, ctx.IDENTIFIER(i).getText()));
+			result = ArrayUtils.addAll(result, new VariableRef(cfg, locationOf(ctx.IDENTIFIER(i)), ctx.IDENTIFIER(i).getText()));
 		return result;
 	}
-	
+
 	@Override
 	public Statement visitEmptyStmt(EmptyStmtContext ctx) {
-		return new NoOp(cfg, new SourceCodeLocation(file, getLine(ctx), getCol(ctx)));
+		return new NoOp(cfg, locationOf(ctx));
 	}
 
 	@Override
 	public Pair<Statement, Statement> visitReturnStmt(ReturnStmtContext ctx) {		
+		SourceCodeLocation location = locationOf(ctx);
+
 		if (ctx.expressionList() != null) {
 			GoReturn ret;
 			if (ctx.expressionList().expression().size() == 1) 
-				ret =  new GoReturn(cfg, visitExpression(ctx.expressionList().expression(0)));
+				ret =  new GoReturn(cfg, location, visitExpression(ctx.expressionList().expression(0)));
 			else
-				ret =  new GoReturn(cfg, new GoRawValue(cfg, visitExpressionList(ctx.expressionList())));
+				ret =  new GoReturn(cfg, location, new GoExpressionsTuple(cfg, location, visitExpressionList(ctx.expressionList())));
 
 			cfg.addNode(ret, visibleIds);
 			return Pair.of(ret, ret);
 		} else {
-			Ret ret = new Ret(cfg);
+			// TODO: we should check if cfg specifies the return values
+			Ret ret = new Ret(cfg, location);
 			cfg.addNode(ret, visibleIds);
+
 			return Pair.of(ret, ret);
 		}
 	}
 
 	@Override
 	public Pair<Statement, Statement> visitBreakStmt(BreakStmtContext ctx) {
-		NoOp breakSt = new NoOp(cfg);
+		NoOp breakSt = new NoOp(cfg, locationOf(ctx));
 		cfg.addNode(breakSt, visibleIds);
+
 		addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size() -1)));
 		return Pair.of(breakSt, breakSt);
 	}
 
 	@Override
 	public Pair<Statement, Statement> visitContinueStmt(ContinueStmtContext ctx) {		
-		NoOp continueSt = new NoOp(cfg);
+		NoOp continueSt = new NoOp(cfg, locationOf(ctx));
 		cfg.addNode(continueSt, visibleIds);
+
 		addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size() -1)));
 		return Pair.of(continueSt, continueSt);
 	}
@@ -1064,7 +889,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitFallthroughStmt(FallthroughStmtContext ctx) {
-		GoFallThrough ft = new GoFallThrough(cfg);
+		GoFallThrough ft = new GoFallThrough(cfg, locationOf(ctx));
 		cfg.addNode(ft, visibleIds);
 		return Pair.of(ft, ft);
 	}
@@ -1078,12 +903,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitIfStmt(IfStmtContext ctx) {
+		SourceCodeLocation location = locationOf(ctx);
 
 		// Visit if statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
 		cfg.addNode(booleanGuard, visibleIds);
-
-		NoOp ifExitNode = new NoOp(cfg);
+		NoOp ifExitNode = new NoOp(cfg, location);
 		cfg.addNode(ifExitNode, visibleIds);
 
 		Pair<Statement, Statement> trueBlock = visitBlock(ctx.block(0));
@@ -1155,9 +980,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitExprSwitchStmt(ExprSwitchStmtContext ctx) {
-
-		Expression switchGuard = ctx.expression() == null ? new GoBoolean(cfg, true) :  visitExpression(ctx.expression());
-		NoOp exitNode = new NoOp(cfg);		
+		SourceCodeLocation location = locationOf(ctx);
+		Expression switchGuard = ctx.expression() == null ? new GoBoolean(cfg, location, true) :  visitExpression(ctx.expression());
+		NoOp exitNode = new NoOp(cfg, location);		
 		Statement entryNode = null;
 		Statement previousGuard = null;
 		Pair<Statement, Statement> defaultBlock = null;
@@ -1174,9 +999,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Expression[] expsCase = visitExpressionList(switchCase.exprSwitchCase().expressionList());
 				for (int j = 0; j < expsCase.length; j++) 
 					if (caseBooleanGuard == null)
-						caseBooleanGuard = new GoEqual(cfg, expsCase[j], switchGuard);
+						caseBooleanGuard = new GoEqual(cfg, (SourceCodeLocation) expsCase[j].getLocation(), expsCase[j], switchGuard);
 					else
-						caseBooleanGuard = new GoLogicalOr(cfg, caseBooleanGuard, new GoEqual(cfg, expsCase[j], switchGuard));
+						caseBooleanGuard = new GoLogicalOr(cfg, (SourceCodeLocation) expsCase[j].getLocation(), caseBooleanGuard, new GoEqual(cfg, (SourceCodeLocation) expsCase[j].getLocation(), expsCase[j], switchGuard));
 
 				cfg.addNode(caseBooleanGuard, visibleIds);
 				addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
@@ -1222,32 +1047,25 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Pair.of(entryNode, exitNode);
 	}
 
-
-	@Override
-	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
-		// TODO Auto-generated method stub
-		Statement noop = new NoOp(cfg);
-		cfg.addNode(noop, visibleIds);
-		return Pair.of(noop, noop);
-	}
-	
-
 	@Override
 	public Pair<Statement, Statement> visitForStmt(ForStmtContext ctx) {
+		SourceCodeLocation location = locationOf(ctx);
 		Map<String, VariableRef> backup = new HashMap<>(visibleIds);
-		NoOp exitNode = new NoOp(cfg);
+		NoOp exitNode = new NoOp(cfg, location);
 		cfg.addNode(exitNode, visibleIds);
+
 		exitPoints.add(exitNode);
 
 		if (ctx.forClause() != null) {
-			boolean hasInitStmt = hasInitStmt(ctx);
-			boolean hasCondition = hasCondition(ctx);
-			boolean hasPostStmt = hasPostStmt(ctx);
+			boolean hasInitStmt = ctx.forClause().init != null;
+			boolean hasCondition = ctx.forClause().guard != null;
+			boolean hasPostStmt = ctx.forClause().inc != null;
 
 			// Checking if initialization is missing
 			Pair<Statement, Statement> init = null;
 			Statement entryNode = null;
 			if (hasInitStmt) {
+				// TODO: variables declared here should be only visible in the for block
 				init = visitSimpleStmt(ctx.forClause().simpleStmt(0));
 				cfg.addNode(entryNode = init.getLeft(), visibleIds);
 			}
@@ -1257,8 +1075,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (hasCondition) 
 				cond = visitExpression(ctx.forClause().expression());
 			else 
-				cond = new GoBoolean(cfg, true);
+				cond = new GoBoolean(cfg, location, true);
 			cfg.addNode(cond, visibleIds);
+
 			entryPoints.add(cond);
 
 			//Map<String, VariableRef> backupForPost = new HashMap<>(visibleIds);
@@ -1271,15 +1090,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			Pair<Statement, Statement> block;
 			if (ctx.block() == null || ctx.block().statementList() == null) {
-				NoOp emptyBlock = new NoOp(cfg);
+				NoOp emptyBlock = new NoOp(cfg, location);
 				cfg.addNode(emptyBlock, visibleIds);
+
 				block = Pair.of(emptyBlock, emptyBlock);
 			} else
 				block = visitBlock(ctx.block());
 
 			Statement exitNodeBlock = block.getRight();
 			Statement entryNodeOfBlock = block.getLeft();
-			
+
 			restoreVisibleIdsAfterForLoop(backup);
 
 			addEdge(new TrueEdge(cond, entryNodeOfBlock));
@@ -1303,14 +1123,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		if (ctx.rangeClause() != null) {
 			// TODO: SUPER UNSOUND
-			NoOp entry = new NoOp(cfg);
+			NoOp entry = new NoOp(cfg, location);
 			cfg.addNode(entry, visibleIds);
+
 			entryPoints.add(entry);
 
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
-			
+
 			restoreVisibleIdsAfterForLoop(backup);
-			
+
 			addEdge(new SequentialEdge(entry, block.getLeft()));
 			addEdge(new SequentialEdge(block.getLeft(), exitNode));
 
@@ -1327,9 +1148,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryPoints.add(guard);
 
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
-			
+
 			restoreVisibleIdsAfterForLoop(backup);
-			
+
 			addEdge(new SequentialEdge(guard, block.getLeft()));
 			addEdge(new SequentialEdge(guard, exitNode));
 			addEdge(new SequentialEdge(block.getRight(), guard));
@@ -1340,15 +1161,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 
 		// for { }
-		NoOp entry = new NoOp(cfg);
+		NoOp entry = new NoOp(cfg, location);
 		cfg.addNode(entry, visibleIds);
+
 		entryPoints.add(entry);
-		
+
 
 		Pair<Statement, Statement> block = visitBlock(ctx.block());
-		
+
 		restoreVisibleIdsAfterForLoop(backup);
-		
+
 		addEdge(new SequentialEdge(block.getRight(), block.getLeft()));
 		addEdge(new SequentialEdge(entry, block.getLeft()));
 		addEdge(new SequentialEdge(block.getLeft(), exitNode));
@@ -1357,6 +1179,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		exitPoints.remove(exitPoints.size()-1);
 		return Pair.of(entry, exitNode);
 	}
+
 
 	private void restoreVisibleIdsAfterForLoop(Map<String, VariableRef> backup) {
 		Collection<String> toRemove = new HashSet<>();
@@ -1368,49 +1191,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			toRemove.forEach(visibleIds::remove);
 
 	}
-	
-
-	@Override
-	public GoType visitElementType(ElementTypeContext ctx) {
-		return visitType_(ctx.type_());
-	}
-
-	@Override
-	public GoType visitPointerType(PointerTypeContext ctx) {
-		return GoPointerType.lookup(new GoPointerType(visitType_(ctx.type_())));
-	}
-
-	@Override
-	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
-		if (ctx.methodSpec().isEmpty())
-			return GoInterfaceType.getEmptyInterface();
-		else 
-			for (MethodSpecContext methSpec : ctx.methodSpec())
-				currentUnit.addCFG(new CFG(visitMethodSpec(methSpec)));
-
-		return GoInterfaceType.lookup(currentUnit.getName(), currentUnit);
-	}
-
-	@Override
-	public GoType visitSliceType(SliceTypeContext ctx) {
-		return GoSliceType.lookup(new GoSliceType(visitElementType(ctx.elementType())));
-	}
-
-	@Override
-	public GoType visitMapType(MapTypeContext ctx) {
-		return GoMapType.lookup(new GoMapType(visitType_(ctx.type_()), visitElementType(ctx.elementType())));
-	}
-
-	@Override
-	public GoType visitChannelType(ChannelTypeContext ctx) {
-		GoType contentType = visitElementType(ctx.elementType());
-		if (ctx.RECEIVE() == null)
-			return GoChannelType.lookup(new GoChannelType(contentType));
-		else if (getCol(ctx.CHAN().getSymbol()) < getCol(ctx.RECEIVE().getSymbol()))
-			return GoChannelType.lookup(new GoChannelType(contentType, true, false));
-
-		return GoChannelType.lookup(new GoChannelType(contentType, false, true));
-	}
 
 	@Override
 	public CFGDescriptor visitMethodSpec(MethodSpecContext ctx) {
@@ -1420,7 +1200,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Parameter[] params = visitParameters(ctx.parameters());
 			//			return new GoMethodSpecification(name, returnType, params);
 
-			return new CFGDescriptor(currentUnit, false, name, returnType, params);
+			return new CFGDescriptor(locationOf(ctx), currentUnit, false, name, returnType, params);
 		} 
 
 		throw new UnsupportedOperationException("Method specification not supported yet:  " + ctx.getText());
@@ -1447,29 +1227,26 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			else if (ctx.primaryExpr().getText().equals("len")) {
 				Expression[] args = visitArguments(ctx.arguments());
-				return new GoLength(cfg, file, getLine(ctx.primaryExpr()), getCol(ctx.primaryExpr()), args[0]);
+				return new GoLength(cfg, locationOf(ctx.primaryExpr()), args[0]);
 			}
 
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
-			// Function call (e.g., f(1,2,3), x.f())
-			if (ctx.arguments() != null) {
-				Expression[] args = visitArguments(ctx.arguments());
-				return resolveCall(primary, args);
-			}
+			// Function/method call (e.g., f(1,2,3), x.f())
+			// TODO: need to check if it is instance or not
+			if (ctx.arguments() != null) 
+				return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, primary.toString(), visitArguments(ctx.arguments()));
 
 			// Array/slice/map access e1[e2]
 			else if (ctx.index() != null) {
 				Expression index = visitIndex(ctx.index());
-				return new GoCollectionAccess(cfg, primary, index);
+				return new GoCollectionAccess(cfg, locationOf(ctx), primary, index);
 			}
 
 			// Field access x.f
 			else if (ctx.IDENTIFIER() != null) {
-				int line = getLine(ctx.IDENTIFIER().getSymbol());
-				int col = getCol(ctx.IDENTIFIER().getSymbol());
-				Global index = new Global(new SourceCodeLocation(file, line, col), ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
-				return new AccessUnitGlobal(cfg, primary, index);
+				Global index = new Global(locationOf(ctx.IDENTIFIER()), ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
+				return new AccessUnitGlobal(cfg, locationOf(ctx), primary, index);
 			}
 
 			// Simple slice expression a[l:h]
@@ -1477,11 +1254,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Pair<Expression, Expression> args = visitSlice(ctx.slice());
 
 				if (args.getRight() == null)
-					return new GoSimpleSlice(cfg, primary, args.getLeft(),new GoLength(cfg, primary));
+					return new GoSimpleSlice(cfg, locationOf(ctx), primary, args.getLeft(), new GoLength(cfg, locationOf(ctx), primary));
 				else
-					return new GoSimpleSlice(cfg, primary, args.getLeft(), args.getRight());
+					return new GoSimpleSlice(cfg, locationOf(ctx), primary, args.getLeft(), args.getRight());
 			}
-			
+
 			else if (ctx.typeAssertion() != null) {
 				return new GoTypeAssertion(cfg, primary, visitType_(ctx.typeAssertion().type_()));
 			}
@@ -1495,49 +1272,30 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return (Expression) child;
 	}
 
-	private Expression resolveCall(Expression primary, Expression[] args) {
-
-		if (primary.toString().equals("Contains"))
-			return new GoContains(cfg, args[0], args[1]);
-
-		if (primary.toString().equals("HasPrefix"))
-			return new GoHasPrefix(cfg, args[0], args[1]);
-
-		if (primary.toString().equals("HasSuffix"))
-			return new GoHasSuffix(cfg, args[0], args[1]);
-
-		if (primary.toString().equals("Index"))
-			return new GoIndexOf(cfg, args[0], args[1]);
-
-		if (primary.toString().equals("Replace"))
-			return new GoReplace(cfg, args[0], args[1], args[2]);
-
-		return new UnresolvedCall(cfg, ResolutionStrategy.STATIC_TYPES, false, primary.toString(), args);
-	}
-
 	@Override
 	public Expression visitUnaryExpr(UnaryExprContext ctx) {
 		if (ctx.primaryExpr() != null)
 			return visitPrimaryExpr(ctx.primaryExpr());
+		SourceCodeLocation location = locationOf(ctx);
 
 		Expression exp = visitExpression(ctx.expression());
 		if (ctx.PLUS() != null)
-			return new GoPlus(cfg, file, getLine(ctx), getCol(ctx), exp);
+			return new GoPlus(cfg, location, exp);
 
 		if (ctx.MINUS() != null)
-			return new GoMinus(cfg, file, getLine(ctx), getCol(ctx), exp);
+			return new GoMinus(cfg, location, exp);
 
 		if (ctx.EXCLAMATION() != null)
-			return new GoNot(cfg, file, getLine(ctx), getCol(ctx), exp);
+			return new GoNot(cfg, location, exp);
 
 		if (ctx.STAR() != null)
-			return new GoRef(cfg, file, getLine(ctx), getCol(ctx), exp);
+			return new GoRef(cfg, location, exp);
 
 		if (ctx.AMPERSAND() != null)
-			return new GoDeref(cfg, file, getLine(ctx), getCol(ctx), exp);
+			return new GoDeref(cfg, location, exp);
 
 		if (ctx.CARET() != null)
-			return new GoBitwiseNot(cfg, exp);
+			return new GoBitwiseNot(cfg, location, exp);
 
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
@@ -1581,13 +1339,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.integer() != null)
 			return visitInteger(ctx.integer());
 
+		SourceCodeLocation location = locationOf(ctx);
 		// Go nil value
 		if (ctx.NIL_LIT() != null)
-			return new GoNil(cfg);
+			return new GoNil(cfg, location);
 
 		// Go float value
 		if (ctx.FLOAT_LIT() != null) 
-			return new GoFloat(cfg, Double.parseDouble(ctx.FLOAT_LIT().getText()));
+			return new GoFloat(cfg, location, Double.parseDouble(ctx.FLOAT_LIT().getText()));
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1598,37 +1357,33 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitInteger(IntegerContext ctx) {
-		int line = getLine(ctx);
-		int col = getCol(ctx);
+		SourceCodeLocation location = locationOf(ctx);
 
 		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
 		if (ctx.DECIMAL_LIT() != null)
-			return new GoInteger(cfg, file, line, col, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
+			return new GoInteger(cfg, location, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 
 		// TODO: 0 matched as octacl literal and not decimal literal
 		if (ctx.OCTAL_LIT() != null)
-			return new GoInteger(cfg, file, line, col, Integer.parseInt(ctx.OCTAL_LIT().getText()));
+			return new GoInteger(cfg, location, Integer.parseInt(ctx.OCTAL_LIT().getText()));
 
 		if (ctx.RUNE_LIT() != null) 
-			return new GoRune(cfg, file, line, col, removeQuotes(ctx.getText()));
-
-		if (ctx.IMAGINARY_LIT() != null)
-			throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-
-		if (ctx.HEX_LIT() != null)
-			throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+			return new GoRune(cfg, location, removeQuotes(ctx.getText()));
 
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());	
 	}
 
 	@Override
 	public Expression visitOperandName(OperandNameContext ctx) {
+		// TODO: qualified identifier not handled
 		if (ctx.IDENTIFIER() != null) {
+			SourceCodeLocation location = locationOf(ctx);
+
 			// Boolean values (true, false) are matched as identifiers
 			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
-				return new GoBoolean(cfg, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
+				return new GoBoolean(cfg, location, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
 			else
-				return new VariableRef(cfg, ctx.IDENTIFIER().getText());
+				return new VariableRef(cfg, location, ctx.IDENTIFIER().getText());
 		}
 
 		Object child = visitChildren(ctx);
@@ -1642,7 +1397,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
 
-		GoType type = visitLiteralType(ctx.literalType());
+		GoType type = new GoTypeVisitor(file, currentUnit).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue());
 
 		if (raw instanceof Map<?, ?>)
@@ -1652,15 +1407,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			exps = ((List<Expression>) raw).toArray(exps);
 			return new GoNonKeyedLiteral(cfg, file, getLine(ctx), getCol(ctx), exps, type);
 		}
-	}
-
-	@Override
-	public GoType visitLiteralType(LiteralTypeContext ctx) {
-		Object child = visitChildren(ctx);
-		if (!(child instanceof Type))
-			throw new IllegalStateException("Type expected");
-		else
-			return (GoType) child;
 	}
 
 	@Override
@@ -1711,7 +1457,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitKey(KeyContext ctx) {
 
 		if (ctx.IDENTIFIER() != null)
-			return new VariableRef(cfg, ctx.IDENTIFIER().getText());
+			return new VariableRef(cfg, locationOf(ctx), ctx.IDENTIFIER().getText());
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1730,71 +1476,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoStructType visitStructType(StructTypeContext ctx) {		
-		for (FieldDeclContext field : ctx.fieldDecl()) 
-			for (Pair<String, Type> fd : visitFieldDecl(field))
-				currentUnit.addInstanceGlobal(new Global(fd.getLeft(), fd.getRight()));
-
-		return GoStructType.lookup(currentUnit.getName(), currentUnit);
-	}
-
-	@Override
-	public List<Pair<String, Type>> visitFieldDecl(FieldDeclContext ctx) {
-		List<Pair<String, Type>> result = new ArrayList<>();
-
-		if (ctx.anonymousField() != null)
-			result.add(visitAnonymousField(ctx.anonymousField()));
-		else {
-			GoType fieldType = visitType_(ctx.type_());
-			for (TerminalNode f : ctx.identifierList().IDENTIFIER())
-				result.add(Pair.of(f.getText(), fieldType));
-		}
-
-		return result;
-	}
-
-	@Override
 	public Expression visitString_(String_Context ctx) {
+		SourceCodeLocation location = locationOf(ctx);
 		if (ctx.RAW_STRING_LIT() != null)
-			return new GoString(cfg, removeQuotes(ctx.RAW_STRING_LIT().getText()));
+			return new GoString(cfg, location, removeQuotes(ctx.RAW_STRING_LIT().getText()));
 
 		if (ctx.INTERPRETED_STRING_LIT() != null)
-			return new GoString(cfg, removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
+			return new GoString(cfg, location, removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
 
 		throw new IllegalStateException("Illegal state: string rule has no other productions.");
-	}
-
-
-	@Override
-	public GoType visitArrayType(ArrayTypeContext ctx) {
-		GoType contentType = visitElementType(ctx.elementType());
-		Integer length = visitArrayLength(ctx.arrayLength());
-		return GoArrayType.lookup(new GoArrayType(contentType, length));
-	}
-
-	@Override
-	public Integer visitArrayLength(ArrayLengthContext ctx) {
-		// The array length must be an integer value, not required to be an expression.
-		try {
-			return Integer.parseInt(ctx.expression().getText());
-		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Go error: non-constant array bound " + ctx.getText());
-		}
-	}
-	
-
-	@Override
-	public Pair<String, Type> visitAnonymousField(AnonymousFieldContext ctx) {
-		Type type = visitTypeName(ctx.typeName());
-		if (ctx.STAR() != null)
-			type = new GoPointerType(type);
-		return Pair.of(ctx.typeName().getText(), type);
-	}
-
-	@Override
-	public Expression visitFunctionLit(FunctionLitContext ctx) {
-		// TODO: function literal
-		return new GoInteger(cfg, 1);
 	}
 
 	@Override
@@ -1804,20 +1494,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Expression, Expression> visitSlice(SliceContext ctx) {
-
+		SourceCodeLocation location = locationOf(ctx);
 		// [:]
-		if (ctx.expression(0) == null) {
-			return Pair.of(new GoInteger(cfg, 0), null);
-		} 
+		if (ctx.expression(0) == null) 
+			return Pair.of(new GoInteger(cfg, location, 0), null);
 
 		// [n:] or [:n]
 		if (ctx.expression(1) == null) {
 			Expression n = visitExpression(ctx.expression(0));
 
-			if (getCol(ctx.expression(0)) < getCol(ctx.COLON(0).getSymbol()))
+			if (getCol(ctx.expression(0)) < getCol(ctx.COLON(0)))
 				return Pair.of(n, null);
 			else
-				return Pair.of(new GoInteger(cfg, 0), n);
+				return Pair.of(new GoInteger(cfg, location, 0), n);
 
 		} 
 
@@ -1838,42 +1527,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				exps = ArrayUtils.addAll(exps, visitExpression(ctx.expressionList().expression(i)));
 		return exps;
 	}
-	
-
-	/**
-	 * Checks if the for statement has the initialization statement.
-	 * 
-	 * @param ctx 	the for statement context
-	 * @return {@code true}	if the for statement has the initialization statement, {@code false} otherwise
-	 */
-	private boolean hasInitStmt(ForStmtContext ctx) {
-		return ctx.forClause().simpleStmt(0) != null && getCol(ctx.forClause().simpleStmt(0)) < getCol(ctx.forClause().SEMI(0).getSymbol()); 
-	}
-
-	/**
-	 * Checks if the for statement has the guard expression.
-	 * 
-	 * @param ctx 	the for statement context
-	 * @return {@code true}	if the for statement has the guard expression, {@code false} otherwise
-	 */
-	private boolean hasCondition(ForStmtContext ctx) {
-		return  ctx.forClause().expression() != null;
-	}
-
-	/**
-	 * Checks if the for statement has the post statement.
-	 * 
-	 * @param ctx 	the for statement context
-	 * @return {@code true}	if the for statement has the post statement; {@code false} otherwise
-	 */
-	private boolean hasPostStmt(ForStmtContext ctx) {
-		return ctx.forClause().simpleStmt(1) != null ||
-				(ctx.forClause().simpleStmt(0) != null &&  
-				getCol(ctx.forClause().simpleStmt(0)) > getCol(ctx.forClause().SEMI(1).getSymbol()));
-	}
 
 	private String removeQuotes(String str) {
-		return str.substring(1, str.length()-1);
+		return str.substring(1, str.length() -1);
 	}
 
 	private GoType parseType(String type) {
@@ -1899,23 +1555,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return t;
 	}
-	
+
+	@Override
+	public GoType visitType_(Type_Context ctx) {
+		return new GoTypeVisitor(file, currentUnit).visitType_(ctx);
+	}
 
 	@Override
 	public Statement visitSendStmt(SendStmtContext ctx) {
 		// TODO: send statement
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-
-	@Override
-	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
-		throw new IllegalStateException("exprCaseClause should never be visited.");
-	}
-
-	@Override
-	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
-		throw new IllegalStateException("exprSwitchCase should never be visited.");
 	}
 
 	@Override
@@ -1926,6 +1575,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitTypeSwitchGuard(TypeSwitchGuardContext ctx) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+
+	@Override
+	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
@@ -1967,33 +1622,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitForClause(ForClauseContext ctx) {
-		// TODO Auto-generated method stub
+	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
+		// TODO: labeled statements (issue #9)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
-	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
-		// TODO: labeled statements
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-	
-	@Override
 	public Statement visitRangeClause(RangeClauseContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO range clause (issue #4)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
 	public Statement visitGoStmt(GoStmtContext ctx) {
-		// TODO Auto-generated method stub
+		// TODO go stmt
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitSignature(SignatureContext ctx) {
-		// This method shold never be visited
-		throw new IllegalStateException("Signature should never be visited");
 	}
 
 	@Override
@@ -2003,8 +1646,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitReceiverType(ReceiverTypeContext ctx) {
-		// TODO: receiver type
+	public Expression visitFunctionLit(FunctionLitContext ctx) {
+		// TODO: function literal
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -2013,9 +1656,32 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// This method should never be visited
 		throw new UnsupportedOperationException("Eos should never be visited");
 	}
-	
+
 	public Map<String, VariableRef> getVisibleIds() {
 		return visibleIds;
 	}
 
+	@Override
+	public Statement visitSignature(SignatureContext ctx) {
+		// This method shold never be visited
+		throw new IllegalStateException("Signature should never be visited");
+	}
+
+	@Override
+	public Statement visitForClause(ForClauseContext ctx) {
+		// This method shold never be visited
+		throw new UnsupportedOperationException("For cluase should never be visited");
+	}
+
+	@Override
+	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
+		// This method shold never be visited
+		throw new IllegalStateException("exprCaseClause should never be visited.");
+	}
+
+	@Override
+	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
+		// This method shold never be visited
+		throw new IllegalStateException("exprSwitchCase should never be visited.");
+	}
 }

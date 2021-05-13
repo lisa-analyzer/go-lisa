@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Literal;
 
@@ -20,7 +21,7 @@ public class GoBoolean extends Literal {
 	 * @param cfg   the cfg that this Go integer belongs to
 	 * @param value the Boolean value
 	 */
-	public GoBoolean(CFG cfg, Boolean value) {
-		super(cfg, value, GoBoolType.INSTANCE);
+	public GoBoolean(CFG cfg, SourceCodeLocation location, Boolean value) {
+		super(cfg, location, value, GoBoolType.INSTANCE);
 	}
 }

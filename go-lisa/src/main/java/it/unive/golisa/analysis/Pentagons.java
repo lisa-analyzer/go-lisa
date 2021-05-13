@@ -9,6 +9,8 @@ import java.util.Set;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.PairRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -66,12 +68,12 @@ public class Pentagons implements ValueDomain<Pentagons> {
 
 	@Override
 	public String toString() {
-		return representation();
+		return representation().toString();
 	}
 
 	@Override
-	public String representation() {
-		return "(" + left.representation() + ", " + right.representation() + ")";
+	public DomainRepresentation representation() {
+		return new PairRepresentation(left.representation(), right.representation());
 	}
 
 	@Override

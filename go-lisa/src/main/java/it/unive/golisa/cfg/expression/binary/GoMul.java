@@ -30,12 +30,8 @@ public class GoMul extends BinaryNativeCall implements GoBinaryNumericalOperatio
 	 * @param exp1	left-hand side operand
 	 * @param exp2 	right-hand side operand 
 	 */
-	public GoMul(CFG cfg, Expression exp1, Expression exp2) {
-		this(cfg, null, -1, -1, exp1, exp2);
-	}
-	
-	public GoMul(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "*", exp1, exp2);
+	public GoMul(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "*", exp1, exp2);
 	}
 
 	@Override

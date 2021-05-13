@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
+import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -115,18 +118,18 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
-	public String representation() {
+	public DomainRepresentation representation() {
 		if (isTop())
-			return "TOP";
+			return Lattice.TOP_REPR;
 
 		if (isBottom())
-			return "BOTTOM";
+			return Lattice.BOTTOM_REPR;
 
 		StringBuilder builder = new StringBuilder();
 		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : function.entrySet())
 			builder.append(entry.getKey()).append(" == ").append(entry.getValue().toString()).append("\n");
 
-		return builder.toString().trim();
+		return new StringRepresentation(builder.toString().trim());
 	}
 
 	@Override

@@ -16,13 +16,9 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 
 public class GoBitwiseNot extends UnaryNativeCall {
-
-	public GoBitwiseNot(CFG cfg, Expression exp) {
-		this(cfg, null, -1, -1, exp);
-	}
 	
-	public GoBitwiseNot(CFG cfg, String sourceFile, int line, int col, Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "^", exp.getStaticType(), exp);
+	public GoBitwiseNot(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "^", exp.getStaticType(), exp);
 	}
 	
 	@Override

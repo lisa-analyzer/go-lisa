@@ -8,6 +8,7 @@ import java.util.Map;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
@@ -21,6 +22,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 	public static GoStructType lookup(String name, CompilationUnit unit)  {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
+	
 	}
 
 	private final String name;
@@ -95,8 +97,8 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg) {
-		return new GoNil(cfg);
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+		return new GoNil(cfg, location);
 	}
 
 	@Override

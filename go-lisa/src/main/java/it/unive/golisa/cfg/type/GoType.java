@@ -4,13 +4,14 @@ import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 
 public interface GoType extends Type {
 
-	public Expression defaultValue(CFG cfg);
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location);
 		
 	public default boolean isGoUntyped() {
 		return this instanceof GoUntypedFloat || this instanceof GoUntypedInt;

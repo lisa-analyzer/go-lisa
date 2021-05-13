@@ -15,12 +15,8 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 
 public class GoCollectionAccess extends BinaryNativeCall {
 
-	public GoCollectionAccess(CFG cfg, Expression container, Expression child) {
-		this(cfg, null, -1, -1, container, child);
-	}
-
-	public GoCollectionAccess(CFG cfg, String sourceFile, int line, int col, Expression container, Expression child) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col),  container + "::" +  child, container, child);
+	public GoCollectionAccess(CFG cfg, SourceCodeLocation location, Expression container, Expression child) {
+		super(cfg, location,  container + "::" +  child, container, child);
 	}
 
 	@Override

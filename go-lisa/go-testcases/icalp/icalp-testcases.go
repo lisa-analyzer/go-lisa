@@ -8,11 +8,9 @@ func copy(rep, pref string) (string, string){
 		a = a + rep
 		b =  b + rep
 	}
-	
-	return a, b
 }
 
-func bultan1(x1, x2 string) {
+func bultan1(x1, x2, c string) {
 	if x1 == x2 {
 		x1 = x1 + c;
 	} else {
@@ -38,9 +36,9 @@ func ignore(expr, location, pref string) bool {
 func strings(x string) {
 	var y string = "b";
 	if (Contains(x, "abc")) {
-		y = y + "a";
+		z = z + "a";
 	} else {
-		y = y + "a";
+		z = z + "a";
 	}
 }
 
@@ -78,14 +76,14 @@ func SanitizePhoneNumber(phoneNumber string, pref string) string {
 	ret := phoneNumber
 	
 	if strings.HasPrefix(phoneNumber, pref) {
-		ret := phoneNumber
+		ret = phoneNumber
 	}
 	
 	if strings.HasPrefix(phoneNumber, "08") {
-		ret := pref + phoneNumber[2:]
+		ret = pref + phoneNumber[2:]
 	}
 	if strings.HasPrefix(phoneNumber, "8") {
-		ret := pref + phoneNumber[1:]
+		ret = pref + phoneNumber[1:]
 	}
 	
 	return ret

@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.statement;
 
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Return;
@@ -18,7 +19,7 @@ public class GoReturn extends Return {
 	 * @param cfg			the cfg that this statement belongs to
 	 * @param expression	the expression to be returned
 	 */
-	public GoReturn(CFG cfg, Expression expression) {
-		super(cfg, expression);
+	public GoReturn(CFG cfg, SourceCodeLocation location, Expression expression) {
+		super(cfg, location, expression);
 	}
 }

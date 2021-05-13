@@ -24,22 +24,9 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperation {
-
-	/**
-	 * Builds a Go sum expression. The location where 
-	 * this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp1	left-hand side operand
-	 * @param exp2 	right-hand side operand 
-	 */
-	public GoSum(CFG cfg, Expression exp1, Expression exp2) {
-		this(cfg, null, -1, -1, exp1, exp2);
-	}
 	
-	public GoSum(CFG cfg, String filePath, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(filePath, line, col), "+", exp1, exp2);
+	public GoSum(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, "+", exp1, exp2);
 	}
 
 	@Override

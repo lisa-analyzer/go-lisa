@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
@@ -50,8 +51,8 @@ public class GoAliasType implements GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg) {
-		return baseType.defaultValue(cfg);
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+		return baseType.defaultValue(cfg, location);
 	}
 
 	@Override

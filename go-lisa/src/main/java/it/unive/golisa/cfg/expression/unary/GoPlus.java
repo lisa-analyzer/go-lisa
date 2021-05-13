@@ -24,21 +24,9 @@ import it.unive.lisa.symbolic.value.Constant;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoPlus extends UnaryNativeCall {
-
-	/**
-	 * Builds a Go unary plus expression. The location where 
-	 * this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp	operand
-	 */
-	public GoPlus(CFG cfg, Expression exp) {
-		this(cfg, null, -1, -1, exp);
-	}
 	
-	public GoPlus(CFG cfg, String sourceFile, int line, int col, Expression exp) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "+", exp);
+	public GoPlus(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "+", exp);
 	}
 
 	@Override
@@ -48,7 +36,7 @@ public class GoPlus extends UnaryNativeCall {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 
-		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), 0));
+		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0));
 
 		return entryState.smallStepSemantics(
 				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_ADD), this);

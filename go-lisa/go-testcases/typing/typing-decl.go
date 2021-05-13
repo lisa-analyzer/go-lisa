@@ -45,9 +45,6 @@ func relTyping() {
 	y := 7
 	var c int =  x * y
 	b := x < 2
-	c := 2.2
-	d := c < 2.3
+	d := 2.2
+	e := c < 2.3
 }
-
-
-

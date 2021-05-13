@@ -6,14 +6,9 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Literal;
 
 public class GoRune extends Literal {
-
-	public GoRune(CFG cfg, String value) {
-		// TODO: create rune type
-		this(cfg, null, -1, -1, value);
-	}
 	
-	public GoRune(CFG cfg, String sourceFile, int line, int col, String value) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), value, GoStringType.INSTANCE);
+	public GoRune(CFG cfg, SourceCodeLocation location, String value) {
+		super(cfg, location, value, GoStringType.INSTANCE);
 	}
 	
 	@Override

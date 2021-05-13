@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -19,8 +18,23 @@ import org.apache.logging.log4j.Logger;
 
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
-import it.unive.golisa.antlr.GoParser.*;
+import it.unive.golisa.antlr.GoParser.DeclarationContext;
+import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
+import it.unive.golisa.antlr.GoParser.ImportDeclContext;
+import it.unive.golisa.antlr.GoParser.ImportPathContext;
+import it.unive.golisa.antlr.GoParser.ImportSpecContext;
+import it.unive.golisa.antlr.GoParser.MethodDeclContext;
+import it.unive.golisa.antlr.GoParser.PackageClauseContext;
+import it.unive.golisa.antlr.GoParser.SourceFileContext;
+import it.unive.golisa.antlr.GoParser.String_Context;
+import it.unive.golisa.antlr.GoParser.TypeDeclContext;
+import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
+import it.unive.golisa.cfg.expression.binary.GoContains;
+import it.unive.golisa.cfg.expression.binary.GoHasPrefix;
+import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
+import it.unive.golisa.cfg.expression.binary.GoIndexOf;
+import it.unive.golisa.cfg.expression.ternary.GoReplace;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
@@ -28,7 +42,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.VariableRef;
+import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
 
 /**
  * @GoFrontEnd manages the translation from a Go program to the
@@ -47,6 +61,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	private final Program program;
 
+	/**
+	 * The resolution strategy for Go calling expressions.
+	 */
+	public static final ResolutionStrategy CALL_STRATEGY = ResolutionStrategy.DYNAMIC_TYPES;
 
 	/**
 	 * Builds an instance of @GoToCFG for a given Go program
@@ -107,17 +125,20 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		GoInterfaceType.lookup("EMPTY_INTERFACE", packageUnit);
 
+		for (ImportDeclContext imp : ctx.importDecl())
+			visitImportDecl(imp);
+
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
 			visitDeclarationContext(decl);
 
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
 			visitMethodDecl(decl); 
-		
+
 		// method declaration must be linked to compilation unit of a declaration context, for the function declaration is not needed
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations"))	
 			visitFunctionDecl(funcDecl);
-		
+
 
 		return program;
 	}
@@ -126,9 +147,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (decl.typeDecl() != null) 
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addCompilationUnit(unit);
-		
 	}
-	
+
 	@Override
 	public Collection<CompilationUnit> visitTypeDecl(TypeDeclContext ctx) {
 		HashSet<CompilationUnit> units = new HashSet<>();
@@ -136,22 +156,20 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			String unitName = typeSpec.IDENTIFIER().getText();
 			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
-			visitTypeSpec(typeSpec);
+			new GoTypeVisitor(filePath, unit).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
-
-
 	private int getLine(ParserRuleContext ctx) {
 		return ctx.getStart().getLine();
 	} 
 
-	
+
 	private int getCol(ParserRuleContext ctx) {
 		return ctx.getStop().getCharPositionInLine();
 	} 
 
-	
+
 	@Override
 	public String visitPackageClause(PackageClauseContext ctx) {
 		return ctx.IDENTIFIER().getText();
@@ -159,32 +177,55 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitImportDecl(ImportDeclContext ctx) {
-		// TODO: import declaration
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		for (ImportSpecContext impSpec: ctx.importSpec())
+			visitImportSpec(impSpec);
+		return null;
 	}
 
 	@Override
 	public Statement visitImportSpec(ImportSpecContext ctx) {
-		// TODO: import specification
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		return visitImportPath(ctx.importPath());
+	}
+
+	@Override
+	public String visitString_(String_Context ctx) {
+		return ctx.getText().substring(1, ctx.getText().length() -1);
 	}
 
 	@Override
 	public Statement visitImportPath(ImportPathContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		String lib = visitString_(ctx.string_());
+
+		if (lib.equals("strings")) 
+			loadGoStrings();
+		return null;
+	}
+
+	private void loadGoStrings() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		CompilationUnit str = new CompilationUnit(unknownLocation, "string", false);
+		str.addInstanceConstruct(new GoHasPrefix(unknownLocation, str));
+		str.addInstanceConstruct(new GoHasSuffix(unknownLocation, str));
+		str.addInstanceConstruct(new GoContains(unknownLocation, str));
+		str.addInstanceConstruct(new GoReplace(unknownLocation, str));
+		str.addInstanceConstruct(new GoIndexOf(unknownLocation, str));	
+
+		// We add the string methods also in package unit as non-instant cfgs
+		packageUnit.addInstanceConstruct(new GoHasPrefix(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoHasSuffix(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoContains(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoReplace(unknownLocation, str));
+		packageUnit.addInstanceConstruct(new GoIndexOf(unknownLocation, str));
 	}
 
 	@Override
-	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
-		GoFunctionVisitor visitor = new GoFunctionVisitor(ctx, packageUnit, filePath, program, source);
-
-		return visitor.visitFunctionDecl(ctx);
+	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {	
+		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, source).visitFunctionDecl(ctx);
 	}
-	
 
-	public CFG visitMethodDeclaration(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath,program, source).visitCodeMember(ctx);
+	@Override
+	public CFG visitMethodDecl(MethodDeclContext ctx) {
+		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, source).visitCodeMember(ctx);
 	}
 
 }

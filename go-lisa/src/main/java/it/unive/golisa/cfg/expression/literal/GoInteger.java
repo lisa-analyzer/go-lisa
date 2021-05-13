@@ -20,12 +20,8 @@ public class GoInteger extends Literal {
 	 * 
 	 * @param cfg   the cfg that this Go integer belongs to
 	 * @param value the integer value
-	 */
-	public GoInteger(CFG cfg, Integer value) {
-		this(cfg, null, -1, -1 , value);
-	}
-	
-	public GoInteger(CFG cfg, String sourceFile, int line, int col, Integer value) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), value, GoUntypedInt.INSTANCE);
+	 */	
+	public GoInteger(CFG cfg, SourceCodeLocation location, Integer value) {
+		super(cfg, location, value, GoUntypedInt.INSTANCE);
 	}
 }

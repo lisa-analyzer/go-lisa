@@ -25,19 +25,7 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoGreater extends BinaryNativeCall {
-	
-	/**
-	 * Builds a Go greater expression. 
-	 * The location where this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp1	left-hand side operand
-	 * @param exp2 	right-hand side operand 
-	 */
-	public GoGreater(CFG cfg, Expression exp1, Expression exp2) {
-		this(cfg, null, -1, -1, exp1, exp2);
-	}
+
 
 	/**
 	 * Builds a Go greater expression at a given location in the program.
@@ -52,8 +40,8 @@ public class GoGreater extends BinaryNativeCall {
 	 * @param exp1		    left-hand side operand
 	 * @param exp2		    right-hand side operand
 	 */
-	public GoGreater(CFG cfg, String sourceFile, int line, int col, Expression exp1, Expression exp2) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), ">", GoBoolType.INSTANCE,exp1, exp2);
+	public GoGreater(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		super(cfg, location, ">", GoBoolType.INSTANCE,exp1, exp2);
 	}
 
 	@Override

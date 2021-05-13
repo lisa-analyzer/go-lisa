@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import it.unive.golisa.cfg.expression.literal.GoString;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.StringType;
@@ -36,7 +37,7 @@ public class GoStringType implements StringType, GoType {
 	
 	@Override
 	public boolean equals(Object other) {
-		return other instanceof GoStringType;
+		return this == other;
 	}
 	
 	@Override
@@ -56,8 +57,8 @@ public class GoStringType implements StringType, GoType {
 	}
 	
 	@Override
-	public Expression defaultValue(CFG cfg) {
-		return new GoString(cfg, "");
+	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+		return new GoString(cfg, location, "");
 	}
 		
 	@Override

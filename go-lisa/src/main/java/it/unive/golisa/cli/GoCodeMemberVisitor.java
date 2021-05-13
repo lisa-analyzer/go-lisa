@@ -100,7 +100,7 @@ import it.unive.golisa.antlr.GoParser.UnaryExprContext;
 import it.unive.golisa.antlr.GoParser.VarDeclContext;
 import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.VariableScoopingCFG;
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
@@ -189,7 +189,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	private final Map<String, VariableRef> visibleIds;
 
-	protected VariableScoopingCFG cfg;
+	protected VariableScopingCFG cfg;
 
 	protected CFGDescriptor descriptor;
 
@@ -236,7 +236,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScoopingCFG(descriptor, entrypoints, matrix);
+		cfg = new VariableScopingCFG(descriptor, entrypoints, matrix);
 
 		visibleIds = new HashMap<>();
 
@@ -278,7 +278,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		params = ArrayUtils.insert(0, params, receiver);
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
-		VariableScoopingCFG method = new VariableScoopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
+		VariableScopingCFG method = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 		cfg = method;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
 

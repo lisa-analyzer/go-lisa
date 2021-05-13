@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.unive.golisa.cli.GoFrontEnd;
-import it.unive.golisa.cfg.VariableScoopingCFG;
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;
@@ -18,7 +18,7 @@ import it.unive.lisa.program.cfg.CFG;
 
 import org.junit.Test;
 
-public class VariableScoopingTest {
+public class VariableScopingTest {
 
 	private static CompilationUnit findUnit(Program prog, String name) {
 		CompilationUnit unit = prog.getUnits().stream().filter(u -> u.getName().equals(name)).findFirst().get();
@@ -35,7 +35,7 @@ public class VariableScoopingTest {
 
 	@Test
 	public void testSingle() throws IOException, ProgramValidationException {
-		Program prog = GoFrontEnd.processFile("go-testcases/variablescooping/scooping.go");
+		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
 		prog.validateAndFinalize();
 		// we just check that no exception is thrown
 	}
@@ -43,16 +43,16 @@ public class VariableScoopingTest {
 	
 	@Test
 	public void testForLoopVariableScooping() throws IOException, ProgramValidationException  {
-		assertTrue((new File("go-testcases/variablescooping/scooping.go")).exists());
-		Program prog = GoFrontEnd.processFile("go-testcases/variablescooping/scooping.go");
+		assertTrue((new File("go-testcases/variablescoping/scoping.go")).exists());
+		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
 		prog.validateAndFinalize();
 
 		CompilationUnit main = findUnit(prog, "main");
 
 		CFG test = findCFG(main, "test");
 		
-		assertTrue(test instanceof VariableScoopingCFG);
-		VariableScoopingCFG vscfg_test = (VariableScoopingCFG) test;
+		assertTrue(test instanceof VariableScopingCFG);
+		VariableScopingCFG vscfg_test = (VariableScopingCFG) test;
 		
 		Map<String, Set<String>> currentResults = new HashMap<>();
 		vscfg_test.getNodes().forEach(node -> currentResults.put(node.toString(), new HashSet<>(vscfg_test.getVisibleIds(node).keySet())));

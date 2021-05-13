@@ -5,7 +5,7 @@ import it.unive.golisa.antlr.GoParser.FunctionTypeContext;
 import it.unive.golisa.antlr.GoParser.ParametersContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
 import it.unive.golisa.antlr.GoParser.SourceFileContext;
-import it.unive.golisa.cfg.VariableScoopingCFG;
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.lisa.program.CompilationUnit;
@@ -36,7 +36,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 		
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScoopingCFG(descriptor, entrypoints, matrix);
+		cfg = new VariableScopingCFG(descriptor, entrypoints, matrix);
 		initializeVisibleIds();
 		
 		packageUnit.addCFG(cfg);

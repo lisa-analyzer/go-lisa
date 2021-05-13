@@ -17,7 +17,7 @@ import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class VariableScoopingCFG extends CFG {
+public class VariableScopingCFG extends CFG {
 
 	/**
 	 * The mapping between the statements and the IDs visible in those statements
@@ -33,7 +33,7 @@ public class VariableScoopingCFG extends CFG {
 	 * @param adjacencyMatrix the matrix containing all the statements and the
 	 *                            edges that will be part of this cfg
 	 */
-	public VariableScoopingCFG(CFGDescriptor descriptor, Collection<Statement> entrypoints,
+	public VariableScopingCFG(CFGDescriptor descriptor, Collection<Statement> entrypoints,
 			AdjacencyMatrix<Statement, Edge, CFG> adjacencyMatrix) {
 		super(descriptor, entrypoints, adjacencyMatrix);
 		scoopingMap = new HashMap<>();
@@ -44,7 +44,7 @@ public class VariableScoopingCFG extends CFG {
 	 * 
 	 * @param descriptor the descriptor of this cfg
 	 */
-	public VariableScoopingCFG(CFGDescriptor descriptor) {
+	public VariableScopingCFG(CFGDescriptor descriptor) {
 		super(descriptor);
 		scoopingMap = new HashMap<>();
 	}

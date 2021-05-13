@@ -70,24 +70,18 @@ public class GoKeyedLiteral extends NativeCall {
 				AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), hid, lenProperty);
 				AnalysisState<A, H, V> lenState = containerState.smallStepSemantics(lenAccess, this);
 
-				AnalysisState<A, H, V> lenResult = null;
+				AnalysisState<A, H, V> lenResult = entryState.bottom();
 				for (SymbolicExpression lenId : lenState.getComputedExpressions())
-					if (lenResult == null)
-						lenResult = lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this);
-					else
-						lenResult = lenResult.lub(lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+					lenResult = lenResult.lub(lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
 				// Assign the cap property to this hid
 				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap");
 				AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), hid, capProperty);
 				AnalysisState<A, H, V> capState = lenResult.smallStepSemantics(capAccess, this);
 
-				AnalysisState<A, H, V> capResult = null;
+				AnalysisState<A, H, V> capResult = entryState.bottom();
 				for (SymbolicExpression lenId : capState.getComputedExpressions())
-					if (capResult == null)
-						capResult = capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this);
-					else
-						capResult = capResult.lub(capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+					capResult = capResult.lub(capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
 				if (getParameters().length == 0)
 					return capResult.smallStepSemantics(created, this);

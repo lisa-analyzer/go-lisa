@@ -11,6 +11,16 @@ func test(b int) {
 		c:= a
 		c = c + b
 		a =  a + b
+		if(a == i) {
+			d := 9
+			for j := 2; j < 4; j++ {
+				d = d + j
+			}
+			a = d + 4
+		} else {
+			e := 8
+			b = e + 3
+		}
 	}
 	
 	a = b + 2

@@ -76,6 +76,15 @@ public class VariableScoopingTest {
 		expectedResult.put("c := a", Set.of("a", "b", "sum", "i", "c"));
 		expectedResult.put("c = +(c, b)", Set.of("a", "b", "sum", "i", "c"));
 		expectedResult.put("a = +(a, b)", Set.of("a", "b", "sum", "i", "c"));
+		expectedResult.put("==(a, i)", Set.of("a", "b", "sum", "i", "c"));
+		expectedResult.put("d := 9", Set.of("a", "b", "sum", "i", "c", "d"));
+		expectedResult.put("j := 2", Set.of("a", "b", "sum", "i", "c", "d", "j"));
+		expectedResult.put("<(j, 4)", Set.of("a", "b", "sum", "i", "c", "d", "j"));
+		expectedResult.put("j = +(j, 1)", Set.of("a", "b", "sum", "i", "c", "d", "j"));
+		expectedResult.put("d = +(d, j)", Set.of("a", "b", "sum", "i", "c", "d", "j"));
+		expectedResult.put("a = +(d, 4)", Set.of("a", "b", "sum", "i", "c", "d"));
+		expectedResult.put("e := 8", Set.of("a", "b", "sum", "i", "c", "e"));
+		expectedResult.put("b = +(e, 3)", Set.of("a", "b", "sum", "i", "c", "e"));
 		expectedResult.put("a = +(b, 2)", Set.of("a", "b", "sum"));
 		
 		

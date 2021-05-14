@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -126,4 +127,13 @@ public class Pentagons implements ValueDomain<Pentagons> {
 		return new Pentagons(new ValueEnvironment<Interval>(new Interval(), newFunc), right);
 	}
 
+	@Override
+	public Pentagons pushScope(ScopeToken token) throws SemanticException {
+		return new Pentagons(left.pushScope(token), right.pushScope(token));
+	}
+
+	@Override
+	public Pentagons popScope(ScopeToken token) throws SemanticException {
+		return new Pentagons(left.popScope(token), right.popScope(token));
+	}
 }

@@ -2,6 +2,7 @@ package it.unive.golisa.analysis.rsubs;
 
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -325,5 +326,15 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	@Override
 	public String toString() {
 		return representation().toString();
+	}
+
+	@Override
+	public RSubs pushScope(ScopeToken token) throws SemanticException {
+		return new RSubs(string.pushScope(token), num.pushScope(token));
+	}
+
+	@Override
+	public RSubs popScope(ScopeToken token) throws SemanticException {
+		return new RSubs(string.popScope(token), num.popScope(token));
 	}
 }

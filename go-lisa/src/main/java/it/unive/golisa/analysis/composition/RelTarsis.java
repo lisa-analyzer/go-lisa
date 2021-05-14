@@ -4,6 +4,7 @@ import it.unive.golisa.analysis.rsubs.RelationalSubstringDomain;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -137,5 +138,17 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	@Override
 	public String toString() {
 		return representation().toString();
+	}
+
+	@Override
+	public RelTarsis pushScope(ScopeToken token) throws SemanticException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RelTarsis popScope(ScopeToken token) throws SemanticException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -26,7 +26,6 @@ import it.unive.lisa.type.Untyped;
  */
 class GoFunctionVisitor extends GoCodeMemberVisitor {
 
-	
 	//side-effect su packageUnit
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program) {
 		super(file, program);
@@ -46,6 +45,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Pair<Statement, Statement> result = visitBlock(ctx.block());	
 		cfg.getEntrypoints().add(result.getLeft());
 		cfg.simplify();
+		
+		if (cfg.getDescriptor().getName().equals("main"))
+			program.addEntryPoint(cfg);
 		
 		return result;
 	}

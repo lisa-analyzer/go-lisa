@@ -15,11 +15,12 @@ import it.unive.golisa.cli.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.imp.IMPFrontend;
+import it.unive.lisa.imp.ParsingException;
 import it.unive.lisa.outputs.JsonReport;
 import it.unive.lisa.program.Program;
 
-public abstract class AnalysisTest {
+public abstract class GoAnalysisTestExecutor {
 
 	protected static final String EXPECTED_RESULTS_DIR = "go-testcases";
 	protected static final String ACTUAL_RESULTS_DIR = "go-outputs";
@@ -39,21 +40,60 @@ public abstract class AnalysisTest {
 	 * <li>The external files mentioned in the reports are different</li>
 	 * </ul>
 	 * 
-	 * @param folder     the name of the sub-folder; this is used for searching
-	 *                       expected results and as a working directory for
-	 *                       executing tests in the test execution folder
-	 * @param source     the name of the imp source file to be searched in the
-	 *                       given folder
-	 * @param inferTypes whether or not type inference should be run
-	 * @param dumpTypes  whether or not inferred type information should be
-	 *                       dumped
-	 * @param state      the abstract state for the analysis; if {@code null},
-	 *                       no analysis is executed, otherwise the results are
-	 *                       also dumped
+	 * @param folder        the name of the sub-folder; this is used for
+	 *                          searching expected results and as a working
+	 *                          directory for executing tests in the test
+	 *                          execution folder
+	 * @param source        the name of the imp source file to be searched in
+	 *                          the given folder
+	 * @param configuration the configuration of the analysis to run (note that
+	 *                          the workdir present into the configuration will
+	 *                          be ignored, as it will be overwritten by the
+	 *                          computed workdir)
 	 */
-	protected void perform(String folder, String source, boolean inferTypes, boolean dumpTypes, boolean dumpCFGs,
-			AbstractState<?, ?, ?> state) {
+	protected void perform(String folder, String source, LiSAConfiguration configuration) {
 		System.out.println("Testing " + getCaller());
+		performAux(folder, null, source, configuration);
+	}
+
+	/**
+	 * Performs a test, running an analysis. The test will fail if:
+	 * <ul>
+	 * <li>The imp file cannot be parsed (i.e. a {@link ParsingException} is
+	 * thrown)</li>
+	 * <li>The previous working directory using for the test execution cannot be
+	 * deleted</li>
+	 * <li>The analysis run terminates with an {@link AnalysisException}</li>
+	 * <li>One of the json reports (either the one generated during the test
+	 * execution or the one used as baseline) cannot be found or cannot be
+	 * opened</li>
+	 * <li>The two json reports are different</li>
+	 * <li>The external files mentioned in the reports are different</li>
+	 * </ul>
+	 * 
+	 * @param folder        the name of the sub-folder; this is used for
+	 *                          searching expected results and as a working
+	 *                          directory for executing tests in the test
+	 *                          execution folder
+	 * @param source        the name of the imp source file to be searched in
+	 *                          {@code folder}
+	 * @param subfolder     an additional folder that is appended to
+	 *                          {@code folder} both when computing the working
+	 *                          directory and when searching for the expected
+	 *                          results, but <b>not</b> for searching the source
+	 *                          IMP program
+	 * @param configuration the configuration of the analysis to run (note that
+	 *                          the workdir present into the configuration will
+	 *                          be ignored, as it will be overwritten by the
+	 *                          computed workdir)
+	 */
+	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration) {
+		System.out.println("Testing " + getCaller());
+		performAux(folder, subfolder, source, configuration);
+
+	}
+
+	private void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration) {
 		Path expectedPath = Paths.get(EXPECTED_RESULTS_DIR, folder);
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, folder);
 		Path target = Paths.get(expectedPath.toString(), source);
@@ -65,15 +105,10 @@ public abstract class AnalysisTest {
 			e.printStackTrace(System.err);
 			fail("Exception while parsing '" + target + "': " + e.getMessage());
 		}
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setInferTypes(inferTypes)
-			.setDumpCFGs(dumpCFGs)
-			.setDumpTypeInference(dumpTypes)
-			.setJsonOutput(true);
 
-		if (state != null) {
-			conf.setAbstractState(state);
-			conf.setDumpAnalysis(true);
+		if (subfolder != null) {
+			expectedPath = Paths.get(expectedPath.toString(), subfolder);
+			actualPath = Paths.get(actualPath.toString(), subfolder);
 		}
 
 		File workdir = actualPath.toFile();
@@ -86,10 +121,11 @@ public abstract class AnalysisTest {
 				fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
 			}
 		}
-		
-		conf.setWorkdir(workdir.toString());
+		configuration.setWorkdir(workdir.toString());
 
-		LiSA lisa = new LiSA(conf);
+		configuration.setJsonOutput(true);
+
+		LiSA lisa = new LiSA(configuration);
 		try {
 			lisa.run(program);
 		} catch (AnalysisException e) {

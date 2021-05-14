@@ -1,41 +1,50 @@
 import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
+import it.unive.lisa.LiSAConfiguration;
 
-public class CFGTest extends AnalysisTest {
+public class CFGTest extends GoAnalysisTestExecutor {
 
+	
 	@Test
 	public void testDeclaration() throws AnalysisSetupException {
-		perform("cfg/decl", "go-decl.go", false, false, true, null);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/decl", "go-decl.go", conf);
 	}
 	
 	@Test
 	public void testIf() throws AnalysisSetupException {
-		perform("cfg/if", "go-if.go", false, false, true, null);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/if", "go-if.go", conf);
 	}
 	
 	@Test
 	public void testFor() throws AnalysisSetupException {
-		perform("cfg/for", "go-for.go", false, false, true, null);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/for", "go-for.go", conf);
 	}
 	
 	@Test
 	public void testTypes() throws AnalysisSetupException {
-		perform("cfg/types", "go-types.go", false, false, true, null);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/types", "go-types.go", conf);
 	}
 		
 	@Test
 	public void testTour() throws AnalysisSetupException {
-		perform("cfg/tour", "go-tour.go", false, false, true, null);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/tour", "go-tour.go", conf);
 	}
 	
 	@Test
 	public void testSwitch() throws AnalysisSetupException {
-		perform("cfg/switch", "go-switch.go", false, false, true, null);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/switch", "go-switch.go", conf);
 	}
 	
 	@Test
 	public void testReturn() throws AnalysisSetupException {
-		perform("cfg/return", "go-return.go", false, false, true, null);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/return", "go-return.go", conf);
 	}
 }

@@ -5,12 +5,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -22,6 +25,7 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
@@ -344,5 +348,44 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		}
 
 		return false;
+	}
+
+	@Override
+	public RelationalSubstringDomain pushScope(ScopeToken token) throws SemanticException {
+		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token));
+	}
+
+	@Override
+	public RelationalSubstringDomain popScope(ScopeToken token) throws SemanticException {
+		AtomicReference<SemanticException> holder = new AtomicReference<>();
+
+		RelationalSubstringDomain result = liftIdentifiers(id -> {
+			if (id instanceof OutOfScopeIdentifier)
+				try {
+					return (Identifier) id.popScope(token);
+				} catch (SemanticException e) {
+					holder.set(e);
+				}
+			return null;
+		});
+
+		if (holder.get() != null)
+			throw new SemanticException("Popping the scope '" + token + "' raised an error", holder.get());
+
+		return result;
+	}	
+	
+	private RelationalSubstringDomain liftIdentifiers(Function<Identifier, Identifier> lifter) throws SemanticException {
+		if (isBottom() || isTop())
+			return this;
+
+		Map<Identifier, ExpressionInverseSet<ValueExpression>> function = mkNewFunction(null);
+		for (Identifier id : getKeys()) {
+			Identifier lifted = lifter.apply(id);
+			if (lifted != null)
+				function.put(lifted, getState(id));
+		}
+
+		return new RelationalSubstringDomain(lattice, function);
 	}
 }

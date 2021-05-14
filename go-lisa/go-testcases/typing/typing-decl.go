@@ -3,17 +3,6 @@ package main
 import "fmt"
 import "strings"
 
-func strings() {
-	a := "abc"
-	b := "bcd"
-	x := Contains(a,b)
-	y := HasPrefix(a,b)
-	z := HasSuffix(a,b)
-	w := Index(a,b)
-	j := Replace(a,b,b)
-}
-
-
 func simpleTyping() {
 	var a int = 1 + 1
 	var b float32 = 2 + 2

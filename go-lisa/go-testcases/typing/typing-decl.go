@@ -37,3 +37,10 @@ func relTyping() {
 	d := 2.2
 	e := c < 2.3
 }
+
+func arrayTyping() {
+	v1 := [3]int{1,2,3}
+	v2 := [5]int{1,2,3,4,5}
+	x := v1[0]
+	y := v2[1]
+}

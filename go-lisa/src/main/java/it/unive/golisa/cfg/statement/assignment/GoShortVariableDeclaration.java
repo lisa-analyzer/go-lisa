@@ -14,10 +14,10 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -25,7 +25,7 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class GoShortVariableDeclaration extends BinaryExpression {
+public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
 	 * Builds a Go variable declaration with initialization,
@@ -80,24 +80,7 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression leftExp : left.getComputedExpressions()) 
 			for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-				AnalysisState<A, H, V> tmp = null;
-				if (rightExp.getDynamicType() instanceof GoUntypedInt) {
-					ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-					Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE);
-					it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
-							new it.unive.lisa.symbolic.value.BinaryExpression(intType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
-
-					tmp = right.assign((Identifier) leftExp, rightConverted, this);
-				} else if (rightExp.getDynamicType() instanceof GoUntypedFloat) {
-					ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
-					Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE);
-					it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
-							new it.unive.lisa.symbolic.value.BinaryExpression(floatType, rightExp, typeCast, BinaryOperator.TYPE_CONV);
-
-					tmp = right.assign((Identifier) leftExp, rightConverted, this);
-				} else 
-					tmp = right.assign((Identifier) leftExp, rightExp, this);
-
+				AnalysisState<A, H, V> tmp = right.assign((Identifier) leftExp, NumericalTyper.type(rightExp), this);
 				result = result.lub(tmp);
 			}
 
@@ -106,5 +89,22 @@ public class GoShortVariableDeclaration extends BinaryExpression {
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 		return result;
+	}
+	
+	public static class NumericalTyper {
+		
+		public static SymbolicExpression type(SymbolicExpression exp) {
+			if (exp.getDynamicType() instanceof GoUntypedInt) {
+				ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
+				Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE);
+				return new BinaryExpression(intType, exp, typeCast, BinaryOperator.TYPE_CONV);
+
+			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
+				ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
+				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE);
+				return new BinaryExpression(floatType, exp, typeCast, BinaryOperator.TYPE_CONV);
+			} else 
+				return exp;
+		}
 	}
 }

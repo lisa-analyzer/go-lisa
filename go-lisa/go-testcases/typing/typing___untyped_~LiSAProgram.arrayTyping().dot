@@ -1,0 +1,16 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<v1 := nonKeyedLit([3]int)(1, 2, 3)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ heap[w]:heap: [int]<BR/>v1: [[3]int]<BR/>[inferred: [[3]int], state: _|_] ]]<BR/>}} -&gt; [v1]>];
+	"node1" [shape="rect",color="gray",label=<x := v1::0(v1, 0)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ heap[w]:heap: [int]<BR/>v1: [[3]int]<BR/>v2: [[5]int]<BR/>x: [int]<BR/>[inferred: [int], state: _|_] ]]<BR/>}} -&gt; [x]>];
+	"node2" [shape="rect",color="gray",label=<y := v2::1(v2, 1)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ heap[w]:heap: [int]<BR/>v1: [[3]int]<BR/>v2: [[5]int]<BR/>x: [int]<BR/>y: [int]<BR/>[inferred: [int], state: _|_] ]]<BR/>}} -&gt; [y]>];
+	"node3" [shape="rect",color="gray",label=<v2 := nonKeyedLit([5]int)(1, 2, 3, 4, 5)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ heap[w]:heap: [int]<BR/>v1: [[3]int]<BR/>v2: [[5]int]<BR/>[inferred: [[5]int], state: _|_] ]]<BR/>}} -&gt; [v2]>];
+	"node1" -> "node2" [color="black"];
+	"node0" -> "node3" [color="black"];
+	"node3" -> "node1" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

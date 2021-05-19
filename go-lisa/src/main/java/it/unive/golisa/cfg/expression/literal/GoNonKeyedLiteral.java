@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.literal;
 
+import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
@@ -21,6 +22,7 @@ import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
+import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -128,15 +130,15 @@ public class GoNonKeyedLiteral extends NativeCall {
 					AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
 
 					for (SymbolicExpression index : accessState.getComputedExpressions())
-						for (SymbolicExpression v : params[i])
-							tmp = tmp.assign((Identifier) index, v, this);
-
+						for (SymbolicExpression v : params[i]) 
+							tmp = tmp.assign((Identifier) index, NumericalTyper.type(v), this);
 				}
 
-				result = result.lub(tmp.smallStepSemantics(hid, this));
+				HeapReference ref = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), hid);
+				result = result.lub(tmp.smallStepSemantics(ref, this));
 			}
 
-			return result.smallStepSemantics(created, this);
+			return result;
 		}
 
 		// TODO: to handle the other cases (maps, array...)

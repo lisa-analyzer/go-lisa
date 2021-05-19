@@ -10,10 +10,10 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
@@ -26,7 +26,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoVariableDeclaration extends BinaryExpression {
+public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	private final Type type;
 
@@ -69,8 +69,7 @@ public class GoVariableDeclaration extends BinaryExpression {
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
 			Constant typeCast = new Constant(new TypeTokenType(idType), type);
-			it.unive.lisa.symbolic.value.BinaryExpression rightConverted = 
-					new it.unive.lisa.symbolic.value.BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV);				
+			BinaryExpression rightConverted = new BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV);				
 
 			AnalysisState<A, H, V> tmp = right.assign(id, rightConverted, this);
 			result = result.lub(tmp);

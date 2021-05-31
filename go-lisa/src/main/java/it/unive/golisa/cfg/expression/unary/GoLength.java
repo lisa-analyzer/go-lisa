@@ -15,6 +15,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
+import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.value.PointerIdentifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.Variable;
@@ -37,9 +39,24 @@ public class GoLength extends UnaryNativeCall {
 
 		if (expr.getDynamicType().isArrayType() || expr.getDynamicType() instanceof GoSliceType) {
 			// When expr is an array or a slice, we access the len property
+			AnalysisState<A, H, V> rec = entryState.smallStepSemantics(expr, this);
+			AnalysisState<A, H, V> result = entryState.bottom();
 			ExternalSet<Type> untypedType = Caches.types().mkSingletonSet(Untyped.INSTANCE);
-			AccessChild access = new AccessChild(intType, expr, new Variable(untypedType, "len"));
-			return exprState.smallStepSemantics(access, this);
+
+			for (SymbolicExpression recExpr : rec.getComputedExpressions()) {	
+				HeapDereference deref = new HeapDereference(getRuntimeTypes(), recExpr);
+				AnalysisState<A, H, V> refState = entryState.smallStepSemantics(deref, this);
+
+				for (SymbolicExpression l : refState.getComputedExpressions()) {
+					if (!(l instanceof PointerIdentifier))
+						continue;
+
+					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), (PointerIdentifier) l, new Variable(untypedType, "len")), this);
+					result = result.lub(tmp);
+				}
+
+			}
+			return result;
 		}
 				
 		if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())

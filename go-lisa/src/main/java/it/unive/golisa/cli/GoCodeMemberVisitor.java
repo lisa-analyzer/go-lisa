@@ -161,7 +161,7 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
-import it.unive.lisa.program.cfg.statement.AccessUnitGlobal;
+import it.unive.lisa.program.cfg.statement.AccessInstance;
 import it.unive.lisa.program.cfg.statement.Assignment;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
@@ -1231,7 +1231,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				if (primary instanceof VariableRef) // Function call
 					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, primary.toString(), visitArguments(ctx.arguments()));				
-				else if (primary instanceof AccessUnitGlobal) {
+				else if (primary instanceof AccessInstance) {
 					Expression receiver = getReceiver(ctx.primaryExpr());
 					if (receiver instanceof VariableRef) {
 						VariableRef x = (VariableRef) receiver;
@@ -1254,7 +1254,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			// Field access x.f
 			else if (ctx.IDENTIFIER() != null) {
 				Global index = new Global(locationOf(ctx.IDENTIFIER()), ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
-				return new AccessUnitGlobal(cfg, locationOf(ctx), primary, index);
+				return new AccessInstance(cfg, locationOf(ctx), primary, index);
 			}
 
 			// Simple slice expression a[l:h]

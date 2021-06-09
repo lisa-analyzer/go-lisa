@@ -335,9 +335,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.identifierList() == null)
 			result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
 		else 
-			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) 
-				result = ArrayUtils.addAll(result, new Parameter(locationOf(ctx.identifierList().IDENTIFIER(i)), ctx.identifierList().IDENTIFIER(i).getText(), type));
-
+			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) {
+				TerminalNode par = ctx.identifierList().IDENTIFIER(i);
+				result = ArrayUtils.addAll(result, new Parameter(locationOf(par), par.getText(), type));
+			}
 		return result;
 	}
 
@@ -806,7 +807,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			int col = getCol(ctx);
 
 			VariableRef[] left = visitIdentifierList(ctx.identifierList());
-			
+
 			for (int i = 0; i < left.length; i++)
 				if (visibleIds.containsKey(left[i].getName())) 
 					throw new GoSyntaxException(
@@ -814,7 +815,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else
 					visibleIds.put(left[i].getName(), left[i]);
 
-			
+
 			Expression right = visitExpression(exps.expression(0));
 
 			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left, right);
@@ -869,21 +870,35 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitReturnStmt(ReturnStmtContext ctx) {		
 		SourceCodeLocation location = locationOf(ctx);
 
-		if (ctx.expressionList() != null) {
+		ExpressionListContext expressionList = ctx.expressionList();
+		if (expressionList != null) {
 			GoReturn ret;
-			if (ctx.expressionList().expression().size() == 1) 
-				ret =  new GoReturn(cfg, location, visitExpression(ctx.expressionList().expression(0)));
+			if (expressionList.expression().size() == 1) 
+				ret =  new GoReturn(cfg, location, visitExpression(expressionList.expression(0)));
 			else {
-				GoExpressionsTuple tupleExp = new GoExpressionsTuple(cfg, location, visitExpressionList(ctx.expressionList()));
+				GoExpressionsTuple tupleExp = new GoExpressionsTuple(cfg, location, visitExpressionList(expressionList));
 				ret =  new GoReturn(cfg, location, tupleExp);
 			}
 			cfg.addNode(ret, visibleIds);
 			return Pair.of(ret, ret);
 		} else {
-			// TODO: we should check if cfg specifies the return values
+			Type returnType = cfg.getDescriptor().getReturnType();
+			if (returnType instanceof GoTypesTuple) {
+				GoTypesTuple tuple = (GoTypesTuple) returnType;
+
+				if (tuple.isNamedValues()) {
+					Expression[] result = new Expression[tuple.size()];
+					for (int i = 0; i < tuple.size(); i++) 
+						result[i] = new VariableRef(cfg, location, tuple.get(i).getName());
+
+					GoReturn ret = new GoReturn(cfg, location, new GoExpressionsTuple(cfg, location, result));
+					cfg.addNode(ret, visibleIds);
+					return Pair.of(ret, ret);
+				}
+			} 
+			
 			Ret ret = new Ret(cfg, location);
 			cfg.addNode(ret, visibleIds);
-
 			return Pair.of(ret, ret);
 		}
 	}

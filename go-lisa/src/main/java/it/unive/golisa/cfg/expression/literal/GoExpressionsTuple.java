@@ -34,6 +34,7 @@ public class GoExpressionsTuple extends NativeCall {
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
 			AnalysisState<A, H, V>[] computedStates, ExpressionSet<SymbolicExpression>[] params)
 					throws SemanticException {
+		AnalysisState<A, H, V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
 
 		// Length of the expression tuple
 		int len = getParameters().length;						
@@ -46,7 +47,6 @@ public class GoExpressionsTuple extends NativeCall {
 		
 		GoTypesTuple tupleType = new GoTypesTuple(types);
 		
-		AnalysisState<A, H, V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(tupleType));
 
 		// Allocates the new heap allocation 

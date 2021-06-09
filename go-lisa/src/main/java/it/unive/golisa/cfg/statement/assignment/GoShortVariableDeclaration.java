@@ -14,6 +14,7 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -25,20 +26,6 @@ import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
-
-	/**
-	 * Builds a Go variable declaration with initialization,
-	 * assigning {@code expression} to {@code var} 
-	 * without make explicit the location (i.e. no source
-	 * file/line/column is available).
-	 * 
-	 * @param cfg        the cfg that this declaration belongs to
-	 * @param var     the declared variable
-	 * @param expression the expression to assign to {@code var}
-	 */
-	public GoShortVariableDeclaration(CFG cfg, VariableRef var, Expression expression) {
-		super(cfg, var, expression);
-	}
 
 	/**
 	 * Builds a Go variable declaration with initialization,
@@ -57,6 +44,10 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 	 */
 	public GoShortVariableDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef var, Expression expression) {
 		super(cfg, new SourceCodeLocation(sourceFile, line, col), var, expression);
+	}
+	
+	public GoShortVariableDeclaration(CFG cfg, CodeLocation location, VariableRef var, Expression expression) {
+		super(cfg, location, var, expression);
 	}
 
 	@Override

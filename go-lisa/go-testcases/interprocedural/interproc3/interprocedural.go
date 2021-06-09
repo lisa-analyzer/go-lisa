@@ -1,14 +1,21 @@
 package main
 
-func f1() (int,string) {
+func f1() (int, string) {
 	return 1, "hello"
 }
 
-func f2() (int,int) {
+func f2() (int, int) {
 	return 2, 3
+}
+
+func f3() (x int, y int) {
+	x = 4
+	y = 5
+	return
 }
 
 func main() {
 	a, b := f1()	
 	c, d := f2()
+	e, f := f3()
 }

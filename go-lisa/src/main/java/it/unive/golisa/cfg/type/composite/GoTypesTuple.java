@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -67,8 +68,12 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		// TODO Auto-generated method stub
-		return null;
+		Expression[] exps = new Expression[size()];
+		
+		for (int i = 0; i < size(); i++)
+			exps[i] = ((GoType) get(i).getStaticType()).defaultValue(cfg, location);
+		
+		return new GoExpressionsTuple(cfg, location, exps);
 	}
 
 	@Override

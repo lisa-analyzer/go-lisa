@@ -13,7 +13,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.symbolic.value.PointerIdentifier;
 
 public class GoCollectionAccess extends BinaryNativeCall {
 
@@ -30,18 +29,10 @@ public class GoCollectionAccess extends BinaryNativeCall {
 		AnalysisState<A, H, V> rec = entryState.smallStepSemantics(left, this);
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression expr : rec.getComputedExpressions()) {	
-			HeapDereference deref = new HeapDereference(getRuntimeTypes(), expr);
-			AnalysisState<A, H, V> refState = entryState.smallStepSemantics(deref, this);
-
-			for (SymbolicExpression l : refState.getComputedExpressions()) {
-				if (!(l instanceof PointerIdentifier))
-					continue;
-
-				AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), (PointerIdentifier) l, right), this);
-				result = result.lub(tmp);
-			}
-
+			AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), new HeapDereference(getRuntimeTypes(), expr), right), this);
+			result = result.lub(tmp);
 		}
+
 		return result;
 	}
 }

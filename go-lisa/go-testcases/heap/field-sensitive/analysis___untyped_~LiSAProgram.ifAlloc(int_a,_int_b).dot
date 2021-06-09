@@ -2,9 +2,6 @@ digraph {
 	"node0" [shape="rect",color="black",label=<==(a, b)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ a: #TOP#<BR/>b: #TOP# ]]<BR/>}} -&gt; [a == b]>];
 	"node1" [shape="rect",color="gray",label=<x := nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':30:17] ]]<BR/>value [[ a: #TOP#<BR/>b: #TOP#<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':30:17[X]: [3, 3]<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':30:17[Y]: [4, 4] ]]<BR/>}} -&gt; [x]>];
 	"node2" [shape="rect",color="gray",label=<x := nonKeyedLit(Vertex)(1, 2)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':28:17] ]]<BR/>value [[ a: #TOP#<BR/>b: #TOP#<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':28:17[X]: [1, 1]<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':28:17[Y]: [2, 2] ]]<BR/>}} -&gt; [x]>];
-	"node3" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ [] ]]<BR/>value [[ a: #TOP#<BR/>b: #TOP#<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':28:17[X]: [1, 1]<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':28:17[Y]: [2, 2]<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':30:17[X]: [3, 3]<BR/>heap[s]:pp@'go-testcases/heap/field-sensitive/go-structs.go':30:17[Y]: [4, 4] ]]<BR/>}} -&gt; [skip]>];
-	"node1" -> "node3" [color="black"];
-	"node2" -> "node3" [color="black"];
 	"node0" -> "node1" [color="red",style="dashed"];
 	"node0" -> "node2" [color="blue",style="dashed"];
 subgraph cluster_legend {

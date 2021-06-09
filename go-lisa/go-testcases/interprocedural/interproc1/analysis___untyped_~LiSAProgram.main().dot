@@ -1,9 +1,7 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<v1 := keyedLiteral([3]int)()<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/array.go':5:14] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/array.go':5:14: [3, 3] ]]<BR/>}} -&gt; [v1]>];
-	"node1" [shape="rect",color="gray",label=<v1::0(v1, 0) = 0<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/array.go':5:14] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/array.go':5:14: [0, 3] ]]<BR/>}} -&gt; [heap[w]:pp@'go-testcases/collections/array/array.go':5:14]>];
-	"node2" [shape="rect",color="gray",label=<v1::1(v1, 1) = 1<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/array.go':5:14] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/array.go':5:14: [0, 3] ]]<BR/>}} -&gt; [heap[w]:pp@'go-testcases/collections/array/array.go':5:14]>];
+	"node0" [shape="rect",color="black",label=<x := [unresolved]f(1, 2, 3)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/interprocedural/interproc1/interprocedural.go':5:18] ]]<BR/>value [[ heap[w]:pp@'go-testcases/interprocedural/interproc1/interprocedural.go':5:18: [1, 3] ]]<BR/>}} -&gt; [x]>];
+	"node1" [shape="rect",color="gray",label=<y := [unresolved]f(4, 5, 6)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/interprocedural/interproc1/interprocedural.go':5:18] ]]<BR/>value [[ heap[w]:pp@'go-testcases/interprocedural/interproc1/interprocedural.go':5:18: [1, 6] ]]<BR/>}} -&gt; [y]>];
 	"node0" -> "node1" [color="black"];
-	"node1" -> "node2" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

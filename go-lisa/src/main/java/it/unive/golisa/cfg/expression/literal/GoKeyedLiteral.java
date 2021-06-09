@@ -23,9 +23,6 @@ import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.HeapLocation;
-import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.PointerIdentifier;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Untyped;
 
@@ -59,42 +56,30 @@ public class GoKeyedLiteral extends NativeCall {
 			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				if (!(containerExp instanceof HeapLocation))
-					continue;
-
-				HeapLocation location = (HeapLocation) containerExp;
-				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), location);
+				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp);
 				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference);
-				AnalysisState<A, H, V> derefState = containerState.smallStepSemantics(dereference, this);
-				
-				for (SymbolicExpression containerPointer : derefState.getComputedExpressions()) {
-					if (!(containerPointer instanceof PointerIdentifier))
-						continue;
 
-					PointerIdentifier pid = (PointerIdentifier) containerPointer;
+				// Assign the len property to this hid
+				Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len");
+				AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference, lenProperty);
+				AnalysisState<A, H, V> lenState = containerState.smallStepSemantics(lenAccess, this);
 
-					// Assign the len property to this hid
-					Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len");
-					AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), pid, lenProperty);
-					AnalysisState<A, H, V> lenState = containerState.smallStepSemantics(lenAccess, this);
+				AnalysisState<A, H, V> lenResult = entryState.bottom();
+				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+					lenResult = lenResult.lub(lenState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
-					AnalysisState<A, H, V> lenResult = entryState.bottom();
-					for (SymbolicExpression lenId : lenState.getComputedExpressions())
-						lenResult = lenResult.lub(lenState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+				// Assign the cap property to this hid
+				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap");
+				AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference, capProperty);
+				AnalysisState<A, H, V> capState = lenResult.smallStepSemantics(capAccess, this);
 
-					// Assign the cap property to this hid
-					Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap");
-					AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), pid, capProperty);
-					AnalysisState<A, H, V> capState = lenResult.smallStepSemantics(capAccess, this);
+				AnalysisState<A, H, V> capResult = entryState.bottom();
+				for (SymbolicExpression lenId : capState.getComputedExpressions())
+					capResult = capResult.lub(capState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
 
-					AnalysisState<A, H, V> capResult = entryState.bottom();
-					for (SymbolicExpression lenId : capState.getComputedExpressions())
-						capResult = capResult.lub(capState.assign((Identifier) lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+				if (getParameters().length == 0)
+					return capResult.smallStepSemantics(reference, this);
 
-					if (getParameters().length == 0)
-						return capResult.smallStepSemantics(new HeapReference(Caches.types().mkSingletonSet(getStaticType()), location), this);
-
-				}
 			}
 		}
 

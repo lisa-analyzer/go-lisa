@@ -20,7 +20,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
@@ -80,7 +79,7 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression leftExp : left.getComputedExpressions()) 
 			for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-				AnalysisState<A, H, V> tmp = right.assign((Identifier) leftExp, NumericalTyper.type(rightExp), this);
+				AnalysisState<A, H, V> tmp = right.assign(leftExp, NumericalTyper.type(rightExp), this);
 				result = result.lub(tmp);
 			}
 

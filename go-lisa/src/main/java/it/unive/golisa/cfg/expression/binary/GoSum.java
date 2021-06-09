@@ -24,7 +24,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperation {
-	
+
 	public GoSum(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "+", exp1, exp2);
 	}
@@ -33,37 +33,24 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
+					throws SemanticException {
 		BinaryOperator op;
 		ExternalSet<Type> types;
-		
-		Type leftType = leftExp.getDynamicType();
-		Type rightType = rightExp.getDynamicType();
-		
-		if (leftType.isStringType() || rightType.isStringType()) {
-			op = BinaryOperator.STRING_CONCAT;
-			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
-		} else if (leftType.isNumericType() || rightType.isNumericType()) {
-			op = BinaryOperator.NUMERIC_ADD;
-			types = resultType(leftExp, rightExp);
-		} else {
-			// Rewrite as string concatenation symbolic expression
-			op = BinaryOperator.STRING_CONCAT;
-			types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
-			AnalysisState<A, H, V> stringConcat = rightState
-					.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this);
-			// Rewrite as numeric add symbolic expression
-			op = BinaryOperator.NUMERIC_ADD;
-			types = resultType(leftExp, rightExp);
-			AnalysisState<A, H, V> numericAdd = rightState
-					.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this);
-			
-			// Least upper bound of the two results
-			return stringConcat.lub(numericAdd);
-		}
-		
-		return rightState
-				.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this);
+				
+		AnalysisState<A, H, V> result = entryState.bottom();
+		for (Type leftType : leftExp.getTypes())
+			for (Type rightType : rightExp.getTypes()) {
+				if (leftType.isStringType() && rightType.isStringType()) {
+					op = BinaryOperator.STRING_CONCAT;
+					types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
+				} else if (leftType.isNumericType() || rightType.isNumericType()) {
+					op = BinaryOperator.NUMERIC_ADD;
+					types = resultType(leftExp, rightExp);
+				} else
+					continue;
+				result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this));
+			}	
+
+		return result;
 	}
-	
 }

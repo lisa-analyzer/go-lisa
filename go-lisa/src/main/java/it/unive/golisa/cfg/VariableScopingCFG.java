@@ -22,7 +22,7 @@ public class VariableScopingCFG extends CFG {
 	/**
 	 * The mapping between the statements and the IDs visible in those statements
 	 */
-	private final Map<Statement, Map<String, VariableRef>> scoopingMap;
+	private final Map<Statement, Map<String, VariableRef>> scopingMap;
 	
 	/**
 	 * Builds the control flow graph.
@@ -36,7 +36,7 @@ public class VariableScopingCFG extends CFG {
 	public VariableScopingCFG(CFGDescriptor descriptor, Collection<Statement> entrypoints,
 			AdjacencyMatrix<Statement, Edge, CFG> adjacencyMatrix) {
 		super(descriptor, entrypoints, adjacencyMatrix);
-		scoopingMap = new HashMap<>();
+		scopingMap = new HashMap<>();
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public class VariableScopingCFG extends CFG {
 	 */
 	public VariableScopingCFG(CFGDescriptor descriptor) {
 		super(descriptor);
-		scoopingMap = new HashMap<>();
+		scopingMap = new HashMap<>();
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class VariableScopingCFG extends CFG {
 	 * @param visibleIds the IDs visible to collect
 	 */
 	public void addNode(Statement node, Map<String, VariableRef> visibleIds) {
-		scoopingMap.put(node, new HashMap<>(visibleIds));
+		scopingMap.put(node, new HashMap<>(visibleIds));
 		super.addNode(node);
 	}
 
@@ -70,6 +70,6 @@ public class VariableScopingCFG extends CFG {
 	 * @return the visible IDs  
 	 */
 	public Map<String, VariableRef> getVisibleIds(Statement node){
-		return scoopingMap.get(node);
+		return scopingMap.get(node);
 	}
 }

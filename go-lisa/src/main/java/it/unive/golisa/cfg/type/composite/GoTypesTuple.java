@@ -12,6 +12,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 
@@ -33,6 +34,10 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 			this.add(pars[i]);
 	}
 
+	public Type getTypeAt(int i) {
+		return this.get(i).getStaticType();
+	}
+	
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		if (other instanceof GoTypesTuple) {
@@ -52,8 +57,12 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		if (other instanceof GoTypesTuple) {
+			GoTypesTuple that = (GoTypesTuple) other;			
+			return this.canBeAssignedTo(that) ? this : that.canBeAssignedTo(this) ? that : Untyped.INSTANCE;
+		}
+		
+		return Untyped.INSTANCE;
 	}
 
 	@Override
@@ -65,6 +74,11 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
+	}
+	
+	@Override
+	public boolean isPointerType() {
+		return true;
 	}
 
 	@Override

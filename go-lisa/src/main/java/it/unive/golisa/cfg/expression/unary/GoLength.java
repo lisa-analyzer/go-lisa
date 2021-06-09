@@ -16,7 +16,7 @@ import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.symbolic.value.PointerIdentifier;
+import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.Variable;
@@ -48,10 +48,10 @@ public class GoLength extends UnaryNativeCall {
 				AnalysisState<A, H, V> refState = entryState.smallStepSemantics(deref, this);
 
 				for (SymbolicExpression l : refState.getComputedExpressions()) {
-					if (!(l instanceof PointerIdentifier))
+					if (!(l instanceof MemoryPointer))
 						continue;
 
-					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), (PointerIdentifier) l, new Variable(untypedType, "len")), this);
+					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), (MemoryPointer) l, new Variable(untypedType, "len")), this);
 					result = result.lub(tmp);
 				}
 

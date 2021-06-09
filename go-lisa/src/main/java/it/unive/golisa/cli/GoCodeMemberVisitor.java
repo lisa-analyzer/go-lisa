@@ -142,6 +142,7 @@ import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.assignment.GoConstantDeclaration;
+import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
@@ -354,8 +355,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return Untyped.INSTANCE;
 		if (ctx.type_() != null)
 			return visitType_(ctx.type_());
-		else
+		else {			
 			return new GoTypesTuple(visitParameters(ctx.parameters()));
+		}
 	}
 
 	@Override
@@ -681,32 +683,52 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Pair<Statement, Statement> visitAssignment(AssignmentContext ctx) {		
+	public Pair<Statement, Statement> visitAssignment(AssignmentContext ctx) {	
+
 		ExpressionListContext ids = ctx.expressionList(0);
 		ExpressionListContext exps = ctx.expressionList(1);
 
-		Statement lastStmt = null;
-		Statement entryNode = null;
+		// Number of identifiers to be assigned
+		int sizeIds = ids.expression().size();
+		// Number of expressions to be assigned
+		int sizeExps = exps.expression().size();
 
-		for (int i = 0; i < ids.expression().size(); i++) {
+		// Multi variable short declaration
+		if (sizeIds != sizeExps) {
+			int line = getLine(ctx);
+			int col = getCol(ctx);
 
-			int line = getLine(ids.expression(i));
-			int col = getCol(exps.expression(i));
+			Expression[] left = visitExpressionList(ids);
+			Expression right = visitExpression(exps.expression(0));
 
-			Expression lhs = visitExpression(ids.expression(i));
-			Expression exp = buildExpressionFromAssignment(new SourceCodeLocation(file, line, col), lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
-
-			Assignment asg = new Assignment(cfg, locationOf(ctx), lhs, exp);
+			GoMultiAssignment asg = new GoMultiAssignment(cfg, file, line, col, left, right);
 			cfg.addNode(asg, visibleIds);
+			return Pair.of(asg, asg);
+		} else {
 
-			if (lastStmt != null)
-				addEdge(new SequentialEdge(lastStmt, asg));
-			else
-				entryNode = asg;
-			lastStmt = asg;
+			Statement lastStmt = null;
+			Statement entryNode = null;
+
+			for (int i = 0; i < ids.expression().size(); i++) {
+
+				int line = getLine(ids.expression(i));
+				int col = getCol(exps.expression(i));
+
+				Expression lhs = visitExpression(ids.expression(i));
+				Expression exp = buildExpressionFromAssignment(new SourceCodeLocation(file, line, col), lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
+
+				Assignment asg = new Assignment(cfg, locationOf(ctx), lhs, exp);
+				cfg.addNode(asg, visibleIds);
+
+				if (lastStmt != null)
+					addEdge(new SequentialEdge(lastStmt, asg));
+				else
+					entryNode = asg;
+				lastStmt = asg;
+			}
+
+			return Pair.of(entryNode, lastStmt);
 		}
-
-		return Pair.of(entryNode, lastStmt);
 	}
 
 	private Expression buildExpressionFromAssignment(SourceCodeLocation location, Expression lhs, Assign_opContext op, Expression exp) {
@@ -784,9 +806,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			int col = getCol(ctx);
 
 			VariableRef[] left = visitIdentifierList(ctx.identifierList());
+			
+			for (int i = 0; i < left.length; i++)
+				if (visibleIds.containsKey(left[i].getName())) 
+					throw new GoSyntaxException(
+							"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
+				else
+					visibleIds.put(left[i].getName(), left[i]);
+
+			
 			Expression right = visitExpression(exps.expression(0));
 
-			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, Untyped.INSTANCE, left, right);
+			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left, right);
 			cfg.addNode(asg, visibleIds);
 			return Pair.of(asg, asg);
 		} else {
@@ -842,9 +873,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			GoReturn ret;
 			if (ctx.expressionList().expression().size() == 1) 
 				ret =  new GoReturn(cfg, location, visitExpression(ctx.expressionList().expression(0)));
-			else
-				ret =  new GoReturn(cfg, location, new GoExpressionsTuple(cfg, location, visitExpressionList(ctx.expressionList())));
-
+			else {
+				GoExpressionsTuple tupleExp = new GoExpressionsTuple(cfg, location, visitExpressionList(ctx.expressionList()));
+				ret =  new GoReturn(cfg, location, tupleExp);
+			}
 			cfg.addNode(ret, visibleIds);
 			return Pair.of(ret, ret);
 		} else {

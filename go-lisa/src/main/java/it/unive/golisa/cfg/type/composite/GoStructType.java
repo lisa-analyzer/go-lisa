@@ -22,7 +22,11 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 	public static GoStructType lookup(String name, CompilationUnit unit)  {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
-	
+	}
+
+	public static void updateReference(String name, CompilationUnit unit)  {
+		if (structTypes.containsKey(name))
+			structTypes.put(name, new GoStructType(name, unit));
 	}
 
 	private final String name;
@@ -55,7 +59,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	public Type commonSupertype(Type other) {
 		if (other instanceof GoStructType)
 			return ((GoStructType) other).name.equals(name) ? other : Untyped.INSTANCE;
-		
+
 		// TODO: how to treat interfaces?
 		return Untyped.INSTANCE;
 	}
@@ -105,7 +109,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
 	}
-	
+
 	@Override
 	public boolean isPointerType() {
 		return true;

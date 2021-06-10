@@ -36,6 +36,7 @@ import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
 import it.unive.golisa.cfg.expression.binary.GoIndexOf;
 import it.unive.golisa.cfg.expression.ternary.GoReplace;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
@@ -131,12 +132,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
 			visitMethodDecl(decl); 
 
+		updateUnitReferences();
+		
 		// method declaration must be linked to compilation unit of a declaration context, for the function declaration is not needed
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations"))	
 			visitFunctionDecl(funcDecl);
 
 		return program;
+	}
+
+	private void updateUnitReferences() {
+		for (CompilationUnit unit : program.getUnits())
+			GoStructType.updateReference(unit.getName(), unit);
 	}
 
 	private void visitDeclarationContext(DeclarationContext decl) {

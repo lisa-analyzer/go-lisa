@@ -147,6 +147,7 @@ import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.program.CompilationUnit;
@@ -469,7 +470,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 
 			visibleIds.put(target.getName(), target);
-
 
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
@@ -896,7 +896,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					return Pair.of(ret, ret);
 				}
 			} 
-			
+
 			Ret ret = new Ret(cfg, location);
 			cfg.addNode(ret, visibleIds);
 			return Pair.of(ret, ret);
@@ -1457,39 +1457,34 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return (Expression) child;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
-
 		GoType type = new GoTypeVisitor(file, currentUnit).visitLiteralType(ctx.literalType());
-		Object raw = visitLiteralValue(ctx.literalValue());
-
+		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof Map<?, ?>)
 			return new GoKeyedLiteral(cfg, locationOf(ctx), (Map<Expression, Expression>) raw,  type);
 		else 
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw, type);
 	}
 
-	@Override
-	public Object visitLiteralValue(LiteralValueContext ctx) {
+	public Object visitLiteralValue(LiteralValueContext ctx, GoType type) {
 		if (ctx.elementList() == null)
 			return new HashMap<Expression, Expression>();
-		return visitElementList(ctx.elementList());
+		return visitElementList(ctx.elementList(), type);
 	}
 
-	@Override
-	public Object visitElementList(ElementListContext ctx) {
+	@SuppressWarnings("unchecked")
+	public Object visitElementList(ElementListContext ctx, GoType type) {
 		// All keyed or all without key
-		Object firstElement = visitKeyedElement(ctx.keyedElement(0));
+		Object firstElement = visitKeyedElement(ctx.keyedElement(0), type);
 
 		if (firstElement instanceof Pair<?,?>) {
 			Map<Expression, Expression> result = new HashMap<Expression, Expression>();
-			@SuppressWarnings("unchecked")
 			Pair<Expression, Expression> firstKeyed = (Pair<Expression, Expression>) firstElement;
 			result.put(firstKeyed.getLeft(), firstKeyed.getRight());
 			for (int i = 1; i < ctx.keyedElement().size(); i++) {
-				@SuppressWarnings("unchecked")
-				Pair<Expression, Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i));
+				Pair<Expression, Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
 				result.put(keyed.getLeft(), keyed.getRight());
 			}
 
@@ -1498,18 +1493,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression[] result = new Expression[ctx.keyedElement().size()];
 			result[0] = (Expression) firstElement;
 			for (int i = 1; i < ctx.keyedElement().size(); i++) 
-				result[i] = (Expression) visitKeyedElement(ctx.keyedElement(i));
-
+				result[i] = (Expression) visitKeyedElement(ctx.keyedElement(i), type);
 			return result;
 		}
 	}
 
-	@Override
-	public Object visitKeyedElement(KeyedElementContext ctx) {
+	public Object visitKeyedElement(KeyedElementContext ctx, GoType type) {
 		if (ctx.key() != null)
-			return Pair.of(visitKey(ctx.key()), visitElement(ctx.element()));
+			return Pair.of(visitKey(ctx.key()), visitElement(ctx.element(), type));
 		else
-			return visitElement(ctx.element());
+			return visitElement(ctx.element(), type);
 	}
 
 	@Override
@@ -1525,15 +1518,30 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return (Expression) child;
 	}
 
-	@Override
-	public Expression visitElement(ElementContext ctx) {	
-		Object child = visitChildren(ctx);
-		if (!(child instanceof Expression))
-			throw new IllegalStateException("Expression expected, found Statement instead");
-		else
-			return (Expression) child;
+	public Expression visitElement(ElementContext ctx, GoType type) {	
+
+		if (ctx.expression() != null)
+			return visitExpression(ctx.expression());
+		else {
+			Object lit = visitLiteralValue(ctx.literalValue(), type);
+
+			if (lit instanceof Expression)
+				return (Expression) lit;
+			else if (lit instanceof Expression[]) 
+				return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) lit, getContentType(type));
+			else
+				throw new IllegalStateException("Expression or Expression[] expected, found Statement instead");
+		}
 	}
 
+	private GoType getContentType(Type type) {
+		if (type instanceof GoArrayType)
+			return (GoType) ((GoArrayType) type).getContentType();
+		throw new IllegalStateException(type + " has not content type");
+
+	}
+	
+	
 	@Override
 	public Expression visitString_(String_Context ctx) {
 		SourceCodeLocation location = locationOf(ctx);

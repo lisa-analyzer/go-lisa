@@ -18,3 +18,7 @@ func alias() {
 	v2 := v1
 	x := v2[0] + v1[0]
 }
+
+func defaultArray() { 
+	var x [3]int
+}

@@ -1,8 +1,7 @@
-package it.unive.golisa.cfg.expression.binary;
+package it.unive.golisa.cfg.expression.runtime.strings;
 
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -24,17 +23,17 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 
-public class GoIndexOf extends NativeCFG {
+public class GoContains extends NativeCFG {
 
-	public GoIndexOf(SourceCodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, "Index", GoBoolType.INSTANCE,
+	public GoContains(SourceCodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "Contains", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
-				IndexOf.class);
+				Contains.class);
 	}
-
-	public static class IndexOf extends BinaryNativeCall implements PluggableStatement {
 	
+	public static class Contains extends BinaryNativeCall implements PluggableStatement {
+		
 		private Statement original;
 
 		@Override
@@ -42,8 +41,8 @@ public class GoIndexOf extends NativeCFG {
 			original = st;
 		}
 		
-		public IndexOf(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-			super(cfg, location, "Index", GoIntType.INSTANCE, exp1, exp2);
+		public Contains(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+			super(cfg, location, "Contains", GoBoolType.INSTANCE, exp1, exp2);
 		}
 
 		@Override
@@ -51,13 +50,14 @@ public class GoIndexOf extends NativeCFG {
 				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
 				SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 						throws SemanticException {
+
 			if (!leftExp.getDynamicType().isStringType() && !leftExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
 			if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_INDEX_OF), original);
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_CONTAINS), original);
 		}
 	}
 }

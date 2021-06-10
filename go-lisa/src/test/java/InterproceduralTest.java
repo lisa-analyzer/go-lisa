@@ -59,4 +59,16 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc4", "interprocedural.go", conf);
 	}
+	
+	@Test
+	public void testInterproc5() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setDumpTypeInference(false)
+				.setInferTypes(true)
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setDumpAnalysis(true)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("interprocedural/interproc5", "interprocedural.go", conf);
+	}
 }

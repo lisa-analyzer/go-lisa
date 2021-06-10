@@ -30,11 +30,12 @@ import it.unive.golisa.antlr.GoParser.String_Context;
 import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.expression.binary.GoContains;
-import it.unive.golisa.cfg.expression.binary.GoHasPrefix;
-import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
-import it.unive.golisa.cfg.expression.binary.GoIndexOf;
-import it.unive.golisa.cfg.expression.ternary.GoReplace;
+import it.unive.golisa.cfg.expression.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.expression.runtime.strings.GoContains;
+import it.unive.golisa.cfg.expression.runtime.strings.GoHasPrefix;
+import it.unive.golisa.cfg.expression.runtime.strings.GoHasSuffix;
+import it.unive.golisa.cfg.expression.runtime.strings.GoIndexOf;
+import it.unive.golisa.cfg.expression.runtime.strings.GoReplace;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.logging.IterationLogger;
@@ -133,7 +134,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			visitMethodDecl(decl); 
 
 		updateUnitReferences();
-		
+
 		// method declaration must be linked to compilation unit of a declaration context, for the function declaration is not needed
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations"))	
@@ -200,12 +201,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Statement visitImportPath(ImportPathContext ctx) {
 		String lib = visitString_(ctx.string_());
 
-		if (lib.equals("strings")) 
-			loadGoStrings();
+		switch (lib) {
+		case "strings": loadStrings();
+		case "fmt": loadFmt();
+		}
 		return null;
 	}
 
-	private void loadGoStrings() {
+	private void loadStrings() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
 		CompilationUnit str = new CompilationUnit(unknownLocation, "strings", false);
 		str.addConstruct(new GoHasPrefix(unknownLocation, str));
@@ -215,13 +218,24 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		str.addConstruct(new GoIndexOf(unknownLocation, str));	
 
 		program.addCompilationUnit(str);
-		
+
 		// We add the string methods also in package unit as non-instant cfgs
 		packageUnit.addConstruct(new GoHasPrefix(unknownLocation, str));
 		packageUnit.addConstruct(new GoHasSuffix(unknownLocation, str));
 		packageUnit.addConstruct(new GoContains(unknownLocation, str));
 		packageUnit.addConstruct(new GoReplace(unknownLocation, str));
 		packageUnit.addConstruct(new GoIndexOf(unknownLocation, str));
+	}
+
+	private void loadFmt() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		CompilationUnit fmt = new CompilationUnit(unknownLocation, "fmt", false);
+		fmt.addConstruct(new GoPrintln(unknownLocation, fmt));
+
+		program.addCompilationUnit(fmt);
+
+		// We add the string methods also in package unit as non-instant cfgs
+		packageUnit.addConstruct(new GoPrintln(unknownLocation, fmt));
 	}
 
 	@Override

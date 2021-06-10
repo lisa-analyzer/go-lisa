@@ -1462,9 +1462,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
 		GoType type = new GoTypeVisitor(file, currentUnit).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
-		if (raw instanceof Map<?, ?>)
-			return new GoKeyedLiteral(cfg, locationOf(ctx), (Map<Expression, Expression>) raw,  type);
-		else 
+		if (raw instanceof Map<?, ?>)  {
+						
+			Object[] keysObj = ((Map<Expression, Expression>)raw).keySet().toArray();
+			Object[] valuesObj = ((Map<Expression, Expression>)raw).values().toArray();
+					
+			Expression[] keys = new Expression[keysObj.length];
+			Expression[] values  = new Expression[valuesObj.length];
+			
+			for (int i = 0; i < keys.length; i++)  {
+				keys[i] = (Expression) keysObj[i];
+				values[i] = (Expression) valuesObj[i];
+			}
+
+			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
+		}	else 
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw, type);
 	}
 

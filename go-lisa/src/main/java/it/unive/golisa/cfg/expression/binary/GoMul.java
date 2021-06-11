@@ -13,6 +13,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
  * A Go numerical multiplication function call (e1 * e2).
@@ -38,14 +40,17 @@ public class GoMul extends BinaryNativeCall implements GoBinaryNumericalOperatio
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
-		if (!leftExp.getDynamicType().isNumericType() && !leftExp.getDynamicType().isUntyped())
-			return entryState.bottom();
-		if (!rightExp.getDynamicType().isNumericType() && !rightExp.getDynamicType().isUntyped())
-			return entryState.bottom();
+					throws SemanticException {
+		ExternalSet<Type> types;
 
-		return rightState
-				.smallStepSemantics(new BinaryExpression(resultType(leftExp, rightExp), leftExp, rightExp,
-						BinaryOperator.NUMERIC_MUL), this);
+		AnalysisState<A, H, V> result = entryState.bottom();
+		for (Type leftType : leftExp.getTypes())
+			for (Type rightType : rightExp.getTypes()) 
+				if (leftType.isNumericType() && rightType.isNumericType()) {
+					types = resultType(leftExp, rightExp);
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_MUL), this));
+				} 
+
+		return result;
 	}
 }

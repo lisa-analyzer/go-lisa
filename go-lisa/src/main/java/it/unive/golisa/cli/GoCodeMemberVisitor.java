@@ -1460,7 +1460,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
-		GoType type = new GoTypeVisitor(file, currentUnit).visitLiteralType(ctx.literalType());
+		GoType type = new GoTypeVisitor(file, currentUnit, program).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof Map<?, ?>)  {
 						
@@ -1637,7 +1637,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitType_(Type_Context ctx) {
-		return new GoTypeVisitor(file, currentUnit).visitType_(ctx);
+		return new GoTypeVisitor(file, currentUnit, program).visitType_(ctx);
 	}
 
 	@Override

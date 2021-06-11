@@ -121,13 +121,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		return visitResult(signature.result());
+		return new GoCodeMemberVisitor(file, program).visitResult(signature.result());
 	}
 
 	@Override
 	public GoType visitFunctionType(FunctionTypeContext ctx) {
 		SignatureContext sign = ctx.signature();
-		Type returnType = visitResult(sign.result()); 
+		Type returnType = getGoReturnType(sign); 
 		Parameter[] params = visitParameters(sign.parameters());
 
 		return GoFunctionType.lookup(new GoFunctionType(params, returnType));
@@ -141,5 +141,4 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	private boolean isReturnStmt(Statement stmt) {
 		return stmt instanceof GoReturn || stmt instanceof Ret;
 	}
-
 }

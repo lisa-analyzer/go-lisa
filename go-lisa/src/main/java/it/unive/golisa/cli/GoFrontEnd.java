@@ -161,7 +161,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			String unitName = typeSpec.IDENTIFIER().getText();
 			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(filePath, unit).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(filePath, unit, program).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}

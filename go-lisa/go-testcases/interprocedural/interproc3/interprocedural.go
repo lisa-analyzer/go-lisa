@@ -14,7 +14,7 @@ func f3() (x int, y int) {
 	return
 }
 
-// https://tour.golang.org/basics/4
+// from https://tour.golang.org/basics/4
 func add1(x int, y int) int {
 	return x + y
 }
@@ -24,10 +24,16 @@ func add2(x, y int) int {
 	return x + y
 }
 
+// from https://tour.golang.org/basics/6
+func swap(x, y int) (int, int) {
+	return y, x
+}
+
 func main() {
 	a, b := f1()	
 	c, d := f2()
 	e, f := f3()
 	g := add1(42, 13)
 	h := add2(42, 13)
+	i, j := swap(1,2)
 }

@@ -22,9 +22,12 @@ public class GoDeref extends UnaryNativeCall {
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
 			SymbolicExpression expr) throws SemanticException {
-		// TODO Auto-generated method stub
+//		Set<Type> types =  new HashSet<>();
+//		
+//		for (Type type : expr.getTypes())
+//			types.add(new GoPointerType(type));
+//		
+//		return exprState.smallStepSemantics(new MemoryPointer(Caches.types().mkSet(types), expr), this);
 		return null;
 	}
-
-
 }

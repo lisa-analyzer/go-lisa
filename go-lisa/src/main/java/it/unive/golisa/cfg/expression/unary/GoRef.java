@@ -18,12 +18,11 @@ public class GoRef extends UnaryNativeCall {
 		super(cfg, location, "*", exp);
 	}
 
-	
 	@Override
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
 			SymbolicExpression expr) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO: fix
+		return entryState.smallStepSemantics(expr, this);
 	}
 }

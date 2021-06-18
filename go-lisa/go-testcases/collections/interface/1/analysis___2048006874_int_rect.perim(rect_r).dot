@@ -1,5 +1,7 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<var x [3]int = nonKeyedLit([3]int)(0, 0, 0)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/array.go':23:10] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/array.go':23:10: [0, 3] ]]<BR/>}} -&gt; [x]>];
+	labelloc="t";
+	label="[['go-testcases/collections/interface/1/interface.go':22:20], ['go-testcases/collections/interface/1/interface.go':17:19]]";
+	"node0" [shape="rect",color="black",peripheries="2",label=<return +(*(2, r::width), *(2, r::height))<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35[height]: [4, 4]<BR/>heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35[width]: [3, 3]<BR/>ret_value@perim: [14, 14] ]]<BR/>}} -&gt; [ret_value@perim]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

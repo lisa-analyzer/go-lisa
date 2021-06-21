@@ -278,7 +278,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 	
 	@Override
 	public StrictUpperBounds pushScope(ScopeToken token) throws SemanticException {
-		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token));
+		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getLocation()));
 	}
 
 	@Override

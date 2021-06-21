@@ -49,7 +49,7 @@ public class GoDiv extends BinaryNativeCall implements GoBinaryNumericalOperatio
 			for (Type rightType : rightExp.getTypes()) 
 				if (leftType.isNumericType() && rightType.isNumericType()) {
 					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_DIV), this));
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_DIV, getLocation()), this));
 				} 
 
 		return result;

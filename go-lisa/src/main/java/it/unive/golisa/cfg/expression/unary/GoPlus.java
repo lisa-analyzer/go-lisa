@@ -36,10 +36,10 @@ public class GoPlus extends UnaryNativeCall {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 
-		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0));
+		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0), getLocation());
 
 		return entryState.smallStepSemantics(
-				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_ADD), this);
+				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_ADD, getLocation()), this);
 	}
 
 }

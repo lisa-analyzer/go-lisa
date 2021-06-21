@@ -32,7 +32,7 @@ public class GoBitwiseNot extends UnaryNativeCall {
 
 		
 		// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
-		return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(expr.getDynamicType())), this);	
+		return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(expr.getDynamicType()), getLocation()), this);	
 	}
 
 }

@@ -1,0 +1,14 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<var e1 Employee = nonKeyedLit(Emp)(1)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/interface/3/interface.go':28:24] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/interface/3/interface.go':28:24[id]: [1, 1] ]]<BR/>}} -&gt; [e1]>];
+	"node1" [shape="rect",color="gray",label=<r1 := [unresolved]GetFullName(e1, &quot;Vincenzo Arceri&quot;)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/interface/3/interface.go':28:24] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/interface/3/interface.go':28:24[id]: [1, 1]<BR/>r1: #TOP# ]]<BR/>}} -&gt; [r1]>];
+	"node2" [shape="rect",color="gray",label=<r2 := [unresolved]GetSalary(e1, 25000, 5)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/interface/3/interface.go':28:24] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/interface/3/interface.go':28:24[id]: [1, 1]<BR/>r1: #TOP#<BR/>r2: [23750, 24999] ]]<BR/>}} -&gt; [r2]>];
+	"node0" -> "node1" [color="black"];
+	"node1" -> "node2" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

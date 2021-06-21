@@ -57,7 +57,7 @@ public class GoIndexOf extends NativeCFG {
 			if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_INDEX_OF), original);
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_INDEX_OF, getLocation()), original);
 		}
 	}
 }

@@ -37,7 +37,7 @@ public class GoNot extends UnaryNativeCall {
 			return entryState.bottom();
 
 		return exprState.smallStepSemantics(
-				new UnaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), expr, UnaryOperator.LOGICAL_NOT), this);
+				new UnaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), expr, UnaryOperator.LOGICAL_NOT, getLocation()), this);
 	}
 
 }

@@ -40,7 +40,7 @@ public class GoSubtraction extends BinaryNativeCall implements GoBinaryNumerical
 			for (Type rightType : rightExp.getTypes()) 
 				if (leftType.isNumericType() && rightType.isNumericType()) {
 					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_SUB), this));
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_SUB, getLocation()), this));
 				} 
 
 		return result;

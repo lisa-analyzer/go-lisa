@@ -58,9 +58,9 @@ public class GoLogicalAnd extends BinaryNativeCall {
 		if (leftState.satisfies(leftExp, this) == Satisfiability.NOT_SATISFIED) 
 			return leftState;
 		else if (leftState.satisfies(leftExp, this) == Satisfiability.SATISFIED) 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_AND), this);
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_AND, getLocation()), this);
 		else if (leftState.satisfies(leftExp, this) == Satisfiability.UNKNOWN) 
-			return leftState.lub(rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_AND), this));
+			return leftState.lub(rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_AND, getLocation()), this));
 		else 
 			return entryState.bottom();
 	}

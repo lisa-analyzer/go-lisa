@@ -86,13 +86,13 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		public static SymbolicExpression type(SymbolicExpression exp) {
 			if (exp.getDynamicType() instanceof GoUntypedInt) {
 				ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE);
-				return new BinaryExpression(intType, exp, typeCast, BinaryOperator.TYPE_CONV);
+				Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE, exp.getLocation());
+				return new BinaryExpression(intType, exp, typeCast, BinaryOperator.TYPE_CONV, exp.getLocation());
 
 			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
 				ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE);
-				return new BinaryExpression(floatType, exp, typeCast, BinaryOperator.TYPE_CONV);
+				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE,  exp.getLocation());
+				return new BinaryExpression(floatType, exp, typeCast, BinaryOperator.TYPE_CONV,  exp.getLocation());
 			} else 
 				return exp;
 		}

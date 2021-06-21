@@ -1258,10 +1258,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (ctx.primaryExpr().getText().equals("new")) {
 				// new requires a type as input
 				if (ctx.arguments().type_() != null)
-					return new GoNew(cfg, file, getLine(ctx.primaryExpr()), getCol(ctx.primaryExpr()), visitType_(ctx.arguments().type_()));
+					return new GoNew(cfg, locationOf(ctx.primaryExpr()), visitType_(ctx.arguments().type_()));
 				else {
 					// TODO: this is a workaround...
-					return new GoNew(cfg, file, getLine(ctx.primaryExpr()), getCol(ctx.primaryExpr()), parseType(ctx.arguments().expressionList().getText()));
+					return new GoNew(cfg, locationOf(ctx.primaryExpr()), parseType(ctx.arguments().expressionList().getText()));
 				}
 			}
 
@@ -1368,7 +1368,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitConversion(ConversionContext ctx) {
 		Type type = visitType_(ctx.type_());
 		Expression exp = visitExpression(ctx.expression());
-		return new GoTypeConversion(cfg, type, exp);
+		return new GoTypeConversion(cfg, locationOf(ctx), type, exp);
 	}
 
 	@Override

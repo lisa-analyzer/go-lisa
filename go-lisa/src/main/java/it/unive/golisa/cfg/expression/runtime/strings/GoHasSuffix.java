@@ -56,7 +56,7 @@ public class GoHasSuffix extends NativeCFG {
 			if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_ENDS_WITH), original);
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_ENDS_WITH, getLocation()), original);
 		}
 	}
 }

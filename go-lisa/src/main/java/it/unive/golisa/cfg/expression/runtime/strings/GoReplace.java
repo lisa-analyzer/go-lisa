@@ -64,7 +64,7 @@ public class GoReplace extends NativeCFG {
 			if (!right.getDynamicType().isStringType() && ! right.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_REPLACE), original);
+			return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_REPLACE, getLocation()), original);
 		}
 	}
 }

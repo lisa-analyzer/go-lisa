@@ -47,7 +47,7 @@ public class GoExpressionsTuple extends NativeCall {
 		
 		GoTypesTuple tupleType = new GoTypesTuple(types);
 		
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(tupleType));
+		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(tupleType), getLocation());
 
 		// Allocates the new heap allocation 
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
@@ -56,12 +56,12 @@ public class GoExpressionsTuple extends NativeCall {
 		AnalysisState<A, H, V> result = entryState.bottom();
 
 		for (SymbolicExpression containerExp : containerExps) {
-			HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp);
-			HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference);
+			HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp, getLocation());
+			HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference, getLocation());
 
 			AnalysisState<A, H, V> tmp = containerState;
 			for (int i = 0; i < len; i++) {
-				AccessChild access = new AccessChild(Caches.types().mkSingletonSet(tupleType.getTypeAt(i)), dereference, new Constant(GoIntType.INSTANCE, i));
+				AccessChild access = new AccessChild(Caches.types().mkSingletonSet(tupleType.getTypeAt(i)), dereference, new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
 
 				for (SymbolicExpression index : accessState.getComputedExpressions())

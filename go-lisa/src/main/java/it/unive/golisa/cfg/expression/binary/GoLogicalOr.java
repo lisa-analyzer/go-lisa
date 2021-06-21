@@ -58,9 +58,9 @@ public class GoLogicalOr extends BinaryNativeCall {
 		if (leftState.satisfies(leftExp, this) == Satisfiability.SATISFIED) 
 			return leftState;
 		else if (leftState.satisfies(leftExp, this) == Satisfiability.NOT_SATISFIED) 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR), this);
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR, getLocation()), this);
 		else if (leftState.satisfies(leftExp, this) == Satisfiability.UNKNOWN) 
-			return leftState.lub(rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR), this));
+			return leftState.lub(rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.LOGICAL_OR, getLocation()), this));
 		else 
 			return entryState.bottom();
 	}

@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
+import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -64,14 +66,21 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		expressions.put(getLeft(), right);
 
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
-		Variable id = new Variable(idType, ((VariableRef) getLeft()).getName());
+		Variable id = new Variable(idType, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
 
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-			Constant typeCast = new Constant(new TypeTokenType(idType), type);
-			BinaryExpression rightConverted = new BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV);				
+			AnalysisState<A, H, V> tmp = null;
+			if (rightExp.getDynamicType() instanceof GoUntypedInt || rightExp.getDynamicType() instanceof GoUntypedFloat) {
+				Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
+				tmp = right.assign(id, new BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV, getRight().getLocation()), this);
+			} else {
+				tmp = entryState.bottom();
+				for (Type rightType : rightExp.getTypes())
+					if (rightType.canBeAssignedTo(type))
+						tmp = right.assign(id, rightExp, this);
+			}
 
-			AnalysisState<A, H, V> tmp = right.assign(id, rightConverted, this);
 			result = result.lub(tmp);
 		}
 

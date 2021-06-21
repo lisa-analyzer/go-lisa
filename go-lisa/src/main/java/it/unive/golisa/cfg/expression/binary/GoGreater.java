@@ -52,7 +52,7 @@ public class GoGreater extends BinaryNativeCall {
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
 		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) 
-				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_GE), this);
+				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_GE, getLocation()), this);
 	
 		return entryState.bottom();
 	}

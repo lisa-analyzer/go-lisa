@@ -48,7 +48,7 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 					types = resultType(leftExp, rightExp);
 				} else
 					continue;
-				result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op), this));
+				result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op, getLocation()), this));
 			}	
 
 		return result;

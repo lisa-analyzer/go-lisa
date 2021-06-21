@@ -20,6 +20,7 @@ import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
@@ -314,7 +315,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 				else 
 					result.add(exps[j]);
 
-				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j], BinaryOperator.STRING_CONCAT);
+				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j], BinaryOperator.STRING_CONCAT, exps[j].getLocation());
 				result.add(partial);
 			}
 		}
@@ -327,7 +328,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		for (int i = 0; i < str.length(); i++) 
 			for (int j = i+1; j <= str.length(); j++) 
-				res.add(new Constant(GoStringType.INSTANCE, str.substring(i,j)));
+				res.add(new Constant(GoStringType.INSTANCE, str.substring(i,j), SourceCodeLocation.UNKNOWN));
 
 		return res;
 	}
@@ -352,7 +353,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 	@Override
 	public RelationalSubstringDomain pushScope(ScopeToken token) throws SemanticException {
-		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token));
+		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getLocation()));
 	}
 
 	@Override

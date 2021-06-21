@@ -302,7 +302,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			Parameter[] cfgArgs = new Parameter[]{};
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
-				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
+				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(file, program).visitParameterDecl(formalPars.parameterDecl(i)));
 			
 			return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs);
 		}

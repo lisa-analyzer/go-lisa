@@ -29,7 +29,7 @@ public class GoCollectionAccess extends BinaryNativeCall {
 		AnalysisState<A, H, V> rec = entryState.smallStepSemantics(left, this);
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression expr : rec.getComputedExpressions()) {	
-			AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), new HeapDereference(getRuntimeTypes(), expr), right), this);
+			AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), new HeapDereference(getRuntimeTypes(), expr, getLocation()), right, getLocation()), this);
 			result = result.lub(tmp);
 		}
 

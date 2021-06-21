@@ -44,14 +44,14 @@ public class GoLength extends UnaryNativeCall {
 			ExternalSet<Type> untypedType = Caches.types().mkSingletonSet(Untyped.INSTANCE);
 
 			for (SymbolicExpression recExpr : rec.getComputedExpressions()) {	
-				HeapDereference deref = new HeapDereference(getRuntimeTypes(), recExpr);
+				HeapDereference deref = new HeapDereference(getRuntimeTypes(), recExpr, getLocation());
 				AnalysisState<A, H, V> refState = entryState.smallStepSemantics(deref, this);
 
 				for (SymbolicExpression l : refState.getComputedExpressions()) {
 					if (!(l instanceof MemoryPointer))
 						continue;
 
-					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), (MemoryPointer) l, new Variable(untypedType, "len")), this);
+					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), (MemoryPointer) l, new Variable(untypedType, "len", getLocation()), getLocation()), this);
 					result = result.lub(tmp);
 				}
 
@@ -63,6 +63,6 @@ public class GoLength extends UnaryNativeCall {
 			return entryState.bottom();
 		
 		
-		return exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH), this);
+		return exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), this);
 	}
 }

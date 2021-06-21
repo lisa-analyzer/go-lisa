@@ -30,6 +30,6 @@ public class GoTypeAssertion extends UnaryNativeCall {
 			SymbolicExpression expr) throws SemanticException {
 		
 		// TODO: Type assertion not handled yet, just returning top expression
-		return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type)), this);
+		return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
 	}
 }

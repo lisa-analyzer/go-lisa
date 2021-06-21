@@ -44,7 +44,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 		// (the semantics of this call does not need information about the
 		// intermediate analysis states)
 		AnalysisState<A, H, V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()));
+		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()), getLocation());
 
 		// Allocates the new heap allocation 
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
@@ -57,8 +57,8 @@ public class GoNonKeyedLiteral extends NativeCall {
 			AnalysisState<A, H, V> result = entryState.bottom();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp);
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference);
+				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference, getLocation());
 
 				if (getParameters().length == 0) {
 					result = result.lub(containerState);
@@ -69,7 +69,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 				AnalysisState<A, H, V> tmp = containerState;
 
 				for (Global field : structUnit.getInstanceGlobals(true)) {
-					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), dereference, getVariable(field));
+					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), dereference, getVariable(field), getLocation());
 					AnalysisState<A, H, V> fieldState = tmp.smallStepSemantics(access, this);
 					for (SymbolicExpression id : fieldState.getComputedExpressions()) 
 						for (SymbolicExpression v : params[i])
@@ -91,26 +91,26 @@ public class GoNonKeyedLiteral extends NativeCall {
 			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp);
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference);
+				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference, getLocation());
 
 				// Assign the len property to this hid
-				Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len");
-				AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference, lenProperty);
+				Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len", getLocation());
+				AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference, lenProperty, getLocation());
 				AnalysisState<A, H, V> lenState = containerState.smallStepSemantics(lenAccess, this);
 
 				AnalysisState<A, H, V> lenResult = entryState.bottom();
 				for (SymbolicExpression lenId : lenState.getComputedExpressions())
-					lenResult = lenResult.lub(lenState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+					lenResult = lenResult.lub(lenState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				// Assign the cap property to this hid
-				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap");
-				AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference, capProperty);
+				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap", getLocation());
+				AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference, capProperty, getLocation());
 				AnalysisState<A, H, V> capState = lenResult.smallStepSemantics(capAccess, this);
 
 				AnalysisState<A, H, V> capResult = entryState.bottom();
 				for (SymbolicExpression lenId : capState.getComputedExpressions())
-					capResult = capResult.lub(capState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength), this));
+					capResult = capResult.lub(capState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				if (getParameters().length == 0) {
 					result = result.lub(capResult);
@@ -120,7 +120,7 @@ public class GoNonKeyedLiteral extends NativeCall {
 				// Allocate the heap location
 				AnalysisState<A, H, V> tmp = capResult;
 				for (int i = 0; i < arrayLength; i++) {
-					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(contentType), dereference, new Constant(GoIntType.INSTANCE, i));
+					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(contentType), dereference, new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 					AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
 
 					for (SymbolicExpression index : accessState.getComputedExpressions())
@@ -129,7 +129,6 @@ public class GoNonKeyedLiteral extends NativeCall {
 				}
 
 				result = result.lub(tmp.smallStepSemantics(reference, this));
-
 			}
 
 			return result;
@@ -140,6 +139,6 @@ public class GoNonKeyedLiteral extends NativeCall {
 	}
 
 	private SymbolicExpression getVariable(Global global) {
-		return new Variable(Caches.types().mkSingletonSet(global.getStaticType()), global.getName());
+		return new Variable(Caches.types().mkSingletonSet(global.getStaticType()), global.getName(), global.getLocation());
 	}	
 }

@@ -58,7 +58,7 @@ public class GoModule extends BinaryNativeCall {
 
 		return rightState
 				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftType), leftExp, rightExp,
-						BinaryOperator.NUMERIC_MOD), this);
+						BinaryOperator.NUMERIC_MOD, getLocation()), this);
 	}
 
 }

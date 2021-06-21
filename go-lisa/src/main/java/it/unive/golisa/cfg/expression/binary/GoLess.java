@@ -52,7 +52,7 @@ public class GoLess extends BinaryNativeCall {
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
 		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) 
-				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LT), this);
+				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LT, getLocation()), this);
 	
 		return entryState.bottom();
 	}

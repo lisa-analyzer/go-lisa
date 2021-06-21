@@ -1,0 +1,14 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<v1 := keyedLiteral([3]int)()<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[cap]: [3, 3]<BR/>heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[len]: [3, 3] ]]<BR/>}} -&gt; [v1]>];
+	"node1" [shape="rect",color="gray",label=<v1::0(v1, 0) = 0<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[0]: [0, 0]<BR/>heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[cap]: [3, 3]<BR/>heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[len]: [3, 3] ]]<BR/>}} -&gt; [heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[0]]>];
+	"node2" [shape="rect",color="gray",label=<v1::1(v1, 1) = 1<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[0]: [0, 0]<BR/>heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[1]: [1, 1]<BR/>heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[cap]: [3, 3]<BR/>heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[len]: [3, 3] ]]<BR/>}} -&gt; [heap[s]:pp@'go-testcases/collections/array/field-sensitive/array.go':5:14[1]]>];
+	"node1" -> "node2" [color="black"];
+	"node0" -> "node1" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

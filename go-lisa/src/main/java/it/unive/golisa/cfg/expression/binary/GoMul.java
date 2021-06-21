@@ -48,7 +48,7 @@ public class GoMul extends BinaryNativeCall implements GoBinaryNumericalOperatio
 			for (Type rightType : rightExp.getTypes()) 
 				if (leftType.isNumericType() && rightType.isNumericType()) {
 					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_MUL), this));
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_MUL, getLocation()), this));
 				} 
 
 		return result;

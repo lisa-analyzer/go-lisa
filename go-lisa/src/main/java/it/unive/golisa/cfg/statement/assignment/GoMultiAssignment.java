@@ -80,8 +80,8 @@ public class GoMultiAssignment extends Expression {
 			expressions.put(ids[i], idState);
 
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), retExp);
-				AccessChild access = new AccessChild(untyped, dereference, new Constant(GoIntType.INSTANCE, i));
+				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), retExp, getLocation());
+				AccessChild access = new AccessChild(untyped, dereference, new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				AnalysisState<A, H, V> accessState = rightState.smallStepSemantics(access, this);
 				
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {

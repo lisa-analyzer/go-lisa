@@ -35,6 +35,6 @@ public class GoMinus extends UnaryNativeCall {
 			return entryState.bottom();
 
 		return exprState.smallStepSemantics(
-				new UnaryExpression(Caches.types().mkSingletonSet(expr.getDynamicType()), expr, UnaryOperator.NUMERIC_NEG), this);
+				new UnaryExpression(Caches.types().mkSingletonSet(expr.getDynamicType()), expr, UnaryOperator.NUMERIC_NEG, getLocation()), this);
 	}
 }

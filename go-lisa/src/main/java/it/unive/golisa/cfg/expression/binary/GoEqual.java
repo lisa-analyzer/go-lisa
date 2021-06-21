@@ -57,6 +57,6 @@ public class GoEqual extends BinaryNativeCall {
 		// TODO: not covering composite types (e.g., channels, arrays, structs...)
 		return rightState
 				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp,
-						BinaryOperator.COMPARISON_EQ), this);
+						BinaryOperator.COMPARISON_EQ, getLocation()), this);
 	}
 }

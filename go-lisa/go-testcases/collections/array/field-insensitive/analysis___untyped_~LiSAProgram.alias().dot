@@ -1,7 +1,7 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<v1 := nonKeyedLit([3]int)(7, 8, 9)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/array.go':11:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/array.go':11:19: [3, 9] ]]<BR/>}} -&gt; [v1]>];
-	"node1" [shape="rect",color="gray",label=<v1::1(v1, 1) = 1<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/array.go':11:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/array.go':11:19: [0, 9] ]]<BR/>}} -&gt; [heap[w]:pp@'go-testcases/collections/array/array.go':11:19]>];
-	"node2" [shape="rect",color="gray",label=<v1::0(v1, 0) = 0<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/array.go':11:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/array.go':11:19: [0, 9] ]]<BR/>}} -&gt; [heap[w]:pp@'go-testcases/collections/array/array.go':11:19]>];
+	"node0" [shape="rect",color="black",label=<v1 := nonKeyedLit([3]int)(7, 8, 9)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/field-insensitive/array.go':17:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/field-insensitive/array.go':17:19: [3, 9] ]]<BR/>}} -&gt; [v1]>];
+	"node1" [shape="rect",color="gray",label=<x := +(v2::0(v2, 0), v1::0(v1, 0))<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/field-insensitive/array.go':17:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/field-insensitive/array.go':17:19: [3, 9]<BR/>x: [6, 18] ]]<BR/>}} -&gt; [x]>];
+	"node2" [shape="rect",color="gray",label=<v2 := v1<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/collections/array/field-insensitive/array.go':17:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/array/field-insensitive/array.go':17:19: [3, 9] ]]<BR/>}} -&gt; [v2]>];
 	"node0" -> "node2" [color="black"];
 	"node2" -> "node1" [color="black"];
 subgraph cluster_legend {

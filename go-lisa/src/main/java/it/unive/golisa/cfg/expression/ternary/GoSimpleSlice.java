@@ -39,6 +39,6 @@ public class GoSimpleSlice extends TernaryNativeCall {
 		if (!right.getDynamicType().isNumericType() && ! right.getDynamicType().isUntyped())
 			return entryState.bottom();
 		
-		return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING), this);
+		return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING, getLocation()), this);
 	}
 }

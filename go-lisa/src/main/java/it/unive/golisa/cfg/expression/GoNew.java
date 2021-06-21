@@ -18,12 +18,9 @@ import it.unive.lisa.type.Type;
 
 public class GoNew extends NativeCall {
 
-	public GoNew(CFG cfg, GoType type) {
-		this(cfg, null, -1, -1, type);
-	}
 	
-	public GoNew(CFG cfg, String sourceFile, int line, int col, GoType type) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), "new", type);
+	public GoNew(CFG cfg, SourceCodeLocation location, GoType type) {
+		super(cfg, location, "new", type);
 	}
 
 	@Override
@@ -33,7 +30,7 @@ public class GoNew extends NativeCall {
 		// Following the Golang reference:
 		// The new built-in function allocates memory. The first argument is a type, not a value, 
 		// and the value returned is a pointer to a newly allocated zero value of that type.
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet((Type) getParameters()[0]));
+		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet((Type) getParameters()[0]), getLocation());
 		return entryState.smallStepSemantics(created, this);
 	}
 }

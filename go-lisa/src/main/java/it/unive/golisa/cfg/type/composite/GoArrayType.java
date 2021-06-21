@@ -98,6 +98,7 @@ public class GoArrayType implements GoType, PointerType {
 		for (int i = 0; i < length; i++)
 			result[i] = contentType.defaultValue(cfg, location);
 
+		System.err.println(location);
 		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
 	

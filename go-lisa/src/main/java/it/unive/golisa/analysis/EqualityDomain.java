@@ -158,7 +158,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 
 	@Override
 	public EqualityDomain pushScope(ScopeToken token) throws SemanticException {
-		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getLocation()));
+		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getCodeLocation()));
 	}
 
 	@Override

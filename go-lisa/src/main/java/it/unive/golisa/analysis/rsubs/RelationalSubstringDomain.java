@@ -315,7 +315,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 				else 
 					result.add(exps[j]);
 
-				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j], BinaryOperator.STRING_CONCAT, exps[j].getLocation());
+				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j], BinaryOperator.STRING_CONCAT, exps[j].getCodeLocation());
 				result.add(partial);
 			}
 		}
@@ -353,7 +353,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 	@Override
 	public RelationalSubstringDomain pushScope(ScopeToken token) throws SemanticException {
-		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getLocation()));
+		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getCodeLocation()));
 	}
 
 	@Override

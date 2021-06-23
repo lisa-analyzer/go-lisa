@@ -1,14 +1,12 @@
 package it.unive.golisa.analysis;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import it.unive.golisa.analysis.tarsis.TarsisIntv;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.PairRepresentation;
@@ -19,15 +17,15 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 
 public class Pentagons implements ValueDomain<Pentagons> {
 
-	protected ValueEnvironment<Interval> left;
+	protected ValueEnvironment<TarsisIntv> left;
 
 	protected StrictUpperBounds right;
 	
 	public Pentagons() {
-		this(new ValueEnvironment<Interval>(new Interval()), new StrictUpperBounds());
+		this(new ValueEnvironment<TarsisIntv>(new TarsisIntv()), new StrictUpperBounds());
 	}
 
-	private Pentagons(ValueEnvironment<Interval> left, StrictUpperBounds right) {
+	private Pentagons(ValueEnvironment<TarsisIntv> left, StrictUpperBounds right) {
 		this.left = left;
 		this.right = right;
 	}
@@ -35,29 +33,29 @@ public class Pentagons implements ValueDomain<Pentagons> {
 	@Override
 	public Pentagons assign(Identifier id, ValueExpression expression, ProgramPoint pp)
 			throws SemanticException {
-		ValueEnvironment<Interval> intervals = left.assign(id, expression, pp);
+		ValueEnvironment<TarsisIntv> TarsisIntvs = left.assign(id, expression, pp);
 		StrictUpperBounds upperBounds = right.assign(id, expression, pp);
-		return new Pentagons(intervals, upperBounds).refine();
+		return new Pentagons(TarsisIntvs, upperBounds).refine();
 	}
 
 	@Override
 	public Pentagons smallStepSemantics(ValueExpression expression, ProgramPoint pp)
 			throws SemanticException {
-		ValueEnvironment<Interval> intervals = left.smallStepSemantics(expression, pp);
+		ValueEnvironment<TarsisIntv> TarsisIntvs = left.smallStepSemantics(expression, pp);
 		StrictUpperBounds upperBounds = right.smallStepSemantics(expression, pp);
-		return new Pentagons(intervals, upperBounds).refine();
+		return new Pentagons(TarsisIntvs, upperBounds).refine();
 	}
 	
 	@Override
 	public Pentagons assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		ValueEnvironment<Interval> newLeft = left.assume(expression, pp);
+		ValueEnvironment<TarsisIntv> newLeft = left.assume(expression, pp);
 		StrictUpperBounds newRight = right.assume(expression, pp);
 		return new Pentagons(newLeft, newRight);
 	}
 
 	@Override
 	public Pentagons forgetIdentifier(Identifier id) throws SemanticException {
-		ValueEnvironment<Interval> newLeft = left.forgetIdentifier(id);
+		ValueEnvironment<TarsisIntv> newLeft = left.forgetIdentifier(id);
 		StrictUpperBounds newRight = right.forgetIdentifier(id);
 		return new Pentagons(newLeft, newRight);
 	}
@@ -106,25 +104,25 @@ public class Pentagons implements ValueDomain<Pentagons> {
 
 		if (left.isTop() || right.isTop())
 			return this;
-		
+	
 		Set<Identifier> refined = new HashSet<>();
-		Map<Identifier, Interval> newFunc = new HashMap<Identifier, Interval>();
+		ValueEnvironment<TarsisIntv> env = new ValueEnvironment<TarsisIntv>(new TarsisIntv());
 		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : right.getMap().entrySet()) {
 			Identifier id = entry.getKey();
-			Interval idInterval = left.getState(id);
+			TarsisIntv idTarsisIntv = left.getState(id);
 
 			for (Identifier upperBound : entry.getValue()) {
-				Interval boundInterval = new Interval(null, left.getState(upperBound).getHigh());
-				newFunc.put(id, idInterval.glb(boundInterval));
+				TarsisIntv boundTarsisIntv = new TarsisIntv(null, left.getState(upperBound).getHigh());
+				left.putState(id, idTarsisIntv.glb(boundTarsisIntv));
 				refined.add(id);
 			}
 		}
-		
+
 		for (Identifier id : left.getKeys())
 			if (!refined.contains(id))
-				newFunc.put(id, left.getState(id));
+				env.putState(id, left.getState(id));
 
-		return new Pentagons(new ValueEnvironment<Interval>(new Interval(), newFunc), right);
+		return new Pentagons(env, right);
 	}
 
 	@Override

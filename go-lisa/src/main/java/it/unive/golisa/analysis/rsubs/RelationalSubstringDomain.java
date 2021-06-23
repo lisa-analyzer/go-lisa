@@ -20,7 +20,7 @@ import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
@@ -328,7 +328,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		for (int i = 0; i < str.length(); i++) 
 			for (int j = i+1; j <= str.length(); j++) 
-				res.add(new Constant(GoStringType.INSTANCE, str.substring(i,j), SourceCodeLocation.UNKNOWN));
+				res.add(new Constant(GoStringType.INSTANCE, str.substring(i,j), SyntheticLocation.INSTANCE));
 
 		return res;
 	}

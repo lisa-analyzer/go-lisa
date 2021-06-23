@@ -102,23 +102,4 @@ public class GoMultiAssignment extends Expression {
 		result = prime * result + Arrays.hashCode(ids);
 		return result;
 	}
-
-	@Override
-	public boolean isEqualTo(Statement obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		GoMultiAssignment other = (GoMultiAssignment) obj;
-		if (e == null) {
-			if (other.e != null)
-				return false;
-		} else if (!e.equals(other.e))
-			return false;
-		if (!Arrays.equals(ids, other.ids))
-			return false;
-		return true;
-	}
 }

@@ -170,7 +170,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			return new Tarsis(bottomString(), intValue.evalUnaryExpression(UnaryOperator.NUMERIC_NEG, arg.intValue, pp));
 		case STRING_LENGTH:
 			it.unive.tarsis.AutomatonString.Interval result = arg.stringValue.length();
-			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
+			return new Tarsis(bottomString(), new TarsisIntv(new TarsisMathNumber(result.getLower()), new TarsisMathNumber(result.getUpper())));
 		default:
 			return top();
 		}
@@ -181,12 +181,12 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		case STRING_INDEX_OF:
 			// Checking top cases
 			if (left.stringValue.getAutomaton().equals(Automata.mkTopAutomaton()))
-				return new Tarsis(bottomString(), new TarsisIntv(-1, null));
+				return new Tarsis(bottomString(), new TarsisIntv(TarsisMathNumber.MINUS_ONE, TarsisMathNumber.PLUS_INFINITY));
 			if (right.stringValue.getAutomaton().equals(Automata.mkTopAutomaton()))
-				return new Tarsis(bottomString(), new TarsisIntv(-1, left.stringValue.length().getUpper()));
+				return new Tarsis(bottomString(), new TarsisIntv(TarsisMathNumber.MINUS_ONE, new TarsisMathNumber(left.stringValue.length().getUpper())));
 	
 			it.unive.tarsis.AutomatonString.Interval result = left.stringValue.indexOf(right.stringValue);
-			return new Tarsis(bottomString(), new TarsisIntv(result.getLower(), result.getUpper()));
+			return new Tarsis(bottomString(), new TarsisIntv(new TarsisMathNumber(result.getLower()), new TarsisMathNumber(result.getUpper())));
 		case NUMERIC_ADD:
 			return new Tarsis(bottomString(), left.intValue.plus(right.intValue));
 		case STRING_CONCAT:
@@ -207,8 +207,8 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			AutomatonString result = new AutomatonString(Automata.mkEmptyLanguage());
 
 			if (iIntv.isFinite() && jIntv.isFinite()) {
-				for (int i = iIntv.getLow(); i <= iIntv.getHigh(); i++)
-					for (int j = jIntv.getLow(); j <= jIntv.getHigh(); j++)
+				for (int i = iIntv.getLowNumber(); i <= iIntv.getHighNumber(); i++)
+					for (int j = jIntv.getLowNumber(); j <= jIntv.getHighNumber(); j++)
 						if (i <= j)
 							result = result.lub(left.stringValue.substring(i, j));
 				return new Tarsis(result, intValue.bottom());

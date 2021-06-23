@@ -21,7 +21,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		perform("collections/struct", "struct.go", conf);
 	}
 	
-	
+	/**
+	 * Array tests
+	 */
 	@Test
 	public void fieldInsensitivedPointBasedArrayTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
@@ -34,6 +36,23 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()));
 		perform("collections/array/field-sensitive", "array.go", conf);
+	}
+	
+	/**
+	 * Slice tests
+	 */
+	@Test
+	public void fieldInsensitivedPointBasedSliceTest() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval()));
+		perform("collections/slice/field-insensitive", "slice.go", conf);
+	}
+	
+	@Test
+	public void fieldSensitivePointBasedSliceTest() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()));
+		perform("collections/slice/field-sensitive", "slice.go", conf);
 	}
 	
 	@Test

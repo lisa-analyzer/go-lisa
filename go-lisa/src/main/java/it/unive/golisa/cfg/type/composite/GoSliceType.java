@@ -10,10 +10,11 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
-public class GoSliceType implements GoType {
+public class GoSliceType implements GoType, PointerType {
 	
 	private Type contentType;
 

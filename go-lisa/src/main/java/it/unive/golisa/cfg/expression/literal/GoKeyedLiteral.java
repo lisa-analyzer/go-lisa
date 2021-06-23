@@ -3,6 +3,7 @@ package it.unive.golisa.cfg.expression.literal;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -53,6 +54,9 @@ public class GoKeyedLiteral extends NativeCall {
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
 		ExpressionSet<SymbolicExpression> containerExps = containerState.getComputedExpressions();
 
+		/* 
+		 * Array allocation
+		 */
 		if (getStaticType() instanceof GoArrayType) {
 
 			GoArrayType arrayType = (GoArrayType) getStaticType();
@@ -86,6 +90,9 @@ public class GoKeyedLiteral extends NativeCall {
 			}
 		}
 
+		/*
+		 * Struct allocation
+		 */
 		if (getStaticType() instanceof GoStructType) {
 			// Retrieve the struct type (that is a compilation unit)
 			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
@@ -118,6 +125,7 @@ public class GoKeyedLiteral extends NativeCall {
 			return result;
 		} 
 
+		
 		// TODO: to handle the other cases (maps...)
 		return entryState.top();
 	}

@@ -101,6 +101,7 @@ import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
+import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
@@ -1253,9 +1254,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return visitConversion(ctx.conversion());
 
 		if (ctx.primaryExpr() != null) {
-
+			
 			// Check built-in functions
-			if (ctx.primaryExpr().getText().equals("new")) {
+			String funcName = ctx.primaryExpr().getText();
+			
+			switch(funcName) {
+			case "new":
 				// new requires a type as input
 				if (ctx.arguments().type_() != null)
 					return new GoNew(cfg, locationOf(ctx.primaryExpr()), visitType_(ctx.arguments().type_()));
@@ -1263,13 +1267,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					// TODO: this is a workaround...
 					return new GoNew(cfg, locationOf(ctx.primaryExpr()), parseType(ctx.arguments().expressionList().getText()));
 				}
-			}
-
-			else if (ctx.primaryExpr().getText().equals("len")) {
+			case "len":
 				Expression[] args = visitArguments(ctx.arguments());
 				return new GoLength(cfg, locationOf(ctx.primaryExpr()), args[0]);
+				
+			case "make":
+				GoType typeToAllocate = visitType_(ctx.arguments().type_());
+				args = visitArguments(ctx.arguments());
+				return new GoMake(cfg, locationOf(ctx.primaryExpr()), typeToAllocate, args);
 			}
-
+			
+	
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
 			// Function/method call (e.g., f(1,2,3), x.f())

@@ -49,9 +49,10 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
+		Statement entryNode = null;
 		Pair<Statement, Statement> result = visitBlock(ctx.block());	
-		Statement functionEntryPoint = result.getLeft();
-		cfg.getEntrypoints().add(functionEntryPoint);
+//		Statement functionEntryPoint = result.getLeft();
+//		cfg.getEntrypoints().add(functionEntryPoint);
 
 		if (cfg.getDescriptor().getName().equals("main"))
 			program.addEntryPoint(cfg);
@@ -62,7 +63,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 			if (tuple.isNamedValues()) {
 				Statement lastStmt = null;
-				Statement entryNode = null;
 
 				for (Parameter par : tuple) {
 					VariableRef var = new VariableRef(cfg, par.getLocation(), par.getName());
@@ -81,15 +81,15 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 				addEdge(new SequentialEdge(lastStmt, result.getLeft()));
 				cfg.getEntrypoints().add(entryNode);
 			} else {
-				cfg.getEntrypoints().add(functionEntryPoint);
+				entryNode = result.getLeft();
 			}
 
-		} else {
-			cfg.getEntrypoints().add(functionEntryPoint);
-		}
+		} else 
+			entryNode = result.getLeft();
 		
+		cfg.getEntrypoints().add(entryNode);
 		cfg.simplify();
-		return result;
+		return Pair.of(entryNode, result.getRight());
 	}
 
 	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl) {

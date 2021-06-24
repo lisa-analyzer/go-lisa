@@ -36,4 +36,12 @@ func main() {
 	g := add1(42, 13)
 	h := add2(42, 13)
 	i, j := swap(1,2)
+	l, k := split(17)
+}
+
+// from https://tour.golang.org/basics/7
+func split(sum int) (x, y int) {
+	x = sum * 4 / 9
+	y = sum - x
+	return
 }

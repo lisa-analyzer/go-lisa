@@ -226,39 +226,35 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		}
 	}
 
-	protected Satisfiability satisfiesAbstractValue(Tarsis value) {
+	protected Satisfiability satisfiesAbstractValue(Tarsis value, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesNullConstant() {
+	protected Satisfiability satisfiesNullConstant(ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesNonNullConstant(Constant constant) {
+	protected Satisfiability satisfiesNonNullConstant(Constant constant, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesUnaryExpression(UnaryOperator operator, Tarsis arg) {
+	protected Satisfiability satisfiesUnaryExpression(UnaryOperator operator, Tarsis arg, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right) {
+	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right, ProgramPoint pp) {
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
 
 		switch(operator) {
-		case COMPARISON_EQ:
-			break;
-		case COMPARISON_GE:
-			break;
-		case COMPARISON_GT:
-			break;
 		case COMPARISON_LE:
-			break;
 		case COMPARISON_LT:
-			break;
+		case COMPARISON_GT:
+		case COMPARISON_GE:
 		case COMPARISON_NE:
-			break;
+		case COMPARISON_EQ:
+			return intValue.satisfiesBinaryExpression(operator, left.intValue, right.intValue, pp);
+
 		case STRING_CONTAINS:
 			if (left.stringValue.contains(right.stringValue))
 				return Satisfiability.SATISFIED;
@@ -292,7 +288,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	}
 
 	protected Satisfiability satisfiesTernaryExpression(TernaryOperator operator, Tarsis left, Tarsis middle,
-			Tarsis right) {
+			Tarsis right, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
@@ -356,8 +352,70 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) {
-		// TODO Auto-generated method stub
-		return null;
+		if (expression instanceof Identifier)
+			return satisfiesAbstractValue(environment.getState((Identifier) expression), pp);
+
+		if (expression instanceof NullConstant)
+			return satisfiesNullConstant(pp);
+
+		if (expression instanceof Constant)
+			return satisfiesNonNullConstant((Constant) expression, pp);
+
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression unary = (UnaryExpression) expression;
+
+			if (unary.getOperator() == UnaryOperator.LOGICAL_NOT)
+				return satisfies((ValueExpression) unary.getExpression(), environment, pp).negate();
+			else {
+				Tarsis arg = eval((ValueExpression) unary.getExpression(), environment, pp);
+				if (arg.isBottom())
+					return Satisfiability.BOTTOM;
+
+				return satisfiesUnaryExpression(unary.getOperator(), arg, pp);
+			}
+		}
+
+		if (expression instanceof BinaryExpression) {
+			BinaryExpression binary = (BinaryExpression) expression;
+
+			if (binary.getOperator() == BinaryOperator.LOGICAL_AND)
+				return satisfies((ValueExpression) binary.getLeft(), environment, pp)
+						.and(satisfies((ValueExpression) binary.getRight(), environment, pp));
+			else if (binary.getOperator() == BinaryOperator.LOGICAL_OR)
+				return satisfies((ValueExpression) binary.getLeft(), environment, pp)
+						.or(satisfies((ValueExpression) binary.getRight(), environment, pp));
+			else {
+				Tarsis left = eval((ValueExpression) binary.getLeft(), environment, pp);
+				if (left.isBottom())
+					return Satisfiability.BOTTOM;
+
+				Tarsis right = eval((ValueExpression) binary.getRight(), environment, pp);
+				if (right.isBottom())
+					return Satisfiability.BOTTOM;
+
+				return satisfiesBinaryExpression(binary.getOperator(), left, right, pp);
+			}
+		}
+
+		if (expression instanceof TernaryExpression) {
+			TernaryExpression ternary = (TernaryExpression) expression;
+
+			Tarsis left = eval((ValueExpression) ternary.getLeft(), environment, pp);
+			if (left.isBottom())
+				return Satisfiability.BOTTOM;
+
+			Tarsis middle = eval((ValueExpression) ternary.getMiddle(), environment, pp);
+			if (middle.isBottom())
+				return Satisfiability.BOTTOM;
+
+			Tarsis right = eval((ValueExpression) ternary.getRight(), environment, pp);
+			if (right.isBottom())
+				return Satisfiability.BOTTOM;
+
+			return satisfiesTernaryExpression(ternary.getOperator(), left, middle, right, pp);
+		}
+
+		return Satisfiability.UNKNOWN;
 	}
 
 	@Override
@@ -378,14 +436,13 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	@Override
 	public ValueEnvironment<Tarsis> assume(ValueEnvironment<Tarsis> environment, ValueExpression expression,
 			ProgramPoint pp) throws SemanticException {
-		// TODO put proper assume
 		return environment;
 	}
 
 	@Override
 	public Tarsis glb(Tarsis other) throws SemanticException {
-		// TODO put proper glb
-		return BOTTOM;
+		// TODO glb on stringValue
+		return new Tarsis(stringValue, intValue.glb(other.intValue));
 	}
 	
 	protected Tarsis evalTypeConv(BinaryExpression conv, Tarsis left, Tarsis right, ProgramPoint pp) {

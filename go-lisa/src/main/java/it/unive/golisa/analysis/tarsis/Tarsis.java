@@ -123,6 +123,12 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			if (right.isBottom())
 				return right;
 
+			if (binary.getOperator() == BinaryOperator.TYPE_CAST)
+				return evalTypeCast(binary, left, right, pp);
+
+			if (binary.getOperator() == BinaryOperator.TYPE_CONV)
+				return evalTypeConv(binary, left, right, pp);
+			
 			return evalBinaryExpression(binary.getOperator(), left, right, pp);
 		}
 
@@ -380,5 +386,25 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	public Tarsis glb(Tarsis other) throws SemanticException {
 		// TODO put proper glb
 		return BOTTOM;
+	}
+	
+	protected Tarsis evalTypeConv(BinaryExpression conv, Tarsis left, Tarsis right, ProgramPoint pp) {
+		return conv.getTypes().isEmpty() ? bottom() : left;
+	}
+
+	/**
+	 * Yields the evaluation of a type cast expression.
+	 * 
+	 * @param cast  the type casted expression
+	 * @param left  the left expression, namely the expression to be casted
+	 * @param right the right expression, namely the types to which left should
+	 *                  be casted
+	 * @param pp    the program point that where this operation is being
+	 *                  evaluated
+	 * 
+	 * @return the evaluation of the type cast expression
+	 */
+	protected Tarsis evalTypeCast(BinaryExpression cast, Tarsis left, Tarsis right, ProgramPoint pp) {
+		return cast.getTypes().isEmpty() ? bottom() : left;
 	}
 }

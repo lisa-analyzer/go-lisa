@@ -142,13 +142,11 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public RelTarsis pushScope(ScopeToken token) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RelTarsis(tarsis.pushScope(token), rsubs.pushScope(token));
 	}
 
 	@Override
 	public RelTarsis popScope(ScopeToken token) throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		return new RelTarsis(tarsis.popScope(token), rsubs.popScope(token));
 	}
 }

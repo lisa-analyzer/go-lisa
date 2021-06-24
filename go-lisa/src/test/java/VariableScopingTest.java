@@ -32,7 +32,6 @@ public class VariableScopingTest {
 		return cfg;
 	}
 
-
 	@Test
 	public void testSingle() throws IOException, ProgramValidationException {
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
@@ -40,7 +39,6 @@ public class VariableScopingTest {
 		// we just check that no exception is thrown
 	}
 
-	
 	@Test
 	public void testForLoopVariableScooping() throws IOException, ProgramValidationException  {
 		assertTrue((new File("go-testcases/variablescoping/scoping.go")).exists());

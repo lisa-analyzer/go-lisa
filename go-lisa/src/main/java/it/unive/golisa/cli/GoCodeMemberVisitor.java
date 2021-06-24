@@ -155,6 +155,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
@@ -400,7 +401,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Pair<Statement, Statement> visitStatementList(StatementListContext ctx) {		
+	public Pair<Statement, Statement> visitStatementList(StatementListContext ctx) {
+		// It is an empty statement
+		if (ctx == null || ctx.statement().size() == 0) {
+			NoOp nop = new NoOp(cfg, SyntheticLocation.INSTANCE);
+			cfg.addNode(nop);
+			return Pair.of(nop, nop);
+		}
+	
 		Statement lastStmt = null;
 		Statement entryNode = null;
 
@@ -788,7 +796,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// This method should never be visited
 		throw new UnsupportedOperationException("Assign_op should never be visited");
 	}
-
+	
+	/*
+	 * Following the Go specification {@link https://golang.org/ref/spec#Short_variable_declarations}
+	 * Unlike regular variable declarations, a short variable declaration may redeclare 
+	 * variables provided they were originally declared earlier in the same block 
+	 * (or the parameter lists if the block is the function body) with the same type, 
+	 * and at least one of the non-blank variables is new. 
+	 * As a consequence, redeclaration can only appear in a multi-variable short declaration. 
+	 * Redeclaration does not introduce a new variable; it just assigns a new value to the original.
+	 */
 	@Override
 	public Pair<Statement, Statement> visitShortVarDecl(ShortVarDeclContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
@@ -796,7 +813,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// Number of identifiers to be assigned
 		int sizeIds = ids.IDENTIFIER().size();
-		// Numbefr of expressions to be assigned
+		// Number of expressions to be assigned
 		int sizeExps = exps.expression().size();
 
 		Statement lastStmt = null;
@@ -1482,10 +1499,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				keys[i] = (Expression) keysObj[i];
 				values[i] = (Expression) valuesObj[i];
 			}
-
+			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
+				type = GoArrayType.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) keys).length));
 			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
-		}	else 
+		}	else {
+		
+			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
+				type = GoArrayType.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) raw).length));
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw, type);
+		}
 	}
 
 	public Object visitLiteralValue(LiteralValueContext ctx, GoType type) {

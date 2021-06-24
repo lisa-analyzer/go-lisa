@@ -250,11 +250,20 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitLiteralType(LiteralTypeContext ctx) {
-		Object child = visitChildren(ctx);
-		if (!(child instanceof GoType))
-			throw new IllegalStateException("Type expected");
-		else
-			return (GoType) child;
+		if (ctx.structType() != null)
+			return visitStructType(ctx.structType());
+		else if (ctx.arrayType() != null)
+			return visitArrayType(ctx.arrayType());
+		else if (ctx.sliceType() != null)
+			return visitSliceType(ctx.sliceType());
+		else if (ctx.mapType() != null)
+			return visitMapType(ctx.mapType());
+		else if (ctx.typeName() != null)
+			return visitTypeName(ctx.typeName());
+		else {
+			GoType elementType = visitElementType(ctx.elementType());
+			return GoArrayType.lookup(new GoArrayType(elementType, -1));
+		}
 	}
 
 	static protected int getLine(ParserRuleContext ctx) {
@@ -303,7 +312,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(file, program).visitParameterDecl(formalPars.parameterDecl(i)));
-			
+
 			return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs);
 		}
 

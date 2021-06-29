@@ -84,6 +84,7 @@ public class VariableScopingTest {
 		expectedResult.put("e := 8", Set.of("a", "b", "sum", "i", "c", "e"));
 		expectedResult.put("b = +(e, 3)", Set.of("a", "b", "sum", "i", "c", "e"));
 		expectedResult.put("a = +(b, 2)", Set.of("a", "b", "sum"));
+		expectedResult.put("ret", Set.of("a", "b", "sum"));
 		
 		
 		return expectedResult;

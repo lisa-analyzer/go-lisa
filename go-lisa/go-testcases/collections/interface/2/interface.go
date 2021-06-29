@@ -20,4 +20,5 @@ func (t T) M() string {
 func main() {
 	var i I = T{"hello"} // assign i = ref$pp1 cast-as I
 	x := i.M()
+	return
 }

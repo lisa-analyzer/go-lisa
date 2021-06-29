@@ -28,4 +28,5 @@ func main() {
 	var e1 Employee = Emp{1}
 	r1 := e1.GetFullName("Vincenzo Arceri")
 	r2 := e1.GetSalary(25000, 5)
+	return
 }

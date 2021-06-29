@@ -19,4 +19,5 @@ func main() {
 	v := Vertex{3, 4}
 	abs1 := v.f1()
 	abs2 := f2(v)
+	return
 }

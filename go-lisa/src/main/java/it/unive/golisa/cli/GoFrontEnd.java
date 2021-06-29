@@ -30,14 +30,34 @@ import it.unive.golisa.antlr.GoParser.String_Context;
 import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
+import it.unive.golisa.cfg.expression.runtime.conversion.GoToString;
 import it.unive.golisa.cfg.expression.runtime.fmt.GoPrintln;
 import it.unive.golisa.cfg.expression.runtime.strings.GoContains;
 import it.unive.golisa.cfg.expression.runtime.strings.GoHasPrefix;
 import it.unive.golisa.cfg.expression.runtime.strings.GoHasSuffix;
-import it.unive.golisa.cfg.expression.runtime.strings.GoIndexOf;
+import it.unive.golisa.cfg.expression.runtime.strings.GoIndex;
+import it.unive.golisa.cfg.expression.runtime.strings.GoIndexRune;
 import it.unive.golisa.cfg.expression.runtime.strings.GoReplace;
+import it.unive.golisa.cfg.expression.runtime.url.UrlPathEscape;
+import it.unive.golisa.cfg.expression.runtime.url.UrlQueryEscape;
+import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
+import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
@@ -101,6 +121,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
 
+//		GoArrayType.clearAll();
+//		GoStructType.clearAll();
+		
 		InputStream stream = new FileInputStream(getFilePath());
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
@@ -110,8 +133,32 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Program result = visitSourceFile((SourceFileContext) tree);
 		stream.close();
-
+		
+		registerGoTypes(program);
+		// Register all the types
+		
 		return result;
+	}
+
+	private void registerGoTypes(Program program) {
+		program.registerType(GoBoolType.INSTANCE);
+		program.registerType(GoFloat32Type.INSTANCE);
+		program.registerType(GoFloat64Type.INSTANCE);
+		program.registerType(GoIntType.INSTANCE);
+		program.registerType(GoUntypedInt.INSTANCE);
+		program.registerType(GoUntypedFloat.INSTANCE);
+		program.registerType(GoInt8Type.INSTANCE);
+		program.registerType(GoUInt8Type.INSTANCE);		
+		program.registerType(GoInt16Type.INSTANCE);
+		program.registerType(GoUInt16Type.INSTANCE);	
+		program.registerType(GoInt32Type.INSTANCE);
+		program.registerType(GoUInt32Type.INSTANCE);	
+		program.registerType(GoInt64Type.INSTANCE);
+		program.registerType(GoUInt64Type.INSTANCE);
+		program.registerType(GoUntypedFloat.INSTANCE);
+		program.registerType(GoStringType.INSTANCE);
+		GoArrayType.all().forEach(program::registerType);
+		GoStructType.all().forEach(program::registerType);
 	}
 
 	CompilationUnit packageUnit;
@@ -201,11 +248,29 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Statement visitImportPath(ImportPathContext ctx) {
 		String lib = visitString_(ctx.string_());
 
+		loadCore();
+		
+		
 		switch (lib) {
 		case "strings": loadStrings();
 		case "fmt": loadFmt();
+		case "url": loadUrl();
 		}
 		return null;
+	}
+
+	private void loadUrl() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		CompilationUnit url = new CompilationUnit(unknownLocation, "url", false);
+		url.addConstruct(new UrlQueryEscape(unknownLocation, url));
+		url.addConstruct(new UrlPathEscape(unknownLocation, url));
+
+		program.addCompilationUnit(url);		
+	}
+
+	private void loadCore() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		packageUnit.addConstruct(new GoToString(unknownLocation, packageUnit));
 	}
 
 	private void loadStrings() {
@@ -215,7 +280,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		str.addConstruct(new GoHasSuffix(unknownLocation, str));
 		str.addConstruct(new GoContains(unknownLocation, str));
 		str.addConstruct(new GoReplace(unknownLocation, str));
-		str.addConstruct(new GoIndexOf(unknownLocation, str));	
+		str.addConstruct(new GoIndex(unknownLocation, str));	
+		str.addConstruct(new GoIndexRune(unknownLocation, str));	
 
 		program.addCompilationUnit(str);
 
@@ -224,7 +290,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		packageUnit.addConstruct(new GoHasSuffix(unknownLocation, str));
 		packageUnit.addConstruct(new GoContains(unknownLocation, str));
 		packageUnit.addConstruct(new GoReplace(unknownLocation, str));
-		packageUnit.addConstruct(new GoIndexOf(unknownLocation, str));
+		packageUnit.addConstruct(new GoIndex(unknownLocation, str));
+		packageUnit.addConstruct(new GoIndexRune(unknownLocation, str));
 	}
 
 	private void loadFmt() {

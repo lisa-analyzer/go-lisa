@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.type.composite;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
@@ -137,11 +137,6 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
-	}
-
-	@Override
 	public boolean isPointerType() {
 		return true;
 	}
@@ -149,5 +144,25 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	@Override
 	public CompilationUnit getUnit() {
 		return unit;
+	}
+	
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoStructType in : structTypes.values())
+			instances.add(in);
+		return instances;	
+	}
+	
+	
+	@Override
+	public Collection<Type> allInstances() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoStructType in : structTypes.values())
+			instances.add(in);
+		return instances;
+	}
+	
+	public static void clearAll() {
+		structTypes.clear();
 	}
 }

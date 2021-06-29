@@ -20,4 +20,5 @@ func measure(g geometry) int {
 func main() {
     ret := rect{width: 3, height: 4}
     a := measure(ret)
+	return
 }

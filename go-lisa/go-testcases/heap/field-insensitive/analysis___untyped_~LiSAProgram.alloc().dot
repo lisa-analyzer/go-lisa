@@ -1,7 +1,9 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<v1 := nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':19:17] ]]<BR/>value [[ heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':19:17: [3, 4] ]]<BR/>}} -&gt; [v1]>];
-	"node1" [shape="rect",color="gray",label=<v2 := nonKeyedLit(Vertex)(10, 11)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':19:17, heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':19:17: [3, 4]<BR/>heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:19: [10, 11] ]]<BR/>}} -&gt; [v2]>];
-	"node0" -> "node1" [color="black"];
+	"node0" [shape="rect",color="black",label=<v1 := nonKeyedLit(Vertex)(3, 4)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17] ]]<BR/>value [[ heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17: [3, 4] ]]<BR/>}} -&gt; [v1]>];
+	"node1" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17, heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':21:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17: [3, 4]<BR/>heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':21:19: [10, 11] ]]<BR/>}} -&gt; [skip]>];
+	"node2" [shape="rect",color="gray",label=<v2 := nonKeyedLit(Vertex)(10, 11)<BR/>{{<BR/>heap [[ [heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17, heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':21:19] ]]<BR/>value [[ heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':20:17: [3, 4]<BR/>heap[w]:pp@'go-testcases/heap/field-insensitive/go-structs.go':21:19: [10, 11] ]]<BR/>}} -&gt; [v2]>];
+	"node0" -> "node2" [color="black"];
+	"node2" -> "node1" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

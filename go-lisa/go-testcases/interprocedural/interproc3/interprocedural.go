@@ -37,6 +37,7 @@ func main() {
 	h := add2(42, 13)
 	i, j := swap(1,2)
 	l, k := split(17)
+	return
 }
 
 // from https://tour.golang.org/basics/7

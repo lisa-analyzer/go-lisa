@@ -13,6 +13,9 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.interprocedural.callgraph.impl.RTACallGraph;
+import it.unive.lisa.interprocedural.impl.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.impl.RecursionFreeToken;
 import it.unive.lisa.program.Program;
 
 public class ICALPTest {
@@ -28,6 +31,8 @@ public class ICALPTest {
 			.setInferTypes(true)
 			.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis()))
 			.setDumpAnalysis(true)
+			.setCallGraph(new RTACallGraph())
+			.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 			.setWorkdir(tmpDir);
 
 		LiSA lisa = new LiSA(conf);

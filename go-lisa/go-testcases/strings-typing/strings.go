@@ -10,5 +10,5 @@ func main() {
 	z := strings.HasSuffix(a,b)
 	w := strings.Index(a,b)
 	j := strings.Replace(a,b,b)
-	c := a[0]
+	return
 }

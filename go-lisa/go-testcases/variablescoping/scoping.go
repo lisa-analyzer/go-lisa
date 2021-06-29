@@ -24,5 +24,5 @@ func test(b int) {
 	}
 	
 	a = b + 2
-
+	return
 }

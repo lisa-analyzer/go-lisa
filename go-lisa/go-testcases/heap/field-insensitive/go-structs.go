@@ -13,21 +13,23 @@ func main() {
 	v := Vertex{3, 4}
 	v.X = 2
 	v.Y = 3
+	return
 }
 
 func alloc() {
 	v1 := Vertex{3,4}
 	v2 := Vertex{10,11}
-
+	return
 }
 
-func ifAlloc(a,b int) float64 {
+func ifAlloc(a,b int) {
 
 	if a == b {
 		x := Vertex{1,2}
 	} else {
 		x := Vertex{3,4}
 	}
+	return 
 }
 
 func forAlloc() {

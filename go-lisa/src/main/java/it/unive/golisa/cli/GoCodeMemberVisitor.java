@@ -277,14 +277,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		params = ArrayUtils.insert(0, params, receiver);
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
-		VariableScopingCFG method = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
-		cfg = method;
+		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
+
+		//		// If the method body does not have exit points 
+		//		// a return statement is added
+		if (cfg.getAllExitpoints().isEmpty()) {
+			Ret ret  =  new Ret(cfg, SyntheticLocation.INSTANCE);
+			cfg.addNode(ret);
+			cfg.addEdge(new SequentialEdge(body.getRight(), ret));
+		}
 
 		cfg.getEntrypoints().add(body.getLeft());
 		cfg.simplify();
-		currentUnit.addInstanceCFG(method);
-		return method;
+		currentUnit.addInstanceCFG(cfg);
+		return cfg;
 	}
 
 
@@ -408,7 +415,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			cfg.addNode(nop);
 			return Pair.of(nop, nop);
 		}
-	
+
 		Statement lastStmt = null;
 		Statement entryNode = null;
 
@@ -796,7 +803,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// This method should never be visited
 		throw new UnsupportedOperationException("Assign_op should never be visited");
 	}
-	
+
 	/*
 	 * Following the Go specification {@link https://golang.org/ref/spec#Short_variable_declarations}
 	 * Unlike regular variable declarations, a short variable declaration may redeclare 
@@ -827,11 +834,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			VariableRef[] left = visitIdentifierList(ctx.identifierList());
 
 			for (int i = 0; i < left.length; i++)
-				if (visibleIds.containsKey(left[i].getName())) 
-					throw new GoSyntaxException(
-							"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
-				else
-					visibleIds.put(left[i].getName(), left[i]);
+				//				if (visibleIds.containsKey(left[i].getName())) 
+				//					throw new GoSyntaxException(
+				//							"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
+				//				else
+				visibleIds.put(left[i].getName(), left[i]);
 
 
 			Expression right = visitExpression(exps.expression(0));
@@ -851,9 +858,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Type type = exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 
-				if (visibleIds.containsKey(target.getName()))
-					throw new GoSyntaxException(
-							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
+				//				if (visibleIds.containsKey(target.getName()))
+				//					throw new GoSyntaxException(
+				//							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 
 				visibleIds.put(target.getName(), target);
 
@@ -1177,10 +1184,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
 			return Pair.of(entryNode, exitNode);
-		}
+		} 
 
 		if (ctx.rangeClause() != null) {
-			// TODO: SUPER UNSOUND
+			// TODO: to fix
 			NoOp entry = new NoOp(cfg, location);
 			cfg.addNode(entry, visibleIds);
 
@@ -1192,6 +1199,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			addEdge(new SequentialEdge(entry, block.getLeft()));
 			addEdge(new SequentialEdge(block.getLeft(), exitNode));
+			addEdge(new SequentialEdge(block.getRight(), entry));
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
@@ -1271,10 +1279,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return visitConversion(ctx.conversion());
 
 		if (ctx.primaryExpr() != null) {
-			
+
 			// Check built-in functions
 			String funcName = ctx.primaryExpr().getText();
-			
+
 			switch(funcName) {
 			case "new":
 				// new requires a type as input
@@ -1287,33 +1295,38 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			case "len":
 				Expression[] args = visitArguments(ctx.arguments());
 				return new GoLength(cfg, locationOf(ctx.primaryExpr()), args[0]);
-				
+
 			case "make":
-				GoType typeToAllocate = visitType_(ctx.arguments().type_());
 				args = visitArguments(ctx.arguments());
-				return new GoMake(cfg, locationOf(ctx.primaryExpr()), typeToAllocate, args);
+				if (ctx.arguments().type_() != null)  {
+					GoType typeToAllocate = visitType_(ctx.arguments().type_());
+					return new GoMake(cfg, locationOf(ctx.primaryExpr()), typeToAllocate, args);
+				} else {
+					return new GoMake(cfg, locationOf(ctx.primaryExpr()), null, args);
+				}
+
+
 			}
-			
-	
+
+
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
 			// Function/method call (e.g., f(1,2,3), x.f())
 			// TODO: need to check if it is instance or not
 			if (ctx.arguments() != null) {
-
+				Expression[] args = visitArguments(ctx.arguments());
 				if (primary instanceof VariableRef) // Function call
 					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, primary.toString(), visitArguments(ctx.arguments()));				
 				else if (primary instanceof AccessInstanceGlobal) {
 					Expression receiver = getReceiver(ctx.primaryExpr());
-					if (receiver instanceof VariableRef) {
-						VariableRef x = (VariableRef) receiver;
-						if (program.getUnit(x.getName()) != null)
-							return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, getMethodName(ctx.primaryExpr()), visitArguments(ctx.arguments()));				
-						else {
-							Expression[] args = ArrayUtils.insert(0, visitArguments(ctx.arguments()), receiver);
-							return new UnresolvedCall(cfg, locationOf(ctx), ResolutionStrategy.FIRST_DYNAMIC_THEN_STATIC, true, getMethodName(ctx.primaryExpr()), args);				
-						}
-					}
+					if (program.getUnit(receiver.toString()) != null) 
+						//						VariableRef x = (VariableRef) receiver;
+						//						if (program.getUnit(x.getName()) != null)
+						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, getMethodName(ctx.primaryExpr()), args);				
+					else {
+						args = ArrayUtils.insert(0, args, receiver);
+						return new UnresolvedCall(cfg, locationOf(ctx), ResolutionStrategy.FIRST_DYNAMIC_THEN_STATIC, true, getMethodName(ctx.primaryExpr()), args);				
+					}				
 				}
 			}
 
@@ -1340,7 +1353,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 
 			else if (ctx.typeAssertion() != null) {
-				return new GoTypeAssertion(cfg, primary, visitType_(ctx.typeAssertion().type_()));
+				return new GoTypeAssertion(cfg, locationOf(ctx), primary, visitType_(ctx.typeAssertion().type_()));
 			}
 		}
 
@@ -1488,13 +1501,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		GoType type = new GoTypeVisitor(file, currentUnit, program).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof Map<?, ?>)  {
-						
+
 			Object[] keysObj = ((Map<Expression, Expression>)raw).keySet().toArray();
 			Object[] valuesObj = ((Map<Expression, Expression>)raw).values().toArray();
-					
+
 			Expression[] keys = new Expression[keysObj.length];
 			Expression[] values  = new Expression[valuesObj.length];
-			
+
 			for (int i = 0; i < keys.length; i++)  {
 				keys[i] = (Expression) keysObj[i];
 				values[i] = (Expression) valuesObj[i];
@@ -1503,7 +1516,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				type = GoArrayType.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) keys).length));
 			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 		}	else {
-		
+
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) raw).length));
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw, type);
@@ -1582,8 +1595,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		throw new IllegalStateException(type + " has not content type");
 
 	}
-	
-	
+
+
 	@Override
 	public Expression visitString_(String_Context ctx) {
 		SourceCodeLocation location = locationOf(ctx);

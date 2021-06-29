@@ -18,4 +18,5 @@ func main() {
     r := rect{width: 10, height: 5}
 	a := r.area()
     b := r.perim()
+    return
 }

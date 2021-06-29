@@ -47,6 +47,12 @@ public class GoMake extends NativeCall {
 
 		AnalysisState<A, H, V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
 
+		// No type information is provided and just a single type 
+		// is passed as argument and it should be allocated
+		if (type == null) {
+			return entryState.top();
+		}
+		
 		/**
 		 * Slice allocation
 		 */

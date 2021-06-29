@@ -17,6 +17,7 @@ import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -50,17 +51,18 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 		Statement entryNode = null;
-		Pair<Statement, Statement> result = visitBlock(ctx.block());	
-//		Statement functionEntryPoint = result.getLeft();
-//		cfg.getEntrypoints().add(functionEntryPoint);
+		Pair<Statement, Statement> body = visitBlock(ctx.block());	
 
+		// The function named "main" is the entry point of the program
 		if (cfg.getDescriptor().getName().equals("main"))
 			program.addEntryPoint(cfg);
 
 		Type returnType = cfg.getDescriptor().getReturnType();
-		if (returnType instanceof GoTypesTuple) {
-			GoTypesTuple tuple = (GoTypesTuple) returnType;
 
+		if (!(returnType instanceof  GoTypesTuple))
+			entryNode = body.getLeft();
+		else {
+			GoTypesTuple tuple = (GoTypesTuple) returnType;
 			if (tuple.isNamedValues()) {
 				Statement lastStmt = null;
 
@@ -77,19 +79,25 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 						entryNode = decl;
 					lastStmt = decl;
 				}
-				
-				addEdge(new SequentialEdge(lastStmt, result.getLeft()));
-				cfg.getEntrypoints().add(entryNode);
-			} else {
-				entryNode = result.getLeft();
-			}
 
-		} else 
-			entryNode = result.getLeft();
-		
+				addEdge(new SequentialEdge(lastStmt, body.getLeft()));
+				cfg.getEntrypoints().add(entryNode);
+
+			} else 
+				entryNode = body.getLeft();
+		}
+
+		// If the function body does not have exit points 
+		// a return statement is added
+		if (cfg.getAllExitpoints().isEmpty()) {
+			Ret ret  =  new Ret(cfg, SyntheticLocation.INSTANCE);
+			cfg.addNode(ret);
+			addEdge(new SequentialEdge(body.getRight(), ret));
+		}
+
 		cfg.getEntrypoints().add(entryNode);
 		cfg.simplify();
-		return Pair.of(entryNode, result.getRight());
+		return Pair.of(entryNode, body.getRight());
 	}
 
 	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl) {
@@ -132,12 +140,12 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		return GoFunctionType.lookup(new GoFunctionType(params, returnType));
 	}
-	
+
 	private void addEdge(Edge edge) {
 		if (!isReturnStmt(edge.getSource()))
 			cfg.addEdge(edge);
 	}
-	
+
 	private boolean isReturnStmt(Statement stmt) {
 		return stmt instanceof GoReturn || stmt instanceof Ret;
 	}

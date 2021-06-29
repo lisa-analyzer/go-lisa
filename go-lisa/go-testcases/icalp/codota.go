@@ -1,5 +1,16 @@
 package codota
 
+import "strings"
+
+
+func main(x, y, z string) {
+	a := parseIso8601Date(x)
+	b := secName(x,y,z)
+	c := verifyProtocol(x)
+	d := verifyProtocol2(y)
+	return
+}
+
 // From: https://www.codota.com/code/query/java.lang@String+java.lang@String@concat
 func parseIso8601Date(dateString string) string {
   // For EC2 Spot Fleet.

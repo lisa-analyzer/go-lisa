@@ -37,24 +37,24 @@ public class GoCollectionAccess extends BinaryNativeCall {
 		AnalysisState<A, H, V> result = entryState.bottom();
 
 
-		for (Type type : left.getTypes()) {
-			if (type.isStringType()) {
-				Constant one = new Constant(GoIntType.INSTANCE, 1, getLocation());
-				AnalysisState<A, H, V> nextState = rightState.smallStepSemantics(new BinaryExpression(getRuntimeTypes(), right, one, BinaryOperator.NUMERIC_ADD, getLocation()), this);
-
-				for (SymbolicExpression next : nextState.getComputedExpressions()) 
-					result = result.lub(rightState.smallStepSemantics(
-							new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), 
-									left, 
-									right, next, TernaryOperator.STRING_SUBSTRING, getLocation()), this));
-			} else if (type.isPointerType()) {
+//		for (Type type : left.getTypes()) {
+//			if (type.isStringType()) {
+//				Constant one = new Constant(GoIntType.INSTANCE, 1, getLocation());
+//				AnalysisState<A, H, V> nextState = rightState.smallStepSemantics(new BinaryExpression(getRuntimeTypes(), right, one, BinaryOperator.NUMERIC_ADD, getLocation()), this);
+//
+//				for (SymbolicExpression next : nextState.getComputedExpressions()) 
+//					result = result.lub(rightState.smallStepSemantics(
+//							new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), 
+//									left, 
+//									right, next, TernaryOperator.STRING_SUBSTRING, getLocation()), this));
+//			} else if (type.isPointerType()) {
 				AnalysisState<A, H, V> rec = entryState.smallStepSemantics(left, this);
 				for (SymbolicExpression expr : rec.getComputedExpressions()) {	
 					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), new HeapDereference(getRuntimeTypes(), expr, getLocation()), right, getLocation()), this);
 					result = result.lub(tmp);
-				}
+//				}
 			}
-		}
+//		}
 		
 		return result;
 	}

@@ -293,6 +293,11 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
+		
+		// The interface is empty
+		if (ctx.methodSpec().size() == 0)	
+			return GoInterfaceType.getEmptyInterface();
+		
 		for (MethodSpecContext methodSpec : ctx.methodSpec()) 
 			unit.addInstanceCFG(new CFG(visitMethodSpec(methodSpec)));
 		return GoInterfaceType.lookup(unit.getName(), unit);

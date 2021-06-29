@@ -15,6 +15,7 @@ package main
         arr1 := build(1,2,3)
         arr2 := build(-5,5,6)
 	    x, y := f()
+	    return
     }
     
 	func f() (int,int) {

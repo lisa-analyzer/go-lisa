@@ -19,8 +19,8 @@ public class GoTypeAssertion extends UnaryNativeCall {
 
 	private final Type type;
 	
-	public GoTypeAssertion(CFG cfg, Expression exp1, Type type) {
-		super(cfg, new SourceCodeLocation(null, -1, -1), ".", exp1);
+	public GoTypeAssertion(CFG cfg, SourceCodeLocation location, Expression exp1, Type type) {
+		super(cfg, location, ".", exp1);
 		this.type = type;
 	}
 

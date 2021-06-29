@@ -24,6 +24,7 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.tarsis.AutomatonString;
 import it.unive.tarsis.automata.Automata;
+import it.unive.tarsis.automata.Automaton;
 
 public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDomain<Tarsis> {
 
@@ -86,7 +87,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	}
 	
 	@Override
-	public Tarsis eval(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) {
+	public Tarsis eval(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) throws SemanticException {
 		if (expression instanceof Identifier)
 			return environment.getState((Identifier) expression);
 
@@ -182,17 +183,29 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		}
 	} 
 
-	protected Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right, ProgramPoint pp) {
+	protected Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right, ProgramPoint pp) throws SemanticException {
 		switch(operator) {
 		case STRING_INDEX_OF:
-			// Checking top cases
-			if (left.stringValue.getAutomaton().equals(Automata.mkTopAutomaton()))
+			Automaton leftAutomaton = left.stringValue.getAutomaton();
+			Automaton rightAutomaton = left.stringValue.getAutomaton();
+			
+			if (leftAutomaton.hasCycle()  || rightAutomaton.hasCycle())
 				return new Tarsis(bottomString(), new TarsisIntv(TarsisMathNumber.MINUS_ONE, TarsisMathNumber.PLUS_INFINITY));
-			if (right.stringValue.getAutomaton().equals(Automata.mkTopAutomaton()))
-				return new Tarsis(bottomString(), new TarsisIntv(TarsisMathNumber.MINUS_ONE, new TarsisMathNumber(left.stringValue.length().getUpper())));
-	
-			it.unive.tarsis.AutomatonString.Interval result = left.stringValue.indexOf(right.stringValue);
-			return new Tarsis(bottomString(), new TarsisIntv(new TarsisMathNumber(result.getLower()), new TarsisMathNumber(result.getUpper())));
+
+			
+			TarsisIntv result = intValue.bottom();
+			
+			for (String str : leftAutomaton.getLanguage())
+				for (String src : rightAutomaton.getLanguage())
+					if (str.contains(src))
+						result = result.lub(new TarsisIntv(new TarsisMathNumber(str.indexOf(src)), new TarsisMathNumber(str.indexOf(src))));
+					else
+						result = result.lub(new TarsisIntv(TarsisMathNumber.MINUS_ONE, TarsisMathNumber.MINUS_ONE));
+			
+			if (result.getHigh().isInfinite())
+				result = new TarsisIntv(result.getLow(), new TarsisMathNumber(leftAutomaton.maxLengthString()));
+			
+			return new Tarsis(bottomString(), result);
 		case NUMERIC_ADD:
 			return new Tarsis(bottomString(), left.intValue.plus(right.intValue));
 		case STRING_CONCAT:
@@ -351,7 +364,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) {
+	public Satisfiability satisfies(ValueExpression expression, ValueEnvironment<Tarsis> environment, ProgramPoint pp) throws SemanticException {
 		if (expression instanceof Identifier)
 			return satisfiesAbstractValue(environment.getState((Identifier) expression), pp);
 

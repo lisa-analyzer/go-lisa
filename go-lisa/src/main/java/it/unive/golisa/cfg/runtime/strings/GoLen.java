@@ -1,11 +1,13 @@
-package it.unive.golisa.cfg.expression.runtime.url;
+package it.unive.golisa.cfg.runtime.strings;
 
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -18,17 +20,20 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.UnaryOperator;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class UrlQueryEscape extends NativeCFG {
+public class GoLen extends NativeCFG {
 
-	public UrlQueryEscape(SourceCodeLocation location, CompilationUnit urlUnit) {
-		super(new CFGDescriptor(location, urlUnit, false, "QueryEscape", GoStringType.INSTANCE,
+	public GoLen(SourceCodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "Len", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
-				QueryEscape.class);
+				Len.class);
 	}
 	
-	public static class QueryEscape extends UnaryNativeCall implements PluggableStatement {
+	public static class Len extends UnaryNativeCall implements PluggableStatement {
 		
 		private Statement original;
 
@@ -37,17 +42,18 @@ public class UrlQueryEscape extends NativeCFG {
 			original = st;
 		}
 		
-		public QueryEscape(CFG cfg, SourceCodeLocation location, Expression exp1) {
-			super(cfg, location, "QueryEscape", GoStringType.INSTANCE, exp1);
+		public Len(CFG cfg, SourceCodeLocation location, Expression arg) {
+			super(cfg, location, "Len", GoIntType.INSTANCE, arg);
 		}
 
 		@Override
 		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
 				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
-			// TODO to implement  query escape method from url package
-			return entryState.smallStepSemantics(new PushAny(getRuntimeTypes(), getLocation()), original);
+			ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
+			return exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), original);
 		}
+
+		
 	}
 }
-

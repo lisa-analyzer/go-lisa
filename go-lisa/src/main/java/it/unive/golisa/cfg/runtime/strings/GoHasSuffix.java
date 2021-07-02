@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.expression.runtime.strings;
+package it.unive.golisa.cfg.runtime.strings;
 
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;

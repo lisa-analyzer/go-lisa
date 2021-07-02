@@ -30,16 +30,17 @@ import it.unive.golisa.antlr.GoParser.String_Context;
 import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.expression.runtime.conversion.GoToString;
-import it.unive.golisa.cfg.expression.runtime.fmt.GoPrintln;
-import it.unive.golisa.cfg.expression.runtime.strings.GoContains;
-import it.unive.golisa.cfg.expression.runtime.strings.GoHasPrefix;
-import it.unive.golisa.cfg.expression.runtime.strings.GoHasSuffix;
-import it.unive.golisa.cfg.expression.runtime.strings.GoIndex;
-import it.unive.golisa.cfg.expression.runtime.strings.GoIndexRune;
-import it.unive.golisa.cfg.expression.runtime.strings.GoReplace;
-import it.unive.golisa.cfg.expression.runtime.url.UrlPathEscape;
-import it.unive.golisa.cfg.expression.runtime.url.UrlQueryEscape;
+import it.unive.golisa.cfg.runtime.conversion.GoToString;
+import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.strings.GoContains;
+import it.unive.golisa.cfg.runtime.strings.GoHasPrefix;
+import it.unive.golisa.cfg.runtime.strings.GoHasSuffix;
+import it.unive.golisa.cfg.runtime.strings.GoIndex;
+import it.unive.golisa.cfg.runtime.strings.GoIndexRune;
+import it.unive.golisa.cfg.runtime.strings.GoLen;
+import it.unive.golisa.cfg.runtime.strings.GoReplace;
+import it.unive.golisa.cfg.runtime.url.UrlPathEscape;
+import it.unive.golisa.cfg.runtime.url.UrlQueryEscape;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
@@ -282,6 +283,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		str.addConstruct(new GoReplace(unknownLocation, str));
 		str.addConstruct(new GoIndex(unknownLocation, str));	
 		str.addConstruct(new GoIndexRune(unknownLocation, str));	
+		str.addConstruct(new GoLen(unknownLocation, str));	
 
 		program.addCompilationUnit(str);
 
@@ -292,6 +294,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		packageUnit.addConstruct(new GoReplace(unknownLocation, str));
 		packageUnit.addConstruct(new GoIndex(unknownLocation, str));
 		packageUnit.addConstruct(new GoIndexRune(unknownLocation, str));
+		packageUnit.addConstruct(new GoLen(unknownLocation, str));
 	}
 
 	private void loadFmt() {

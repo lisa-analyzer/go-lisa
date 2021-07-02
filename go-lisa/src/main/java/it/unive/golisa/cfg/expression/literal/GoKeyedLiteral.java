@@ -27,8 +27,11 @@ import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoKeyedLiteral extends NativeCall {
 
@@ -48,7 +51,8 @@ public class GoKeyedLiteral extends NativeCall {
 		// (the semantics of this call does not need information about the
 		// intermediate analysis states)
 		AnalysisState<A, H, V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()), getLocation());
+		ExternalSet<Type> type = Caches.types().mkSingletonSet(getStaticType());
+		HeapAllocation created = new HeapAllocation(type, getLocation());
 
 		// Allocates the new heap allocation 
 		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
@@ -63,8 +67,8 @@ public class GoKeyedLiteral extends NativeCall {
 			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp, getLocation());
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference, getLocation());
+				HeapReference reference = new HeapReference(type, containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				// Assign the len property to this hid
 				Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len", getLocation());
@@ -100,8 +104,8 @@ public class GoKeyedLiteral extends NativeCall {
 			AnalysisState<A, H, V> result = entryState.bottom();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp, getLocation());
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference, getLocation());
+				HeapReference reference = new HeapReference(type, containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				if (getParameters().length == 0) {
 					result = result.lub(containerState);
@@ -127,7 +131,7 @@ public class GoKeyedLiteral extends NativeCall {
 
 		
 		// TODO: to handle the other cases (maps...)
-		return entryState.top();
+		return entryState.smallStepSemantics(new PushAny(type, getLocation()), this);
 	}
 
 	private Variable getVariable(Global varRef) {

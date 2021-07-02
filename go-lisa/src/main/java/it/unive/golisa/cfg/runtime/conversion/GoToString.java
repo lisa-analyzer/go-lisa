@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.expression.runtime.conversion;
+package it.unive.golisa.cfg.runtime.conversion;
 
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;

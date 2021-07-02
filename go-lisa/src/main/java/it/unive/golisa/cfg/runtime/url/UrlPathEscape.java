@@ -1,6 +1,5 @@
-package it.unive.golisa.cfg.expression.runtime.url;
+package it.unive.golisa.cfg.runtime.url;
 
-import it.unive.golisa.cfg.expression.runtime.url.UrlQueryEscape.QueryEscape;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;

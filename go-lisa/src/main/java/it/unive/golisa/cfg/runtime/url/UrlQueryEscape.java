@@ -1,5 +1,6 @@
-package it.unive.golisa.cfg.expression.runtime.fmt;
+package it.unive.golisa.cfg.runtime.url;
 
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -17,34 +18,36 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.Untyped;
+import it.unive.lisa.symbolic.value.PushAny;
 
-public class GoPrintln extends NativeCFG {
+public class UrlQueryEscape extends NativeCFG {
 
-	public GoPrintln(SourceCodeLocation location, CompilationUnit fmtUnit) {
-		super(new CFGDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
-				new Parameter(location, "this", Untyped.INSTANCE)),
-				Println.class);
+	public UrlQueryEscape(SourceCodeLocation location, CompilationUnit urlUnit) {
+		super(new CFGDescriptor(location, urlUnit, false, "QueryEscape", GoStringType.INSTANCE,
+				new Parameter(location, "this", GoStringType.INSTANCE)),
+				QueryEscape.class);
 	}
 	
-	public static class Println extends UnaryNativeCall implements PluggableStatement {
-
+	public static class QueryEscape extends UnaryNativeCall implements PluggableStatement {
+		
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-
-		public Println(CFG cfg, SourceCodeLocation location, Expression arg) {
-			super(cfg, location, "Println", Untyped.INSTANCE, arg);
+		
+		public QueryEscape(CFG cfg, SourceCodeLocation location, Expression exp1) {
+			super(cfg, location, "QueryEscape", GoStringType.INSTANCE, exp1);
 		}
 
 		@Override
 		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {			
-			return exprState.smallStepSemantics(expr, original);
+				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+			// TODO to implement  query escape method from url package
+			return entryState.smallStepSemantics(new PushAny(getRuntimeTypes(), getLocation()), original);
 		}
 	}
 }
+

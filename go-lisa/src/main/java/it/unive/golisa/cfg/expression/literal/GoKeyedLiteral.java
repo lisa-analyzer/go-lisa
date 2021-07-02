@@ -131,7 +131,7 @@ public class GoKeyedLiteral extends NativeCall {
 
 		
 		// TODO: to handle the other cases (maps...)
-		return entryState.smallStepSemantics(new PushAny(type, getLocation()), this);
+		return entryState.top().smallStepSemantics(new PushAny(type, getLocation()), this);
 	}
 
 	private Variable getVariable(Global varRef) {

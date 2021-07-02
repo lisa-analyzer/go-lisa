@@ -11,7 +11,7 @@ repositories {
 
 group = 'it.unive'
 version = '0.1'
-mainClassName = 'it.unive.golisa.cli.GoLiSA'
+mainClassName = 'it.unive.golisa.cli.popl.POPLEvaluation'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'lib')
@@ -28,7 +28,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'it.unive.golisa.cli.GoLiSA'
+                'Main-Class': 'it.unive.golisa.cli.popl.POPLEvaluation'
         )
     }
 }

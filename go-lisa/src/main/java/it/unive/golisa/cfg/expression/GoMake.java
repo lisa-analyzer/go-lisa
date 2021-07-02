@@ -27,6 +27,7 @@ import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Untyped;
 
@@ -59,8 +60,12 @@ public class GoMake extends NativeCall {
 		if (type instanceof GoSliceType) {	
 			GoType contentType = (GoType) ((GoSliceType) type).getContentType();
 			SourceCodeLocation sliceLocation = (SourceCodeLocation) getLocation();
-			//FIXME: this is  a temporary workaround. At this location, two allocations are performed, need to differentiate
+			//FIXME: this is a temporary workaround. At this location, two allocations are performed, need to differentiate
 			SourceCodeLocation underlyingArrayLocation = new SourceCodeLocation(sliceLocation.getSourceFile(), sliceLocation.getLine(), sliceLocation.getCol() +1);
+	
+			// FIXME: currently, we handle just slice allocation where the length and  the capability are integers
+			if (!(getParameters()[0] instanceof  GoInteger))
+				return entryState.top().smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
 
 			int length = (int) ((GoInteger) getParameters()[0]).getValue();
 			int cap = getParameters().length == 1 ? length : (int) ((GoInteger) getParameters()[2]).getValue();
@@ -123,15 +128,16 @@ public class GoMake extends NativeCall {
 		 * Channel allocation
 		 */
 		if (type instanceof GoChannelType) 
-			return entryState.top();
+			return entryState.top().smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
 		
 		/**
 		 * Map allocation
 		 */
 		if (type instanceof GoMapType) 
-			return entryState.top();
+			return entryState.top().smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
 
-		return entryState.bottom();
+		return entryState.top().smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
+
 	}
 
 }

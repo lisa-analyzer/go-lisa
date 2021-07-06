@@ -9,7 +9,6 @@ import it.unive.golisa.antlr.GoParser.ParametersContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
@@ -17,10 +16,8 @@ import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -89,9 +86,10 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		// If the function body does not have exit points 
 		// a return statement is added
+		// TODO @Olly: need to change the visibility of the variables reaching implicit return statement
 		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret  =  new Ret(cfg, SyntheticLocation.INSTANCE);
-			cfg.addNode(ret);
+			Ret ret  =  new Ret(cfg, new SourceCodeLocation(file, 0, 0));
+			cfg.addNode(ret, cfg.getVisibleIds(body.getRight()));
 			addEdge(new SequentialEdge(body.getRight(), ret));
 		}
 
@@ -139,14 +137,5 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Parameter[] params = visitParameters(sign.parameters());
 
 		return GoFunctionType.lookup(new GoFunctionType(params, returnType));
-	}
-
-	private void addEdge(Edge edge) {
-		if (!isReturnStmt(edge.getSource()))
-			cfg.addEdge(edge);
-	}
-
-	private boolean isReturnStmt(Statement stmt) {
-		return stmt instanceof GoReturn || stmt instanceof Ret;
 	}
 }

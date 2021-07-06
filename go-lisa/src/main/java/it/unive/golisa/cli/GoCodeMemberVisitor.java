@@ -280,14 +280,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
 
-		//		// If the method body does not have exit points 
-		//		// a return statement is added
+		// If the method body does not have exit points 
+		// a return statement is added
+		// TODO @Olly: need to change the visibility of the variables reaching implicit return statement
 		if (cfg.getAllExitpoints().isEmpty()) {
 			Ret ret  =  new Ret(cfg, SyntheticLocation.INSTANCE);
-			cfg.addNode(ret);
+			cfg.addNode(ret, cfg.getVisibleIds(body.getRight()));
 			cfg.addEdge(new SequentialEdge(body.getRight(), ret));
 		}
-
+		
 		cfg.getEntrypoints().add(body.getLeft());
 		cfg.simplify();
 		currentUnit.addInstanceCFG(cfg);
@@ -392,7 +393,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return res;
 	}
-	private void updateVisileIds(Map<String, VariableRef> backup,Statement last) {
+	
+	protected void updateVisileIds(Map<String, VariableRef> backup, Statement last) {
 
 		Collection<String> toRemove = new HashSet<>();
 		for (Entry<String, VariableRef> id : visibleIds.entrySet())
@@ -1028,7 +1030,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return stmt instanceof GoReturn || stmt instanceof Ret;
 	}
 
-	private void addEdge(Edge edge) {
+	protected void addEdge(Edge edge) {
 		if (!isReturnStmt(edge.getSource()))
 			cfg.addEdge(edge);
 	}

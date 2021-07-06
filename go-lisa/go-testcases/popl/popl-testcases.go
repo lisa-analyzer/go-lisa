@@ -88,3 +88,11 @@ func SanitizePhoneNumber(phoneNumber string, pref string) string {
 	
 	return ret
 }
+
+func main() {
+	x := "ab"
+	y := "a"
+	z := "b"
+	w := y + z
+	return
+}

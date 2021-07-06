@@ -6,8 +6,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,7 +22,6 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.impl.heap.MonolithicHeap;
-import it.unive.lisa.analysis.impl.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.interprocedural.callgraph.impl.RTACallGraph;
 import it.unive.lisa.program.Program;
 
@@ -105,7 +102,7 @@ public class POPLEvaluation {
 			 * Tarsis  analysis
 			 */
 			conf.setWorkdir(outputDir + "/tarsis").setInferTypes(true)
-			.setAbstractState(getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Tarsis()))
+			.setAbstractState(getDefaultFor(AbstractState.class, new MonolithicHeap(), new Tarsis()))
 			.setDumpAnalysis(true)
 			.setCallGraph(new RTACallGraph())
 			.setInterproceduralAnalysis(new ModularWorstCaseWithNativeCalls<>());
@@ -130,7 +127,7 @@ public class POPLEvaluation {
 			 */
 			conf = new LiSAConfiguration();
 			conf.setWorkdir(outputDir + "/relTarsis").setInferTypes(true)
-			.setAbstractState(getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new RelTarsis()))
+			.setAbstractState(getDefaultFor(AbstractState.class, new MonolithicHeap(), new RelTarsis()))
 			.setCallGraph(new RTACallGraph())
 			.setInterproceduralAnalysis(new ModularWorstCaseWithNativeCalls<>())
 			.setDumpAnalysis(true);

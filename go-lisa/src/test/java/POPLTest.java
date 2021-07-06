@@ -18,9 +18,9 @@ import it.unive.lisa.interprocedural.impl.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.impl.RecursionFreeToken;
 import it.unive.lisa.program.Program;
 
-public class ICALPTest {
-	private String tmpDir = "go-outputs/icalp";
-	private String sourcePath = "go-testcases/icalp/";
+public class POPLTest {
+	private String tmpDir = "go-outputs/popl";
+	private String sourcePath = "go-testcases/popl/";
 	
 	@Test
 	public void codotaTest() throws IOException, AnalysisSetupException {
@@ -66,7 +66,7 @@ public class ICALPTest {
 	
 	@Test
 	public void icalpTestCases() throws IOException, AnalysisSetupException {
-		Program program = GoFrontEnd.processFile(sourcePath + "icalp-testcases.go");
+		Program program = GoFrontEnd.processFile(sourcePath + "popl-testcases.go");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setJsonOutput(true)

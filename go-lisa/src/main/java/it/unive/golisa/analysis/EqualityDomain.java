@@ -4,8 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -14,6 +17,7 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
@@ -150,5 +154,44 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	@Override
 	public boolean isBottom() {
 		return lattice.isBottom() && function == null;
+	}
+
+	@Override
+	public EqualityDomain pushScope(ScopeToken token) throws SemanticException {
+		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getCodeLocation()));
+	}
+
+	@Override
+	public EqualityDomain popScope(ScopeToken token) throws SemanticException {
+		AtomicReference<SemanticException> holder = new AtomicReference<>();
+
+		EqualityDomain result = liftIdentifiers(id -> {
+			if (id instanceof OutOfScopeIdentifier)
+				try {
+					return (Identifier) id.popScope(token);
+				} catch (SemanticException e) {
+					holder.set(e);
+				}
+			return null;
+		});
+
+		if (holder.get() != null)
+			throw new SemanticException("Popping the scope '" + token + "' raised an error", holder.get());
+
+		return result;
 	}	
+	
+	private EqualityDomain liftIdentifiers(Function<Identifier, Identifier> lifter) throws SemanticException {
+		if (isBottom() || isTop())
+			return this;
+
+		Map<Identifier, ExpressionInverseSet<Identifier>> function = mkNewFunction(null);
+		for (Identifier id : getKeys()) {
+			Identifier lifted = lifter.apply(id);
+			if (lifted != null)
+				function.put(lifted, getState(id));
+		}
+
+		return new EqualityDomain(lattice, function);
+	}
 }

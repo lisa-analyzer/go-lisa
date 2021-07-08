@@ -5,23 +5,30 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import it.unive.golisa.analysis.ExpressionInverseSet;
+import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
+import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
@@ -93,7 +100,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		// Add phase
 		func.put(id, func.get(id) == null ? getRelations(expression) : func.get(id).glb(getRelations(expression)));
-		
+
 		// Inter-asg phase
 		for (Identifier y : func.keySet())
 			if (!y.equals(id) && func.get(y).contains(func.get(id)))
@@ -103,7 +110,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		for (ValueExpression idRel : func.get(id))
 			if (id instanceof Identifier) 
 				func.put(id, func.get(id) == null ? func.get(idRel) : func.get(id).glb(func.get(idRel)));
-		
+
 		// Closure phase
 		return new RelationalSubstringDomain(lattice, func).closure();
 	}
@@ -310,7 +317,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 				else 
 					result.add(exps[j]);
 
-				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j], BinaryOperator.STRING_CONCAT);
+				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j], BinaryOperator.STRING_CONCAT, exps[j].getCodeLocation());
 				result.add(partial);
 			}
 		}
@@ -323,7 +330,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		for (int i = 0; i < str.length(); i++) 
 			for (int j = i+1; j <= str.length(); j++) 
-				res.add(new Constant(GoStringType.INSTANCE, str.substring(i,j)));
+				res.add(new Constant(GoStringType.INSTANCE, str.substring(i,j), SyntheticLocation.INSTANCE));
 
 		return res;
 	}
@@ -344,5 +351,78 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		}
 
 		return false;
+	}
+
+	@Override
+	public RelationalSubstringDomain pushScope(ScopeToken token) throws SemanticException {
+		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getCodeLocation()));
+	}
+
+	@Override
+	public RelationalSubstringDomain popScope(ScopeToken token) throws SemanticException {
+		AtomicReference<SemanticException> holder = new AtomicReference<>();
+
+		RelationalSubstringDomain result = liftIdentifiers(id -> {
+			if (id instanceof OutOfScopeIdentifier)
+				try {
+					return (Identifier) id.popScope(token);
+				} catch (SemanticException e) {
+					holder.set(e);
+				}
+			return null;
+		});
+
+		if (holder.get() != null)
+			throw new SemanticException("Popping the scope '" + token + "' raised an error", holder.get());
+
+		return result;
+	}	
+
+	private RelationalSubstringDomain liftIdentifiers(Function<Identifier, Identifier> lifter) throws SemanticException {
+		if (isBottom() || isTop())
+			return this;
+
+		Map<Identifier, ExpressionInverseSet<ValueExpression>> function = mkNewFunction(null);
+		for (Identifier id : getKeys()) {
+			Identifier lifted = lifter.apply(id);
+			if (lifted != null)
+				function.put(lifted, getState(id));
+		}
+
+		return new RelationalSubstringDomain(lattice, function);
+	}
+
+	public RelationalSubstringDomain propagateConstants(ValueEnvironment<StringConstantPropagation> cs) throws SemanticException {
+
+		if (isTop() || isBottom() || cs.isTop() || cs.isBottom())
+			return this;
+
+		RelationalSubstringDomain result = new RelationalSubstringDomain(lattice, function);
+
+		for (Identifier id : this.getKeys()) {
+			Set<String> constants = new HashSet<>();
+			ExpressionInverseSet<ValueExpression> previousRelations = result.getState(id);
+
+			if (previousRelations.isTop() || previousRelations.isBottom())
+				continue;
+
+			for (ValueExpression exp : getState(id).elements()) {
+				String string = exp.accept(new ResolverVisitor(), cs);
+				if (string != null) {
+					constants.add(string);
+					for (String str : constants)
+						previousRelations = previousRelations.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
+				}
+			}
+
+			if (!constants.isEmpty()) 
+				for (Identifier idCs : cs.getKeys())
+					if (constants.contains(cs.getState(idCs).getString()) && !idCs.getName().equals(id.getName())) {
+						previousRelations =	previousRelations.addExpression(idCs);
+						result = result.putState(id, previousRelations);
+					}	
+		}
+
+		return result;
 	}
 }

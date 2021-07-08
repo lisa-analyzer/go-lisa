@@ -11,11 +11,12 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 
-public class GoInterfaceType implements GoType, UnitType {
+public class GoInterfaceType implements GoType, UnitType, PointerType {
 
 	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
@@ -89,6 +90,11 @@ public class GoInterfaceType implements GoType, UnitType {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
@@ -98,6 +104,11 @@ public class GoInterfaceType implements GoType, UnitType {
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
+	}
+	
+	@Override
+	public boolean isPointerType() {
+		return true;
 	}
 
 	@Override

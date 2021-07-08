@@ -30,12 +30,35 @@ import it.unive.golisa.antlr.GoParser.String_Context;
 import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.expression.binary.GoContains;
-import it.unive.golisa.cfg.expression.binary.GoHasPrefix;
-import it.unive.golisa.cfg.expression.binary.GoHasSuffix;
-import it.unive.golisa.cfg.expression.binary.GoIndexOf;
-import it.unive.golisa.cfg.expression.ternary.GoReplace;
+import it.unive.golisa.cfg.runtime.conversion.GoToString;
+import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.strings.GoContains;
+import it.unive.golisa.cfg.runtime.strings.GoHasPrefix;
+import it.unive.golisa.cfg.runtime.strings.GoHasSuffix;
+import it.unive.golisa.cfg.runtime.strings.GoIndex;
+import it.unive.golisa.cfg.runtime.strings.GoIndexRune;
+import it.unive.golisa.cfg.runtime.strings.GoLen;
+import it.unive.golisa.cfg.runtime.strings.GoReplace;
+import it.unive.golisa.cfg.runtime.url.UrlPathEscape;
+import it.unive.golisa.cfg.runtime.url.UrlQueryEscape;
+import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
+import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
@@ -85,8 +108,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		return filePath;
 	}
 
-	private SourceFileContext source;
-
 	public static Program processFile(String filePath) throws IOException {
 		return new GoFrontEnd(filePath).toLiSAProgram();
 	}
@@ -101,6 +122,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
 
+//		GoArrayType.clearAll();
+//		GoStructType.clearAll();
+		
 		InputStream stream = new FileInputStream(getFilePath());
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
@@ -110,14 +134,37 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Program result = visitSourceFile((SourceFileContext) tree);
 		stream.close();
-
+		
+		registerGoTypes(program);
+		// Register all the types
+		
 		return result;
+	}
+
+	private void registerGoTypes(Program program) {
+		program.registerType(GoBoolType.INSTANCE);
+		program.registerType(GoFloat32Type.INSTANCE);
+		program.registerType(GoFloat64Type.INSTANCE);
+		program.registerType(GoIntType.INSTANCE);
+		program.registerType(GoUntypedInt.INSTANCE);
+		program.registerType(GoUntypedFloat.INSTANCE);
+		program.registerType(GoInt8Type.INSTANCE);
+		program.registerType(GoUInt8Type.INSTANCE);		
+		program.registerType(GoInt16Type.INSTANCE);
+		program.registerType(GoUInt16Type.INSTANCE);	
+		program.registerType(GoInt32Type.INSTANCE);
+		program.registerType(GoUInt32Type.INSTANCE);	
+		program.registerType(GoInt64Type.INSTANCE);
+		program.registerType(GoUInt64Type.INSTANCE);
+		program.registerType(GoUntypedFloat.INSTANCE);
+		program.registerType(GoStringType.INSTANCE);
+		GoArrayType.all().forEach(program::registerType);
+		GoStructType.all().forEach(program::registerType);
 	}
 
 	CompilationUnit packageUnit;
 	@Override
 	public Program visitSourceFile(SourceFileContext ctx) {
-		source = ctx;
 		String packageName = visitPackageClause(ctx.packageClause());
 
 		packageUnit = new CompilationUnit(new SourceCodeLocation(filePath, 0, 0), packageName, false);
@@ -134,13 +181,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
 			visitMethodDecl(decl); 
 
+		updateUnitReferences();
+
 		// method declaration must be linked to compilation unit of a declaration context, for the function declaration is not needed
 		// Visit of each FunctionDeclContext populating the corresponding cfg
 		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations"))	
 			visitFunctionDecl(funcDecl);
 
-
 		return program;
+	}
+
+	private void updateUnitReferences() {
+		for (CompilationUnit unit : program.getUnits())
+			GoStructType.updateReference(unit.getName(), unit);
 	}
 
 	private void visitDeclarationContext(DeclarationContext decl) {
@@ -156,7 +209,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			String unitName = typeSpec.IDENTIFIER().getText();
 			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(filePath, unit).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(filePath, unit, program).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
@@ -196,36 +249,73 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public Statement visitImportPath(ImportPathContext ctx) {
 		String lib = visitString_(ctx.string_());
 
-		if (lib.equals("strings")) 
-			loadGoStrings();
+		loadCore();
+		
+		
+		switch (lib) {
+		case "strings": loadStrings();
+		case "fmt": loadFmt();
+		case "url": loadUrl();
+		}
 		return null;
 	}
 
-	private void loadGoStrings() {
+	private void loadUrl() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
-		CompilationUnit str = new CompilationUnit(unknownLocation, "string", false);
-		str.addInstanceConstruct(new GoHasPrefix(unknownLocation, str));
-		str.addInstanceConstruct(new GoHasSuffix(unknownLocation, str));
-		str.addInstanceConstruct(new GoContains(unknownLocation, str));
-		str.addInstanceConstruct(new GoReplace(unknownLocation, str));
-		str.addInstanceConstruct(new GoIndexOf(unknownLocation, str));	
+		CompilationUnit url = new CompilationUnit(unknownLocation, "url", false);
+		url.addConstruct(new UrlQueryEscape(unknownLocation, url));
+		url.addConstruct(new UrlPathEscape(unknownLocation, url));
+
+		program.addCompilationUnit(url);		
+	}
+
+	private void loadCore() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		packageUnit.addConstruct(new GoToString(unknownLocation, packageUnit));
+	}
+
+	private void loadStrings() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		CompilationUnit str = new CompilationUnit(unknownLocation, "strings", false);
+		str.addConstruct(new GoHasPrefix(unknownLocation, str));
+		str.addConstruct(new GoHasSuffix(unknownLocation, str));
+		str.addConstruct(new GoContains(unknownLocation, str));
+		str.addConstruct(new GoReplace(unknownLocation, str));
+		str.addConstruct(new GoIndex(unknownLocation, str));	
+		str.addConstruct(new GoIndexRune(unknownLocation, str));	
+		str.addConstruct(new GoLen(unknownLocation, str));	
+
+		program.addCompilationUnit(str);
 
 		// We add the string methods also in package unit as non-instant cfgs
-		packageUnit.addInstanceConstruct(new GoHasPrefix(unknownLocation, str));
-		packageUnit.addInstanceConstruct(new GoHasSuffix(unknownLocation, str));
-		packageUnit.addInstanceConstruct(new GoContains(unknownLocation, str));
-		packageUnit.addInstanceConstruct(new GoReplace(unknownLocation, str));
-		packageUnit.addInstanceConstruct(new GoIndexOf(unknownLocation, str));
+		packageUnit.addConstruct(new GoHasPrefix(unknownLocation, str));
+		packageUnit.addConstruct(new GoHasSuffix(unknownLocation, str));
+		packageUnit.addConstruct(new GoContains(unknownLocation, str));
+		packageUnit.addConstruct(new GoReplace(unknownLocation, str));
+		packageUnit.addConstruct(new GoIndex(unknownLocation, str));
+		packageUnit.addConstruct(new GoIndexRune(unknownLocation, str));
+		packageUnit.addConstruct(new GoLen(unknownLocation, str));
+	}
+
+	private void loadFmt() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		CompilationUnit fmt = new CompilationUnit(unknownLocation, "fmt", false);
+		fmt.addConstruct(new GoPrintln(unknownLocation, fmt));
+
+		program.addCompilationUnit(fmt);
+
+		// We add the string methods also in package unit as non-instant cfgs
+		packageUnit.addConstruct(new GoPrintln(unknownLocation, fmt));
 	}
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {	
-		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, source).visitFunctionDecl(ctx);
+		return new GoFunctionVisitor(ctx, packageUnit, filePath, program).visitFunctionDecl(ctx);
 	}
 
 	@Override
 	public CFG visitMethodDecl(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, source).visitCodeMember(ctx);
+		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program).visitCodeMember(ctx);
 	}
 
 }

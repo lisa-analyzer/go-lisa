@@ -5,7 +5,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
@@ -13,6 +13,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
  * A Go numerical subtraction function call (e1 - e2).
@@ -27,18 +29,21 @@ public class GoSubtraction extends BinaryNativeCall implements GoBinaryNumerical
 
 	@Override
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, CallGraph callGraph, AnalysisState<A, H, V> leftState,
+			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 			throws SemanticException {
 
-		if (!leftExp.getDynamicType().isNumericType() && !leftExp.getDynamicType().isUntyped())
-			return entryState.bottom();
-		if (!rightExp.getDynamicType().isNumericType() && !rightExp.getDynamicType().isUntyped())
-			return entryState.bottom();
+		ExternalSet<Type> types;
 
-		return rightState
-				.smallStepSemantics(new BinaryExpression(resultType(leftExp, rightExp), leftExp, rightExp,
-						BinaryOperator.NUMERIC_SUB), this);
+		AnalysisState<A, H, V> result = entryState.bottom();
+		for (Type leftType : leftExp.getTypes())
+			for (Type rightType : rightExp.getTypes()) 
+				if (leftType.isNumericType() && rightType.isNumericType()) {
+					types = resultType(leftExp, rightExp);
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_SUB, getLocation()), this));
+				} 
+
+		return result;
 	}
 
 }

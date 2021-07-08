@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_~LiSAProgram.returnInIfStmt1(int_i).dot", "untyped_~LiSAProgram.returnInIfStmt2(int_i).dot", "untyped_~LiSAProgram.returnInLoop().dot" ]
+  "files" : [ "int_~LiSAProgram.returnInIfStmt1(int_i).dot", "int_~LiSAProgram.returnInIfStmt2(int_i).dot", "int_~LiSAProgram.returnInLoop().dot" ]
 }

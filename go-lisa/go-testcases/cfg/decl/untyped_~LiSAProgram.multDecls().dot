@@ -2,10 +2,12 @@ digraph {
 	"node0" [shape="rect",color="black",label=<var i int = 1>];
 	"node1" [shape="rect",color="gray",label=<var j int = 2>];
 	"node2" [shape="rect",color="gray",label=<var k string = &quot;abc&quot;>];
-	"node3" [shape="rect",color="gray",label=<var l string = &quot;def&quot;>];
+	"node3" [shape="rect",color="black",peripheries="2",label=<ret>];
+	"node4" [shape="rect",color="gray",label=<var l string = &quot;def&quot;>];
 	"node1" -> "node2" [color="black"];
+	"node2" -> "node4" [color="black"];
+	"node4" -> "node3" [color="black"];
 	"node0" -> "node1" [color="black"];
-	"node2" -> "node3" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

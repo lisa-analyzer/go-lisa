@@ -7,7 +7,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
-import it.unive.lisa.callgraph.CallGraph;
+import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -25,7 +25,7 @@ public class GoSimpleSlice extends TernaryNativeCall {
 	@Override
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V>
 	ternarySemantics(
-			AnalysisState<A, H, V> entryState, CallGraph callGraph, 
+			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, 
 			AnalysisState<A, H, V> leftState, SymbolicExpression left,
 			AnalysisState<A, H, V> middleState, SymbolicExpression middle,
 			AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
@@ -39,6 +39,6 @@ public class GoSimpleSlice extends TernaryNativeCall {
 		if (!right.getDynamicType().isNumericType() && ! right.getDynamicType().isUntyped())
 			return entryState.bottom();
 		
-		return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING), this);
+		return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING, getLocation()), this);
 	}
 }

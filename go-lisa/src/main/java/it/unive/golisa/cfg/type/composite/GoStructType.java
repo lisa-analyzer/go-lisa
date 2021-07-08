@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.type.composite;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
@@ -10,6 +10,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
@@ -22,7 +23,11 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 	public static GoStructType lookup(String name, CompilationUnit unit)  {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
-	
+	}
+
+	public static void updateReference(String name, CompilationUnit unit)  {
+		if (structTypes.containsKey(name))
+			structTypes.put(name, new GoStructType(name, unit));
 	}
 
 	private final String name;
@@ -45,8 +50,38 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	public boolean canBeAssignedTo(Type other) {
 		if (other instanceof GoStructType)
 			return ((GoStructType) other).name.equals(name);
-		if (other instanceof GoInterfaceType)
-			return ((GoInterfaceType) other).isEmptyInterface();
+		if (other instanceof GoInterfaceType) {
+			GoInterfaceType intf = (GoInterfaceType) other;
+
+			for (CFG methodSpec : intf.getUnit().getAllCFGs()) {
+				String methodName = methodSpec.getDescriptor().getName();
+				Type methodReturnType = methodSpec.getDescriptor().getReturnType();
+				Parameter[] methodPars = methodSpec.getDescriptor().getArgs();
+				boolean match = false;
+				for (CFG structMethod : getUnit().getAllCFGs()) {
+					String funcName = structMethod.getDescriptor().getName();
+					Type funcReturnType = structMethod.getDescriptor().getReturnType();
+					Parameter[] funcPars = structMethod.getDescriptor().getArgs();		
+
+					if (funcName.equals(methodName) && funcReturnType.canBeAssignedTo(methodReturnType)) {
+						if (methodPars.length == 0 && funcPars.length == 1) 
+							match = true;
+						else {
+							for (int i = 0; i < methodPars.length; i++)
+								if (methodPars[i].getName().equals(funcPars[i +1].getName())  && methodPars[i].getStaticType().canBeAssignedTo(funcPars[i+1].getStaticType()))
+									match = true;
+						}
+					}
+				}
+
+				if (!match)
+					return false;
+			}
+
+			return true;
+
+			//return ((GoInterfaceType) other).isEmptyInterface();
+		}
 
 		return other.isUntyped();
 	}
@@ -55,7 +90,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	public Type commonSupertype(Type other) {
 		if (other instanceof GoStructType)
 			return ((GoStructType) other).name.equals(name) ? other : Untyped.INSTANCE;
-		
+
 		// TODO: how to treat interfaces?
 		return Untyped.INSTANCE;
 	}
@@ -102,11 +137,6 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
-	}
-	
-	@Override
 	public boolean isPointerType() {
 		return true;
 	}
@@ -114,5 +144,25 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	@Override
 	public CompilationUnit getUnit() {
 		return unit;
+	}
+	
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoStructType in : structTypes.values())
+			instances.add(in);
+		return instances;	
+	}
+	
+	
+	@Override
+	public Collection<Type> allInstances() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoStructType in : structTypes.values())
+			instances.add(in);
+		return instances;
+	}
+	
+	public static void clearAll() {
+		structTypes.clear();
 	}
 }

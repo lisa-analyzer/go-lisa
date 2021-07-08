@@ -1,0 +1,24 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<var a int = +(1, 1)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>[inferred: [int], state: _|_] ]]<BR/>}} -&gt; [a]>];
+	"node1" [shape="rect",color="gray",label=<var d float32 = -(2, 2)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>b: [float32]<BR/>c: [int]<BR/>d: [float32]<BR/>[inferred: [float32], state: _|_] ]]<BR/>}} -&gt; [d]>];
+	"node2" [shape="rect",color="gray",label=<var e float32 = +(d)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>b: [float32]<BR/>c: [int]<BR/>d: [float32]<BR/>e: [float32]<BR/>[inferred: [float32], state: _|_] ]]<BR/>}} -&gt; [e]>];
+	"node3" [shape="rect",color="gray",label=<var x string = +(&quot;a&quot;, &quot;b&quot;)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>b: [float32]<BR/>c: [int]<BR/>d: [float32]<BR/>e: [float32]<BR/>x: [string]<BR/>[inferred: [string], state: _|_] ]]<BR/>}} -&gt; [x]>];
+	"node4" [shape="rect",color="gray",label=<var c int = *(a, a)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>b: [float32]<BR/>c: [int]<BR/>[inferred: [int], state: _|_] ]]<BR/>}} -&gt; [c]>];
+	"node5" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>b: [float32]<BR/>c: [int]<BR/>d: [float32]<BR/>e: [float32]<BR/>subs: [string]<BR/>x: [string]<BR/>[inferred: _|_, state: _|_] ]]<BR/>}} -&gt; [skip]>];
+	"node6" [shape="rect",color="gray",label=<var b float32 = +(2, 2)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>b: [float32]<BR/>[inferred: [float32], state: _|_] ]]<BR/>}} -&gt; [b]>];
+	"node7" [shape="rect",color="gray",label=<var subs string = slice(x, 1, 3)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [int]<BR/>b: [float32]<BR/>c: [int]<BR/>d: [float32]<BR/>e: [float32]<BR/>subs: [string]<BR/>x: [string]<BR/>[inferred: [string], state: _|_] ]]<BR/>}} -&gt; [subs]>];
+	"node1" -> "node2" [color="black"];
+	"node2" -> "node3" [color="black"];
+	"node0" -> "node6" [color="black"];
+	"node3" -> "node7" [color="black"];
+	"node4" -> "node1" [color="black"];
+	"node6" -> "node4" [color="black"];
+	"node7" -> "node5" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

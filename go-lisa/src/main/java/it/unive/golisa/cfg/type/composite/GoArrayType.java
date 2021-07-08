@@ -1,10 +1,7 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
@@ -35,7 +32,7 @@ public class GoArrayType implements GoType, PointerType {
 		this.length = length;
 	}
 
-	public Type getContentType() {
+	public GoType getContentType() {
 		return contentType;
 	}
 
@@ -96,11 +93,11 @@ public class GoArrayType implements GoType, PointerType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		List<Expression> result = new ArrayList<>();
+		Expression[] result = new Expression[length];
 		for (int i = 0; i < length; i++)
-			result.add(contentType.defaultValue(cfg, location));
+			result[i] = contentType.defaultValue(cfg, location);
 
-		return new GoNonKeyedLiteral(cfg, (Expression[]) result.toArray(), this);
+		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
 	
 	@Override
@@ -113,8 +110,23 @@ public class GoArrayType implements GoType, PointerType {
 		return true;
 	}
 
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoArrayType in : arrayTypes)
+			instances.add(in);
+		return instances;	
+	}
+	
+	
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		Collection<Type> instances = new HashSet<>();
+		for (GoArrayType in : arrayTypes)
+			instances.add(in);
+		return instances;
+	}
+	
+	public static void clearAll() {
+		arrayTypes.clear();
 	}
 }

@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func returnInLoop() {
+func returnInLoop() int {
 	
 	for i := 0; i < 10; i++ {
 		i = i - 1;
@@ -11,7 +11,7 @@ func returnInLoop() {
 	return i;
 }
 
-func returnInIfStmt1(i int) {
+func returnInIfStmt1(i int) int {
 	if i < 3 {
 		return 1
 	} else {
@@ -19,7 +19,7 @@ func returnInIfStmt1(i int) {
 	}
 }
 
-func returnInIfStmt2(i int) {
+func returnInIfStmt2(i int) int {
 	if i < 3 {
 		i++
 		return 1

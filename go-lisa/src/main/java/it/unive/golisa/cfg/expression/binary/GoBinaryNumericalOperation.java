@@ -30,7 +30,7 @@ public interface GoBinaryNumericalOperation {
 				else if (t2.canBeAssignedTo(t1))
 					result.add(t1);
 				else
-					return Caches.types().mkSingletonSet(Untyped.INSTANCE);
+					result.add(Untyped.INSTANCE);
 		if (result.isEmpty())
 			result.add(Untyped.INSTANCE);
 		return result;

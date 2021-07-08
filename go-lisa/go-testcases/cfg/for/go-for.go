@@ -13,7 +13,7 @@ func simpleFor() {
 	res := "Hello"
 }
 
-func noInitFor() {
+func noInitFor() int {
 	const (
 		// Big number
 		Big = 100
@@ -29,7 +29,7 @@ func noInitFor() {
 	return sum
 }
 
-func noIncFor() {
+func noIncFor() int {
 	sum := 0
 	for i := 0 ; i < 10 ; {
 		sum = sum + i

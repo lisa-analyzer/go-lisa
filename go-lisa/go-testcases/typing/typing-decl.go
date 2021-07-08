@@ -3,18 +3,7 @@ package main
 import "fmt"
 import "strings"
 
-func strings() {
-	a := "abc"
-	b := "bcd"
-	x := Contains(a,b)
-	y := HasPrefix(a,b)
-	z := HasSuffix(a,b)
-	w := Index(a,b)
-	j := Replace(a,b,b)
-}
-
-
-func simpleTyping() int {
+func simpleTyping() {
 	var a int = 1 + 1
 	var b float32 = 2 + 2
 	var c int = a * a
@@ -22,22 +11,20 @@ func simpleTyping() int {
 	var e float32 =  +d
 	var x string = "a" + "b"
 	var subs string = x[1:3]
+	return
 }
 
-func typeError1(x, y int) int {
+func typeError1(x, y int) {
 	var i int = 1 + 1.2
+	return
 }
-
-func typeError2(x, y int) int {
-	var i int = "a" + "b"
-}
-
 
 func comparisonTyping(x,y int) {
 	b := 2 == 2
 	var d int = 2 + 2
 	e := d == 2
-	c := 2 != 2
+	c := 2 != 2	
+	return
 }
 
 func relTyping() {
@@ -47,4 +34,14 @@ func relTyping() {
 	b := x < 2
 	d := 2.2
 	e := c < 2.3
+	return
+}
+
+func arrayTyping() {
+	v1 := [3]int{1,2,3}
+	v2 := [5]int{1,2,3,4,5}
+	x := v1[0]
+	y := v2[1] + v2[0]
+	v3 := v1
+	return
 }

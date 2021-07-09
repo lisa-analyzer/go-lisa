@@ -8,7 +8,6 @@ import org.junit.Test;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.checks.syntactic.CheckTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
-import it.unive.lisa.imp.ParsingException;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
@@ -204,7 +203,7 @@ public class NonDetStatementsCheckTest extends GoAnalysisTestExecutor {
 	}
 
 	@Test
-	public void testSyntacticChecks() throws IOException, ParsingException {
+	public void testSyntacticChecks() throws IOException{
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true).setInferTypes(true).addSyntacticCheck(new VariableI());
 		perform("nondet", "nondet.go", conf);
 	}

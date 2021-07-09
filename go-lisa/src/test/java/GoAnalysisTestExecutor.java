@@ -15,8 +15,6 @@ import it.unive.golisa.cli.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.imp.IMPFrontend;
-import it.unive.lisa.imp.ParsingException;
 import it.unive.lisa.outputs.JsonReport;
 import it.unive.lisa.program.Program;
 

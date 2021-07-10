@@ -37,3 +37,10 @@ func noIncFor() int {
 	
 	return sum
 }
+
+func forRange() {
+	var pow = [4]int{1, 2, 4, 8}
+	for i, v := range pow {
+		fmt.Printf("2**%d = %d\n", i, v)
+	}
+}

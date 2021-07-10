@@ -138,6 +138,7 @@ import it.unive.golisa.cfg.expression.unary.GoLength;
 import it.unive.golisa.cfg.expression.unary.GoMinus;
 import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
+import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
@@ -1189,23 +1190,79 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		} 
 
 		if (ctx.rangeClause() != null) {
-			// TODO: to fix
-			NoOp entry = new NoOp(cfg, location);
-			cfg.addNode(entry, visibleIds);
+			RangeClauseContext range = ctx.rangeClause();
+			Expression rangedCollection = visitExpression(ctx.rangeClause().expression());
+			VariableRef idxRange = null;	
+			VariableRef valRange = null;
+			Statement idxInit = null;
+			Statement valInit = null;
+			
+			Statement idxPost;
+			Statement valPost;
 
-			entryPoints.add(entry);
+			GoInteger zero = new GoInteger(cfg, locationOf(ctx), 0);
+			GoInteger one = new GoInteger(cfg, locationOf(ctx), 1);
+			
+			if (range.identifierList() != null) {
+				VariableRef[] rangeIds = visitIdentifierList(range.identifierList());
+				idxRange = rangeIds[0];
+				valRange = rangeIds[1];
+				
+				// Creates the initialization statements for idx and val range variable
+				idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
+				valInit = new GoShortVariableDeclaration(cfg, location, valRange,
+						new GoCollectionAccess(cfg, location, rangedCollection, zero));
+			} else if (range.expressionList() != null) {
+				Expression[] rangeIds = visitExpressionList(range.expressionList());
 
+				if (!(rangeIds[0] instanceof VariableRef) || !(rangeIds[1] instanceof VariableRef))
+					throw new IllegalStateException("range variables must  be identifiers.");
+
+				idxRange = (VariableRef) rangeIds[0];
+				valRange = (VariableRef) rangeIds[1];
+				
+
+				// Creates the initialization statements for idx and val range variable
+				idxInit = new Assignment(cfg, locationOf(ctx), idxRange, zero);
+				valInit = new Assignment(cfg, location, valRange,
+						new GoCollectionAccess(cfg, location, rangedCollection, zero));
+			} else {
+				throw new UnsupportedOperationException("empty range variables not supported yet.");
+
+			}
+			entryPoints.add(idxInit);
+
+			cfg.addNode(idxInit, visibleIds);
+			cfg.addNode(valInit, visibleIds);
+
+			idxPost = new Assignment(cfg, location, idxRange, 
+					new GoSum(cfg, location, idxRange, one));
+			valPost = new Assignment(cfg, location, valRange, 
+					new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
+	
+			cfg.addNode(idxPost, visibleIds);
+			cfg.addNode(valPost, visibleIds);
+			
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
 
-			restoreVisibleIdsAfterForLoop(backup);
+			// Build the range condition
+			GoLess rangeCondition = new GoLess(cfg, location, idxRange, 
+					new GoLength(cfg, location, rangedCollection));
+			GoRange rangeNode = new GoRange(cfg, location, rangeCondition);
+			cfg.addNode(rangeNode, visibleIds);
 
-			addEdge(new SequentialEdge(entry, block.getLeft()));
-			addEdge(new SequentialEdge(block.getLeft(), exitNode));
-			addEdge(new SequentialEdge(block.getRight(), entry));
+			addEdge(new SequentialEdge(idxInit, valInit));
+			addEdge(new SequentialEdge(valInit, rangeNode));
+			addEdge(new TrueEdge(rangeNode, block.getRight()));
+			addEdge(new FalseEdge(rangeNode, exitNode));
+			addEdge(new SequentialEdge(block.getLeft(), idxPost));
+			addEdge(new SequentialEdge(idxPost, valPost));
+			addEdge(new SequentialEdge(valPost, rangeNode));
+			restoreVisibleIdsAfterForLoop(backup);
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
-			return Pair.of(entry, exitNode);
+			return Pair.of(idxInit, exitNode);
 		}
 
 		// for i < n (corresponding to the classical while loop)

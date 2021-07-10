@@ -38,9 +38,18 @@ func noIncFor() int {
 	return sum
 }
 
+// from https://tour.golang.org/moretypes/16
 func forRange() {
 	var pow = [4]int{1, 2, 4, 8}
 	for i, v := range pow {
 		fmt.Printf("2**%d = %d\n", i, v)
+	}
+}
+
+
+func forRangeJustWithIndex() {
+	var pow = [4]int{1, 2, 4, 8}
+	for i := range pow {
+		fmt.Printf("i = %d\n", i)
 	}
 }

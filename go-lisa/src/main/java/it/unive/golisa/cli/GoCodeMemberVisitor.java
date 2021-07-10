@@ -289,7 +289,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			cfg.addNode(ret, cfg.getVisibleIds(body.getRight()));
 			cfg.addEdge(new SequentialEdge(body.getRight(), ret));
 		}
-		
+
 		cfg.getEntrypoints().add(body.getLeft());
 		cfg.simplify();
 		currentUnit.addInstanceCFG(cfg);
@@ -394,7 +394,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return res;
 	}
-	
+
 	protected void updateVisileIds(Map<String, VariableRef> backup, Statement last) {
 
 		Collection<String> toRemove = new HashSet<>();
@@ -1191,58 +1191,74 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		if (ctx.rangeClause() != null) {
 			RangeClauseContext range = ctx.rangeClause();
-			Expression rangedCollection = visitExpression(ctx.rangeClause().expression());
+			Expression rangedCollection = visitExpression(range.expression());
 			VariableRef idxRange = null;	
 			VariableRef valRange = null;
 			Statement idxInit = null;
-			Statement valInit = null;
+			Statement idxPost = null;
 			
-			Statement idxPost;
-			Statement valPost;
+			Statement valInit = new NoOp(cfg, SyntheticLocation.INSTANCE);
+			Statement valPost = new NoOp(cfg, SyntheticLocation.INSTANCE);
 
 			GoInteger zero = new GoInteger(cfg, locationOf(ctx), 0);
 			GoInteger one = new GoInteger(cfg, locationOf(ctx), 1);
-			
+
 			if (range.identifierList() != null) {
 				VariableRef[] rangeIds = visitIdentifierList(range.identifierList());
-				idxRange = rangeIds[0];
-				valRange = rangeIds[1];
-				
-				// Creates the initialization statements for idx and val range variable
-				idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
-				valInit = new GoShortVariableDeclaration(cfg, location, valRange,
-						new GoCollectionAccess(cfg, location, rangedCollection, zero));
+
+				if (rangeIds.length == 0) {
+					throw new UnsupportedOperationException("empty range variables not supported yet.");
+				} else {
+					idxRange = rangeIds[0];
+					idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
+					idxPost = new Assignment(cfg, location, idxRange, 
+							new GoSum(cfg, location, idxRange, one));
+					
+					// Index and values are used in range
+					if (rangeIds.length == 2) {
+						valRange = rangeIds[1];
+
+						// Creates the initialization statement for val range variable
+						valInit = new GoShortVariableDeclaration(cfg, location, valRange,
+								new GoCollectionAccess(cfg, location, rangedCollection, zero));
+						
+						valPost = new Assignment(cfg, location, valRange, 
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
+					} 
+				}
 			} else if (range.expressionList() != null) {
 				Expression[] rangeIds = visitExpressionList(range.expressionList());
 
-				if (!(rangeIds[0] instanceof VariableRef) || !(rangeIds[1] instanceof VariableRef))
-					throw new IllegalStateException("range variables must  be identifiers.");
-
-				idxRange = (VariableRef) rangeIds[0];
-				valRange = (VariableRef) rangeIds[1];
+				if (rangeIds.length == 0) {
+					throw new UnsupportedOperationException("empty range variables not supported yet.");
+				} else {
+					if (!(rangeIds[0] instanceof VariableRef))
+						throw new IllegalStateException("range variables must  be identifiers.");
 				
+					idxRange = (VariableRef) rangeIds[0];
+					idxInit = new Assignment(cfg, locationOf(ctx), idxRange, zero);
 
-				// Creates the initialization statements for idx and val range variable
-				idxInit = new Assignment(cfg, locationOf(ctx), idxRange, zero);
-				valInit = new Assignment(cfg, location, valRange,
-						new GoCollectionAccess(cfg, location, rangedCollection, zero));
-			} else {
+					if (rangeIds.length == 2) {
+						valRange = (VariableRef) rangeIds[1];
+
+						// Creates the initialization statements for idx and val range variable
+						valInit = new Assignment(cfg, location, valRange,
+								new GoCollectionAccess(cfg, location, rangedCollection, zero));
+						
+						valPost = new Assignment(cfg, location, valRange, 
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
+					} 
+				}				
+			} else 
 				throw new UnsupportedOperationException("empty range variables not supported yet.");
 
-			}
 			entryPoints.add(idxInit);
 
 			cfg.addNode(idxInit, visibleIds);
 			cfg.addNode(valInit, visibleIds);
-
-			idxPost = new Assignment(cfg, location, idxRange, 
-					new GoSum(cfg, location, idxRange, one));
-			valPost = new Assignment(cfg, location, valRange, 
-					new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
-	
 			cfg.addNode(idxPost, visibleIds);
 			cfg.addNode(valPost, visibleIds);
-			
+
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
 
 			// Build the range condition

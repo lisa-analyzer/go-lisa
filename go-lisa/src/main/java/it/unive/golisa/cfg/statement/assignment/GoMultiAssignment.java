@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 
+import it.unive.golisa.cfg.expression.GoAnonymousVariable;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -79,6 +80,9 @@ public class GoMultiAssignment extends Expression {
 			AnalysisState<A, H, V> idState = ids[i].semantics(rightState, interprocedural, expressions);
 			expressions.put(ids[i], idState);
 
+			if (ids[i] instanceof GoAnonymousVariable)
+				continue;
+			
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
 				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), retExp, getLocation());
 				AccessChild access = new AccessChild(untyped, dereference, new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());

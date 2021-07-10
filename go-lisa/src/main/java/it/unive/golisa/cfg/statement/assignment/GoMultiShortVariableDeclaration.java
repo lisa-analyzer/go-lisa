@@ -13,6 +13,6 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 	
 	@Override
 	public String toString() {
-		return StringUtils.join(ids, ", ") + " = " + e.toString();
+		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 }

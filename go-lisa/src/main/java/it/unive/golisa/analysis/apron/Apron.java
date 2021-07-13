@@ -1,5 +1,6 @@
 package it.unive.golisa.analysis.apron;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 import apron.Abstract1;
@@ -27,10 +28,8 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.types.IntType;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
@@ -96,7 +95,7 @@ public class Apron implements ValueDomain<Apron> {
 
 	public Apron() {
 		try {
-			String[] vars = {"<ret>"}; //Variable needed to represent the value returned
+			String[] vars = {"<ret>"}; // Variable needed to represent the returned value 
 			state = new Abstract1(manager, new apron.Environment(new String[0], vars));
 		}
 		catch(ApronException e) {
@@ -139,6 +138,10 @@ public class Apron implements ValueDomain<Apron> {
 				coeff = new MpqScalar((int) c.getValue());
 			else if (c.getValue() instanceof Float)
 				coeff = new MpfrScalar((double) c.getValue(), Mpfr.getDefaultPrec());
+			else if (c.getValue() instanceof Long)
+				coeff = new MpfrScalar((long) c.getValue(), Mpfr.getDefaultPrec());
+			else if (c.getValue() instanceof BigInteger)
+				coeff = new MpfrScalar(new Mpfr(((BigInteger) c.getValue()), Mpfr.RNDN));
 			else
 				coeff = new MpfrScalar();
 
@@ -197,7 +200,6 @@ public class Apron implements ValueDomain<Apron> {
 
 			switch (un.getOperator()) {
 			case LOGICAL_NOT:
-				// TODO: this is wrong and it should be fixed
 				return assume(expression.removeNegations(), pp);
 			default:
 				return top();
@@ -255,13 +257,9 @@ public class Apron implements ValueDomain<Apron> {
 		case COMPARISON_EQ:
 			return new Tcons1(state.getEnvironment(), toApronOperator(exp.getOperator()), toApronExpression(combinedExpr));
 		case COMPARISON_LE:
-			Constant zero = new Constant(IntType.INSTANCE, 0, SyntheticLocation.INSTANCE);
-			combinedExpr = new BinaryExpression(combinedExpr.getTypes(), zero, combinedExpr, BinaryOperator.NUMERIC_SUB, combinedExpr.getCodeLocation());
-			return new Tcons1(state.getEnvironment(), toApronOperator(BinaryOperator.COMPARISON_GE), toApronExpression(combinedExpr));
+			return toApronComparison(new BinaryExpression(exp.getTypes(), exp.getRight(), exp.getLeft(), BinaryOperator.COMPARISON_GE, exp.getCodeLocation()));
 		case COMPARISON_LT:
-			zero = new Constant(IntType.INSTANCE, 0, SyntheticLocation.INSTANCE);
-			combinedExpr = new BinaryExpression(combinedExpr.getTypes(), zero, combinedExpr, BinaryOperator.NUMERIC_SUB, combinedExpr.getCodeLocation());
-			return new Tcons1(state.getEnvironment(), toApronOperator(BinaryOperator.COMPARISON_GT), toApronExpression(combinedExpr));
+			return toApronComparison(new BinaryExpression(exp.getTypes(), exp.getRight(), exp.getLeft(), BinaryOperator.COMPARISON_GT, exp.getCodeLocation()));
 		default:
 			throw new UnsupportedOperationException("Comparison operator "+exp.getOperator()+" not yet supported"); 		
 		}		
@@ -282,24 +280,102 @@ public class Apron implements ValueDomain<Apron> {
 			if (state.isBottom(manager))
 				return Satisfiability.BOTTOM;
 
+			if (expression instanceof UnaryExpression) {
+				UnaryExpression un = (UnaryExpression) expression;
+
+				switch(un.getOperator()) {
+				case LOGICAL_NOT:
+					Satisfiability isSAT = satisfies((ValueExpression) un.getExpression(), pp);
+					if (isSAT == Satisfiability.SATISFIED)
+						return Satisfiability.NOT_SATISFIED;
+					else if (isSAT == Satisfiability.NOT_SATISFIED)
+						return Satisfiability.SATISFIED;
+					else
+						return Satisfiability.UNKNOWN;
+				default:
+					return Satisfiability.UNKNOWN;
+				}
+			}
+
 
 			if (expression instanceof BinaryExpression) {
 				BinaryExpression bin = (BinaryExpression) expression;
+				BinaryExpression neg;
 
+				// FIXME: it seems there's a bug with manager.wasExact
 				switch(bin.getOperator()) {
 				case COMPARISON_EQ:
+					if (state.satisfy(manager, toApronComparison(bin)))
+						return Satisfiability.SATISFIED;
+					else {
+						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_NE, bin.getCodeLocation());
+						
+						if (state.satisfy(manager, toApronComparison(neg)))
+							return Satisfiability.NOT_SATISFIED;
+
+						return Satisfiability.UNKNOWN;
+					}
 				case COMPARISON_GE:
+					if (state.satisfy(manager, toApronComparison(bin)))
+						return Satisfiability.SATISFIED;
+					else {
+						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LT, bin.getCodeLocation());
+						
+						if (state.satisfy(manager, toApronComparison(neg)))
+							return Satisfiability.NOT_SATISFIED;
+
+						return Satisfiability.UNKNOWN;
+					}
 				case COMPARISON_GT:
+					if (state.satisfy(manager, toApronComparison(bin)))
+						return Satisfiability.SATISFIED;
+					else {
+						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LE, bin.getCodeLocation());
+						
+						if (state.satisfy(manager, toApronComparison(neg)))
+							return Satisfiability.NOT_SATISFIED;
+
+						return Satisfiability.UNKNOWN;
+					}
 				case COMPARISON_LE:
+					if (state.satisfy(manager, toApronComparison(bin)))
+						return Satisfiability.SATISFIED;
+					else {
+						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GT, bin.getCodeLocation());
+						
+						if (state.satisfy(manager, toApronComparison(neg)))
+							return Satisfiability.NOT_SATISFIED;
+
+						return Satisfiability.UNKNOWN;
+					}
 				case COMPARISON_LT:
+					if (state.satisfy(manager, toApronComparison(bin)))
+						return Satisfiability.SATISFIED;
+					else {
+						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GE, bin.getCodeLocation());
+						
+						if (state.satisfy(manager, toApronComparison(neg)))
+							return Satisfiability.NOT_SATISFIED;
+
+						return Satisfiability.UNKNOWN;
+					}
 				case COMPARISON_NE:
 					if (state.satisfy(manager, toApronComparison(bin)))
 						return Satisfiability.SATISFIED;
-					else if (manager.wasExact())
-						return Satisfiability.NOT_SATISFIED;
-					else
-						return Satisfiability.UNKNOWN;
+					else {
+						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_EQ, bin.getCodeLocation());
+						
+						if (state.satisfy(manager, toApronComparison(neg)))
+							return Satisfiability.NOT_SATISFIED;
 
+						return Satisfiability.UNKNOWN;
+					}
+//					if (state.satisfy(manager, toApronComparison(bin)))
+//						return Satisfiability.SATISFIED;
+//					else if (manager.wasExact()) 
+//						return Satisfiability.NOT_SATISFIED;
+//					else 
+//						return Satisfiability.UNKNOWN;
 				case LOGICAL_AND:
 					return satisfies((ValueExpression) bin.getLeft(), pp).and(satisfies((ValueExpression) bin.getRight(), pp));
 				case LOGICAL_OR:
@@ -415,4 +491,8 @@ public class Apron implements ValueDomain<Apron> {
 		String n = id.getName();
 		return new StringVar(n);
 	}	
+
+	public boolean containsIdentifier(Identifier id) {
+		return Arrays.asList(state.getEnvironment().getVars()).contains(toApronVar(id));
+	}
 }

@@ -3,6 +3,7 @@ package it.unive.golisa.cli;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1552,7 +1553,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
 		if (ctx.DECIMAL_LIT() != null)
+			try {
 			return new GoInteger(cfg, location, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
+			} catch (NumberFormatException e) {
+				return new GoInteger(cfg, location, new BigInteger(ctx.DECIMAL_LIT().getText()));
+			}
 
 		// TODO: 0 matched as octacl literal and not decimal literal
 		if (ctx.OCTAL_LIT() != null)

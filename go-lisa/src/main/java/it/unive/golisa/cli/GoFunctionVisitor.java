@@ -23,6 +23,7 @@ import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
@@ -87,7 +88,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			} else 
 				entryNode = body.getLeft();
 		}
-
+		
 		// If the function body does not have exit points 
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {
@@ -113,7 +114,15 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			}
 		}
 		
-		cfg.getEntrypoints().add(entryNode);
+		for( Statement st : matrix.getExits())
+			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
+				Ret ret = new Ret(cfg, descriptor.getLocation());
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+				matrix.addNode(ret);
+				matrix.addEdge(new SequentialEdge(st, ret));
+			}
+		
+		cfg.getEntrypoints().add(entryNode);				
 		cfg.simplify();
 		return Pair.of(entryNode, body.getRight());
 	}

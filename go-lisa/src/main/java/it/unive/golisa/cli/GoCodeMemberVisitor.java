@@ -303,8 +303,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						entry.setScopeEnd(ret);
 			}
 		}
-
 		
+		for( Statement st : matrix.getExits())
+			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
+				Ret ret = new Ret(cfg, descriptor.getLocation());
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+				matrix.addNode(ret);
+				matrix.addEdge(new SequentialEdge(st, ret));
+			}
 		
 		cfg.simplify();
 		currentUnit.addInstanceCFG(cfg);
@@ -1001,7 +1007,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.ELSE() == null) {
 			// If statement without else branch
 			addEdge(new TrueEdge(booleanGuard, entryStatementTrueBranch));			
-			addEdge(new FalseEdge(booleanGuard, ifExitNode));			
+			addEdge(new FalseEdge(booleanGuard, ifExitNode));
 			addEdge(new SequentialEdge(exitStatementTrueBranch, ifExitNode));
 		} else {
 			if (ctx.block(1) != null) {

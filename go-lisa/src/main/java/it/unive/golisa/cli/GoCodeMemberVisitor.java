@@ -1601,7 +1601,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	}
 
-
 	@Override
 	public Expression visitString_(String_Context ctx) {
 		SourceCodeLocation location = locationOf(ctx);
@@ -1634,7 +1633,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				return Pair.of(n, null);
 			else
 				return Pair.of(new GoInteger(cfg, location, 0), n);
-
 		} 
 
 		return Pair.of(visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
@@ -1653,6 +1651,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < ctx.expressionList().expression().size(); i++)
 				exps = ArrayUtils.addAll(exps, visitExpression(ctx.expressionList().expression(i)));
 		return exps;
+	}
+	
+	@Override
+	public Pair<Statement, Statement> visitGoStmt(GoStmtContext ctx) {
+		Expression call = visitExpression(ctx.expression());
+		
+		if (!(call instanceof Call))
+			throw new IllegalStateException("Only method and function calls can be spawn as go routines.");
+
+		GoRoutine routine = new GoRoutine(cfg, locationOf(ctx), (Call) call);
+		cfg.addNode(routine, visibleIds);
+		return Pair.of(routine, routine);
 	}
 
 	private String removeQuotes(String str) {
@@ -1758,18 +1768,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitRangeClause(RangeClauseContext ctx) {
 		// TODO range clause (issue #4)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Pair<Statement, Statement> visitGoStmt(GoStmtContext ctx) {
-		Expression call = visitExpression(ctx.expression());
-		
-		if (!(call instanceof Call))
-			throw new IllegalStateException("Only method and function call can be spawn as go routines.");
-
-		GoRoutine routine = new GoRoutine(cfg, locationOf(ctx), (Call) call);
-		cfg.addNode(routine, visibleIds);
-		return Pair.of(routine, routine);
 	}
 
 	@Override

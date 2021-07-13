@@ -45,7 +45,7 @@ public class GoRoutine extends Statement {
 	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
 			StatementStore<A, H, V> expressions) throws SemanticException {
-		// TODO semantics of go routine
+		// TODO semantics of go routine not supported yet
 		return entryState.top();
 	}
 }

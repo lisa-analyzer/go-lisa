@@ -113,7 +113,7 @@ public class Apron implements ValueDomain<Apron> {
 			Environment env = state.getEnvironment();
 			Var variable = toApronVar(id);
 			Abstract1 newState;
-			if (!Arrays.asList(env.getVars()).contains(variable)) {
+			if (containsIdentifier(id)) {
 				Var[] vars = {variable};
 				env = env.add(new Var[0], vars);
 				newState = state.changeEnvironmentCopy(manager, env, false);
@@ -159,10 +159,9 @@ public class Apron implements ValueDomain<Apron> {
 			default:
 				return new Texpr1BinNode(toApronOperator(bin.getOperator()), toApronExpression(bin.getLeft()), toApronExpression(bin.getRight()));			
 			}
-
 		}
 
-		throw new UnsupportedOperationException("Expression "+exp.getClass().getTypeName()+" not yet supported by Apron interface");
+		throw new UnsupportedOperationException("Expression "+ exp.getClass().getTypeName() + " not yet supported by Apron");
 	}
 
 	private int toApronOperator(BinaryOperator op) {
@@ -296,7 +295,6 @@ public class Apron implements ValueDomain<Apron> {
 					return Satisfiability.UNKNOWN;
 				}
 			}
-
 
 			if (expression instanceof BinaryExpression) {
 				BinaryExpression bin = (BinaryExpression) expression;

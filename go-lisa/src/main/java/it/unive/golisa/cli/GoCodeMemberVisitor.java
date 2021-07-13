@@ -143,6 +143,7 @@ import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
+import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.cfg.statement.assignment.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
@@ -168,6 +169,7 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.AccessInstanceGlobal;
 import it.unive.lisa.program.cfg.statement.Assignment;
+import it.unive.lisa.program.cfg.statement.Call;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
@@ -1759,9 +1761,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitGoStmt(GoStmtContext ctx) {
-		// TODO go stmt
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Statement, Statement> visitGoStmt(GoStmtContext ctx) {
+		Expression call = visitExpression(ctx.expression());
+		
+		if (!(call instanceof Call))
+			throw new IllegalStateException("Only method and function call can be spawn as go routines.");
+
+		GoRoutine routine = new GoRoutine(cfg, locationOf(ctx), (Call) call);
+		cfg.addNode(routine, visibleIds);
+		return Pair.of(routine, routine);
 	}
 
 	@Override

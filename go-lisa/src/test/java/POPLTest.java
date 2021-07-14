@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.composition.RelTarsis;
-import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;

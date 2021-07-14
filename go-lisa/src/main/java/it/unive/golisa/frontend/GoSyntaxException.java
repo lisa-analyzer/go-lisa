@@ -1,4 +1,4 @@
-package it.unive.golisa.cli;
+package it.unive.golisa.frontend;
 
 /**
  * An exception thrown due to an inconsistency in an Go file.

@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 
-import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;

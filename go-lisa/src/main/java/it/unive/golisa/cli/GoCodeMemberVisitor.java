@@ -279,6 +279,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
+		Pair<Statement, Statement> body = visitBlock(ctx.block());
+		
+		cfg.getEntrypoints().add(body.getLeft());
+		
 		// If the method body does not have exit points 
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {

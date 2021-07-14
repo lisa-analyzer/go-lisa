@@ -89,6 +89,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 				entryNode = body.getLeft();
 		}
 		
+		cfg.getEntrypoints().add(entryNode);
+		
 		// If the function body does not have exit points 
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {
@@ -122,7 +124,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
 		
-		cfg.getEntrypoints().add(entryNode);				
+						
 		cfg.simplify();
 		return Pair.of(entryNode, body.getRight());
 	}

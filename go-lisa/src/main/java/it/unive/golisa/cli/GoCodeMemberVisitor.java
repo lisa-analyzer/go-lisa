@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -1502,7 +1503,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
 		GoType type = new GoTypeVisitor(file, currentUnit, program).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
-		if (raw instanceof Map<?, ?>)  {
+		if (raw instanceof LinkedHashMap<?, ?>)  {
 
 			Object[] keysObj = ((Map<Expression, Expression>)raw).keySet().toArray();
 			Object[] valuesObj = ((Map<Expression, Expression>)raw).values().toArray();
@@ -1527,7 +1528,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	public Object visitLiteralValue(LiteralValueContext ctx, GoType type) {
 		if (ctx.elementList() == null)
-			return new HashMap<Expression, Expression>();
+			return new LinkedHashMap<Expression, Expression>();
 		return visitElementList(ctx.elementList(), type);
 	}
 
@@ -1537,7 +1538,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Object firstElement = visitKeyedElement(ctx.keyedElement(0), type);
 
 		if (firstElement instanceof Pair<?,?>) {
-			Map<Expression, Expression> result = new HashMap<Expression, Expression>();
+			LinkedHashMap<Expression, Expression> result = new LinkedHashMap<>();
 			Pair<Expression, Expression> firstKeyed = (Pair<Expression, Expression>) firstElement;
 			result.put(firstKeyed.getLeft(), firstKeyed.getRight());
 			for (int i = 1; i < ctx.keyedElement().size(); i++) {

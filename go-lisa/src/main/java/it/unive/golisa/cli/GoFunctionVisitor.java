@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
+import it.unive.golisa.antlr.GoParser.FunctionLitContext;
 import it.unive.golisa.antlr.GoParser.FunctionTypeContext;
 import it.unive.golisa.antlr.GoParser.ParametersContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
@@ -19,6 +20,7 @@ import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.VariableTableEntry;
@@ -36,10 +38,24 @@ import it.unive.lisa.type.Untyped;
  */
 class GoFunctionVisitor extends GoCodeMemberVisitor {
 
-	//side-effect su packageUnit
+	// side-effect on packageUnit
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program) {
 		super(file, program);
 		this.descriptor = buildCFGDescriptor(funcDecl);
+
+		this.currentUnit = packageUnit;
+
+		// side effects on entrypoints and matrix will affect the cfg
+		cfg = new VariableScopingCFG(descriptor, entrypoints, matrix);
+		initializeVisibleIds();
+
+		packageUnit.addCFG(cfg);
+	}
+
+	// side-effect on packageUnit
+	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program) {
+		super(file, program);
+		this.descriptor = buildCFGDescriptor(funcLit);
 
 		this.currentUnit = packageUnit;
 
@@ -88,9 +104,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			} else 
 				entryNode = body.getLeft();
 		}
-		
+
 		cfg.getEntrypoints().add(entryNode);
-		
+
 		// If the function body does not have exit points 
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {
@@ -115,18 +131,92 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 						entry.setScopeEnd(ret);
 			}
 		}
-		
+
 		for( Statement st : matrix.getExits())
 			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, descriptor.getLocation());
 				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-				matrix.addNode(ret);
+					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
-		
-						
+
+
 		cfg.simplify();
 		return Pair.of(entryNode, body.getRight());
+	}
+	
+	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
+		Statement entryNode = null;
+		Pair<Statement, Statement> body = visitBlock(ctx.block());	
+
+		Type returnType = cfg.getDescriptor().getReturnType();
+
+		if (!(returnType instanceof  GoTypesTuple))
+			entryNode = body.getLeft();
+		else {
+			GoTypesTuple tuple = (GoTypesTuple) returnType;
+			if (tuple.isNamedValues()) {
+				Statement lastStmt = null;
+
+				for (Parameter par : tuple) {
+					VariableRef var = new VariableRef(cfg, par.getLocation(), par.getName());
+					GoType parType = (GoType) par.getStaticType();
+					GoShortVariableDeclaration decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var, parType.defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
+
+					cfg.addNode(decl);
+
+					if (lastStmt != null)
+						addEdge(new SequentialEdge(lastStmt, decl));
+					else
+						entryNode = decl;
+					lastStmt = decl;
+				}
+
+				addEdge(new SequentialEdge(lastStmt, body.getLeft()));
+				cfg.getEntrypoints().add(entryNode);
+
+			} else 
+				entryNode = body.getLeft();
+		}
+
+		cfg.getEntrypoints().add(entryNode);
+
+		// If the function body does not have exit points 
+		// a return statement is added
+		if (cfg.getAllExitpoints().isEmpty()) {
+			Ret ret = new Ret(cfg, descriptor.getLocation());
+			if (cfg.getNodesCount() == 0) {
+				// empty method, so the ret is also the entrypoint
+				matrix.addNode(ret);
+				entrypoints.add(ret);
+			} else {
+				// every non-throwing instruction that does not have a follower
+				// is ending the method
+				Collection<Statement> preExits = new LinkedList<>();
+				for (Statement st : matrix.getNodes())
+					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+						preExits.add(st);
+				matrix.addNode(ret);
+				for (Statement st : preExits)
+					matrix.addEdge(new SequentialEdge(st, ret));
+
+				for (VariableTableEntry entry : descriptor.getVariables())
+					if (preExits.contains(entry.getScopeEnd()))
+						entry.setScopeEnd(ret);
+			}
+		}
+
+		for( Statement st : matrix.getExits())
+			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
+				Ret ret = new Ret(cfg, descriptor.getLocation());
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+					matrix.addNode(ret);
+				matrix.addEdge(new SequentialEdge(st, ret));
+			}
+
+
+		cfg.simplify();
+		return cfg;
 	}
 
 	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl) {
@@ -143,6 +233,22 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
 		return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
+	}
+	
+	private CFGDescriptor buildCFGDescriptor(FunctionLitContext funcLit) {
+		String funcName = "anonymousFunction";
+		SignatureContext signature = funcLit.signature();
+		ParametersContext formalPars = signature.parameters();
+
+		int line = getLine(signature);
+		int col = getCol(signature);
+
+		Parameter[] cfgArgs = new Parameter[]{};
+
+		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
+			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
+
+		return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName, getGoReturnType(funcLit.signature()), cfgArgs);
 	}
 
 	/**

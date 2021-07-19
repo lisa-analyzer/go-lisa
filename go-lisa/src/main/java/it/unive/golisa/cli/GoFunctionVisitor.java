@@ -1,5 +1,8 @@
 package it.unive.golisa.cli;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -18,7 +21,9 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
@@ -83,17 +88,43 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			} else 
 				entryNode = body.getLeft();
 		}
-
+		
+		cfg.getEntrypoints().add(entryNode);
+		
 		// If the function body does not have exit points 
 		// a return statement is added
-		// TODO @Olly: need to change the visibility of the variables reaching implicit return statement
 		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret  =  new Ret(cfg, new SourceCodeLocation(file, 0, 0));
-			cfg.addNode(ret, cfg.getVisibleIds(body.getRight()));
-			addEdge(new SequentialEdge(body.getRight(), ret));
-		}
+			Ret ret = new Ret(cfg, descriptor.getLocation());
+			if (cfg.getNodesCount() == 0) {
+				// empty method, so the ret is also the entrypoint
+				matrix.addNode(ret);
+				entrypoints.add(ret);
+			} else {
+				// every non-throwing instruction that does not have a follower
+				// is ending the method
+				Collection<Statement> preExits = new LinkedList<>();
+				for (Statement st : matrix.getNodes())
+					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+						preExits.add(st);
+				matrix.addNode(ret);
+				for (Statement st : preExits)
+					matrix.addEdge(new SequentialEdge(st, ret));
 
-		cfg.getEntrypoints().add(entryNode);
+				for (VariableTableEntry entry : descriptor.getVariables())
+					if (preExits.contains(entry.getScopeEnd()))
+						entry.setScopeEnd(ret);
+			}
+		}
+		
+		for( Statement st : matrix.getExits())
+			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
+				Ret ret = new Ret(cfg, descriptor.getLocation());
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+				matrix.addNode(ret);
+				matrix.addEdge(new SequentialEdge(st, ret));
+			}
+		
+						
 		cfg.simplify();
 		return Pair.of(entryNode, body.getRight());
 	}

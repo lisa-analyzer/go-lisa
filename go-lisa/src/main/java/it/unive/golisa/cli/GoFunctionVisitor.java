@@ -236,7 +236,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	}
 	
 	private CFGDescriptor buildCFGDescriptor(FunctionLitContext funcLit) {
-		String funcName = "anonymousFunction";
+		String funcName = "anonymousFunction" +  c++;
 		SignatureContext signature = funcLit.signature();
 		ParametersContext formalPars = signature.parameters();
 

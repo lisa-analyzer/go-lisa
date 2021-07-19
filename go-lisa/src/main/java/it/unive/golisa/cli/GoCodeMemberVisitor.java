@@ -201,6 +201,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	protected final Program program;
 
+	protected static int c = 0;
+	
 	/**
 	 * Stack of loop exit points (used for break statements)
 	 */
@@ -609,10 +611,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		else
 			return (Expression) child;
 	}
-
-
-
-
 
 	@SuppressWarnings("unchecked")
 	@Override

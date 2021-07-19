@@ -1,9 +1,7 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<x, _ := [unresolved]f()<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ x: [-Inf, +Inf] ]]<BR/>}} -&gt; [x]>];
-	"node1" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ y: [-Inf, +Inf] ]]<BR/>}} -&gt; [skip]>];
-	"node2" [shape="rect",color="gray",label=<_, y := [unresolved]f()<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ y: [-Inf, +Inf] ]]<BR/>}} -&gt; [y]>];
-	"node0" -> "node2" [color="black"];
-	"node2" -> "node1" [color="black"];
+	labelloc="t";
+	label="['go-testcases/interprocedural/interproc6/interprocedural.go':5:14]";
+	"node0" [shape="rect",color="black",peripheries="2",label=<return (tuple)(1, 2)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/interprocedural/interproc6/interprocedural.go':9:10, heap[w]:pp@'go-testcases/interprocedural/interproc6/interprocedural.go':9:10] ]]<BR/>value [[ ['go-testcases/interprocedural/interproc6/interprocedural.go':5:14]:x: [1, 1]<BR/>heap[s]:pp@'go-testcases/interprocedural/interproc6/interprocedural.go':9:10[0]: [1, 1]<BR/>heap[s]:pp@'go-testcases/interprocedural/interproc6/interprocedural.go':9:10[1]: [2, 2]<BR/>heap[w]:pp@'go-testcases/interprocedural/interproc6/interprocedural.go':9:10[0]: [1, 1]<BR/>heap[w]:pp@'go-testcases/interprocedural/interproc6/interprocedural.go':9:10[1]: [2, 2] ]]<BR/>}} -&gt; [ret_value@f]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

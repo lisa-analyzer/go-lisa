@@ -11,6 +11,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 public class GoChannelType implements GoType {
 	
@@ -46,14 +47,17 @@ public class GoChannelType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		// TODO Auto-generated method stub
+		if (other instanceof GoChannelType)
+			return contentType.canBeAssignedTo(((GoChannelType) other).contentType);
 		return false;
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		// TODO Auto-generated method stub
-		return null;
+		if (other instanceof GoChannelType)
+			if (contentType.canBeAssignedTo(((GoChannelType) other).contentType))
+				return other;
+		return Untyped.INSTANCE;
 	}
 
 	public boolean isBidiretional() {
@@ -71,10 +75,10 @@ public class GoChannelType implements GoType {
 	@Override
 	public String toString() {
 		if (isBidiretional())
-			return "chan" + contentType.toString();
+			return "chan " + contentType.toString();
 		else if (isSendDirection())
-			return "chan<-" + contentType.toString();
-		return "<-chan" + contentType.toString();
+			return "chan <-" + contentType.toString();
+		return "<- chan" + contentType.toString();
 	}
 	
 	@Override

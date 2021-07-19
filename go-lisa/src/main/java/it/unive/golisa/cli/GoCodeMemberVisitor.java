@@ -108,6 +108,7 @@ import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseOr;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseXOr;
+import it.unive.golisa.cfg.expression.binary.GoChannelSend;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoEqual;
 import it.unive.golisa.cfg.expression.binary.GoGreater;
@@ -134,6 +135,7 @@ import it.unive.golisa.cfg.expression.literal.GoRune;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
 import it.unive.golisa.cfg.expression.unary.GoBitwiseNot;
+import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
 import it.unive.golisa.cfg.expression.unary.GoDeref;
 import it.unive.golisa.cfg.expression.unary.GoLength;
 import it.unive.golisa.cfg.expression.unary.GoMinus;
@@ -1428,6 +1430,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.CARET() != null)
 			return new GoBitwiseNot(cfg, location, exp);
 
+		if (ctx.RECEIVE() != null)
+			return new GoChannelReceive(cfg, location, exp);
+		
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1494,7 +1499,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.DECIMAL_LIT() != null)
 			return new GoInteger(cfg, location, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 
-		// TODO: 0 matched as octacl literal and not decimal literal
+		// TODO: 0 matched as octal literal and not decimal literal
 		if (ctx.OCTAL_LIT() != null)
 			return new GoInteger(cfg, location, Integer.parseInt(ctx.OCTAL_LIT().getText()));
 
@@ -1602,47 +1607,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return (Expression) child;
 	}
 
-	public Expression visitElement(ElementContext ctx, GoType type) {	
-
-		if (ctx.expression() != null)
-			return visitExpression(ctx.expression());
-		else {
-			Object lit = visitLiteralValue(ctx.literalValue(), type);
-
-			if (lit instanceof Expression)
-				return (Expression) lit;
-			else if (lit instanceof Expression[]) 
-				return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) lit, getContentType(type));
-			else
-				throw new IllegalStateException("Expression or Expression[] expected, found Statement instead");
-		}
-	}
-
-	private GoType getContentType(Type type) {
-		if (type instanceof GoArrayType)
-			return (GoType) ((GoArrayType) type).getContentType();
-		throw new IllegalStateException(type + " has not content type");
-
-	}
-
-
 	@Override
-	public Expression visitString_(String_Context ctx) {
-		SourceCodeLocation location = locationOf(ctx);
-		if (ctx.RAW_STRING_LIT() != null)
-			return new GoString(cfg, location, removeQuotes(ctx.RAW_STRING_LIT().getText()));
-
-		if (ctx.INTERPRETED_STRING_LIT() != null)
-			return new GoString(cfg, location, removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
-
-		throw new IllegalStateException("Illegal state: string rule has no other productions.");
+	public Pair<Statement, Statement> visitSendStmt(SendStmtContext ctx) {
+		GoChannelSend send = new GoChannelSend(cfg, locationOf(ctx), visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+		cfg.addNode(send, visibleIds);
+		return Pair.of(send, send);
 	}
-
-	@Override
-	public Expression visitIndex(IndexContext ctx) {
-		return visitExpression(ctx.expression());
-	}
-
+	
 	@Override
 	public Pair<Expression, Expression> visitSlice(SliceContext ctx) {
 		SourceCodeLocation location = locationOf(ctx);
@@ -1662,6 +1633,46 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		} 
 
 		return Pair.of(visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+	}
+	
+	public Expression visitElement(ElementContext ctx, GoType type) {	
+
+		if (ctx.expression() != null)
+			return visitExpression(ctx.expression());
+		else {
+			Object lit = visitLiteralValue(ctx.literalValue(), type);
+
+			if (lit instanceof Expression)
+				return (Expression) lit;
+			else if (lit instanceof Expression[]) 
+				return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) lit, getContentType(type));
+			else
+				throw new IllegalStateException("Expression or Expression[] expected, found Statement instead");
+		}
+	}
+	
+	private GoType getContentType(Type type) {
+		if (type instanceof GoArrayType)
+			return (GoType) ((GoArrayType) type).getContentType();
+		throw new IllegalStateException(type + " has no content type");
+
+	}
+
+	@Override
+	public Expression visitString_(String_Context ctx) {
+		SourceCodeLocation location = locationOf(ctx);
+		if (ctx.RAW_STRING_LIT() != null)
+			return new GoString(cfg, location, removeQuotes(ctx.RAW_STRING_LIT().getText()));
+
+		if (ctx.INTERPRETED_STRING_LIT() != null)
+			return new GoString(cfg, location, removeQuotes(ctx.INTERPRETED_STRING_LIT().getText()));
+
+		throw new IllegalStateException("Illegal state: string rule has no other productions.");
+	}
+
+	@Override
+	public Expression visitIndex(IndexContext ctx) {
+		return visitExpression(ctx.expression());
 	}
 
 	@Override
@@ -1710,12 +1721,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public GoType visitType_(Type_Context ctx) {
 		return new GoTypeVisitor(file, currentUnit, program).visitType_(ctx);
-	}
-
-	@Override
-	public Statement visitSendStmt(SendStmtContext ctx) {
-		// TODO: send statement
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -1808,31 +1813,31 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		throw new UnsupportedOperationException("Eos should never be visited");
 	}
 
-	public Map<String, VariableRef> getVisibleIds() {
-		return visibleIds;
-	}
-
 	@Override
 	public Statement visitSignature(SignatureContext ctx) {
-		// This method shold never be visited
+		// This method should never be visited
 		throw new IllegalStateException("Signature should never be visited");
 	}
 
 	@Override
 	public Statement visitForClause(ForClauseContext ctx) {
-		// This method shold never be visited
+		// This method should never be visited
 		throw new UnsupportedOperationException("For cluase should never be visited");
 	}
 
 	@Override
 	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
-		// This method shold never be visited
+		// This method should never be visited
 		throw new IllegalStateException("exprCaseClause should never be visited.");
 	}
 
 	@Override
 	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
-		// This method shold never be visited
+		// This method should never be visited
 		throw new IllegalStateException("exprSwitchCase should never be visited.");
+	}
+	
+	public Map<String, VariableRef> getVisibleIds() {
+		return visibleIds;
 	}
 }

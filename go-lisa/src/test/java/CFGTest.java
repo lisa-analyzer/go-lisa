@@ -47,4 +47,10 @@ public class CFGTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
 		perform("cfg/return", "go-return.go", conf);
 	}
+	
+	@Test
+	public void testChannel() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/channel", "go-channel.go", conf);
+	}
 }

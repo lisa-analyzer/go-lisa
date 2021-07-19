@@ -36,7 +36,7 @@ public class GoMake extends NativeCall {
 	private final GoType type;
 
 	public GoMake(CFG cfg, CodeLocation location, GoType type, Expression[] parameters) {
-		super(cfg, location, "make", parameters);
+		super(cfg, location, "make " + type, parameters);
 		this.type = type;
 	}
 

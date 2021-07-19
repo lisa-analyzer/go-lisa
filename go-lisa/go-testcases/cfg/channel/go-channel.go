@@ -14,3 +14,9 @@ func main() {
 
 	fmt.Println(x, y, x+y)
 }
+
+func chan1() {
+    messages := make(chan string)
+    msg := <-messages
+    fmt.Println(msg)
+}

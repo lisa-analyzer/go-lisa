@@ -123,7 +123,6 @@ public class GoMake extends NativeCall {
 			return result;
 		}
 
-
 		/**
 		 * Channel allocation
 		 */

@@ -15,14 +15,19 @@ func main() {
 	fmt.Println(x, y, x+y)
 }
 
-func chan1() {
+// from https://gobyexample.com/channels
+func channels() {
     messages := make(chan string)
+
+    go func() { messages <- "ping" }()
+
     msg := <-messages
     fmt.Println(msg)
 }
 
+
 // from https://gobyexample.com/channel-buffering
-func bufferedChan() {
+func bufferedChannels() {
 	messages := make(chan string, 2)
 
     messages <- "buffered"

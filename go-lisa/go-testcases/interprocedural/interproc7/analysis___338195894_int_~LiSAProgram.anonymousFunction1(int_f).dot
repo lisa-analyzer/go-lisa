@@ -1,7 +1,7 @@
 digraph {
 	labelloc="t";
 	label="['go-testcases/interprocedural/interproc7/interprocedural.go':9:5]";
-	"node0" [shape="rect",color="black",peripheries="2",label=<return *(f, f)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ ['go-testcases/interprocedural/interproc7/interprocedural.go':9:5]:a: [16, 16]<BR/>f: [5, 5]<BR/>ret_value@anonymousFunction2: [25, 25] ]]<BR/>}} -&gt; [ret_value@anonymousFunction2]>];
+	"node0" [shape="rect",color="black",peripheries="2",label=<return *(f, f)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ ['go-testcases/interprocedural/interproc7/interprocedural.go':9:5]:a: [16, 16]<BR/>f: [5, 5]<BR/>ret_value@anonymousFunction1: [25, 25] ]]<BR/>}} -&gt; [ret_value@anonymousFunction1]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

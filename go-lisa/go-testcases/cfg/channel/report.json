@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_~LiSAProgram.bufferedChan().dot", "untyped_~LiSAProgram.chan1().dot", "untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "untyped_~LiSAProgram.anonymousFunction0().dot", "untyped_~LiSAProgram.bufferedChannels().dot", "untyped_~LiSAProgram.channels().dot", "untyped_~LiSAProgram.main().dot" ]
 }

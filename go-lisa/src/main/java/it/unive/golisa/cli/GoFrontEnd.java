@@ -98,6 +98,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private GoFrontEnd(String filePath) {
 		this.filePath = filePath;
 		this.program = new Program();
+		GoCodeMemberVisitor.c = 0;
 	}
 
 	/**

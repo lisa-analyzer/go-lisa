@@ -20,3 +20,14 @@ func chan1() {
     msg := <-messages
     fmt.Println(msg)
 }
+
+// from https://gobyexample.com/channel-buffering
+func bufferedChan() {
+	messages := make(chan string, 2)
+
+    messages <- "buffered"
+    messages <- "channel"
+
+    fmt.Println(<-messages)
+    fmt.Println(<-messages)
+}

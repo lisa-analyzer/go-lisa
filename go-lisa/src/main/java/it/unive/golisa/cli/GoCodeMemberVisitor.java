@@ -1728,6 +1728,42 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
+	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
+		// TODO select statement (see issue #22)
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+	
+	@Override
+	public Statement visitCommClause(CommClauseContext ctx) {
+		// TODO select statement (see issue #22)
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+
+	@Override
+	public Statement visitCommCase(CommCaseContext ctx) {
+		// TODO select statement (see issue #22)
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+
+	@Override
+	public Statement visitRecvStmt(RecvStmtContext ctx) {
+		// TODO select statement (see issue #22)
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+
+	@Override
+	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
+		// TODO: labeled statements (see issue #9)
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+
+	@Override
+	public Statement visitRangeClause(RangeClauseContext ctx) {
+		// TODO range clause (see issue #4)
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+
+	@Override
 	public Statement visitTypeSwitchStmt(TypeSwitchStmtContext ctx) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
@@ -1738,13 +1774,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
-
-	@Override
-	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
+	
 	@Override
 	public Statement visitTypeCaseClause(TypeCaseClauseContext ctx) {
 		// TODO Auto-generated method stub
@@ -1760,36 +1790,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Statement visitTypeList(TypeListContext ctx) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitCommClause(CommClauseContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitCommCase(CommCaseContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitRecvStmt(RecvStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
-		// TODO: labeled statements (issue #9)
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitRangeClause(RangeClauseContext ctx) {
-		// TODO range clause (issue #4)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 

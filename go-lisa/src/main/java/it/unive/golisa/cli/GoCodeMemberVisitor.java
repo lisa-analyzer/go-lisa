@@ -154,6 +154,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
@@ -247,7 +248,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	protected void initializeVisibleIds() {
 		for (VariableTableEntry par : descriptor.getVariables())
-			visibleIds.put(par.getName(), par.createReference(cfg));
+			if(!GoLangUtils.refersToBlankIdentifier(par.createReference(cfg)))
+				visibleIds.put(par.getName(), par.createReference(cfg));
 	}
 
 	private CFGDescriptor mkDescriptor(CompilationUnit packageUnit, MethodDeclContext ctx) {
@@ -515,8 +517,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (visibleIds.containsKey(target.getName()))
 				throw new GoSyntaxException(
 						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
-
-			visibleIds.put(target.getName(), target);
+			if(!GoLangUtils.refersToBlankIdentifier(target))
+				visibleIds.put(target.getName(), target);
 
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
@@ -664,8 +666,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (visibleIds.containsKey(target.getName()))
 				throw new GoSyntaxException(
 						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
-
-			visibleIds.put(target.getName(), target);
+			if(!GoLangUtils.refersToBlankIdentifier(target))
+				visibleIds.put(target.getName(), target);
 
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
@@ -869,7 +871,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				//					throw new GoSyntaxException(
 				//							"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
 				//				else
-				visibleIds.put(left[i].getName(), left[i]);
+				if(!GoLangUtils.refersToBlankIdentifier(left[i]))
+					visibleIds.put(left[i].getName(), left[i]);
 
 
 			Expression right = visitExpression(exps.expression(0));
@@ -893,7 +896,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				//					throw new GoSyntaxException(
 				//							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 
-				visibleIds.put(target.getName(), target);
+				if(!GoLangUtils.refersToBlankIdentifier(target))
+					visibleIds.put(target.getName(), target);
 
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
 				cfg.addNode(asg, visibleIds);

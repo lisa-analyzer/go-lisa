@@ -207,7 +207,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected final Program program;
 
 	protected static int c = 0;
-	
+
 	/**
 	 * Stack of loop exit points (used for break statements)
 	 */
@@ -290,9 +290,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
-		
+
 		cfg.getEntrypoints().add(body.getLeft());
-		
+
 		// If the method body does not have exit points 
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {
@@ -317,15 +317,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						entry.setScopeEnd(ret);
 			}
 		}
-		
+
 		for( Statement st : matrix.getExits())
 			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, descriptor.getLocation());
 				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-				matrix.addNode(ret);
+					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
-		
+
 		cfg.simplify();
 		currentUnit.addInstanceCFG(cfg);
 		return cfg;
@@ -429,7 +429,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return res;
 	}
-	
+
 	protected void updateVisileIds(Map<String, VariableRef> backup, Statement last) {
 
 		Collection<String> toRemove = new HashSet<>();
@@ -1069,14 +1069,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			cfg.addEdge(edge);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Pair<Statement, Statement> visitSwitchStmt(SwitchStmtContext ctx) {
-		Object result = visitChildren(ctx);
-		if (!(result instanceof Pair<?,?>))
-			throw new IllegalStateException("Pair of Statements expected");
-		else 
-			return (Pair<Statement, Statement>) result;	
+		if (ctx.exprSwitchStmt() != null)
+			return visitExprSwitchStmt(ctx.exprSwitchStmt());
+		else if (ctx.typeSwitchStmt() != null)
+			return visitTypeSwitchStmt(ctx.typeSwitchStmt());
+
+		throw new IllegalStateException("Illegal state: switchStmt rule has no other productions.");
 	}
 
 	@Override
@@ -1313,7 +1313,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		if (ctx.operand() != null)
 			return visitOperand(ctx.operand());
-		
+
 		if (ctx.conversion() != null) 
 			return visitConversion(ctx.conversion());
 
@@ -1347,15 +1347,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 
 			Object primary = visitPrimaryExpr(ctx.primaryExpr());
-			
+
 			// Function/method call (e.g., f(1,2,3), x.f())
 			// TODO: need to check if it is instance or not
 			if (ctx.arguments() != null) {
 				Expression[] args = visitArguments(ctx.arguments());
 				if (primary instanceof VariableRef) // Function call
 					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, primary.toString(), visitArguments(ctx.arguments()));				
-				
-				
+
+
 				else if (primary instanceof AccessInstanceGlobal) {
 					Expression receiver = (Expression) getReceiver(ctx.primaryExpr());
 					if (program.getUnit(receiver.toString()) != null) 
@@ -1365,7 +1365,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						return new UnresolvedCall(cfg, locationOf(ctx), ResolutionStrategy.FIRST_DYNAMIC_THEN_STATIC, true, getMethodName(ctx.primaryExpr()), args);				
 					}				
 				} 
-				
+
 				// Anonymous function
 				else if (primary instanceof CFG) 
 					return new CFGCall(cfg, locationOf(ctx), funcName, (CFG) primary, args);
@@ -1397,7 +1397,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				return new GoTypeAssertion(cfg, locationOf(ctx), (Expression) primary, visitType_(ctx.typeAssertion().type_()));
 			}
 		}
-		
+
 		throw new IllegalStateException("Illegal state: primaryExpr rule has no other productions.");
 	}
 
@@ -1437,7 +1437,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		if (ctx.RECEIVE() != null)
 			return new GoChannelReceive(cfg, location, exp);
-		
+
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
@@ -1473,7 +1473,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return visitCompositeLit(ctx.compositeLit());
 		else if (ctx.functionLit() != null)
 			return visitFunctionLit(ctx.functionLit());
-		
+
 		throw new IllegalStateException("Illegal state: literal rule has no other productions.");
 	}
 
@@ -1621,7 +1621,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfg.addNode(send, visibleIds);
 		return Pair.of(send, send);
 	}
-	
+
 	@Override
 	public Pair<Expression, Expression> visitSlice(SliceContext ctx) {
 		SourceCodeLocation location = locationOf(ctx);
@@ -1641,7 +1641,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return Pair.of(visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 	}
-	
+
 	public Expression visitElement(ElementContext ctx, GoType type) {	
 
 		if (ctx.expression() != null)
@@ -1657,7 +1657,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				throw new IllegalStateException("Expression or Expression[] expected, found Statement instead");
 		}
 	}
-	
+
 	private GoType getContentType(Type type) {
 		if (type instanceof GoArrayType)
 			return (GoType) ((GoArrayType) type).getContentType();
@@ -1681,7 +1681,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitIndex(IndexContext ctx) {
 		return visitExpression(ctx.expression());
 	}
-	
+
 	@Override
 	public CFG visitFunctionLit(FunctionLitContext ctx) {
 		return new GoFunctionVisitor(ctx, currentUnit, file, program).buildAnonymousCFG(ctx);
@@ -1701,11 +1701,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				exps = ArrayUtils.addAll(exps, visitExpression(ctx.expressionList().expression(i)));
 		return exps;
 	}
-	
+
 	@Override
 	public Pair<Statement, Statement> visitGoStmt(GoStmtContext ctx) {
 		Expression call = visitExpression(ctx.expression());
-		
+
 		if (!(call instanceof Call))
 			throw new IllegalStateException("Only method and function calls can be spawn as go routines.");
 
@@ -1748,11 +1748,134 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
+	public Pair<Statement, Statement> visitTypeSwitchStmt(TypeSwitchStmtContext ctx) {
+
+		SourceCodeLocation location = locationOf(ctx);
+		Expression typeSwitchExp = (Expression) visitPrimaryExpr(ctx.typeSwitchGuard().primaryExpr());
+
+		NoOp exitNode = new NoOp(cfg, location);		
+		cfg.addNode(exitNode, visibleIds);
+
+		Statement entryNode = null;
+		Statement previousGuard = null;
+		Pair<Statement, Statement> defaultBlock = null;
+
+		for (int i = 0; i < ctx.typeCaseClause().size(); i++)  {
+			TypeCaseClauseContext typeSwitchCase = ctx.typeCaseClause(i);
+			Pair<Statement, Statement> caseBlock = visitStatementList(typeSwitchCase.statementList());
+			Expression caseBooleanGuard = null;
+
+			// Check if the switch case is not the default case
+			if (typeSwitchCase.typeSwitchCase().typeList() != null) {
+				Type[] types = visitTypeList(typeSwitchCase.typeSwitchCase().typeList());
+				for (int j = 0; j < types.length; j++)  {
+					SourceCodeLocation typeLoc = locationOf(typeSwitchCase.typeSwitchCase().typeList().type_(j));
+					VariableRef typeSwitchVar = new VariableRef(cfg, typeLoc, ctx.typeSwitchGuard().IDENTIFIER().getText());
+					VariableRef typeSwitchCheck = new VariableRef(cfg, typeLoc, "ok");
+					VariableRef[] ids = new VariableRef[] {typeSwitchVar, typeSwitchCheck};
+
+					GoMultiShortVariableDeclaration shortDecl =
+							new GoMultiShortVariableDeclaration(cfg, typeLoc.getSourceFile(), typeLoc.getLine(), typeLoc.getCol(), ids, 
+									new GoTypeAssertion(cfg, typeLoc, typeSwitchExp, types[j]));
+
+					caseBooleanGuard = new GoEqual(cfg, typeLoc, typeSwitchCheck, 
+							new GoBoolean(cfg, typeLoc, true));
+
+					cfg.addNode(shortDecl, visibleIds);
+					cfg.addNode(caseBooleanGuard, visibleIds);
+					cfg.addEdge(new SequentialEdge(shortDecl, caseBooleanGuard));
+
+					cfg.addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
+					cfg.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+
+					if (entryNode == null) 
+						entryNode = shortDecl;
+					else 
+						addEdge(new FalseEdge(previousGuard, shortDecl));
+
+					previousGuard = caseBooleanGuard;		
+				}
+
+			} else 		
+				defaultBlock = caseBlock;
+
+		}
+
+		if (defaultBlock != null) {
+			addEdge(new FalseEdge(previousGuard, defaultBlock.getLeft()));
+			addEdge(new SequentialEdge(defaultBlock.getRight(), exitNode));
+		} else 
+			addEdge(new FalseEdge(previousGuard, exitNode));
+
+		if (ctx.simpleStmt() != null) {
+			Pair<Statement, Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
+			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode));
+			entryNode = simpleStmt.getLeft();
+		}
+
+		return Pair.of(entryNode, exitNode);
+	}
+
+	@Override
+	public Type[] visitTypeList(TypeListContext ctx) {
+		Type[] types = new Type[ctx.type_().size()];
+		for (int i =  0;  i < types.length; i++)
+			types[i] = visitType_(ctx.type_(i));
+		return types;
+	}
+
+	@Override
+	public Statement visitEos(EosContext ctx) {
+		throw new UnsupportedOperationException("eos should never be visited");
+	}
+
+	@Override
+	public Statement visitSignature(SignatureContext ctx) {
+		throw new IllegalStateException("signarure should never be visited");
+	}
+
+	@Override
+	public Statement visitForClause(ForClauseContext ctx) {
+		throw new UnsupportedOperationException("forClause should never be visited");
+	}
+
+	@Override
+	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
+		throw new IllegalStateException("exprCaseClause should never be visited.");
+	}
+
+	@Override
+	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
+		throw new IllegalStateException("exprSwitchCase should never be visited.");
+	}
+	
+	@Override
+	public Statement visitTypeSwitchGuard(TypeSwitchGuardContext ctx) {
+		throw new IllegalStateException("typeSwitchGuard should never be visited.");
+	}
+
+	@Override
+	public Statement visitTypeCaseClause(TypeCaseClauseContext ctx) {
+		throw new IllegalStateException("typeCaseClause should never be visited.");
+	}
+
+	@Override
+	public Statement visitTypeSwitchCase(TypeSwitchCaseContext ctx) {
+		throw new IllegalStateException("typeSwitchCase should never be visited.");
+	}
+	
+	@Override
+	public Expression visitMethodExpr(MethodExprContext ctx) {
+		// TODO: method expression
+		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+
+	@Override
 	public Pair<Statement, Statement> visitSelectStmt(SelectStmtContext ctx) {
 		// TODO select statement (see issue #22)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
-	
+
 	@Override
 	public Statement visitCommClause(CommClauseContext ctx) {
 		// TODO select statement (see issue #22)
@@ -1781,75 +1904,5 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitRangeClause(RangeClauseContext ctx) {
 		// TODO range clause (see issue #4)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitTypeSwitchStmt(TypeSwitchStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitTypeSwitchGuard(TypeSwitchGuardContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-	
-	@Override
-	public Statement visitTypeCaseClause(TypeCaseClauseContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitTypeSwitchCase(TypeSwitchCaseContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitTypeList(TypeListContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Expression visitMethodExpr(MethodExprContext ctx) {
-		// TODO: method expression
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitEos(EosContext ctx) {
-		// This method should never be visited
-		throw new UnsupportedOperationException("Eos should never be visited");
-	}
-
-	@Override
-	public Statement visitSignature(SignatureContext ctx) {
-		// This method should never be visited
-		throw new IllegalStateException("Signature should never be visited");
-	}
-
-	@Override
-	public Statement visitForClause(ForClauseContext ctx) {
-		// This method should never be visited
-		throw new UnsupportedOperationException("For cluase should never be visited");
-	}
-
-	@Override
-	public Statement visitExprCaseClause(ExprCaseClauseContext ctx) {
-		// This method should never be visited
-		throw new IllegalStateException("exprCaseClause should never be visited.");
-	}
-
-	@Override
-	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
-		// This method should never be visited
-		throw new IllegalStateException("exprSwitchCase should never be visited.");
-	}
-	
-	public Map<String, VariableRef> getVisibleIds() {
-		return visibleIds;
 	}
 }

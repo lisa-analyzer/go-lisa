@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import it.unive.golisa.cfg.expression.GoAnonymousVariable;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,6 +21,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -77,6 +79,9 @@ public class GoMultiAssignment extends Expression {
 
 		ExternalSet<Type> untyped = Caches.types().mkSingletonSet(Untyped.INSTANCE);
 		for (int i = 0; i < ids.length; i++) {
+			if(ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+				continue;
+				
 			AnalysisState<A, H, V> idState = ids[i].semantics(rightState, interprocedural, expressions);
 			expressions.put(ids[i], idState);
 

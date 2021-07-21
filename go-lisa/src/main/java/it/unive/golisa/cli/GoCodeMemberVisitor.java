@@ -1134,8 +1134,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(lastCaseBlock.getRight(), exitNode));
 
 		if (defaultBlock != null) {
-			addEdge(new FalseEdge(previousGuard, defaultBlock.getRight()));
-			addEdge(new SequentialEdge(defaultBlock.getLeft(), exitNode));
+			addEdge(new FalseEdge(previousGuard, defaultBlock.getLeft()));
+			addEdge(new SequentialEdge(defaultBlock.getRight(), exitNode));
 		} else {
 			addEdge(new FalseEdge(previousGuard, exitNode));
 		}

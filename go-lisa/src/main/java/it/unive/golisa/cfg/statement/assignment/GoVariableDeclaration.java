@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import it.unive.golisa.cfg.expression.GoAnonymousVariable;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AbstractState;
@@ -63,6 +64,11 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 					throws SemanticException {
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
 		expressions.put(getRight(), right);
+		
+		// e.g., _ = f(), we just return right state
+		if (getLeft() instanceof GoAnonymousVariable)
+			return right;
+		
 		expressions.put(getLeft(), right);
 
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);

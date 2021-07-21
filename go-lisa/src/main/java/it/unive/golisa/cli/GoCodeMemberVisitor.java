@@ -101,6 +101,7 @@ import it.unive.golisa.antlr.GoParser.VarDeclContext;
 import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScopingCFG;
+import it.unive.golisa.cfg.expression.GoAnonymousVariable;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
@@ -141,6 +142,7 @@ import it.unive.golisa.cfg.expression.unary.GoLength;
 import it.unive.golisa.cfg.expression.unary.GoMinus;
 import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
+import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
@@ -163,6 +165,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
@@ -289,8 +292,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
-		Pair<Statement, Statement> body = visitBlock(ctx.block());
 
+		Pair<Statement, Statement> body = visitBlock(ctx.block());
 		cfg.getEntrypoints().add(body.getLeft());
 
 		// If the method body does not have exit points 
@@ -515,7 +518,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			int line = getLine(ids.IDENTIFIER(i));
 			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i)) : getCol(exps.expression(i));
 
-			VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
+			VariableRef target = buildVariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);	
 			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col), type, target, exp);
 			cfg.addNode(asg, visibleIds);
 
@@ -535,6 +538,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Pair.of(entryNode, lastStmt);
 	}
 
+	
+	private VariableRef buildVariableRef(CFG cfg, CodeLocation location, String name, Type type) {
+		if  (name.equals("_"))
+			return new GoAnonymousVariable(cfg, location);
+		else
+			return new VariableRef(cfg, location, name, type);
+	}
+	
+	private VariableRef buildVariableRef(CFG cfg, CodeLocation location, String name) {
+		return buildVariableRef(cfg, location, name, Untyped.INSTANCE);
+	}
+	
 	@Override
 	public Expression visitExpression(ExpressionContext ctx) {	
 		SourceCodeLocation location = locationOf(ctx);
@@ -658,7 +673,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {		
-			VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
+			VariableRef target = buildVariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 			Expression exp = visitExpression(exps.expression(i));
 
 			GoConstantDeclaration asg = new GoConstantDeclaration(cfg, locationOf(ctx), target, exp);
@@ -891,7 +906,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from the type of exp
 				Type type = exp.getStaticType();
-				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
+				VariableRef target = buildVariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 
 				//				if (visibleIds.containsKey(target.getName()))
 				//					throw new GoSyntaxException(
@@ -918,7 +933,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public VariableRef[] visitIdentifierList(IdentifierListContext ctx) {
 		VariableRef[] result = new VariableRef[] {};
 		for (int i = 0; i < ctx.IDENTIFIER().size(); i++)
-			result = ArrayUtils.addAll(result, new VariableRef(cfg, locationOf(ctx.IDENTIFIER(i)), ctx.IDENTIFIER(i).getText()));
+			result = ArrayUtils.addAll(result, buildVariableRef(cfg, locationOf(ctx.IDENTIFIER(i)), ctx.IDENTIFIER(i).getText()));
 		return result;
 	}
 
@@ -950,7 +965,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				if (tuple.isNamedValues()) {
 					Expression[] result = new Expression[tuple.size()];
 					for (int i = 0; i < tuple.size(); i++) 
-						result[i] = new VariableRef(cfg, location, tuple.get(i).getName());
+						result[i] = buildVariableRef(cfg, location, tuple.get(i).getName(), Untyped.INSTANCE);
 
 					GoReturn ret = new GoReturn(cfg, location, new GoExpressionsTuple(cfg, location, result));
 					cfg.addNode(ret, visibleIds);
@@ -1223,23 +1238,95 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		} 
 
 		if (ctx.rangeClause() != null) {
-			// TODO: to fix
-			NoOp entry = new NoOp(cfg, location);
-			cfg.addNode(entry, visibleIds);
+			RangeClauseContext range = ctx.rangeClause();
+			Expression rangedCollection = visitExpression(range.expression());
+			VariableRef idxRange = null;	
+			VariableRef valRange = null;
+			Statement idxInit = null;
+			Statement idxPost = null;
+			
+			Statement valInit = new NoOp(cfg, SyntheticLocation.INSTANCE);
+			Statement valPost = new NoOp(cfg, SyntheticLocation.INSTANCE);
 
-			entryPoints.add(entry);
+			GoInteger zero = new GoInteger(cfg, locationOf(ctx), 0);
+			GoInteger one = new GoInteger(cfg, locationOf(ctx), 1);
+
+			if (range.identifierList() != null) {
+				VariableRef[] rangeIds = visitIdentifierList(range.identifierList());
+
+				if (rangeIds.length == 0) {
+					throw new UnsupportedOperationException("empty range variables not supported yet.");
+				} else {
+					idxRange = rangeIds[0];
+					idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
+					idxPost = new Assignment(cfg, location, idxRange, 
+							new GoSum(cfg, location, idxRange, one));
+					
+					// Index and values are used in range
+					if (rangeIds.length == 2) {
+						valRange = rangeIds[1];
+
+						// Creates the initialization statement for val range variable
+						valInit = new GoShortVariableDeclaration(cfg, location, valRange,
+								new GoCollectionAccess(cfg, location, rangedCollection, zero));
+						
+						valPost = new Assignment(cfg, location, valRange, 
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
+					} 
+				}
+			} else if (range.expressionList() != null) {
+				Expression[] rangeIds = visitExpressionList(range.expressionList());
+
+				if (rangeIds.length == 0) {
+					throw new UnsupportedOperationException("empty range variables not supported yet.");
+				} else {
+					if (!(rangeIds[0] instanceof VariableRef))
+						throw new IllegalStateException("range variables must  be identifiers.");
+				
+					idxRange = (VariableRef) rangeIds[0];
+					idxInit = new Assignment(cfg, locationOf(ctx), idxRange, zero);
+
+					if (rangeIds.length == 2) {
+						valRange = (VariableRef) rangeIds[1];
+
+						// Creates the initialization statements for idx and val range variable
+						valInit = new Assignment(cfg, location, valRange,
+								new GoCollectionAccess(cfg, location, rangedCollection, zero));
+						
+						valPost = new Assignment(cfg, location, valRange, 
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
+					} 
+				}				
+			} else 
+				throw new UnsupportedOperationException("empty range variables not supported yet.");
+
+			entryPoints.add(idxInit);
+
+			cfg.addNode(idxInit, visibleIds);
+			cfg.addNode(valInit, visibleIds);
+			cfg.addNode(idxPost, visibleIds);
+			cfg.addNode(valPost, visibleIds);
 
 			Pair<Statement, Statement> block = visitBlock(ctx.block());
 
-			restoreVisibleIdsAfterForLoop(backup);
+			// Build the range condition
+			GoLess rangeCondition = new GoLess(cfg, location, idxRange, 
+					new GoLength(cfg, location, rangedCollection));
+			GoRange rangeNode = new GoRange(cfg, location, rangeCondition);
+			cfg.addNode(rangeNode, visibleIds);
 
-			addEdge(new SequentialEdge(entry, block.getLeft()));
-			addEdge(new SequentialEdge(block.getLeft(), exitNode));
-			addEdge(new SequentialEdge(block.getRight(), entry));
+			addEdge(new SequentialEdge(idxInit, valInit));
+			addEdge(new SequentialEdge(valInit, rangeNode));
+			addEdge(new TrueEdge(rangeNode, block.getRight()));
+			addEdge(new FalseEdge(rangeNode, exitNode));
+			addEdge(new SequentialEdge(block.getLeft(), idxPost));
+			addEdge(new SequentialEdge(idxPost, valPost));
+			addEdge(new SequentialEdge(valPost, rangeNode));
+			restoreVisibleIdsAfterForLoop(backup);
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
-			return Pair.of(entry, exitNode);
+			return Pair.of(idxInit, exitNode);
 		}
 
 		// for i < n (corresponding to the classical while loop)
@@ -1527,7 +1614,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
 				return new GoBoolean(cfg, location, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
 			else
-				return new VariableRef(cfg, location, ctx.IDENTIFIER().getText());
+				return buildVariableRef(cfg, location, ctx.IDENTIFIER().getText());
 		}
 
 		Object child = visitChildren(ctx);
@@ -1606,7 +1693,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitKey(KeyContext ctx) {
 
 		if (ctx.IDENTIFIER() != null)
-			return new VariableRef(cfg, locationOf(ctx), ctx.IDENTIFIER().getText());
+			return buildVariableRef(cfg, locationOf(ctx), ctx.IDENTIFIER().getText());
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))

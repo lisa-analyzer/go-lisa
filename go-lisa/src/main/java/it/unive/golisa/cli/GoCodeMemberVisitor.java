@@ -101,7 +101,6 @@ import it.unive.golisa.antlr.GoParser.VarDeclContext;
 import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cfg.expression.GoAnonymousVariable;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
@@ -165,7 +164,6 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
-import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
@@ -175,8 +173,8 @@ import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.AccessInstanceGlobal;
 import it.unive.lisa.program.cfg.statement.Assignment;
-import it.unive.lisa.program.cfg.statement.Call;
 import it.unive.lisa.program.cfg.statement.CFGCall;
+import it.unive.lisa.program.cfg.statement.Call;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
@@ -518,7 +516,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			int line = getLine(ids.IDENTIFIER(i));
 			int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i)) : getCol(exps.expression(i));
 
-			VariableRef target = buildVariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);	
+			VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);	
 			GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col), type, target, exp);
 			cfg.addNode(asg, visibleIds);
 
@@ -538,18 +536,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Pair.of(entryNode, lastStmt);
 	}
 
-	
-	private VariableRef buildVariableRef(CFG cfg, CodeLocation location, String name, Type type) {
-		if  (name.equals("_"))
-			return new GoAnonymousVariable(cfg, location);
-		else
-			return new VariableRef(cfg, location, name, type);
-	}
-	
-	private VariableRef buildVariableRef(CFG cfg, CodeLocation location, String name) {
-		return buildVariableRef(cfg, location, name, Untyped.INSTANCE);
-	}
-	
 	@Override
 	public Expression visitExpression(ExpressionContext ctx) {	
 		SourceCodeLocation location = locationOf(ctx);
@@ -673,7 +659,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) {		
-			VariableRef target = buildVariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
+			VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 			Expression exp = visitExpression(exps.expression(i));
 
 			GoConstantDeclaration asg = new GoConstantDeclaration(cfg, locationOf(ctx), target, exp);
@@ -906,7 +892,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from the type of exp
 				Type type = exp.getStaticType();
-				VariableRef target = buildVariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
+				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(), type);
 
 				//				if (visibleIds.containsKey(target.getName()))
 				//					throw new GoSyntaxException(
@@ -933,7 +919,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public VariableRef[] visitIdentifierList(IdentifierListContext ctx) {
 		VariableRef[] result = new VariableRef[] {};
 		for (int i = 0; i < ctx.IDENTIFIER().size(); i++)
-			result = ArrayUtils.addAll(result, buildVariableRef(cfg, locationOf(ctx.IDENTIFIER(i)), ctx.IDENTIFIER(i).getText()));
+			result = ArrayUtils.addAll(result, new VariableRef(cfg, locationOf(ctx.IDENTIFIER(i)), ctx.IDENTIFIER(i).getText()));
 		return result;
 	}
 
@@ -965,7 +951,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				if (tuple.isNamedValues()) {
 					Expression[] result = new Expression[tuple.size()];
 					for (int i = 0; i < tuple.size(); i++) 
-						result[i] = buildVariableRef(cfg, location, tuple.get(i).getName(), Untyped.INSTANCE);
+						result[i] = new VariableRef(cfg, location, tuple.get(i).getName(), Untyped.INSTANCE);
 
 					GoReturn ret = new GoReturn(cfg, location, new GoExpressionsTuple(cfg, location, result));
 					cfg.addNode(ret, visibleIds);
@@ -1244,7 +1230,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			VariableRef valRange = null;
 			Statement idxInit = null;
 			Statement idxPost = null;
-			
+
 			Statement valInit = new NoOp(cfg, SyntheticLocation.INSTANCE);
 			Statement valPost = new NoOp(cfg, SyntheticLocation.INSTANCE);
 
@@ -1261,7 +1247,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
 					idxPost = new Assignment(cfg, location, idxRange, 
 							new GoSum(cfg, location, idxRange, one));
-					
+
 					// Index and values are used in range
 					if (rangeIds.length == 2) {
 						valRange = rangeIds[1];
@@ -1269,7 +1255,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// Creates the initialization statement for val range variable
 						valInit = new GoShortVariableDeclaration(cfg, location, valRange,
 								new GoCollectionAccess(cfg, location, rangedCollection, zero));
-						
+
 						valPost = new Assignment(cfg, location, valRange, 
 								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
 					} 
@@ -1282,7 +1268,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				} else {
 					if (!(rangeIds[0] instanceof VariableRef))
 						throw new IllegalStateException("range variables must  be identifiers.");
-				
+
 					idxRange = (VariableRef) rangeIds[0];
 					idxInit = new Assignment(cfg, locationOf(ctx), idxRange, zero);
 
@@ -1292,7 +1278,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// Creates the initialization statements for idx and val range variable
 						valInit = new Assignment(cfg, location, valRange,
 								new GoCollectionAccess(cfg, location, rangedCollection, zero));
-						
+
 						valPost = new Assignment(cfg, location, valRange, 
 								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
 					} 
@@ -1614,7 +1600,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
 				return new GoBoolean(cfg, location, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
 			else
-				return buildVariableRef(cfg, location, ctx.IDENTIFIER().getText());
+				return new VariableRef(cfg, location, ctx.IDENTIFIER().getText());
 		}
 
 		Object child = visitChildren(ctx);
@@ -1693,7 +1679,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitKey(KeyContext ctx) {
 
 		if (ctx.IDENTIFIER() != null)
-			return buildVariableRef(cfg, locationOf(ctx), ctx.IDENTIFIER().getText());
+			return new VariableRef(cfg, locationOf(ctx), ctx.IDENTIFIER().getText());
 
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
@@ -1935,7 +1921,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitExprSwitchCase(ExprSwitchCaseContext ctx) {
 		throw new IllegalStateException("exprSwitchCase should never be visited.");
 	}
-	
+
 	@Override
 	public Statement visitTypeSwitchGuard(TypeSwitchGuardContext ctx) {
 		throw new IllegalStateException("typeSwitchGuard should never be visited.");
@@ -1950,7 +1936,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitTypeSwitchCase(TypeSwitchCaseContext ctx) {
 		throw new IllegalStateException("typeSwitchCase should never be visited.");
 	}
-	
+
 	@Override
 	public Expression visitMethodExpr(MethodExprContext ctx) {
 		// TODO: method expression

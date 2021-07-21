@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 
-import it.unive.golisa.cfg.expression.GoAnonymousVariable;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.util.GoLangUtils;
@@ -85,7 +84,7 @@ public class GoMultiAssignment extends Expression {
 			AnalysisState<A, H, V> idState = ids[i].semantics(rightState, interprocedural, expressions);
 			expressions.put(ids[i], idState);
 
-			if (ids[i] instanceof GoAnonymousVariable)
+			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
 				continue;
 			
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {

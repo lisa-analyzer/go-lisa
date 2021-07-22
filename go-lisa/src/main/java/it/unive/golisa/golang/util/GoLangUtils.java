@@ -1,5 +1,9 @@
-package it.unive.golisa.util;
+package it.unive.golisa.golang.util;
 
+import java.util.Map;
+import java.util.Set;
+
+import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.Variable;
 
@@ -18,5 +22,13 @@ public class GoLangUtils {
 	
 	public static boolean refersToBlankIdentifier(VariableRef vref) {
 		return vref.getName().equals(BLANK_IDENTIFIER);
+	}
+	
+	/**
+	 * Yield the mapping by package of Go Lang API
+	 * @return the mapping by package of Go Lang API
+	 */
+	public static Map<String, Set<GoLangApiSignature>> getGoLangApiSignatures() {
+		return GoLangApiSignatures.getGoApiSignatures().getMapPackages();
 	}
 }

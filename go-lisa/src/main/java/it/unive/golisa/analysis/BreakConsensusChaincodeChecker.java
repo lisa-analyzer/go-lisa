@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -121,9 +122,6 @@ public class BreakConsensusChaincodeChecker implements SyntacticCheck {
 		else if(goLangApiSignature instanceof MethodGoLangApiSignature)
 			signatureName = ((MethodGoLangApiSignature) goLangApiSignature).getName(); 
 		
-		if(signatureName.contains(call.getTargetName()))
-			System.out.println();
-		
 		if( signatureName != null && signatureName.equals(call.getTargetName()) 
 					&& call.getParameters().length > 1 
 					&& call.getParameters()[0] instanceof VariableRef) {
@@ -202,8 +200,8 @@ public class BreakConsensusChaincodeChecker implements SyntacticCheck {
 	 * vulnerability.
 	 */
 	private boolean matchConcurrencyStatement(Statement node) {
-		// TODO : : currenty go routine and go channel are not supported
-		return false;
+		// TODO : : currently go channel are not supported
+		return node instanceof GoRoutine;
 	}
 
 	/*

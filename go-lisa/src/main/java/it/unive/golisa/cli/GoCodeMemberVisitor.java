@@ -1221,9 +1221,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
 			return Pair.of(entryNode, exitNode);
-		} 
-
-		if (ctx.rangeClause() != null) {
+		}  
+		
+		/*
+		 * For range
+		 */
+		else if (ctx.rangeClause() != null) {
 			RangeClauseContext range = ctx.rangeClause();
 			Expression rangedCollection = visitExpression(range.expression());
 			VariableRef idxRange = null;	
@@ -1303,15 +1306,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			addEdge(new SequentialEdge(idxInit, valInit));
 			addEdge(new SequentialEdge(valInit, rangeNode));
-			addEdge(new TrueEdge(rangeNode, block.getRight()));
+			addEdge(new TrueEdge(rangeNode, block.getLeft()));
 			addEdge(new FalseEdge(rangeNode, exitNode));
-			addEdge(new SequentialEdge(block.getLeft(), idxPost));
+			addEdge(new SequentialEdge(block.getRight(), idxPost));
 			addEdge(new SequentialEdge(idxPost, valPost));
 			addEdge(new SequentialEdge(valPost, rangeNode));
 			restoreVisibleIdsAfterForLoop(backup);
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
+			System.err.println(cfg.getEdges());
 			return Pair.of(idxInit, exitNode);
 		}
 

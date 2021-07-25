@@ -14,6 +14,8 @@ import apron.MpqScalar;
 import apron.Octagon;
 import apron.Polka;
 import apron.PolkaEq;
+import apron.PplGrid;
+import apron.PplPoly;
 import apron.StringVar;
 import apron.Tcons1;
 import apron.Texpr1BinNode;
@@ -89,6 +91,8 @@ public class Apron implements ValueDomain<Apron> {
 		case Octagon: manager=new Octagon(); break;
 		case Polka: manager=new Polka(false); break;
 		case PolkaEq: manager=new PolkaEq(); break;
+		case PplGrid: manager=new PplGrid(); break;
+		case PplPoly: manager=new PplPoly(false); break;
 		default: throw new UnsupportedOperationException("Numerical domain "+numericalDomain+" unknown in Apron");
 		}
 	}
@@ -113,7 +117,7 @@ public class Apron implements ValueDomain<Apron> {
 			Environment env = state.getEnvironment();
 			Var variable = toApronVar(id);
 			Abstract1 newState;
-			if (containsIdentifier(id)) {
+			if (!containsIdentifier(id)) {
 				Var[] vars = {variable};
 				env = env.add(new Var[0], vars);
 				newState = state.changeEnvironmentCopy(manager, env, false);

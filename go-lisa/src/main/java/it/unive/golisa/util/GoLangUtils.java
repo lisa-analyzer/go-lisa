@@ -1,5 +1,6 @@
 package it.unive.golisa.util;
 
+import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.Variable;
 
@@ -16,7 +17,7 @@ public class GoLangUtils {
 		return v.getName().equals(BLANK_IDENTIFIER);
 	}
 	
-	public static boolean refersToBlankIdentifier(VariableRef vref) {
-		return vref.getName().equals(BLANK_IDENTIFIER);
+	public static boolean refersToBlankIdentifier(Expression vref) {
+		return vref instanceof VariableRef && ((VariableRef) vref).getName().equals(BLANK_IDENTIFIER);
 	}
 }

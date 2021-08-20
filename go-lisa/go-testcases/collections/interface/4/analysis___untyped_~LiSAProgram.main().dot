@@ -1,11 +1,11 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<a := [1 targets]func(fint)int{returnf*f}(4)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ a: [16, 16] ]]<BR/>}} -&gt; [a]>];
-	"node1" [shape="rect",color="gray",label=<[unresolved]Println(a)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ a: [16, 16]<BR/>b: [25, 25] ]]<BR/>}} -&gt; [a]>];
-	"node2" [shape="rect",color="gray",label=<b := [1 targets]func(fint)int{returnf*f}(5)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ a: [16, 16]<BR/>b: [25, 25] ]]<BR/>}} -&gt; [b]>];
-	"node3" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ a: [16, 16]<BR/>b: [25, 25] ]]<BR/>}} -&gt; [skip]>];
-	"node0" -> "node2" [color="black"];
-	"node1" -> "node3" [color="black"];
-	"node2" -> "node1" [color="black"];
+	"node0" [shape="rect",color="black",label=<var i EMPTY_INTERFACE = &quot;hello&quot;<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [i]>];
+	"node1" [shape="rect",color="gray",label=<s := .(string)(i)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ s: [-Inf, +Inf] ]]<BR/>}} -&gt; [s]>];
+	"node2" [shape="rect",color="gray",label=<f := .(float64)(i)<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; []>];
+	"node3" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; [skip]>];
+	"node0" -> "node1" [color="black"];
+	"node1" -> "node2" [color="black"];
+	"node2" -> "node3" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

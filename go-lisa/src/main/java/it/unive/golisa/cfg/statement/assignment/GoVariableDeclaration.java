@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import it.unive.golisa.cfg.expression.GoAnonymousVariable;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
+import it.unive.golisa.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -66,7 +66,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		expressions.put(getRight(), right);
 		
 		// e.g., _ = f(), we just return right state
-		if (getLeft() instanceof GoAnonymousVariable)
+		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return right;
 		
 		expressions.put(getLeft(), right);

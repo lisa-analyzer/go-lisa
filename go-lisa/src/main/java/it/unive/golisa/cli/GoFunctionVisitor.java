@@ -1,4 +1,4 @@
-package it.unive.golisa.frontend;
+package it.unive.golisa.cli;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;

@@ -1,4 +1,4 @@
-package it.unive.golisa.frontend;
+package it.unive.golisa.cli;
 
 import java.util.ArrayList;
 import java.util.List;

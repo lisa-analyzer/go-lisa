@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.golisa.cli.GoFrontEnd;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;

@@ -1,4 +1,4 @@
-package it.unive.golisa.frontend;
+package it.unive.golisa.cli;
 
 import java.io.FileInputStream;
 import java.io.IOException;

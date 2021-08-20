@@ -9,7 +9,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import it.unive.golisa.analysis.composition.RelTarsis;
 import it.unive.golisa.analysis.tarsis.Tarsis;
-import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;

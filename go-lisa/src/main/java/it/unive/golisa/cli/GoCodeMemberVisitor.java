@@ -128,6 +128,7 @@ import it.unive.golisa.cfg.expression.binary.GoTypeAssertion;
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
 import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.expression.literal.GoFloat;
+import it.unive.golisa.cfg.expression.literal.GoFunctionLiteral;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.expression.literal.GoKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoNil;
@@ -155,6 +156,7 @@ import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.golisa.util.GoLangUtils;
@@ -1390,7 +1392,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Object visitPrimaryExpr(PrimaryExprContext ctx) {
+	public Expression visitPrimaryExpr(PrimaryExprContext ctx) {
 
 		if (ctx.operand() != null)
 			return visitOperand(ctx.operand());
@@ -1427,7 +1429,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 
 
-			Object primary = visitPrimaryExpr(ctx.primaryExpr());
+			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
 			// Function/method call (e.g., f(1,2,3), x.f())
 			// TODO: need to check if it is instance or not
@@ -1447,14 +1449,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				} 
 
 				// Anonymous function
-				else if (primary instanceof CFG) 
-					return new CFGCall(cfg, locationOf(ctx), funcName, (CFG) primary, args);
+				else if (primary instanceof GoFunctionLiteral)  
+					return new CFGCall(cfg, locationOf(ctx), funcName, (CFG) ((GoFunctionLiteral) primary).getValue(), args);
 			}
 
 			// Array/slice/map access e1[e2]
 			else if (ctx.index() != null) {
 				Expression index = visitIndex(ctx.index());
-				return new GoCollectionAccess(cfg, locationOf(ctx), (Expression) primary, index);
+				return new GoCollectionAccess(cfg, locationOf(ctx), primary, index);
 			}
 
 			// Field access x.f
@@ -1468,13 +1470,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Pair<Expression, Expression> args = visitSlice(ctx.slice());
 
 				if (args.getRight() == null)
-					return new GoSimpleSlice(cfg, locationOf(ctx), (Expression) primary, args.getLeft(), new GoLength(cfg, locationOf(ctx), (Expression) primary));
+					return new GoSimpleSlice(cfg, locationOf(ctx), primary, args.getLeft(), new GoLength(cfg, locationOf(ctx), (Expression) primary));
 				else
-					return new GoSimpleSlice(cfg, locationOf(ctx), (Expression) primary, args.getLeft(), args.getRight());
+					return new GoSimpleSlice(cfg, locationOf(ctx), primary, args.getLeft(), args.getRight());
 			}
 
 			else if (ctx.typeAssertion() != null) {
-				return new GoTypeAssertion(cfg, locationOf(ctx), (Expression) primary, visitType_(ctx.typeAssertion().type_()));
+				return new GoTypeAssertion(cfg, locationOf(ctx), primary, visitType_(ctx.typeAssertion().type_()));
 			}
 		}
 
@@ -1529,7 +1531,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Object visitOperand(OperandContext ctx) {
+	public Expression visitOperand(OperandContext ctx) {
 		if (ctx.expression() != null)
 			return visitExpression(ctx.expression());
 
@@ -1546,7 +1548,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Object visitLiteral(LiteralContext ctx) {
+	public Expression visitLiteral(LiteralContext ctx) {
 		if (ctx.basicLit() != null)
 			return visitBasicLit(ctx.basicLit());
 		else if (ctx.compositeLit() != null)
@@ -1629,7 +1631,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Statement visitCompositeLit(CompositeLitContext ctx) {
+	public Expression visitCompositeLit(CompositeLitContext ctx) {
 		GoType type = new GoTypeVisitor(file, currentUnit, program, constants).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>)  {
@@ -1773,8 +1775,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public CFG visitFunctionLit(FunctionLitContext ctx) {
-		return new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
+	public Expression visitFunctionLit(FunctionLitContext ctx) {
+		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
+		Type funcType = GoFunctionType.lookup(new GoFunctionType(funcLit.getDescriptor().getArgs(), funcLit.getDescriptor().getReturnType()));
+		return new GoFunctionLiteral(cfg, locationOf(ctx), funcLit, funcType);
 	}
 
 	@Override
@@ -1841,7 +1845,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Pair<Statement, Statement> visitTypeSwitchStmt(TypeSwitchStmtContext ctx) {
 
 		SourceCodeLocation location = locationOf(ctx);
-		Expression typeSwitchExp = (Expression) visitPrimaryExpr(ctx.typeSwitchGuard().primaryExpr());
+		Expression typeSwitchExp = visitPrimaryExpr(ctx.typeSwitchGuard().primaryExpr());
 
 		NoOp exitNode = new NoOp(cfg, location);		
 		cfg.addNode(exitNode, visibleIds);

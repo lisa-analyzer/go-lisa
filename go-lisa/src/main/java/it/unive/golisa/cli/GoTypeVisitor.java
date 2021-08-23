@@ -2,6 +2,7 @@ package it.unive.golisa.cli;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -13,6 +14,7 @@ import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
 import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
 import it.unive.golisa.antlr.GoParser.ChannelTypeContext;
 import it.unive.golisa.antlr.GoParser.ElementTypeContext;
+import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FieldDeclContext;
 import it.unive.golisa.antlr.GoParser.InterfaceTypeContext;
 import it.unive.golisa.antlr.GoParser.LiteralTypeContext;
@@ -73,10 +75,13 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	protected final Program program;
 
-	public GoTypeVisitor(String file, CompilationUnit unit, Program program) {
+	protected final Map<String, ExpressionContext> constants;
+
+	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.unit = unit;
 		this.program = program;
+		this.constants = constants;
 	}
 
 	/**
@@ -186,12 +191,62 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Integer visitArrayLength(ArrayLengthContext ctx) {
-		// The array length must be an integer value, not required to be an expression.
+		// The array length must be an integer value or a constant expression
+
+		Integer length = getConstantValue(ctx.expression());
+		if (length != null)
+			return length;
+
+		throw new IllegalStateException("Go error: non-constant array bound " + ctx.getText());
+	}
+
+	private boolean isInteger(String s) {
 		try {
-			return Integer.parseInt(ctx.expression().getText());
-		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Go error: non-constant array bound " + ctx.getText());
+			Integer.parseInt(s);
+			return  true;
+		} catch (NumberFormatException nfe) {
+			return false;
 		}
+	}
+
+	private Integer getConstantValue(ExpressionContext expression) {
+
+		if (isInteger(expression.getText()))
+			return Integer.parseInt(expression.getText());
+
+		if (expression.STAR() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left * right;
+		}
+
+		if (expression.DIV() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left / right;
+		}
+
+		if (expression.MINUS() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left - right;
+		}
+
+		if (expression.PLUS() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left + right;
+		}
+				
+		if (expression.primaryExpr().operand().operandName().IDENTIFIER() != null) 
+			if (constants.containsKey(expression.getText()))
+				return getConstantValue(constants.get(expression.getText()));
+		
+		return null;
 	}
 
 	@Override
@@ -293,11 +348,11 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
-		
+
 		// The interface is empty
 		if (ctx.methodSpec().size() == 0)	
 			return GoInterfaceType.getEmptyInterface();
-		
+
 		for (MethodSpecContext methodSpec : ctx.methodSpec()) 
 			unit.addInstanceCFG(new CFG(visitMethodSpec(methodSpec)));
 		return GoInterfaceType.lookup(unit.getName(), unit);
@@ -316,7 +371,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			Parameter[] cfgArgs = new Parameter[]{};
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
-				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(file, program).visitParameterDecl(formalPars.parameterDecl(i)));
+				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(file, program, constants).visitParameterDecl(formalPars.parameterDecl(i)));
 
 			return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs);
 		}
@@ -328,7 +383,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		// The return type is not specified
 		if (result == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(file, program).visitResult(result);
+		return new GoCodeMemberVisitor(file, program, constants).visitResult(result);
 	}
 
 	@Override

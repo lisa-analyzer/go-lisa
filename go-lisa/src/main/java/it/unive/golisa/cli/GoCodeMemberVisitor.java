@@ -220,6 +220,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 */
 	private List<Statement> entryPoints = new ArrayList<Statement>();
 
+	
+	protected final Map<String, ExpressionContext> constants;
 
 	/**
 	 * Current compilation unit to parse
@@ -227,21 +229,23 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected CompilationUnit currentUnit;
 
 
-	public GoCodeMemberVisitor(String file, Program program) {
+	public GoCodeMemberVisitor(String file, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.program = program;
 		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		visibleIds = new HashMap<>();
+		this.constants = constants;
 	}
 
 
-	public GoCodeMemberVisitor(CompilationUnit packageUnit, MethodDeclContext ctx, String file, Program program) {
+	public GoCodeMemberVisitor(CompilationUnit packageUnit, MethodDeclContext ctx, String file, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.descriptor = mkDescriptor(packageUnit,ctx);
 		this.program = program;
-
+		this.constants = constants;
+		
 		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
@@ -1607,10 +1611,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			SourceCodeLocation location = locationOf(ctx);
 
 			// Boolean values (true, false) are matched as identifiers
-			if (ctx.IDENTIFIER().getText().equals("true") || ctx.IDENTIFIER().getText().equals("false"))
-				return new GoBoolean(cfg, location, Boolean.parseBoolean(ctx.IDENTIFIER().getText()));
+			String stringId = ctx.IDENTIFIER().getText();
+			if (stringId.equals("true") || stringId.equals("false"))
+				return new GoBoolean(cfg, location, Boolean.parseBoolean(stringId));
+			else if (constants.containsKey(stringId))
+				return visitExpression(constants.get(stringId));
 			else
-				return new VariableRef(cfg, location, ctx.IDENTIFIER().getText());
+				return new VariableRef(cfg, location, stringId);
 		}
 
 		Object child = visitChildren(ctx);
@@ -1623,7 +1630,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Statement visitCompositeLit(CompositeLitContext ctx) {
-		GoType type = new GoTypeVisitor(file, currentUnit, program).visitLiteralType(ctx.literalType());
+		GoType type = new GoTypeVisitor(file, currentUnit, program, constants).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>)  {
 
@@ -1767,7 +1774,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public CFG visitFunctionLit(FunctionLitContext ctx) {
-		return new GoFunctionVisitor(ctx, currentUnit, file, program).buildAnonymousCFG(ctx);
+		return new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
 	}
 
 	@Override
@@ -1827,7 +1834,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitType_(Type_Context ctx) {
-		return new GoTypeVisitor(file, currentUnit, program).visitType_(ctx);
+		return new GoTypeVisitor(file, currentUnit, program, constants).visitType_(ctx);
 	}
 
 	@Override
@@ -1910,7 +1917,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Type[] visitTypeList(TypeListContext ctx) {
 		Type[] types = new Type[ctx.type_().size()];
-		for (int i =  0;  i < types.length; i++)
+		for (int i =  0; i < types.length; i++)
 			types[i] = visitType_(ctx.type_(i));
 		return types;
 	}

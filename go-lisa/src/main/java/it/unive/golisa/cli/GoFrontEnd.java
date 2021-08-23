@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -18,8 +20,13 @@ import org.apache.logging.log4j.Logger;
 
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
+import it.unive.golisa.antlr.GoParser.ConstDeclContext;
+import it.unive.golisa.antlr.GoParser.ConstSpecContext;
 import it.unive.golisa.antlr.GoParser.DeclarationContext;
+import it.unive.golisa.antlr.GoParser.ExpressionContext;
+import it.unive.golisa.antlr.GoParser.ExpressionListContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
+import it.unive.golisa.antlr.GoParser.IdentifierListContext;
 import it.unive.golisa.antlr.GoParser.ImportDeclContext;
 import it.unive.golisa.antlr.GoParser.ImportPathContext;
 import it.unive.golisa.antlr.GoParser.ImportSpecContext;
@@ -83,6 +90,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private final String filePath;
 
 	private final Program program;
+	
+	private Map<String, ExpressionContext> constants;
 
 	/**
 	 * The resolution strategy for Go calling expressions.
@@ -98,6 +107,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private GoFrontEnd(String filePath) {
 		this.filePath = filePath;
 		this.program = new Program();
+		this.constants = new HashMap<>();
 		GoCodeMemberVisitor.c = 0;
 	}
 
@@ -201,6 +211,24 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		if (decl.typeDecl() != null) 
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addCompilationUnit(unit);
+		
+		if (decl.constDecl() != null)
+			visitConstDeclContext(decl.constDecl());
+			
+	}
+	
+	private void visitConstDeclContext(ConstDeclContext ctx) {
+		for (ConstSpecContext constSpec : ctx.constSpec()) 
+			visitConstSpecContext(constSpec);
+	}
+	
+	
+	private void visitConstSpecContext(ConstSpecContext ctx) {
+		IdentifierListContext ids = ctx.identifierList();
+		ExpressionListContext exps = ctx.expressionList();
+
+		for (int i = 0; i < ids.IDENTIFIER().size(); i++) 
+			constants.put(ids.IDENTIFIER(i).getText(), exps.expression(i));
 	}
 
 	@Override
@@ -210,7 +238,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 			String unitName = typeSpec.IDENTIFIER().getText();
 			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(filePath, unit, program).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(filePath, unit, program, constants).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
@@ -311,12 +339,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {	
-		return new GoFunctionVisitor(ctx, packageUnit, filePath, program).visitFunctionDecl(ctx);
+		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, constants).visitFunctionDecl(ctx);
 	}
 
 	@Override
 	public CFG visitMethodDecl(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program).visitCodeMember(ctx);
+		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, constants).visitCodeMember(ctx);
 	}
 
 }

@@ -2,10 +2,12 @@ package it.unive.golisa.cli;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
 import it.unive.golisa.antlr.GoParser.FunctionTypeContext;
@@ -39,8 +41,8 @@ import it.unive.lisa.type.Untyped;
 class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	// side-effect on packageUnit
-	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program) {
-		super(file, program);
+	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program, Map<String, ExpressionContext> constants) {
+		super(file, program, constants);
 		this.descriptor = buildCFGDescriptor(funcDecl);
 
 		this.currentUnit = packageUnit;
@@ -53,8 +55,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	}
 
 	// side-effect on packageUnit
-	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program) {
-		super(file, program);
+	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program, Map<String, ExpressionContext> constants) {
+		super(file, program, constants);
 		this.descriptor = buildCFGDescriptor(funcLit);
 
 		this.currentUnit = packageUnit;
@@ -263,7 +265,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(file, program).visitResult(signature.result());
+		return new GoCodeMemberVisitor(file, program, constants).visitResult(signature.result());
 	}
 
 	@Override

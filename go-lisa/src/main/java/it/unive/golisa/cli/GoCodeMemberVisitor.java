@@ -1850,8 +1850,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (typeSwitchCase.typeSwitchCase().typeList() != null) {
 				Type[] types = visitTypeList(typeSwitchCase.typeSwitchCase().typeList());
 				for (int j = 0; j < types.length; j++)  {
-					SourceCodeLocation typeLoc = locationOf(typeSwitchCase.typeSwitchCase().typeList().type_(j));
-					VariableRef typeSwitchVar = new VariableRef(cfg, typeLoc, ctx.typeSwitchGuard().IDENTIFIER().getText());
+					SourceCodeLocation typeLoc = locationOf(typeSwitchCase.typeSwitchCase().typeList().type_(j));					
+					
+					VariableRef typeSwitchVar;
+					
+					// If the switch identifier is missing, we create a fake identifier
+					if (ctx.typeSwitchGuard().IDENTIFIER() == null)
+						 typeSwitchVar = new VariableRef(cfg, typeLoc, "switchId");
+					else
+						 typeSwitchVar = new VariableRef(cfg, typeLoc, ctx.typeSwitchGuard().IDENTIFIER().getText());
+					
 					VariableRef typeSwitchCheck = new VariableRef(cfg, typeLoc, "ok");
 					VariableRef[] ids = new VariableRef[] {typeSwitchVar, typeSwitchCheck};
 
@@ -1864,10 +1872,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 					cfg.addNode(shortDecl, visibleIds);
 					cfg.addNode(caseBooleanGuard, visibleIds);
-					cfg.addEdge(new SequentialEdge(shortDecl, caseBooleanGuard));
+					addEdge(new SequentialEdge(shortDecl, caseBooleanGuard));
 
-					cfg.addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
-					cfg.addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
+					addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()));
+					addEdge(new SequentialEdge(caseBlock.getRight(), exitNode));
 
 					if (entryNode == null) 
 						entryNode = shortDecl;

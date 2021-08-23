@@ -1321,7 +1321,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			entryPoints.remove(entryPoints.size()-1);
 			exitPoints.remove(exitPoints.size()-1);
-			System.err.println(cfg.getEdges());
 			return Pair.of(idxInit, exitNode);
 		}
 

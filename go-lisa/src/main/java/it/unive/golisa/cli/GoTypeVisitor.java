@@ -148,14 +148,16 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitType_(Type_Context ctx) {
-
 		if (ctx.typeName() != null)
 			return visitTypeName(ctx.typeName());
 
 		if (ctx.typeLit() != null)
 			return visitTypeLit(ctx.typeLit());
 
-		return (GoType) visitChildren(ctx);
+		if (ctx.type_() != null)
+			return visitType_(ctx.type_());
+
+		throw new IllegalStateException("Illegal state: type_ rule has no other productions.");
 	}
 
 	@Override

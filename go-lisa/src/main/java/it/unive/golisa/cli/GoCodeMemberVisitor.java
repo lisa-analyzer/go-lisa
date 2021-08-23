@@ -611,7 +611,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// Go and (&)
 		if (ctx.AMPERSAND() != null)
 			return new GoBitwiseAnd(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
-
+		
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
@@ -1432,7 +1432,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				if (primary instanceof VariableRef) // Function call
 					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, primary.toString(), visitArguments(ctx.arguments()));				
 
-
 				else if (primary instanceof AccessInstanceGlobal) {
 					Expression receiver = (Expression) getReceiver(ctx.primaryExpr());
 					if (program.getUnit(receiver.toString()) != null) 
@@ -1580,20 +1579,23 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitInteger(IntegerContext ctx) {
 		SourceCodeLocation location = locationOf(ctx);
 
-		//TODO: for the moment, we skip any other integer literal format (e.g., octal, imaginary)
+		//TODO: for the moment, we skip any other integer literal format (e.g., imaginary)
 		if (ctx.DECIMAL_LIT() != null)
 			try {
 			return new GoInteger(cfg, location, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 			} catch (NumberFormatException e) {
 				return new GoInteger(cfg, location, new BigInteger(ctx.DECIMAL_LIT().getText()));
 			}
-
-		// TODO: 0 matched as octal literal and not decimal literal
-		if (ctx.OCTAL_LIT() != null)
-			return new GoInteger(cfg, location, Integer.parseInt(ctx.OCTAL_LIT().getText()));
-
+		
 		if (ctx.RUNE_LIT() != null) 
 			return new GoRune(cfg, location, removeQuotes(ctx.getText()));
+
+		if (ctx.HEX_LIT() != null) 
+			// removes '0x'
+			return new GoInteger(cfg, location, Integer.parseInt(ctx.HEX_LIT().getText().substring(2), 16));
+		
+		if (ctx.OCTAL_LIT() != null)
+			return new GoInteger(cfg, location, Integer.parseInt(ctx.OCTAL_LIT().getText(), 8));
 
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());	
 	}

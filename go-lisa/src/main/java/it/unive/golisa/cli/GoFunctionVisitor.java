@@ -135,7 +135,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		for( Statement st : matrix.getExits())
 			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, descriptor.getLocation());
-				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty()) 
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
@@ -144,7 +144,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		cfg.simplify();
 		return Pair.of(entryNode, body.getRight());
 	}
-	
+
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());	
@@ -206,14 +206,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			}
 		}
 
-		for( Statement st : matrix.getExits())
+		for (Statement st : matrix.getExits())
 			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, descriptor.getLocation());
 				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
-
 
 		cfg.simplify();
 		return cfg;
@@ -234,7 +233,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
 	}
-	
+
 	private CFGDescriptor buildCFGDescriptor(FunctionLitContext funcLit) {
 		String funcName = "anonymousFunction" +  c++;
 		SignatureContext signature = funcLit.signature();

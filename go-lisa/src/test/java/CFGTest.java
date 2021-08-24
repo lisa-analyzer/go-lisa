@@ -37,9 +37,15 @@ public class CFGTest extends GoAnalysisTestExecutor {
 	}
 	
 	@Test
-	public void testSwitch() throws AnalysisSetupException {
+	public void testExprSwitch() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
-		perform("cfg/switch", "go-switch.go", conf);
+		perform("cfg/switch/expr", "go-switch.go", conf);
+	}
+	
+	@Test
+	public void testTypeSwitch() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/switch/type", "go-switch.go", conf);
 	}
 	
 	@Test
@@ -49,6 +55,12 @@ public class CFGTest extends GoAnalysisTestExecutor {
 	}
 	
 	@Test
+	public void testChannel() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/channel", "go-channel.go", conf);
+	}
+	
+	@Test	
 	public void testRoutine() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
 		perform("cfg/routine", "go-routine.go", conf);

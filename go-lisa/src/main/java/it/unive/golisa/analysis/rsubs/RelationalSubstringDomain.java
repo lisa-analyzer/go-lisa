@@ -425,4 +425,10 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		return result;
 	}
+
+	@Override
+	protected RelationalSubstringDomain mk(ExpressionInverseSet<ValueExpression> lattice,
+			Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
+		return new RelationalSubstringDomain(lattice, function);
+	}
 }

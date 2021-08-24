@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import it.unive.golisa.cfg.expression.literal.GoString;
+import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -48,6 +49,8 @@ public class GoStringType implements StringType, GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
+		if (other instanceof GoInterfaceType)
+			return ((GoInterfaceType) other).isEmptyInterface();
 		return other instanceof GoStringType || other.isUntyped();
 	}
 

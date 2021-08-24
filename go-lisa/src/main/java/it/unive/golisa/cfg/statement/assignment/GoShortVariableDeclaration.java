@@ -4,6 +4,7 @@ import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
+import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -63,6 +64,11 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 					throws SemanticException {
 
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
+	
+		// e.g., _ := f(), we just return right state
+		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
+			return right;
+			
 		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
 		expressions.put(getRight(), right);
 		expressions.put(getLeft(), left);

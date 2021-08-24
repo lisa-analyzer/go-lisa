@@ -194,4 +194,10 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 
 		return new EqualityDomain(lattice, function);
 	}
+
+	@Override
+	protected EqualityDomain mk(ExpressionInverseSet<Identifier> lattice,
+			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
+		return new EqualityDomain(lattice, function);
+	}
 }

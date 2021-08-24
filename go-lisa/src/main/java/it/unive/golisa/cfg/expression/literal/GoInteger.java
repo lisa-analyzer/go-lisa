@@ -21,7 +21,7 @@ public class GoInteger extends Literal {
 	 * @param cfg   the cfg that this Go integer belongs to
 	 * @param value the integer value
 	 */	
-	public GoInteger(CFG cfg, SourceCodeLocation location, Integer value) {
+	public GoInteger(CFG cfg, SourceCodeLocation location, Object value) {
 		super(cfg, location, value, GoUntypedInt.INSTANCE);
 	}
 }

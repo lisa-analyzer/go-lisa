@@ -90,4 +90,17 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
 		perform("collections/interface/3", "interface.go", conf);
 	}
+	
+	
+	@Test
+	public void interfaceTest4() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setInferTypes(true)
+				.setDumpTypeInference(false)
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setDumpAnalysis(true)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+		perform("collections/interface/4", "interface.go", conf);
+	}
 }

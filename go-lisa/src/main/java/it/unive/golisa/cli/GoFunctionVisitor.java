@@ -2,10 +2,12 @@ package it.unive.golisa.cli;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
 import it.unive.golisa.antlr.GoParser.FunctionTypeContext;
@@ -39,8 +41,8 @@ import it.unive.lisa.type.Untyped;
 class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	// side-effect on packageUnit
-	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program) {
-		super(file, program);
+	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program, Map<String, ExpressionContext> constants) {
+		super(packageUnit, file, program, constants);
 		this.descriptor = buildCFGDescriptor(funcDecl);
 
 		this.currentUnit = packageUnit;
@@ -53,8 +55,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	}
 
 	// side-effect on packageUnit
-	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program) {
-		super(file, program);
+	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program, Map<String, ExpressionContext> constants) {
+		super(packageUnit, file, program, constants);
 		this.descriptor = buildCFGDescriptor(funcLit);
 
 		this.currentUnit = packageUnit;
@@ -64,6 +66,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
+	}
+
+	public GoFunctionVisitor(CompilationUnit unit, String file, Program program,
+			Map<String, ExpressionContext> constants) {
+		super(unit, file, program, constants);
 	}
 
 	@Override
@@ -135,7 +142,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		for( Statement st : matrix.getExits())
 			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, descriptor.getLocation());
-				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty()) 
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
@@ -144,7 +151,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		cfg.simplify();
 		return Pair.of(entryNode, body.getRight());
 	}
-	
+
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());	
@@ -206,14 +213,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			}
 		}
 
-		for( Statement st : matrix.getExits())
+		for (Statement st : matrix.getExits())
 			if(st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, descriptor.getLocation());
 				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
-
 
 		cfg.simplify();
 		return cfg;
@@ -234,7 +240,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName, getGoReturnType(funcDecl.signature()), cfgArgs);
 	}
-	
+
 	private CFGDescriptor buildCFGDescriptor(FunctionLitContext funcLit) {
 		String funcName = "anonymousFunction" +  c++;
 		SignatureContext signature = funcLit.signature();
@@ -264,7 +270,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(file, program).visitResult(signature.result());
+		return new GoCodeMemberVisitor(currentUnit, file, program, constants).visitResult(signature.result());
 	}
 
 	@Override

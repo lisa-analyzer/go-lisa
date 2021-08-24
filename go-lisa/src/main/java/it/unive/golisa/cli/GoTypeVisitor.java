@@ -1,7 +1,10 @@
 package it.unive.golisa.cli;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -13,7 +16,9 @@ import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
 import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
 import it.unive.golisa.antlr.GoParser.ChannelTypeContext;
 import it.unive.golisa.antlr.GoParser.ElementTypeContext;
+import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FieldDeclContext;
+import it.unive.golisa.antlr.GoParser.FunctionTypeContext;
 import it.unive.golisa.antlr.GoParser.InterfaceTypeContext;
 import it.unive.golisa.antlr.GoParser.LiteralTypeContext;
 import it.unive.golisa.antlr.GoParser.MapTypeContext;
@@ -73,10 +78,13 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	protected final Program program;
 
-	public GoTypeVisitor(String file, CompilationUnit unit, Program program) {
+	protected final Map<String, ExpressionContext> constants;
+
+	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.unit = unit;
 		this.program = program;
+		this.constants = constants;
 	}
 
 	/**
@@ -143,18 +151,44 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitType_(Type_Context ctx) {
-
 		if (ctx.typeName() != null)
 			return visitTypeName(ctx.typeName());
 
 		if (ctx.typeLit() != null)
 			return visitTypeLit(ctx.typeLit());
 
-		return (GoType) visitChildren(ctx);
+		if (ctx.type_() != null)
+			return visitType_(ctx.type_());
+
+		throw new IllegalStateException("Illegal state: type_ rule has no other productions.");
 	}
 
 	@Override
 	public GoType visitTypeLit(TypeLitContext ctx) {
+
+		if (ctx.arrayType() != null)
+			return visitArrayType(ctx.arrayType());
+
+		if (ctx.structType() != null)
+			return visitStructType(ctx.structType());
+
+		if (ctx.pointerType() != null)
+			return visitPointerType(ctx.pointerType());
+
+		if (ctx.functionType() != null)
+			return visitFunctionType(ctx.functionType());
+
+		if (ctx.sliceType() != null)
+			return visitSliceType(ctx.sliceType());
+
+		if (ctx.mapType() != null)
+			return visitMapType(ctx.mapType());
+
+		if (ctx.channelType() != null)
+			return visitChannelType(ctx.channelType());
+
+
+
 		Object result = visitChildren(ctx);
 		if (!(result instanceof GoType))
 			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
@@ -173,6 +207,11 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
+	public GoType visitFunctionType(FunctionTypeContext ctx) {
+		return new GoFunctionVisitor(unit, file, program, constants).visitFunctionType(ctx);
+	}
+
+	@Override
 	public Pair<String, String> visitQualifiedIdent(QualifiedIdentContext ctx) {
 		return Pair.of(ctx.IDENTIFIER(0).getText(), ctx.IDENTIFIER(1).getText());
 	}
@@ -186,12 +225,62 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Integer visitArrayLength(ArrayLengthContext ctx) {
-		// The array length must be an integer value, not required to be an expression.
+		// The array length must be an integer value or a constant expression
+
+		Integer length = getConstantValue(ctx.expression());
+		if (length != null)
+			return length;
+
+		throw new IllegalStateException("Go error: non-constant array bound " + ctx.getText());
+	}
+
+	private boolean isInteger(String s) {
 		try {
-			return Integer.parseInt(ctx.expression().getText());
-		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Go error: non-constant array bound " + ctx.getText());
+			Integer.parseInt(s);
+			return  true;
+		} catch (NumberFormatException nfe) {
+			return false;
 		}
+	}
+
+	private Integer getConstantValue(ExpressionContext expression) {
+
+		if (isInteger(expression.getText()))
+			return Integer.parseInt(expression.getText());
+
+		if (expression.STAR() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left * right;
+		}
+
+		if (expression.DIV() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left / right;
+		}
+
+		if (expression.MINUS() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left - right;
+		}
+
+		if (expression.PLUS() != null) {
+			Integer left = getConstantValue(expression.expression(0));
+			Integer right = getConstantValue(expression.expression(1));
+			if (left != null && right != null)
+				return left + right;
+		}
+
+		if (expression.primaryExpr().operand().operandName().IDENTIFIER() != null) 
+			if (constants.containsKey(expression.getText()))
+				return getConstantValue(constants.get(expression.getText()));
+
+		return null;
 	}
 
 	@Override
@@ -287,24 +376,26 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		for (FieldDeclContext field : ctx.fieldDecl()) 
 			for (Pair<String, Type> fd : visitFieldDecl(field))
 				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, getLine(field), getCol(field)), fd.getLeft(), fd.getRight()));
-
 		return GoStructType.lookup(unit.getName(), unit);
 	}
 
 	@Override
 	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
-		
+
 		// The interface is empty
 		if (ctx.methodSpec().size() == 0)	
 			return GoInterfaceType.getEmptyInterface();
-		
+
 		for (MethodSpecContext methodSpec : ctx.methodSpec()) 
-			unit.addInstanceCFG(new CFG(visitMethodSpec(methodSpec)));
+			for (CFGDescriptor desc : visitMethodSpec(methodSpec))
+				unit.addInstanceCFG(new CFG(desc));
 		return GoInterfaceType.lookup(unit.getName(), unit);
 	}
 
 	@Override
-	public CFGDescriptor visitMethodSpec(MethodSpecContext ctx) {
+	public Set<CFGDescriptor> visitMethodSpec(MethodSpecContext ctx) {
+
+		Set<CFGDescriptor> descs = new HashSet<>();
 
 		if (ctx.IDENTIFIER() != null) {
 			String funcName = ctx.IDENTIFIER().getText();
@@ -316,19 +407,30 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			Parameter[] cfgArgs = new Parameter[]{};
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
-				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(file, program).visitParameterDecl(formalPars.parameterDecl(i)));
+				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(unit, file, program, constants).visitParameterDecl(formalPars.parameterDecl(i)));
 
-			return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs);
+			descs.add(new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs));
 		}
 
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// need to include methods of typeName
+		// TODO: this works just  if the typeName is defined in the source code
+		else if (ctx.typeName() != null) {
+			GoType type = visitTypeName(ctx.typeName());
+			CompilationUnit unitType = program.getUnit(type.toString());
+			
+			if (unitType != null)
+				for (CFG cfg : unitType.getAllCFGs())
+					descs.add(cfg.getDescriptor());
+		}
+
+		return descs;
 	}
 
 	private Type getGoReturnType(ResultContext result) {
 		// The return type is not specified
 		if (result == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(file, program).visitResult(result);
+		return new GoCodeMemberVisitor(unit, file, program, constants).visitResult(result);
 	}
 
 	@Override

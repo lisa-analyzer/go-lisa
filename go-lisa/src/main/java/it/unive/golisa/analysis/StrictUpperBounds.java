@@ -314,4 +314,10 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 
 		return new StrictUpperBounds(lattice, function);
 	}
+
+	@Override
+	protected StrictUpperBounds mk(ExpressionInverseSet<Identifier> lattice,
+			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
+		return new StrictUpperBounds(lattice, function);
+	}
 }

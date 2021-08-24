@@ -479,6 +479,37 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return Pair.of(entryNode, lastStmt);
 	}
+	
+
+	public Pair<Statement, Statement> visitStatementListOfSwitchCase(StatementListContext ctx) {
+		// It is an empty statement
+		if (ctx == null || ctx.statement().size() == 0) {
+			NoOp nop = new NoOp(cfg, SyntheticLocation.INSTANCE);
+			cfg.addNode(nop);
+			return Pair.of(nop, nop);
+		}
+
+		Statement lastStmt = null;
+		Statement entryNode = null;
+		
+		Map<String, VariableRef> backup = new HashMap<>(visibleIds);
+
+		for (int i = 0; i < ctx.statement().size(); i++)  {
+			Pair<Statement, Statement> currentStmt = visitStatement(ctx.statement(i));
+
+			if (lastStmt != null) 
+				addEdge(new SequentialEdge(lastStmt, currentStmt.getLeft()));	
+			else 
+				entryNode = currentStmt.getLeft();
+
+			lastStmt = currentStmt.getRight();
+			
+			//scoping must be updated for each case
+			updateVisileIds(backup, lastStmt);
+		}
+
+		return Pair.of(entryNode, lastStmt);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -1105,7 +1136,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		for (int i = 0; i < ctx.exprCaseClause().size(); i++)  {
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
-			Pair<Statement, Statement> caseBlock = visitStatementList(switchCase.statementList());
+			Pair<Statement, Statement> caseBlock = visitStatementListOfSwitchCase(switchCase.statementList());
 			Expression caseBooleanGuard = null;
 
 			// Check if the switch case is not the default case
@@ -1140,6 +1171,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				lastCaseBlock = caseBlock;
 			else
 				lastCaseBlock = null;
+			
 		}
 
 		if (lastCaseBlock != null)

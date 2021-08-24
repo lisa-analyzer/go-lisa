@@ -1,8 +1,10 @@
 package it.unive.golisa.cli;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -163,30 +165,30 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitTypeLit(TypeLitContext ctx) {
-		
+
 		if (ctx.arrayType() != null)
 			return visitArrayType(ctx.arrayType());
-		
+
 		if (ctx.structType() != null)
 			return visitStructType(ctx.structType());
 
 		if (ctx.pointerType() != null)
 			return visitPointerType(ctx.pointerType());
-	
+
 		if (ctx.functionType() != null)
 			return visitFunctionType(ctx.functionType());
 
 		if (ctx.sliceType() != null)
 			return visitSliceType(ctx.sliceType());
-		
+
 		if (ctx.mapType() != null)
 			return visitMapType(ctx.mapType());
-		
+
 		if (ctx.channelType() != null)
 			return visitChannelType(ctx.channelType());
-		
-		
-		
+
+
+
 		Object result = visitChildren(ctx);
 		if (!(result instanceof GoType))
 			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
@@ -203,7 +205,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
 		}
 	}
-	
+
 	@Override
 	public GoType visitFunctionType(FunctionTypeContext ctx) {
 		return new GoFunctionVisitor(unit, file, program, constants).visitFunctionType(ctx);
@@ -273,11 +275,11 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			if (left != null && right != null)
 				return left + right;
 		}
-				
+
 		if (expression.primaryExpr().operand().operandName().IDENTIFIER() != null) 
 			if (constants.containsKey(expression.getText()))
 				return getConstantValue(constants.get(expression.getText()));
-		
+
 		return null;
 	}
 
@@ -385,12 +387,15 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			return GoInterfaceType.getEmptyInterface();
 
 		for (MethodSpecContext methodSpec : ctx.methodSpec()) 
-			unit.addInstanceCFG(new CFG(visitMethodSpec(methodSpec)));
+			for (CFGDescriptor desc : visitMethodSpec(methodSpec))
+				unit.addInstanceCFG(new CFG(desc));
 		return GoInterfaceType.lookup(unit.getName(), unit);
 	}
 
 	@Override
-	public CFGDescriptor visitMethodSpec(MethodSpecContext ctx) {
+	public Set<CFGDescriptor> visitMethodSpec(MethodSpecContext ctx) {
+
+		Set<CFGDescriptor> descs = new HashSet<>();
 
 		if (ctx.IDENTIFIER() != null) {
 			String funcName = ctx.IDENTIFIER().getText();
@@ -404,10 +409,21 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(unit, file, program, constants).visitParameterDecl(formalPars.parameterDecl(i)));
 
-			return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs);
+			descs.add(new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs));
 		}
 
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+		// need to include methods of typeName
+		// TODO: this works just  if the typeName is defined in the source code
+		else if (ctx.typeName() != null) {
+			GoType type = visitTypeName(ctx.typeName());
+			CompilationUnit unitType = program.getUnit(type.toString());
+			
+			if (unitType != null)
+				for (CFG cfg : unitType.getAllCFGs())
+					descs.add(cfg.getDescriptor());
+		}
+
+		return descs;
 	}
 
 	private Type getGoReturnType(ResultContext result) {

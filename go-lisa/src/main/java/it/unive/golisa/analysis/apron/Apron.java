@@ -426,6 +426,18 @@ public class Apron implements ValueDomain<Apron> {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
 	}
+	
+	public Apron glb(Apron other) throws SemanticException {
+		try {
+			if (other.state.isBottom(manager) || this.state.isBottom(manager))
+				return bottom();
+	
+			return new Apron(state.meetCopy(manager, other.state));
+		} catch (ApronException e) {
+			throw new UnsupportedOperationException("Apron library crashed", e);
+		}
+	}
+	
 
 	@Override
 	public Apron widening(Apron other) throws SemanticException {

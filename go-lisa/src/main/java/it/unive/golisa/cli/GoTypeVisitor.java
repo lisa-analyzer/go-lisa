@@ -16,6 +16,7 @@ import it.unive.golisa.antlr.GoParser.ChannelTypeContext;
 import it.unive.golisa.antlr.GoParser.ElementTypeContext;
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FieldDeclContext;
+import it.unive.golisa.antlr.GoParser.FunctionTypeContext;
 import it.unive.golisa.antlr.GoParser.InterfaceTypeContext;
 import it.unive.golisa.antlr.GoParser.LiteralTypeContext;
 import it.unive.golisa.antlr.GoParser.MapTypeContext;
@@ -162,6 +163,30 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitTypeLit(TypeLitContext ctx) {
+		
+		if (ctx.arrayType() != null)
+			return visitArrayType(ctx.arrayType());
+		
+		if (ctx.structType() != null)
+			return visitStructType(ctx.structType());
+
+		if (ctx.pointerType() != null)
+			return visitPointerType(ctx.pointerType());
+	
+		if (ctx.functionType() != null)
+			return visitFunctionType(ctx.functionType());
+
+		if (ctx.sliceType() != null)
+			return visitSliceType(ctx.sliceType());
+		
+		if (ctx.mapType() != null)
+			return visitMapType(ctx.mapType());
+		
+		if (ctx.channelType() != null)
+			return visitChannelType(ctx.channelType());
+		
+		
+		
 		Object result = visitChildren(ctx);
 		if (!(result instanceof GoType))
 			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
@@ -177,6 +202,11 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
 			return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
 		}
+	}
+	
+	@Override
+	public GoType visitFunctionType(FunctionTypeContext ctx) {
+		return new GoFunctionVisitor(unit, file, program, constants).visitFunctionType(ctx);
 	}
 
 	@Override
@@ -344,7 +374,6 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		for (FieldDeclContext field : ctx.fieldDecl()) 
 			for (Pair<String, Type> fd : visitFieldDecl(field))
 				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, getLine(field), getCol(field)), fd.getLeft(), fd.getRight()));
-
 		return GoStructType.lookup(unit.getName(), unit);
 	}
 
@@ -373,7 +402,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			Parameter[] cfgArgs = new Parameter[]{};
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
-				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(file, program, constants).visitParameterDecl(formalPars.parameterDecl(i)));
+				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(unit, file, program, constants).visitParameterDecl(formalPars.parameterDecl(i)));
 
 			return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs);
 		}
@@ -385,7 +414,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		// The return type is not specified
 		if (result == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(file, program, constants).visitResult(result);
+		return new GoCodeMemberVisitor(unit, file, program, constants).visitResult(result);
 	}
 
 	@Override

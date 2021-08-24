@@ -228,6 +228,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		ExpressionListContext exps = ctx.expressionList();
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) 
+			if (exps.expression(i) != null)
 			constants.put(ids.IDENTIFIER(i).getText(), exps.expression(i));
 	}
 
@@ -242,6 +243,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		}
 		return units;
 	}
+	 
 	private int getLine(ParserRuleContext ctx) {
 		return ctx.getStart().getLine();
 	} 

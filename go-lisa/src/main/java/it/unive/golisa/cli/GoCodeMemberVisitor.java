@@ -107,6 +107,7 @@ import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
+import it.unive.golisa.cfg.expression.binary.GoBitwiseNAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseOr;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseXOr;
 import it.unive.golisa.cfg.expression.binary.GoChannelSend;
@@ -222,7 +223,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 */
 	private List<Statement> entryPoints = new ArrayList<Statement>();
 
-	
+
 	protected final Map<String, ExpressionContext> constants;
 
 	/**
@@ -231,7 +232,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected CompilationUnit currentUnit;
 
 
-	public GoCodeMemberVisitor(String file, Program program, Map<String, ExpressionContext> constants) {
+	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.program = program;
 		matrix = new AdjacencyMatrix<>();
@@ -239,6 +240,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfs = new LinkedList<>();
 		visibleIds = new HashMap<>();
 		this.constants = constants;
+		this.currentUnit = unit;
 	}
 
 
@@ -247,7 +249,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		this.descriptor = mkDescriptor(packageUnit,ctx);
 		this.program = program;
 		this.constants = constants;
-		
+
 		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
@@ -617,7 +619,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// Go and (&)
 		if (ctx.AMPERSAND() != null)
 			return new GoBitwiseAnd(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
-		
+
+		// Go nand (&^)
+		if (ctx.BIT_CLEAR() != null)
+			return new GoBitwiseNAnd(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
+
 		Object child = visitChildren(ctx);
 		if (!(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
@@ -821,7 +827,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// &^=
 		if (op.BIT_CLEAR() != null)
-			throw new UnsupportedOperationException("Unsupported assignment operator: " + op.getText());
+			return new GoBitwiseNAnd(cfg, location, lhs, exp);
 
 		// ^=
 		if (op.CARET() != null)
@@ -1228,7 +1234,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			exitPoints.remove(exitPoints.size()-1);
 			return Pair.of(entryNode, exitNode);
 		}  
-		
+
 		/*
 		 * For range
 		 */
@@ -1450,6 +1456,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				// Anonymous function
 				else if (primary instanceof GoFunctionLiteral)  
 					return new CFGCall(cfg, locationOf(ctx), funcName, (CFG) ((GoFunctionLiteral) primary).getValue(), args);
+
+				else {
+					// need to resolve also the caller
+					args = ArrayUtils.insert(0, args, primary);
+					return new UnresolvedCall(cfg, locationOf(ctx), ResolutionStrategy.FIRST_DYNAMIC_THEN_STATIC, true, primary.toString(), args);				
+				}
 			}
 
 			// Array/slice/map access e1[e2]
@@ -1587,18 +1599,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		//TODO: for the moment, we skip any other integer literal format (e.g., imaginary)
 		if (ctx.DECIMAL_LIT() != null)
 			try {
-			return new GoInteger(cfg, location, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
+				return new GoInteger(cfg, location, Integer.parseInt(ctx.DECIMAL_LIT().getText()));
 			} catch (NumberFormatException e) {
 				return new GoInteger(cfg, location, new BigInteger(ctx.DECIMAL_LIT().getText()));
 			}
-		
+
 		if (ctx.RUNE_LIT() != null) 
 			return new GoRune(cfg, location, removeQuotes(ctx.getText()));
 
 		if (ctx.HEX_LIT() != null) 
 			// removes '0x'
 			return new GoInteger(cfg, location, Integer.parseInt(ctx.HEX_LIT().getText().substring(2), 16));
-		
+
 		if (ctx.OCTAL_LIT() != null)
 			return new GoInteger(cfg, location, Integer.parseInt(ctx.OCTAL_LIT().getText(), 8));
 
@@ -1733,6 +1745,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Pair.of(visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Expression visitElement(ElementContext ctx, GoType type) {	
 
 		if (ctx.expression() != null)
@@ -1744,8 +1757,23 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				return (Expression) lit;
 			else if (lit instanceof Expression[]) 
 				return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) lit, getContentType(type));
-			else
-				throw new IllegalStateException("Expression or Expression[] expected, found Statement instead");
+			else if (lit instanceof Map<?, ?>)  {
+				Object[] keysObj = ((Map<Expression, Expression>)lit).keySet().toArray();
+				Object[] valuesObj = ((Map<Expression, Expression>)lit).values().toArray();
+
+				Expression[] keys = new Expression[keysObj.length];
+				Expression[] values  = new Expression[valuesObj.length];
+
+				for (int i = 0; i < keys.length; i++)  {
+					keys[i] = (Expression) keysObj[i];
+					values[i] = (Expression) valuesObj[i];
+				}
+
+				if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
+					type = GoArrayType.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) keys).length));
+				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
+			} else
+				throw new IllegalStateException("Expression, Expression[] or  LinkedHashMap expected, found Statement instead");
 		}
 	}
 
@@ -1863,15 +1891,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Type[] types = visitTypeList(typeSwitchCase.typeSwitchCase().typeList());
 				for (int j = 0; j < types.length; j++)  {
 					SourceCodeLocation typeLoc = locationOf(typeSwitchCase.typeSwitchCase().typeList().type_(j));					
-					
+
 					VariableRef typeSwitchVar;
-					
+
 					// If the switch identifier is missing, we create a fake identifier
 					if (ctx.typeSwitchGuard().IDENTIFIER() == null)
-						 typeSwitchVar = new VariableRef(cfg, typeLoc, "switchId");
+						typeSwitchVar = new VariableRef(cfg, typeLoc, "switchId");
 					else
-						 typeSwitchVar = new VariableRef(cfg, typeLoc, ctx.typeSwitchGuard().IDENTIFIER().getText());
-					
+						typeSwitchVar = new VariableRef(cfg, typeLoc, ctx.typeSwitchGuard().IDENTIFIER().getText());
+
 					VariableRef typeSwitchCheck = new VariableRef(cfg, typeLoc, "ok");
 					VariableRef[] ids = new VariableRef[] {typeSwitchVar, typeSwitchCheck};
 

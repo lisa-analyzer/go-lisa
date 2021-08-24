@@ -42,7 +42,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	// side-effect on packageUnit
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program, Map<String, ExpressionContext> constants) {
-		super(file, program, constants);
+		super(packageUnit, file, program, constants);
 		this.descriptor = buildCFGDescriptor(funcDecl);
 
 		this.currentUnit = packageUnit;
@@ -56,7 +56,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	// side-effect on packageUnit
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program, Map<String, ExpressionContext> constants) {
-		super(file, program, constants);
+		super(packageUnit, file, program, constants);
 		this.descriptor = buildCFGDescriptor(funcLit);
 
 		this.currentUnit = packageUnit;
@@ -66,6 +66,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
+	}
+
+	public GoFunctionVisitor(CompilationUnit unit, String file, Program program,
+			Map<String, ExpressionContext> constants) {
+		super(unit, file, program, constants);
 	}
 
 	@Override
@@ -265,7 +270,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(file, program, constants).visitResult(signature.result());
+		return new GoCodeMemberVisitor(currentUnit, file, program, constants).visitResult(signature.result());
 	}
 
 	@Override

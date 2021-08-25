@@ -25,17 +25,21 @@ import apron.Texpr1Node;
 import apron.Texpr1VarNode;
 import apron.Var;
 import gmp.Mpfr;
+import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
@@ -113,6 +117,8 @@ public class Apron implements ValueDomain<Apron> {
 
 	@Override
 	public Apron assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+
+
 		try {
 			Environment env = state.getEnvironment();
 			Var variable = toApronVar(id);
@@ -124,14 +130,36 @@ public class Apron implements ValueDomain<Apron> {
 			} else
 				newState = state;
 
-			return new Apron(newState.assignCopy(manager, variable, new Texpr1Intern(newState.getEnvironment(), toApronExpression(expression)), null));
+			if (expression instanceof Identifier && !containsIdentifier((Identifier) expression)) {
+				Var[] vars = {toApronVar((Identifier) expression)};
+				env = newState.getEnvironment().add(new Var[0], vars);
+				newState = newState.changeEnvironmentCopy(manager, env, false);
+			} 
+
+			if (expression instanceof PushAny) {
+				Apron result = new Apron(newState);
+				result = result.forgetIdentifier(id);
+				Constant zero = new Constant(GoIntType.INSTANCE, 0, pp.getLocation());
+				Apron ge = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_GE, pp.getLocation()), pp);
+				Apron le = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_LE, pp.getLocation()), pp);
+				return ge.lub(le);
+			} else {
+				Texpr1Node apronExpression = toApronExpression(expression);
+				MpfrScalar sc = new MpfrScalar();
+				sc.setInfty(1);
+				Texpr1Node notHandled = new Texpr1CstNode(sc);
+				if (!apronExpression.equals(notHandled))
+					return new Apron(newState.assignCopy(manager, variable, new Texpr1Intern(newState.getEnvironment(), apronExpression), null));
+				else
+					return new Apron(newState);
+			}
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
 	}
 
-	private Texpr1Node toApronExpression(SymbolicExpression exp) {
-		if (exp instanceof Identifier)
+	private Texpr1Node toApronExpression(SymbolicExpression exp) throws ApronException {
+		if (exp instanceof Identifier) 
 			return new Texpr1VarNode(((Identifier) exp).getName());
 
 		if (exp instanceof Constant) {
@@ -146,8 +174,12 @@ public class Apron implements ValueDomain<Apron> {
 				coeff = new MpfrScalar((long) c.getValue(), Mpfr.getDefaultPrec());
 			else if (c.getValue() instanceof BigInteger)
 				coeff = new MpfrScalar(new Mpfr(((BigInteger) c.getValue()), Mpfr.RNDN));
-			else
-				coeff = new MpfrScalar();
+			else {
+				MpfrScalar sc = new MpfrScalar();
+				sc.setInfty(1);
+				coeff = sc;
+			}
+
 
 			return new Texpr1CstNode(coeff);
 		}
@@ -170,6 +202,7 @@ public class Apron implements ValueDomain<Apron> {
 
 	private int toApronOperator(BinaryOperator op) {
 		switch(op) {
+		case STRING_CONCAT:
 		case NUMERIC_ADD: return Texpr1BinNode.OP_ADD;
 		case NUMERIC_MUL: return Texpr1BinNode.OP_MUL;
 		case NUMERIC_SUB: return Texpr1BinNode.OP_SUB;
@@ -249,7 +282,7 @@ public class Apron implements ValueDomain<Apron> {
 		return top();
 	}
 
-	private Tcons1 toApronComparison(BinaryExpression exp) {
+	private Tcons1 toApronComparison(BinaryExpression exp) throws ApronException {
 		// Apron supports only "exp <comparison> 0", so we need to move everything on the left node 
 		SymbolicExpression combinedExpr = new BinaryExpression(exp.getTypes(), exp.getLeft(), exp.getRight(), BinaryOperator.NUMERIC_SUB, exp.getCodeLocation()); 
 
@@ -311,7 +344,7 @@ public class Apron implements ValueDomain<Apron> {
 						return Satisfiability.SATISFIED;
 					else {
 						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_NE, bin.getCodeLocation());
-						
+
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
 
@@ -322,7 +355,7 @@ public class Apron implements ValueDomain<Apron> {
 						return Satisfiability.SATISFIED;
 					else {
 						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LT, bin.getCodeLocation());
-						
+
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
 
@@ -333,7 +366,7 @@ public class Apron implements ValueDomain<Apron> {
 						return Satisfiability.SATISFIED;
 					else {
 						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LE, bin.getCodeLocation());
-						
+
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
 
@@ -344,7 +377,7 @@ public class Apron implements ValueDomain<Apron> {
 						return Satisfiability.SATISFIED;
 					else {
 						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GT, bin.getCodeLocation());
-						
+
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
 
@@ -355,7 +388,7 @@ public class Apron implements ValueDomain<Apron> {
 						return Satisfiability.SATISFIED;
 					else {
 						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GE, bin.getCodeLocation());
-						
+
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
 
@@ -366,18 +399,18 @@ public class Apron implements ValueDomain<Apron> {
 						return Satisfiability.SATISFIED;
 					else {
 						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_EQ, bin.getCodeLocation());
-						
+
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
 
 						return Satisfiability.UNKNOWN;
 					}
-//					if (state.satisfy(manager, toApronComparison(bin)))
-//						return Satisfiability.SATISFIED;
-//					else if (manager.wasExact()) 
-//						return Satisfiability.NOT_SATISFIED;
-//					else 
-//						return Satisfiability.UNKNOWN;
+					//					if (state.satisfy(manager, toApronComparison(bin)))
+					//						return Satisfiability.SATISFIED;
+					//					else if (manager.wasExact()) 
+					//						return Satisfiability.NOT_SATISFIED;
+					//					else 
+					//						return Satisfiability.UNKNOWN;
 				case LOGICAL_AND:
 					return satisfies((ValueExpression) bin.getLeft(), pp).and(satisfies((ValueExpression) bin.getRight(), pp));
 				case LOGICAL_OR:
@@ -426,18 +459,18 @@ public class Apron implements ValueDomain<Apron> {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
 	}
-	
+
 	public Apron glb(Apron other) throws SemanticException {
 		try {
 			if (other.state.isBottom(manager) || this.state.isBottom(manager))
 				return bottom();
-	
+
 			return new Apron(state.meetCopy(manager, other.state));
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
 	}
-	
+
 
 	@Override
 	public Apron widening(Apron other) throws SemanticException {
@@ -508,5 +541,9 @@ public class Apron implements ValueDomain<Apron> {
 
 	public boolean containsIdentifier(Identifier id) {
 		return Arrays.asList(state.getEnvironment().getVars()).contains(toApronVar(id));
+	}
+
+	public  Abstract1 getApronState() {
+		return state;
 	}
 }

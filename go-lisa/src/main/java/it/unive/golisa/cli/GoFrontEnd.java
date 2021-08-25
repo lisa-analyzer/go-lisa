@@ -39,6 +39,7 @@ import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.runtime.conversion.GoToString;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.strconv.GoAtoi;
 import it.unive.golisa.cfg.runtime.strings.GoContains;
 import it.unive.golisa.cfg.runtime.strings.GoHasPrefix;
 import it.unive.golisa.cfg.runtime.strings.GoHasSuffix;
@@ -287,6 +288,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		case "strings": loadStrings();
 		case "fmt": loadFmt();
 		case "url": loadUrl();
+		case "strconv": loadStrconv();
 		}
 		return null;
 	}
@@ -327,6 +329,17 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		packageUnit.addConstruct(new GoIndexRune(unknownLocation, str));
 		packageUnit.addConstruct(new GoLen(unknownLocation, str));
 	}
+	
+	private void loadStrconv() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		CompilationUnit strconv = new CompilationUnit(unknownLocation, "strconv", false);
+		strconv.addConstruct(new GoAtoi(unknownLocation, strconv));
+
+		program.addCompilationUnit(strconv);
+
+		// We add the  methods also in package unit as non-instant cfgs
+		packageUnit.addConstruct(new GoAtoi(unknownLocation, strconv));
+	}
 
 	private void loadFmt() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
@@ -335,7 +348,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		program.addCompilationUnit(fmt);
 
-		// We add the string methods also in package unit as non-instant cfgs
+		// We add the  methods also in package unit as non-instant cfgs
 		packageUnit.addConstruct(new GoPrintln(unknownLocation, fmt));
 	}
 

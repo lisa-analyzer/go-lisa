@@ -11,7 +11,6 @@ import it.unive.golisa.cfg.type.numeric.signed.GoInt8Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.analysis.AnalysisState;
@@ -64,14 +63,24 @@ public class OverflowChecker implements SemanticCheck {
 			VariableRef v = (VariableRef) node;
 			Variable id = new Variable(v.getRuntimeTypes(), v.getName(), v.getLocation());
 
+			boolean mayBeNumeric = false;
+			for (Type type : id.getTypes())
+				if (type.isNumericType()) {
+					mayBeNumeric = true;
+					break;
+				}
+
+			if (!mayBeNumeric)
+				return true;
+
 			for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
 				AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(node);
-				Apron ap = (Apron) analysisAtNode.getState().getValueState();
+				Apron ap = (Apron) analysisAtNode.getState().getValueState();				
 				ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
 				BinaryExpression checkOver = new BinaryExpression(bool, id, getMaxValue(v.getDynamicType()), BinaryOperator.COMPARISON_GT, v.getLocation());
 				BinaryExpression checkUnder = new BinaryExpression(bool, id, getMinValue(v.getDynamicType()), BinaryOperator.COMPARISON_LT, v.getLocation());
 
-				if (!ap.containsIdentifier(id))
+				if (!ap.containsIdentifier(id)) 
 					return true;
 
 				Satisfiability overflows = null;
@@ -92,11 +101,12 @@ public class OverflowChecker implements SemanticCheck {
 						tool.warnOn(node, "[MAYBE-UNDERFLOW] the variable "  + id + " may underflow. Need to manually check.");
 
 				} catch (SemanticException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
+
+
 
 		return true;
 	}
@@ -147,10 +157,10 @@ public class OverflowChecker implements SemanticCheck {
 		if (type == GoUInt32Type.INSTANCE)
 			return new Constant(type, 4294967295L, SyntheticLocation.INSTANCE);
 
-		if (type == GoUInt64Type.INSTANCE)
+//		if (type == GoUInt64Type.INSTANCE)
 			return new Constant(type, new BigInteger("18446744073709551615"), SyntheticLocation.INSTANCE);
 
-		return null;
+//		return null;
 	}
 
 	private Constant getMinValue(Type type) {
@@ -166,9 +176,9 @@ public class OverflowChecker implements SemanticCheck {
 		if (type == GoInt64Type.INSTANCE || type == GoIntType.INSTANCE || type == GoUntypedInt.INSTANCE)
 			return new Constant(type, (long) -9223372036854775808L, SyntheticLocation.INSTANCE);
 
-		if (type == GoUInt8Type.INSTANCE || type == GoUInt16Type.INSTANCE || type == GoUInt32Type.INSTANCE || type == GoUInt64Type.INSTANCE)
+		//if (type == GoUInt8Type.INSTANCE || type == GoUInt16Type.INSTANCE || type == GoUInt32Type.INSTANCE || type == GoUInt64Type.INSTANCE)
 			return new Constant(type, 0, SyntheticLocation.INSTANCE);
 
-		return null;
+//		return null;
 	}
 }

@@ -40,6 +40,7 @@ import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.runtime.conversion.GoToString;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
 import it.unive.golisa.cfg.runtime.strconv.GoAtoi;
+import it.unive.golisa.cfg.runtime.strconv.GoItoa;
 import it.unive.golisa.cfg.runtime.strings.GoContains;
 import it.unive.golisa.cfg.runtime.strings.GoHasPrefix;
 import it.unive.golisa.cfg.runtime.strings.GoHasSuffix;
@@ -334,11 +335,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
 		CompilationUnit strconv = new CompilationUnit(unknownLocation, "strconv", false);
 		strconv.addConstruct(new GoAtoi(unknownLocation, strconv));
+		strconv.addConstruct(new GoItoa(unknownLocation, strconv));
 
 		program.addCompilationUnit(strconv);
 
 		// We add the  methods also in package unit as non-instant cfgs
 		packageUnit.addConstruct(new GoAtoi(unknownLocation, strconv));
+		packageUnit.addConstruct(new GoItoa(unknownLocation, strconv));
 	}
 
 	private void loadFmt() {

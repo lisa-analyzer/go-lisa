@@ -130,12 +130,6 @@ public class Apron implements ValueDomain<Apron> {
 			} else
 				newState = state;
 
-			if (expression instanceof Identifier && !containsIdentifier((Identifier) expression)) {
-				Var[] vars = {toApronVar((Identifier) expression)};
-				env = newState.getEnvironment().add(new Var[0], vars);
-				newState = newState.changeEnvironmentCopy(manager, env, false);
-			} 
-
 			if (expression instanceof PushAny) {
 				Apron result = new Apron(newState);
 				result = result.forgetIdentifier(id);
@@ -145,6 +139,15 @@ public class Apron implements ValueDomain<Apron> {
 				return ge.lub(le);
 			} else {
 				Texpr1Node apronExpression = toApronExpression(expression);
+				Var[] vars = apronExpression.getVars();
+
+				for (int i = 0; i < vars.length; i++)
+					if (!newState.getEnvironment().hasVar(vars[i])) {
+						Var[] vars1 = {vars[i]};
+						env = newState.getEnvironment().add(new Var[0], vars1);
+						newState = newState.changeEnvironmentCopy(manager, env, false);
+					}
+
 				MpfrScalar sc = new MpfrScalar();
 				sc.setInfty(1);
 				Texpr1Node notHandled = new Texpr1CstNode(sc);
@@ -159,7 +162,7 @@ public class Apron implements ValueDomain<Apron> {
 	}
 
 	private Texpr1Node toApronExpression(SymbolicExpression exp) throws ApronException {
-		if (exp instanceof Identifier) 
+		if (exp instanceof Identifier)  
 			return new Texpr1VarNode(((Identifier) exp).getName());
 
 		if (exp instanceof Constant) {

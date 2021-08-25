@@ -100,4 +100,49 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("apron/sm2/protected/ppl", "sm-protected.go", conf);
 	}
+	
+	@Test
+	public void testSmInterval() throws AnalysisSetupException {
+		Apron.setManager(ApronDomain.Box);
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Apron()))
+				.addSemanticCheck(new OverflowChecker())
+				.setInferTypes(true)
+				.setJsonOutput(true)
+				.setDumpAnalysis(true)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("apron/sm1/box", "sm.go", conf);
+
+	}
+
+	@Test
+	public void testSmOct() throws AnalysisSetupException {
+		Apron.setManager(ApronDomain.Octagon);
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Apron()))
+				.addSemanticCheck(new OverflowChecker())
+				.setInferTypes(true)
+				.setJsonOutput(true)
+				.setDumpAnalysis(true)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("apron/sm1/oct", "sm.go", conf);
+
+	}
+	
+	@Test
+	public void testSmPpl() throws AnalysisSetupException {
+		Apron.setManager(ApronDomain.PplPoly);
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Apron()))
+				.addSemanticCheck(new OverflowChecker())
+				.setInferTypes(true)
+				.setJsonOutput(true)
+				.setDumpAnalysis(true)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("apron/sm1/ppl", "sm.go", conf);
+
+	}
 }

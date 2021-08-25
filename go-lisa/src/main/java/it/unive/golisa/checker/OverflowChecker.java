@@ -106,8 +106,6 @@ public class OverflowChecker implements SemanticCheck {
 			}
 		}
 
-
-
 		return true;
 	}
 

@@ -22,15 +22,15 @@ import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
-public class GoAtoi extends NativeCFG {
+public class GoItoa extends NativeCFG {
 
-	public GoAtoi(SourceCodeLocation location, CompilationUnit strconvUnit) {
-		super(new CFGDescriptor(location, strconvUnit, false, "Atoi", GoIntType.INSTANCE,
-				new Parameter(location, "this", GoStringType.INSTANCE)),
-				Atoi.class);
+	public GoItoa(SourceCodeLocation location, CompilationUnit strconvUnit) {
+		super(new CFGDescriptor(location, strconvUnit, false, "Itoa", GoStringType.INSTANCE,
+				new Parameter(location, "this", GoIntType.INSTANCE)),
+				Itoa.class);
 	}
 	
-	public static class Atoi extends UnaryNativeCall implements PluggableStatement {
+	public static class Itoa extends UnaryNativeCall implements PluggableStatement {
 		
 		private Statement original;
 
@@ -39,18 +39,18 @@ public class GoAtoi extends NativeCFG {
 			original = st;
 		}
 		
-		public Atoi(CFG cfg, SourceCodeLocation location, Expression exp1) {
-			super(cfg, location, "Atoi", GoIntType.INSTANCE, exp1);
+		public Itoa(CFG cfg, SourceCodeLocation location, Expression exp1) {
+			super(cfg, location, "Itoa", GoStringType.INSTANCE, exp1);
 		}
 
 		@Override
 		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
 				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
-			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
+			if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 				return entryState.bottom();
 			
-			return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoIntType.INSTANCE), getLocation()), original);
+			return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoStringType.INSTANCE), getLocation()), original);
 
 		}
 	}

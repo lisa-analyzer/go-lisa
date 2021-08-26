@@ -56,7 +56,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		}
 		
 		if(matchMapIterationStatement(node))
-			tool.warnOn(node, "MapIteration detected!");
+			tool.warnOn(node, "For-range interation detected!");
 		if(matchConcurrencyStatement(node))
 			tool.warnOn(node, "Concurrecy behavior detected!");
 		

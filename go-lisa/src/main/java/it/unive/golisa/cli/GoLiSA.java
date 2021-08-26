@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 import it.unive.golisa.analysis.composition.RelTarsis;
 import it.unive.golisa.analysis.tarsis.Tarsis;
+import it.unive.golisa.checker.BreakConsensusGoSmartContractChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -39,6 +40,7 @@ public class GoLiSA {
 		if (!theDir.exists())
 			theDir.mkdirs();
 
+
 		try {
 			program = GoFrontEnd.processFile(filePath);
 		} catch (ParseCancellationException e) {
@@ -63,11 +65,15 @@ public class GoLiSA {
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		
+		
+		conf.setWorkdir(outputDir)
+			.setDumpAnalysis(true)
+			.setJsonOutput(true)
+			.setDumpCFGs(true)
+			.addSyntacticCheck(new BreakConsensusGoSmartContractChecker());
+		
 		LiSA lisa = new LiSA(conf);
-		conf.setWorkdir(outputDir).setInferTypes(true)
-			.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), args.length < 3 || args[2].equals("-tarsis") ? new Tarsis() : new RelTarsis()))
-			.setDumpAnalysis(true);
-
+		
 		try {
 			lisa.run(program);
 		} catch (Exception e) {

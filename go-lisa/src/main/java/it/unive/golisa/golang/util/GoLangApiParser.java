@@ -1,25 +1,28 @@
 package it.unive.golisa.golang.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
@@ -38,32 +41,74 @@ public class GoLangApiParser {
 
 	private static final Logger log = LogManager.getLogger(GoLangApiParser.class); 
 	
-	private static final String DEFAULT_GO_API_FOLDER = "go-api";
+	private static final String DEFAULT_GO_API_FOLDER = "/go-api";
 	
 	public static Map<String, Set<GoLangApiSignature>> parseFiles(String string) {
 		log.info("Start parsing Go Lang Api");
+		
 		Map<String, Set<GoLangApiSignature>> mapPackages = new HashMap<>();
-		Collection<File> files = FileUtils.listFiles(new File(DEFAULT_GO_API_FOLDER), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-		for (File file : files) {
-			if(FilenameUtils.isExtension(file.getName(), "txt"))
-				try {
-					Map<? extends String, ? extends Set<GoLangApiSignature>> tmp = parseGoAPIFile(file);
-					for(String k : tmp.keySet()) {
-						mapPackages.putIfAbsent(k, new HashSet<>());
-						mapPackages.get(k).addAll(tmp.get(k));
+		String protocol = GoLangApiParser.class.getResource(DEFAULT_GO_API_FOLDER).getProtocol();
+		if(protocol.equals("jar")){
+			JarFile jf = null;
+	        try {            
+	            jf = new JarFile(GoLangApiParser.class.getProtectionDomain().getCodeSource().getLocation().getFile());
+
+	            Enumeration<JarEntry> entries = jf.entries();
+	            while (entries.hasMoreElements()) {
+	                JarEntry je = entries.nextElement();
+	                if (je.getName().startsWith("resources"+DEFAULT_GO_API_FOLDER)) {
+	        			if(FilenameUtils.isExtension(je.getName(), "txt"))
+	        				try {
+	        					Map<? extends String, ? extends Set<GoLangApiSignature>> tmp = parseGoAPIFile(GoLangApiParser.class.getClass().getResourceAsStream(DEFAULT_GO_API_FOLDER+je.getName()));
+	        					for(String k : tmp.keySet()) {
+	        						mapPackages.putIfAbsent(k, new HashSet<>());
+	        						mapPackages.get(k).addAll(tmp.get(k));
+	        					}
+	        				}catch(IOException e) {
+	        					log.error("Unable to parse Go API file "+ je.getName(), e);
+	        				}
+	                }
+	            }
+	        } catch (IOException ex) {
+	            ex.printStackTrace();
+	        } finally {
+	            try {
+	                jf.close();
+	            } catch (Exception e) {
+	            }
+	        }
+		} else if(protocol.equals("file")) {
+
+			URL url = GoLangApiParser.class.getResource(DEFAULT_GO_API_FOLDER);
+			
+			for (File file : new File(url.getFile()).listFiles()) {
+				if(FilenameUtils.isExtension(file.getName(), "txt"))
+					try {
+						Map<? extends String, ? extends Set<GoLangApiSignature>> tmp = parseGoAPIFile(new FileInputStream(file));
+						for(String k : tmp.keySet()) {
+							mapPackages.putIfAbsent(k, new HashSet<>());
+							mapPackages.get(k).addAll(tmp.get(k));
+						}
+					}catch(IOException e) {
+						log.error("Unable to parse Go API file "+ file.getName(), e);
 					}
-				}catch(IOException e) {
-					log.error("Unable to parse Go API file "+ file.getName(), e);
-				}
+			}
 		}
+		
 		log.info("End parsing Go Lang Api");
 		return mapPackages;
 	}
 
-	private static Map<? extends String, ? extends Set<GoLangApiSignature>> parseGoAPIFile(File file) throws IOException {
-		List<String> lines = FileUtils.readLines(file, StandardCharsets.UTF_8);
-		 Map<String, Set<GoLangApiSignature>> tmp = new HashMap<>();
-		 boolean comment = false;
+	private static Map<? extends String, ? extends Set<GoLangApiSignature>> parseGoAPIFile(InputStream inputStream) throws IOException {
+		List<String> lines = new ArrayList<>();
+		BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+		
+		String s;
+		while((s=br.readLine()) == null)
+			lines.add(s);
+		 
+		Map<String, Set<GoLangApiSignature>> tmp = new HashMap<>();
+		boolean comment = false;
 		for(String line : lines) {
 			if(line.contains("/*"))
 				comment = true;

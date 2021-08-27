@@ -14,11 +14,11 @@ version = '0.1'
 mainClassName = 'it.unive.golisa.cli.GoLiSA'
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'lib')
-    compile project(':lisa')
+    //compile project(':lisa')
     antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
     implementation 'com.github.unive-ssv:tarsis:1.0'
+    implementation 'com.github.unive-ssv:lisa:0.1b1'
     
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'

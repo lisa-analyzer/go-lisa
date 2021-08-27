@@ -213,7 +213,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	 */
 	private boolean matchRandomStatement(UnresolvedCall call) {
 
-		return  matchAnyPackageSignatures("math/rand", call, true);
+		return  matchAnyPackageSignatures("rand", call, true);
 	}
 
 	@Override

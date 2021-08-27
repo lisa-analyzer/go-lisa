@@ -28,7 +28,7 @@ class GoLangApiSignatures {
 	private final Map<String, Set<GoLangApiSignature>> mapPackages;
 	
 	private GoLangApiSignatures() {
-		mapPackages = GoLangApiParser.parseFiles("/go-api");
+		mapPackages = GoLangApiParser.parseFiles();
 	}
 
 	public Map<String, Set<GoLangApiSignature>> getMapPackages() {

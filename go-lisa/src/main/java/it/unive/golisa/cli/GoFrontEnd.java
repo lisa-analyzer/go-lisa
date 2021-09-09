@@ -188,6 +188,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		for (ImportDeclContext imp : ctx.importDecl())
 			visitImportDecl(imp);
+		
+		loadCore();
 
 		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
 			visitDeclarationContext(decl);
@@ -282,9 +284,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	@Override
 	public Statement visitImportPath(ImportPathContext ctx) {
 		String lib = visitString_(ctx.string_());
-
-		loadCore();
-		
 		
 		switch (lib) {
 		case "strings": loadStrings();

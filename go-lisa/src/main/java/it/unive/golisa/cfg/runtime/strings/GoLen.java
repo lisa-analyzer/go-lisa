@@ -53,7 +53,5 @@ public class GoLen extends NativeCFG {
 			ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
 			return exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), original);
 		}
-
-		
 	}
 }

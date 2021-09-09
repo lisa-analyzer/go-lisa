@@ -1,24 +1,28 @@
 {
   "warnings" : [ {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':11:12] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable PA may overflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':10:33] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable p1 may overflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':11:12] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable PA may underflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':10:33] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable p1 may underflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':11:37] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable referenceRate may overflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':11:56] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable p2 may overflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':11:37] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable referenceRate may underflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':11:56] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable p2 may underflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':12:28] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable p1 may overflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':12:35] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable payment may overflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':12:28] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable p1 may underflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':12:35] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable payment may underflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':12:33] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable p2 may overflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':13:50] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable err may overflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':12:33] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable p2 may underflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':13:50] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable err may underflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':7:41] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable referenceRateBytes may overflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':6:64] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable referenceRateBytes may overflow. Need to manually check."
   }, {
-    "message" : "['go-testcases/apron/sm1/oct/sm.go':7:41] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable referenceRateBytes may underflow. Need to manually check."
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':6:64] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable referenceRateBytes may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':7:60] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-OVERFLOW] the variable referenceRate may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm1/oct/sm.go':7:60] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, int FixedRateBPS, int FloatingRateBPS, int PA, int referenceRate)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable referenceRate may underflow. Need to manually check."
   } ],
   "files" : [ "analysis___pb.Response_~LiSAProgram.main(shim.ChaincodeStubInterface_stub,_int_FixedRateBPS,_int_FloatingRateBPS,_int_PA,_int_referenceRate).dot" ]
 }

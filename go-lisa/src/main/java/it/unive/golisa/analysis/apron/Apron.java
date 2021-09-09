@@ -137,7 +137,8 @@ public class Apron implements ValueDomain<Apron> {
 				Apron ge = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_GE, pp.getLocation()), pp);
 				Apron le = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_LE, pp.getLocation()), pp);
 				return ge.lub(le);
-			} else {
+			} 
+			else {
 				Texpr1Node apronExpression = toApronExpression(expression);
 				Var[] vars = apronExpression.getVars();
 
@@ -222,6 +223,38 @@ public class Apron implements ValueDomain<Apron> {
 
 	@Override
 	public Apron smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+		// the small-step semantics does not alter the state, but it should
+		// add to the environment the identifiers produced by expression in order to be 
+		// tracked by Apron
+		
+		if (expression instanceof Identifier) {
+			Identifier id = (Identifier) expression;
+			Environment env = state.getEnvironment();
+			Var variable = toApronVar(id);
+			if (!containsIdentifier(id)) {
+				Var[] vars = {variable};
+				env = env.add(new Var[0], vars);
+				try {
+					return new Apron(state.changeEnvironmentCopy(manager, env, state.isBottom(manager)));
+				} catch (ApronException e) {
+					throw new UnsupportedOperationException("Apron library crashed", e);
+				}
+			} else
+				return new Apron(state);
+		}
+		
+		if (expression instanceof UnaryExpression) {
+			UnaryExpression un = (UnaryExpression) expression;
+			return smallStepSemantics((ValueExpression) un.getExpression(), pp);
+		}
+
+		if (expression instanceof BinaryExpression) {
+			BinaryExpression bin = (BinaryExpression) expression;
+			Apron left = smallStepSemantics((ValueExpression) bin.getLeft(), pp);
+			Apron right = smallStepSemantics((ValueExpression) bin.getLeft(), pp);
+			return left.lub(right);
+		}
+		
 		return new Apron(state);
 	}
 

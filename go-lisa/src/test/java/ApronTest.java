@@ -143,6 +143,5 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("apron/sm1/ppl", "sm.go", conf);
-
 	}
 }

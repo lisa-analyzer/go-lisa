@@ -37,6 +37,7 @@ import it.unive.golisa.antlr.GoParser.String_Context;
 import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
+import it.unive.golisa.cfg.runtime.conversion.GoToInt64;
 import it.unive.golisa.cfg.runtime.conversion.GoToString;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
 import it.unive.golisa.cfg.runtime.strconv.GoAtoi;
@@ -306,6 +307,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private void loadCore() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
 		packageUnit.addConstruct(new GoToString(unknownLocation, packageUnit));
+		packageUnit.addConstruct(new GoToInt64(unknownLocation, packageUnit));
 	}
 
 	private void loadStrings() {

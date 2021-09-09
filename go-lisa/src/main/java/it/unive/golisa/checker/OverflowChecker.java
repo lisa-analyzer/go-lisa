@@ -3,6 +3,9 @@ package it.unive.golisa.checker;
 import java.math.BigInteger;
 
 import it.unive.golisa.analysis.apron.Apron;
+import it.unive.golisa.cfg.statement.assignment.GoAssignment;
+import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
+import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
@@ -26,6 +29,7 @@ import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -53,16 +57,33 @@ public class OverflowChecker implements SemanticCheck {
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph) {
-		return true;}
+		return true;
+	}
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Statement node) {
 
+		Expression leftExpression = null;
+		Type vType = null;
+		
+		if (node instanceof GoAssignment) {
+			GoAssignment assignment = (GoAssignment) node;
+			leftExpression = assignment.getLeft();
+		} else if (node instanceof GoVariableDeclaration) {
+			GoVariableDeclaration assignment = (GoVariableDeclaration) node;
+			leftExpression = assignment.getLeft();
+			vType = assignment.getDeclaredType();
+		} else if (node instanceof GoShortVariableDeclaration) {
+			GoShortVariableDeclaration assignment = (GoShortVariableDeclaration) node;
+			leftExpression = assignment.getLeft();
+		}
+		
+		
 		// Checking if each variable reference is over/under flowing
-		if (node instanceof VariableRef) {
-			VariableRef v = (VariableRef) node;
-			Variable id = new Variable(v.getRuntimeTypes(), v.getName(), v.getLocation());
+		if (leftExpression instanceof VariableRef) {
+			Variable id = new Variable(((VariableRef) leftExpression).getRuntimeTypes(), ((VariableRef) leftExpression).getName(), ((VariableRef) leftExpression).getLocation());
 
+			vType = vType == null ? id.getDynamicType() : vType;
 			boolean mayBeNumeric = false;
 			for (Type type : id.getTypes())
 				if (type.isNumericType()) {
@@ -77,8 +98,8 @@ public class OverflowChecker implements SemanticCheck {
 				AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(node);
 				Apron ap = (Apron) analysisAtNode.getState().getValueState();				
 				ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
-				BinaryExpression checkOver = new BinaryExpression(bool, id, getMaxValue(v.getDynamicType()), BinaryOperator.COMPARISON_GT, v.getLocation());
-				BinaryExpression checkUnder = new BinaryExpression(bool, id, getMinValue(v.getDynamicType()), BinaryOperator.COMPARISON_LT, v.getLocation());
+				BinaryExpression checkOver = new BinaryExpression(bool, id, getMaxValue(vType), BinaryOperator.COMPARISON_GT, leftExpression.getLocation());
+				BinaryExpression checkUnder = new BinaryExpression(bool, id, getMinValue(vType), BinaryOperator.COMPARISON_LT, leftExpression.getLocation());
 
 				if (!ap.containsIdentifier(id)) 
 					return true;
@@ -92,7 +113,7 @@ public class OverflowChecker implements SemanticCheck {
 						tool.warnOn(node, "[DEFINITE-OVERFLOW] the variable "  + id + " overflows");
 					else if (overflows == Satisfiability.UNKNOWN)
 						tool.warnOn(node, "[MAYBE-OVERFLOW] the variable "  + id + " may overflow. Need to manually check.");
-
+						
 					underflows = ap.satisfies(checkUnder, node);
 
 					if (underflows == Satisfiability.SATISFIED)

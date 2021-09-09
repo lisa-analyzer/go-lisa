@@ -96,4 +96,8 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 		return result;
 	}
+
+	public Type getDeclaredType() {
+		return type;
+	}
 }

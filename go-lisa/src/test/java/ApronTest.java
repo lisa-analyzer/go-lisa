@@ -1,3 +1,4 @@
+
 import org.junit.Test;
 
 import it.unive.golisa.analysis.apron.Apron;
@@ -13,7 +14,7 @@ import it.unive.lisa.interprocedural.impl.ContextBasedAnalysis;
 
 public class ApronTest extends GoAnalysisTestExecutor {
 	
-	
+
 	@Test
 	public void testSm2Interval() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.Box);

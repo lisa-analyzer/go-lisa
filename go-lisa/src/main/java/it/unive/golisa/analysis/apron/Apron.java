@@ -118,7 +118,7 @@ public class Apron implements ValueDomain<Apron> {
 
 	@Override
 	public Apron assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		
+
 		try {
 			Environment env = state.getEnvironment();
 			Var variable = toApronVar(id);
@@ -226,7 +226,7 @@ public class Apron implements ValueDomain<Apron> {
 		// the small-step semantics does not alter the state, but it should
 		// add to the environment the identifiers produced by expression in order to be 
 		// tracked by Apron
-		
+
 		if (expression instanceof Identifier) {
 			Identifier id = (Identifier) expression;
 			Environment env = state.getEnvironment();
@@ -242,7 +242,7 @@ public class Apron implements ValueDomain<Apron> {
 			} else
 				return new Apron(state);
 		}
-		
+
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
 			return smallStepSemantics((ValueExpression) un.getExpression(), pp);
@@ -254,7 +254,7 @@ public class Apron implements ValueDomain<Apron> {
 			Apron right = smallStepSemantics((ValueExpression) bin.getLeft(), pp);
 			return left.lub(right);
 		}
-		
+
 		return new Apron(state);
 	}
 
@@ -275,10 +275,17 @@ public class Apron implements ValueDomain<Apron> {
 				ValueExpression inner = (ValueExpression) un.getExpression();
 				if (inner instanceof UnaryExpression && ((UnaryExpression) inner).getOperator() == UnaryOperator.LOGICAL_NOT)
 					return assume(((ValueExpression) ((UnaryExpression) inner).getExpression()).removeNegations(), pp);
-			
-				return assume(expression.removeNegations(), pp);
+
+
+				// It is possible that the expression cannot be rewritten (e.g.,
+				// !true, !var_id) hence we recursively call assume iff something changed
+				ValueExpression rewritten = un.removeNegations();
+				if (rewritten != un)
+					return assume(rewritten, pp);
+				else
+					return this;
 			default:
-				return topPreservingIds();
+				return this;
 			}
 		}
 
@@ -300,7 +307,7 @@ public class Apron implements ValueDomain<Apron> {
 				} catch (UnsupportedOperationException e) {
 					// if a sub-expression of expression cannot be 
 					// translated by Apron, then top is returned.
-					return topPreservingIds();
+					return this;
 				}
 			case LOGICAL_AND:
 				left = assume((ValueExpression) bin.getLeft(), pp); 
@@ -312,7 +319,7 @@ public class Apron implements ValueDomain<Apron> {
 				} catch (UnsupportedOperationException e) {
 					// if a sub-expression of expression cannot be 
 					// translated by Apron, then top is returned.
-					return topPreservingIds();
+					return this;
 				}
 			case LOGICAL_OR:
 				left = assume((ValueExpression) bin.getLeft(), pp); 
@@ -324,14 +331,14 @@ public class Apron implements ValueDomain<Apron> {
 				} catch (UnsupportedOperationException e) {
 					// if a sub-expression of expression cannot be 
 					// translated by Apron, then top is returned.
-					return topPreservingIds();
+					return this;
 				}
 			default:
-				return topPreservingIds();
+				return this;
 			}
 		}	
 
-		return topPreservingIds();
+		return this;
 	}
 
 	private Tcons1 toApronComparison(BinaryExpression exp) throws ApronException {
@@ -355,6 +362,9 @@ public class Apron implements ValueDomain<Apron> {
 
 	@Override
 	public Apron forgetIdentifier(Identifier id) throws SemanticException {
+		if (!containsIdentifier(id))
+			return this;
+		
 		try {
 			return new Apron(state.forgetCopy(manager, toApronVar(id), false));
 		} catch (ApronException e) {
@@ -507,16 +517,18 @@ public class Apron implements ValueDomain<Apron> {
 		// we compute the least environment extending the this and other environment
 		Environment lubEnv = state.getEnvironment().lce(other.state.getEnvironment());
 		try {
+			Abstract1 unifiedThis = state.changeEnvironmentCopy(manager, lubEnv, state.isBottom(manager));
 			if (other.state.isBottom(manager)) 
-				return new Apron(state.changeEnvironmentCopy(manager, lubEnv, state.isBottom(manager)));
-						
-			if (this.state.isBottom(manager)) 
-				return new Apron(other.state.changeEnvironmentCopy(manager, lubEnv, other.state.isBottom(manager)));
-		
-			if (state.isTop(manager) || other.state.isTop(manager))
-				return new Apron(other.state.changeEnvironmentCopy(manager, lubEnv, other.state.isBottom(manager)));
+				return new Apron(unifiedThis);
 
-			return new Apron(state.joinCopy(manager, other.state));
+			Abstract1 unifiedOther = other.state.changeEnvironmentCopy(manager, lubEnv, other.state.isBottom(manager));
+			if (this.state.isBottom(manager)) 
+				return new Apron(unifiedOther);
+
+			if (state.isTop(manager) || other.state.isTop(manager))
+				return new Apron(unifiedOther);
+
+			return new Apron(unifiedThis.joinCopy(manager, unifiedOther));
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
@@ -524,10 +536,16 @@ public class Apron implements ValueDomain<Apron> {
 
 	public Apron glb(Apron other) throws SemanticException {
 		try {
-			if (other.state.isBottom(manager) || this.state.isBottom(manager))
-				return bottom();
 
-			return new Apron(state.meetCopy(manager, other.state));
+			// we compute the least environment extending the this and other environment
+			Environment lubEnv = state.getEnvironment().lce(other.state.getEnvironment());
+			Abstract1 unifiedThis = state.changeEnvironmentCopy(manager, lubEnv, state.isBottom(manager));
+			Abstract1 unifiedOther = other.state.changeEnvironmentCopy(manager, lubEnv, other.state.isBottom(manager));
+//
+//			if (other.state.isBottom(manager) || this.state.isBottom(manager))
+//				return bottom();
+
+			return new Apron(unifiedThis.meetCopy(manager, unifiedOther));
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
@@ -552,9 +570,20 @@ public class Apron implements ValueDomain<Apron> {
 		try {
 			if (state.isBottom(manager))
 				return true;
-			if (other.state.isBottom(manager))
+			else if (other.state.isBottom(manager))
 				return false;
-			return state.isIncluded(manager, other.state);
+			else if (other.state.isTop(manager))
+				return true;
+			else if (state.isTop(manager))
+				return false;
+
+			// we first need to  uniform the environments
+			Environment unifiedEnv = state.getEnvironment().lce(other.state.getEnvironment());
+
+			Abstract1 unifiedOther = other.state.changeEnvironmentCopy(manager, unifiedEnv, false);
+			Abstract1 unifiedThis = state.changeEnvironmentCopy(manager, unifiedEnv, false);
+
+			return unifiedThis.isIncluded(manager, unifiedOther);
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
@@ -599,13 +628,5 @@ public class Apron implements ValueDomain<Apron> {
 
 	public  Abstract1 getApronState() {
 		return state;
-	}
-	
-	private Apron topPreservingIds() {
-		try {
-			return new Apron(top().getApronState().changeEnvironmentCopy(manager, state.getEnvironment(), false));
-		} catch (ApronException e) {
-			throw new UnsupportedOperationException("Apron library crashed", e);
-		}
 	}
 }

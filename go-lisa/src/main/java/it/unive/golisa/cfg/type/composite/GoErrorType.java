@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -37,12 +38,15 @@ public class GoErrorType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return other instanceof GoErrorType || other.isUntyped();
+		return other instanceof GoErrorType ||  other instanceof GoNilType || other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoErrorType || other.isUntyped() ? other : Untyped.INSTANCE;
+		if  (other instanceof GoErrorType
+				||other instanceof GoNilType)
+			return this;
+		return Untyped.INSTANCE;
 	}
 
 	@Override

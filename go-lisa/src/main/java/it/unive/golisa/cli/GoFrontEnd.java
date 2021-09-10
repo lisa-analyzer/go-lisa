@@ -52,8 +52,10 @@ import it.unive.golisa.cfg.runtime.strings.GoReplace;
 import it.unive.golisa.cfg.runtime.url.UrlPathEscape;
 import it.unive.golisa.cfg.runtime.url.UrlQueryEscape;
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
@@ -148,9 +150,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		Program result = visitSourceFile((SourceFileContext) tree);
 		stream.close();
-		
-		registerGoTypes(program);
+
 		// Register all the types
+		registerGoTypes(program);
 		
 		return result;
 	}
@@ -172,6 +174,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		program.registerType(GoUInt64Type.INSTANCE);
 		program.registerType(GoUntypedFloat.INSTANCE);
 		program.registerType(GoStringType.INSTANCE);
+		program.registerType(GoErrorType.INSTANCE);
+		program.registerType(GoNilType.INSTANCE);
 		GoArrayType.all().forEach(program::registerType);
 		GoStructType.all().forEach(program::registerType);
 	}

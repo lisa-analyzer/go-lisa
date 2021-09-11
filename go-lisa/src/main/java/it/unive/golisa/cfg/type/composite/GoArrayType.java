@@ -116,8 +116,7 @@ public class GoArrayType implements GoType, PointerType {
 			instances.add(in);
 		return instances;	
 	}
-	
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		Collection<Type> instances = new HashSet<>();

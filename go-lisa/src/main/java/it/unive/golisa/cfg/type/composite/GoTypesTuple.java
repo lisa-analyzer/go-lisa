@@ -76,9 +76,19 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 		return new GoExpressionsTuple(cfg, location, exps);
 	}
 
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoTypesTuple in : tupleTypes)
+			instances.add(in);
+		return instances;	
+	}
+
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		Collection<Type> instances = new HashSet<>();
+		for (GoTypesTuple in : tupleTypes)
+			instances.add(in);
+		return instances;
 	}
 	
 	@Override

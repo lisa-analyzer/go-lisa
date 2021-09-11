@@ -53,11 +53,18 @@ import it.unive.golisa.cfg.runtime.url.UrlPathEscape;
 import it.unive.golisa.cfg.runtime.url.UrlQueryEscape;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoNilType;
+import it.unive.golisa.cfg.type.GoQualifiedType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.composite.GoChannelType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
+import it.unive.golisa.cfg.type.composite.GoMapType;
+import it.unive.golisa.cfg.type.composite.GoPointerType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
@@ -178,6 +185,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		program.registerType(GoNilType.INSTANCE);
 		GoArrayType.all().forEach(program::registerType);
 		GoStructType.all().forEach(program::registerType);
+		GoSliceType.all().forEach(program::registerType);
+		GoPointerType.all().forEach(program::registerType);
+		GoMapType.all().forEach(program::registerType);
+		GoTypesTuple.all().forEach(program::registerType);
+		GoChannelType.all().forEach(program::registerType);
+		GoFunctionType.all().forEach(program::registerType);
+		GoQualifiedType.all().forEach(program::registerType);
+		
 	}
 
 	CompilationUnit packageUnit;

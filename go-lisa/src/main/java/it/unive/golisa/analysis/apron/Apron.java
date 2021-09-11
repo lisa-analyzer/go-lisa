@@ -39,7 +39,6 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
@@ -130,36 +129,43 @@ public class Apron implements ValueDomain<Apron> {
 			} else
 				newState = state;
 
-			if (expression instanceof PushAny) {
-				Apron result = new Apron(newState);
-				result = result.forgetIdentifier(id);
-				Constant zero = new Constant(GoIntType.INSTANCE, 0, pp.getLocation());
-				Apron ge = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_GE, pp.getLocation()), pp);
-				Apron le = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_LE, pp.getLocation()), pp);
-				return ge.lub(le);
-			} 
-			else {
-				Texpr1Node apronExpression = toApronExpression(expression);
-				Var[] vars = apronExpression.getVars();
+			Texpr1Node apronExpression = toApronExpression(expression);
 
-				for (int i = 0; i < vars.length; i++)
-					if (!newState.getEnvironment().hasVar(vars[i])) {
-						Var[] vars1 = {vars[i]};
-						env = newState.getEnvironment().add(new Var[0], vars1);
-						newState = newState.changeEnvironmentCopy(manager, env, false);
-					}
+			// we are not able to translate expression
+			// hence, we treat it as "don't know"
+			if (apronExpression == null)
+				return forgetAbstractionOf(newState, id, pp);
 
-				MpfrScalar sc = new MpfrScalar();
-				sc.setInfty(1);
-				Texpr1Node notHandled = new Texpr1CstNode(sc);
-				if (!apronExpression.equals(notHandled))
-					return new Apron(newState.assignCopy(manager, variable, new Texpr1Intern(newState.getEnvironment(), apronExpression), null));
-				else
-					return new Apron(newState);
-			}
+			Var[] vars = apronExpression.getVars();
+
+			for (int i = 0; i < vars.length; i++)
+				if (!newState.getEnvironment().hasVar(vars[i])) {
+					Var[] vars1 = {vars[i]};
+					env = newState.getEnvironment().add(new Var[0], vars1);
+					newState = newState.changeEnvironmentCopy(manager, env, false);
+				}
+
+			MpfrScalar sc = new MpfrScalar();
+			sc.setInfty(1);
+			Texpr1Node notHandled = new Texpr1CstNode(sc);
+			if (!apronExpression.equals(notHandled))
+				return new Apron(newState.assignCopy(manager, variable, new Texpr1Intern(newState.getEnvironment(), apronExpression), null));
+			else
+				return new Apron(newState);
+
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
+	}
+
+
+	private Apron forgetAbstractionOf(Abstract1 newState, Identifier id, ProgramPoint pp) throws SemanticException {
+		Apron result = new Apron(newState);
+		result = result.forgetIdentifier(id);
+		Constant zero = new Constant(GoIntType.INSTANCE, 0, pp.getLocation());
+		Apron ge = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_GE, pp.getLocation()), pp);
+		Apron le = result.assume(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), id, zero, BinaryOperator.COMPARISON_LE, pp.getLocation()), pp);
+		return ge.lub(le);
 	}
 
 	private Texpr1Node toApronExpression(SymbolicExpression exp) throws ApronException {
@@ -188,6 +194,24 @@ public class Apron implements ValueDomain<Apron> {
 			return new Texpr1CstNode(coeff);
 		}
 
+		if (exp instanceof UnaryExpression) {
+			UnaryExpression un = (UnaryExpression) exp;
+
+			switch(un.getOperator()) {
+			case LOGICAL_NOT:
+				break;
+			case NUMERIC_NEG:
+				break;
+			case STRING_LENGTH:
+				break;
+			case TYPEOF:
+				break;
+			default:
+				break;
+
+			}
+		}
+
 		if (exp instanceof BinaryExpression) {			
 			BinaryExpression bin = (BinaryExpression) exp;
 
@@ -197,11 +221,20 @@ public class Apron implements ValueDomain<Apron> {
 				if (!exp.getTypes().isEmpty())
 					return toApronExpression(bin.getLeft());
 			default:
-				return new Texpr1BinNode(toApronOperator(bin.getOperator()), toApronExpression(bin.getLeft()), toApronExpression(bin.getRight()));			
+				Texpr1Node rewrittenLeft =  toApronExpression(bin.getLeft());
+				if (rewrittenLeft == null)
+					return null;
+				
+				Texpr1Node rewrittenRight = toApronExpression(bin.getRight());
+				if (rewrittenRight == null)
+					return null;
+				
+				return new Texpr1BinNode(toApronOperator(bin.getOperator()), rewrittenLeft, rewrittenRight);			
 			}
 		}
-
-		throw new UnsupportedOperationException("Expression "+ exp.getClass().getTypeName() + " not yet supported by Apron");
+		
+		// we are not able to translate the expression
+		return null;
 	}
 
 	private int toApronOperator(BinaryOperator op) {
@@ -262,7 +295,7 @@ public class Apron implements ValueDomain<Apron> {
 	public Apron assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		try {
 			if (state.isBottom(manager))
-				return bottom();
+				return this;
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
 		}
@@ -350,7 +383,11 @@ public class Apron implements ValueDomain<Apron> {
 		case COMPARISON_GE:
 		case COMPARISON_NE:
 		case COMPARISON_EQ:
-			return new Tcons1(state.getEnvironment(), toApronOperator(exp.getOperator()), toApronExpression(combinedExpr));
+			Texpr1Node apronExpression = toApronExpression(combinedExpr);
+			if (apronExpression != null)
+				return new Tcons1(state.getEnvironment(), toApronOperator(exp.getOperator()), apronExpression);
+			else
+				throw new UnsupportedOperationException("Comparison operator "+exp.getOperator()+" not yet supported"); 		
 		case COMPARISON_LE:
 			return toApronComparison(new BinaryExpression(exp.getTypes(), exp.getRight(), exp.getLeft(), BinaryOperator.COMPARISON_GE, exp.getCodeLocation()));
 		case COMPARISON_LT:
@@ -364,7 +401,7 @@ public class Apron implements ValueDomain<Apron> {
 	public Apron forgetIdentifier(Identifier id) throws SemanticException {
 		if (!containsIdentifier(id))
 			return this;
-		
+
 		try {
 			return new Apron(state.forgetCopy(manager, toApronVar(id), false));
 		} catch (ApronException e) {
@@ -467,12 +504,7 @@ public class Apron implements ValueDomain<Apron> {
 
 						return Satisfiability.UNKNOWN;
 					}
-					//					if (state.satisfy(manager, toApronComparison(bin)))
-					//						return Satisfiability.SATISFIED;
-					//					else if (manager.wasExact()) 
-					//						return Satisfiability.NOT_SATISFIED;
-					//					else 
-					//						return Satisfiability.UNKNOWN;
+					
 				case LOGICAL_AND:
 					return satisfies((ValueExpression) bin.getLeft(), pp).and(satisfies((ValueExpression) bin.getRight(), pp));
 				case LOGICAL_OR:
@@ -483,11 +515,9 @@ public class Apron implements ValueDomain<Apron> {
 			}
 
 			return Satisfiability.UNKNOWN;
-		}
-		catch (ApronException e) {
+		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
-		} 
-		catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException e) {
 			// if a sub-expression of expression cannot be 
 			// translated by Apron, then Unknown is returned.
 			return Satisfiability.UNKNOWN;
@@ -536,14 +566,10 @@ public class Apron implements ValueDomain<Apron> {
 
 	public Apron glb(Apron other) throws SemanticException {
 		try {
-
 			// we compute the least environment extending the this and other environment
 			Environment lubEnv = state.getEnvironment().lce(other.state.getEnvironment());
 			Abstract1 unifiedThis = state.changeEnvironmentCopy(manager, lubEnv, state.isBottom(manager));
 			Abstract1 unifiedOther = other.state.changeEnvironmentCopy(manager, lubEnv, other.state.isBottom(manager));
-//
-//			if (other.state.isBottom(manager) || this.state.isBottom(manager))
-//				return bottom();
 
 			return new Apron(unifiedThis.meetCopy(manager, unifiedOther));
 		} catch (ApronException e) {

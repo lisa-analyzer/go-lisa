@@ -65,4 +65,11 @@ public class CFGTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
 		perform("cfg/routine", "go-routine.go", conf);
 	}
+	
+
+	@Test	
+	public void testGoTo() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpCFGs(true);
+		perform("cfg/goto", "goto.go", conf);
+	}
 }

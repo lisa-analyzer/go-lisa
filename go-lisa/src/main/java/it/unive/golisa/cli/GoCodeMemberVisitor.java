@@ -150,6 +150,7 @@ import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.GoRoutine;
+import it.unive.golisa.cfg.statement.GoTo;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
@@ -205,6 +206,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	private final Map<String, VariableRef> visibleIds;
 
+	protected final Map<Statement, String> gotos;
+	
+	protected final Map<String, Statement> labeledStmt;
+	
 	protected VariableScopingCFG cfg;
 
 	protected CFGDescriptor descriptor;
@@ -241,6 +246,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		visibleIds = new HashMap<>();
 		this.constants = constants;
 		this.currentUnit = unit;
+		this.gotos = new HashMap<>();
+		this.labeledStmt = new HashMap<>();
 	}
 
 
@@ -250,6 +257,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		this.program = program;
 		this.constants = constants;
 
+		gotos = new HashMap<>();
+		labeledStmt = new HashMap<>();
 		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
@@ -300,6 +309,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
 		Pair<Statement, Statement> body = visitBlock(ctx.block());
+		
+		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
+			// we must call cfg.addEdge, and not addEdge
+			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		
 		cfg.getEntrypoints().add(body.getLeft());
 
 		// If the method body does not have exit points 
@@ -336,6 +350,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 
 		cfg.simplify();
+		
 		currentUnit.addInstanceCFG(cfg);
 		return cfg;
 	}
@@ -996,9 +1011,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Statement visitGotoStmt(GotoStmtContext ctx) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	public Pair<Statement, Statement> visitLabeledStmt(LabeledStmtContext ctx) {
+		Pair<Statement, Statement> stmt = visitStatement(ctx.statement());
+		labeledStmt.put(ctx.IDENTIFIER().getText(), stmt.getLeft());
+		return stmt;
+//		// TODO: labeled statements (see issue #9)
+//		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+	
+	@Override
+	public Pair<Statement, Statement> visitGotoStmt(GotoStmtContext ctx) {
+		GoTo nop = new GoTo(cfg, locationOf(ctx));
+		cfg.addNode(nop);
+		gotos.put(nop, ctx.IDENTIFIER().getText());
+		return Pair.of(nop, nop);
+//		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 
 	@Override
@@ -1076,9 +1103,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	private boolean isReturnStmt(Statement stmt) {
 		return stmt instanceof GoReturn || stmt instanceof Ret;
 	}
+	
+	private boolean isGoTo(Statement stmt) {
+		return stmt instanceof GoTo;
+	}
 
 	protected void addEdge(Edge edge) {
-		if (!isReturnStmt(edge.getSource()))
+		if (!isReturnStmt(edge.getSource()) && !isGoTo(edge.getSource()))
 			cfg.addEdge(edge);
 	}
 
@@ -2020,12 +2051,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Statement visitRecvStmt(RecvStmtContext ctx) {
 		// TODO select statement (see issue #22)
-		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
-	}
-
-	@Override
-	public Statement visitLabeledStmt(LabeledStmtContext ctx) {
-		// TODO: labeled statements (see issue #9)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
 

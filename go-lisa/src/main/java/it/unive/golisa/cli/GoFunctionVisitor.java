@@ -3,6 +3,7 @@ package it.unive.golisa.cli;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -78,6 +79,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Statement entryNode = null;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());	
 
+		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
+			// we must call cfg.addEdge, and not addEdge
+			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		
+		
 		// The function named "main" is the entry point of the program
 		if (cfg.getDescriptor().getName().equals("main"))
 			program.addEntryPoint(cfg);
@@ -111,7 +117,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			} else 
 				entryNode = body.getLeft();
 		}
-
+		
 		cfg.getEntrypoints().add(entryNode);
 
 		// If the function body does not have exit points 
@@ -156,6 +162,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Statement entryNode = null;
 		Pair<Statement, Statement> body = visitBlock(ctx.block());	
 
+		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
+			// we must call cfg.addEdge, and not addEdge
+			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		
+		
 		Type returnType = cfg.getDescriptor().getReturnType();
 
 		if (!(returnType instanceof  GoTypesTuple))
@@ -220,7 +231,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
-
+		
 		cfg.simplify();
 		return cfg;
 	}

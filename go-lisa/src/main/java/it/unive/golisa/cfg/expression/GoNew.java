@@ -14,7 +14,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
-import it.unive.lisa.type.Type;
 
 public class GoNew extends NativeCall {
 
@@ -30,7 +29,7 @@ public class GoNew extends NativeCall {
 		// Following the Golang reference:
 		// The new built-in function allocates memory. The first argument is a type, not a value, 
 		// and the value returned is a pointer to a newly allocated zero value of that type.
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet((Type) getParameters()[0]), getLocation());
+		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()), getLocation());
 		return entryState.smallStepSemantics(created, this);
 	}
 }

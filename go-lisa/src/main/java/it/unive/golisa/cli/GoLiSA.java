@@ -68,6 +68,7 @@ public class GoLiSA {
 		
 		conf.setWorkdir(outputDir)
 			.setDumpAnalysis(true)
+			.setInferTypes(true)
 			.setJsonOutput(true)
 			.setDumpCFGs(true)
 			.addSyntacticCheck(new BreakConsensusGoSmartContractChecker());

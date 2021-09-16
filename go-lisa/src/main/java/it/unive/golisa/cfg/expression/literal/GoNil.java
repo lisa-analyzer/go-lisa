@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.expression.literal;
 
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Literal;
-import it.unive.lisa.type.Untyped;
 
 /**
  * A Go nil value.
@@ -20,7 +20,7 @@ public class GoNil extends Literal {
 	 * @param cfg the cfg that this literal belongs to
 	 */
 	public GoNil(CFG cfg, SourceCodeLocation location) {
-		super(cfg, location, "nil", Untyped.INSTANCE);
+		super(cfg, location, "nil", GoNilType.INSTANCE);
 	}
 
 }

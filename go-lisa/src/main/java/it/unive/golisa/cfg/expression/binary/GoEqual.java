@@ -15,6 +15,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.type.Type;
 
 /**
  * A Go equal function call (e1 == e2).
@@ -47,16 +48,18 @@ public class GoEqual extends BinaryNativeCall {
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
-		
-		// following the Golang specification:
-		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
-		if (!(rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) && !(leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType())))
-			return entryState.bottom();
-		
-		// TODO: not covering composite types (e.g., channels, arrays, structs...)
-		return rightState
-				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp,
-						BinaryOperator.COMPARISON_EQ, getLocation()), this);
+					throws SemanticException {
+
+		AnalysisState<A, H, V> result = entryState.bottom();
+		for (Type leftType : leftExp.getTypes())
+			for (Type rightType : rightExp.getTypes()) 
+				if (rightType.canBeAssignedTo(leftType) || leftType.canBeAssignedTo(rightType)) {
+					// TODO: not covering composite types (e.g., channels, arrays, structs...)
+					AnalysisState<A, H, V> tmp = rightState
+							.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp,
+									BinaryOperator.COMPARISON_EQ, getLocation()), this);	
+					result = result.lub(tmp);
+				}
+		return result;
 	}
 }

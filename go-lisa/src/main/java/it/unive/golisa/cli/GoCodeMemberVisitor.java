@@ -150,6 +150,7 @@ import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.GoRoutine;
+import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoConstantDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
@@ -176,7 +177,6 @@ import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.AccessInstanceGlobal;
-import it.unive.lisa.program.cfg.statement.Assignment;
 import it.unive.lisa.program.cfg.statement.CFGCall;
 import it.unive.lisa.program.cfg.statement.Call;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -767,10 +767,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// increment and decrement statements are syntactic sugar
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
-			asg = new Assignment(cfg, location, exp, 
+			asg = new GoAssignment(cfg, location, exp, 
 					new GoSum(cfg, location, exp,  new GoInteger(cfg, location, 1)));		
 		else
-			asg = new Assignment(cfg, location, exp, 
+			asg = new GoAssignment(cfg, location, exp, 
 					new GoSubtraction(cfg, location, exp, new GoInteger(cfg, location, 1)));
 
 		cfg.addNode(asg, visibleIds);
@@ -812,7 +812,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Expression lhs = visitExpression(ids.expression(i));
 				Expression exp = buildExpressionFromAssignment(new SourceCodeLocation(file, line, col), lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
-				Assignment asg = new Assignment(cfg, locationOf(ctx), lhs, exp);
+				GoAssignment asg = new GoAssignment(cfg, locationOf(ctx), lhs, exp);
 				cfg.addNode(asg, visibleIds);
 
 				if (lastStmt != null)
@@ -1292,7 +1292,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				} else {
 					idxRange = rangeIds[0];
 					idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
-					idxPost = new Assignment(cfg, location, idxRange, 
+					idxPost = new GoAssignment(cfg, location, idxRange, 
 							new GoSum(cfg, location, idxRange, one));
 
 					// Index and values are used in range
@@ -1303,7 +1303,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						valInit = new GoShortVariableDeclaration(cfg, location, valRange,
 								new GoCollectionAccess(cfg, location, rangedCollection, zero));
 
-						valPost = new Assignment(cfg, location, valRange, 
+						valPost = new GoAssignment(cfg, location, valRange, 
 								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
 					} 
 				}
@@ -1317,16 +1317,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						throw new IllegalStateException("range variables must  be identifiers.");
 
 					idxRange = (VariableRef) rangeIds[0];
-					idxInit = new Assignment(cfg, locationOf(ctx), idxRange, zero);
+					idxInit = new GoAssignment(cfg, locationOf(ctx), idxRange, zero);
 
 					if (rangeIds.length == 2) {
 						valRange = (VariableRef) rangeIds[1];
 
 						// Creates the initialization statements for idx and val range variable
-						valInit = new Assignment(cfg, location, valRange,
+						valInit = new GoAssignment(cfg, location, valRange,
 								new GoCollectionAccess(cfg, location, rangedCollection, zero));
 
-						valPost = new Assignment(cfg, location, valRange, 
+						valPost = new GoAssignment(cfg, location, valRange, 
 								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
 					} 
 				}				

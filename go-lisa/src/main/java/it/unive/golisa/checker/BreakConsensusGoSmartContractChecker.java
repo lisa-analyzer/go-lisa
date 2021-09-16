@@ -14,6 +14,7 @@ import it.unive.lisa.checks.syntactic.CheckTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -40,12 +41,13 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 	@Override
 	public boolean visit(CheckTool tool, CFG graph, Statement node) {
-
+		
 		checkIssuesRelatedToGoLangAPI(tool, graph, node);
 		
 		return true;
 	}
 	
+
 	private void checkIssuesRelatedToGoLangAPI(CheckTool tool, CFG graph, Statement node) {
 		
 		if(node instanceof UnresolvedCall) {
@@ -56,7 +58,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		}
 		
 		if(matchMapIterationStatement(node))
-			tool.warnOn(node, "For-range interation detected!");
+			tool.warnOn(node, "For-range interation detected!" + getTypeRangeStmt(node) == null ? "" : getTypeRangeStmt(node) );
 		if(matchConcurrencyStatement(node))
 			tool.warnOn(node, "Concurrecy behavior detected!");
 		
@@ -65,7 +67,6 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		
 	}
 
-	
 	private void checkIssuesRelatedToExternalEnviroments(CheckTool tool, CFG graph, Statement node) {
 		
 		if (node instanceof UnresolvedCall) {
@@ -82,6 +83,24 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		
 	}
 
+	private String getTypeRangeStmt(Statement node) {
+		GoRange range = (GoRange) node;
+		for(Expression e1 : range.getParameters()) {
+			if(e1 instanceof GoLess) {
+				GoLess less = (GoLess) e1;
+				for(Expression e2 : less.getParameters()) {
+					if(e2 instanceof GoLength) {
+						GoLength length = (GoLength) e2;
+						Type type = null;
+						for(Expression e3 : length.getParameters()) {
+							return e3.getStaticType().toString();
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
 	
 	private boolean matchOsApi(UnresolvedCall call) {
 
@@ -194,7 +213,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	 */
 	private boolean matchSystemTimestampStatement(UnresolvedCall call) {
 		
-		List<String> SYSTEM_TIME_SIGNATURES = List.of("Now");
+		List<String> SYSTEM_TIME_SIGNATURES = List.of("Now", "Since", "Until");
 		
 		if( SYSTEM_TIME_SIGNATURES.contains(call.getTargetName()) 
 				&& call.getParameters().length > 1 
@@ -228,7 +247,22 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 	@Override
 	public boolean visitCompilationUnit(CheckTool tool, CompilationUnit unit) {
+		
+		checkExternalLibraries(tool, unit);
+			tool.warnOn(unit, "Possible external library detected!");
 		return true;
+	}
+
+	private boolean checkExternalLibraries(CheckTool tool, CompilationUnit unit) {
+
+		if(unit.getLocation() instanceof SourceCodeLocation) {
+			SourceCodeLocation scl = (SourceCodeLocation) unit.getLocation();
+			if( scl.getSourceFile() != null && !scl.getSourceFile().equals(GoLangUtils.GO_UNKNOWN_SOURCE))
+				return false;
+		}
+		
+		return true;
+		
 	}
 
 	@Override

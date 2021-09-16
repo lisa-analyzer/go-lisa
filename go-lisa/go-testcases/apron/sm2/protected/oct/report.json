@@ -1,0 +1,36 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':13:43] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable Aval may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':13:43] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable Aval may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':15:43] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable Bval may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':15:43] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable Bval may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':16:31] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable X may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':16:31] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable X may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':17:20] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable Aval may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':17:20] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable Aval may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':25:55] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable err may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':25:55] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable err may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':26:55] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable err may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':26:55] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable err may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':6:34] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable Avalbytes may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':6:34] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable Avalbytes may underflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':7:34] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-OVERFLOW] the variable Bvalbytes may overflow. Need to manually check."
+  }, {
+    "message" : "['go-testcases/apron/sm2/protected/oct/sm-protected.go':7:34] on 'pb.Response ~LiSAProgram::main(shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] [MAYBE-UNDERFLOW] the variable Bvalbytes may underflow. Need to manually check."
+  } ],
+  "files" : [ "analysis___pb.Response_~LiSAProgram.main(shim.ChaincodeStubInterface_stub,_[]string_args).dot" ]
+}

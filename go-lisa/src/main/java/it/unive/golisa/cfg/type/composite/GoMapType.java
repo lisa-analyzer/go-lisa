@@ -1,7 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -101,8 +100,18 @@ public class GoMapType implements GoType, PointerType {
 		return new GoNil(cfg, location);
 	}
 
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoMapType in : mapTypes)
+			instances.add(in);
+		return instances;	
+	}
+
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		Collection<Type> instances = new HashSet<>();
+		for (GoMapType in : mapTypes)
+			instances.add(in);
+		return instances;
 	}
 }

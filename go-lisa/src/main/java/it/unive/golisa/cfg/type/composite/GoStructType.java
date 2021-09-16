@@ -153,7 +153,6 @@ public class GoStructType implements GoType, UnitType, PointerType {
 		return instances;	
 	}
 	
-	
 	@Override
 	public Collection<Type> allInstances() {
 		Collection<Type> instances = new HashSet<>();

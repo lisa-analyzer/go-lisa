@@ -1,7 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -117,8 +116,18 @@ public class GoChannelType implements GoType {
 		return new GoNil(cfg, location);
 	}
 	
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoChannelType in : channelTypes)
+			instances.add(in);
+		return instances;	
+	}
+
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		Collection<Type> instances = new HashSet<>();
+		for (GoChannelType in : channelTypes)
+			instances.add(in);
+		return instances;
 	}
 }

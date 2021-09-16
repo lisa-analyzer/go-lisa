@@ -15,6 +15,9 @@ public class GoLangUtils {
 
 	public static final String BLANK_IDENTIFIER = "_";
 	
+	public static final String GO_RUNTIME_SOURCE = "go-runtime";
+	public static final String GO_UNKNOWN_SOURCE = "unknown";
+	
 	public static boolean isBlankIdentifier(Variable v) {
 		return v.getName().equals(BLANK_IDENTIFIER);
 	}

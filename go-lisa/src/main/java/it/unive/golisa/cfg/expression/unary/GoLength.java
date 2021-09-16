@@ -16,7 +16,6 @@ import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.Variable;
@@ -25,7 +24,7 @@ import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoLength extends UnaryNativeCall {
-	
+
 	public GoLength(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "len", exp);
 	}
@@ -34,35 +33,33 @@ public class GoLength extends UnaryNativeCall {
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
 			SymbolicExpression expr) throws SemanticException {
-	
+
 		ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
+		AnalysisState<A, H, V> result = entryState.bottom();
 
-		if (expr.getDynamicType().isArrayType() || expr.getDynamicType() instanceof GoSliceType) {
-			// When expr is an array or a slice, we access the len property
-			AnalysisState<A, H, V> rec = entryState.smallStepSemantics(expr, this);
-			AnalysisState<A, H, V> result = entryState.bottom();
-			ExternalSet<Type> untypedType = Caches.types().mkSingletonSet(Untyped.INSTANCE);
+		for (Type type : expr.getTypes()) {
+			if (type.isArrayType() || type instanceof GoSliceType) {
+				// When expr is an array or a slice, we access the len property
+				AnalysisState<A, H, V> rec = entryState.smallStepSemantics(expr, this);
+				AnalysisState<A, H, V> partialResult = entryState.bottom();
+				ExternalSet<Type> untypedType = Caches.types().mkSingletonSet(Untyped.INSTANCE);
 
-			for (SymbolicExpression recExpr : rec.getComputedExpressions()) {	
-				HeapDereference deref = new HeapDereference(getRuntimeTypes(), recExpr, getLocation());
-				AnalysisState<A, H, V> refState = entryState.smallStepSemantics(deref, this);
+				for (SymbolicExpression recExpr : rec.getComputedExpressions()) {	
+					HeapDereference deref = new HeapDereference(getRuntimeTypes(), recExpr, getLocation());
+					AnalysisState<A, H, V> refState = entryState.smallStepSemantics(deref, this);
 
-				for (SymbolicExpression l : refState.getComputedExpressions()) {
-					if (!(l instanceof MemoryPointer))
-						continue;
-
-					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), (MemoryPointer) l, new Variable(untypedType, "len", getLocation()), getLocation()), this);
-					result = result.lub(tmp);
+					for (SymbolicExpression l : refState.getComputedExpressions()) {
+						AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), l, new Variable(untypedType, "len", getLocation()), getLocation()), this);
+						partialResult = partialResult.lub(tmp);
+					}
 				}
-
+				result = result.lub(partialResult);
 			}
-			return result;
+
+			if (type.isStringType())
+				result = result.lub(exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), this));
 		}
-				
-		if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
-			return entryState.bottom();
-		
-		
-		return exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), this);
+
+		return result;
 	}
 }

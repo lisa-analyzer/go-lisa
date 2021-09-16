@@ -1,7 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,6 +72,8 @@ public class GoSliceType implements GoType, PointerType {
 			return false;
 		return true;
 	}
+	
+	
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
@@ -81,6 +82,16 @@ public class GoSliceType implements GoType, PointerType {
 	
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		Collection<Type> instances = new HashSet<>();
+		for (GoSliceType in : sliceTypes)
+			instances.add(in);
+		return instances;
+	}
+
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoSliceType in : sliceTypes)
+			instances.add(in);
+		return instances;
 	}
 }

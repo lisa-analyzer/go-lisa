@@ -257,12 +257,18 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 		if(unit.getLocation() instanceof SourceCodeLocation) {
 			SourceCodeLocation scl = (SourceCodeLocation) unit.getLocation();
-			if( scl.getSourceFile() != null && !scl.getSourceFile().equals(GoLangUtils.GO_UNKNOWN_SOURCE))
+			if( scl.getSourceFile() != null && !scl.getSourceFile().equals(GoLangUtils.GO_UNKNOWN_SOURCE)
+					|| !unit.getName().contains(".") || ! isWhiteListRepo(unit))
 				return false;
 		}
 		
 		return true;
 		
+	}
+
+	private boolean isWhiteListRepo(CompilationUnit unit) {
+		List<String> whitelist = List.of("github.com/golang/", "golang.org/", "github.com/google/go", "google.golang.org/", "github.com/cosmos/", "github.com/hyperledger/");
+		return whitelist.parallelStream().anyMatch(p -> unit.getName().startsWith(p));
 	}
 
 	@Override

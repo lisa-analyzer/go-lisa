@@ -162,6 +162,7 @@ import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -198,7 +199,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	protected final String file;
 
-	protected final AdjacencyMatrix<Statement, Edge, CFG> matrix;
+//	protected final AdjacencyMatrix<Statement, Edge, CFG> matrix;
 
 	protected final Collection<Statement> entrypoints;
 
@@ -240,7 +241,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.program = program;
-		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		visibleIds = new HashMap<>();
@@ -259,11 +259,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		gotos = new HashMap<>();
 		labeledStmt = new HashMap<>();
-		matrix = new AdjacencyMatrix<>();
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(descriptor, entrypoints, matrix);
+		cfg = new VariableScopingCFG(descriptor, entrypoints, new AdjacencyMatrix<>());
 
 		visibleIds = new HashMap<>();
 
@@ -318,6 +317,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// If the method body does not have exit points 
 		// a return statement is added
+		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 		if (cfg.getAllExitpoints().isEmpty()) {
 			Ret ret = new Ret(cfg, descriptor.getLocation());
 			if (cfg.getNodesCount() == 0) {
@@ -403,6 +403,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Parameter[] result = new Parameter[]{};
 		GoType type = visitType_(ctx.type_());
 
+		// the parameter's type is variadic (e.g., ...string)
+		if (ctx.ELLIPSIS() != null)
+			type = GoVariadicType.lookup(new GoVariadicType(type));
+		
 		if (ctx.identifierList() == null)
 			result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
 		else 

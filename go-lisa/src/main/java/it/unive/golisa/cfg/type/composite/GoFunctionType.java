@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +30,11 @@ public class GoFunctionType implements GoType {
 	public GoFunctionType(Parameter[] params, Type returnType) {
 		this.params = params;
 		this.returnType = returnType;
+	}
+	
+	@Override
+	public String toString() {
+		return "func (" + Arrays.toString(params) + ")" + returnType;	
 	}
 	
 	@Override

@@ -27,6 +27,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.VariableTableEntry;
+import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
@@ -34,6 +35,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function
@@ -49,7 +51,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(descriptor, entrypoints, matrix);
+		cfg = new VariableScopingCFG(descriptor, entrypoints, new AdjacencyMatrix<>());
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -63,7 +65,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(descriptor, entrypoints, matrix);
+		cfg = new VariableScopingCFG(descriptor, entrypoints, new AdjacencyMatrix<>());
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -119,6 +121,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		}
 		
 		cfg.getEntrypoints().add(entryNode);
+		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 
 		// If the function body does not have exit points 
 		// a return statement is added
@@ -152,7 +155,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
-
 
 		cfg.simplify();
 		return Pair.of(entryNode, body.getRight());
@@ -199,6 +201,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		cfg.getEntrypoints().add(entryNode);
 
+		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
+		
 		// If the function body does not have exit points 
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {

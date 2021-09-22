@@ -65,6 +65,7 @@ import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
@@ -192,7 +193,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		GoChannelType.all().forEach(program::registerType);
 		GoFunctionType.all().forEach(program::registerType);
 		GoQualifiedType.all().forEach(program::registerType);
-		
+		GoVariadicType.all().forEach(program::registerType);
 	}
 
 	CompilationUnit packageUnit;

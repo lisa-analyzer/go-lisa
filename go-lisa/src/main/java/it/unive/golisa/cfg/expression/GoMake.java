@@ -68,7 +68,7 @@ public class GoMake extends NativeCall {
 				return entryState.top().smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
 
 			int length = (int) ((GoInteger) getParameters()[0]).getValue();
-			int cap = getParameters().length == 1 ? length : (int) ((GoInteger) getParameters()[2]).getValue();
+			int cap = getParameters().length == 1 ? length : (int) ((GoInteger) getParameters()[1]).getValue();
 
 			GoArrayType arrayType = GoArrayType.lookup(new GoArrayType(contentType, length));
 			Expression array = arrayType.defaultValue(getCFG(), underlyingArrayLocation);

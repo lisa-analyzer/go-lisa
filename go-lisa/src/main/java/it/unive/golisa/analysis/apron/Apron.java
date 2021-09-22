@@ -145,13 +145,7 @@ public class Apron implements ValueDomain<Apron> {
 					newState = newState.changeEnvironmentCopy(manager, env, false);
 				}
 
-			MpfrScalar sc = new MpfrScalar();
-			sc.setInfty(1);
-			Texpr1Node notHandled = new Texpr1CstNode(sc);
-			if (!apronExpression.equals(notHandled))
-				return new Apron(newState.assignCopy(manager, variable, new Texpr1Intern(newState.getEnvironment(), apronExpression), null));
-			else
-				return new Apron(newState);
+			return new Apron(newState.assignCopy(manager, variable, new Texpr1Intern(newState.getEnvironment(), apronExpression), null));
 
 		} catch (ApronException e) {
 			throw new UnsupportedOperationException("Apron library crashed", e);
@@ -184,11 +178,8 @@ public class Apron implements ValueDomain<Apron> {
 				coeff = new MpfrScalar((long) c.getValue(), Mpfr.getDefaultPrec());
 			else if (c.getValue() instanceof BigInteger)
 				coeff = new MpfrScalar(new Mpfr(((BigInteger) c.getValue()), Mpfr.RNDN));
-			else {
-				MpfrScalar sc = new MpfrScalar();
-				sc.setInfty(1);
-				coeff = sc;
-			}
+			else 
+				return null;
 
 
 			return new Texpr1CstNode(coeff);
@@ -224,15 +215,15 @@ public class Apron implements ValueDomain<Apron> {
 				Texpr1Node rewrittenLeft =  toApronExpression(bin.getLeft());
 				if (rewrittenLeft == null)
 					return null;
-				
+
 				Texpr1Node rewrittenRight = toApronExpression(bin.getRight());
 				if (rewrittenRight == null)
 					return null;
-				
+
 				return new Texpr1BinNode(toApronOperator(bin.getOperator()), rewrittenLeft, rewrittenRight);			
 			}
 		}
-		
+
 		// we are not able to translate the expression
 		return null;
 	}
@@ -412,7 +403,8 @@ public class Apron implements ValueDomain<Apron> {
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		try {
-			if (state.isBottom(manager))
+
+			if (state.getEnvironment().equals(new apron.Environment()))
 				return Satisfiability.BOTTOM;
 
 			if (expression instanceof UnaryExpression) {
@@ -504,7 +496,7 @@ public class Apron implements ValueDomain<Apron> {
 
 						return Satisfiability.UNKNOWN;
 					}
-					
+
 				case LOGICAL_AND:
 					return satisfies((ValueExpression) bin.getLeft(), pp).and(satisfies((ValueExpression) bin.getRight(), pp));
 				case LOGICAL_OR:

@@ -25,9 +25,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 public class GoMultiAssignment extends Expression {
@@ -76,7 +73,6 @@ public class GoMultiAssignment extends Expression {
 
 		AnalysisState<A, H, V> result = entryState.bottom();
 
-		ExternalSet<Type> untyped = Caches.types().mkSingletonSet(Untyped.INSTANCE);
 		for (int i = 0; i < ids.length; i++) {
 			if(ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
 				continue;
@@ -89,7 +85,7 @@ public class GoMultiAssignment extends Expression {
 			
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
 				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), retExp, getLocation());
-				AccessChild access = new AccessChild(untyped, dereference, new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				AccessChild access = new AccessChild(Caches.types().mkUniversalSet(), dereference, new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				AnalysisState<A, H, V> accessState = rightState.smallStepSemantics(access, this);
 				
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {

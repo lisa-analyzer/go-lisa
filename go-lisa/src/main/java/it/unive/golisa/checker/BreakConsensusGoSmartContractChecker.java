@@ -248,7 +248,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	@Override
 	public boolean visitCompilationUnit(CheckTool tool, CompilationUnit unit) {
 		
-		checkExternalLibraries(tool, unit);
+		if(checkExternalLibraries(tool, unit))
 			tool.warnOn(unit, "Possible external library detected!");
 		return true;
 	}

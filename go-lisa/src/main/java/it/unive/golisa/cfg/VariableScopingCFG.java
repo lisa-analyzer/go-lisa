@@ -3,7 +3,9 @@ package it.unive.golisa.cfg;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import it.unive.golisa.scooping.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -22,7 +24,7 @@ public class VariableScopingCFG extends CFG {
 	/**
 	 * The mapping between the statements and the IDs visible in those statements
 	 */
-	private final Map<Statement, Map<String, VariableRef>> scopingMap;
+	private final Map<Statement, Map<String, Set<IdInfo>>> scopingMap;
 	
 	/**
 	 * Builds the control flow graph.
@@ -56,7 +58,7 @@ public class VariableScopingCFG extends CFG {
 	 * 
 	 * @param visibleIds the IDs visible to collect
 	 */
-	public void addNode(Statement node, Map<String, VariableRef> visibleIds) {
+	public void addNode(Statement node, Map<String, Set<IdInfo>> visibleIds) {
 		scopingMap.put(node, new HashMap<>(visibleIds));
 		super.addNode(node);
 	}
@@ -69,7 +71,7 @@ public class VariableScopingCFG extends CFG {
 	 * 
 	 * @return the visible IDs  
 	 */
-	public Map<String, VariableRef> getVisibleIds(Statement node){
+	public Map<String, Set<IdInfo>> getVisibleIds(Statement node){
 		return scopingMap.get(node);
 	}
 }

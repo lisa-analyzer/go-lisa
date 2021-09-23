@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -79,6 +80,8 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
+import it.unive.golisa.golang.api.signature.GoLangApiSignature;
+import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
@@ -105,6 +108,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private final Program program;
 	
 	private Map<String, ExpressionContext> constants;
+	
+	private Map<String, Set<GoLangApiSignature>> mapPackagesGoLangApi = GoLangUtils.getGoLangApiSignatures();
 
 	/**
 	 * The resolution strategy for Go calling expressions.
@@ -253,7 +258,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		ExpressionListContext exps = ctx.expressionList();
 
 		for (int i = 0; i < ids.IDENTIFIER().size(); i++) 
-			if (exps.expression(i) != null)
+			if (exps != null && exps.expression(i) != null)
 			constants.put(ids.IDENTIFIER(i).getText(), exps.expression(i));
 	}
 
@@ -306,16 +311,30 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		String lib = visitString_(ctx.string_());
 		
 		switch (lib) {
-		case "strings": loadStrings();
-		case "fmt": loadFmt();
-		case "url": loadUrl();
-		case "strconv": loadStrconv();
+			case "strings": loadStrings(); break;
+			case "fmt": loadFmt(); break;
+			case "url": loadUrl(); break;
+			case "strconv": loadStrconv(); break;
+			default: loadUnhandledLib(lib); break;
 		}
 		return null;
 	}
 
+	private void loadUnhandledLib(String lib) {
+		
+		SourceCodeLocation unknownLocation;
+		if(mapPackagesGoLangApi.containsKey(lib)) 
+			// it is a package contained in Go APIs
+			unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		else
+			unknownLocation = new SourceCodeLocation("unknown", 0, 0);
+
+		CompilationUnit cu = new CompilationUnit(unknownLocation, lib , false);
+		program.addCompilationUnit(cu);		
+	}
+
 	private void loadUrl() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit url = new CompilationUnit(unknownLocation, "url", false);
 		url.addConstruct(new UrlQueryEscape(unknownLocation, url));
 		url.addConstruct(new UrlPathEscape(unknownLocation, url));
@@ -324,13 +343,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	private void loadCore() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		packageUnit.addConstruct(new GoToString(unknownLocation, packageUnit));
 		packageUnit.addConstruct(new GoToInt64(unknownLocation, packageUnit));
 	}
 
 	private void loadStrings() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit str = new CompilationUnit(unknownLocation, "strings", false);
 		str.addConstruct(new GoHasPrefix(unknownLocation, str));
 		str.addConstruct(new GoHasSuffix(unknownLocation, str));
@@ -353,7 +372,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 	
 	private void loadStrconv() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit strconv = new CompilationUnit(unknownLocation, "strconv", false);
 		strconv.addConstruct(new GoAtoi(unknownLocation, strconv));
 		strconv.addConstruct(new GoItoa(unknownLocation, strconv));
@@ -366,7 +385,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	private void loadFmt() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation("go-runtime", 0, 0);
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit fmt = new CompilationUnit(unknownLocation, "fmt", false);
 		fmt.addConstruct(new GoPrintln(unknownLocation, fmt));
 

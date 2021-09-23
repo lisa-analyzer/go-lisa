@@ -43,3 +43,4 @@ local.properties
 # UML diagrams
 diagrams/
 /go-outputs/
+/bin/

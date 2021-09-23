@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.golisa.util.GoLangUtils;
+import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

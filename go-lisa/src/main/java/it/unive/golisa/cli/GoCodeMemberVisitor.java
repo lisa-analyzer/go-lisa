@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -161,9 +162,11 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.golisa.cfg.type.composite.GoVariadicType;
-import it.unive.golisa.util.GoLangUtils;
+import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.golisa.scooping.IdInfo;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
@@ -205,7 +208,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	protected final Collection<ControlFlowStructure> cfs;
 
-	private final Map<String, VariableRef> visibleIds;
+	private final Map<String, Set<IdInfo>> visibleIds;
 
 	protected final Map<Statement, String> gotos;
 	
@@ -218,6 +221,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected final Program program;
 
 	protected static int c = 0;
+	
+	protected int blockDeep;
 
 	/**
 	 * Stack of loop exit points (used for break statements)
@@ -244,10 +249,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		visibleIds = new HashMap<>();
+		this.blockDeep = 0;
 		this.constants = constants;
 		this.currentUnit = unit;
 		this.gotos = new HashMap<>();
 		this.labeledStmt = new HashMap<>();
+		this.currentUnit = unit;		
 	}
 
 
@@ -265,14 +272,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfg = new VariableScopingCFG(descriptor, entrypoints, new AdjacencyMatrix<>());
 
 		visibleIds = new HashMap<>();
-
+		this.blockDeep = 0;
+		
 		initializeVisibleIds();	
 	}
 
 	protected void initializeVisibleIds() {
 		for (VariableTableEntry par : descriptor.getVariables())
-			if(!GoLangUtils.refersToBlankIdentifier(par.createReference(cfg)))
-				visibleIds.put(par.getName(), par.createReference(cfg));
+			if(!GoLangUtils.refersToBlankIdentifier(par.createReference(cfg))) {
+				visibleIds.putIfAbsent(par.getName(), new HashSet<IdInfo>());
+				visibleIds.get(par.getName()).add(new IdInfo(par.createReference(cfg), blockDeep));
+			}
+
 	}
 
 	private CFGDescriptor mkDescriptor(CompilationUnit packageUnit, MethodDeclContext ctx) {
@@ -438,7 +449,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
-		Map<String, VariableRef> backup = new HashMap<>(visibleIds);
+		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+		blockDeep++;
 
 		if (ctx.statementList() == null) {
 			SourceCodeLocation location = locationOf(ctx);
@@ -454,23 +466,39 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
-
+		blockDeep--;
 		return res;
 	}
 
-	protected void updateVisileIds(Map<String, VariableRef> backup, Statement last) {
+	protected void updateVisileIds(Map<String, Set<IdInfo>> backup, Statement last) {
 
-		Collection<String> toRemove = new HashSet<>();
-		for (Entry<String, VariableRef> id : visibleIds.entrySet())
+		Map<String, Set<IdInfo> > toRemove = new HashMap<>();
+		for (Entry<String, Set<IdInfo>> id : visibleIds.entrySet())
 			if (!backup.containsKey(id.getKey())) {
-				VariableRef ref = id.getValue();
-				descriptor.addVariable(new VariableTableEntry(ref.getLocation(),
-						0, ref.getRootStatement(), last, id.getKey(), Untyped.INSTANCE));
-				toRemove.add(id.getKey());
+				for(IdInfo idInfo : id.getValue()) {
+					VariableRef ref = idInfo.getRef();
+					descriptor.addVariable(new VariableTableEntry(ref.getLocation(),
+							0, ref.getRootStatement(), last, id.getKey(), Untyped.INSTANCE));
+					toRemove.putIfAbsent(id.getKey(), new HashSet<IdInfo>());
+					toRemove.get(id.getKey()).add(idInfo);
+				}
 			}
 
-		if (!toRemove.isEmpty())
-			toRemove.forEach(visibleIds::remove);
+		if (!toRemove.isEmpty()) {
+			for(String k :toRemove.keySet()) {
+				if(visibleIds.containsKey(k)) {
+					Set<IdInfo> visibleInfoSet = visibleIds.get(k);
+					Set<IdInfo> removeInfoSet = toRemove.get(k);
+					if (visibleInfoSet != null && removeInfoSet != null)
+						visibleInfoSet.removeAll(removeInfoSet);
+					
+					if(visibleInfoSet == null || (visibleInfoSet != null && visibleInfoSet.isEmpty()))
+						visibleIds.remove(k);	
+				}
+	
+			}
+			
+		}
 	}
 
 	@Override
@@ -494,6 +522,37 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				entryNode = currentStmt.getLeft();
 
 			lastStmt = currentStmt.getRight();
+		}
+
+		return Pair.of(entryNode, lastStmt);
+	}
+	
+
+	public Pair<Statement, Statement> visitStatementListOfSwitchCase(StatementListContext ctx) {
+		// It is an empty statement
+		if (ctx == null || ctx.statement().size() == 0) {
+			NoOp nop = new NoOp(cfg, SyntheticLocation.INSTANCE);
+			cfg.addNode(nop);
+			return Pair.of(nop, nop);
+		}
+
+		Statement lastStmt = null;
+		Statement entryNode = null;
+		
+		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+
+		for (int i = 0; i < ctx.statement().size(); i++)  {
+			Pair<Statement, Statement> currentStmt = visitStatement(ctx.statement(i));
+
+			if (lastStmt != null) 
+				addEdge(new SequentialEdge(lastStmt, currentStmt.getLeft()));	
+			else 
+				entryNode = currentStmt.getLeft();
+
+			lastStmt = currentStmt.getRight();
+			
+			//scoping must be updated for each case
+			updateVisileIds(backup, lastStmt);
 		}
 
 		return Pair.of(entryNode, lastStmt);
@@ -548,10 +607,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			cfg.addNode(asg, visibleIds);
 
 			if (visibleIds.containsKey(target.getName()))
-				throw new GoSyntaxException(
-						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
-			if(!GoLangUtils.refersToBlankIdentifier(target))
-				visibleIds.put(target.getName(), target);
+				if(visibleIds.get(target.getName()).stream().anyMatch( info -> info.equals(new IdInfo(target, blockDeep))))
+					throw new GoSyntaxException(
+							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
+			
+			if(!GoLangUtils.refersToBlankIdentifier(target)) {
+				visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
+				visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
+			}
 
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
@@ -697,10 +760,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			cfg.addNode(asg, visibleIds);
 
 			if (visibleIds.containsKey(target.getName()))
-				throw new GoSyntaxException(
-						"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
-			if(!GoLangUtils.refersToBlankIdentifier(target))
-				visibleIds.put(target.getName(), target);
+				if(visibleIds.get(target.getName()).stream().anyMatch( info -> info.equals(new IdInfo(target, blockDeep))))
+					throw new GoSyntaxException(
+							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
+			if(!GoLangUtils.refersToBlankIdentifier(target)) {
+				visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
+				visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
+			}
 
 			if (lastStmt != null)
 				addEdge(new SequentialEdge(lastStmt, asg));
@@ -904,9 +970,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				//					throw new GoSyntaxException(
 				//							"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
 				//				else
-				if(!GoLangUtils.refersToBlankIdentifier(left[i]))
-					visibleIds.put(left[i].getName(), left[i]);
-
+				if(!GoLangUtils.refersToBlankIdentifier(left[i])) {
+					visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
+					visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
+				}
+					
+			
 
 			Expression right = visitExpression(exps.expression(0));
 
@@ -929,8 +998,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				//					throw new GoSyntaxException(
 				//							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 
-				if(!GoLangUtils.refersToBlankIdentifier(target))
-					visibleIds.put(target.getName(), target);
+				if(!GoLangUtils.refersToBlankIdentifier(target)) {
+					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
+					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
+				}
 
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
 				cfg.addNode(asg, visibleIds);
@@ -1140,7 +1211,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		for (int i = 0; i < ctx.exprCaseClause().size(); i++)  {
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
-			Pair<Statement, Statement> caseBlock = visitStatementList(switchCase.statementList());
+			Pair<Statement, Statement> caseBlock = visitStatementListOfSwitchCase(switchCase.statementList());
 			Expression caseBooleanGuard = null;
 
 			// Check if the switch case is not the default case
@@ -1175,6 +1246,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				lastCaseBlock = caseBlock;
 			else
 				lastCaseBlock = null;
+			
 		}
 
 		if (lastCaseBlock != null)
@@ -1199,7 +1271,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitForStmt(ForStmtContext ctx) {
 		SourceCodeLocation location = locationOf(ctx);
-		Map<String, VariableRef> backup = new HashMap<>(visibleIds);
+		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
 		NoOp exitNode = new NoOp(cfg, location);
 		cfg.addNode(exitNode, visibleIds);
 
@@ -1229,7 +1301,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			entryPoints.add(cond);
 
-			//Map<String, VariableRef> backupForPost = new HashMap<>(visibleIds);
+			//Map<String, IdInfo> backupForPost = new HashMap<>(visibleIds);
 			// Checking if post statement is missing
 			Pair<Statement, Statement> post = null;
 			if (hasPostStmt) {
@@ -1406,15 +1478,32 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 
-	private void restoreVisibleIdsAfterForLoop(Map<String, VariableRef> backup) {
-		Collection<String> toRemove = new HashSet<>();
-		for (Entry<String, VariableRef> id : visibleIds.entrySet())
-			if (!backup.containsKey(id.getKey())) 
-				toRemove.add(id.getKey());
+	private void restoreVisibleIdsAfterForLoop(Map<String, Set<IdInfo>> backup) {
+	
+		Map<String, Set<IdInfo> > toRemove = new HashMap<>();
+		for (Entry<String, Set<IdInfo>> id : visibleIds.entrySet())
+			if (!backup.containsKey(id.getKey())) {
+				for(IdInfo idInfo : id.getValue()) {
+					toRemove.putIfAbsent(id.getKey(), new HashSet<IdInfo>());
+					toRemove.get(id.getKey()).add(idInfo);
+				}
+			}
 
-		if (!toRemove.isEmpty())
-			toRemove.forEach(visibleIds::remove);
-
+		if (!toRemove.isEmpty()) {
+			for(String k :toRemove.keySet()) {
+				if(visibleIds.containsKey(k)) {
+					Set<IdInfo> visibleInfoSet = visibleIds.get(k);
+					Set<IdInfo> removeInfoSet = toRemove.get(k);
+					if (visibleInfoSet != null && removeInfoSet != null)
+						visibleInfoSet.removeAll(removeInfoSet);
+					
+					if(visibleInfoSet == null || (visibleInfoSet != null && visibleInfoSet.isEmpty()))
+						visibleIds.remove(k);	
+				}
+	
+			}
+			
+		}
 	}
 
 	@Override
@@ -1814,8 +1903,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	private GoType getContentType(Type type) {
 		if (type instanceof GoArrayType)
 			return (GoType) ((GoArrayType) type).getContentType();
+		if (type instanceof GoSliceType)
+			return (GoType) ((GoSliceType) type).getContentType();
+		
 		throw new IllegalStateException(type + " has no content type");
-
 	}
 
 	@Override

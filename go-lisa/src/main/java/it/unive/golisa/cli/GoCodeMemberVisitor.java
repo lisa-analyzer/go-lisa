@@ -1468,7 +1468,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				}
 			}
 
-
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
 
 			// Function/method call (e.g., f(1,2,3), x.f())

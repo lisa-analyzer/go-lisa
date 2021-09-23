@@ -350,6 +350,9 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		else if (ctx.typeName() != null)
 			return visitTypeName(ctx.typeName());
 		else {
+			// Case with ellipsis (e.g., [...]int) 
+			// -1 is just a placeholder. It will be replaced  with the
+			// correct size in GoCodeMemberVisitor.visitCompositeLit.
 			GoType elementType = visitElementType(ctx.elementType());
 			return GoArrayType.lookup(new GoArrayType(elementType, -1));
 		}

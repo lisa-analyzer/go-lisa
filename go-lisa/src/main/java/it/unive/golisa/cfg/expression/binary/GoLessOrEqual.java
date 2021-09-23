@@ -15,6 +15,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.type.Type;
 
 
 /**
@@ -51,15 +52,18 @@ public class GoLessOrEqual extends BinaryNativeCall {
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 					throws SemanticException {
 
+		AnalysisState<A, H, V> result = entryState.bottom();
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
-		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) {
-			// only, integer, floating point values, strings are ordered
-			if (leftExp.getDynamicType().isNumericType() && leftExp.getDynamicType().isNumericType())
-				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LE, getLocation()), this);
-			//TODO: string comparisong: missing lexicographical order in LiSa binary operator
-		}
-
-		return entryState.bottom();
+		for (Type leftType : leftExp.getTypes())
+			for (Type rightType : rightExp.getTypes()) {
+				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
+					// TODO: only, integer, floating point values, strings are ordered
+					// but missing lexicographical string order in LiSA
+					AnalysisState<A, H, V> tmp = rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LE, getLocation()), this);
+					result = result.lub(tmp);
+				}
+			}
+		return result;
 	}
 }

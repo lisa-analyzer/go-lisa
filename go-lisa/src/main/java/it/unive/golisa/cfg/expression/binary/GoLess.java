@@ -15,6 +15,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.type.Type;
 
 /**
  * A Go less function call (e1 < e2).
@@ -25,7 +26,7 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoLess extends BinaryNativeCall {
-	
+
 	/**
 	 * Builds a Go less expression at a given location in the program.
 	 * 
@@ -47,13 +48,20 @@ public class GoLess extends BinaryNativeCall {
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
 			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
-		
+					throws SemanticException {
+
+		AnalysisState<A, H, V> result = entryState.bottom();
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
-		if (leftExp.getDynamicType().canBeAssignedTo(rightExp.getDynamicType()) || rightExp.getDynamicType().canBeAssignedTo(leftExp.getDynamicType())) 
-				return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LT, getLocation()), this);
-	
-		return entryState.bottom();
+		for (Type leftType : leftExp.getTypes())
+			for (Type rightType : rightExp.getTypes()) {
+				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
+					// TODO: only, integer, floating point values, strings are ordered
+					// but missing lexicographical string order in LiSA
+					AnalysisState<A, H, V> tmp = rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LT, getLocation()), this);
+					result = result.lub(tmp);
+				}
+			}
+		return result;
 	}
 }

@@ -220,6 +220,13 @@ public class Apron implements ValueDomain<Apron> {
 				if (rewrittenRight == null)
 					return null;
 
+				if (bin.getOperator() == BinaryOperator.COMPARISON_LT)
+					return new Texpr1BinNode(Tcons1.SUP, rewrittenRight, rewrittenLeft);			
+
+				if (bin.getOperator() == BinaryOperator.COMPARISON_LE)
+					return new Texpr1BinNode(Tcons1.SUPEQ, rewrittenRight, rewrittenLeft);			
+
+				
 				return new Texpr1BinNode(toApronOperator(bin.getOperator()), rewrittenLeft, rewrittenRight);			
 			}
 		}
@@ -241,6 +248,7 @@ public class Apron implements ValueDomain<Apron> {
 		case COMPARISON_NE: return Tcons1.DISEQ;
 		case COMPARISON_GE: return Tcons1.SUPEQ;
 		case COMPARISON_GT: return Tcons1.SUP;
+		
 		default: throw new UnsupportedOperationException("Operator "+op+" not yet supported by Apron interface");
 		}
 	}

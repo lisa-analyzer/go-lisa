@@ -75,8 +75,12 @@ public class GoNonKeyedLiteral extends NativeCall {
 					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(field.getStaticType()), dereference, getVariable(field), getLocation());
 					AnalysisState<A, H, V> fieldState = tmp.smallStepSemantics(access, this);
 					for (SymbolicExpression id : fieldState.getComputedExpressions()) 
-						for (SymbolicExpression v : params[i])
-							tmp = fieldState.assign(id, NumericalTyper.type(v), this);
+						if (i < params.length)
+							for (SymbolicExpression v : params[i])
+								tmp = fieldState.assign(id, NumericalTyper.type(v), this);
+						else
+							tmp = fieldState.assign(id, new PushAny(Caches.types().mkUniversalSet(), getLocation()), this);
+
 					i++;
 				}
 

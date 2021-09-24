@@ -22,6 +22,7 @@ public class GoDeref extends UnaryNativeCall {
 	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
 			SymbolicExpression expr) throws SemanticException {
-		return entryState.top();
+		// TODO: fix
+		return exprState.smallStepSemantics(expr, this);
 	}
 }

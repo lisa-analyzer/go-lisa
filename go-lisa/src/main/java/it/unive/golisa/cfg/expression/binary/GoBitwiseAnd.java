@@ -45,15 +45,15 @@ public class GoBitwiseAnd extends BinaryNativeCall implements GoBinaryNumericalO
 			SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
 					throws SemanticException {
 
-		Type leftType = left.getDynamicType();
-		if (!leftType.isUntyped() || (leftType.isNumericType() && !leftType.asNumericType().isIntegral()))
-			return entryState.bottom();
-
-		Type rightType = right.getDynamicType();
-		if (!rightType.isUntyped() || (rightType.isNumericType() && !leftType.asNumericType().isIntegral()))
-			return entryState.bottom();
-		
-		// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
-		return rightState.smallStepSemantics(new PushAny(resultType(left, right), getLocation()), this);	
+		AnalysisState<A, H, V> result = entryState.bottom();
+		for (Type leftType : left.getTypes())
+			for (Type rightType : right.getTypes())
+				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) && 
+						(rightType.isUntyped() || (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
+					// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
+					AnalysisState<A, H, V> tmp = rightState.smallStepSemantics(new PushAny(resultType(left, right), getLocation()), this);	
+					result = result.lub(tmp);
+				}
+		return result;	
 	}
 }

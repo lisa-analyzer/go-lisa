@@ -226,7 +226,10 @@ public class Apron implements ValueDomain<Apron> {
 				if (bin.getOperator() == BinaryOperator.COMPARISON_LE)
 					return new Texpr1BinNode(Tcons1.SUPEQ, rewrittenRight, rewrittenLeft);			
 
-				
+				if (!canBeConvertedToApronOperator(bin.getOperator()))
+					// we are not able to translate the expression
+					return null;
+
 				return new Texpr1BinNode(toApronOperator(bin.getOperator()), rewrittenLeft, rewrittenRight);			
 			}
 		}
@@ -235,6 +238,25 @@ public class Apron implements ValueDomain<Apron> {
 		return null;
 	}
 
+
+	private boolean canBeConvertedToApronOperator(BinaryOperator op) {
+		switch(op) {
+		case STRING_CONCAT:
+		case NUMERIC_ADD:
+		case NUMERIC_MUL: 
+		case NUMERIC_SUB:
+		case NUMERIC_DIV: 
+		case NUMERIC_MOD: 
+		case COMPARISON_EQ: 
+		case COMPARISON_NE: 
+		case COMPARISON_GE: 
+		case COMPARISON_GT: 
+			return true;
+		default:
+			return false;
+		}
+	}
+	
 	private int toApronOperator(BinaryOperator op) {
 		switch(op) {
 		case STRING_CONCAT:
@@ -248,7 +270,7 @@ public class Apron implements ValueDomain<Apron> {
 		case COMPARISON_NE: return Tcons1.DISEQ;
 		case COMPARISON_GE: return Tcons1.SUPEQ;
 		case COMPARISON_GT: return Tcons1.SUP;
-		
+
 		default: throw new UnsupportedOperationException("Operator "+op+" not yet supported by Apron interface");
 		}
 	}

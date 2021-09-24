@@ -83,7 +83,6 @@ public class OverflowChecker implements SemanticCheck {
 		if (leftExpression instanceof VariableRef) {
 			Variable id = new Variable(((VariableRef) leftExpression).getRuntimeTypes(), ((VariableRef) leftExpression).getName(), ((VariableRef) leftExpression).getLocation());
 
-			vType = vType == null ? id.getDynamicType() : vType;
 			boolean mayBeNumeric = false;
 			for (Type type : id.getTypes())
 				if (type.isNumericType()) {
@@ -93,6 +92,8 @@ public class OverflowChecker implements SemanticCheck {
 
 			if (!mayBeNumeric)
 				return true;
+			
+			vType = vType == null ? id.getDynamicType() : vType;
 
 			for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
 				AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(node);

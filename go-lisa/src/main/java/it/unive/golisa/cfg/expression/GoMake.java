@@ -63,10 +63,15 @@ public class GoMake extends NativeCall {
 			//FIXME: this is a temporary workaround. At this location, two allocations are performed, need to differentiate
 			SourceCodeLocation underlyingArrayLocation = new SourceCodeLocation(sliceLocation.getSourceFile(), sliceLocation.getLine(), sliceLocation.getCol() +1);
 	
-			// FIXME: currently, we handle just slice allocation where the length and  the capability are integers
+			// FIXME: currently, we handle just slice allocation where the length is integer
 			if (!(getParameters()[0] instanceof  GoInteger))
 				return entryState.top().smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
 
+			// FIXME: currently, we handle just slice allocation where the capability is integer
+			if (getParameters().length == 2 && !(getParameters()[1] instanceof  GoInteger))
+				return entryState.top().smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(type), getLocation()), this);
+
+			
 			int length = (int) ((GoInteger) getParameters()[0]).getValue();
 			int cap = getParameters().length == 1 ? length : (int) ((GoInteger) getParameters()[1]).getValue();
 

@@ -64,7 +64,7 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 					throws SemanticException {
 
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
-	
+		
 		// e.g., _ := f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return right;

@@ -65,7 +65,7 @@ public class OverflowChecker implements SemanticCheck {
 
 		Expression leftExpression = null;
 		Type vType = null;
-		
+
 		if (node instanceof GoAssignment) {
 			GoAssignment assignment = (GoAssignment) node;
 			leftExpression = assignment.getLeft();
@@ -77,8 +77,8 @@ public class OverflowChecker implements SemanticCheck {
 			GoShortVariableDeclaration assignment = (GoShortVariableDeclaration) node;
 			leftExpression = assignment.getLeft();
 		}
-		
-		
+
+
 		// Checking if each variable reference is over/under flowing
 		if (leftExpression instanceof VariableRef) {
 			Variable id = new Variable(((VariableRef) leftExpression).getRuntimeTypes(), ((VariableRef) leftExpression).getName(), ((VariableRef) leftExpression).getLocation());
@@ -92,7 +92,7 @@ public class OverflowChecker implements SemanticCheck {
 
 			if (!mayBeNumeric)
 				return true;
-			
+
 			vType = vType == null ? id.getDynamicType() : vType;
 
 			for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
@@ -108,19 +108,30 @@ public class OverflowChecker implements SemanticCheck {
 				Satisfiability overflows = null;
 				Satisfiability underflows = null;
 				try {
+					boolean needToWarn = false;
+					String message= "[OVER/UNDERFLOW] ";
 					overflows = ap.satisfies(checkOver, node);
 
-					if (overflows == Satisfiability.SATISFIED)
-						tool.warnOn(node, "[DEFINITE-OVERFLOW] the variable "  + id + " overflows");
-					else if (overflows == Satisfiability.UNKNOWN)
-						tool.warnOn(node, "[MAYBE-OVERFLOW] the variable "  + id + " may overflow. Need to manually check.");
-						
+					if (overflows == Satisfiability.SATISFIED) {
+						message += "The variable "  + id + " overflows.";
+						needToWarn = true;
+					} else if (overflows == Satisfiability.UNKNOWN) {
+						needToWarn = true;
+						message += "The variable "  + id + " may overflow. Need to manually check.";
+					}
+
 					underflows = ap.satisfies(checkUnder, node);
 
-					if (underflows == Satisfiability.SATISFIED)
-						tool.warnOn(node, "[DEFINITE-UNDERFLOW] the variable "  + id + " underflows");
-					else if (underflows == Satisfiability.UNKNOWN)
-						tool.warnOn(node, "[MAYBE-UNDERFLOW] the variable "  + id + " may underflow. Need to manually check.");
+					if (underflows == Satisfiability.SATISFIED) {
+						message += "The variable "  + id + " undeflows.";
+						needToWarn = true;
+					} else if (underflows == Satisfiability.UNKNOWN) {
+						needToWarn = true;
+						message += "The variable "  + id + " may undeflow. Need to manually check.";
+					}
+
+					if (needToWarn)
+						tool.warnOn(node, message);
 
 				} catch (SemanticException e) {
 					e.printStackTrace();
@@ -177,10 +188,10 @@ public class OverflowChecker implements SemanticCheck {
 		if (type == GoUInt32Type.INSTANCE)
 			return new Constant(type, 4294967295L, SyntheticLocation.INSTANCE);
 
-//		if (type == GoUInt64Type.INSTANCE)
-			return new Constant(type, new BigInteger("18446744073709551615"), SyntheticLocation.INSTANCE);
+		//		if (type == GoUInt64Type.INSTANCE)
+		return new Constant(type, new BigInteger("18446744073709551615"), SyntheticLocation.INSTANCE);
 
-//		return null;
+		//		return null;
 	}
 
 	private Constant getMinValue(Type type) {
@@ -197,8 +208,8 @@ public class OverflowChecker implements SemanticCheck {
 			return new Constant(type, (long) -9223372036854775808L, SyntheticLocation.INSTANCE);
 
 		//if (type == GoUInt8Type.INSTANCE || type == GoUInt16Type.INSTANCE || type == GoUInt32Type.INSTANCE || type == GoUInt64Type.INSTANCE)
-			return new Constant(type, 0, SyntheticLocation.INSTANCE);
+		return new Constant(type, 0, SyntheticLocation.INSTANCE);
 
-//		return null;
+		//		return null;
 	}
 }

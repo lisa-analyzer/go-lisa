@@ -53,6 +53,9 @@ public class GoStructType implements GoType, UnitType, PointerType {
 		if (other instanceof GoInterfaceType) {
 			GoInterfaceType intf = (GoInterfaceType) other;
 
+			if (intf.isEmptyInterface())
+				return true;
+			
 			for (CFG methodSpec : intf.getUnit().getAllCFGs()) {
 				String methodName = methodSpec.getDescriptor().getName();
 				Type methodReturnType = methodSpec.getDescriptor().getReturnType();
@@ -79,8 +82,6 @@ public class GoStructType implements GoType, UnitType, PointerType {
 			}
 
 			return true;
-
-			//return ((GoInterfaceType) other).isEmptyInterface();
 		}
 
 		return other.isUntyped();

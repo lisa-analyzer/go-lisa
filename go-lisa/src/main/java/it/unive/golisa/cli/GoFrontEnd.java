@@ -81,6 +81,7 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
+import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
@@ -109,7 +110,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	
 	private Map<String, ExpressionContext> constants;
 	
-	private Map<String, Set<GoLangApiSignature>> mapPackagesGoLangApi = GoLangUtils.getGoLangApiSignatures();
+	private GoLangAPISignatureMapper mapper = GoLangAPISignatureMapper.getGoApiSignatures();
 
 	/**
 	 * The resolution strategy for Go calling expressions.
@@ -323,7 +324,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private void loadUnhandledLib(String lib) {
 		
 		SourceCodeLocation unknownLocation;
-		if(mapPackagesGoLangApi.containsKey(lib)) 
+		if(mapper.getPackages().contains(lib)) 
 			// it is a package contained in Go APIs
 			unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		else

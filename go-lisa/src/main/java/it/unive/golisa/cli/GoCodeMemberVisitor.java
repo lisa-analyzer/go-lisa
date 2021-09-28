@@ -1633,9 +1633,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				else if (primary instanceof AccessInstanceGlobal) {
 					Expression receiver = (Expression) getReceiver(ctx.primaryExpr());
-					if (program.getUnit(receiver.toString()) != null) 
+					if (program.getUnit(receiver.toString()) != null) {//FIXME: lack check, not always match for example "rand" has the import "math/rand" 
+						args = ArrayUtils.insert(0, args, receiver);
 						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, getMethodName(ctx.primaryExpr()), args);				
-					else {
+					} else {
 						args = ArrayUtils.insert(0, args, receiver);
 						return new UnresolvedCall(cfg, locationOf(ctx), ResolutionStrategy.FIRST_DYNAMIC_THEN_STATIC, true, getMethodName(ctx.primaryExpr()), args);				
 					}				

@@ -2,7 +2,10 @@ package it.unive.golisa.golang.util;
 
 import java.util.Map;
 import java.util.Set;
+
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.lisa.program.cfg.statement.Expression;import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.Variable;
 
@@ -26,11 +29,16 @@ public class GoLangUtils {
 		return vref instanceof VariableRef && ((VariableRef) vref).getName().equals(BLANK_IDENTIFIER);
 	}
 	
-	/**
-	 * Yield the mapping by package of Go Lang API
-	 * @return the mapping by package of Go Lang API
-	 */
-	public static Map<String, Set<GoLangApiSignature>> getGoLangApiSignatures() {
-		return GoLangApiSignatures.getGoApiSignatures().getMapPackages();
+
+	public static Map<String, Set<MethodGoLangApiSignature>> getGoLangApiMethodSignatures() {
+		return GoLangAPISignatureMapper.getGoApiSignatures().getMapMethod();
+	}
+
+	public static Map<String, Set<FuncGoLangApiSignature>> getGoLangApiFunctionSignatures() {
+		return GoLangAPISignatureMapper.getGoApiSignatures().getMapFunc();
+	}
+	
+	public static Set<String> getGoLangApiPackageSignatures() {
+		return GoLangAPISignatureMapper.getGoApiSignatures().getPackages();
 	}
 }

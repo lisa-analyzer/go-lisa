@@ -22,6 +22,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.AccessInstanceGlobal;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnresolvedCall;
@@ -61,6 +62,10 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		if(matchConcurrencyStatement(node))
 			tool.warnOn(node, "Concurrecy behavior detected!");
 		
+		if(node instanceof AccessInstanceGlobal) {
+			System.out.print("");//TODO:
+		}
+		
 		checkIssuesRelatedToExternalEnviroments(tool, graph, node);
 		
 		
@@ -79,6 +84,11 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 			if(matchOsApi((UnresolvedCall) node))
 				tool.warnOn(node, "Use of OS API detected!");
 		}
+		
+		if(node instanceof AccessInstanceGlobal) {
+			System.out.print("");//TODO:
+		}
+		
 		
 	}
 
@@ -128,13 +138,17 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	}
 	
 	private boolean matchAnyPackageSignatures(String packageName, UnresolvedCall call, boolean checkSubPackages){
-		Map<String, Set<GoLangApiSignature>> mapPackagesGoLangApi = GoLangUtils.getGoLangApiSignatures();
+		Map<String, Set<FuncGoLangApiSignature>> mapf = GoLangUtils.getGoLangApiFunctionSignatures();
+		Map<String, Set<MethodGoLangApiSignature>> mapm = GoLangUtils.getGoLangApiMethodSignatures();
 		
-		if(mapPackagesGoLangApi.containsKey(packageName) && mapPackagesGoLangApi.get(packageName).stream().anyMatch(s -> (s instanceof MethodGoLangApiSignature || s instanceof FuncGoLangApiSignature)  && matchSignature(s, call)))
+		if(mapf.containsKey(packageName) && mapf.get(packageName).stream().anyMatch(s ->  matchSignature(s, call))
+				|| mapm.containsKey(packageName) && mapm.get(packageName).stream().anyMatch(s ->  matchSignature(s, call)))
 			return true;
 		if(checkSubPackages)
-			for(String k : mapPackagesGoLangApi.keySet())
-				if(k.startsWith(packageName+"/") && mapPackagesGoLangApi.get(k).stream().anyMatch(s -> (s instanceof MethodGoLangApiSignature || s instanceof FuncGoLangApiSignature)  && matchSignature(s, call)))
+			for(String k : GoLangUtils.getGoLangApiPackageSignatures())
+				if((k.startsWith(packageName+"/") || k.endsWith("/"+packageName)) && 
+						(mapf.get(k).stream().anyMatch(s -> matchSignature(s, call))
+								|| mapm.get(k).stream().anyMatch(s -> matchSignature(s, call))))
 					return true;
 		return false;
 	}
@@ -257,7 +271,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		if(unit.getLocation() instanceof SourceCodeLocation) {
 			SourceCodeLocation scl = (SourceCodeLocation) unit.getLocation();
 			if( scl.getSourceFile() != null && !scl.getSourceFile().equals(GoLangUtils.GO_UNKNOWN_SOURCE)
-					|| !unit.getName().contains(".") || ! isWhiteListRepo(unit))
+					|| !unit.getName().contains(".") || isWhiteListRepo(unit))
 				return false;
 		}
 		

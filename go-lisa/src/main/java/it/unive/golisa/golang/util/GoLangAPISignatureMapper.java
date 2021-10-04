@@ -1,14 +1,12 @@
 package it.unive.golisa.golang.util;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import java.util.Map;
+import java.util.Set;
 
 import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;

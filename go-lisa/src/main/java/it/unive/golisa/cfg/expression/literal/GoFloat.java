@@ -4,7 +4,7 @@ import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
  * Go float value class.
@@ -12,7 +12,7 @@ import it.unive.lisa.program.cfg.statement.Literal;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoFloat extends Literal {
+public class GoFloat extends Literal<Double> {
 
 	/**
 	 * Builds a Go float value. The location where 

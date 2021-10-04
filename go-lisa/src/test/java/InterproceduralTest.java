@@ -4,11 +4,11 @@ import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.impl.heap.pointbased.FieldSensitivePointBasedHeap;
-import it.unive.lisa.analysis.impl.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.impl.numeric.Interval;
-import it.unive.lisa.interprocedural.callgraph.impl.RTACallGraph;
-import it.unive.lisa.interprocedural.impl.ContextBasedAnalysis;
+import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
+import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class InterproceduralTest extends GoAnalysisTestExecutor {
 

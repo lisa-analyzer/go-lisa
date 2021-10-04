@@ -5,10 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.binary.GoChannelSend;
-import it.unive.golisa.cfg.expression.binary.GoLess;
 import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
-import it.unive.golisa.cfg.expression.unary.GoLength;
-import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
@@ -22,12 +19,10 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.statement.AccessInstanceGlobal;
-import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.VariableRef;
-import it.unive.lisa.type.Type;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
 
 public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
@@ -57,8 +52,6 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 				tool.warnOn(node, "System time detected!");
 		}
 		
-		if(matchMapIterationStatement(node))
-			tool.warnOn(node, "For-range interation detected!" + getTypeRangeStmt(node) == null ? "" : getTypeRangeStmt(node) );
 		if(matchConcurrencyStatement(node))
 			tool.warnOn(node, "Concurrecy behavior detected!");
 		
@@ -92,25 +85,6 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		
 	}
 
-	private String getTypeRangeStmt(Statement node) {
-		GoRange range = (GoRange) node;
-		for(Expression e1 : range.getParameters()) {
-			if(e1 instanceof GoLess) {
-				GoLess less = (GoLess) e1;
-				for(Expression e2 : less.getParameters()) {
-					if(e2 instanceof GoLength) {
-						GoLength length = (GoLength) e2;
-						Type type = null;
-						for(Expression e3 : length.getParameters()) {
-							return e3.getStaticType().toString();
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
-	
 	private boolean matchOsApi(UnresolvedCall call) {
 
 		return matchAnyPackageSignatures("os", call, true)
@@ -173,41 +147,6 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		return false;
 	}
 	
-	
-	
-	
-	/*
-	 * Maps. Go supports a built-in map type that implements a hash table. The range keyword allows us to iterate
-	 * over maps. However, the order in which the map entries are ranged is not deterministic. Therefore, iterating
-	 * the Go map may result in non-deterministic behaviors. Maps are also not safe for concurrent uses because it is
-	 * known what happens when you simultaneously read and write to them. The following code snippet suffer from
-	 * such vulnerability
-	 */
-	private boolean matchMapIterationStatement(Statement node) {
-		if(node instanceof GoRange) {
-			return true;
-			//TODO: type checking/inference needed
-/*			GoRange range = (GoRange) node;
-			for(Expression e1 : range.getParameters()) {
-				if(e1 instanceof GoLess) {
-					GoLess less = (GoLess) e1;
-					for(Expression e2 : less.getParameters()) {
-						if(e2 instanceof GoLength) {
-							GoLength length = (GoLength) e2;
-							Type type = null;
-							for(Expression e3 : length.getParameters()) {
-								type = e3.getStaticType();
-							}
-						}
-					}
-				}
-			}
-*/
-		}
-		return false;
-	}
-
-
 	/*
 	 * Concurrency. Goroutines and channels introduce concurrency into Go chaincodes. The concurrency may
 	 * lead to non-deterministic behavior and race condition problems.The following code snippet suffers from such

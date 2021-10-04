@@ -11,10 +11,11 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.TernaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.TernaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.TernaryOperator;
+import it.unive.lisa.type.Type;
 
 public class GoSimpleSlice extends TernaryNativeCall {
 
@@ -30,15 +31,26 @@ public class GoSimpleSlice extends TernaryNativeCall {
 			AnalysisState<A, H, V> middleState, SymbolicExpression middle,
 			AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
 		
-		if (!left.getDynamicType().isStringType() && ! left.getDynamicType().isUntyped())
-			return entryState.bottom();
-
-		if (!middle.getDynamicType().isNumericType() && ! middle.getDynamicType().isUntyped())
-			return entryState.bottom();
-
-		if (!right.getDynamicType().isNumericType() && ! right.getDynamicType().isUntyped())
-			return entryState.bottom();
+		AnalysisState<A, H, V> result = entryState.bottom();
+		for (Type leftType : left.getTypes())
+			for (Type middleType : middle.getTypes())
+				for (Type rightType : right.getTypes())
+					if ((leftType.isStringType() || leftType.isUntyped()) 
+						&& (middleType.isNumericType() || middleType.isUntyped()) 
+						&& (rightType.isNumericType() || rightType.isUntyped())) {
+						AnalysisState<A, H, V> tmp = rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING, getLocation()), this);
+						result = result.lub(tmp);
+					}
+		return result;
+//		
+//		if (!left.getDynamicType().isStringType() && ! left.getDynamicType().isUntyped())
+//			return entryState.bottom();
+//
+//		if (!middle.getDynamicType().isNumericType() && ! middle.getDynamicType().isUntyped())
+//			return entryState.bottom();
+//
+//		if (!right.getDynamicType().isNumericType() && ! right.getDynamicType().isUntyped())
+//			return entryState.bottom();
 		
-		return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING, getLocation()), this);
 	}
 }

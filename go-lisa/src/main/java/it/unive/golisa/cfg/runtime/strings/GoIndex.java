@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.strings;
 
-import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -11,23 +10,23 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 
 public class GoIndex extends NativeCFG {
 
-	public GoIndex(SourceCodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, "Index", GoBoolType.INSTANCE,
+	public GoIndex(CodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "Index", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
 				IndexOf.class);
@@ -42,7 +41,11 @@ public class GoIndex extends NativeCFG {
 			original = st;
 		}
 		
-		public IndexOf(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		public static IndexOf build(CFG cfg, CodeLocation location, Expression... params) {
+			return new IndexOf(cfg, location, params[0], params[1]);
+		}
+		
+		public IndexOf(CFG cfg, CodeLocation location, Expression exp1, Expression exp2) {
 			super(cfg, location, "Index", GoIntType.INSTANCE, exp1, exp2);
 		}
 

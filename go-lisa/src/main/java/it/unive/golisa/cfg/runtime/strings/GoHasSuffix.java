@@ -10,22 +10,22 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 
 public class GoHasSuffix extends NativeCFG {
 
-	public GoHasSuffix(SourceCodeLocation location, CompilationUnit stringUnit) {
+	public GoHasSuffix(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "HasSuffix", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
@@ -41,7 +41,11 @@ public class GoHasSuffix extends NativeCFG {
 			original = st;
 		}
 		
-		public HasSuffix(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
+		public static HasSuffix build(CFG cfg, CodeLocation location, Expression... params) {
+			return new HasSuffix(cfg, location, params[0], params[1]);
+		}
+		
+		public HasSuffix(CFG cfg, CodeLocation location, Expression exp1, Expression exp2) {
 			super(cfg, location, "HasSuffix", GoBoolType.INSTANCE, exp1, exp2);
 		}
 

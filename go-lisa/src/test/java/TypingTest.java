@@ -2,8 +2,8 @@ import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.interprocedural.callgraph.impl.RTACallGraph;
-import it.unive.lisa.interprocedural.impl.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class TypingTest extends GoAnalysisTestExecutor {
 	

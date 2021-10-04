@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.expression.literal;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
  * A Go string value.
@@ -11,7 +11,7 @@ import it.unive.lisa.program.cfg.statement.Literal;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoString extends Literal {
+public class GoString extends Literal<String> {
 
 	/**
 	 * Builds a Go string value. The location where 

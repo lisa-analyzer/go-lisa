@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.expression.literal;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
  * A Go Boolean value.
@@ -11,7 +11,7 @@ import it.unive.lisa.program.cfg.statement.Literal;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoBoolean extends Literal {
+public class GoBoolean extends Literal<Boolean> {
 	
 	/**
 	 * Builds a Go boolean value. The location where 

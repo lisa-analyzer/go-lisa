@@ -4,8 +4,8 @@ import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.impl.numeric.Interval;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.PairRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
@@ -109,11 +109,11 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			SymbolicExpression right = binary.getRight();
 
 			switch (binary.getOperator()) {
-			case NUMERIC_ADD:
-			case NUMERIC_DIV:
-			case NUMERIC_MOD:
-			case NUMERIC_MUL:
-			case NUMERIC_SUB:
+			case NUMERIC_NON_OVERFLOWING_ADD:
+			case NUMERIC_NON_OVERFLOWING_DIV:
+			case NUMERIC_NON_OVERFLOWING_MOD:
+			case NUMERIC_NON_OVERFLOWING_MUL:
+			case NUMERIC_NON_OVERFLOWING_SUB:
 				return processableByNumericalDomain((ValueExpression) left) && processableByNumericalDomain((ValueExpression) right);
 			case COMPARISON_EQ:
 			case COMPARISON_GE:
@@ -194,11 +194,11 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			case COMPARISON_NE:
 			case LOGICAL_AND:
 			case LOGICAL_OR:
-			case NUMERIC_ADD:
-			case NUMERIC_DIV:
-			case NUMERIC_MOD:
-			case NUMERIC_MUL:
-			case NUMERIC_SUB:
+			case NUMERIC_NON_OVERFLOWING_ADD:
+			case NUMERIC_NON_OVERFLOWING_DIV:
+			case NUMERIC_NON_OVERFLOWING_MOD:
+			case NUMERIC_NON_OVERFLOWING_MUL:
+			case NUMERIC_NON_OVERFLOWING_SUB:
 				return false;
 			case STRING_CONCAT:
 				return true;

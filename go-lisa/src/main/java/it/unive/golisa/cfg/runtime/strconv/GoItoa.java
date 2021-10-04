@@ -10,21 +10,21 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 public class GoItoa extends NativeCFG {
 
-	public GoItoa(SourceCodeLocation location, CompilationUnit strconvUnit) {
+	public GoItoa(CodeLocation location, CompilationUnit strconvUnit) {
 		super(new CFGDescriptor(location, strconvUnit, false, "Itoa", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoIntType.INSTANCE)),
 				Itoa.class);
@@ -39,7 +39,11 @@ public class GoItoa extends NativeCFG {
 			original = st;
 		}
 		
-		public Itoa(CFG cfg, SourceCodeLocation location, Expression exp1) {
+		public static Itoa build(CFG cfg, CodeLocation location, Expression... params) {
+			return new Itoa(cfg, location, params[0]);
+		}
+		
+		public Itoa(CFG cfg, CodeLocation location, Expression exp1) {
 			super(cfg, location, "Itoa", GoStringType.INSTANCE, exp1);
 		}
 

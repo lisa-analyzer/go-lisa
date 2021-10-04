@@ -10,22 +10,22 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
 
 public class GoHasPrefix extends NativeCFG {
 
-	public GoHasPrefix(SourceCodeLocation location, CompilationUnit stringUnit) {
+	public GoHasPrefix(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "HasPrefix", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
@@ -41,7 +41,11 @@ public class GoHasPrefix extends NativeCFG {
 			original = st;
 		}
 
-		public HasPrefix(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		public static HasPrefix build(CFG cfg, CodeLocation location, Expression... params) {
+			return new HasPrefix(cfg, location, params[0], params[1]);
+		}
+		
+		public HasPrefix(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "HasPrefix", GoBoolType.INSTANCE, left, right);
 		}
 

@@ -7,21 +7,21 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
 public class GoPrintln extends NativeCFG {
 
-	public GoPrintln(SourceCodeLocation location, CompilationUnit fmtUnit) {
+	public GoPrintln(CodeLocation location, CompilationUnit fmtUnit) {
 		super(new CFGDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),
 				Println.class);
@@ -36,7 +36,11 @@ public class GoPrintln extends NativeCFG {
 			original = st;
 		}
 
-		public Println(CFG cfg, SourceCodeLocation location, Expression arg) {
+		public static Println build(CFG cfg, CodeLocation location, Expression... params) {
+			return new Println(cfg, location, params[0]);
+		}
+		
+		public Println(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "Println", Untyped.INSTANCE, arg);
 		}
 

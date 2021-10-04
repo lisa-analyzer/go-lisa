@@ -8,9 +8,9 @@ import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.impl.heap.MonolithicHeap;
-import it.unive.lisa.interprocedural.callgraph.impl.RTACallGraph;
-import it.unive.lisa.interprocedural.impl.ContextBasedAnalysis;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class ApronTest extends GoAnalysisTestExecutor {
 	

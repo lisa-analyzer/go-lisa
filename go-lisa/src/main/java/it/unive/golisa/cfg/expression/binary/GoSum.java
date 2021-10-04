@@ -10,8 +10,8 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
@@ -44,7 +44,7 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 					op = BinaryOperator.STRING_CONCAT;
 					types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
 				} else if (leftType.isNumericType() || rightType.isNumericType()) {
-					op = BinaryOperator.NUMERIC_ADD;
+					op = BinaryOperator.NUMERIC_NON_OVERFLOWING_ADD;
 					types = resultType(leftExp, rightExp);
 				} else
 					continue;

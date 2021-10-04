@@ -95,21 +95,21 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 
 	@Override
 	protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right, ProgramPoint pp) {
-		if (operator != BinaryOperator.NUMERIC_DIV && (left.isTop() || right.isTop()))
+		if (operator != BinaryOperator.NUMERIC_NON_OVERFLOWING_DIV && (left.isTop() || right.isTop()))
 			// with div, we can return zero or bottom even if one of the
 			// operands is top
 			return top();
 
 		switch (operator) {
-		case NUMERIC_ADD:
+		case NUMERIC_NON_OVERFLOWING_ADD:
 			return new TarsisIntv(left.interval.plus(right.interval));
-		case NUMERIC_SUB:
+		case NUMERIC_NON_OVERFLOWING_SUB:
 			return new TarsisIntv(left.interval.diff(right.interval));
-		case NUMERIC_MUL:
+		case NUMERIC_NON_OVERFLOWING_MUL:
 			if (left.is(0) || right.is(0))
 				return ZERO;
 			return new TarsisIntv(left.interval.mul(right.interval));
-		case NUMERIC_DIV:
+		case NUMERIC_NON_OVERFLOWING_DIV:
 			if (right.is(0))
 				return bottom();
 			if (left.is(0))

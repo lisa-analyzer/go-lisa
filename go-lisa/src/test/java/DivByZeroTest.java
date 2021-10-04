@@ -7,7 +7,7 @@ import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.impl.heap.MonolithicHeap;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
 
 public class DivByZeroTest extends GoAnalysisTestExecutor {
 		

@@ -1,9 +1,9 @@
 package it.unive.golisa.golang.util;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;

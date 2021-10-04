@@ -183,16 +183,16 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.FalseEdge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.edge.TrueEdge;
-import it.unive.lisa.program.cfg.statement.AccessInstanceGlobal;
-import it.unive.lisa.program.cfg.statement.CFGCall;
-import it.unive.lisa.program.cfg.statement.Call;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnresolvedCall;
-import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
 import it.unive.lisa.program.cfg.statement.VariableRef;
+import it.unive.lisa.program.cfg.statement.call.CFGCall;
+import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall.ResolutionStrategy;
+import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
@@ -1634,7 +1634,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else if (primary instanceof AccessInstanceGlobal) {
 					Expression receiver = (Expression) getReceiver(ctx.primaryExpr());
 					if (program.getUnit(receiver.toString()) != null) {//FIXME: lack check, not always match for example "rand" has the import "math/rand" 
-						args = ArrayUtils.insert(0, args, receiver);
+//						args = ArrayUtils.insert(0, args, receiver);
 						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, getMethodName(ctx.primaryExpr()), args);				
 					} else {
 						args = ArrayUtils.insert(0, args, receiver);

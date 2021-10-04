@@ -8,21 +8,21 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 public class UrlPathEscape extends NativeCFG {
 
-	public UrlPathEscape(SourceCodeLocation location, CompilationUnit urlUnit) {
+	public UrlPathEscape(CodeLocation location, CompilationUnit urlUnit) {
 		super(new CFGDescriptor(location, urlUnit, false, "PathEscape", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				PathEscape.class);
@@ -37,8 +37,12 @@ public class UrlPathEscape extends NativeCFG {
 			original = st;
 		}
 		
-		public PathEscape(CFG cfg, SourceCodeLocation location, Expression exp1) {
-			super(cfg, location, "PathEscape", GoStringType.INSTANCE, exp1);
+		public static PathEscape build(CFG cfg, CodeLocation location, Expression... params) {
+			return new PathEscape(cfg, location, params[0]);
+		}
+		
+		public PathEscape(CFG cfg, CodeLocation location, Expression exp) {
+			super(cfg, location, "PathEscape", GoStringType.INSTANCE, exp);
 		}
 
 		@Override

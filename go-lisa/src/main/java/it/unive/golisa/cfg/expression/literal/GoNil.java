@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.expression.literal;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
  * A Go nil value.

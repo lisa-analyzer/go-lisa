@@ -8,21 +8,21 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 public class UrlQueryEscape extends NativeCFG {
 
-	public UrlQueryEscape(SourceCodeLocation location, CompilationUnit urlUnit) {
+	public UrlQueryEscape(CodeLocation location, CompilationUnit urlUnit) {
 		super(new CFGDescriptor(location, urlUnit, false, "QueryEscape", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				QueryEscape.class);
@@ -37,7 +37,11 @@ public class UrlQueryEscape extends NativeCFG {
 			original = st;
 		}
 		
-		public QueryEscape(CFG cfg, SourceCodeLocation location, Expression exp1) {
+		public static QueryEscape build(CFG cfg, CodeLocation location, Expression... params) {
+			return new QueryEscape(cfg, location, params[0]);
+		}
+		
+		public QueryEscape(CFG cfg, CodeLocation location, Expression exp1) {
 			super(cfg, location, "QueryEscape", GoStringType.INSTANCE, exp1);
 		}
 

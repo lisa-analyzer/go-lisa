@@ -10,15 +10,15 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.UnaryOperator;
@@ -27,7 +27,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoLen extends NativeCFG {
 
-	public GoLen(SourceCodeLocation location, CompilationUnit stringUnit) {
+	public GoLen(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Len", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				Len.class);
@@ -42,7 +42,11 @@ public class GoLen extends NativeCFG {
 			original = st;
 		}
 		
-		public Len(CFG cfg, SourceCodeLocation location, Expression arg) {
+		public static Len build(CFG cfg, CodeLocation location, Expression... params) {
+			return new Len(cfg, location, params[0]);
+		}
+		
+		public Len(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "Len", GoIntType.INSTANCE, arg);
 		}
 

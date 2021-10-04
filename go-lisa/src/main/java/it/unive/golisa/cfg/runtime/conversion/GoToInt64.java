@@ -9,15 +9,15 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
@@ -29,7 +29,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoToInt64 extends NativeCFG {
 
-	public GoToInt64(SourceCodeLocation location, CompilationUnit pkgUnit) {
+	public GoToInt64(CodeLocation location, CompilationUnit pkgUnit) {
 		super(new CFGDescriptor(location, pkgUnit, false, "int64", GoInt64Type.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),
 				ToInt64.class);
@@ -44,7 +44,11 @@ public class GoToInt64 extends NativeCFG {
 			original = st;
 		}
 
-		public ToInt64(CFG cfg, SourceCodeLocation location, Expression arg) {
+		public static ToInt64 build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ToInt64(cfg, location, params[0]);
+		}
+		
+		public ToInt64(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "int64", GoInt64Type.INSTANCE, arg);
 		}
 

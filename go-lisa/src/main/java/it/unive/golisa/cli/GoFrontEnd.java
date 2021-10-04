@@ -3,12 +3,14 @@ package it.unive.golisa.cli;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -80,7 +82,6 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
-import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.logging.IterationLogger;
@@ -89,7 +90,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnresolvedCall.ResolutionStrategy;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall.ResolutionStrategy;
 
 /**
  * @GoFrontEnd manages the translation from a Go program to the
@@ -152,17 +153,25 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
 
-//		GoArrayType.clearAll();
-//		GoStructType.clearAll();
-		
+		long start = System.currentTimeMillis();
+
 		InputStream stream = new FileInputStream(getFilePath());
+		
+		long l = Files.lines(Paths.get(getFilePath()), Charset.defaultCharset()).count();
+		log.info("LOCS: " + l);
+
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
 		parser.setErrorHandler(new BailErrorStrategy());
 
 		ParseTree tree = parser.sourceFile();
+		long parsingTime = System.currentTimeMillis();
+
 
 		Program result = visitSourceFile((SourceFileContext) tree);
+		
+		log.info("PARSING TIME: " + (parsingTime - start) + " CFG time: " + (System.currentTimeMillis() - parsingTime));
+
 		stream.close();
 
 		// Register all the types

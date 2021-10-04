@@ -242,11 +242,11 @@ public class Apron implements ValueDomain<Apron> {
 	private boolean canBeConvertedToApronOperator(BinaryOperator op) {
 		switch(op) {
 		case STRING_CONCAT:
-		case NUMERIC_ADD:
-		case NUMERIC_MUL: 
-		case NUMERIC_SUB:
-		case NUMERIC_DIV: 
-		case NUMERIC_MOD: 
+		case NUMERIC_NON_OVERFLOWING_ADD:
+		case NUMERIC_NON_OVERFLOWING_MUL: 
+		case NUMERIC_NON_OVERFLOWING_SUB:
+		case NUMERIC_NON_OVERFLOWING_DIV: 
+		case NUMERIC_NON_OVERFLOWING_MOD: 
 		case COMPARISON_EQ: 
 		case COMPARISON_NE: 
 		case COMPARISON_GE: 
@@ -260,11 +260,11 @@ public class Apron implements ValueDomain<Apron> {
 	private int toApronOperator(BinaryOperator op) {
 		switch(op) {
 		case STRING_CONCAT:
-		case NUMERIC_ADD: return Texpr1BinNode.OP_ADD;
-		case NUMERIC_MUL: return Texpr1BinNode.OP_MUL;
-		case NUMERIC_SUB: return Texpr1BinNode.OP_SUB;
-		case NUMERIC_DIV: return Texpr1BinNode.OP_DIV;
-		case NUMERIC_MOD: return Texpr1BinNode.OP_MOD;
+		case NUMERIC_NON_OVERFLOWING_ADD: return Texpr1BinNode.OP_ADD;
+		case NUMERIC_NON_OVERFLOWING_MUL: return Texpr1BinNode.OP_MUL;
+		case NUMERIC_NON_OVERFLOWING_SUB: return Texpr1BinNode.OP_SUB;
+		case NUMERIC_NON_OVERFLOWING_DIV: return Texpr1BinNode.OP_DIV;
+		case NUMERIC_NON_OVERFLOWING_MOD: return Texpr1BinNode.OP_MOD;
 
 		case COMPARISON_EQ: return Tcons1.EQ;
 		case COMPARISON_NE: return Tcons1.DISEQ;
@@ -397,7 +397,7 @@ public class Apron implements ValueDomain<Apron> {
 
 	private Tcons1 toApronComparison(BinaryExpression exp) throws ApronException {
 		// Apron supports only "exp <comparison> 0", so we need to move everything on the left node 
-		SymbolicExpression combinedExpr = new BinaryExpression(exp.getTypes(), exp.getLeft(), exp.getRight(), BinaryOperator.NUMERIC_SUB, exp.getCodeLocation()); 
+		SymbolicExpression combinedExpr = new BinaryExpression(exp.getTypes(), exp.getLeft(), exp.getRight(), BinaryOperator.NUMERIC_NON_OVERFLOWING_SUB, exp.getCodeLocation()); 
 
 		switch(exp.getOperator()) {
 		case COMPARISON_GT:

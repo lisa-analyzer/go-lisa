@@ -10,21 +10,21 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 public class GoAtoi extends NativeCFG {
 
-	public GoAtoi(SourceCodeLocation location, CompilationUnit strconvUnit) {
+	public GoAtoi(CodeLocation location, CompilationUnit strconvUnit) {
 		super(new CFGDescriptor(location, strconvUnit, false, "Atoi", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				Atoi.class);
@@ -39,7 +39,11 @@ public class GoAtoi extends NativeCFG {
 			original = st;
 		}
 		
-		public Atoi(CFG cfg, SourceCodeLocation location, Expression exp1) {
+		public static Atoi build(CFG cfg, CodeLocation location, Expression... params) {
+			return new Atoi(cfg, location, params[0]);
+		}
+		
+		public Atoi(CFG cfg, CodeLocation location, Expression exp1) {
 			super(cfg, location, "Atoi", GoIntType.INSTANCE, exp1);
 		}
 

@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.expression.literal;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Literal;
+import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
  * Go integer value class.
@@ -11,7 +11,7 @@ import it.unive.lisa.program.cfg.statement.Literal;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoInteger extends Literal {
+public class GoInteger extends Literal<Object> {
 
 	/**
 	 * Builds a Go integer value. The location where 

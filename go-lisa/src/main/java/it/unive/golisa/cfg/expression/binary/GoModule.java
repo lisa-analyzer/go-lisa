@@ -10,8 +10,8 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
@@ -58,7 +58,7 @@ public class GoModule extends BinaryNativeCall {
 
 		return rightState
 				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftType), leftExp, rightExp,
-						BinaryOperator.NUMERIC_MOD, getLocation()), this);
+						BinaryOperator.NUMERIC_NON_OVERFLOWING_MOD, getLocation()), this);
 	}
 
 }

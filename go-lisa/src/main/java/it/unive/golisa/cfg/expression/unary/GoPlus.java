@@ -12,7 +12,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
@@ -39,7 +39,7 @@ public class GoPlus extends UnaryNativeCall {
 		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0), getLocation());
 
 		return entryState.smallStepSemantics(
-				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_ADD, getLocation()), this);
+				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_NON_OVERFLOWING_ADD, getLocation()), this);
 	}
 
 }

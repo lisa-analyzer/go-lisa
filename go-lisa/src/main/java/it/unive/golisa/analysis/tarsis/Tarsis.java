@@ -206,7 +206,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 				result = new TarsisIntv(result.getLow(), new TarsisMathNumber(leftAutomaton.maxLengthString()));
 			
 			return new Tarsis(bottomString(), result);
-		case NUMERIC_ADD:
+		case NUMERIC_NON_OVERFLOWING_ADD:
 			return new Tarsis(bottomString(), left.intValue.plus(right.intValue));
 		case STRING_CONCAT:
 			return new Tarsis(left.stringValue.concat(right.stringValue), intValue.bottom());

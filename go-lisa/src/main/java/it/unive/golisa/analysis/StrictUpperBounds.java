@@ -42,7 +42,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 			SymbolicExpression right = binary.getRight();
 
 			switch (binary.getOperator()) {
-			case NUMERIC_ADD:
+			case NUMERIC_NON_OVERFLOWING_ADD:
 				if (left instanceof Identifier && !left.equals(id) && right instanceof Constant) {
 					Identifier y = (Identifier) left;
 					Constant cons = (Constant) right;
@@ -77,7 +77,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 					}
 				}
 				break;
-			case NUMERIC_SUB:
+			case NUMERIC_NON_OVERFLOWING_SUB:
 				if (left instanceof Identifier && !left.equals(id)
 						&& right instanceof Constant) {
 					Identifier y = (Identifier) left;

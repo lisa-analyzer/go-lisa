@@ -8,8 +8,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.BinaryNativeCall;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.BinaryOperator;
@@ -48,7 +48,7 @@ public class GoMul extends BinaryNativeCall implements GoBinaryNumericalOperatio
 			for (Type rightType : rightExp.getTypes()) 
 				if (leftType.isNumericType() && rightType.isNumericType()) {
 					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_MUL, getLocation()), this));
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_NON_OVERFLOWING_MUL, getLocation()), this));
 				} 
 
 		return result;

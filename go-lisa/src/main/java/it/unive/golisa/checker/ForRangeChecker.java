@@ -49,6 +49,7 @@ public class ForRangeChecker implements SemanticCheck {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Statement node) {
 		if (node instanceof GoRange) {
 			Set<Type> rangedTypes = new HashSet<>();
@@ -64,7 +65,6 @@ public class ForRangeChecker implements SemanticCheck {
 									AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(e3);
 									InferenceSystem<InferredTypes> v = (InferenceSystem<InferredTypes>) analysisAtNode.getState().getValueState();
 									rangedTypes.addAll(((InferredTypes) v.getInferredValue()).getRuntimeTypes());
-
 								}
 							}
 						}

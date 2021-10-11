@@ -188,10 +188,7 @@ public class OverflowChecker implements SemanticCheck {
 		if (type == GoUInt32Type.INSTANCE)
 			return new Constant(type, 4294967295L, SyntheticLocation.INSTANCE);
 
-		//		if (type == GoUInt64Type.INSTANCE)
 		return new Constant(type, new BigInteger("18446744073709551615"), SyntheticLocation.INSTANCE);
-
-		//		return null;
 	}
 
 	private Constant getMinValue(Type type) {
@@ -207,9 +204,6 @@ public class OverflowChecker implements SemanticCheck {
 		if (type == GoInt64Type.INSTANCE || type == GoIntType.INSTANCE || type == GoUntypedInt.INSTANCE)
 			return new Constant(type, (long) -9223372036854775808L, SyntheticLocation.INSTANCE);
 
-		//if (type == GoUInt8Type.INSTANCE || type == GoUInt16Type.INSTANCE || type == GoUInt32Type.INSTANCE || type == GoUInt64Type.INSTANCE)
 		return new Constant(type, 0, SyntheticLocation.INSTANCE);
-
-		//		return null;
 	}
 }

@@ -38,6 +38,7 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 		ExternalSet<Type> types;
 				
 		AnalysisState<A, H, V> result = entryState.bottom();
+		
 		for (Type leftType : leftExp.getTypes())
 			for (Type rightType : rightExp.getTypes()) {
 				if (leftType.isStringType() && rightType.isStringType()) {
@@ -48,7 +49,9 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 					types = resultType(leftExp, rightExp);
 				} else
 					continue;
-				result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, op, getLocation()), this));
+				
+				result = result.lub(rightState.smallStepSemantics(
+						new BinaryExpression(types, leftExp, rightExp, op, getLocation()), this));
 			}	
 
 		return result;

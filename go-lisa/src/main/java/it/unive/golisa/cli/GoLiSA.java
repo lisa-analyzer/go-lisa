@@ -5,18 +5,12 @@ import java.io.IOException;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
-import it.unive.golisa.analysis.apron.Apron;
-import it.unive.golisa.analysis.apron.Apron.ApronDomain;
 import it.unive.golisa.checker.BreakConsensusGoSmartContractChecker;
 import it.unive.golisa.checker.DivisionByZeroChecker;
 import it.unive.golisa.checker.ForRangeChecker;
-import it.unive.golisa.checker.OverflowChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAFactory;
-import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.program.Program;
 
 public class GoLiSA {
@@ -41,21 +35,7 @@ public class GoLiSA {
 
 
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("-box")) {
-				Apron.setManager(ApronDomain.PplPoly);
-				conf.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Apron()));
-				conf.setInferTypes(true);
-			} else if (args[i].equals("-oct")) {
-				Apron.setManager(ApronDomain.Octagon);
-				conf.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Apron()));
-				conf.setInferTypes(true);
-			} else if (args[i].equals("-poly")) {
-				Apron.setManager(ApronDomain.PplPoly);
-				conf.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Apron()));
-				conf.setInferTypes(true);
-			} else if (args[i].equals("-over-under-flow-check"))
-				conf.addSemanticCheck(new OverflowChecker());
-			else if (args[i].equals("-div-by-zero-check"))
+			if (args[i].equals("-div-by-zero-check"))
 				conf.addSemanticCheck(new DivisionByZeroChecker());
 			else if (args[i].equals("-break-consens-check"))
 				conf.addSyntacticCheck(new BreakConsensusGoSmartContractChecker());

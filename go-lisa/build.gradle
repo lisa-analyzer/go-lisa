@@ -22,8 +22,6 @@ dependencies {
     implementation 'com.github.unive-ssv:tarsis:1.0'
 	implementation 'com.github.unive-ssv:lisa-sdk:0.1b2'
 	implementation 'com.github.unive-ssv:lisa-core:0.1b2'
-	implementation 'com.github.unive-ssv:lisa-imp:0.1b2'
-    applicationDefaultJvmArgs = ["-Djava.library.path=/Users/vince/apron/lib:/usr/local/opt/gmp/lib -ea"]
     
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
@@ -40,9 +38,6 @@ jar {
         )
     }
 }
-
-
-sourceSets.main.java.srcDirs += ['/Users/vince/gits/apron-0.9.13/japron']
 
 generateGrammarSource {
     maxHeapSize = "64m"

@@ -101,4 +101,8 @@ public class GoPointerType implements PointerType, GoType {
 			instances.add(in);
 		return instances;
 	}
+
+	public static void clearAll() {
+		pointerTypes.clear();
+	}
 }

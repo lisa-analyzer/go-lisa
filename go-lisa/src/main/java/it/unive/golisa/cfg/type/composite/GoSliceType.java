@@ -93,4 +93,8 @@ public class GoSliceType implements GoType, PointerType {
 			instances.add(in);
 		return instances;
 	}
+
+	public static void clearAll() {
+		sliceTypes.clear();
+	}
 }

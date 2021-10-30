@@ -151,6 +151,18 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 *                         closed
 	 */
 	private Program toLiSAProgram() throws IOException {
+		// first remove all cached types from previous executions
+		GoArrayType.clearAll();
+		GoStructType.clearAll();
+		GoSliceType.clearAll();
+		GoPointerType.clearAll();
+		GoMapType.clearAll();
+		GoTypesTuple.clearAll();
+		GoChannelType.clearAll();
+		GoFunctionType.clearAll();
+		GoQualifiedType.clearAll();
+		GoVariadicType.clearAll();
+		
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
 

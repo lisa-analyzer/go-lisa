@@ -93,4 +93,8 @@ public class GoQualifiedType implements GoType {
 			instances.add(in);
 		return instances;
 	}
+
+	public static void clearAll() {
+		qualTypes.clear();
+	}
 }

@@ -115,4 +115,8 @@ public class GoMapType implements GoType, PointerType {
 			instances.add(in);
 		return instances;
 	}
+
+	public static void clearAll() {
+		mapTypes.clear();
+	}
 }

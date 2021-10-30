@@ -22,19 +22,23 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
  */
 public class GoMinus extends UnaryNativeCall {
 
-	
-	public GoMinus(CFG cfg, SourceCodeLocation location,  Expression exp) {
-		super(cfg, location,  "-", exp);
+	public GoMinus(CFG cfg, SourceCodeLocation location, Expression exp) {
+		super(cfg, location, "-", exp);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
-			SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState,
+					SymbolicExpression expr) throws SemanticException {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 
 		return exprState.smallStepSemantics(
-				new UnaryExpression(Caches.types().mkSingletonSet(expr.getDynamicType()), expr, UnaryOperator.NUMERIC_NEG, getLocation()), this);
+				new UnaryExpression(Caches.types().mkSingletonSet(expr.getDynamicType()), expr,
+						UnaryOperator.NUMERIC_NEG, getLocation()),
+				this);
 	}
 }

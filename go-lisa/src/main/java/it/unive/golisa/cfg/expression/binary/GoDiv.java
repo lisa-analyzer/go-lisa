@@ -22,35 +22,38 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoDiv extends BinaryNativeCall implements GoBinaryNumericalOperation {
-	
+
 	/**
-	 * Builds a Go division expression. 
-	 * The location where this expression appears is unknown 
-	 * (i.e. no source file/line/column is available).
+	 * Builds a Go division expression. The location where this expression
+	 * appears is unknown (i.e. no source file/line/column is available).
 	 * 
-	 * @param cfg	the cfg that this expression belongs to
-	 * @param exp1	left-hand side operand
-	 * @param exp2 	right-hand side operand 
+	 * @param cfg  the cfg that this expression belongs to
+	 * @param exp1 left-hand side operand
+	 * @param exp2 right-hand side operand
 	 */
 	public GoDiv(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "/", exp1, exp2);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
-		
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> leftState,
+					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+					throws SemanticException {
+
 		ExternalSet<Type> types;
 
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes()) 
+			for (Type rightType : rightExp.getTypes())
 				if (leftType.isNumericType() && rightType.isNumericType()) {
 					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_NON_OVERFLOWING_DIV, getLocation()), this));
-				} 
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp,
+							BinaryOperator.NUMERIC_NON_OVERFLOWING_DIV, getLocation()), this));
+				}
 
 		return result;
 	}

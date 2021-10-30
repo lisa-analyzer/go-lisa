@@ -151,7 +151,8 @@ public class TarsisMathNumber implements Comparable<TarsisMathNumber> {
 			else
 				return MINUS_INFINITY;
 
-		return cached(new TarsisMathNumber(number.divide(other.number, 100, RoundingMode.HALF_UP).stripTrailingZeros()));
+		return cached(
+				new TarsisMathNumber(number.divide(other.number, 100, RoundingMode.HALF_UP).stripTrailingZeros()));
 	}
 
 	@Override
@@ -247,7 +248,7 @@ public class TarsisMathNumber implements Comparable<TarsisMathNumber> {
 	public String toString() {
 		return isNaN() ? "NaN" : isMinusInfinity() ? "-Inf" : isPlusInfinity() ? "+Inf" : number.toString();
 	}
-	
+
 	public int getNumber() {
 		return isPositiveOrZero() ? number.intValue() : -1 * number.intValue();
 	}

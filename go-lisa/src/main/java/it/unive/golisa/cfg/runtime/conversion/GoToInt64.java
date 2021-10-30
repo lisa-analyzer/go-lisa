@@ -47,18 +47,22 @@ public class GoToInt64 extends NativeCFG {
 		public static ToInt64 build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ToInt64(cfg, location, params[0]);
 		}
-		
+
 		public ToInt64(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "int64", GoInt64Type.INSTANCE, arg);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {			
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 			ExternalSet<Type> castType = Caches.types().mkSingletonSet(GoInt64Type.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoInt64Type.INSTANCE, getLocation());
-			return entryState.smallStepSemantics(new BinaryExpression(castType, expr, typeCast, BinaryOperator.TYPE_CONV, original.getLocation()), original);
+			return entryState.smallStepSemantics(
+					new BinaryExpression(castType, expr, typeCast, BinaryOperator.TYPE_CONV, original.getLocation()),
+					original);
 		}
 	}
 }

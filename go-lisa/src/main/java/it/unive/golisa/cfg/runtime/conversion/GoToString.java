@@ -47,18 +47,22 @@ public class GoToString extends NativeCFG {
 		public static ToString build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ToString(cfg, location, params[0]);
 		}
-		
+
 		public ToString(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "string", GoStringType.INSTANCE, arg);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {			
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 			ExternalSet<Type> castType = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoStringType.INSTANCE, getLocation());
-			return entryState.smallStepSemantics(new BinaryExpression(castType, expr, typeCast, BinaryOperator.TYPE_CONV, original.getLocation()), original);
+			return entryState.smallStepSemantics(
+					new BinaryExpression(castType, expr, typeCast, BinaryOperator.TYPE_CONV, original.getLocation()),
+					original);
 		}
 	}
 }

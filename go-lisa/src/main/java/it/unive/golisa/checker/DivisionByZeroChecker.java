@@ -24,13 +24,15 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class DivisionByZeroChecker  implements SemanticCheck {
+public class DivisionByZeroChecker implements SemanticCheck {
 
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
+	public void beforeExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {
+	}
 
 	@Override
-	public void afterExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
+	public void afterExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {
+	}
 
 	@Override
 	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<?, ?, ?> tool, CompilationUnit unit) {
@@ -38,7 +40,8 @@ public class DivisionByZeroChecker  implements SemanticCheck {
 	}
 
 	@Override
-	public void visitGlobal(CheckToolWithAnalysisResults<?, ?, ?> tool, Unit unit, Global global, boolean instance) {}
+	public void visitGlobal(CheckToolWithAnalysisResults<?, ?, ?> tool, Unit unit, Global global, boolean instance) {
+	}
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph) {
@@ -47,7 +50,7 @@ public class DivisionByZeroChecker  implements SemanticCheck {
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Statement node) {
-		if (node instanceof  GoDiv) {
+		if (node instanceof GoDiv) {
 			GoDiv div = (GoDiv) node;
 			ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
 			Expression right = div.getParameters()[1];
@@ -58,10 +61,11 @@ public class DivisionByZeroChecker  implements SemanticCheck {
 				try {
 					for (SymbolicExpression rightExp : analysisAtRightNode.getComputedExpressions()) {
 						Constant zero = new Constant(GoIntType.INSTANCE, 0, right.getLocation());
-						BinaryExpression divByZero = new BinaryExpression(bool, rightExp, zero , BinaryOperator.COMPARISON_EQ, right.getLocation());
+						BinaryExpression divByZero = new BinaryExpression(bool, rightExp, zero,
+								BinaryOperator.COMPARISON_EQ, right.getLocation());
 						Satisfiability sat = analysisAtRightNode.satisfies(divByZero, right);
 
-						if (sat == Satisfiability.SATISFIED) 
+						if (sat == Satisfiability.SATISFIED)
 							tool.warnOn(node, "[DEFINITE-DIV-BY-ZERO] division by zero!");
 						else if (sat == Satisfiability.UNKNOWN)
 							tool.warnOn(node, "[MAYBE-DIV-BY-ZERO] maybe a division by zero!");
@@ -70,8 +74,8 @@ public class DivisionByZeroChecker  implements SemanticCheck {
 					e.printStackTrace();
 				}
 			}
-		}		
-		
+		}
+
 		return true;
 	}
 

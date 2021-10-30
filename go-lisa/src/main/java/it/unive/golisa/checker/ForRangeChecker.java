@@ -1,8 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.binary.GoLess;
 import it.unive.golisa.cfg.expression.unary.GoLength;
 import it.unive.golisa.cfg.expression.unary.GoRange;
@@ -21,14 +18,18 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ForRangeChecker implements SemanticCheck {
 
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
+	public void beforeExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {
+	}
 
 	@Override
-	public void afterExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
+	public void afterExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {
+	}
 
 	@Override
 	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<?, ?, ?> tool, CompilationUnit unit) {
@@ -36,7 +37,8 @@ public class ForRangeChecker implements SemanticCheck {
 	}
 
 	@Override
-	public void visitGlobal(CheckToolWithAnalysisResults<?, ?, ?> tool, Unit unit, Global global, boolean instance) {}
+	public void visitGlobal(CheckToolWithAnalysisResults<?, ?, ?> tool, Unit unit, Global global, boolean instance) {
+	}
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph) {
@@ -55,15 +57,16 @@ public class ForRangeChecker implements SemanticCheck {
 			Set<Type> rangedTypes = new HashSet<>();
 			GoRange range = (GoRange) node;
 			for (Expression e1 : range.getParameters()) {
-				if(e1 instanceof GoLess) {
+				if (e1 instanceof GoLess) {
 					GoLess less = (GoLess) e1;
-					for(Expression e2 : less.getParameters()) {
-						if(e2 instanceof GoLength) {
+					for (Expression e2 : less.getParameters()) {
+						if (e2 instanceof GoLength) {
 							GoLength length = (GoLength) e2;
-							for(Expression e3 : length.getParameters()) {
+							for (Expression e3 : length.getParameters()) {
 								for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
 									AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(e3);
-									InferenceSystem<InferredTypes> v = (InferenceSystem<InferredTypes>) analysisAtNode.getState().getValueState();
+									InferenceSystem<InferredTypes> v = (InferenceSystem<InferredTypes>) analysisAtNode
+											.getState().getValueState();
 									rangedTypes.addAll(((InferredTypes) v.getInferredValue()).getRuntimeTypes());
 								}
 							}

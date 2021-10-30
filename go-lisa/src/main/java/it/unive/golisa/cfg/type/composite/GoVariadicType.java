@@ -1,16 +1,15 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class GoVariadicType implements GoType {
 
@@ -18,8 +17,7 @@ public class GoVariadicType implements GoType {
 
 	private final GoType contentType;
 
-
-	public static GoVariadicType lookup(GoVariadicType type)  {
+	public static GoVariadicType lookup(GoVariadicType type) {
 		if (!variadicTypes.contains(type))
 			variadicTypes.add(type);
 		return variadicTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -36,7 +34,7 @@ public class GoVariadicType implements GoType {
 			return this.contentType.canBeAssignedTo(that.contentType);
 		}
 
-		//TODO: what about slices?
+		// TODO: what about slices?
 		return other.isUntyped();
 	}
 
@@ -47,8 +45,8 @@ public class GoVariadicType implements GoType {
 			if (!contentCommonType.isUntyped())
 				return new GoVariadicType((GoType) contentCommonType);
 		}
-		
-		//TODO: what about slices?
+
+		// TODO: what about slices?
 		return Untyped.INSTANCE;
 	}
 
@@ -73,7 +71,7 @@ public class GoVariadicType implements GoType {
 	public String toString() {
 		return "..." + contentType.toString();
 	}
-	
+
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		// TODO: default value of a variadic type?
@@ -84,7 +82,7 @@ public class GoVariadicType implements GoType {
 		Collection<Type> instances = new HashSet<>();
 		for (GoVariadicType in : variadicTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override

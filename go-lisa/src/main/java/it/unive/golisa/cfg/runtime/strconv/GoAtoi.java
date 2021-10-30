@@ -29,34 +29,36 @@ public class GoAtoi extends NativeCFG {
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				Atoi.class);
 	}
-	
+
 	public static class Atoi extends UnaryNativeCall implements PluggableStatement {
-		
+
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		public static Atoi build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Atoi(cfg, location, params[0]);
 		}
-		
+
 		public Atoi(CFG cfg, CodeLocation location, Expression exp1) {
 			super(cfg, location, "Atoi", GoIntType.INSTANCE, exp1);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
 				return entryState.bottom();
-			
-			return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoIntType.INSTANCE), getLocation()), original);
+
+			return exprState.smallStepSemantics(
+					new PushAny(Caches.types().mkSingletonSet(GoIntType.INSTANCE), getLocation()), original);
 
 		}
 	}
 }
-

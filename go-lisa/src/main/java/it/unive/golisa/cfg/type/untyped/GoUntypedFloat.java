@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.type.untyped;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -11,15 +8,18 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
-public class GoUntypedFloat implements GoType, NumericType  {
+public class GoUntypedFloat implements GoType, NumericType {
 
 	/**
-	 * Unique instance of GoUntypedInt type. 
+	 * Unique instance of GoUntypedInt type.
 	 */
 	public static final GoUntypedFloat INSTANCE = new GoUntypedFloat();
 
-	private GoUntypedFloat() {}
+	private GoUntypedFloat() {
+	}
 
 	@Override
 	public String toString() {
@@ -41,10 +41,10 @@ public class GoUntypedFloat implements GoType, NumericType  {
 		return (other instanceof GoType && ((GoType) other).isGoFloat()) || other.isUntyped() ? true : false;
 	}
 
-
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoType && ((GoType) other).isGoFloat() || other instanceof GoUntypedFloat ? other : Untyped.INSTANCE;
+		return other instanceof GoType && ((GoType) other).isGoFloat() || other instanceof GoUntypedFloat ? other
+				: Untyped.INSTANCE;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class GoUntypedFloat implements GoType, NumericType  {
 	public boolean isIntegral() {
 		return false;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

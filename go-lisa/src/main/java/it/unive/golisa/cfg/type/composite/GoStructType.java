@@ -1,10 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
@@ -16,16 +11,20 @@ import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class GoStructType implements GoType, UnitType, PointerType {
 
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
-	public static GoStructType lookup(String name, CompilationUnit unit)  {
+	public static GoStructType lookup(String name, CompilationUnit unit) {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
 	}
 
-	public static void updateReference(String name, CompilationUnit unit)  {
+	public static void updateReference(String name, CompilationUnit unit) {
 		if (structTypes.containsKey(name))
 			structTypes.put(name, new GoStructType(name, unit));
 	}
@@ -55,7 +54,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 			if (intf.isEmptyInterface())
 				return true;
-			
+
 			for (CFG methodSpec : intf.getUnit().getAllCFGs()) {
 				String methodName = methodSpec.getDescriptor().getName();
 				Type methodReturnType = methodSpec.getDescriptor().getReturnType();
@@ -64,14 +63,15 @@ public class GoStructType implements GoType, UnitType, PointerType {
 				for (CFG structMethod : getUnit().getAllCFGs()) {
 					String funcName = structMethod.getDescriptor().getName();
 					Type funcReturnType = structMethod.getDescriptor().getReturnType();
-					Parameter[] funcPars = structMethod.getDescriptor().getArgs();		
+					Parameter[] funcPars = structMethod.getDescriptor().getArgs();
 
 					if (funcName.equals(methodName) && funcReturnType.canBeAssignedTo(methodReturnType)) {
-						if (methodPars.length == 0 && funcPars.length == 1) 
+						if (methodPars.length == 0 && funcPars.length == 1)
 							match = true;
 						else {
 							for (int i = 0; i < methodPars.length; i++)
-								if (methodPars[i].getName().equals(funcPars[i +1].getName())  && methodPars[i].getStaticType().canBeAssignedTo(funcPars[i+1].getStaticType()))
+								if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
+										.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
 									match = true;
 						}
 					}
@@ -146,14 +146,14 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	public CompilationUnit getUnit() {
 		return unit;
 	}
-	
+
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoStructType in : structTypes.values())
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		Collection<Type> instances = new HashSet<>();
@@ -161,7 +161,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 			instances.add(in);
 		return instances;
 	}
-	
+
 	public static void clearAll() {
 		structTypes.clear();
 	}

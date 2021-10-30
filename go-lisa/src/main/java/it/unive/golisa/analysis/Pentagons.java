@@ -1,9 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import it.unive.golisa.analysis.tarsis.TarsisIntv;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,13 +10,16 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class Pentagons implements ValueDomain<Pentagons> {
 
 	protected ValueEnvironment<TarsisIntv> left;
 
 	protected StrictUpperBounds right;
-	
+
 	public Pentagons() {
 		this(new ValueEnvironment<TarsisIntv>(new TarsisIntv()), new StrictUpperBounds());
 	}
@@ -45,7 +44,7 @@ public class Pentagons implements ValueDomain<Pentagons> {
 		StrictUpperBounds upperBounds = right.smallStepSemantics(expression, pp);
 		return new Pentagons(TarsisIntvs, upperBounds).refine();
 	}
-	
+
 	@Override
 	public Pentagons assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		ValueEnvironment<TarsisIntv> newLeft = left.assume(expression, pp);
@@ -104,7 +103,7 @@ public class Pentagons implements ValueDomain<Pentagons> {
 
 		if (left.isTop() || right.isTop())
 			return this;
-	
+
 		Set<Identifier> refined = new HashSet<>();
 		ValueEnvironment<TarsisIntv> env = new ValueEnvironment<TarsisIntv>(new TarsisIntv());
 		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : right.getMap().entrySet()) {

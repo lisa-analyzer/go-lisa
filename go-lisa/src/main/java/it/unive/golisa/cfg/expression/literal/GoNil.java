@@ -13,8 +13,7 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
 public class GoNil extends Literal {
 
 	/**
-	 * Builds a Go nil value. The location where 
-	 * this literal appears is unknown 
+	 * Builds a Go nil value. The location where this literal appears is unknown
 	 * (i.e. no source file/line/column is available).
 	 * 
 	 * @param cfg the cfg that this literal belongs to

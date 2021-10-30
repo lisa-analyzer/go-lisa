@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -12,6 +8,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoMapType implements GoType, PointerType {
 
@@ -20,7 +19,7 @@ public class GoMapType implements GoType, PointerType {
 
 	private static final Set<GoMapType> mapTypes = new HashSet<>();
 
-	public static GoMapType lookup(GoMapType type)  {
+	public static GoMapType lookup(GoMapType type) {
 		if (!mapTypes.contains(type))
 			mapTypes.add(type);
 		return mapTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -41,22 +40,24 @@ public class GoMapType implements GoType, PointerType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		if (other instanceof GoMapType) 
-			return keyType.canBeAssignedTo(((GoMapType) other).keyType) && elementType.canBeAssignedTo(((GoMapType) other).elementType);
+		if (other instanceof GoMapType)
+			return keyType.canBeAssignedTo(((GoMapType) other).keyType)
+					&& elementType.canBeAssignedTo(((GoMapType) other).elementType);
 		return other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		if (other instanceof GoMapType) 
-			if (keyType.canBeAssignedTo(((GoMapType) other).keyType) && elementType.canBeAssignedTo(((GoMapType) other).elementType))
+		if (other instanceof GoMapType)
+			if (keyType.canBeAssignedTo(((GoMapType) other).keyType)
+					&& elementType.canBeAssignedTo(((GoMapType) other).elementType))
 				return other;
 		return Untyped.INSTANCE;
 	}
 
 	@Override
 	public String toString() {
-		return "map[" + keyType + "]"+ elementType;
+		return "map[" + keyType + "]" + elementType;
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public class GoMapType implements GoType, PointerType {
 	public boolean isPointerType() {
 		return true;
 	}
-	
+
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoNil(cfg, location);
@@ -104,7 +105,7 @@ public class GoMapType implements GoType, PointerType {
 		Collection<Type> instances = new HashSet<>();
 		for (GoMapType in : mapTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override

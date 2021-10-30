@@ -26,7 +26,7 @@ public class GoRoutine extends Statement {
 	@Override
 	public int setOffset(int offset) {
 		this.offset = offset;
-		return call.setOffset(offset +1);
+		return call.setOffset(offset + 1);
 	}
 
 	@Override
@@ -42,9 +42,11 @@ public class GoRoutine extends Statement {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-			StatementStore<A, H, V> expressions) throws SemanticException {
+	public <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					StatementStore<A, H, V> expressions) throws SemanticException {
 		// TODO semantics of go routine not supported yet
 		return entryState.top();
 	}

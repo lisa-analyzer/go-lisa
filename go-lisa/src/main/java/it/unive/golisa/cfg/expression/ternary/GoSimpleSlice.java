@@ -24,21 +24,26 @@ public class GoSimpleSlice extends TernaryNativeCall {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V>
-	ternarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, 
-			AnalysisState<A, H, V> leftState, SymbolicExpression left,
-			AnalysisState<A, H, V> middleState, SymbolicExpression middle,
-			AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
-		
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> leftState, SymbolicExpression left,
+					AnalysisState<A, H, V> middleState, SymbolicExpression middle,
+					AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
+
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (Type leftType : left.getTypes())
 			for (Type middleType : middle.getTypes())
 				for (Type rightType : right.getTypes())
-					if ((leftType.isStringType() || leftType.isUntyped()) 
-						&& (middleType.isNumericType() || middleType.isUntyped()) 
-						&& (rightType.isNumericType() || rightType.isUntyped())) {
-						AnalysisState<A, H, V> tmp = rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_SUBSTRING, getLocation()), this);
+					if ((leftType.isStringType() || leftType.isUntyped())
+							&& (middleType.isNumericType() || middleType.isUntyped())
+							&& (rightType.isNumericType() || rightType.isUntyped())) {
+						AnalysisState<A, H,
+								V> tmp = rightState.smallStepSemantics(
+										new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE),
+												left, middle, right, TernaryOperator.STRING_SUBSTRING, getLocation()),
+										this);
 						result = result.lub(tmp);
 					}
 		return result;
@@ -51,6 +56,6 @@ public class GoSimpleSlice extends TernaryNativeCall {
 //
 //		if (!right.getDynamicType().isNumericType() && ! right.getDynamicType().isUntyped())
 //			return entryState.bottom();
-		
+
 	}
 }

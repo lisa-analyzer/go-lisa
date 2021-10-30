@@ -1,30 +1,31 @@
 package it.unive.golisa.cfg;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import it.unive.golisa.scooping.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A control flow graph, that has {@link Statement}s as nodes and {@link Edge}s
- * as edges. It also can contains a mapping between the statements and the IDs visible in those statements
+ * as edges. It also can contains a mapping between the statements and the IDs
+ * visible in those statements
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class VariableScopingCFG extends CFG {
 
 	/**
-	 * The mapping between the statements and the IDs visible in those statements
+	 * The mapping between the statements and the IDs visible in those
+	 * statements
 	 */
 	private final Map<Statement, Map<String, Set<IdInfo>>> scopingMap;
-	
+
 	/**
 	 * Builds the control flow graph.
 	 * 
@@ -39,7 +40,7 @@ public class VariableScopingCFG extends CFG {
 		super(descriptor, entrypoints, adjacencyMatrix);
 		scopingMap = new HashMap<>();
 	}
-	
+
 	/**
 	 * Builds the control flow graph.
 	 * 
@@ -49,12 +50,12 @@ public class VariableScopingCFG extends CFG {
 		super(descriptor);
 		scopingMap = new HashMap<>();
 	}
-	
+
 	/**
-	 * Adds the given node to the set of nodes, and collect  IDs visible in that node
+	 * Adds the given node to the set of nodes, and collect IDs visible in that
+	 * node
 	 * 
-	 * @param node the node to add
-	 * 
+	 * @param node       the node to add
 	 * @param visibleIds the IDs visible to collect
 	 */
 	public void addNode(Statement node, Map<String, Set<IdInfo>> visibleIds) {
@@ -62,15 +63,14 @@ public class VariableScopingCFG extends CFG {
 		super.addNode(node);
 	}
 
-	
 	/**
 	 * Yields the IDs visible from a statement
 	 * 
 	 * @param node the node to add
 	 * 
-	 * @return the visible IDs  
+	 * @return the visible IDs
 	 */
-	public Map<String, Set<IdInfo>> getVisibleIds(Statement node){
+	public Map<String, Set<IdInfo>> getVisibleIds(Statement node) {
 		return scopingMap.get(node);
 	}
 }

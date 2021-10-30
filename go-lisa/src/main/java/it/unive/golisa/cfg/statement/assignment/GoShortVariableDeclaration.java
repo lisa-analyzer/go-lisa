@@ -29,24 +29,25 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
-	 * Builds a Go variable declaration with initialization,
-	 * assigning {@code expression} to {@code target},
-	 * happening at the given location in the program.
+	 * Builds a Go variable declaration with initialization, assigning
+	 * {@code expression} to {@code target}, happening at the given location in
+	 * the program.
 	 * 
 	 * @param cfg        the cfg that this declaration belongs to
-	 * @param sourceFile the source file where this declaration happens. If unknown,
-	 *                   use {@code null}
-	 * @param line       the line number where this declaration happens in the source
-	 *                   file. If unknown, use {@code -1}
-	 * @param col        the column where this statement happens in the source file.
-	 *                   If unknown, use {@code -1}
-	 * @param var	     the declared variable
+	 * @param sourceFile the source file where this declaration happens. If
+	 *                       unknown, use {@code null}
+	 * @param line       the line number where this declaration happens in the
+	 *                       source file. If unknown, use {@code -1}
+	 * @param col        the column where this statement happens in the source
+	 *                       file. If unknown, use {@code -1}
+	 * @param var        the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoShortVariableDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef var, Expression expression) {
+	public GoShortVariableDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef var,
+			Expression expression) {
 		super(cfg, new SourceCodeLocation(sourceFile, line, col), var, expression);
 	}
-	
+
 	public GoShortVariableDeclaration(CFG cfg, CodeLocation location, VariableRef var, Expression expression) {
 		super(cfg, location, var, expression);
 	}
@@ -58,23 +59,24 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 
 	@Override
 	public final <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, StatementStore<A, H, V> expressions)
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					StatementStore<A, H, V> expressions)
 					throws SemanticException {
 
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
-		
+
 		// e.g., _ := f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return right;
-			
+
 		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
 		expressions.put(getRight(), right);
 		expressions.put(getLeft(), left);
 
 		AnalysisState<A, H, V> result = entryState.bottom();
-		for (SymbolicExpression leftExp : left.getComputedExpressions()) 
+		for (SymbolicExpression leftExp : left.getComputedExpressions())
 			for (SymbolicExpression rightExp : right.getComputedExpressions()) {
 				AnalysisState<A, H, V> tmp = right.assign(leftExp, NumericalTyper.type(rightExp), this);
 				result = result.lub(tmp);
@@ -86,9 +88,9 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 		return result;
 	}
-	
+
 	public static class NumericalTyper {
-		
+
 		public static SymbolicExpression type(SymbolicExpression exp) {
 			if (exp.getDynamicType() instanceof GoUntypedInt) {
 				ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
@@ -97,9 +99,10 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 
 			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
 				ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE,  exp.getCodeLocation());
-				return new BinaryExpression(floatType, exp, typeCast, BinaryOperator.TYPE_CONV,  exp.getCodeLocation());
-			} else 
+				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE,
+						exp.getCodeLocation());
+				return new BinaryExpression(floatType, exp, typeCast, BinaryOperator.TYPE_CONV, exp.getCodeLocation());
+			} else
 				return exp;
 		}
 	}

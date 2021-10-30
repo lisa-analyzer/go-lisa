@@ -3,20 +3,23 @@ package it.unive.golisa.scooping;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 
 public class IdInfo {
-	
+
 	private final VariableRef ref;
 	private final int blockDeep;
-	
+
 	public IdInfo(VariableRef ref, int blockDeep) {
 		this.ref = ref;
 		this.blockDeep = blockDeep;
 	}
+
 	public VariableRef getRef() {
 		return ref;
 	}
+
 	public int getBlockDeep() {
 		return blockDeep;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -25,7 +28,7 @@ public class IdInfo {
 		result = prime * result + ((ref == null) ? 0 : ref.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -40,15 +43,12 @@ public class IdInfo {
 		if (ref == null) {
 			if (other.ref != null)
 				return false;
-		} else{
+		} else {
 			if (ref.getName().equals(other.ref.getName()))
 				return true;
 		}
 
 		return false;
 	}
-	
-	
-	
-	
+
 }

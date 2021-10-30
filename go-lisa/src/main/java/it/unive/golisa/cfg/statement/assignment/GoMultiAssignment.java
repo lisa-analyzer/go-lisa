@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Arrays;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -26,71 +22,78 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiAssignment extends Expression {
-	
+
 	protected final Expression[] ids;
 	protected final Expression e;
-	
-	public GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[]  ids, Expression e) {
+
+	public GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[] ids, Expression e) {
 		super(cfg, new SourceCodeLocation(filePath, line, col));
 		this.ids = ids;
 		this.e = e;
 	}
-	
+
 	@Override
 	public int setOffset(int offset) {
 		this.offset = offset;
 		ids[0].setOffset(offset + 1);
 		for (int i = 1; i < ids.length; i++)
-			ids[i].setOffset(ids[i-1].getOffset() +1);
-		return e.setOffset(ids[ids.length -1].getOffset() +1);
+			ids[i].setOffset(ids[i - 1].getOffset() + 1);
+		return e.setOffset(ids[ids.length - 1].getOffset() + 1);
 	}
-	
+
 	@Override
 	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
 		for (int i = 0; i < ids.length; i++)
 			if (!ids[i].accept(visitor, tool))
 				return false;
-		
+
 		if (!e.accept(visitor, tool))
 			return false;
-		
+
 		return visitor.visit(tool, getCFG(), this);
 	}
-	
+
 	@Override
 	public String toString() {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
-	
+
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, StatementStore<A, H, V> expressions)
-			throws SemanticException {
+	public <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					StatementStore<A, H, V> expressions)
+					throws SemanticException {
 		AnalysisState<A, H, V> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
 		AnalysisState<A, H, V> result = entryState.bottom();
 
 		for (int i = 0; i < ids.length; i++) {
-			if(ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+			if (ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
 				continue;
-				
+
 			AnalysisState<A, H, V> idState = ids[i].semantics(rightState, interprocedural, expressions);
 			expressions.put(ids[i], idState);
 
 			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
 				continue;
-			
+
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), retExp, getLocation());
-				AccessChild access = new AccessChild(Caches.types().mkUniversalSet(), dereference, new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()),
+						retExp, getLocation());
+				AccessChild access = new AccessChild(Caches.types().mkUniversalSet(), dereference,
+						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				AnalysisState<A, H, V> accessState = rightState.smallStepSemantics(access, this);
-				
+
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
 					for (SymbolicExpression idExp : idState.getComputedExpressions())
-					result = result.lub(rightState.assign(idExp, NumericalTyper.type(accessExp), this));
+						result = result.lub(rightState.assign(idExp, NumericalTyper.type(accessExp), this));
 				}
 			}
 		}

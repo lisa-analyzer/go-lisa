@@ -27,28 +27,30 @@ public class UrlPathEscape extends NativeCFG {
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				PathEscape.class);
 	}
-	
+
 	public static class PathEscape extends UnaryNativeCall implements PluggableStatement {
-		
+
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		public static PathEscape build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PathEscape(cfg, location, params[0]);
 		}
-		
+
 		public PathEscape(CFG cfg, CodeLocation location, Expression exp) {
 			super(cfg, location, "PathEscape", GoStringType.INSTANCE, exp);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 			// TODO to implement path escape method from url package
 			return entryState.smallStepSemantics(new PushAny(getRuntimeTypes(), getLocation()), original);
 		}

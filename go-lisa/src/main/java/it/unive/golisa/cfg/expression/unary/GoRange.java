@@ -18,11 +18,13 @@ public class GoRange extends UnaryNativeCall {
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "range", GoBoolType.INSTANCE, exp);
 	}
-	
+
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-			AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 		return exprState.smallStepSemantics(expr, this);
 	}
 }

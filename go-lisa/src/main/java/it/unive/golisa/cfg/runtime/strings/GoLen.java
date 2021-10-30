@@ -32,30 +32,33 @@ public class GoLen extends NativeCFG {
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				Len.class);
 	}
-	
+
 	public static class Len extends UnaryNativeCall implements PluggableStatement {
-		
+
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		public static Len build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Len(cfg, location, params[0]);
 		}
-		
+
 		public Len(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "Len", GoIntType.INSTANCE, arg);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 			ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-			return exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), original);
+			return exprState.smallStepSemantics(
+					new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), original);
 		}
 	}
 }

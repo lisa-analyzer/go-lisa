@@ -1,4 +1,3 @@
-import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
@@ -6,6 +5,7 @@ import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.numeric.Interval;
+import org.junit.Test;
 
 public class InstrumentationTest extends GoAnalysisTestExecutor {
 

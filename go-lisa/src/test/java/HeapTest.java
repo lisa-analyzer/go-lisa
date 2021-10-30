@@ -1,4 +1,3 @@
-import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
@@ -7,6 +6,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.numeric.Interval;
+import org.junit.Test;
 
 public class HeapTest extends GoAnalysisTestExecutor {
 
@@ -20,7 +20,8 @@ public class HeapTest extends GoAnalysisTestExecutor {
 	@Test
 	public void fieldSensitivepointBasedTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()));
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
+						new Interval()));
 		perform("heap/field-sensitive", "go-structs.go", conf);
 	}
 }

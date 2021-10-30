@@ -1,10 +1,5 @@
 package it.unive.golisa.cli;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-
 import it.unive.golisa.checker.BreakConsensusGoSmartContractChecker;
 import it.unive.golisa.checker.DivisionByZeroChecker;
 import it.unive.golisa.checker.ForRangeChecker;
@@ -12,6 +7,9 @@ import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.program.Program;
+import java.io.File;
+import java.io.IOException;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class GoLiSA {
 
@@ -32,7 +30,6 @@ public class GoLiSA {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
-
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-div-by-zero-check"))
@@ -56,12 +53,12 @@ public class GoLiSA {
 		try {
 			program = GoFrontEnd.processFile(filePath);
 		} catch (ParseCancellationException e) {
-			// a parsing  error occurred 
+			// a parsing error occurred
 			System.err.println("Parsing error.");
 			return;
 		} catch (IOException e) {
 			// the file does not exists
-			System.err.println("File " + filePath +  "does not exist.");
+			System.err.println("File " + filePath + "does not exist.");
 			return;
 		} catch (UnsupportedOperationException e1) {
 			// an unsupported operations has been encountered
@@ -71,7 +68,7 @@ public class GoLiSA {
 		} catch (Exception e2) {
 			// other exception
 			e2.printStackTrace();
-			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());		
+			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());
 			return;
 		}
 
@@ -83,6 +80,6 @@ public class GoLiSA {
 			// an error occurred during the analysis
 			e.printStackTrace();
 			return;
-		} 
+		}
 	}
 }

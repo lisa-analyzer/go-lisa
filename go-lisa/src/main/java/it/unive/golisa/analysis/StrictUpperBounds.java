@@ -1,10 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
@@ -20,14 +15,21 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
-public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Identifier, ExpressionInverseSet<Identifier>> implements ValueDomain<StrictUpperBounds>{
+public class StrictUpperBounds
+		extends FunctionalLattice<StrictUpperBounds, Identifier, ExpressionInverseSet<Identifier>>
+		implements ValueDomain<StrictUpperBounds> {
 
 	public StrictUpperBounds() {
 		this(new ExpressionInverseSet<>(), null);
 	}
 
-	private StrictUpperBounds(ExpressionInverseSet<Identifier> lattice, Map<Identifier, ExpressionInverseSet<Identifier>> function) {
+	private StrictUpperBounds(ExpressionInverseSet<Identifier> lattice,
+			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		super(lattice, function);
 	}
 
@@ -49,8 +51,10 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 
 					if (cons.getValue() instanceof Integer) {
 						Integer c = (Integer) cons.getValue();
-						ExpressionInverseSet<Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
-						ExpressionInverseSet<Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
+						ExpressionInverseSet<
+								Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
+						ExpressionInverseSet<
+								Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
 
 						Map<Identifier, ExpressionInverseSet<Identifier>> func;
 						if (function == null)
@@ -85,8 +89,10 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 
 					if (cons.getValue() instanceof Integer) {
 						Integer c = (Integer) cons.getValue();
-						ExpressionInverseSet<Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
-						ExpressionInverseSet<Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
+						ExpressionInverseSet<
+								Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
+						ExpressionInverseSet<
+								Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
 
 						Map<Identifier, ExpressionInverseSet<Identifier>> func;
 						if (function == null)
@@ -128,7 +134,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 	@Override
 	public StrictUpperBounds assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		Satisfiability isSat = satisfies(expression, pp);
-		if ( isSat == Satisfiability.SATISFIED)
+		if (isSat == Satisfiability.SATISFIED)
 			return this;
 		else if (isSat == Satisfiability.NOT_SATISFIED)
 			return bottom();
@@ -153,7 +159,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
-			switch(unary.getOperator()) {
+			switch (unary.getOperator()) {
 			case LOGICAL_NOT:
 				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
 			default:
@@ -176,11 +182,11 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 			Identifier left = (Identifier) binary.getLeft();
 			Identifier right = (Identifier) binary.getRight();
 
-			switch(binary.getOperator()) {
+			switch (binary.getOperator()) {
 			case COMPARISON_EQ:
 				if (getState(right).contains(left) || getState(left).contains(right))
 					return Satisfiability.NOT_SATISFIED;
-				return Satisfiability.UNKNOWN;	
+				return Satisfiability.UNKNOWN;
 			case COMPARISON_GE:
 			case COMPARISON_GT: // x > y or x >= y
 				if (getState(right).contains(left))
@@ -194,7 +200,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 			case COMPARISON_NE:
 				if (getState(right).contains(left) || getState(left).contains(right))
 					return Satisfiability.SATISFIED;
-				return Satisfiability.UNKNOWN;	
+				return Satisfiability.UNKNOWN;
 			case LOGICAL_AND:
 				return satisfies(left, pp).and(satisfies(right, pp));
 			case LOGICAL_OR:
@@ -240,7 +246,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 	@Override
 	public boolean isBottom() {
 		return lattice.isBottom() && function == null;
-	}	
+	}
 
 	private StrictUpperBounds closure() {
 		if (isTop() || isBottom())
@@ -275,7 +281,7 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 	public DomainRepresentation representation() {
 		return new MapRepresentation(function, StringRepresentation::new, StringRepresentation::new);
 	}
-	
+
 	@Override
 	public StrictUpperBounds pushScope(ScopeToken token) throws SemanticException {
 		return liftIdentifiers(id -> new OutOfScopeIdentifier(id, token, id.getCodeLocation()));
@@ -299,8 +305,8 @@ public class StrictUpperBounds extends FunctionalLattice<StrictUpperBounds, Iden
 			throw new SemanticException("Popping the scope '" + token + "' raised an error", holder.get());
 
 		return result;
-	}	
-	
+	}
+
 	private StrictUpperBounds liftIdentifiers(Function<Identifier, Identifier> lifter) throws SemanticException {
 		if (isBottom() || isTop())
 			return this;

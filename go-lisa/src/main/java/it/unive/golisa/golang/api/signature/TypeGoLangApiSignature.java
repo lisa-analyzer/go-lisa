@@ -1,12 +1,12 @@
 package it.unive.golisa.golang.api.signature;
 
-public class TypeGoLangApiSignature  extends GoLangApiSignature{
+public class TypeGoLangApiSignature extends GoLangApiSignature {
 
-	final String fullTypeSignature; //TODO: missing parsing
-	
+	final String fullTypeSignature; // TODO: missing parsing
+
 	public TypeGoLangApiSignature(String pkg, String fullTypeSignature) {
 		super(pkg);
-		
+
 		this.fullTypeSignature = fullTypeSignature;
 	}
 
@@ -43,6 +43,5 @@ public class TypeGoLangApiSignature  extends GoLangApiSignature{
 	public String getFullTypeSignature() {
 		return fullTypeSignature;
 	}
-	
-	
+
 }

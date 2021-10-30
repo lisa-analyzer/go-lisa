@@ -33,7 +33,6 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	private final boolean isTop;
 	private final boolean isBottom;
 
-
 	public RSubs() {
 		this(new RelationalSubstringDomain(), new ValueEnvironment<Interval>(new Interval()), true, false);
 	}
@@ -64,7 +63,6 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		return new RSubs(string, num.top());
 	}
 
-
 	private boolean processableByNumericalDomain(ValueExpression expression) {
 
 		if (expression instanceof Identifier) {
@@ -89,7 +87,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 
-			switch(unary.getOperator()) {
+			switch (unary.getOperator()) {
 			case LOGICAL_NOT:
 				return false;
 			case NUMERIC_NEG:
@@ -114,7 +112,8 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			case NUMERIC_NON_OVERFLOWING_MOD:
 			case NUMERIC_NON_OVERFLOWING_MUL:
 			case NUMERIC_NON_OVERFLOWING_SUB:
-				return processableByNumericalDomain((ValueExpression) left) && processableByNumericalDomain((ValueExpression) right);
+				return processableByNumericalDomain((ValueExpression) left)
+						&& processableByNumericalDomain((ValueExpression) right);
 			case COMPARISON_EQ:
 			case COMPARISON_GE:
 			case COMPARISON_GT:
@@ -143,7 +142,6 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		return false;
 	}
 
-
 	private boolean processableByStringDomain(ValueExpression expression) {
 
 		if (expression instanceof Identifier) {
@@ -168,7 +166,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 
-			switch(unary.getOperator()) {
+			switch (unary.getOperator()) {
 			case LOGICAL_NOT:
 				return false;
 			case NUMERIC_NEG:
@@ -252,7 +250,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			return Lattice.TOP_REPR;
 		if (isBottom())
 			return Lattice.BOTTOM_REPR;
-		return new PairRepresentation(string,  num, StringRepresentation::new, StringRepresentation::new);
+		return new PairRepresentation(string, num, StringRepresentation::new, StringRepresentation::new);
 	}
 
 	@Override
@@ -282,7 +280,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	public int hashCode() {	
+	public int hashCode() {
 		if (isTop())
 			return 1;
 		if (isBottom())

@@ -1,10 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -13,30 +8,34 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoFunctionType implements GoType {
 
 	private Parameter[] params;
 	private Type returnType;
-			
+
 	private static final Set<GoFunctionType> functionTypes = new HashSet<>();
 
-	public static GoFunctionType lookup(GoFunctionType type)  {
+	public static GoFunctionType lookup(GoFunctionType type) {
 		if (!functionTypes.contains(type))
 			functionTypes.add(type);
 		return functionTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
-	
+
 	public GoFunctionType(Parameter[] params, Type returnType) {
 		this.params = params;
 		this.returnType = returnType;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "func (" + Arrays.toString(params) + ")" + returnType;	
+		return "func (" + Arrays.toString(params) + ")" + returnType;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -82,12 +81,12 @@ public class GoFunctionType implements GoType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoNil(cfg, location);
 	}
-	
+
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoFunctionType in : functionTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override

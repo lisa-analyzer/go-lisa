@@ -21,12 +21,14 @@ public class GoCollectionAccess extends BinaryNativeCall {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> leftState,
+					SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
 					throws SemanticException {
 		AnalysisState<A, H, V> result = entryState.bottom();
-
 
 //		for (Type type : left.getTypes()) {
 //			if (type.isStringType()) {
@@ -39,14 +41,18 @@ public class GoCollectionAccess extends BinaryNativeCall {
 //									left, 
 //									right, next, TernaryOperator.STRING_SUBSTRING, getLocation()), this));
 //			} else if (type.isPointerType()) {
-				AnalysisState<A, H, V> rec = entryState.smallStepSemantics(left, this);
-				for (SymbolicExpression expr : rec.getComputedExpressions()) {	
-					AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), new HeapDereference(getRuntimeTypes(), expr, getLocation()), right, getLocation()), this);
-					result = result.lub(tmp);
+		AnalysisState<A, H, V> rec = entryState.smallStepSemantics(left, this);
+		for (SymbolicExpression expr : rec.getComputedExpressions()) {
+			AnalysisState<A, H,
+					V> tmp = rec.smallStepSemantics(
+							new AccessChild(getRuntimeTypes(),
+									new HeapDereference(getRuntimeTypes(), expr, getLocation()), right, getLocation()),
+							this);
+			result = result.lub(tmp);
 //				}
-			}
+		}
 //		}
-		
+
 		return result;
 	}
 }

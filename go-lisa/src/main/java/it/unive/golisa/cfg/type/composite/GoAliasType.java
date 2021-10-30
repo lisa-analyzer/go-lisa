@@ -1,22 +1,21 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GoAliasType implements GoType {
 
 	public static final Map<String, GoAliasType> aliases = new HashMap<>();
 
-	public static GoAliasType lookup(String name, GoAliasType type)  {
+	public static GoAliasType lookup(String name, GoAliasType type) {
 		if (!aliases.containsKey(name))
 			aliases.put(name, type);
 		return aliases.get(name);
@@ -40,12 +39,14 @@ public class GoAliasType implements GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return (other instanceof GoAliasType && ((GoAliasType) other).alias.equals(alias) && baseType.canBeAssignedTo(((GoAliasType) other).baseType)) || other.isUntyped();
+		return (other instanceof GoAliasType && ((GoAliasType) other).alias.equals(alias)
+				&& baseType.canBeAssignedTo(((GoAliasType) other).baseType)) || other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		if (other instanceof GoAliasType && ((GoAliasType) other).alias.equals(alias) && baseType.canBeAssignedTo(((GoAliasType) other).baseType))
+		if (other instanceof GoAliasType && ((GoAliasType) other).alias.equals(alias)
+				&& baseType.canBeAssignedTo(((GoAliasType) other).baseType))
 			return other;
 		return Untyped.INSTANCE;
 	}

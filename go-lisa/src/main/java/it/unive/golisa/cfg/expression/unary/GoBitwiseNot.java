@@ -16,23 +16,27 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 
 public class GoBitwiseNot extends UnaryNativeCall {
-	
+
 	public GoBitwiseNot(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "^", exp.getStaticType(), exp);
 	}
-	
+
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
-			SymbolicExpression expr) throws SemanticException {
-		
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState,
+					SymbolicExpression expr) throws SemanticException {
+
 		Type exprType = expr.getDynamicType();
 		if (!exprType.isUntyped() || (exprType.isNumericType() && !exprType.asNumericType().isIntegral()))
 			return entryState.bottom();
 
-		
-		// TODO: LiSA has not symbolic expression handling bitwise, return top at the moment
-		return exprState.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(expr.getDynamicType()), getLocation()), this);	
+		// TODO: LiSA has not symbolic expression handling bitwise, return top
+		// at the moment
+		return exprState.smallStepSemantics(
+				new PushAny(Caches.types().mkSingletonSet(expr.getDynamicType()), getLocation()), this);
 	}
 
 }

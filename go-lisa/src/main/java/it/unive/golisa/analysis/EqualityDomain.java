@@ -1,12 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,14 +13,22 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
-public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier, ExpressionInverseSet<Identifier>> implements ValueDomain<EqualityDomain> {
+public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier, ExpressionInverseSet<Identifier>>
+		implements ValueDomain<EqualityDomain> {
 
 	public EqualityDomain() {
 		this(new ExpressionInverseSet<>(), null);
 	}
 
-	private EqualityDomain(ExpressionInverseSet<Identifier> lattice, Map<Identifier, ExpressionInverseSet<Identifier>> function) {
+	private EqualityDomain(ExpressionInverseSet<Identifier> lattice,
+			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		super(lattice, function);
 	}
 
@@ -55,7 +56,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	@Override
 	public EqualityDomain assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		Satisfiability isSat = satisfies(expression, pp);
-		if ( isSat == Satisfiability.SATISFIED)
+		if (isSat == Satisfiability.SATISFIED)
 			return this;
 		else if (isSat == Satisfiability.NOT_SATISFIED)
 			return bottom();
@@ -80,7 +81,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 
-			switch(unary.getOperator()) {
+			switch (unary.getOperator()) {
 			case LOGICAL_NOT:
 				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
 			default:
@@ -97,7 +98,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 			Identifier left = (Identifier) binary.getLeft();
 			Identifier right = (Identifier) binary.getRight();
 
-			switch(binary.getOperator()) {
+			switch (binary.getOperator()) {
 			case COMPARISON_GE:
 			case COMPARISON_EQ:
 			case COMPARISON_LE:
@@ -109,7 +110,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 			case COMPARISON_GT:
 				if (getState(left).contains(right) || getState(right).contains(left))
 					return Satisfiability.NOT_SATISFIED;
-				return Satisfiability.UNKNOWN;			
+				return Satisfiability.UNKNOWN;
 			case LOGICAL_AND:
 				return satisfies((ValueExpression) left, pp).and(satisfies((ValueExpression) right, pp));
 			case LOGICAL_OR:
@@ -179,8 +180,8 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 			throw new SemanticException("Popping the scope '" + token + "' raised an error", holder.get());
 
 		return result;
-	}	
-	
+	}
+
 	private EqualityDomain liftIdentifiers(Function<Identifier, Identifier> lifter) throws SemanticException {
 		if (isBottom() || isTop())
 			return this;

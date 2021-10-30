@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -12,6 +8,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoArrayType implements GoType, PointerType {
 
@@ -20,7 +19,7 @@ public class GoArrayType implements GoType, PointerType {
 
 	private static final Set<GoArrayType> arrayTypes = new HashSet<>();
 
-	public static GoArrayType lookup(GoArrayType type)  {
+	public static GoArrayType lookup(GoArrayType type) {
 		if (!arrayTypes.contains(type))
 			arrayTypes.add(type);
 
@@ -43,14 +42,16 @@ public class GoArrayType implements GoType, PointerType {
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		if (other instanceof GoArrayType)
-			return contentType.canBeAssignedTo(((GoArrayType) other).contentType) && length.equals(((GoArrayType) other).length);
+			return contentType.canBeAssignedTo(((GoArrayType) other).contentType)
+					&& length.equals(((GoArrayType) other).length);
 		return false;
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
 		if (other instanceof GoArrayType)
-			if (contentType.canBeAssignedTo(((GoArrayType) other).contentType) && length.equals(((GoArrayType) other).length))
+			if (contentType.canBeAssignedTo(((GoArrayType) other).contentType)
+					&& length.equals(((GoArrayType) other).length))
 				return other;
 		return Untyped.INSTANCE;
 	}
@@ -99,12 +100,12 @@ public class GoArrayType implements GoType, PointerType {
 
 		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
-	
+
 	@Override
 	public boolean isPointerType() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean isArrayType() {
 		return true;
@@ -114,7 +115,7 @@ public class GoArrayType implements GoType, PointerType {
 		Collection<Type> instances = new HashSet<>();
 		for (GoArrayType in : arrayTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override
@@ -124,7 +125,7 @@ public class GoArrayType implements GoType, PointerType {
 			instances.add(in);
 		return instances;
 	}
-	
+
 	public static void clearAll() {
 		arrayTypes.clear();
 	}

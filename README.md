@@ -1,5 +1,5 @@
 # GoLiSA
-GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications (NFM 2022)
+GoLiSA: A Static Analyzer for Go Smart Contracts and DApps (NFM 2022)
 
 ## How to use GoLiSA
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/cli/GoLiSA.java) and it expects two paramaters:

@@ -20,9 +20,9 @@ dependencies {
     antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
     implementation 'com.github.unive-ssv:tarsis:1.0'
-	implementation 'com.github.unive-ssv:lisa-sdk:0.1b2'
-	implementation 'com.github.unive-ssv:lisa-core:0.1b2'
-	implementation 'com.github.unive-ssv:lisa-imp:0.1b2'
+	implementation 'com.github.unive-ssv:lisa-sdk:0.1b3'
+	implementation 'com.github.unive-ssv:lisa-core:0.1b3'
+	implementation 'com.github.unive-ssv:lisa-imp:0.1b3'
     applicationDefaultJvmArgs = ["-Djava.library.path=/Users/vince/apron/lib:/usr/local/opt/gmp/lib -ea"]
     
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'

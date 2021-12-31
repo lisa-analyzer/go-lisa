@@ -160,6 +160,8 @@ import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
+import it.unive.golisa.cfg.statement.block.CloseBlock;
+import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
@@ -450,7 +452,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
-		blockDeep++;
 
 		if (ctx.statementList() == null) {
 			NoOp noop = new NoOp(cfg, locationOf(ctx.R_CURLY()));
@@ -458,12 +459,29 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			updateVisileIds(backup, noop);
 			return Pair.of(noop, noop);
 		}
-
+		
+		blockDeep++;
+		
 		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
+		if(isReturnStmt(res.getRight()))
+			return res;
+		
+		OpenBlock open = new OpenBlock(cfg, locationOf(ctx.L_CURLY()));
+		cfg.addNode(open);
+		
+		CloseBlock close = new CloseBlock(cfg, locationOf(ctx.R_CURLY()), open);
+		cfg.addNode(close);
+		
+		addEdge(new SequentialEdge(open, res.getLeft()));
+		addEdge(new SequentialEdge(res.getRight(), close));		
+		
 		blockDeep--;
-		return res;
+		
+		return Pair.of(open, close);
 	}
+	
+
 
 	protected void updateVisileIds(Map<String, Set<IdInfo>> backup, Statement last) {
 
@@ -1576,6 +1594,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.typeName() == null) {
 			Type returnType = ctx.result() == null? Untyped.INSTANCE : visitResult(ctx.result());
 			String name = ctx.IDENTIFIER().getText();
+
 			Parameter[] params = visitParameters(ctx.parameters());
 			//			return new GoMethodSpecification(name, returnType, params);
 
@@ -2229,4 +2248,5 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// TODO range clause (see issue #4)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
 	}
+	
 }

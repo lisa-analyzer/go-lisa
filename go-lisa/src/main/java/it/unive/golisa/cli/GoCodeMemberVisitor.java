@@ -160,6 +160,7 @@ import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
+import it.unive.golisa.cfg.statement.block.BlockScope;
 import it.unive.golisa.cfg.statement.block.CloseBlock;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.GoType;
@@ -448,11 +449,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return new GoTypesTuple(visitParameters(ctx.parameters()));
 		}
 	}
-
+	
+	
+	LinkedList<BlockScope> blockList = new LinkedList<>();
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
-
+		blockList.addLast(new BlockScope());
 		if (ctx.statementList() == null) {
 			NoOp noop = new NoOp(cfg, locationOf(ctx.R_CURLY()));
 			cfg.addNode(noop);
@@ -649,6 +652,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
 						visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
 						visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
+						blockList.getLast().addVarSpec(left[i]);
 					}
 
 			Expression right = visitExpression(exps.expression(0));
@@ -656,6 +660,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			// We can safely reause the multi-short variable declaration class
 			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left, right);
 			cfg.addNode(asg, visibleIds);
+			
 			return Pair.of(asg, asg);
 		} else {
 
@@ -682,6 +687,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				if(!GoLangUtils.refersToBlankIdentifier(target)) {
 					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
 					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
+					blockList.getLast().addVarSpec(target);
 				}
 
 				if (lastStmt != null)
@@ -911,10 +917,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
 			asg = new GoAssignment(cfg, location, exp, 
-					new GoSum(cfg, location, exp,  new GoInteger(cfg, location, 1)));		
+					new GoSum(cfg, location, exp,  new GoInteger(cfg, location, 1)), blockList);		
 		else
 			asg = new GoAssignment(cfg, location, exp, 
-					new GoSubtraction(cfg, location, exp, new GoInteger(cfg, location, 1)));
+					new GoSubtraction(cfg, location, exp, new GoInteger(cfg, location, 1)), blockList);
 
 		cfg.addNode(asg, visibleIds);
 		return Pair.of(asg, asg);
@@ -939,7 +945,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression[] left = visitExpressionList(ids);
 			Expression right = visitExpression(exps.expression(0));
 
-			GoMultiAssignment asg = new GoMultiAssignment(cfg, file, line, col, left, right);
+			GoMultiAssignment asg = new GoMultiAssignment(cfg, file, line, col, left, right, blockList);
 			cfg.addNode(asg, visibleIds);
 			return Pair.of(asg, asg);
 		} else {
@@ -955,7 +961,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Expression lhs = visitExpression(ids.expression(i));
 				Expression exp = buildExpressionFromAssignment(new SourceCodeLocation(file, line, col), lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
-				GoAssignment asg = new GoAssignment(cfg, locationOf(ctx), lhs, exp);
+				GoAssignment asg = new GoAssignment(cfg, locationOf(ctx), lhs, exp, blockList);
 				cfg.addNode(asg, visibleIds);
 
 				if (lastStmt != null)
@@ -1069,6 +1075,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression right = visitExpression(exps.expression(0));
 
 			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left, right);
+			
+			for(VariableRef ref : left)
+				if (!GoLangUtils.refersToBlankIdentifier(ref))
+					blockList.getLast().addVarSpec(ref);
+			
 			cfg.addNode(asg, visibleIds);
 			return Pair.of(asg, asg);
 		} else {
@@ -1094,6 +1105,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
 				cfg.addNode(asg, visibleIds);
+				
+				if (!GoLangUtils.refersToBlankIdentifier(target))
+					blockList.getLast().addVarSpec(target);
+
 
 				if (lastStmt != null)
 					addEdge(new SequentialEdge(lastStmt, asg));
@@ -1450,8 +1465,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				} else {
 					idxRange = rangeIds[0];
 					idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
+					if (!GoLangUtils.refersToBlankIdentifier(idxRange))
+						blockList.getLast().addVarSpec(idxRange);
 					idxPost = new GoAssignment(cfg, location, idxRange, 
-							new GoSum(cfg, location, idxRange, one));
+							new GoSum(cfg, location, idxRange, one), blockList);
 
 					// Index and values are used in range
 					if (rangeIds.length == 2) {
@@ -1460,9 +1477,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// Creates the initialization statement for val range variable
 						valInit = new GoShortVariableDeclaration(cfg, location, valRange,
 								new GoCollectionAccess(cfg, location, rangedCollection, zero));
+						
+						if (!GoLangUtils.refersToBlankIdentifier(valRange))
+							blockList.getLast().addVarSpec(valRange);
 
 						valPost = new GoAssignment(cfg, location, valRange, 
-								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList);
 					} 
 				}
 			} else if (range.expressionList() != null) {
@@ -1475,17 +1495,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						throw new IllegalStateException("range variables must  be identifiers.");
 
 					idxRange = (VariableRef) rangeIds[0];
-					idxInit = new GoAssignment(cfg, locationOf(ctx), idxRange, zero);
+					idxInit = new GoAssignment(cfg, locationOf(ctx), idxRange, zero, blockList);
 
 					if (rangeIds.length == 2) {
 						valRange = (VariableRef) rangeIds[1];
 
 						// Creates the initialization statements for idx and val range variable
 						valInit = new GoAssignment(cfg, location, valRange,
-								new GoCollectionAccess(cfg, location, rangedCollection, zero));
+								new GoCollectionAccess(cfg, location, rangedCollection, zero), blockList);
 
 						valPost = new GoAssignment(cfg, location, valRange, 
-								new GoCollectionAccess(cfg, location, rangedCollection, idxRange));
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList);
 					} 
 				}				
 			} else 
@@ -2116,7 +2136,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					GoMultiShortVariableDeclaration shortDecl =
 							new GoMultiShortVariableDeclaration(cfg, typeLoc.getSourceFile(), typeLoc.getLine(), typeLoc.getCol(), ids, 
 									new GoTypeAssertion(cfg, typeLoc, typeSwitchExp, types[j]));
-
+					
+					for( VariableRef id : ids)
+						if (!GoLangUtils.refersToBlankIdentifier(id))
+							blockList.getLast().addVarSpec(id);
+					
 					caseBooleanGuard = new GoEqual(cfg, typeLoc, typeSwitchCheck, 
 							new GoBoolean(cfg, typeLoc, true));
 

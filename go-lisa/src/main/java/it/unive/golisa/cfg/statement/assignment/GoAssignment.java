@@ -1,7 +1,14 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+import java.util.Optional;
+
+import it.unive.golisa.cfg.statement.block.BlockScope;
+import it.unive.golisa.cli.GoSyntaxException;
+import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
@@ -12,10 +19,13 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
 
 public class GoAssignment extends BinaryExpression {
+	
+	private Optional<VariableRef> varSpec;
 	/**
 	 * Builds the assignment, assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
@@ -26,8 +36,16 @@ public class GoAssignment extends BinaryExpression {
 	 * @param target     the target of the assignment
 	 * @param expression the expression to assign to {@code target}
 	 */
-	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression) {
+	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression, List<BlockScope> listBlock) {
 		super(cfg, location, target, expression);
+		this.varSpec = computeVarSpec(getLeft(), listBlock);
+	}
+
+	private Optional<VariableRef> computeVarSpec(Expression left, List<BlockScope> listBlock) {
+		Optional<VariableRef> opt = BlockScope.findLastVariableRefInBlockList(listBlock, left);
+		if(opt.isEmpty() && !GoLangUtils.refersToBlankIdentifier(left))
+			throw new GoSyntaxException( "Unable to find variable declaration for  '" + left + "' present at " + left.getLocation());
+		return opt;
 	}
 
 	@Override
@@ -77,6 +95,11 @@ public class GoAssignment extends BinaryExpression {
 			result = result.forgetIdentifiers(getRight().getMetaVariables());
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-		return result;
+		
+		//update result in the last var declaration
+		if(varSpec.isPresent())
+			result = result.pushScope(new ScopeToken(varSpec.get()));
+
+	return result;
 	}
 }

@@ -1,40 +1,54 @@
 package it.unive.golisa.cfg.statement.block;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.Optional;
-import java.util.Set;
 
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 
+/**
+ * The class is used to track the variable declaration in a block
+ * 
+ */
 public class BlockScope {
 
-	private final Set<VariableRef> refs;
+	public enum DeclarationType {
+		CONSTANT,
+		VARIABLE,
+		SHORT_VARIABLE,
+		MULTI_SHORT_VARIABLE, 
+	}
+	
+	private final Map<VariableRef, DeclarationType> refs;
 	
 	public BlockScope() {
-		refs = new HashSet<>();
+		refs = new HashMap<>();
 	}
 	
-	public void addVarSpec(VariableRef ref) {
-		refs.add(ref);	
+	public void addVarDeclaration(VariableRef ref, DeclarationType  type) {
+		refs.put(ref, type);	
 	}
 
-	public Set<VariableRef> getVarsSpec() {
+	private Map<VariableRef, DeclarationType> getVarsDeclarations() {
 		return refs;
 	}
 	
-	public static Optional<VariableRef> findLastVariableRefInBlockList(List<BlockScope> listBlock, Expression exp) {
+	public static Optional<Pair<VariableRef, DeclarationType>> findLastVariableDeclarationInBlockList(List<BlockScope> listBlock, Expression exp) {
 		
 		if(exp instanceof VariableRef) {
 			VariableRef ref = (VariableRef) exp;
 			for(int i = listBlock.size()-1; i >= 0; i--) //search backward
-				for (VariableRef vr : listBlock.get(i).getVarsSpec())
-					if(vr.getName().equals(ref.getName()))
-							return Optional.of(vr);
+				for (Entry<VariableRef, DeclarationType> e : listBlock.get(i).getVarsDeclarations().entrySet())
+					if(e.getKey().getName().equals(ref.getName()))
+							return Optional.of(Pair.of(e.getKey(),e.getValue()));
 		}
 		return Optional.empty();
-	}
-	
+	}	
 	
 }

@@ -161,6 +161,7 @@ import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.block.BlockScope;
+import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
 import it.unive.golisa.cfg.statement.block.CloseBlock;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.GoType;
@@ -652,7 +653,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
 						visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
 						visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
-						blockList.getLast().addVarSpec(left[i]);
+						blockList.getLast().addVarDeclaration(left[i], DeclarationType.MULTI_SHORT_VARIABLE);
 					}
 
 			Expression right = visitExpression(exps.expression(0));
@@ -687,7 +688,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				if(!GoLangUtils.refersToBlankIdentifier(target)) {
 					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
 					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
-					blockList.getLast().addVarSpec(target);
+					blockList.getLast().addVarDeclaration(target, DeclarationType.VARIABLE);
 				}
 
 				if (lastStmt != null)
@@ -861,6 +862,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if(!GoLangUtils.refersToBlankIdentifier(target)) {
 				visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
 				visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
+				blockList.getLast().addVarDeclaration(target, DeclarationType.CONSTANT);
 			}
 
 			if (lastStmt != null)
@@ -1078,7 +1080,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			
 			for(VariableRef ref : left)
 				if (!GoLangUtils.refersToBlankIdentifier(ref))
-					blockList.getLast().addVarSpec(ref);
+					blockList.getLast().addVarDeclaration(ref, DeclarationType.MULTI_SHORT_VARIABLE);
 			
 			cfg.addNode(asg, visibleIds);
 			return Pair.of(asg, asg);
@@ -1107,7 +1109,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				cfg.addNode(asg, visibleIds);
 				
 				if (!GoLangUtils.refersToBlankIdentifier(target))
-					blockList.getLast().addVarSpec(target);
+					blockList.getLast().addVarDeclaration(target, DeclarationType.SHORT_VARIABLE);
 
 
 				if (lastStmt != null)
@@ -1466,7 +1468,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					idxRange = rangeIds[0];
 					idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
 					if (!GoLangUtils.refersToBlankIdentifier(idxRange))
-						blockList.getLast().addVarSpec(idxRange);
+						blockList.getLast().addVarDeclaration(idxRange, DeclarationType.SHORT_VARIABLE);
 					idxPost = new GoAssignment(cfg, location, idxRange, 
 							new GoSum(cfg, location, idxRange, one), blockList);
 
@@ -1479,7 +1481,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 								new GoCollectionAccess(cfg, location, rangedCollection, zero));
 						
 						if (!GoLangUtils.refersToBlankIdentifier(valRange))
-							blockList.getLast().addVarSpec(valRange);
+							blockList.getLast().addVarDeclaration(valRange, DeclarationType.SHORT_VARIABLE);
 
 						valPost = new GoAssignment(cfg, location, valRange, 
 								new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList);
@@ -2139,7 +2141,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					
 					for( VariableRef id : ids)
 						if (!GoLangUtils.refersToBlankIdentifier(id))
-							blockList.getLast().addVarSpec(id);
+							blockList.getLast().addVarDeclaration(id, DeclarationType.MULTI_SHORT_VARIABLE);
 					
 					caseBooleanGuard = new GoEqual(cfg, typeLoc, typeSwitchCheck, 
 							new GoBoolean(cfg, typeLoc, true));

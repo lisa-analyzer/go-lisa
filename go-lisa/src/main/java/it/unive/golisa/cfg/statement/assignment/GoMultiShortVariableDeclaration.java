@@ -1,10 +1,11 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -16,12 +17,12 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		super(cfg, filePath, line, col, ids, e, computeSetVarSpec(ids));
 	}
 	
-	private static Set<VariableRef> computeSetVarSpec(Expression[] ids) {
+	private static Map<VariableRef, DeclarationType> computeSetVarSpec(Expression[] ids) {
 		
-	Set<VariableRef> set = new HashSet<VariableRef>();
+	Map<VariableRef, DeclarationType> set = new HashMap<>();
 	 for(Expression id : ids)
 		 if(!GoLangUtils.refersToBlankIdentifier(id) && id instanceof VariableRef)
-			 set.add((VariableRef) id);
+			 set.put((VariableRef) id, DeclarationType.MULTI_SHORT_VARIABLE);
 		return set;
 	}
 

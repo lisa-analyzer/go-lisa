@@ -3,7 +3,10 @@ package it.unive.golisa.cfg.statement.assignment;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.cfg.statement.block.BlockScope;
+import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
 import it.unive.golisa.cli.GoSyntaxException;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
@@ -25,7 +28,7 @@ import it.unive.lisa.symbolic.value.Identifier;
 
 public class GoAssignment extends BinaryExpression {
 	
-	private Optional<VariableRef> varSpec;
+	private Optional<Pair<VariableRef, DeclarationType>> varDeclaration;
 	/**
 	 * Builds the assignment, assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
@@ -38,13 +41,15 @@ public class GoAssignment extends BinaryExpression {
 	 */
 	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression, List<BlockScope> listBlock) {
 		super(cfg, location, target, expression);
-		this.varSpec = computeVarSpec(getLeft(), listBlock);
+		this.varDeclaration = computeVarDeclaration(getLeft(), listBlock);
 	}
 
-	private Optional<VariableRef> computeVarSpec(Expression left, List<BlockScope> listBlock) {
-		Optional<VariableRef> opt = BlockScope.findLastVariableRefInBlockList(listBlock, left);
+	private Optional<Pair<VariableRef, DeclarationType>> computeVarDeclaration(Expression left, List<BlockScope> listBlock) {
+		Optional<Pair<VariableRef, DeclarationType>> opt = BlockScope.findLastVariableDeclarationInBlockList(listBlock, left);
 		if(opt.isEmpty() && !GoLangUtils.refersToBlankIdentifier(left))
 			throw new GoSyntaxException( "Unable to find variable declaration for  '" + left + "' present at " + left.getLocation());
+		if(opt.isPresent() && opt.get().getValue() == DeclarationType.CONSTANT)
+			throw new GoSyntaxException( "Cannot assign a value to '"+ opt.get().getKey().getName() +"' at "+ left.getLocation()+ ", because is declared as 'const' at "+opt.get().getKey().getLocation());
 		return opt;
 	}
 
@@ -97,8 +102,8 @@ public class GoAssignment extends BinaryExpression {
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 		
 		//update result in the last var declaration
-		if(varSpec.isPresent())
-			result = result.pushScope(new ScopeToken(varSpec.get()));
+		if(varDeclaration.isPresent())
+			result = result.pushScope(new ScopeToken(varDeclaration.get().getKey()));
 
 	return result;
 	}

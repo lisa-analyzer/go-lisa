@@ -1,15 +1,18 @@
 package it.unive.golisa.cfg.statement.assignment;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockScope;
+import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.cli.GoSyntaxException;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -38,31 +41,31 @@ public class GoMultiAssignment extends Expression {
 	
 	protected final Expression[] ids;
 	protected final Expression e;
-	private Set<VariableRef> setVarSpec;
+	private Map<VariableRef, DeclarationType> varDeclarations;
 	
 	public GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[]  ids, Expression e, List<BlockScope> listBlock) {
 		super(cfg, new SourceCodeLocation(filePath, line, col));
 		this.ids = ids;
 		this.e = e;
-		this.setVarSpec = computeVarSpecs(listBlock);
+		this.varDeclarations = computeVarSpecs(listBlock);
 	}
 	
-	protected GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[]  ids, Expression e, Set<VariableRef> setVarSpec) {
+	protected GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[]  ids, Expression e, Map<VariableRef, DeclarationType> setVarSpec) {
 		super(cfg, new SourceCodeLocation(filePath, line, col));
 		this.ids = ids;
 		this.e = e;
-		this.setVarSpec = setVarSpec;
+		this.varDeclarations = setVarSpec;
 	}
 
-	private Set<VariableRef> computeVarSpecs(List<BlockScope> listBlock) {
-		Set<VariableRef> set = new HashSet<>();
+	private Map<VariableRef, DeclarationType> computeVarSpecs(List<BlockScope> listBlock) {
+		Map<VariableRef, DeclarationType> map = new HashMap<>();
 		for(Expression id : ids) {
-			Optional<VariableRef> opt = BlockScope.findLastVariableRefInBlockList(listBlock, id);
+			Optional<Pair<VariableRef, DeclarationType>> opt = BlockScope.findLastVariableDeclarationInBlockList(listBlock, id);
 			if(opt.isEmpty() && !GoLangUtils.refersToBlankIdentifier(id))
 				throw new GoSyntaxException( "Unable to find variable declaration for the expression '" + id + "' present at " + id.getLocation());
-			opt.ifPresent(ref -> set.add(ref));
+			opt.ifPresent(p -> map.put(p.getKey(), DeclarationType.MULTI_SHORT_VARIABLE));
 		}
-		return set;
+		return map;
 	}
 	
 	@Override
@@ -123,8 +126,9 @@ public class GoMultiAssignment extends Expression {
 		}
 
 		//update values of the last var declarations
-		for(VariableRef var : setVarSpec)
-			result = result.pushScope(new ScopeToken(var));
+		for(Entry<VariableRef, DeclarationType> e : varDeclarations.entrySet())
+			if(e.getValue() != DeclarationType.CONSTANT)
+				result = result.pushScope(new ScopeToken(e.getKey()));
 		
 		return result;
 	}

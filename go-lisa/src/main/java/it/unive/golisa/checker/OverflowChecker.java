@@ -20,6 +20,8 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -39,29 +41,13 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class OverflowChecker implements SemanticCheck {
+public class OverflowChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron>,
+		MonolithicHeap, Apron> {
 
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
-
-	@Override
-	public void afterExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
-
-	@Override
-	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<?, ?, ?> tool, CompilationUnit unit) {
-		return true;
-	}
-
-	@Override
-	public void visitGlobal(CheckToolWithAnalysisResults<?, ?, ?> tool, Unit unit, Global global, boolean instance) {}
-
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph) {
-		return true;
-	}
-
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Statement node) {
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CFG graph, Statement node){
 
 		Expression leftExpression = null;
 		Type vType = null;
@@ -142,11 +128,6 @@ public class OverflowChecker implements SemanticCheck {
 		return true;
 	}
 
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Edge edge) {
-		return true;
-	}
-
 	/*
 	 * Min-max numerical type values
 	 * 
@@ -205,5 +186,49 @@ public class OverflowChecker implements SemanticCheck {
 			return new Constant(type, (long) -9223372036854775808L, SyntheticLocation.INSTANCE);
 
 		return new Constant(type, 0, SyntheticLocation.INSTANCE);
+	}
+
+	@Override
+	public void beforeExecution(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void afterExecution(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean visitCompilationUnit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CompilationUnit unit) {
+		return true;
+
+	}
+
+	@Override
+	public void visitGlobal(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			Unit unit, Global global, boolean instance) { }
+
+	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CFG graph) {
+		return true;
+	}
+
+
+
+	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CFG graph, Edge edge) {
+
+		return true;
 	}
 }

@@ -9,6 +9,8 @@ import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
@@ -22,35 +24,13 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 
-public class ForRangeChecker implements SemanticCheck {
-
-	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
-
-	@Override
-	public void afterExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
-
-	@Override
-	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<?, ?, ?> tool, CompilationUnit unit) {
-		return true;
-	}
-
-	@Override
-	public void visitGlobal(CheckToolWithAnalysisResults<?, ?, ?> tool, Unit unit, Global global, boolean instance) {}
-
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph) {
-		return true;
-	}
-
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Edge edge) {
-		return true;
-	}
+public class ForRangeChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+MonolithicHeap, InferenceSystem<InferredTypes>> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Statement node) {
+	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+	CFG graph, Statement node) {
 		if (node instanceof GoRange) {
 			Set<Type> rangedTypes = new HashSet<>();
 			GoRange range = (GoRange) node;
@@ -79,6 +59,43 @@ public class ForRangeChecker implements SemanticCheck {
 				}
 
 		}
+		return true;
+	}
+
+	@Override
+	public void beforeExecution(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void afterExecution(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool) {}
+
+	@Override
+	public boolean visitCompilationUnit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			CompilationUnit unit) {
+		return true;
+	}
+
+	@Override
+	public void visitGlobal(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			Unit unit, Global global, boolean instance) { }
+
+	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			CFG graph) {
+		return true;
+	}
+
+	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			CFG graph, Edge edge) {
 		return true;
 	}
 }

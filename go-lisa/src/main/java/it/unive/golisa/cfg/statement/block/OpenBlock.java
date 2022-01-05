@@ -10,11 +10,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 public class OpenBlock extends Statement {
@@ -57,8 +54,6 @@ public class OpenBlock extends Statement {
 			StatementStore<A, H, V> expressions) throws SemanticException {
 		
 		AnalysisState<A, H, V> scope = entryState.pushScope(new ScopeToken(this));
-		scope = scope.lub(entryState);		
-		return scope;
+		return scope.lub(entryState);
 	}
-
 }

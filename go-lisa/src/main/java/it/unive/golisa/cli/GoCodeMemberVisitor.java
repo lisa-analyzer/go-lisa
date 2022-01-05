@@ -456,7 +456,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
-		blockList.addLast(new BlockScope());
 		if (ctx.statementList() == null) {
 			NoOp noop = new NoOp(cfg, locationOf(ctx.R_CURLY()));
 			cfg.addNode(noop);
@@ -466,22 +465,25 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		
 		blockDeep++;
 		
-		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
-		updateVisileIds(backup, res.getRight());
-		if(isReturnStmt(res.getRight()))
-			return res;
-		
 		OpenBlock open = new OpenBlock(cfg, locationOf(ctx.L_CURLY()));
 		cfg.addNode(open);
 		
 		CloseBlock close = new CloseBlock(cfg, locationOf(ctx.R_CURLY()), open);
 		cfg.addNode(close);
 		
+		blockList.addLast(new BlockScope(open));
+
+		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
+		updateVisileIds(backup, res.getRight());
+		if(isReturnStmt(res.getRight()))
+			return res;
+		
 		addEdge(new SequentialEdge(open, res.getLeft()));
 		addEdge(new SequentialEdge(res.getRight(), close));		
 		
 		blockDeep--;
 		
+		blockList.removeLast();
 		return Pair.of(open, close);
 	}
 	
@@ -919,13 +921,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// e.g., x++ -> x = x + 1 and x-- -> x = x - 1
 		if (ctx.PLUS_PLUS() != null)
 			asg = new GoAssignment(cfg, location, exp, 
-					new GoSum(cfg, location, exp,  new GoInteger(cfg, location, 1)), blockList);		
+					new GoSum(cfg, location, exp,  new GoInteger(cfg, location, 1)), blockList, getContainingBlock());		
 		else
 			asg = new GoAssignment(cfg, location, exp, 
-					new GoSubtraction(cfg, location, exp, new GoInteger(cfg, location, 1)), blockList);
+					new GoSubtraction(cfg, location, exp, new GoInteger(cfg, location, 1)), blockList, getContainingBlock());
 
 		cfg.addNode(asg, visibleIds);
 		return Pair.of(asg, asg);
+	}
+	
+	private OpenBlock getContainingBlock() {
+		return blockList.getLast().getOpen();
 	}
 
 	@Override
@@ -963,7 +969,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Expression lhs = visitExpression(ids.expression(i));
 				Expression exp = buildExpressionFromAssignment(new SourceCodeLocation(file, line, col), lhs, ctx.assign_op(), visitExpression(exps.expression(i)));
 
-				GoAssignment asg = new GoAssignment(cfg, locationOf(ctx), lhs, exp, blockList);
+				GoAssignment asg = new GoAssignment(cfg, locationOf(ctx), lhs, exp, blockList, getContainingBlock());
 				cfg.addNode(asg, visibleIds);
 
 				if (lastStmt != null)
@@ -1470,7 +1476,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					if (!GoLangUtils.refersToBlankIdentifier(idxRange))
 						blockList.getLast().addVarDeclaration(idxRange, DeclarationType.SHORT_VARIABLE);
 					idxPost = new GoAssignment(cfg, location, idxRange, 
-							new GoSum(cfg, location, idxRange, one), blockList);
+							new GoSum(cfg, location, idxRange, one), blockList, getContainingBlock());
 
 					// Index and values are used in range
 					if (rangeIds.length == 2) {
@@ -1484,7 +1490,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 							blockList.getLast().addVarDeclaration(valRange, DeclarationType.SHORT_VARIABLE);
 
 						valPost = new GoAssignment(cfg, location, valRange, 
-								new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList);
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList, getContainingBlock());
 					} 
 				}
 			} else if (range.expressionList() != null) {
@@ -1497,17 +1503,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						throw new IllegalStateException("range variables must  be identifiers.");
 
 					idxRange = (VariableRef) rangeIds[0];
-					idxInit = new GoAssignment(cfg, locationOf(ctx), idxRange, zero, blockList);
+					idxInit = new GoAssignment(cfg, locationOf(ctx), idxRange, zero, blockList, getContainingBlock());
 
 					if (rangeIds.length == 2) {
 						valRange = (VariableRef) rangeIds[1];
 
 						// Creates the initialization statements for idx and val range variable
 						valInit = new GoAssignment(cfg, location, valRange,
-								new GoCollectionAccess(cfg, location, rangedCollection, zero), blockList);
+								new GoCollectionAccess(cfg, location, rangedCollection, zero), blockList, getContainingBlock());
 
 						valPost = new GoAssignment(cfg, location, valRange, 
-								new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList);
+								new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList, getContainingBlock());
 					} 
 				}				
 			} else 

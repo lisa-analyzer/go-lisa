@@ -59,12 +59,12 @@ public class GoMultiAssignment extends Expression {
 
 	private Map<VariableRef, DeclarationType> computeVarSpecs(List<BlockScope> listBlock) {
 		Map<VariableRef, DeclarationType> map = new HashMap<>();
-		for(Expression id : ids) {
-			Optional<Pair<VariableRef, DeclarationType>> opt = BlockScope.findLastVariableDeclarationInBlockList(listBlock, id);
-			if(opt.isEmpty() && !GoLangUtils.refersToBlankIdentifier(id))
-				throw new GoSyntaxException( "Unable to find variable declaration for the expression '" + id + "' present at " + id.getLocation());
-			opt.ifPresent(p -> map.put(p.getKey(), DeclarationType.MULTI_SHORT_VARIABLE));
-		}
+//		for(Epxression id : ids) {
+//			Optional<Pair<VariableRef, DeclarationType>> opt = BlockScope.findLastVariableDeclarationInBlockList(listBlock, id);
+//			if(opt.isEmpty() && !GoLangUtils.refersToBlankIdentifier(id))
+//				throw new GoSyntaxException( "Unable to find variable declaration for the expression '" + id + "' present at " + id.getLocation());
+//			opt.ifPresent(p -> map.put(p.getKey(), DeclarationType.MULTI_SHORT_VARIABLE));
+//		}
 		return map;
 	}
 	

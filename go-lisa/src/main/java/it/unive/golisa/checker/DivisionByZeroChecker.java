@@ -1,12 +1,15 @@
 package it.unive.golisa.checker;
 
+import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -24,29 +27,12 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class DivisionByZeroChecker  implements SemanticCheck {
+public class DivisionByZeroChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron>,
+MonolithicHeap, Apron>  {
 
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
-
-	@Override
-	public void afterExecution(CheckToolWithAnalysisResults<?, ?, ?> tool) {}
-
-	@Override
-	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<?, ?, ?> tool, CompilationUnit unit) {
-		return true;
-	}
-
-	@Override
-	public void visitGlobal(CheckToolWithAnalysisResults<?, ?, ?> tool, Unit unit, Global global, boolean instance) {}
-
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph) {
-		return true;
-	}
-
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Statement node) {
+	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CFG graph, Statement node)  {
 		if (node instanceof  GoDiv) {
 			GoDiv div = (GoDiv) node;
 			ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
@@ -76,7 +62,36 @@ public class DivisionByZeroChecker  implements SemanticCheck {
 	}
 
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<?, ?, ?> tool, CFG graph, Edge edge) {
+	public void beforeExecution(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) { }
+
+	@Override
+	public void afterExecution(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) { }
+
+	@Override
+	public boolean visitCompilationUnit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CompilationUnit unit) {
+		return true;
+	}
+
+	@Override
+	public void visitGlobal(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			Unit unit, Global global, boolean instance) { }
+
+	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CFG graph) {
+		return true;
+	}
+
+	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CFG graph, Edge edge) {
 		return true;
 	}
 }

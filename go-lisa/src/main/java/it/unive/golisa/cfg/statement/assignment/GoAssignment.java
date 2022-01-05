@@ -1,14 +1,9 @@
 package it.unive.golisa.cfg.statement.assignment;
 
 import java.util.List;
-import java.util.Optional;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.cfg.statement.block.BlockScope;
-import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
-import it.unive.golisa.cli.GoSyntaxException;
-import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.ScopeToken;
@@ -22,13 +17,15 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
 
 public class GoAssignment extends BinaryExpression {
-	
-	private Optional<Pair<VariableRef, DeclarationType>> varDeclaration;
+
+	private final List<OpenBlock> openBlocks;
+
+	private final OpenBlock containingBlock;
+
 	/**
 	 * Builds the assignment, assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
@@ -39,18 +36,14 @@ public class GoAssignment extends BinaryExpression {
 	 * @param target     the target of the assignment
 	 * @param expression the expression to assign to {@code target}
 	 */
-	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression, List<BlockScope> listBlock) {
+	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression, List<BlockScope> listBlock, OpenBlock containingBlock) {
 		super(cfg, location, target, expression);
-		this.varDeclaration = computeVarDeclaration(getLeft(), listBlock);
+		this.openBlocks = computeVarDeclaration(getLeft(), listBlock, containingBlock);
+		this.containingBlock = containingBlock;
 	}
 
-	private Optional<Pair<VariableRef, DeclarationType>> computeVarDeclaration(Expression left, List<BlockScope> listBlock) {
-		Optional<Pair<VariableRef, DeclarationType>> opt = BlockScope.findLastVariableDeclarationInBlockList(listBlock, left);
-		if(opt.isEmpty() && !GoLangUtils.refersToBlankIdentifier(left))
-			throw new GoSyntaxException( "Unable to find variable declaration for  '" + left + "' present at " + left.getLocation());
-		if(opt.isPresent() && opt.get().getValue() == DeclarationType.CONSTANT)
-			throw new GoSyntaxException( "Cannot assign a value to '"+ opt.get().getKey().getName() +"' at "+ left.getLocation()+ ", because is declared as 'const' at "+opt.get().getKey().getLocation());
-		return opt;
+	private List<OpenBlock> computeVarDeclaration(Expression left, List<BlockScope> listBlock, OpenBlock containingBlock) {
+		return BlockScope.findLastVariableDeclarationInBlockList(listBlock, left);
 	}
 
 	@Override
@@ -79,10 +72,10 @@ public class GoAssignment extends BinaryExpression {
 	 */
 	@Override
 	public final <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					StatementStore<A, H, V> expressions)
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+			StatementStore<A, H, V> expressions)
 					throws SemanticException {
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
 		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
@@ -93,6 +86,18 @@ public class GoAssignment extends BinaryExpression {
 		for (SymbolicExpression expr1 : left.getComputedExpressions())
 			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
 				AnalysisState<A, H, V> tmp = left.assign(expr1, expr2, this);
+				
+				
+				if (!openBlocks.isEmpty() && openBlocks.get(0) == containingBlock) {
+					for (int i = 0; i < openBlocks.size()-1; i++) {
+						SymbolicExpression idToAssign = expr1;
+
+						for (int j = openBlocks.size() - 2 -i; j >= 0; j--)
+								idToAssign = idToAssign.pushScope(new ScopeToken(openBlocks.get(j)));
+						tmp = tmp.assign(idToAssign, expr2, this);
+					}
+				}
+
 				result = result.lub(tmp);
 			}
 
@@ -100,11 +105,7 @@ public class GoAssignment extends BinaryExpression {
 			result = result.forgetIdentifiers(getRight().getMetaVariables());
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-		
-		//update result in the last var declaration
-		if(varDeclaration.isPresent())
-			result = result.pushScope(new ScopeToken(varDeclaration.get().getKey()));
 
-	return result;
+		return result;
 	}
 }

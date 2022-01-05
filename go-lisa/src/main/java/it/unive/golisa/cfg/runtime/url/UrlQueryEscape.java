@@ -27,31 +27,32 @@ public class UrlQueryEscape extends NativeCFG {
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				QueryEscape.class);
 	}
-	
+
 	public static class QueryEscape extends UnaryNativeCall implements PluggableStatement {
-		
+
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		public static QueryEscape build(CFG cfg, CodeLocation location, Expression... params) {
 			return new QueryEscape(cfg, location, params[0]);
 		}
-		
+
 		public QueryEscape(CFG cfg, CodeLocation location, Expression exp1) {
 			super(cfg, location, "QueryEscape", GoStringType.INSTANCE, exp1);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
-			// TODO to implement  query escape method from url package
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+			// TODO to implement query escape method from url package
 			return entryState.smallStepSemantics(new PushAny(getRuntimeTypes(), getLocation()), original);
 		}
 	}
 }
-

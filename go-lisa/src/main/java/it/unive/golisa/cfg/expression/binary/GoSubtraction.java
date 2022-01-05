@@ -22,26 +22,30 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoSubtraction extends BinaryNativeCall implements GoBinaryNumericalOperation {
-	
+
 	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "-", exp1, exp2);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> leftState,
+					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+					throws SemanticException {
 
 		ExternalSet<Type> types;
 
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes()) 
+			for (Type rightType : rightExp.getTypes())
 				if (leftType.isNumericType() && rightType.isNumericType()) {
 					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_NON_OVERFLOWING_SUB, getLocation()), this));
-				} 
+					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp,
+							BinaryOperator.NUMERIC_NON_OVERFLOWING_SUB, getLocation()), this));
+				}
 
 		return result;
 	}

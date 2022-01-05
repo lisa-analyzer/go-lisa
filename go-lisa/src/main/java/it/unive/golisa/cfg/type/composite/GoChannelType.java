@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -11,18 +7,20 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoChannelType implements GoType {
-	
+
 	private Type contentType;
 
 	private boolean isSend;
 	private boolean isReceive;
-	
 
 	private static final Set<GoChannelType> channelTypes = new HashSet<>();
 
-	public static GoChannelType lookup(GoChannelType type)  {
+	public static GoChannelType lookup(GoChannelType type) {
 		if (!channelTypes.contains(type))
 			channelTypes.add(type);
 		return channelTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -33,7 +31,7 @@ public class GoChannelType implements GoType {
 		this.isReceive = true;
 		this.isSend = true;
 	}
-	
+
 	public GoChannelType(GoType contentType, boolean isSend, boolean isReceive) {
 		this.contentType = contentType;
 		this.isSend = isSend;
@@ -62,7 +60,7 @@ public class GoChannelType implements GoType {
 	public boolean isBidiretional() {
 		return isSendDirection() && isReceiveDirection();
 	}
-	
+
 	private boolean isReceiveDirection() {
 		return isReceive;
 	}
@@ -79,7 +77,7 @@ public class GoChannelType implements GoType {
 			return "chan <-" + contentType.toString();
 		return "<- chan" + contentType.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -115,12 +113,12 @@ public class GoChannelType implements GoType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoNil(cfg, location);
 	}
-	
+
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoChannelType in : channelTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override

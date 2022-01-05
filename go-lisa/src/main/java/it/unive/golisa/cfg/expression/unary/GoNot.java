@@ -17,9 +17,10 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.UnaryOperator;
 
 /**
- * Go unary not native function class (e.g., !(x > y)).
- * The static type of this expression is definite {@link GoBoolType}
- * and its operand must be instance of {@link GoBoolType}.
+ * Go unary not native function class (e.g., !(x > y)). The static type of this
+ * expression is definite {@link GoBoolType} and its operand must be instance of
+ * {@link GoBoolType}.
+ * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoNot extends UnaryNativeCall {
@@ -27,17 +28,22 @@ public class GoNot extends UnaryNativeCall {
 	public GoNot(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "!", GoBoolType.INSTANCE, exp);
 	}
-	
+
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
-			SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState,
+					SymbolicExpression expr) throws SemanticException {
 
 		if (!expr.getDynamicType().isBooleanType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 
 		return exprState.smallStepSemantics(
-				new UnaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), expr, UnaryOperator.LOGICAL_NOT, getLocation()), this);
+				new UnaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), expr, UnaryOperator.LOGICAL_NOT,
+						getLocation()),
+				this);
 	}
 
 }

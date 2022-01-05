@@ -18,25 +18,30 @@ import it.unive.lisa.type.Untyped;
 public class GoTypeAssertion extends UnaryNativeCall {
 
 	private final Type type;
-	
+
 	public GoTypeAssertion(CFG cfg, SourceCodeLocation location, Expression exp, Type type) {
-		super(cfg, location, ".(" + type +")", exp);
+		super(cfg, location, ".(" + type + ")", exp);
 		this.type = type;
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
-			SymbolicExpression expr) throws SemanticException {
-		
-		// A type assertion provides access to an interface value's underlying concrete value,
-		// hence we need to check if the static type of the arguments is an interface
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState,
+					SymbolicExpression expr) throws SemanticException {
+
+		// A type assertion provides access to an interface value's underlying
+		// concrete value,
+		// hence we need to check if the static type of the arguments is an
+		// interface
 		Type argStaticType = getParameters()[0].getStaticType();
-		if (argStaticType instanceof GoInterfaceType || argStaticType instanceof Untyped) 			
-			for (Type exprType : expr.getTypes()) 
-				if (exprType.canBeAssignedTo(type)) 
+		if (argStaticType instanceof GoInterfaceType || argStaticType instanceof Untyped)
+			for (Type exprType : expr.getTypes())
+				if (exprType.canBeAssignedTo(type))
 					return exprState;
-				
+
 		return entryState.bottom();
 	}
 }

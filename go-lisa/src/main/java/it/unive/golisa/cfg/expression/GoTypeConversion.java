@@ -22,22 +22,25 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 public class GoTypeConversion extends UnaryNativeCall {
 
 	private Type type;
-	
+
 	public GoTypeConversion(CFG cfg, SourceCodeLocation location, Type type, Expression exp) {
 		super(cfg, location, "(" + type + ")", exp);
 		this.type = type;
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-			AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 		ExternalSet<Type> castType = Caches.types().mkSingletonSet(type);
 		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
-		return entryState.smallStepSemantics(new BinaryExpression(castType, expr, typeCast, BinaryOperator.TYPE_CAST, getLocation()), this);
+		return entryState.smallStepSemantics(
+				new BinaryExpression(castType, expr, typeCast, BinaryOperator.TYPE_CAST, getLocation()), this);
 	}
 }

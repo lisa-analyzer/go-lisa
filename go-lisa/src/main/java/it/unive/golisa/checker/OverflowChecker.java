@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.math.BigInteger;
-
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
@@ -40,6 +38,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.math.BigInteger;
 
 public class OverflowChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron>,
 		MonolithicHeap, Apron> {
@@ -47,7 +46,7 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
-			CFG graph, Statement node){
+			CFG graph, Statement node) {
 
 		Expression leftExpression = null;
 		Type vType = null;
@@ -64,10 +63,10 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 			leftExpression = assignment.getLeft();
 		}
 
-
 		// Checking if each variable reference is over/under flowing
 		if (leftExpression instanceof VariableRef) {
-			Variable id = new Variable(((VariableRef) leftExpression).getRuntimeTypes(), ((VariableRef) leftExpression).getName(), ((VariableRef) leftExpression).getLocation());
+			Variable id = new Variable(((VariableRef) leftExpression).getRuntimeTypes(),
+					((VariableRef) leftExpression).getName(), ((VariableRef) leftExpression).getLocation());
 
 			boolean mayBeNumeric = false;
 			for (Type type : id.getTypes())
@@ -83,37 +82,39 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 
 			for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
 				AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(node);
-				Apron ap = (Apron) analysisAtNode.getState().getValueState();				
+				Apron ap = (Apron) analysisAtNode.getState().getValueState();
 				ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
-				BinaryExpression checkOver = new BinaryExpression(bool, id, getMaxValue(vType), BinaryOperator.COMPARISON_GT, leftExpression.getLocation());
-				BinaryExpression checkUnder = new BinaryExpression(bool, id, getMinValue(vType), BinaryOperator.COMPARISON_LT, leftExpression.getLocation());
+				BinaryExpression checkOver = new BinaryExpression(bool, id, getMaxValue(vType),
+						BinaryOperator.COMPARISON_GT, leftExpression.getLocation());
+				BinaryExpression checkUnder = new BinaryExpression(bool, id, getMinValue(vType),
+						BinaryOperator.COMPARISON_LT, leftExpression.getLocation());
 
-				if (!ap.containsIdentifier(id)) 
+				if (!ap.containsIdentifier(id))
 					return true;
 
 				Satisfiability overflows = null;
 				Satisfiability underflows = null;
 				try {
 					boolean needToWarn = false;
-					String message= "[OVER/UNDERFLOW] ";
+					String message = "[OVER/UNDERFLOW] ";
 					overflows = ap.satisfies(checkOver, node);
 
 					if (overflows == Satisfiability.SATISFIED) {
-						message += "The variable "  + id + " overflows.";
+						message += "The variable " + id + " overflows.";
 						needToWarn = true;
 					} else if (overflows == Satisfiability.UNKNOWN) {
 						needToWarn = true;
-						message += "The variable "  + id + " may overflow. Need to manually check.";
+						message += "The variable " + id + " may overflow. Need to manually check.";
 					}
 
 					underflows = ap.satisfies(checkUnder, node);
 
 					if (underflows == Satisfiability.SATISFIED) {
-						message += "The variable "  + id + " undeflows.";
+						message += "The variable " + id + " undeflows.";
 						needToWarn = true;
 					} else if (underflows == Satisfiability.UNKNOWN) {
 						needToWarn = true;
-						message += "The variable "  + id + " may undeflow. Need to manually check.";
+						message += "The variable " + id + " may undeflow. Need to manually check.";
 					}
 
 					if (needToWarn)
@@ -129,23 +130,19 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 	}
 
 	/*
-	 * Min-max numerical type values
-	 * 
-	 * uint8       the set of all unsigned  8-bit integers (0 to 255)
-	 * uint16      the set of all unsigned 16-bit integers (0 to 65535)
-	 * uint32      the set of all unsigned 32-bit integers (0 to 4294967295)
-	 * uint64      the set of all unsigned 64-bit integers (0 to 18446744073709551615)
-	 * 
-	 * int8        the set of all signed  8-bit integers (-128 to 127)
-	 * int16       the set of all signed 16-bit integers (-32768 to 32767)
-	 * int32       the set of all signed 32-bit integers (-2147483648 to 2147483647)
-	 * int64       the set of all signed 64-bit integers (-9223372036854775808 to 9223372036854775807)
-	 * 
-	 * float32     the set of all IEEE-754 32-bit floating-point numbers
-	 * float64     the set of all IEEE-754 64-bit floating-point numbers
-	 * 
-	 * complex64   the set of all complex numbers with float32 real and imaginary parts
-	 * complex128  the set of all complex numbers with float64 real and imaginary parts
+	 * Min-max numerical type values uint8 the set of all unsigned 8-bit
+	 * integers (0 to 255) uint16 the set of all unsigned 16-bit integers (0 to
+	 * 65535) uint32 the set of all unsigned 32-bit integers (0 to 4294967295)
+	 * uint64 the set of all unsigned 64-bit integers (0 to
+	 * 18446744073709551615) int8 the set of all signed 8-bit integers (-128 to
+	 * 127) int16 the set of all signed 16-bit integers (-32768 to 32767) int32
+	 * the set of all signed 32-bit integers (-2147483648 to 2147483647) int64
+	 * the set of all signed 64-bit integers (-9223372036854775808 to
+	 * 9223372036854775807) float32 the set of all IEEE-754 32-bit
+	 * floating-point numbers float64 the set of all IEEE-754 64-bit
+	 * floating-point numbers complex64 the set of all complex numbers with
+	 * float32 real and imaginary parts complex128 the set of all complex
+	 * numbers with float64 real and imaginary parts
 	 */
 	private Constant getMaxValue(Type type) {
 		if (type == GoInt8Type.INSTANCE)
@@ -192,14 +189,14 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 	public void beforeExecution(
 			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -213,7 +210,8 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
-			Unit unit, Global global, boolean instance) { }
+			Unit unit, Global global, boolean instance) {
+	}
 
 	@Override
 	public boolean visit(
@@ -221,8 +219,6 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 			CFG graph) {
 		return true;
 	}
-
-
 
 	@Override
 	public boolean visit(

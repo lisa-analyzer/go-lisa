@@ -35,21 +35,22 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	private final Type type;
 
 	/**
-	 * Builds a Go variable declaration with initialization,
-	 * assigning {@code expression} to {@code target},
-	 * happening at the given location in the program.
+	 * Builds a Go variable declaration with initialization, assigning
+	 * {@code expression} to {@code target}, happening at the given location in
+	 * the program.
 	 * 
 	 * @param cfg        the cfg that this declaration belongs to
-	 * @param sourceFile the source file where this declaration happens. If unknown,
-	 *                   use {@code null}
-	 * @param line       the line number where this declaration happens in the source
-	 *                   file. If unknown, use {@code -1}
-	 * @param col        the column where this statement happens in the source file.
-	 *                   If unknown, use {@code -1}
-	 * @param var	     the declared variable
+	 * @param sourceFile the source file where this declaration happens. If
+	 *                       unknown, use {@code null}
+	 * @param line       the line number where this declaration happens in the
+	 *                       source file. If unknown, use {@code -1}
+	 * @param col        the column where this statement happens in the source
+	 *                       file. If unknown, use {@code -1}
+	 * @param var        the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoVariableDeclaration(CFG cfg, SourceCodeLocation location, Type type, VariableRef var, Expression expression) {
+	public GoVariableDeclaration(CFG cfg, SourceCodeLocation location, Type type, VariableRef var,
+			Expression expression) {
 		super(cfg, location, var, expression);
 		this.type = type;
 	}
@@ -60,16 +61,19 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, StatementStore<A, H, V> expressions)
+	public <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					StatementStore<A, H, V> expressions)
 					throws SemanticException {
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
 		expressions.put(getRight(), right);
-		
+
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return right;
-		
+
 		expressions.put(getLeft(), right);
 
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
@@ -78,12 +82,14 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		AnalysisState<A, H, V> result = entryState.bottom();
 		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
 			AnalysisState<A, H, V> tmp = entryState.bottom();
-				for (Type rightType : rightExp.getTypes())
-					if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat || rightType instanceof GoNilType) {
-						Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
-						tmp = right.assign(id, new BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV, getRight().getLocation()), this);
-					} else if (rightType.canBeAssignedTo(type))
-						tmp = right.assign(id, rightExp, this);
+			for (Type rightType : rightExp.getTypes())
+				if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat
+						|| rightType instanceof GoNilType) {
+					Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
+					tmp = right.assign(id, new BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV,
+							getRight().getLocation()), this);
+				} else if (rightType.canBeAssignedTo(type))
+					tmp = right.assign(id, rightExp, this);
 
 			result = result.lub(tmp);
 		}
@@ -92,11 +98,11 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 			result = result.forgetIdentifiers(getRight().getMetaVariables());
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-		
+
 		expressions.put(this, result);
 		return result;
 	}
-	
+
 	public Type getDeclaredType() {
 		return type;
 	}

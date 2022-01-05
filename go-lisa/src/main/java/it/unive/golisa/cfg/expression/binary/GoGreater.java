@@ -18,47 +18,56 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go greater function call (e1 > e2).
- * The static type of this expression is definitely {@link GoBoolType}.
- * The semantics of Go greater expression follows the Golang specification:
+ * A Go greater function call (e1 > e2). The static type of this expression is
+ * definitely {@link GoBoolType}. The semantics of Go greater expression follows
+ * the Golang specification:
  * {@link https://golang.org/ref/spec#Comparison_operators}
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoGreater extends BinaryNativeCall {
 
-
 	/**
 	 * Builds a Go greater expression at a given location in the program.
 	 * 
-	 * @param cfg           the cfg that this expression belongs to
-	 * @param sourceFile    the source file where this expression happens. If
-	 *                      unknown, use {@code null}
-	 * @param line          the line number where this expression happens in the
-	 *                      source file. If unknown, use {@code -1}
-	 * @param col           the column where this expression happens in the source
-	 *                      file. If unknown, use {@code -1}
-	 * @param exp1		    left-hand side operand
-	 * @param exp2		    right-hand side operand
+	 * @param cfg        the cfg that this expression belongs to
+	 * @param sourceFile the source file where this expression happens. If
+	 *                       unknown, use {@code null}
+	 * @param line       the line number where this expression happens in the
+	 *                       source file. If unknown, use {@code -1}
+	 * @param col        the column where this expression happens in the source
+	 *                       file. If unknown, use {@code -1}
+	 * @param exp1       left-hand side operand
+	 * @param exp2       right-hand side operand
 	 */
 	public GoGreater(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, ">", GoBoolType.INSTANCE,exp1, exp2);
+		super(cfg, location, ">", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> leftState,
+					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+					throws SemanticException {
 		AnalysisState<A, H, V> result = entryState.bottom();
 		// following the Golang specification:
-		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
+		// in any comparison, the first operand must be assignable to the type
+		// of the second operand, or vice versa.
 		for (Type leftType : leftExp.getTypes())
 			for (Type rightType : rightExp.getTypes()) {
 				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
-					// TODO: only, integer, floating point values, strings are ordered
+					// TODO: only, integer, floating point values, strings are
+					// ordered
 					// but missing lexicographical string order in LiSA
-					AnalysisState<A, H, V> tmp = rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_GT, getLocation()), this);
+					AnalysisState<A, H,
+							V> tmp = rightState
+									.smallStepSemantics(
+											new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
+													leftExp, rightExp, BinaryOperator.COMPARISON_GT, getLocation()),
+											this);
 					result = result.lub(tmp);
 				}
 			}

@@ -1,16 +1,5 @@
 package it.unive.golisa.cli;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.antlr.GoParser.AnonymousFieldContext;
 import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
 import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
@@ -69,6 +58,15 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
@@ -91,6 +89,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * Given a type context, returns the corresponding Go type.
 	 * 
 	 * @param ctx the type context
+	 * 
 	 * @return the Go type corresponding to {@ctx}
 	 */
 	private GoType getGoType(TypeNameContext ctx) {
@@ -98,40 +97,40 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.IDENTIFIER() != null) {
 
 			String type = ctx.IDENTIFIER().getText();
-			switch(type) { 
-			case "int": 
+			switch (type) {
+			case "int":
 				return GoIntType.INSTANCE;
-			case "int8": 
+			case "int8":
 				return GoInt8Type.INSTANCE;
-			case "int16": 
+			case "int16":
 				return GoInt16Type.INSTANCE;
-			case "int32": 
+			case "int32":
 				return GoInt32Type.INSTANCE;
-			case "int64": 
-				return GoInt64Type.INSTANCE; 
-			case "uint": 
+			case "int64":
+				return GoInt64Type.INSTANCE;
+			case "uint":
 				return GoUIntType.INSTANCE;
 			case "byte": // byte is an alias for int8
-			case "uint8": 
+			case "uint8":
 				return GoUInt8Type.INSTANCE;
-			case "uint16": 
+			case "uint16":
 				return GoUInt16Type.INSTANCE;
 			case "rune": // rune is an alias for int32
-			case "uint32": 
+			case "uint32":
 				return GoUInt32Type.INSTANCE;
-			case "uint64": 
-				return GoUInt64Type.INSTANCE; 
-			case "float32": 
+			case "uint64":
+				return GoUInt64Type.INSTANCE;
+			case "float32":
 				return GoFloat32Type.INSTANCE;
-			case "float64": 
-				return GoFloat64Type.INSTANCE; 
-			case "string": 
+			case "float64":
+				return GoFloat64Type.INSTANCE;
+			case "string":
 				return GoStringType.INSTANCE;
-			case "bool": 
-				return GoBoolType.INSTANCE;	
+			case "bool":
+				return GoBoolType.INSTANCE;
 			case "error":
 				return GoErrorType.INSTANCE;
-			default: 
+			default:
 				if (GoStructType.hasStructType(type))
 					return GoStructType.get(type);
 				else if (GoAliasType.hasAliasType(type))
@@ -142,8 +141,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 					CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(file, 0, 0), type, false);
 					return GoStructType.lookup(type, unit);
 				}
-			} 
-		} 
+			}
+		}
 
 		Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
 		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
@@ -187,12 +186,10 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.channelType() != null)
 			return visitChannelType(ctx.channelType());
 
-
-
 		Object result = visitChildren(ctx);
 		if (!(result instanceof GoType))
 			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
-		else 
+		else
 			return (GoType) result;
 	}
 
@@ -237,7 +234,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	private boolean isInteger(String s) {
 		try {
 			Integer.parseInt(s);
-			return  true;
+			return true;
 		} catch (NumberFormatException nfe) {
 			return false;
 		}
@@ -276,7 +273,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 				return left + right;
 		}
 
-		if (expression.primaryExpr().operand().operandName().IDENTIFIER() != null) 
+		if (expression.primaryExpr().operand().operandName().IDENTIFIER() != null)
 			if (constants.containsKey(expression.getText()))
 				return getConstantValue(constants.get(expression.getText()));
 
@@ -350,8 +347,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		else if (ctx.typeName() != null)
 			return visitTypeName(ctx.typeName());
 		else {
-			// Case with ellipsis (e.g., [...]int) 
-			// -1 is just a placeholder. It will be replaced  with the
+			// Case with ellipsis (e.g., [...]int)
+			// -1 is just a placeholder. It will be replaced with the
 			// correct size in GoCodeMemberVisitor.visitCompositeLit.
 			GoType elementType = visitElementType(ctx.elementType());
 			return GoArrayType.lookup(new GoArrayType(elementType, -1));
@@ -360,25 +357,26 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	static protected int getLine(ParserRuleContext ctx) {
 		return ctx.getStart().getLine();
-	} 
+	}
 
 	static protected int getLine(TerminalNode ctx) {
 		return ctx.getSymbol().getLine();
-	} 
+	}
 
 	static protected int getCol(ParserRuleContext ctx) {
 		return ctx.getStop().getCharPositionInLine();
-	} 
+	}
 
 	static protected int getCol(TerminalNode ctx) {
 		return ctx.getSymbol().getCharPositionInLine();
-	} 
+	}
 
 	@Override
-	public GoStructType visitStructType(StructTypeContext ctx) {		
-		for (FieldDeclContext field : ctx.fieldDecl()) 
+	public GoStructType visitStructType(StructTypeContext ctx) {
+		for (FieldDeclContext field : ctx.fieldDecl())
 			for (Pair<String, Type> fd : visitFieldDecl(field))
-				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, getLine(field), getCol(field)), fd.getLeft(), fd.getRight()));
+				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, getLine(field), getCol(field)),
+						fd.getLeft(), fd.getRight()));
 		return GoStructType.lookup(unit.getName(), unit);
 	}
 
@@ -386,10 +384,10 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
 
 		// The interface is empty
-		if (ctx.methodSpec().size() == 0)	
+		if (ctx.methodSpec().size() == 0)
 			return GoInterfaceType.getEmptyInterface();
 
-		for (MethodSpecContext methodSpec : ctx.methodSpec()) 
+		for (MethodSpecContext methodSpec : ctx.methodSpec())
 			for (CFGDescriptor desc : visitMethodSpec(methodSpec))
 				unit.addInstanceCFG(new CFG(desc));
 		return GoInterfaceType.lookup(unit.getName(), unit);
@@ -407,20 +405,23 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			int line = getLine(ctx);
 			int col = getCol(ctx);
 
-			Parameter[] cfgArgs = new Parameter[]{};
+			Parameter[] cfgArgs = new Parameter[] {};
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
-				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs, new GoCodeMemberVisitor(unit, file, program, constants).visitParameterDecl(formalPars.parameterDecl(i)));
+				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs,
+						new GoCodeMemberVisitor(unit, file, program, constants)
+								.visitParameterDecl(formalPars.parameterDecl(i)));
 
-			descs.add(new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName, getGoReturnType(ctx.result()), cfgArgs));
+			descs.add(new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName,
+					getGoReturnType(ctx.result()), cfgArgs));
 		}
 
 		// need to include methods of typeName
-		// TODO: this works just  if the typeName is defined in the source code
+		// TODO: this works just if the typeName is defined in the source code
 		else if (ctx.typeName() != null) {
 			GoType type = visitTypeName(ctx.typeName());
 			CompilationUnit unitType = program.getUnit(type.toString());
-			
+
 			if (unitType != null)
 				for (CFG cfg : unitType.getAllCFGs())
 					descs.add(cfg.getDescriptor());

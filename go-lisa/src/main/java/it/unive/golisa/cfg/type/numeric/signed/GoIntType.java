@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.type.numeric.signed;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
@@ -12,42 +9,45 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Go int type. The int type, in Go, is a machine dependent type 
- * since his size (32 or 64 bits) depends on the type of architecture that it is used.
- * 
- * It implements the singleton design pattern, that is 
- * the instances of this type are unique. The unique instance of
- * this type can be retrieved by {@link GoIntType#INSTANCE}.
+ * Go int type. The int type, in Go, is a machine dependent type since his size
+ * (32 or 64 bits) depends on the type of architecture that it is used. It
+ * implements the singleton design pattern, that is the instances of this type
+ * are unique. The unique instance of this type can be retrieved by
+ * {@link GoIntType#INSTANCE}.
  * 
  * @link https://www.golang-book.com/books/intro/3
+ * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoIntType implements NumericType, GoType {
 
 	/**
-	 * Unique instance of GoInt type. 
+	 * Unique instance of GoInt type.
 	 */
 	public static final GoIntType INSTANCE = new GoIntType();
-	
-	private GoIntType() {}
+
+	private GoIntType() {
+	}
 
 	@Override
 	public String toString() {
 		return "int";
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		return this == other;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	@Override
 	public boolean is8Bits() {
 		return false;
@@ -74,7 +74,7 @@ public class GoIntType implements NumericType, GoType {
 	public boolean isUnsigned() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		return other instanceof GoIntType || other.isUntyped();
@@ -82,19 +82,19 @@ public class GoIntType implements NumericType, GoType {
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoIntType  || other instanceof GoUntypedInt ? this : Untyped.INSTANCE;
+		return other instanceof GoIntType || other instanceof GoUntypedInt ? this : Untyped.INSTANCE;
 	}
-	
+
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoInteger(cfg, location, 0);
 	}
-	
+
 	@Override
 	public boolean isIntegral() {
 		return true;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

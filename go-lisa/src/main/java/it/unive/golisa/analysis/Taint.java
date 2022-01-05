@@ -24,21 +24,21 @@ public class Taint extends BaseInferredValue<Taint> {
 	private static final AnnotationMatcher TAINTED_MATCHER = new BasicAnnotationMatcher(TAINTED_ANNOTATION);
 
 	public static final Annotation CLEAN_ANNOTATION = new Annotation("lisa.taint.Clean");
-	
+
 	private static final AnnotationMatcher CLEAN_MATCHER = new BasicAnnotationMatcher(CLEAN_ANNOTATION);
 
 	private static final Taint TAINTED = new Taint(true);
-	
+
 	private static final Taint CLEAN = new Taint(false);
-	
+
 	private static final Taint BOTTOM = new Taint(null);
-	
+
 	private final Boolean taint;
 
 	public Taint() {
 		this(true);
 	}
-	
+
 	private Taint(Boolean taint) {
 		this.taint = taint;
 	}
@@ -54,13 +54,14 @@ public class Taint extends BaseInferredValue<Taint> {
 
 		if (annots.contains(CLEAN_MATCHER))
 			return CLEAN;
-		
+
 		return super.variable(id, pp);
 	}
 
 	@Override
 	public DomainRepresentation representation() {
-		return this == BOTTOM ? Lattice.BOTTOM_REPR : this == CLEAN ? new StringRepresentation("_") : new StringRepresentation("#");
+		return this == BOTTOM ? Lattice.BOTTOM_REPR
+				: this == CLEAN ? new StringRepresentation("_") : new StringRepresentation("#");
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public class Taint extends BaseInferredValue<Taint> {
 	public boolean isTainted() {
 		return this == TAINTED;
 	}
-	
+
 	@Override
 	protected InferredPair<Taint> evalNullConstant(Taint state, ProgramPoint pp)
 			throws SemanticException {
@@ -117,10 +118,10 @@ public class Taint extends BaseInferredValue<Taint> {
 	public boolean canProcess(SymbolicExpression expression) {
 		return !expression.getDynamicType().isPointerType();
 	}
-	
+
 	@Override
 	protected Taint lubAux(Taint other) throws SemanticException {
-		return TAINTED; // should never happen 
+		return TAINTED; // should never happen
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package it.unive.golisa.golang.api.signature;
 
 import java.util.Arrays;
 
-public class FuncGoLangApiSignature  extends GoLangApiSignature{
+public class FuncGoLangApiSignature extends GoLangApiSignature {
 
 	private final String name;
 	private final String[] params;
@@ -10,7 +10,7 @@ public class FuncGoLangApiSignature  extends GoLangApiSignature{
 
 	public FuncGoLangApiSignature(String pkg, String name, String[] params, String[] ret) {
 		super(pkg);
-		this.name=name;
+		this.name = name;
 		this.params = params;
 		this.ret = ret;
 	}
@@ -26,8 +26,7 @@ public class FuncGoLangApiSignature  extends GoLangApiSignature{
 	public String[] getRet() {
 		return ret;
 	}
-	
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -62,23 +61,23 @@ public class FuncGoLangApiSignature  extends GoLangApiSignature{
 	@Override
 	public String toString() {
 		String sParams = "";
-		for(int i= 0; i< params.length; i++) {
+		for (int i = 0; i < params.length; i++) {
 			sParams += params[i];
-			if(i != params.length-1)
+			if (i != params.length - 1)
 				sParams += ", ";
 		}
-		
+
 		String sRets = "";
-		for(int i= 0; i< ret.length; i++) {
+		for (int i = 0; i < ret.length; i++) {
 			sRets += ret[i];
-			if(i != ret.length-1)
+			if (i != ret.length - 1)
 				sRets += ", ";
 		}
-		
-		if( ret.length > 1)
-			sRets += "("+sRets+")"; 
-		
-		return super.toString() + ", func " + name + "(" + sParams + ") "+ sRets;
+
+		if (ret.length > 1)
+			sRets += "(" + sRets + ")";
+
+		return super.toString() + ", func " + name + "(" + sParams + ") " + sRets;
 	}
 
 }

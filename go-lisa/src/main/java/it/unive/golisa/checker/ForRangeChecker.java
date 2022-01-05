@@ -1,8 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.binary.GoLess;
 import it.unive.golisa.cfg.expression.unary.GoLength;
 import it.unive.golisa.cfg.expression.unary.GoRange;
@@ -23,27 +20,33 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
+import java.util.HashSet;
+import java.util.Set;
 
-public class ForRangeChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
-MonolithicHeap, InferenceSystem<InferredTypes>> {
+public class ForRangeChecker
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+				MonolithicHeap, InferenceSystem<InferredTypes>> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
-	CFG graph, Statement node) {
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			CFG graph, Statement node) {
 		if (node instanceof GoRange) {
 			Set<Type> rangedTypes = new HashSet<>();
 			GoRange range = (GoRange) node;
 			for (Expression e1 : range.getParameters()) {
-				if(e1 instanceof GoLess) {
+				if (e1 instanceof GoLess) {
 					GoLess less = (GoLess) e1;
-					for(Expression e2 : less.getParameters()) {
-						if(e2 instanceof GoLength) {
+					for (Expression e2 : less.getParameters()) {
+						if (e2 instanceof GoLength) {
 							GoLength length = (GoLength) e2;
-							for(Expression e3 : length.getParameters()) {
+							for (Expression e3 : length.getParameters()) {
 								for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
 									AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(e3);
-									InferenceSystem<InferredTypes> v = (InferenceSystem<InferredTypes>) analysisAtNode.getState().getValueState();
+									InferenceSystem<InferredTypes> v = (InferenceSystem<InferredTypes>) analysisAtNode
+											.getState().getValueState();
 									rangedTypes.addAll(((InferredTypes) v.getInferredValue()).getRuntimeTypes());
 								}
 							}
@@ -64,37 +67,45 @@ MonolithicHeap, InferenceSystem<InferredTypes>> {
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<InferredTypes>> tool) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool) {}
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<InferredTypes>> tool) {
+	}
 
 	@Override
 	public boolean visitCompilationUnit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<InferredTypes>> tool,
 			CompilationUnit unit) {
 		return true;
 	}
 
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
-			Unit unit, Global global, boolean instance) { }
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			Unit unit, Global global, boolean instance) {
+	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<InferredTypes>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>, MonolithicHeap, InferenceSystem<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}

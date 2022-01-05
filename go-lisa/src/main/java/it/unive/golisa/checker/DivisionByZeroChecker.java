@@ -7,9 +7,9 @@ import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -28,12 +28,13 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class DivisionByZeroChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron>,
-MonolithicHeap, Apron>  {
+		MonolithicHeap, Apron> {
 
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
-			CFG graph, Statement node)  {
-		if (node instanceof  GoDiv) {
+	public boolean visit(
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CFG graph, Statement node) {
+		if (node instanceof GoDiv) {
 			GoDiv div = (GoDiv) node;
 			ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
 			Expression right = div.getParameters()[1];
@@ -44,10 +45,11 @@ MonolithicHeap, Apron>  {
 				try {
 					for (SymbolicExpression rightExp : analysisAtRightNode.getComputedExpressions()) {
 						Constant zero = new Constant(GoIntType.INSTANCE, 0, right.getLocation());
-						BinaryExpression divByZero = new BinaryExpression(bool, rightExp, zero , BinaryOperator.COMPARISON_EQ, right.getLocation());
+						BinaryExpression divByZero = new BinaryExpression(bool, rightExp, zero,
+								BinaryOperator.COMPARISON_EQ, right.getLocation());
 						Satisfiability sat = analysisAtRightNode.satisfies(divByZero, right);
 
-						if (sat == Satisfiability.SATISFIED) 
+						if (sat == Satisfiability.SATISFIED)
 							tool.warnOn(node, "[DEFINITE-DIV-BY-ZERO] division by zero!");
 						else if (sat == Satisfiability.UNKNOWN)
 							tool.warnOn(node, "[MAYBE-DIV-BY-ZERO] maybe a division by zero!");
@@ -56,18 +58,20 @@ MonolithicHeap, Apron>  {
 					e.printStackTrace();
 				}
 			}
-		}		
-		
+		}
+
 		return true;
 	}
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) { }
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
+	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) { }
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
+	}
 
 	@Override
 	public boolean visitCompilationUnit(
@@ -79,7 +83,8 @@ MonolithicHeap, Apron>  {
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
-			Unit unit, Global global, boolean instance) { }
+			Unit unit, Global global, boolean instance) {
+	}
 
 	@Override
 	public boolean visit(

@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -12,19 +8,22 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoSliceType implements GoType, PointerType {
-	
+
 	private Type contentType;
 
 	private static final Set<GoSliceType> sliceTypes = new HashSet<>();
 
-	public static GoSliceType lookup(GoSliceType type)  {
+	public static GoSliceType lookup(GoSliceType type) {
 		if (!sliceTypes.contains(type))
 			sliceTypes.add(type);
 		return sliceTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
-	
+
 	public GoSliceType(Type contentType) {
 		this.contentType = contentType;
 	}
@@ -35,12 +34,14 @@ public class GoSliceType implements GoType, PointerType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return (other instanceof GoSliceType &&  ((GoSliceType) other).contentType.canBeAssignedTo(contentType)) || other.isUntyped();
+		return (other instanceof GoSliceType && ((GoSliceType) other).contentType.canBeAssignedTo(contentType))
+				|| other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return (other instanceof GoSliceType &&  ((GoSliceType) other).contentType.equals(contentType)) ? this : Untyped.INSTANCE;
+		return (other instanceof GoSliceType && ((GoSliceType) other).contentType.equals(contentType)) ? this
+				: Untyped.INSTANCE;
 	}
 
 	@Override
@@ -72,14 +73,12 @@ public class GoSliceType implements GoType, PointerType {
 			return false;
 		return true;
 	}
-	
-	
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoNil(cfg, location);
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		Collection<Type> instances = new HashSet<>();

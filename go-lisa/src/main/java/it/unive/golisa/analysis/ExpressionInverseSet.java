@@ -1,33 +1,32 @@
 package it.unive.golisa.analysis;
 
+import it.unive.lisa.analysis.lattices.InverseSetLattice;
+import it.unive.lisa.symbolic.SymbolicExpression;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import it.unive.lisa.analysis.lattices.InverseSetLattice;
-import it.unive.lisa.symbolic.SymbolicExpression;
-
 public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseSetLattice<ExpressionInverseSet<T>, T> {
 
 	private final boolean isTop;
-	
+
 	public ExpressionInverseSet() {
 		this(Collections.emptySet(), true);
 	}
-	
+
 	public ExpressionInverseSet(Set<T> set) {
 		this(set, false);
 	}
-	
+
 	private ExpressionInverseSet(boolean isTop) {
 		this(Collections.emptySet(), isTop);
 	}
-	
+
 	private ExpressionInverseSet(Set<T> set, boolean isTop) {
 		super(set);
 		this.isTop = isTop;
 	}
-		
+
 	@Override
 	public ExpressionInverseSet<T> top() {
 		return new ExpressionInverseSet<T>(true);
@@ -47,7 +46,7 @@ public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseS
 	public boolean isBottom() {
 		return !isTop && elements.isEmpty();
 	}
-	
+
 	@Override
 	protected ExpressionInverseSet<T> mk(Set<T> set) {
 		return new ExpressionInverseSet<T>(set);
@@ -56,13 +55,13 @@ public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseS
 	public boolean contains(ExpressionInverseSet<T> other) {
 		return this.elements.containsAll(other.elements);
 	}
-	
+
 	public ExpressionInverseSet<T> addExpression(T exp) {
 		HashSet<T> exps = new HashSet<>(elements);
 		exps.add(exp);
 		return new ExpressionInverseSet<T>(exps);
 	}
-	
+
 	public ExpressionInverseSet<T> removeExpression(T exp) {
 		HashSet<T> exps = new HashSet<>(elements);
 		exps.remove(exp);

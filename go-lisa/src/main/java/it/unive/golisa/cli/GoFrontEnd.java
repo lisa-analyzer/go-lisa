@@ -1,26 +1,5 @@
 package it.unive.golisa.cli;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ConstDeclContext;
@@ -91,16 +70,35 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall.ResolutionStrategy;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * @GoFrontEnd manages the translation from a Go program to the
- * corresponding LiSA @CFG.
+ * @GoFrontEnd manages the translation from a Go program to the corresponding
+ *                 LiSA @CFG.
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
-	private static final Logger log = LogManager.getLogger(GoFrontEnd.class); 
+	private static final Logger log = LogManager.getLogger(GoFrontEnd.class);
 
 	/**
 	 * Go program file path.
@@ -108,9 +106,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	private final String filePath;
 
 	private final Program program;
-	
+
 	private Map<String, ExpressionContext> constants;
-	
+
 	private GoLangAPISignatureMapper mapper = GoLangAPISignatureMapper.getGoApiSignatures();
 
 	/**
@@ -119,9 +117,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	public static final ResolutionStrategy CALL_STRATEGY = ResolutionStrategy.DYNAMIC_TYPES;
 
 	/**
-	 * Builds an instance of @GoToCFG for a given Go program
-	 * given at the location filePath.
-	 *  
+	 * Builds an instance of @GoToCFG for a given Go program given at the
+	 * location filePath.
+	 * 
 	 * @param filePath file path to a Go program.
 	 */
 	private GoFrontEnd(String filePath) {
@@ -133,6 +131,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Returns the parsed file path.
+	 * 
 	 * @return the parsed file path
 	 */
 	public String getFilePath() {
@@ -147,7 +146,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	 * Returns the collection of @CFG in a Go program at filePath.
 	 * 
 	 * @return collection of @CFG in file
-	 * @throws IOException if {@code stream} to file cannot be written to or closed
+	 * 
+	 * @throws IOException if {@code stream} to file cannot be written to or
+	 *                         closed
 	 */
 	private Program toLiSAProgram() throws IOException {
 		log.info("Go front-end setup...");
@@ -156,7 +157,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		long start = System.currentTimeMillis();
 
 		InputStream stream = new FileInputStream(getFilePath());
-		
+
 		long l = Files.lines(Paths.get(getFilePath()), Charset.defaultCharset()).count();
 		log.info("LOCS: " + l);
 
@@ -167,16 +168,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		ParseTree tree = parser.sourceFile();
 		long parsingTime = System.currentTimeMillis();
 
-
 		Program result = visitSourceFile((SourceFileContext) tree);
-		
+
 		log.info("PARSING TIME: " + (parsingTime - start) + " CFG time: " + (System.currentTimeMillis() - parsingTime));
 
 		stream.close();
 
 		// Register all the types
 		registerGoTypes(program);
-		
+
 		return result;
 	}
 
@@ -188,11 +188,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		program.registerType(GoUntypedInt.INSTANCE);
 		program.registerType(GoUntypedFloat.INSTANCE);
 		program.registerType(GoInt8Type.INSTANCE);
-		program.registerType(GoUInt8Type.INSTANCE);		
+		program.registerType(GoUInt8Type.INSTANCE);
 		program.registerType(GoInt16Type.INSTANCE);
-		program.registerType(GoUInt16Type.INSTANCE);	
+		program.registerType(GoUInt16Type.INSTANCE);
 		program.registerType(GoInt32Type.INSTANCE);
-		program.registerType(GoUInt32Type.INSTANCE);	
+		program.registerType(GoUInt32Type.INSTANCE);
 		program.registerType(GoInt64Type.INSTANCE);
 		program.registerType(GoUInt64Type.INSTANCE);
 		program.registerType(GoUntypedFloat.INSTANCE);
@@ -212,6 +212,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	CompilationUnit packageUnit;
+
 	@Override
 	public Program visitSourceFile(SourceFileContext ctx) {
 		String packageName = visitPackageClause(ctx.packageClause());
@@ -223,20 +224,24 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		for (ImportDeclContext imp : ctx.importDecl())
 			visitImportDecl(imp);
-		
+
 		loadCore();
 
-		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...", "Global declarations")) 
+		for (DeclarationContext decl : IterationLogger.iterate(log, ctx.declaration(), "Parsing global declarations...",
+				"Global declarations"))
 			visitDeclarationContext(decl);
 
-		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...", "Method declarations"))
-			visitMethodDecl(decl); 
+		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...",
+				"Method declarations"))
+			visitMethodDecl(decl);
 
 		updateUnitReferences();
 
-		// method declaration must be linked to compilation unit of a declaration context, for the function declaration is not needed
+		// method declaration must be linked to compilation unit of a
+		// declaration context, for the function declaration is not needed
 		// Visit of each FunctionDeclContext populating the corresponding cfg
-		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(), "Visiting function declarations...", "Function declarations"))	
+		for (FunctionDeclContext funcDecl : IterationLogger.iterate(log, ctx.functionDecl(),
+				"Visiting function declarations...", "Function declarations"))
 			visitFunctionDecl(funcDecl);
 
 		return program;
@@ -248,28 +253,27 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 	}
 
 	private void visitDeclarationContext(DeclarationContext decl) {
-		if (decl.typeDecl() != null) 
+		if (decl.typeDecl() != null)
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addCompilationUnit(unit);
-		
+
 		if (decl.constDecl() != null)
 			visitConstDeclContext(decl.constDecl());
-			
+
 	}
-	
+
 	private void visitConstDeclContext(ConstDeclContext ctx) {
-		for (ConstSpecContext constSpec : ctx.constSpec()) 
+		for (ConstSpecContext constSpec : ctx.constSpec())
 			visitConstSpecContext(constSpec);
 	}
-	
-	
+
 	private void visitConstSpecContext(ConstSpecContext ctx) {
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
 
-		for (int i = 0; i < ids.IDENTIFIER().size(); i++) 
+		for (int i = 0; i < ids.IDENTIFIER().size(); i++)
 			if (exps != null && exps.expression(i) != null)
-			constants.put(ids.IDENTIFIER(i).getText(), exps.expression(i));
+				constants.put(ids.IDENTIFIER(i).getText(), exps.expression(i));
 	}
 
 	@Override
@@ -277,22 +281,21 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		HashSet<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
-			CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
+			CompilationUnit unit = new CompilationUnit(
+					new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
 			new GoTypeVisitor(filePath, unit, program, constants).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
-	 
+
 	private int getLine(ParserRuleContext ctx) {
 		return ctx.getStart().getLine();
-	} 
-
+	}
 
 	private int getCol(ParserRuleContext ctx) {
 		return ctx.getStop().getCharPositionInLine();
-	} 
-
+	}
 
 	@Override
 	public String visitPackageClause(PackageClauseContext ctx) {
@@ -301,7 +304,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Statement visitImportDecl(ImportDeclContext ctx) {
-		for (ImportSpecContext impSpec: ctx.importSpec())
+		for (ImportSpecContext impSpec : ctx.importSpec())
 			visitImportSpec(impSpec);
 		return null;
 	}
@@ -313,34 +316,44 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public String visitString_(String_Context ctx) {
-		return ctx.getText().substring(1, ctx.getText().length() -1);
+		return ctx.getText().substring(1, ctx.getText().length() - 1);
 	}
 
 	@Override
 	public Statement visitImportPath(ImportPathContext ctx) {
 		String lib = visitString_(ctx.string_());
-		
+
 		switch (lib) {
-			case "strings": loadStrings(); break;
-			case "fmt": loadFmt(); break;
-			case "url": loadUrl(); break;
-			case "strconv": loadStrconv(); break;
-			default: loadUnhandledLib(lib); break;
+		case "strings":
+			loadStrings();
+			break;
+		case "fmt":
+			loadFmt();
+			break;
+		case "url":
+			loadUrl();
+			break;
+		case "strconv":
+			loadStrconv();
+			break;
+		default:
+			loadUnhandledLib(lib);
+			break;
 		}
 		return null;
 	}
 
 	private void loadUnhandledLib(String lib) {
-		
+
 		SourceCodeLocation unknownLocation;
-		if(mapper.getPackages().contains(lib)) 
+		if (mapper.getPackages().contains(lib))
 			// it is a package contained in Go APIs
 			unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		else
 			unknownLocation = new SourceCodeLocation("unknown", 0, 0);
 
-		CompilationUnit cu = new CompilationUnit(unknownLocation, lib , false);
-		program.addCompilationUnit(cu);		
+		CompilationUnit cu = new CompilationUnit(unknownLocation, lib, false);
+		program.addCompilationUnit(cu);
 	}
 
 	private void loadUrl() {
@@ -349,7 +362,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		url.addConstruct(new UrlQueryEscape(unknownLocation, url));
 		url.addConstruct(new UrlPathEscape(unknownLocation, url));
 
-		program.addCompilationUnit(url);		
+		program.addCompilationUnit(url);
 	}
 
 	private void loadCore() {
@@ -365,9 +378,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		str.addConstruct(new GoHasSuffix(unknownLocation, str));
 		str.addConstruct(new GoContains(unknownLocation, str));
 		str.addConstruct(new GoReplace(unknownLocation, str));
-		str.addConstruct(new GoIndex(unknownLocation, str));	
-		str.addConstruct(new GoIndexRune(unknownLocation, str));	
-		str.addConstruct(new GoLen(unknownLocation, str));	
+		str.addConstruct(new GoIndex(unknownLocation, str));
+		str.addConstruct(new GoIndexRune(unknownLocation, str));
+		str.addConstruct(new GoLen(unknownLocation, str));
 
 		program.addCompilationUnit(str);
 
@@ -380,7 +393,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 		packageUnit.addConstruct(new GoIndexRune(unknownLocation, str));
 		packageUnit.addConstruct(new GoLen(unknownLocation, str));
 	}
-	
+
 	private void loadStrconv() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit strconv = new CompilationUnit(unknownLocation, "strconv", false);
@@ -389,7 +402,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		program.addCompilationUnit(strconv);
 
-		// We add the  methods also in package unit as non-instant cfgs
+		// We add the methods also in package unit as non-instant cfgs
 		packageUnit.addConstruct(new GoAtoi(unknownLocation, strconv));
 		packageUnit.addConstruct(new GoItoa(unknownLocation, strconv));
 	}
@@ -401,12 +414,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 
 		program.addCompilationUnit(fmt);
 
-		// We add the  methods also in package unit as non-instant cfgs
+		// We add the methods also in package unit as non-instant cfgs
 		packageUnit.addConstruct(new GoPrintln(unknownLocation, fmt));
 	}
 
 	@Override
-	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {	
+	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, constants).visitFunctionDecl(ctx);
 	}
 

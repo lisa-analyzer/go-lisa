@@ -1,4 +1,3 @@
-import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
@@ -9,6 +8,7 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class InterproceduralTest extends GoAnalysisTestExecutor {
 
@@ -41,7 +41,8 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setDumpTypeInference(false)
 				.setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
+						new Interval()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -53,7 +54,8 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setDumpTypeInference(false)
 				.setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
+						new Interval()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -65,19 +67,21 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setDumpTypeInference(false)
 				.setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
+						new Interval()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc5", "interprocedural.go", conf);
 	}
 
-	@Test	
+	@Test
 	public void testInterproc6() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setDumpTypeInference(false)
 				.setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
+						new Interval()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -89,7 +93,8 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setDumpTypeInference(false)
 				.setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
+						new Interval()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());

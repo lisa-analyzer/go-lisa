@@ -1,17 +1,15 @@
 package it.unive.golisa.cfg.statement.block;
 
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.VariableRef;
-
 /**
  * The class is used to track the variable declaration in a block
- * 
  */
 public class BlockScope {
 
@@ -19,7 +17,7 @@ public class BlockScope {
 		CONSTANT,
 		VARIABLE,
 		SHORT_VARIABLE,
-		MULTI_SHORT_VARIABLE, 
+		MULTI_SHORT_VARIABLE,
 	}
 
 	private final Map<VariableRef, DeclarationType> refs;
@@ -31,8 +29,8 @@ public class BlockScope {
 		this.open = open;
 	}
 
-	public void addVarDeclaration(VariableRef ref, DeclarationType  type) {
-		refs.put(ref, type);	
+	public void addVarDeclaration(VariableRef ref, DeclarationType type) {
+		refs.put(ref, type);
 	}
 
 	private Map<VariableRef, DeclarationType> getVarsDeclarations() {
@@ -41,13 +39,13 @@ public class BlockScope {
 
 	public static List<OpenBlock> getListOfBlocksBeforeDeclaration(List<BlockScope> listBlock, Expression exp) {
 		List<OpenBlock> openBlocks = new ArrayList<>();
-		if(exp instanceof VariableRef) {
+		if (exp instanceof VariableRef) {
 			VariableRef ref = (VariableRef) exp;
-			for(int i = listBlock.size()-1; i >= 0; i--) //search backward
+			for (int i = listBlock.size() - 1; i >= 0; i--) // search backward
 				for (Entry<VariableRef, DeclarationType> e : listBlock.get(i).getVarsDeclarations().entrySet())
-					if(e.getKey().getName().equals(ref.getName())) {
+					if (e.getKey().getName().equals(ref.getName())) {
 						for (int j = i; j < listBlock.size(); j++)
-							openBlocks.add(0 ,listBlock.get(j).getOpen());
+							openBlocks.add(0, listBlock.get(j).getOpen());
 						return openBlocks;
 					}
 		}
@@ -56,5 +54,5 @@ public class BlockScope {
 
 	public OpenBlock getOpen() {
 		return open;
-	}	
+	}
 }

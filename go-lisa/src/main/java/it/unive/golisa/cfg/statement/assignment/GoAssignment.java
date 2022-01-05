@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.List;
-
 import it.unive.golisa.cfg.statement.block.BlockScope;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.lisa.analysis.AbstractState;
@@ -19,6 +17,7 @@ import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
+import java.util.List;
 
 public class GoAssignment extends BinaryExpression {
 
@@ -36,7 +35,8 @@ public class GoAssignment extends BinaryExpression {
 	 * @param target     the target of the assignment
 	 * @param expression the expression to assign to {@code target}
 	 */
-	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression, List<BlockScope> listBlock, OpenBlock containingBlock) {
+	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression,
+			List<BlockScope> listBlock, OpenBlock containingBlock) {
 		super(cfg, location, target, expression);
 		this.blocksToDeclaration = BlockScope.getListOfBlocksBeforeDeclaration(listBlock, getLeft());
 		this.containingBlock = containingBlock;
@@ -68,10 +68,10 @@ public class GoAssignment extends BinaryExpression {
 	 */
 	@Override
 	public final <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-			StatementStore<A, H, V> expressions)
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					StatementStore<A, H, V> expressions)
 					throws SemanticException {
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
 		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
@@ -95,8 +95,9 @@ public class GoAssignment extends BinaryExpression {
 	}
 
 	private <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V>  assignScopedId(AnalysisState<A, H, V>entryState, SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
+					SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
 
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
@@ -105,14 +106,14 @@ public class GoAssignment extends BinaryExpression {
 			return entryState;
 
 		AnalysisState<A, H, V> tmp = entryState;
-		
+
 		// removes the block where the declaration occurs
-		List<OpenBlock> blocksBeforeDecl = blocksToDeclaration.subList(0, blocksToDeclaration.size() -1);
+		List<OpenBlock> blocksBeforeDecl = blocksToDeclaration.subList(0, blocksToDeclaration.size() - 1);
 
 		for (int i = 0; i < blocksBeforeDecl.size(); i++) {
 			SymbolicExpression idToAssign = expr1;
 
-			for (int j = blocksBeforeDecl.size() - 1 -i; j >= 0; j--)
+			for (int j = blocksBeforeDecl.size() - 1 - i; j >= 0; j--)
 				idToAssign = idToAssign.pushScope(new ScopeToken(blocksBeforeDecl.get(j)));
 			tmp = tmp.assign(idToAssign, expr2, this);
 		}

@@ -91,10 +91,10 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	@Override
 	protected StringConstantPropagation evalBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
 			StringConstantPropagation right, ProgramPoint pp) {
-		
+
 		if (left.isTop() || right.isTop())
 			return top();
-		
+
 		switch (operator) {
 		case STRING_CONCAT:
 			return new StringConstantPropagation(left.value + right.value);
@@ -107,10 +107,10 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	protected StringConstantPropagation evalTernaryExpression(TernaryOperator operator,
 			StringConstantPropagation left,
 			StringConstantPropagation middle, StringConstantPropagation right, ProgramPoint pp) {
-		
+
 		if (left.isTop() || middle.isTop || right.isTop())
 			return top();
-		
+
 		switch (operator) {
 		case STRING_REPLACE:
 			return new StringConstantPropagation(left.value.replaceAll(middle.value, right.value));
@@ -195,7 +195,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 			return Satisfiability.UNKNOWN;
 		}
 	}
-	
+
 	public String getString() {
 		return value;
 	}

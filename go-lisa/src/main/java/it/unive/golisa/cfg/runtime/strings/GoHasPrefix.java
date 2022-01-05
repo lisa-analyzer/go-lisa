@@ -44,24 +44,27 @@ public class GoHasPrefix extends NativeCFG {
 		public static HasPrefix build(CFG cfg, CodeLocation location, Expression... params) {
 			return new HasPrefix(cfg, location, params[0], params[1]);
 		}
-		
+
 		public HasPrefix(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "HasPrefix", GoBoolType.INSTANCE, left, right);
 		}
 
 		@Override
 		protected <A extends AbstractState<A, H, V>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(AnalysisState<A, H, V> entryState,
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState, SymbolicExpression leftExp,
-				AnalysisState<A, H, V> rightState, SymbolicExpression rightExp) throws SemanticException {
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(AnalysisState<A, H, V> entryState,
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
+						SymbolicExpression leftExp,
+						AnalysisState<A, H, V> rightState, SymbolicExpression rightExp) throws SemanticException {
 			if (!leftExp.getDynamicType().isStringType() && !leftExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
 			if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_STARTS_WITH, getLocation()), original);
+			return rightState
+					.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
+							leftExp, rightExp, BinaryOperator.STRING_STARTS_WITH, getLocation()), original);
 		}
 	}
 }

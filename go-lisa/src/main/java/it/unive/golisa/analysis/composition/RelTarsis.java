@@ -22,10 +22,12 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	private final RelationalSubstringDomain rsubs;
 
 	public RelTarsis() {
-		this(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(), new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
+		this(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(),
+				new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
 	}
 
-	private RelTarsis(ValueEnvironment<Tarsis> tarsis, RelationalSubstringDomain rsubs, ValueEnvironment<StringConstantPropagation> constant) {
+	private RelTarsis(ValueEnvironment<Tarsis> tarsis, RelationalSubstringDomain rsubs,
+			ValueEnvironment<StringConstantPropagation> constant) {
 		this.tarsis = tarsis;
 		this.rsubs = rsubs;
 		this.constant = constant;
@@ -40,12 +42,14 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public RelTarsis smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		return new RelTarsis(tarsis.smallStepSemantics(expression, pp), rsubs.smallStepSemantics(expression, pp), constant.smallStepSemantics(expression, pp));
+		return new RelTarsis(tarsis.smallStepSemantics(expression, pp), rsubs.smallStepSemantics(expression, pp),
+				constant.smallStepSemantics(expression, pp));
 	}
 
 	@Override
 	public RelTarsis assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		return new RelTarsis(tarsis.assume(expression, pp), rsubs.assume(expression, pp), constant.assume(expression, pp));
+		return new RelTarsis(tarsis.assume(expression, pp), rsubs.assume(expression, pp),
+				constant.assume(expression, pp));
 	}
 
 	@Override
@@ -55,10 +59,14 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (tarsis.satisfies(expression, pp) == Satisfiability.SATISFIED || rsubs.satisfies(expression, pp) == Satisfiability.SATISFIED || constant.satisfies(expression, pp) == Satisfiability.SATISFIED)
+		if (tarsis.satisfies(expression, pp) == Satisfiability.SATISFIED
+				|| rsubs.satisfies(expression, pp) == Satisfiability.SATISFIED
+				|| constant.satisfies(expression, pp) == Satisfiability.SATISFIED)
 			return Satisfiability.SATISFIED;
 
-		if (tarsis.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED || rsubs.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED || constant.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED)
+		if (tarsis.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED
+				|| rsubs.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED
+				|| constant.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED)
 			return Satisfiability.NOT_SATISFIED;
 
 		return Satisfiability.UNKNOWN;
@@ -70,13 +78,14 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 			return Lattice.TOP_REPR;
 		if (isBottom())
 			return Lattice.BOTTOM_REPR;
-		
-		return new PairRepresentation(new PairRepresentation(tarsis.representation(), rsubs.representation()), constant.representation());
+
+		return new PairRepresentation(new PairRepresentation(tarsis.representation(), rsubs.representation()),
+				constant.representation());
 	}
 
 	@Override
 	public boolean isTop() {
-		return tarsis.isTop() && rsubs.isTop() && constant.isTop();	
+		return tarsis.isTop() && rsubs.isTop() && constant.isTop();
 	}
 
 	@Override
@@ -86,7 +95,8 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public RelTarsis top() {
-		return new RelTarsis(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(), new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
+		return new RelTarsis(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(),
+				new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
 	}
 
 	@Override
@@ -101,15 +111,15 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	protected RelTarsis wideningAux(RelTarsis other) throws SemanticException {
-		return new RelTarsis(tarsis.widening(other.tarsis), rsubs.widening(other.rsubs), constant.widening(other.constant));
+		return new RelTarsis(tarsis.widening(other.tarsis), rsubs.widening(other.rsubs),
+				constant.widening(other.constant));
 	}
 
 	@Override
 	protected boolean lessOrEqualAux(RelTarsis other) throws SemanticException {
-		return tarsis.lessOrEqual(other.tarsis) && rsubs.lessOrEqual(other.rsubs) && constant.lessOrEqual(other.constant);
+		return tarsis.lessOrEqual(other.tarsis) && rsubs.lessOrEqual(other.rsubs)
+				&& constant.lessOrEqual(other.constant);
 	}
-
-	
 
 	@Override
 	public int hashCode() {

@@ -33,26 +33,29 @@ public class GoIndex extends NativeCFG {
 	}
 
 	public static class IndexOf extends BinaryNativeCall implements PluggableStatement {
-	
+
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		public static IndexOf build(CFG cfg, CodeLocation location, Expression... params) {
 			return new IndexOf(cfg, location, params[0], params[1]);
 		}
-		
+
 		public IndexOf(CFG cfg, CodeLocation location, Expression exp1, Expression exp2) {
 			super(cfg, location, "Index", GoIntType.INSTANCE, exp1, exp2);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-				SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> leftState,
+						SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 						throws SemanticException {
 			if (!leftExp.getDynamicType().isStringType() && !leftExp.getDynamicType().isUntyped())
 				return entryState.bottom();
@@ -60,7 +63,8 @@ public class GoIndex extends NativeCFG {
 			if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_INDEX_OF, getLocation()), original);
+			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoIntType.INSTANCE),
+					leftExp, rightExp, BinaryOperator.STRING_INDEX_OF, getLocation()), original);
 		}
 	}
 }

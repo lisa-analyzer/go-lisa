@@ -1,24 +1,26 @@
 package it.unive.golisa.golang.api.signature;
 
-public class ConstGoLangApiSignature  extends GoLangApiSignature{
+public class ConstGoLangApiSignature extends GoLangApiSignature {
 
 	private final String name;
 	private final String value;
 	private final String type;
-	
+
 	public ConstGoLangApiSignature(String pkg, String name, String value, String type) {
 		super(pkg);
 		this.name = name;
 		this.value = value;
 		this.type = type;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
+
 	public String getValue() {
 		return value;
 	}
+
 	public String getType() {
 		return type;
 	}
@@ -62,10 +64,8 @@ public class ConstGoLangApiSignature  extends GoLangApiSignature{
 
 	@Override
 	public String toString() {
-		return super.toString() + ", const "+ type == null ? "" : (type +" ") + name + value == null ? "" : (" = " + value);
+		return super.toString() + ", const " + type == null ? ""
+				: (type + " ") + name + value == null ? "" : (" = " + value);
 	}
-	
-	
-	
 
 }

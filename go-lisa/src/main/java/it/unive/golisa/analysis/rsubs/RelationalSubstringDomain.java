@@ -1,15 +1,5 @@
 package it.unive.golisa.analysis.rsubs;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -31,14 +21,25 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import org.apache.commons.lang3.ArrayUtils;
 
-public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>> implements ValueDomain<RelationalSubstringDomain> {
+public class RelationalSubstringDomain
+		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
+		implements ValueDomain<RelationalSubstringDomain> {
 
 	public RelationalSubstringDomain() {
 		this(new ExpressionInverseSet<ValueExpression>(), null);
 	}
 
-	protected RelationalSubstringDomain(ExpressionInverseSet<ValueExpression> lattice, Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
+	protected RelationalSubstringDomain(ExpressionInverseSet<ValueExpression> lattice,
+			Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
 		super(lattice, function);
 	}
 
@@ -73,13 +74,13 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		return new RelationalSubstringDomain(lattice, func);
 	}
 
-
 	private RelationalSubstringDomain glb(RelationalSubstringDomain other) throws SemanticException {
 		return super.lub(other);
 	}
 
 	@Override
-	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp)
+			throws SemanticException {
 		Map<Identifier, ExpressionInverseSet<ValueExpression>> func;
 		if (function == null)
 			func = new HashMap<>();
@@ -108,7 +109,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 		// Improvement of add phase
 		for (ValueExpression idRel : func.get(id))
-			if (id instanceof Identifier) 
+			if (id instanceof Identifier)
 				func.put(id, func.get(id) == null ? func.get(idRel) : func.get(id).glb(func.get(idRel)));
 
 		// Closure phase
@@ -119,8 +120,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		if (isTop() || isBottom())
 			return new RelationalSubstringDomain(lattice, function);
 
-
-		Map<Identifier, ExpressionInverseSet<ValueExpression>>  clos = new HashMap<>(function);
+		Map<Identifier, ExpressionInverseSet<ValueExpression>> clos = new HashMap<>(function);
 
 		for (Identifier x : clos.keySet())
 			for (Identifier y : clos.keySet())
@@ -131,13 +131,15 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 	}
 
 	@Override
-	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp)
+			throws SemanticException {
 		return new RelationalSubstringDomain(lattice, function);
 	}
 
 	@Override
 	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// rsubs can assume contains, equals, and & or expressions (all binary expressions)
+		// rsubs can assume contains, equals, and & or expressions (all binary
+		// expressions)
 
 		if (isBottom())
 			return bottom();
@@ -153,7 +155,7 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft(), pp);
 			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight(), pp);
 
-			switch(binary.getOperator()) {
+			switch (binary.getOperator()) {
 
 			case COMPARISON_EQ:
 				ValueExpression left = (ValueExpression) binary.getLeft();
@@ -191,8 +193,10 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 				return leftState.lub(rightState);
 			case LOGICAL_OR:
 				return leftState.glb(rightState);
-			case STRING_STARTS_WITH: // can be assumed but not integrated in the paper
-			case STRING_ENDS_WITH: // can be assumed but not integrated in the paper
+			case STRING_STARTS_WITH: // can be assumed but not integrated in the
+										// paper
+			case STRING_ENDS_WITH: // can be assumed but not integrated in the
+									// paper
 			case STRING_CONTAINS:
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
@@ -237,7 +241,8 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		// rsubs can satisfy contains, equals, and & or expressions (all binary expressions)
+		// rsubs can satisfy contains, equals, and & or expressions (all binary
+		// expressions)
 
 		if (isTop())
 			return Satisfiability.UNKNOWN;
@@ -247,21 +252,25 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
 
-			switch(binary.getOperator()) {
+			switch (binary.getOperator()) {
 			case LOGICAL_AND:
-				return satisfies((ValueExpression) binary.getLeft(), pp).and(satisfies((ValueExpression) binary.getRight(), pp));
+				return satisfies((ValueExpression) binary.getLeft(), pp)
+						.and(satisfies((ValueExpression) binary.getRight(), pp));
 			case LOGICAL_OR:
-				return satisfies((ValueExpression) binary.getLeft(), pp).or(satisfies((ValueExpression) binary.getRight(), pp));
+				return satisfies((ValueExpression) binary.getLeft(), pp)
+						.or(satisfies((ValueExpression) binary.getRight(), pp));
 			case STRING_CONTAINS:
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
-					return getState(x).contains((ValueExpression) binary.getRight()) ? Satisfiability.SATISFIED : Satisfiability.NOT_SATISFIED;
+					return getState(x).contains((ValueExpression) binary.getRight()) ? Satisfiability.SATISFIED
+							: Satisfiability.NOT_SATISFIED;
 				}
 			case STRING_EQUALS:
 				if (binary.getLeft() instanceof Identifier && binary.getRight() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					Identifier y = (Identifier) binary.getRight();
-					return getState(x).contains(y) && getState(y).contains(x) ? Satisfiability.SATISFIED : Satisfiability.NOT_SATISFIED;
+					return getState(x).contains(y) && getState(y).contains(x) ? Satisfiability.SATISFIED
+							: Satisfiability.NOT_SATISFIED;
 				}
 			default:
 				return Satisfiability.UNKNOWN;
@@ -292,10 +301,11 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			BinaryExpression binary = (BinaryExpression) expression;
 
 			if (binary.getOperator() == BinaryOperator.STRING_CONCAT)
-				return ArrayUtils.addAll(flat((ValueExpression) binary.getLeft()), flat((ValueExpression) binary.getRight()));
+				return ArrayUtils.addAll(flat((ValueExpression) binary.getLeft()),
+						flat((ValueExpression) binary.getRight()));
 
 		}
-		return new ValueExpression[] {expression};
+		return new ValueExpression[] { expression };
 	}
 
 	private ExpressionInverseSet<ValueExpression> getRelations(ValueExpression expression) {
@@ -305,32 +315,33 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		for (int i = 0; i < exps.length; i++) {
 			ValueExpression partial = exps[i];
 
-			if (exps[i] instanceof Constant && ((Constant) exps[i]).getValue() instanceof String) 
+			if (exps[i] instanceof Constant && ((Constant) exps[i]).getValue() instanceof String)
 				result.addAll(getAllSubstrings((String) ((Constant) exps[i]).getValue()));
-			else 
-				result.add(exps[i]);		
+			else
+				result.add(exps[i]);
 
 			for (int j = i + 1; j < exps.length; j++) {
 
-				if (exps[j] instanceof Constant && ((Constant) exps[j]).getValue() instanceof String) 
+				if (exps[j] instanceof Constant && ((Constant) exps[j]).getValue() instanceof String)
 					result.addAll(getAllSubstrings((String) ((Constant) exps[j]).getValue()));
-				else 
+				else
 					result.add(exps[j]);
 
-				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j], BinaryOperator.STRING_CONCAT, exps[j].getCodeLocation());
+				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j],
+						BinaryOperator.STRING_CONCAT, exps[j].getCodeLocation());
 				result.add(partial);
 			}
 		}
 
 		return new ExpressionInverseSet<ValueExpression>(result);
-	} 
+	}
 
 	private Set<Constant> getAllSubstrings(String str) {
 		HashSet<Constant> res = new HashSet<Constant>();
 
-		for (int i = 0; i < str.length(); i++) 
-			for (int j = i+1; j <= str.length(); j++) 
-				res.add(new Constant(GoStringType.INSTANCE, str.substring(i,j), SyntheticLocation.INSTANCE));
+		for (int i = 0; i < str.length(); i++)
+			for (int j = i + 1; j <= str.length(); j++)
+				res.add(new Constant(GoStringType.INSTANCE, str.substring(i, j), SyntheticLocation.INSTANCE));
 
 		return res;
 	}
@@ -345,9 +356,11 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		if (expression.equals(id))
 			return true;
 
-		if (expression instanceof BinaryExpression && ((BinaryExpression) expression).getOperator() == BinaryOperator.STRING_CONCAT) {
+		if (expression instanceof BinaryExpression
+				&& ((BinaryExpression) expression).getOperator() == BinaryOperator.STRING_CONCAT) {
 			BinaryExpression binary = (BinaryExpression) expression;
-			return appearsAtTopLevel((ValueExpression) binary.getLeft(), id) || appearsAtTopLevel((ValueExpression) binary.getRight(), id);
+			return appearsAtTopLevel((ValueExpression) binary.getLeft(), id)
+					|| appearsAtTopLevel((ValueExpression) binary.getRight(), id);
 		}
 
 		return false;
@@ -376,9 +389,10 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 			throw new SemanticException("Popping the scope '" + token + "' raised an error", holder.get());
 
 		return result;
-	}	
+	}
 
-	private RelationalSubstringDomain liftIdentifiers(Function<Identifier, Identifier> lifter) throws SemanticException {
+	private RelationalSubstringDomain liftIdentifiers(Function<Identifier, Identifier> lifter)
+			throws SemanticException {
 		if (isBottom() || isTop())
 			return this;
 
@@ -392,7 +406,8 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 		return new RelationalSubstringDomain(lattice, function);
 	}
 
-	public RelationalSubstringDomain propagateConstants(ValueEnvironment<StringConstantPropagation> cs) throws SemanticException {
+	public RelationalSubstringDomain propagateConstants(ValueEnvironment<StringConstantPropagation> cs)
+			throws SemanticException {
 
 		if (isTop() || isBottom() || cs.isTop() || cs.isBottom())
 			return this;
@@ -411,16 +426,17 @@ public class RelationalSubstringDomain extends FunctionalLattice<RelationalSubst
 				if (string != null) {
 					constants.add(string);
 					for (String str : constants)
-						previousRelations = previousRelations.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
+						previousRelations = previousRelations
+								.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
 				}
 			}
 
-			if (!constants.isEmpty()) 
+			if (!constants.isEmpty())
 				for (Identifier idCs : cs.getKeys())
 					if (constants.contains(cs.getState(idCs).getString()) && !idCs.getName().equals(id.getName())) {
-						previousRelations =	previousRelations.addExpression(idCs);
+						previousRelations = previousRelations.addExpression(idCs);
 						result = result.putState(id, previousRelations);
-					}	
+					}
 		}
 
 		return result;

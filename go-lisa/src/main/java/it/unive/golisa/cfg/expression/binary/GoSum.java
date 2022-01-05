@@ -30,15 +30,18 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> leftState,
+					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 					throws SemanticException {
 		BinaryOperator op;
 		ExternalSet<Type> types;
-				
+
 		AnalysisState<A, H, V> result = entryState.bottom();
-		
+
 		for (Type leftType : leftExp.getTypes())
 			for (Type rightType : rightExp.getTypes()) {
 				if (leftType.isStringType() && rightType.isStringType()) {
@@ -49,10 +52,10 @@ public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperatio
 					types = resultType(leftExp, rightExp);
 				} else
 					continue;
-				
+
 				result = result.lub(rightState.smallStepSemantics(
 						new BinaryExpression(types, leftExp, rightExp, op, getLocation()), this));
-			}	
+			}
 
 		return result;
 	}

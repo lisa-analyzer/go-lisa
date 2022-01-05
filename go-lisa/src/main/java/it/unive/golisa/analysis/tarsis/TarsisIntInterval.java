@@ -148,16 +148,20 @@ public class TarsisIntInterval {
 			return ZERO;
 
 		if (!other.includes(ZERO))
-			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.ONE.divide(other.low)));
+			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high),
+					TarsisMathNumber.ONE.divide(other.low)));
 		else if (other.high.is(0))
 			return mul(new TarsisIntInterval(TarsisMathNumber.MINUS_INFINITY, TarsisMathNumber.ONE.divide(other.low)));
 		else if (other.low.is(0))
 			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.PLUS_INFINITY));
 		else if (ignoreZero)
-			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.low), TarsisMathNumber.ONE.divide(other.high)));
+			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.low),
+					TarsisMathNumber.ONE.divide(other.high)));
 		else {
-			TarsisIntInterval lower = mul(new TarsisIntInterval(TarsisMathNumber.MINUS_INFINITY, TarsisMathNumber.ONE.divide(other.low)));
-			TarsisIntInterval higher = mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.PLUS_INFINITY));
+			TarsisIntInterval lower = mul(
+					new TarsisIntInterval(TarsisMathNumber.MINUS_INFINITY, TarsisMathNumber.ONE.divide(other.low)));
+			TarsisIntInterval higher = mul(
+					new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.PLUS_INFINITY));
 
 			if (lower.includes(higher))
 				return lower;
@@ -174,7 +178,7 @@ public class TarsisIntInterval {
 	}
 
 	public boolean intersects(TarsisIntInterval other) {
-		return includes(other) || other.includes(this) 
+		return includes(other) || other.includes(this)
 				|| (high.compareTo(other.low) >= 0 && high.compareTo(other.high) <= 0)
 				|| (other.high.compareTo(low) >= 0 && other.high.compareTo(high) <= 0);
 	}

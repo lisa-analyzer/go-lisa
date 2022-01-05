@@ -26,7 +26,7 @@ public class GoPrintln extends NativeCFG {
 				new Parameter(location, "this", Untyped.INSTANCE)),
 				Println.class);
 	}
-	
+
 	public static class Println extends UnaryNativeCall implements PluggableStatement {
 
 		private Statement original;
@@ -39,15 +39,17 @@ public class GoPrintln extends NativeCFG {
 		public static Println build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Println(cfg, location, params[0]);
 		}
-		
+
 		public Println(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "Println", Untyped.INSTANCE, arg);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-				AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {			
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
 			return exprState.smallStepSemantics(expr, original);
 		}
 	}

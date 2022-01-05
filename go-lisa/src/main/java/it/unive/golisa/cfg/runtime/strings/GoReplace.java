@@ -42,33 +42,36 @@ public class GoReplace extends NativeCFG {
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		public static Replace build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Replace(cfg, location, params[0], params[1], params[2]);
 		}
-		
+
 		public Replace(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
 			super(cfg, location, "Replace", left, middle, right);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V>
-		ternarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, 
-				AnalysisState<A, H, V> leftState, SymbolicExpression left,
-				AnalysisState<A, H, V> middleState, SymbolicExpression middle,
-				AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> leftState, SymbolicExpression left,
+						AnalysisState<A, H, V> middleState, SymbolicExpression middle,
+						AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
 
-			if (!left.getDynamicType().isStringType() && ! left.getDynamicType().isUntyped())
+			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			if (!middle.getDynamicType().isStringType() && ! middle.getDynamicType().isUntyped())
+			if (!middle.getDynamicType().isStringType() && !middle.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			if (!right.getDynamicType().isStringType() && ! right.getDynamicType().isUntyped())
+			if (!right.getDynamicType().isStringType() && !right.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), left, middle, right, TernaryOperator.STRING_REPLACE, getLocation()), original);
+			return rightState
+					.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE),
+							left, middle, right, TernaryOperator.STRING_REPLACE, getLocation()), original);
 		}
 	}
 }

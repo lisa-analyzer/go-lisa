@@ -1,6 +1,4 @@
 
-import org.junit.Test;
-
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.analysis.apron.Apron.ApronDomain;
 import it.unive.golisa.checker.OverflowChecker;
@@ -11,9 +9,9 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class ApronTest extends GoAnalysisTestExecutor {
-	
 
 	@Test
 	public void testSm2Interval() throws AnalysisSetupException {
@@ -44,7 +42,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 		perform("apron/sm2/non-protected/oct", "sm.go", conf);
 
 	}
-	
+
 	@Test
 	public void testSm2Ppl() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.PplPoly);
@@ -59,7 +57,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 		perform("apron/sm2/non-protected/ppl", "sm.go", conf);
 
 	}
-	
+
 	@Test
 	public void testSm2IntervalProtected() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.Box);
@@ -73,7 +71,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("apron/sm2/protected/box", "sm-protected.go", conf);
 	}
-	
+
 	@Test
 	public void testSm2OctProtected() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.Octagon);
@@ -101,7 +99,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("apron/sm2/protected/ppl", "sm-protected.go", conf);
 	}
-	
+
 	@Test
 	public void testSmInterval() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.Box);
@@ -131,7 +129,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 		perform("apron/sm1/oct", "sm.go", conf);
 
 	}
-	
+
 	@Test
 	public void testSmPpl() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.PplPoly);

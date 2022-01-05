@@ -30,9 +30,12 @@ public class GoLength extends UnaryNativeCall {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
-			SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState,
+					SymbolicExpression expr) throws SemanticException {
 
 		ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
 		AnalysisState<A, H, V> result = entryState.bottom();
@@ -44,12 +47,13 @@ public class GoLength extends UnaryNativeCall {
 				AnalysisState<A, H, V> partialResult = entryState.bottom();
 				ExternalSet<Type> untypedType = Caches.types().mkSingletonSet(Untyped.INSTANCE);
 
-				for (SymbolicExpression recExpr : rec.getComputedExpressions()) {	
+				for (SymbolicExpression recExpr : rec.getComputedExpressions()) {
 					HeapDereference deref = new HeapDereference(getRuntimeTypes(), recExpr, getLocation());
 					AnalysisState<A, H, V> refState = entryState.smallStepSemantics(deref, this);
 
 					for (SymbolicExpression l : refState.getComputedExpressions()) {
-						AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), l, new Variable(untypedType, "len", getLocation()), getLocation()), this);
+						AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), l,
+								new Variable(untypedType, "len", getLocation()), getLocation()), this);
 						partialResult = partialResult.lub(tmp);
 					}
 				}
@@ -57,7 +61,8 @@ public class GoLength extends UnaryNativeCall {
 			}
 
 			if (type.isStringType())
-				result = result.lub(exprState.smallStepSemantics(new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), this));
+				result = result.lub(exprState.smallStepSemantics(
+						new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), this));
 		}
 
 		return result;

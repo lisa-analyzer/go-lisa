@@ -1,10 +1,5 @@
 package it.unive.golisa.cli;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-
 import it.unive.golisa.analysis.Taint;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.lisa.AnalysisSetupException;
@@ -13,11 +8,13 @@ import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
-import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import java.io.File;
+import java.io.IOException;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 
 public class GoLiSA {
 
@@ -45,7 +42,7 @@ public class GoLiSA {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(new SimpleAbstractState<>(new MonolithicHeap(), new InferenceSystem<>(new Taint())))
-				.addSemanticCheck( new TaintChecker());
+				.addSemanticCheck(new TaintChecker());
 
 		Program program = null;
 
@@ -56,12 +53,12 @@ public class GoLiSA {
 		try {
 			program = GoFrontEnd.processFile(filePath);
 		} catch (ParseCancellationException e) {
-			// a parsing  error occurred 
+			// a parsing error occurred
 			System.err.println("Parsing error.");
 			return;
 		} catch (IOException e) {
 			// the file does not exists
-			System.err.println("File " + filePath +  "does not exist.");
+			System.err.println("File " + filePath + "does not exist.");
 			return;
 		} catch (UnsupportedOperationException e1) {
 			// an unsupported operations has been encountered
@@ -71,7 +68,7 @@ public class GoLiSA {
 		} catch (Exception e2) {
 			// other exception
 			e2.printStackTrace();
-			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());		
+			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());
 			return;
 		}
 
@@ -83,6 +80,6 @@ public class GoLiSA {
 			// an error occurred during the analysis
 			e.printStackTrace();
 			return;
-		} 
+		}
 	}
 }

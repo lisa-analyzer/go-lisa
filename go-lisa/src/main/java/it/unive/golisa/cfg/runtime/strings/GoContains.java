@@ -31,28 +31,31 @@ public class GoContains extends NativeCFG {
 				new Parameter(location, "other", GoStringType.INSTANCE)),
 				Contains.class);
 	}
-	
+
 	public static class Contains extends BinaryNativeCall implements PluggableStatement {
-		
+
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		public static Contains build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Contains(cfg, location, params[0], params[1]);
 		}
-		
+
 		public Contains(CFG cfg, CodeLocation location, Expression exp1, Expression exp2) {
 			super(cfg, location, "Contains", GoBoolType.INSTANCE, exp1, exp2);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-				AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-				SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+						AnalysisState<A, H, V> leftState,
+						SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
 						throws SemanticException {
 
 			if (!leftExp.getDynamicType().isStringType() && !leftExp.getDynamicType().isUntyped())
@@ -61,7 +64,9 @@ public class GoContains extends NativeCFG {
 			if (!rightExp.getDynamicType().isStringType() && !rightExp.getDynamicType().isUntyped())
 				return entryState.bottom();
 
-			return rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.STRING_CONTAINS, getLocation()), original);
+			return rightState
+					.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
+							leftExp, rightExp, BinaryOperator.STRING_CONTAINS, getLocation()), original);
 		}
 	}
 }

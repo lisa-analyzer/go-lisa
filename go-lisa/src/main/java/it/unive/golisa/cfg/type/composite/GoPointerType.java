@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -12,6 +8,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoPointerType implements PointerType, GoType {
 
@@ -19,7 +18,7 @@ public class GoPointerType implements PointerType, GoType {
 
 	private static final Set<GoPointerType> pointerTypes = new HashSet<>();
 
-	public static GoPointerType lookup(GoPointerType type)  {
+	public static GoPointerType lookup(GoPointerType type) {
 		if (!pointerTypes.contains(type))
 			pointerTypes.add(type);
 		return pointerTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -48,7 +47,7 @@ public class GoPointerType implements PointerType, GoType {
 		if (other instanceof GoPointerType)
 			return baseType.canBeAssignedTo(((GoPointerType) other).baseType) ? other : Untyped.INSTANCE;
 		if (other instanceof GoInterfaceType)
-			return ((GoInterfaceType) other).isEmptyInterface() ?  other : Untyped.INSTANCE;
+			return ((GoInterfaceType) other).isEmptyInterface() ? other : Untyped.INSTANCE;
 
 		return Untyped.INSTANCE;
 	}
@@ -92,7 +91,7 @@ public class GoPointerType implements PointerType, GoType {
 		Collection<Type> instances = new HashSet<>();
 		for (GoPointerType in : pointerTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override

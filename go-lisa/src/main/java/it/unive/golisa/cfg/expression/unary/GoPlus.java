@@ -24,22 +24,28 @@ import it.unive.lisa.symbolic.value.Constant;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoPlus extends UnaryNativeCall {
-	
+
 	public GoPlus(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "+", exp);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> exprState,
-			SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					AnalysisState<A, H, V> exprState,
+					SymbolicExpression expr) throws SemanticException {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 			return entryState.bottom();
 
-		Constant zero = new Constant(GoUntypedInt.INSTANCE, new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0), getLocation());
+		Constant zero = new Constant(GoUntypedInt.INSTANCE,
+				new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0), getLocation());
 
 		return entryState.smallStepSemantics(
-				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr, BinaryOperator.NUMERIC_NON_OVERFLOWING_ADD, getLocation()), this);
+				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr,
+						BinaryOperator.NUMERIC_NON_OVERFLOWING_ADD, getLocation()),
+				this);
 	}
 
 }

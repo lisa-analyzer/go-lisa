@@ -50,7 +50,7 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	public String visit(BinaryExpression expression, String left, String right, Object... params)
 			throws SemanticException {
 
-		switch(expression.getOperator()) {
+		switch (expression.getOperator()) {
 		case STRING_CONCAT:
 			if (left != null && right != null)
 				return left + right;
@@ -64,10 +64,10 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	public String visit(TernaryExpression expression, String left, String middle, String right, Object... params)
 			throws SemanticException {
 
-		switch(expression.getOperator()) {
+		switch (expression.getOperator()) {
 		case STRING_REPLACE:
 			if (left != null && middle != null && right != null)
-				return	left.replaceAll(middle, right);
+				return left.replaceAll(middle, right);
 			return null;
 		default:
 			return null;

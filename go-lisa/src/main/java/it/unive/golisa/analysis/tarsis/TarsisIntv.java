@@ -94,7 +94,8 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right, ProgramPoint pp) {
+	protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right,
+			ProgramPoint pp) {
 		if (operator != BinaryOperator.NUMERIC_NON_OVERFLOWING_DIV && (left.isTop() || right.isTop()))
 			// with div, we can return zero or bottom even if one of the
 			// operands is top
@@ -196,7 +197,8 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 
 			if (glb.isBottom())
 				return Satisfiability.fromBoolean(left.interval.getHigh().compareTo(right.interval.getLow()) <= 0);
-			// we might have a singleton as glb if the two intervals share a bound
+			// we might have a singleton as glb if the two intervals share a
+			// bound
 			if (glb.interval.isSingleton() && left.interval.getHigh().compareTo(right.interval.getLow()) == 0)
 				return Satisfiability.SATISFIED;
 			return Satisfiability.UNKNOWN;
@@ -275,9 +277,11 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 
 		boolean lowIsMinusInfinity = eval.interval.lowIsMinusInfinity();
 		TarsisIntv low_inf = new TarsisIntv(eval.interval.getLow(), TarsisMathNumber.PLUS_INFINITY);
-		TarsisIntv lowp1_inf = new TarsisIntv(eval.interval.getLow().add(TarsisMathNumber.ONE), TarsisMathNumber.PLUS_INFINITY);
+		TarsisIntv lowp1_inf = new TarsisIntv(eval.interval.getLow().add(TarsisMathNumber.ONE),
+				TarsisMathNumber.PLUS_INFINITY);
 		TarsisIntv inf_high = new TarsisIntv(TarsisMathNumber.MINUS_INFINITY, eval.interval.getHigh());
-		TarsisIntv inf_highm1 = new TarsisIntv(TarsisMathNumber.MINUS_INFINITY, eval.interval.getHigh().subtract(TarsisMathNumber.ONE));
+		TarsisIntv inf_highm1 = new TarsisIntv(TarsisMathNumber.MINUS_INFINITY,
+				eval.interval.getHigh().subtract(TarsisMathNumber.ONE));
 
 		switch (operator) {
 		case COMPARISON_EQ:
@@ -306,7 +310,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 			return environment;
 		}
 	}
-	
+
 	public boolean isFinite() {
 		return interval.isFinite();
 	}
@@ -322,7 +326,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	public int getLowNumber() {
 		return interval.getLow().getNumber();
 	}
-	
+
 	public TarsisMathNumber getHigh() {
 		return interval.getHigh();
 	}

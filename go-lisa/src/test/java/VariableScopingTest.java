@@ -1,4 +1,5 @@
 
+import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -13,12 +14,17 @@ import org.junit.Test;
 
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.lisa.AnalysisSetupException;
+import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.cfg.CFG;
 
-public class VariableScopingTest {
+public class VariableScopingTest extends GoAnalysisTestExecutor {
 
 	private static CompilationUnit findUnit(Program prog, String name) {
 		CompilationUnit unit = prog.getUnits().stream().filter(u -> u.getName().equals(name)).findFirst().get();
@@ -58,6 +64,19 @@ public class VariableScopingTest {
 		Map<String, Set<String>> expectedResult = expectedResultForLoopVariableScooping();
 		
 		assertTrue(compareResults(currentResults, expectedResult));
+	}
+	
+
+	@Test
+	public void shadowingTest() throws IOException, AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+			.setInferTypes(true)
+			.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval()))
+			.setDumpAnalysis(true);
+		
+		perform("variablescoping", "shadowing.go", conf);
+
 	}
 
 	private Map<String, Set<String>> expectedResultForLoopVariableScooping() {

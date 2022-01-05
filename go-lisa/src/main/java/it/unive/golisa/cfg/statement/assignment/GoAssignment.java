@@ -22,7 +22,7 @@ import it.unive.lisa.symbolic.value.Identifier;
 
 public class GoAssignment extends BinaryExpression {
 
-	private final List<OpenBlock> openBlocks;
+	private final List<OpenBlock> blocksToDeclaration;
 
 	private final OpenBlock containingBlock;
 
@@ -38,12 +38,8 @@ public class GoAssignment extends BinaryExpression {
 	 */
 	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression, List<BlockScope> listBlock, OpenBlock containingBlock) {
 		super(cfg, location, target, expression);
-		this.openBlocks = computeVarDeclaration(getLeft(), listBlock, containingBlock);
+		this.blocksToDeclaration = BlockScope.getListOfBlocksBeforeDeclaration(listBlock, getLeft());
 		this.containingBlock = containingBlock;
-	}
-
-	private List<OpenBlock> computeVarDeclaration(Expression left, List<BlockScope> listBlock, OpenBlock containingBlock) {
-		return BlockScope.findLastVariableDeclarationInBlockList(listBlock, left);
 	}
 
 	@Override
@@ -85,19 +81,8 @@ public class GoAssignment extends BinaryExpression {
 		AnalysisState<A, H, V> result = right.bottom();
 		for (SymbolicExpression expr1 : left.getComputedExpressions())
 			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
-				AnalysisState<A, H, V> tmp = left.assign(expr1, expr2, this);
-				
-				
-				if (!openBlocks.isEmpty() && openBlocks.get(0) == containingBlock) {
-					for (int i = 0; i < openBlocks.size()-1; i++) {
-						SymbolicExpression idToAssign = expr1;
-
-						for (int j = openBlocks.size() - 2 -i; j >= 0; j--)
-								idToAssign = idToAssign.pushScope(new ScopeToken(openBlocks.get(j)));
-						tmp = tmp.assign(idToAssign, expr2, this);
-					}
-				}
-
+				AnalysisState<A, H, V> tmp = assignScopedId(left, expr1, expr2);
+				tmp = tmp.assign(expr1, expr2, this);
 				result = result.lub(tmp);
 			}
 
@@ -107,5 +92,32 @@ public class GoAssignment extends BinaryExpression {
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 
 		return result;
+	}
+
+	private <A extends AbstractState<A, H, V>,
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>> AnalysisState<A, H, V>  assignScopedId(AnalysisState<A, H, V>entryState, SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
+
+		// if the assignment occurs in the same block in which
+		// the variable is declared, no assignment on scoped ids
+		// needs to be performed
+		if (blocksToDeclaration.get(0) != containingBlock)
+			return entryState;
+
+		AnalysisState<A, H, V> tmp = entryState;
+		
+		// removes the block where the declaration occurs
+		List<OpenBlock> blocksBeforeDecl = blocksToDeclaration.subList(0, blocksToDeclaration.size() -1);
+
+		for (int i = 0; i < blocksBeforeDecl.size(); i++) {
+			SymbolicExpression idToAssign = expr1;
+
+			for (int j = blocksBeforeDecl.size() - 1 -i; j >= 0; j--)
+				idToAssign = idToAssign.pushScope(new ScopeToken(blocksBeforeDecl.get(j)));
+			tmp = tmp.assign(idToAssign, expr2, this);
+		}
+
+		return tmp;
+
 	}
 }

@@ -39,7 +39,7 @@ public class BlockScope {
 		return refs;
 	}
 
-	public static List<OpenBlock> findLastVariableDeclarationInBlockList(List<BlockScope> listBlock, Expression exp) {
+	public static List<OpenBlock> getListOfBlocksBeforeDeclaration(List<BlockScope> listBlock, Expression exp) {
 		List<OpenBlock> openBlocks = new ArrayList<>();
 		if(exp instanceof VariableRef) {
 			VariableRef ref = (VariableRef) exp;

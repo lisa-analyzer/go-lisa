@@ -50,3 +50,16 @@ func m4() {
 	}
 	v--;
 }
+
+func m5() {
+	const n = 0 // cannot be assigned
+	{
+		n := 1
+		{
+			n = 5
+		}
+		
+		n++;
+	}
+}
+

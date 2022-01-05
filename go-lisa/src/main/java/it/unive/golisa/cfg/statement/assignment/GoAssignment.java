@@ -1,7 +1,8 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import it.unive.golisa.cfg.statement.block.BlockScope;
+import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
+import it.unive.golisa.cli.GoSyntaxException;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.ScopeToken;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class GoAssignment extends BinaryExpression {
 
-	private final List<OpenBlock> blocksToDeclaration;
+	private final List<BlockInfo> blocksToDeclaration;
 
 	private final OpenBlock containingBlock;
 
@@ -36,9 +37,9 @@ public class GoAssignment extends BinaryExpression {
 	 * @param expression the expression to assign to {@code target}
 	 */
 	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression,
-			List<BlockScope> listBlock, OpenBlock containingBlock) {
+			List<BlockInfo> listBlock, OpenBlock containingBlock) {
 		super(cfg, location, target, expression);
-		this.blocksToDeclaration = BlockScope.getListOfBlocksBeforeDeclaration(listBlock, getLeft());
+		this.blocksToDeclaration = BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, getLeft());
 		this.containingBlock = containingBlock;
 	}
 
@@ -73,6 +74,12 @@ public class GoAssignment extends BinaryExpression {
 					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
 					StatementStore<A, H, V> expressions)
 					throws SemanticException {
+		
+		// TODO: this check should be moved in the front-end
+		if (blocksToDeclaration.get(blocksToDeclaration.size() - 1).isConstantDeclaration(getLeft()))
+			throw new GoSyntaxException("Cannot assign a value to '" + getLeft() + "' at " + getLeft().getLocation()
+					+ ", because it is declared as 'const'");
+
 		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
 		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
 		expressions.put(getRight(), right);
@@ -102,19 +109,19 @@ public class GoAssignment extends BinaryExpression {
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
 		// needs to be performed
-		if (blocksToDeclaration.get(0) != containingBlock)
+		if (blocksToDeclaration.get(0).getOpen() != containingBlock)
 			return entryState;
 
 		AnalysisState<A, H, V> tmp = entryState;
 
 		// removes the block where the declaration occurs
-		List<OpenBlock> blocksBeforeDecl = blocksToDeclaration.subList(0, blocksToDeclaration.size() - 1);
+		List<BlockInfo> blocksBeforeDecl = blocksToDeclaration.subList(0, blocksToDeclaration.size() - 1);
 
 		for (int i = 0; i < blocksBeforeDecl.size(); i++) {
 			SymbolicExpression idToAssign = expr1;
 
 			for (int j = blocksBeforeDecl.size() - 1 - i; j >= 0; j--)
-				idToAssign = idToAssign.pushScope(new ScopeToken(blocksBeforeDecl.get(j)));
+				idToAssign = idToAssign.pushScope(new ScopeToken(blocksBeforeDecl.get(j).getOpen()));
 			tmp = tmp.assign(idToAssign, expr2, this);
 		}
 

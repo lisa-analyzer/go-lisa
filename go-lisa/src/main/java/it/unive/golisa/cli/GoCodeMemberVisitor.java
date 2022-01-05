@@ -136,8 +136,8 @@ import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
-import it.unive.golisa.cfg.statement.block.BlockScope;
-import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
+import it.unive.golisa.cfg.statement.block.BlockInfo;
+import it.unive.golisa.cfg.statement.block.BlockInfo.DeclarationType;
 import it.unive.golisa.cfg.statement.block.CloseBlock;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.GoType;
@@ -445,7 +445,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	LinkedList<BlockScope> blockList = new LinkedList<>();
+	LinkedList<BlockInfo> blockList = new LinkedList<>();
 
 	@Override
 	public Pair<Statement, Statement> visitBlock(BlockContext ctx) {
@@ -465,7 +465,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		CloseBlock close = new CloseBlock(cfg, locationOf(ctx.R_CURLY()), open);
 		cfg.addNode(close);
 
-		blockList.addLast(new BlockScope(open));
+		blockList.addLast(new BlockInfo(open));
 
 		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());

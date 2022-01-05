@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
+import it.unive.golisa.cfg.statement.block.BlockInfo.DeclarationType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;

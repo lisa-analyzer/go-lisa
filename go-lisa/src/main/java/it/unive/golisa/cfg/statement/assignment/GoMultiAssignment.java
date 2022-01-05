@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.statement.assignment;
 
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
-import it.unive.golisa.cfg.statement.block.BlockScope;
-import it.unive.golisa.cfg.statement.block.BlockScope.DeclarationType;
+import it.unive.golisa.cfg.statement.block.BlockInfo;
+import it.unive.golisa.cfg.statement.block.BlockInfo.DeclarationType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
@@ -39,7 +39,7 @@ public class GoMultiAssignment extends Expression {
 	private Map<VariableRef, DeclarationType> varDeclarations;
 
 	public GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[] ids, Expression e,
-			List<BlockScope> listBlock) {
+			List<BlockInfo> listBlock) {
 		super(cfg, new SourceCodeLocation(filePath, line, col));
 		this.ids = ids;
 		this.e = e;
@@ -54,7 +54,7 @@ public class GoMultiAssignment extends Expression {
 		this.varDeclarations = setVarSpec;
 	}
 
-	private Map<VariableRef, DeclarationType> computeVarSpecs(List<BlockScope> listBlock) {
+	private Map<VariableRef, DeclarationType> computeVarSpecs(List<BlockInfo> listBlock) {
 		Map<VariableRef, DeclarationType> map = new HashMap<>();
 //		for(Epxression id : ids) {
 //			Optional<Pair<VariableRef, DeclarationType>> opt = BlockScope.findLastVariableDeclarationInBlockList(listBlock, id);

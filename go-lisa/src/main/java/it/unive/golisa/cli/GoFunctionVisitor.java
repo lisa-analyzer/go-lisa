@@ -80,7 +80,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 		Statement entryNode = null;
-		Pair<Statement, Statement> body = visitBlock(ctx.block());
+		Pair<Statement, Statement> body = visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -163,7 +163,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
-		Pair<Statement, Statement> body = visitBlock(ctx.block());
+		Pair<Statement, Statement> body = visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge

@@ -320,7 +320,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
-		Pair<Statement, Statement> body = visitBlock(ctx.block());
+		Pair<Statement, Statement> body = visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -366,6 +366,25 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		currentUnit.addInstanceCFG(cfg);
 		return cfg;
+	}
+
+	protected Pair<Statement, Statement> visitMethodBlock(BlockContext ctx) {
+		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+		if (ctx.statementList() == null) {
+			NoOp noop = new NoOp(cfg, locationOf(ctx.R_CURLY()));
+			cfg.addNode(noop);
+			updateVisileIds(backup, noop);
+			return Pair.of(noop, noop);
+		}
+
+		// we build the block information to the block list
+		// but it is not added as node being a method block
+		OpenBlock open = new OpenBlock(cfg, locationOf(ctx.L_CURLY()));
+		blockList.addLast(new BlockInfo(open));
+
+		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
+		updateVisileIds(backup, res.getRight());
+		return res;
 	}
 
 	static protected int getLine(ParserRuleContext ctx) {
@@ -463,17 +482,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		cfg.addNode(open);
 
 		CloseBlock close = new CloseBlock(cfg, locationOf(ctx.R_CURLY()), open);
-		cfg.addNode(close);
 
 		blockList.addLast(new BlockInfo(open));
 
 		Pair<Statement, Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
-		if (isReturnStmt(res.getRight()))
-			return res;
+		if (isReturnStmt(res.getRight())) {
+			addEdge(new SequentialEdge(open, res.getLeft()));
+			return Pair.of(open, res.getRight());
+		}
 
-		addEdge(new SequentialEdge(open, res.getLeft()));
+		cfg.addNode(close);
 		addEdge(new SequentialEdge(res.getRight(), close));
+		addEdge(new SequentialEdge(open, res.getLeft()));
 
 		blockDeep--;
 
@@ -1708,19 +1729,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else if (primary instanceof AccessInstanceGlobal) {
 					Expression receiver = (Expression) getReceiver(ctx.primaryExpr());
 					if (program.getUnit(receiver.toString()) != null) {// FIXME:
-																		// lack
-																		// check,
-																		// not
-																		// always
-																		// match
-																		// for
-																		// example
-																		// "rand"
-																		// has
-																		// the
-																		// import
-																		// "math/rand"
-//						args = ArrayUtils.insert(0, args, receiver);
+						// lack
+						// check,
+						// not
+						// always
+						// match
+						// for
+						// example
+						// "rand"
+						// has
+						// the
+						// import
+						// "math/rand"
+						// args = ArrayUtils.insert(0, args, receiver);
 						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false,
 								getMethodName(ctx.primaryExpr()), args);
 					} else {

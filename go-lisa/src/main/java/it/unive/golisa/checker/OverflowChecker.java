@@ -1,5 +1,7 @@
 package it.unive.golisa.checker;
 
+import java.math.BigInteger;
+
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
@@ -33,12 +35,12 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import java.math.BigInteger;
 
 public class OverflowChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron>,
 		MonolithicHeap, Apron> {
@@ -85,9 +87,9 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 				Apron ap = (Apron) analysisAtNode.getState().getValueState();
 				ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
 				BinaryExpression checkOver = new BinaryExpression(bool, id, getMaxValue(vType),
-						BinaryOperator.COMPARISON_GT, leftExpression.getLocation());
+						ComparisonGt.INSTANCE, leftExpression.getLocation());
 				BinaryExpression checkUnder = new BinaryExpression(bool, id, getMinValue(vType),
-						BinaryOperator.COMPARISON_LT, leftExpression.getLocation());
+						ComparisonLt.INSTANCE, leftExpression.getLocation());
 
 				if (!ap.containsIdentifier(id))
 					return true;

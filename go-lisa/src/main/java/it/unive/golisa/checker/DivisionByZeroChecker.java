@@ -22,8 +22,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
@@ -37,7 +37,7 @@ public class DivisionByZeroChecker implements SemanticCheck<SimpleAbstractState<
 		if (node instanceof GoDiv) {
 			GoDiv div = (GoDiv) node;
 			ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
-			Expression right = div.getParameters()[1];
+			Expression right = div.getSubExpressions()[1];
 
 			for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
 				AnalysisState<?, ?, ?> analysisAtRightNode = an.getAnalysisStateAfter(right);
@@ -46,7 +46,7 @@ public class DivisionByZeroChecker implements SemanticCheck<SimpleAbstractState<
 					for (SymbolicExpression rightExp : analysisAtRightNode.getComputedExpressions()) {
 						Constant zero = new Constant(GoIntType.INSTANCE, 0, right.getLocation());
 						BinaryExpression divByZero = new BinaryExpression(bool, rightExp, zero,
-								BinaryOperator.COMPARISON_EQ, right.getLocation());
+								ComparisonEq.INSTANCE, right.getLocation());
 						Satisfiability sat = analysisAtRightNode.satisfies(divByZero, right);
 
 						if (sat == Satisfiability.SATISFIED)

@@ -11,10 +11,9 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
 
 /**
  * A Go Boolean logical and function call (e1 && e2). The static type of this
@@ -24,7 +23,7 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoLogicalAnd extends BinaryNativeCall {
+public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
 	 * Builds a Go and expression at a given location in the program.
@@ -44,23 +43,18 @@ public class GoLogicalAnd extends BinaryNativeCall {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState,
-					SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
-					throws SemanticException {
-
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
 		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
-			return entryState.bottom();
+			return state.bottom();
 		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())
-			return entryState.bottom();
+			return state.bottom();
 
-		return rightState
+		return state
 				.smallStepSemantics(
 						new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), left, right,
-								BinaryOperator.LOGICAL_AND, getLocation()),
+								LogicalAnd.INSTANCE, getLocation()),
 						this);
 	}
 }

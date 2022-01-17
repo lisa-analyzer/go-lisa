@@ -15,7 +15,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
@@ -27,7 +27,7 @@ public class GoPrintln extends NativeCFG {
 				Println.class);
 	}
 
-	public static class Println extends UnaryNativeCall implements PluggableStatement {
+	public static class Println extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -45,12 +45,10 @@ public class GoPrintln extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
-			return exprState.smallStepSemantics(expr, original);
+		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
+				throws SemanticException {
+			return state.smallStepSemantics(expr, original);
 		}
 	}
 }

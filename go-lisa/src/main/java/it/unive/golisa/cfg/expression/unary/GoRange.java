@@ -10,21 +10,20 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
-public class GoRange extends UnaryNativeCall {
+public class GoRange extends UnaryExpression {
 
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "range", GoBoolType.INSTANCE, exp);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
-		return exprState.smallStepSemantics(expr, this);
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
+			throws SemanticException {
+		return state.smallStepSemantics(expr, this);
+
 	}
 }

@@ -18,7 +18,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
@@ -30,7 +30,7 @@ public class GoItoa extends NativeCFG {
 				Itoa.class);
 	}
 
-	public static class Itoa extends UnaryNativeCall implements PluggableStatement {
+	public static class Itoa extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -48,17 +48,16 @@ public class GoItoa extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
+				throws SemanticException {
 			if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
-				return entryState.bottom();
+				return state.bottom();
 
-			return exprState.smallStepSemantics(
+			return state.smallStepSemantics(
 					new PushAny(Caches.types().mkSingletonSet(GoStringType.INSTANCE), getLocation()), original);
 
+	
 		}
 	}
 }

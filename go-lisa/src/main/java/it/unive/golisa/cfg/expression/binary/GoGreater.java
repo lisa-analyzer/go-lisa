@@ -11,10 +11,9 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
 import it.unive.lisa.type.Type;
 
 /**
@@ -25,7 +24,7 @@ import it.unive.lisa.type.Type;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoGreater extends BinaryNativeCall {
+public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
 	 * Builds a Go greater expression at a given location in the program.
@@ -44,29 +43,27 @@ public class GoGreater extends BinaryNativeCall {
 		super(cfg, location, ">", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
+
+
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState,
-					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-					throws SemanticException {
-		AnalysisState<A, H, V> result = entryState.bottom();
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
+		AnalysisState<A, H, V> result = state.bottom();
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type
 		// of the second operand, or vice versa.
-		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes()) {
+		for (Type leftType : left.getTypes())
+			for (Type rightType : right.getTypes()) {
 				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
 					// TODO: only, integer, floating point values, strings are
 					// ordered
 					// but missing lexicographical string order in LiSA
 					AnalysisState<A, H,
-							V> tmp = rightState
+							V> tmp = state
 									.smallStepSemantics(
 											new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
-													leftExp, rightExp, BinaryOperator.COMPARISON_GT, getLocation()),
+													left, right, ComparisonGt.INSTANCE, getLocation()),
 											this);
 					result = result.lub(tmp);
 				}

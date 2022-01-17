@@ -18,10 +18,9 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
-import it.unive.lisa.symbolic.value.UnaryOperator;
+import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
@@ -33,7 +32,7 @@ public class GoLen extends NativeCFG {
 				Len.class);
 	}
 
-	public static class Len extends UnaryNativeCall implements PluggableStatement {
+	public static class Len extends it.unive.lisa.program.cfg.statement.UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -51,14 +50,13 @@ public class GoLen extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
+				throws SemanticException {
 			ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-			return exprState.smallStepSemantics(
-					new UnaryExpression(intType, expr, UnaryOperator.STRING_LENGTH, getLocation()), original);
+			return state.smallStepSemantics(
+					new UnaryExpression(intType, expr, StringLength.INSTANCE, getLocation()), original);
+
 		}
 	}
 }

@@ -8,12 +8,20 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.TernaryOperator;
-import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
+import it.unive.lisa.symbolic.value.operator.binary.StringContains;
+import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
+import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
+import it.unive.lisa.symbolic.value.operator.binary.StringStartsWith;
+import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
+import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
 public class StringConstantPropagation extends BaseNonRelationalValueDomain<StringConstantPropagation> {
 
@@ -95,12 +103,10 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 		if (left.isTop() || right.isTop())
 			return top();
 
-		switch (operator) {
-		case STRING_CONCAT:
+		if (operator == StringConcat.INSTANCE)
 			return new StringConstantPropagation(left.value + right.value);
-		default:
+		else
 			return top();
-		}
 	}
 
 	@Override
@@ -110,13 +116,11 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 
 		if (left.isTop() || middle.isTop || right.isTop())
 			return top();
-
-		switch (operator) {
-		case STRING_REPLACE:
+		else if (operator == StringReplace.INSTANCE)
 			return new StringConstantPropagation(left.value.replaceAll(middle.value, right.value));
-		default:
+		else
 			return top();
-		}
+
 	}
 
 	@Override
@@ -172,28 +176,26 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
 
-		switch (operator) {
-		case STRING_CONTAINS:
+		if (operator == StringContains.INSTANCE)
 			return left.value.contains(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case STRING_STARTS_WITH:
+		else if (operator == StringStartsWith.INSTANCE)
 			return left.value.startsWith(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case STRING_ENDS_WITH:
+		else if (operator == StringEndsWith.INSTANCE)
 			return left.value.endsWith(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case STRING_EQUALS:
+		else if (operator == StringEquals.INSTANCE)
 			return left.value.equals(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case COMPARISON_EQ:
+		else if (operator == ComparisonEq.INSTANCE)
 			return left.value.equals(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case COMPARISON_NE:
+		else if (operator == ComparisonNe.INSTANCE)
 			return !left.value.equals(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		default:
+		else
 			return Satisfiability.UNKNOWN;
-		}
 	}
 
 	public String getString() {
@@ -204,16 +206,13 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	protected ValueEnvironment<StringConstantPropagation> assumeBinaryExpression(
 			ValueEnvironment<StringConstantPropagation> environment, BinaryOperator operator, ValueExpression left,
 			ValueExpression right, ProgramPoint pp) throws SemanticException {
-		switch (operator) {
-		case STRING_EQUALS:
-		case COMPARISON_EQ:
+		if (operator == StringEquals.INSTANCE || operator == ComparisonEq.INSTANCE) {	
 			if (left instanceof Identifier)
 				environment = environment.assign((Identifier) left, right, pp);
 			else if (right instanceof Identifier)
 				environment = environment.assign((Identifier) right, left, pp);
 			return environment;
-		default:
+		} else
 			return environment;
-		}
 	}
 }

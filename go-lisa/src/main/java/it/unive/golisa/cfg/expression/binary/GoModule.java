@@ -10,10 +10,9 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMod;
 import it.unive.lisa.type.Type;
 
 /**
@@ -21,7 +20,7 @@ import it.unive.lisa.type.Type;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoModule extends BinaryNativeCall {
+public class GoModule extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
 	 * Builds a Go module expression at a given location in the program.
@@ -41,25 +40,20 @@ public class GoModule extends BinaryNativeCall {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState,
-					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-					throws SemanticException {
-
-		Type leftType = leftExp.getDynamicType();
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
+		Type leftType = left.getDynamicType();
 		if (!(leftType.isNumericType() && leftType.asNumericType().isIntegral()) && !leftType.isUntyped())
-			return entryState.bottom();
+			return state.bottom();
 
-		Type rightType = rightExp.getDynamicType();
+		Type rightType = right.getDynamicType();
 		if (!(rightType.isNumericType() && rightType.asNumericType().isIntegral()) && !rightType.isUntyped())
-			return entryState.bottom();
+			return state.bottom();
 
-		return rightState
-				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftType), leftExp, rightExp,
-						BinaryOperator.NUMERIC_NON_OVERFLOWING_MOD, getLocation()), this);
+		return state
+				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftType), left, right,
+						NumericNonOverflowingMod.INSTANCE, getLocation()), this);
+	
 	}
-
 }

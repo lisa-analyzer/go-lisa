@@ -11,10 +11,9 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
-import it.unive.lisa.symbolic.value.UnaryOperator;
+import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 
 /**
  * Go unary not native function class (e.g., !(x > y)). The static type of this
@@ -23,25 +22,22 @@ import it.unive.lisa.symbolic.value.UnaryOperator;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoNot extends UnaryNativeCall {
+public class GoNot extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 
 	public GoNot(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "!", GoBoolType.INSTANCE, exp);
 	}
-
+	
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> exprState,
-					SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
+			throws SemanticException {
 
 		if (!expr.getDynamicType().isBooleanType() && !expr.getDynamicType().isUntyped())
-			return entryState.bottom();
+			return state.bottom();
 
-		return exprState.smallStepSemantics(
-				new UnaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), expr, UnaryOperator.LOGICAL_NOT,
+		return state.smallStepSemantics(
+				new UnaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), expr, LogicalNegation.INSTANCE,
 						getLocation()),
 				this);
 	}

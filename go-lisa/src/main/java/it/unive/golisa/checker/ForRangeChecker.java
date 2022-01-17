@@ -36,13 +36,13 @@ public class ForRangeChecker
 		if (node instanceof GoRange) {
 			Set<Type> rangedTypes = new HashSet<>();
 			GoRange range = (GoRange) node;
-			for (Expression e1 : range.getParameters()) {
+			for (Expression e1 : range.getSubExpressions()) {
 				if (e1 instanceof GoLess) {
 					GoLess less = (GoLess) e1;
-					for (Expression e2 : less.getParameters()) {
+					for (Expression e2 : less.getSubExpressions()) {
 						if (e2 instanceof GoLength) {
 							GoLength length = (GoLength) e2;
-							for (Expression e3 : length.getParameters()) {
+							for (Expression e3 : length.getSubExpressions()) {
 								for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
 									AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(e3);
 									InferenceSystem<InferredTypes> v = (InferenceSystem<InferredTypes>) analysisAtNode

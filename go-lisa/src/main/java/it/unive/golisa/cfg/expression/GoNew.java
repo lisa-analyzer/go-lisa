@@ -11,29 +11,26 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.call.NativeCall;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
 
-public class GoNew extends NativeCall {
+public class GoNew extends NaryExpression {
 
 	public GoNew(CFG cfg, SourceCodeLocation location, GoType type) {
 		super(cfg, location, "new", type);
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> callSemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V>[] computedStates,
-					ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
+	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+			ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
 		// Following the Golang reference:
 		// The new built-in function allocates memory. The first argument is a
 		// type, not a value,
 		// and the value returned is a pointer to a newly allocated zero value
 		// of that type.
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()), getLocation());
-		return entryState.smallStepSemantics(created, this);
+		return state.smallStepSemantics(created, this);
 	}
 }

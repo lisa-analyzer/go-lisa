@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cli.GoSyntaxException;
@@ -7,18 +9,14 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.Identifier;
-import java.util.List;
 
 public class GoAssignment extends BinaryExpression {
 
@@ -38,7 +36,7 @@ public class GoAssignment extends BinaryExpression {
 	 */
 	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {
-		super(cfg, location, target, expression);
+		super(cfg, location, "=", target, expression);
 		this.blocksToDeclaration = BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, getLeft());
 		this.containingBlock = containingBlock;
 	}
@@ -48,64 +46,10 @@ public class GoAssignment extends BinaryExpression {
 		return getLeft() + " = " + getRight();
 	}
 
-	/**
-	 * Semantics of an assignment ({@code left = right}) is evaluated as
-	 * follows:
-	 * <ol>
-	 * <li>the semantic of the {@code right} is evaluated using the given
-	 * {@code entryState}, returning a new analysis state
-	 * {@code as_r = <state_r, expr_r>}</li>
-	 * <li>the semantic of the {@code left} is evaluated using {@code as_r},
-	 * returning a new analysis state {@code as_l = <state_l, expr_l>}</li>
-	 * <li>the final post-state is evaluated through
-	 * {@link AnalysisState#assign(Identifier, SymbolicExpression, ProgramPoint)},
-	 * using {@code expr_l} as {@code id} and {@code expr_r} as
-	 * {@code value}</li>
-	 * </ol>
-	 * This means that all side effects from {@code right} are evaluated before
-	 * the ones from {@code left}.<br>
-	 * <br>
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					StatementStore<A, H, V> expressions)
-					throws SemanticException {
-
-		// TODO: this check should be moved in the front-end
-		if (!blocksToDeclaration.isEmpty()
-				&& blocksToDeclaration.get(blocksToDeclaration.size() - 1).isConstantDeclaration(getLeft()))
-			throw new GoSyntaxException("Cannot assign a value to '" + getLeft() + "' at " + getLeft().getLocation()
-					+ ", because it is declared as 'const'");
-
-		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
-		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
-		expressions.put(getRight(), right);
-		expressions.put(getLeft(), left);
-
-		AnalysisState<A, H, V> result = right.bottom();
-		for (SymbolicExpression expr1 : left.getComputedExpressions())
-			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
-				AnalysisState<A, H, V> tmp = assignScopedId(left, expr1, expr2);
-				tmp = tmp.assign(expr1, expr2, this);
-				result = result.lub(tmp);
-			}
-
-		if (!getRight().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getRight().getMetaVariables());
-		if (!getLeft().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-
-		return result;
-	}
-
 	private <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
-					SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
+			SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
 
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
@@ -128,5 +72,26 @@ public class GoAssignment extends BinaryExpression {
 
 		return tmp;
 
+	}
+
+	@Override
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
+		// TODO: this check should be moved in the front-end
+		if (!blocksToDeclaration.isEmpty()
+				&& blocksToDeclaration.get(blocksToDeclaration.size() - 1).isConstantDeclaration(getLeft()))
+			throw new GoSyntaxException("Cannot assign a value to '" + getLeft() + "' at " + getLeft().getLocation()
+					+ ", because it is declared as 'const'");
+		
+		AnalysisState<A, H, V> result = assignScopedId(state, left, right);
+		result = result.assign(left, right, this);
+
+		if (!getRight().getMetaVariables().isEmpty())
+			result = result.forgetIdentifiers(getRight().getMetaVariables());
+		if (!getLeft().getMetaVariables().isEmpty())
+			result = result.forgetIdentifiers(getLeft().getMetaVariables());
+
+		return result;
 	}
 }

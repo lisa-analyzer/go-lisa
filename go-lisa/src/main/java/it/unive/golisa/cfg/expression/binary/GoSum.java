@@ -11,10 +11,11 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
@@ -23,38 +24,34 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperation {
+public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression implements GoBinaryNumericalOperation {
 
 	public GoSum(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "+", exp1, exp2);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState,
-					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-					throws SemanticException {
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
 		BinaryOperator op;
 		ExternalSet<Type> types;
 
-		AnalysisState<A, H, V> result = entryState.bottom();
+		AnalysisState<A, H, V> result = state.bottom();
 
-		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes()) {
+		for (Type leftType : left.getTypes())
+			for (Type rightType : right.getTypes()) {
 				if (leftType.isStringType() && rightType.isStringType()) {
-					op = BinaryOperator.STRING_CONCAT;
+					op = StringConcat.INSTANCE;
 					types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
 				} else if (leftType.isNumericType() || rightType.isNumericType()) {
-					op = BinaryOperator.NUMERIC_NON_OVERFLOWING_ADD;
-					types = resultType(leftExp, rightExp);
+					op = NumericNonOverflowingAdd.INSTANCE;
+					types = resultType(left, right);
 				} else
 					continue;
 
-				result = result.lub(rightState.smallStepSemantics(
-						new BinaryExpression(types, leftExp, rightExp, op, getLocation()), this));
+				result = result.lub(state.smallStepSemantics(
+						new BinaryExpression(types, left, right, op, getLocation()), this));
 			}
 
 		return result;

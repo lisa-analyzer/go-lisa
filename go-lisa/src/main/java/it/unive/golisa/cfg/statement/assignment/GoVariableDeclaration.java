@@ -18,9 +18,10 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
@@ -51,7 +52,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	 */
 	public GoVariableDeclaration(CFG cfg, SourceCodeLocation location, Type type, VariableRef var,
 			Expression expression) {
-		super(cfg, location, var, expression);
+		super(cfg, location, ":=", var, expression);
 		this.type = type;
 	}
 
@@ -60,38 +61,36 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		return "var " + getLeft() + " " + type + " = " + getRight();
 	}
 
+
+	public Type getDeclaredType() {
+		return type;
+	}
+
 	@Override
-	public <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					StatementStore<A, H, V> expressions)
-					throws SemanticException {
-		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
-		expressions.put(getRight(), right);
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
 
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
-			return right;
-
-		expressions.put(getLeft(), right);
+			return state;
 
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
 		Variable id = new Variable(idType, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
 
-		AnalysisState<A, H, V> result = entryState.bottom();
-		for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-			AnalysisState<A, H, V> tmp = entryState.bottom();
-			for (Type rightType : rightExp.getTypes())
+			AnalysisState<A, H, V> result = state.bottom();
+			for (Type rightType : right.getTypes()) {
+				AnalysisState<A, H, V> tmp = state.bottom();
 				if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat
 						|| rightType instanceof GoNilType) {
 					Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
-					tmp = right.assign(id, new BinaryExpression(idType, rightExp, typeCast, BinaryOperator.TYPE_CONV,
+					tmp = state.assign(id, new BinaryExpression(idType, right, typeCast, TypeConv.INSTANCE,
 							getRight().getLocation()), this);
 				} else if (rightType.canBeAssignedTo(type))
-					tmp = right.assign(id, rightExp, this);
+					tmp = state.assign(id, right, this);
 
 			result = result.lub(tmp);
+			
 		}
 
 		if (!getRight().getMetaVariables().isEmpty())
@@ -99,11 +98,6 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 
-		expressions.put(this, result);
 		return result;
-	}
-
-	public Type getDeclaredType() {
-		return type;
 	}
 }

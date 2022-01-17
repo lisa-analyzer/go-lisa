@@ -8,11 +8,23 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingDiv;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMul;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
+import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
+import it.unive.lisa.symbolic.value.operator.unary.StringLength;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
 public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 
@@ -77,16 +89,15 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 
 	@Override
 	protected TarsisIntv evalUnaryExpression(UnaryOperator operator, TarsisIntv arg, ProgramPoint pp) {
-		switch (operator) {
-		case NUMERIC_NEG:
+
+		if (operator == NumericNegation.INSTANCE) {
 			if (arg.isTop())
 				return top();
 			return new TarsisIntv(arg.interval.mul(TarsisIntInterval.MINUS_ONE));
-		case STRING_LENGTH:
+		} else if (operator == StringLength.INSTANCE)
 			return new TarsisIntv(TarsisMathNumber.ZERO, TarsisMathNumber.PLUS_INFINITY);
-		default:
-			return top();
-		}
+
+		return top();
 	}
 
 	private boolean is(int n) {
@@ -96,21 +107,21 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	@Override
 	protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right,
 			ProgramPoint pp) {
-		if (operator != BinaryOperator.NUMERIC_NON_OVERFLOWING_DIV && (left.isTop() || right.isTop()))
+
+		if (operator != NumericNonOverflowingDiv.INSTANCE && (left.isTop() || right.isTop()))
 			// with div, we can return zero or bottom even if one of the
 			// operands is top
 			return top();
 
-		switch (operator) {
-		case NUMERIC_NON_OVERFLOWING_ADD:
+		if (operator == NumericNonOverflowingAdd.INSTANCE) 
 			return new TarsisIntv(left.interval.plus(right.interval));
-		case NUMERIC_NON_OVERFLOWING_SUB:
+		else if (operator == NumericNonOverflowingSub.INSTANCE)
 			return new TarsisIntv(left.interval.diff(right.interval));
-		case NUMERIC_NON_OVERFLOWING_MUL:
+		else if (operator == NumericNonOverflowingMul.INSTANCE) {
 			if (left.is(0) || right.is(0))
 				return ZERO;
 			return new TarsisIntv(left.interval.mul(right.interval));
-		case NUMERIC_NON_OVERFLOWING_DIV:
+		} else if (operator == NumericNonOverflowingDiv.INSTANCE) {
 			if (right.is(0))
 				return bottom();
 			if (left.is(0))
@@ -119,9 +130,8 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 				return top();
 
 			return new TarsisIntv(left.interval.div(right.interval, false, false));
-		default:
+		} else
 			return top();
-		}
 	}
 
 	@Override
@@ -169,8 +179,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
 
-		switch (operator) {
-		case COMPARISON_EQ:
+		if (operator == ComparisonEq.INSTANCE) {
 			TarsisIntv glb = null;
 			try {
 				glb = left.glb(right);
@@ -183,12 +192,12 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 			else if (left.interval.isSingleton() && left.equals(right))
 				return Satisfiability.SATISFIED;
 			return Satisfiability.UNKNOWN;
-		case COMPARISON_GE:
-			return satisfiesBinaryExpression(BinaryOperator.COMPARISON_LE, right, left, pp);
-		case COMPARISON_GT:
-			return satisfiesBinaryExpression(BinaryOperator.COMPARISON_LT, right, left, pp);
-		case COMPARISON_LE:
-			glb = null;
+		} else if (operator == ComparisonGe.INSTANCE)
+			return satisfiesBinaryExpression(ComparisonLe.INSTANCE, right, left, pp);
+		else if (operator == ComparisonGt.INSTANCE)
+			return satisfiesBinaryExpression(ComparisonLt.INSTANCE, right, left, pp);
+		else if (operator == ComparisonLe.INSTANCE) {
+			TarsisIntv glb = null;
 			try {
 				glb = left.glb(right);
 			} catch (SemanticException e) {
@@ -202,8 +211,8 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 			if (glb.interval.isSingleton() && left.interval.getHigh().compareTo(right.interval.getLow()) == 0)
 				return Satisfiability.SATISFIED;
 			return Satisfiability.UNKNOWN;
-		case COMPARISON_LT:
-			glb = null;
+		} else if (operator == ComparisonLt.INSTANCE) {
+			TarsisIntv glb = null;
 			try {
 				glb = left.glb(right);
 			} catch (SemanticException e) {
@@ -213,8 +222,8 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 			if (glb.isBottom())
 				return Satisfiability.fromBoolean(left.interval.getHigh().compareTo(right.interval.getLow()) < 0);
 			return Satisfiability.UNKNOWN;
-		case COMPARISON_NE:
-			glb = null;
+		} else if (operator == ComparisonNe.INSTANCE) {
+			TarsisIntv glb = null;
 			try {
 				glb = left.glb(right);
 			} catch (SemanticException e) {
@@ -223,9 +232,8 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 			if (glb.isBottom())
 				return Satisfiability.SATISFIED;
 			return Satisfiability.UNKNOWN;
-		default:
+		} else
 			return Satisfiability.UNKNOWN;
-		}
 	}
 
 	@Override
@@ -283,55 +291,53 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 		TarsisIntv inf_highm1 = new TarsisIntv(TarsisMathNumber.MINUS_INFINITY,
 				eval.interval.getHigh().subtract(TarsisMathNumber.ONE));
 
-		switch (operator) {
-		case COMPARISON_EQ:
+		if (operator == ComparisonEq.INSTANCE)
 			return environment.putState(id, eval);
-		case COMPARISON_GE:
+		else if (operator == ComparisonGe.INSTANCE) {
 			if (rightIsExpr)
 				return lowIsMinusInfinity ? environment : environment.putState(id, low_inf);
 			else
 				return environment.putState(id, inf_high);
-		case COMPARISON_GT:
+		} else if  (operator == ComparisonGt.INSTANCE) {
 			if (rightIsExpr)
 				return lowIsMinusInfinity ? environment : environment.putState(id, lowp1_inf);
 			else
 				return environment.putState(id, lowIsMinusInfinity ? eval : inf_highm1);
-		case COMPARISON_LE:
+		} else if (operator == ComparisonLe.INSTANCE) {
 			if (rightIsExpr)
 				return environment.putState(id, inf_high);
 			else
 				return lowIsMinusInfinity ? environment : environment.putState(id, low_inf);
-		case COMPARISON_LT:
+		} else if (operator == ComparisonLt.INSTANCE) {
 			if (rightIsExpr)
 				return environment.putState(id, lowIsMinusInfinity ? eval : inf_highm1);
 			else
 				return lowIsMinusInfinity ? environment : environment.putState(id, lowp1_inf);
-		default:
+		} else 
 			return environment;
 		}
-	}
 
-	public boolean isFinite() {
-		return interval.isFinite();
-	}
+		public boolean isFinite() {
+			return interval.isFinite();
+		}
 
-	public TarsisIntv plus(TarsisIntv other) {
-		return new TarsisIntv(this.interval.plus(other.interval));
-	}
+		public TarsisIntv plus(TarsisIntv other) {
+			return new TarsisIntv(this.interval.plus(other.interval));
+		}
 
-	public int getHighNumber() {
-		return interval.getHigh().getNumber();
-	}
+		public int getHighNumber() {
+			return interval.getHigh().getNumber();
+		}
 
-	public int getLowNumber() {
-		return interval.getLow().getNumber();
-	}
+		public int getLowNumber() {
+			return interval.getLow().getNumber();
+		}
 
-	public TarsisMathNumber getHigh() {
-		return interval.getHigh();
-	}
+		public TarsisMathNumber getHigh() {
+			return interval.getHigh();
+		}
 
-	public TarsisMathNumber getLow() {
-		return interval.getLow();
+		public TarsisMathNumber getLow() {
+			return interval.getLow();
+		}
 	}
-}

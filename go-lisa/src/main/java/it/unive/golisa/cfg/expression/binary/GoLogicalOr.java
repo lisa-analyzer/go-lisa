@@ -12,10 +12,9 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 
 /**
  * A Go Boolean logical or function call (e1 || e2). The static type of this
@@ -25,7 +24,7 @@ import it.unive.lisa.symbolic.value.BinaryOperator;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoLogicalOr extends BinaryNativeCall {
+public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
 	 * Builds a Go or expression at a given location in the program.
@@ -43,32 +42,28 @@ public class GoLogicalOr extends BinaryNativeCall {
 	public GoLogicalOr(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "||", GoBoolType.INSTANCE, exp1, exp2);
 	}
-
+	
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState,
-					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-					throws SemanticException {
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
+		// FIXME: need to check which state needs to be returned (left/right)
+		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
+			return state.bottom();
+		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())
+			return state.bottom();
 
-		if (!leftExp.getDynamicType().isBooleanType() && !leftExp.getDynamicType().isUntyped())
-			return entryState.bottom();
-		if (!rightExp.getDynamicType().isBooleanType() && !rightExp.getDynamicType().isUntyped())
-			return entryState.bottom();
-
-		if (leftState.satisfies(leftExp, this) == Satisfiability.SATISFIED)
-			return leftState;
-		else if (leftState.satisfies(leftExp, this) == Satisfiability.NOT_SATISFIED)
-			return rightState
+		if (state.satisfies(left, this) == Satisfiability.SATISFIED)
+			return state;
+		else if (state.satisfies(left, this) == Satisfiability.NOT_SATISFIED)
+			return state
 					.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
-							leftExp, rightExp, BinaryOperator.LOGICAL_OR, getLocation()), this);
-		else if (leftState.satisfies(leftExp, this) == Satisfiability.UNKNOWN)
-			return leftState.lub(rightState
+							left, right, LogicalOr.INSTANCE, getLocation()), this);
+		else if (state.satisfies(left, this) == Satisfiability.UNKNOWN)
+			return state.lub(state
 					.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
-							leftExp, rightExp, BinaryOperator.LOGICAL_OR, getLocation()), this));
+							left, right, LogicalOr.INSTANCE, getLocation()), this));
 		else
-			return entryState.bottom();
+			return state.bottom();
 	}
 }

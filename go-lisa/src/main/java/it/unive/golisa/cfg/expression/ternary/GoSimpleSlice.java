@@ -11,28 +11,22 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.TernaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
-import it.unive.lisa.symbolic.value.TernaryOperator;
+import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.type.Type;
 
-public class GoSimpleSlice extends TernaryNativeCall {
+public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryExpression {
 
 	public GoSimpleSlice(CFG cfg, SourceCodeLocation location, Expression left, Expression middle, Expression right) {
 		super(cfg, location, "slice", left, middle, right);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState, SymbolicExpression left,
-					AnalysisState<A, H, V> middleState, SymbolicExpression middle,
-					AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
-
-		AnalysisState<A, H, V> result = entryState.bottom();
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression middle, SymbolicExpression right) throws SemanticException {
+		AnalysisState<A, H, V> result = state.bottom();
 		for (Type leftType : left.getTypes())
 			for (Type middleType : middle.getTypes())
 				for (Type rightType : right.getTypes())
@@ -40,22 +34,12 @@ public class GoSimpleSlice extends TernaryNativeCall {
 							&& (middleType.isNumericType() || middleType.isUntyped())
 							&& (rightType.isNumericType() || rightType.isUntyped())) {
 						AnalysisState<A, H,
-								V> tmp = rightState.smallStepSemantics(
+								V> tmp = state.smallStepSemantics(
 										new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE),
-												left, middle, right, TernaryOperator.STRING_SUBSTRING, getLocation()),
+												left, middle, right, StringSubstring.INSTANCE, getLocation()),
 										this);
 						result = result.lub(tmp);
 					}
 		return result;
-//		
-//		if (!left.getDynamicType().isStringType() && ! left.getDynamicType().isUntyped())
-//			return entryState.bottom();
-//
-//		if (!middle.getDynamicType().isNumericType() && ! middle.getDynamicType().isUntyped())
-//			return entryState.bottom();
-//
-//		if (!right.getDynamicType().isNumericType() && ! right.getDynamicType().isUntyped())
-//			return entryState.bottom();
-
 	}
 }

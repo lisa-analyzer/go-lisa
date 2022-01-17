@@ -23,11 +23,11 @@ func alloc() {
 }
 
 func ifAlloc(a,b int) {
-
+	x := Vertex{0,0}
 	if a == b {
-		x := Vertex{1,2}
+		x = Vertex{1,2}
 	} else {
-		x := Vertex{3,4}
+		x = Vertex{3,4}
 	}
 	return 
 }

@@ -9,10 +9,9 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingDiv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
@@ -21,7 +20,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoDiv extends BinaryNativeCall implements GoBinaryNumericalOperation {
+public class GoDiv extends it.unive.lisa.program.cfg.statement.BinaryExpression implements GoBinaryNumericalOperation {
 
 	/**
 	 * Builds a Go division expression. The location where this expression
@@ -36,23 +35,18 @@ public class GoDiv extends BinaryNativeCall implements GoBinaryNumericalOperatio
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState,
-					SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-					throws SemanticException {
-
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
 		ExternalSet<Type> types;
 
-		AnalysisState<A, H, V> result = entryState.bottom();
-		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes())
+		AnalysisState<A, H, V> result = state.bottom();
+		for (Type leftType : left.getTypes())
+			for (Type rightType : right.getTypes())
 				if (leftType.isNumericType() && rightType.isNumericType()) {
-					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp,
-							BinaryOperator.NUMERIC_NON_OVERFLOWING_DIV, getLocation()), this));
+					types = resultType(left, right);
+					result = result.lub(state.smallStepSemantics(new BinaryExpression(types, left, right,
+							NumericNonOverflowingDiv.INSTANCE, getLocation()), this));
 				}
 
 		return result;

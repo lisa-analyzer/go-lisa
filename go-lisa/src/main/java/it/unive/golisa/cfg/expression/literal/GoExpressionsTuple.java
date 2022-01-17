@@ -15,7 +15,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.NativeCall;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
@@ -23,28 +23,24 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
 
-public class GoExpressionsTuple extends NativeCall {
+public class GoExpressionsTuple extends NaryExpression {
 
 	public GoExpressionsTuple(CFG cfg, CodeLocation location, Expression[] expressions) {
 		super(cfg, location, "(tuple)", expressions);
 	}
 
+
 	@Override
-	public <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> callSemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V>[] computedStates, ExpressionSet<SymbolicExpression>[] params)
-					throws SemanticException {
-		AnalysisState<A, H,
-				V> lastPostState = computedStates.length == 0 ? entryState : computedStates[computedStates.length - 1];
+	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+			ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
 
 		// Length of the expression tuple
-		int len = getParameters().length;
+		int len = getSubExpressions().length;
 		Parameter[] types = new Parameter[len];
 
 		for (int i = 0; i < types.length; i++) {
-			Expression p = getParameters()[i];
+			Expression p = getSubExpressions()[i];
 			types[i] = new Parameter(p.getLocation(), "_", p.getDynamicType());
 		}
 
@@ -53,10 +49,10 @@ public class GoExpressionsTuple extends NativeCall {
 		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(tupleType), getLocation());
 
 		// Allocates the new heap allocation
-		AnalysisState<A, H, V> containerState = lastPostState.smallStepSemantics(created, this);
+		AnalysisState<A, H, V> containerState = state.smallStepSemantics(created, this);
 		ExpressionSet<SymbolicExpression> containerExps = containerState.getComputedExpressions();
 
-		AnalysisState<A, H, V> result = entryState.bottom();
+		AnalysisState<A, H, V> result = state.bottom();
 
 		for (SymbolicExpression containerExp : containerExps) {
 			HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp,
@@ -79,6 +75,5 @@ public class GoExpressionsTuple extends NativeCall {
 		}
 
 		return result;
-
 	}
 }

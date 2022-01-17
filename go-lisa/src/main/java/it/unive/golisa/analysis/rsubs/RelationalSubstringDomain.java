@@ -1,5 +1,15 @@
 package it.unive.golisa.analysis.rsubs;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -15,20 +25,19 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import org.apache.commons.lang3.ArrayUtils;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
+import it.unive.lisa.symbolic.value.operator.binary.StringContains;
+import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
+import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
 
 public class RelationalSubstringDomain
 		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
@@ -155,14 +164,13 @@ public class RelationalSubstringDomain
 			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft(), pp);
 			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight(), pp);
 
-			switch (binary.getOperator()) {
-
-			case COMPARISON_EQ:
+			it.unive.lisa.symbolic.value.operator.binary.BinaryOperator op = binary.getOperator();
+			if (op == ComparisonEq.INSTANCE) {
 				ValueExpression left = (ValueExpression) binary.getLeft();
 				ValueExpression right = (ValueExpression) binary.getRight();
 
 				if (!left.getDynamicType().isStringType() || !right.getDynamicType().isStringType())
-					break;
+					return new RelationalSubstringDomain(lattice, function);
 
 				if (left instanceof Identifier && right instanceof Identifier) {
 					Identifier x = (Identifier) left;
@@ -189,22 +197,18 @@ public class RelationalSubstringDomain
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
-			case LOGICAL_AND:
+			} else if (op == LogicalAnd.INSTANCE)
 				return leftState.lub(rightState);
-			case LOGICAL_OR:
+			else if (op == LogicalOr.INSTANCE)
 				return leftState.glb(rightState);
-			case STRING_STARTS_WITH: // can be assumed but not integrated in the
-										// paper
-			case STRING_ENDS_WITH: // can be assumed but not integrated in the
-									// paper
-			case STRING_CONTAINS:
+			else if (op == it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE || op == StringEndsWith.INSTANCE || op == StringContains.INSTANCE) {
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					ExpressionInverseSet<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
-			case STRING_EQUALS:
+			} else if (op == StringEquals.INSTANCE) {
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					ExpressionInverseSet<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
@@ -218,8 +222,6 @@ public class RelationalSubstringDomain
 					func.put(x, func.get(x) == null ? rels : func.get(x).glb(rels));
 					return new RelationalSubstringDomain(lattice, func);
 				}
-			default:
-				break;
 			}
 		}
 
@@ -252,28 +254,27 @@ public class RelationalSubstringDomain
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
 
-			switch (binary.getOperator()) {
-			case LOGICAL_AND:
+			BinaryOperator op = binary.getOperator();
+			if (op == LogicalAnd.INSTANCE) 
 				return satisfies((ValueExpression) binary.getLeft(), pp)
 						.and(satisfies((ValueExpression) binary.getRight(), pp));
-			case LOGICAL_OR:
+			else if (op == LogicalOr.INSTANCE) 
+
 				return satisfies((ValueExpression) binary.getLeft(), pp)
 						.or(satisfies((ValueExpression) binary.getRight(), pp));
-			case STRING_CONTAINS:
+			else if (op == StringContains.INSTANCE) {
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					return getState(x).contains((ValueExpression) binary.getRight()) ? Satisfiability.SATISFIED
 							: Satisfiability.NOT_SATISFIED;
 				}
-			case STRING_EQUALS:
+			} else if (op == StringEquals.INSTANCE) {
 				if (binary.getLeft() instanceof Identifier && binary.getRight() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					Identifier y = (Identifier) binary.getRight();
 					return getState(x).contains(y) && getState(y).contains(x) ? Satisfiability.SATISFIED
 							: Satisfiability.NOT_SATISFIED;
 				}
-			default:
-				return Satisfiability.UNKNOWN;
 			}
 		}
 
@@ -300,7 +301,7 @@ public class RelationalSubstringDomain
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
 
-			if (binary.getOperator() == BinaryOperator.STRING_CONCAT)
+			if (binary.getOperator() == StringConcat.INSTANCE)
 				return ArrayUtils.addAll(flat((ValueExpression) binary.getLeft()),
 						flat((ValueExpression) binary.getRight()));
 
@@ -328,7 +329,7 @@ public class RelationalSubstringDomain
 					result.add(exps[j]);
 
 				partial = new BinaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE), partial, exps[j],
-						BinaryOperator.STRING_CONCAT, exps[j].getCodeLocation());
+						StringConcat.INSTANCE, exps[j].getCodeLocation());
 				result.add(partial);
 			}
 		}
@@ -357,7 +358,7 @@ public class RelationalSubstringDomain
 			return true;
 
 		if (expression instanceof BinaryExpression
-				&& ((BinaryExpression) expression).getOperator() == BinaryOperator.STRING_CONCAT) {
+				&& ((BinaryExpression) expression).getOperator() == StringConcat.INSTANCE) {
 			BinaryExpression binary = (BinaryExpression) expression;
 			return appearsAtTopLevel((ValueExpression) binary.getLeft(), id)
 					|| appearsAtTopLevel((ValueExpression) binary.getRight(), id);

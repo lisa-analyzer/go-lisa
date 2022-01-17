@@ -19,10 +19,9 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.call.TernaryNativeCall;
+import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.TernaryExpression;
-import it.unive.lisa.symbolic.value.TernaryOperator;
+import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 
 public class GoReplace extends NativeCFG {
 
@@ -34,7 +33,7 @@ public class GoReplace extends NativeCFG {
 				Replace.class);
 	}
 
-	public static class Replace extends TernaryNativeCall implements PluggableStatement {
+	public static class Replace extends TernaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -52,26 +51,22 @@ public class GoReplace extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
-						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-						AnalysisState<A, H, V> leftState, SymbolicExpression left,
-						AnalysisState<A, H, V> middleState, SymbolicExpression middle,
-						AnalysisState<A, H, V> rightState, SymbolicExpression right) throws SemanticException {
-
+		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+				SymbolicExpression middle, SymbolicExpression right) throws SemanticException {
 			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
-				return entryState.bottom();
+				return state.bottom();
 
 			if (!middle.getDynamicType().isStringType() && !middle.getDynamicType().isUntyped())
-				return entryState.bottom();
+				return state.bottom();
 
 			if (!right.getDynamicType().isStringType() && !right.getDynamicType().isUntyped())
-				return entryState.bottom();
+				return state.bottom();
 
-			return rightState
-					.smallStepSemantics(new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE),
-							left, middle, right, TernaryOperator.STRING_REPLACE, getLocation()), original);
+			return state
+					.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE),
+							left, middle, right, StringReplace.INSTANCE, getLocation()), original);
+		
 		}
 	}
 }

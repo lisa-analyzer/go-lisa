@@ -12,39 +12,36 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 
 /**
  * Go unary plus native function class (e.g., +(5 - 3), +5).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoPlus extends UnaryNativeCall {
+public class GoPlus extends UnaryExpression {
 
 	public GoPlus(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "+", exp);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> exprState,
-					SymbolicExpression expr) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
+			throws SemanticException {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
-			return entryState.bottom();
+			return state.bottom();
 
 		Constant zero = new Constant(GoUntypedInt.INSTANCE,
 				new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0), getLocation());
 
-		return entryState.smallStepSemantics(
+		return state.smallStepSemantics(
 				new BinaryExpression(Caches.types().mkSingletonSet(zero.getDynamicType()), zero, expr,
-						BinaryOperator.NUMERIC_NON_OVERFLOWING_ADD, getLocation()),
+						NumericNonOverflowingAdd.INSTANCE, getLocation()),
 				this);
 	}
 

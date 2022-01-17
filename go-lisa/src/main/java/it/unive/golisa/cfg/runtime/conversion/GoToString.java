@@ -17,11 +17,11 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.call.UnaryNativeCall;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
@@ -35,7 +35,7 @@ public class GoToString extends NativeCFG {
 				ToString.class);
 	}
 
-	public static class ToString extends UnaryNativeCall implements PluggableStatement {
+	public static class ToString extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -53,15 +53,13 @@ public class GoToString extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-						AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-						AnalysisState<A, H, V> exprState, SymbolicExpression expr) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
+				throws SemanticException {
 			ExternalSet<Type> castType = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoStringType.INSTANCE, getLocation());
-			return entryState.smallStepSemantics(
-					new BinaryExpression(castType, expr, typeCast, BinaryOperator.TYPE_CONV, original.getLocation()),
+			return state.smallStepSemantics(
+					new BinaryExpression(castType, expr, typeCast, TypeConv.INSTANCE, original.getLocation()),
 					original);
 		}
 	}

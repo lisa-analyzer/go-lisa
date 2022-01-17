@@ -8,13 +8,13 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 
-public class GoBitwiseNAnd extends BinaryNativeCall implements GoBinaryNumericalOperation {
+public class GoBitwiseNAnd extends BinaryExpression implements GoBinaryNumericalOperation {
 
 	/**
 	 * Builds a Go and expression at a given location in the program.
@@ -34,15 +34,11 @@ public class GoBitwiseNAnd extends BinaryNativeCall implements GoBinaryNumerical
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V> leftState,
-					SymbolicExpression left, AnalysisState<A, H, V> rightState, SymbolicExpression right)
-					throws SemanticException {
+	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+			SymbolicExpression right) throws SemanticException {
 
-		AnalysisState<A, H, V> result = entryState.bottom();
+		AnalysisState<A, H, V> result = state.bottom();
 		for (Type leftType : left.getTypes())
 			for (Type rightType : right.getTypes())
 				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) &&
@@ -50,7 +46,7 @@ public class GoBitwiseNAnd extends BinaryNativeCall implements GoBinaryNumerical
 								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
 					// TODO: LiSA has not symbolic expression handling bitwise,
 					// return top at the moment
-					AnalysisState<A, H, V> tmp = rightState
+					AnalysisState<A, H, V> tmp = state
 							.smallStepSemantics(new PushAny(resultType(left, right), getLocation()), this);
 					result = result.lub(tmp);
 				}

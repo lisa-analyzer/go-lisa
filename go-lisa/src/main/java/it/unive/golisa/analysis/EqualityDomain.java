@@ -13,6 +13,17 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
+import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier, ExpressionInverseSet<Identifier>>
-		implements ValueDomain<EqualityDomain> {
+implements ValueDomain<EqualityDomain> {
 
 	public EqualityDomain() {
 		this(new ExpressionInverseSet<>(), null);
@@ -81,12 +92,10 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 
-			switch (unary.getOperator()) {
-			case LOGICAL_NOT:
+			if (unary.getOperator() == LogicalNegation.INSTANCE) 
 				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
-			default:
+			else
 				return Satisfiability.UNKNOWN;
-			}
 		}
 
 		if (expression instanceof BinaryExpression) {
@@ -98,27 +107,23 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 			Identifier left = (Identifier) binary.getLeft();
 			Identifier right = (Identifier) binary.getRight();
 
-			switch (binary.getOperator()) {
-			case COMPARISON_GE:
-			case COMPARISON_EQ:
-			case COMPARISON_LE:
+			BinaryOperator op = binary.getOperator();
+			if (op == ComparisonGe.INSTANCE || op == ComparisonEq.INSTANCE || op == ComparisonLe.INSTANCE) {
 				if (getState(left).contains(right) || getState(right).contains(left))
 					return Satisfiability.SATISFIED;
 				return Satisfiability.UNKNOWN;
-			case COMPARISON_NE:
-			case COMPARISON_LT:
-			case COMPARISON_GT:
+			} else if (op == ComparisonNe.INSTANCE || op == ComparisonLt.INSTANCE || op == ComparisonGt.INSTANCE) {
 				if (getState(left).contains(right) || getState(right).contains(left))
 					return Satisfiability.NOT_SATISFIED;
 				return Satisfiability.UNKNOWN;
-			case LOGICAL_AND:
+			} else if (op == LogicalAnd.INSTANCE) 
 				return satisfies((ValueExpression) left, pp).and(satisfies((ValueExpression) right, pp));
-			case LOGICAL_OR:
+			else if (op == LogicalOr.INSTANCE)
 				return satisfies((ValueExpression) left, pp).or(satisfies((ValueExpression) right, pp));
-			default:
+			else
 				return Satisfiability.UNKNOWN;
-			}
 		}
+		
 		return Satisfiability.UNKNOWN;
 	}
 

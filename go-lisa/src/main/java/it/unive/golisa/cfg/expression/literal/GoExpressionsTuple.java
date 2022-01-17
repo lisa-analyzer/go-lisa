@@ -29,11 +29,12 @@ public class GoExpressionsTuple extends NaryExpression {
 		super(cfg, location, "(tuple)", expressions);
 	}
 
-
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-			ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
+	public <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
 
 		// Length of the expression tuple
 		int len = getSubExpressions().length;

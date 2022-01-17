@@ -242,7 +242,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	}
 
 	protected Tarsis evalTernaryExpression(TernaryOperator operator, Tarsis left, Tarsis middle, Tarsis right) {
-		if (operator == StringReplace.INSTANCE) 
+		if (operator == StringReplace.INSTANCE)
 			return new Tarsis(left.stringValue.replace(middle.stringValue, right.stringValue), intValue.bottom());
 		else if (operator == StringSubstring.INSTANCE) {
 			TarsisIntv iIntv = middle.intValue;
@@ -290,7 +290,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 				|| operator == ComparisonNe.INSTANCE
 				|| operator == ComparisonGt.INSTANCE
 				|| operator == ComparisonGe.INSTANCE
-				|| operator == ComparisonEq.INSTANCE) 
+				|| operator == ComparisonEq.INSTANCE)
 			return intValue.satisfiesBinaryExpression(operator, left.intValue, right.intValue, pp);
 		else if (operator == StringContains.INSTANCE) {
 			if (left.stringValue.contains(right.stringValue))
@@ -310,7 +310,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			if (left.stringValue.mayStartWith(right.stringValue))
 				return Satisfiability.UNKNOWN;
 			return Satisfiability.NOT_SATISFIED;
-		} else 
+		} else
 			return Satisfiability.UNKNOWN;
 	}
 

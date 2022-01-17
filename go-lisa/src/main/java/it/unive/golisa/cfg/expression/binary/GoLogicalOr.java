@@ -42,11 +42,14 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 	public GoLogicalOr(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "||", GoBoolType.INSTANCE, exp1, exp2);
 	}
-	
+
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 		// FIXME: need to check which state needs to be returned (left/right)
 		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
 			return state.bottom();

@@ -47,11 +47,13 @@ public class GoAtoi extends NativeCFG {
 			super(cfg, location, "Atoi", GoIntType.INSTANCE, exp1);
 		}
 
-
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
-				throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression expr)
+						throws SemanticException {
 			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
 				return state.bottom();
 

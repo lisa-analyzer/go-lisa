@@ -43,12 +43,13 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 		super(cfg, location, ">", GoBoolType.INSTANCE, exp1, exp2);
 	}
 
-
-
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 		AnalysisState<A, H, V> result = state.bottom();
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type

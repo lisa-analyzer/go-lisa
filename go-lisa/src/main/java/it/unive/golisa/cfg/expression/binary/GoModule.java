@@ -40,9 +40,12 @@ public class GoModule extends it.unive.lisa.program.cfg.statement.BinaryExpressi
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 		Type leftType = left.getDynamicType();
 		if (!(leftType.isNumericType() && leftType.asNumericType().isIntegral()) && !leftType.isUntyped())
 			return state.bottom();
@@ -54,6 +57,6 @@ public class GoModule extends it.unive.lisa.program.cfg.statement.BinaryExpressi
 		return state
 				.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(leftType), left, right,
 						NumericNonOverflowingMod.INSTANCE, getLocation()), this);
-	
+
 	}
 }

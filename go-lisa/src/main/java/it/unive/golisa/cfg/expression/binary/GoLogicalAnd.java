@@ -43,9 +43,12 @@ public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpr
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
 			return state.bottom();
 		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())

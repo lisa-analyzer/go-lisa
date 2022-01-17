@@ -22,9 +22,12 @@ public class GoBitwiseNot extends UnaryExpression {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
-			throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression expr)
+					throws SemanticException {
 		Type exprType = expr.getDynamicType();
 		if (!exprType.isUntyped() || (exprType.isNumericType() && !exprType.asNumericType().isIntegral()))
 			return state.bottom();
@@ -33,7 +36,7 @@ public class GoBitwiseNot extends UnaryExpression {
 		// at the moment
 		return state.smallStepSemantics(
 				new PushAny(Caches.types().mkSingletonSet(expr.getDynamicType()), getLocation()), this);
-	
+
 	}
 
 }

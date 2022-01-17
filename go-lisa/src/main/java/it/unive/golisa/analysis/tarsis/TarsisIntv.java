@@ -113,7 +113,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 			// operands is top
 			return top();
 
-		if (operator == NumericNonOverflowingAdd.INSTANCE) 
+		if (operator == NumericNonOverflowingAdd.INSTANCE)
 			return new TarsisIntv(left.interval.plus(right.interval));
 		else if (operator == NumericNonOverflowingSub.INSTANCE)
 			return new TarsisIntv(left.interval.diff(right.interval));
@@ -298,7 +298,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 				return lowIsMinusInfinity ? environment : environment.putState(id, low_inf);
 			else
 				return environment.putState(id, inf_high);
-		} else if  (operator == ComparisonGt.INSTANCE) {
+		} else if (operator == ComparisonGt.INSTANCE) {
 			if (rightIsExpr)
 				return lowIsMinusInfinity ? environment : environment.putState(id, lowp1_inf);
 			else
@@ -313,31 +313,31 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 				return environment.putState(id, lowIsMinusInfinity ? eval : inf_highm1);
 			else
 				return lowIsMinusInfinity ? environment : environment.putState(id, lowp1_inf);
-		} else 
+		} else
 			return environment;
-		}
-
-		public boolean isFinite() {
-			return interval.isFinite();
-		}
-
-		public TarsisIntv plus(TarsisIntv other) {
-			return new TarsisIntv(this.interval.plus(other.interval));
-		}
-
-		public int getHighNumber() {
-			return interval.getHigh().getNumber();
-		}
-
-		public int getLowNumber() {
-			return interval.getLow().getNumber();
-		}
-
-		public TarsisMathNumber getHigh() {
-			return interval.getHigh();
-		}
-
-		public TarsisMathNumber getLow() {
-			return interval.getLow();
-		}
 	}
+
+	public boolean isFinite() {
+		return interval.isFinite();
+	}
+
+	public TarsisIntv plus(TarsisIntv other) {
+		return new TarsisIntv(this.interval.plus(other.interval));
+	}
+
+	public int getHighNumber() {
+		return interval.getHigh().getNumber();
+	}
+
+	public int getLowNumber() {
+		return interval.getLow().getNumber();
+	}
+
+	public TarsisMathNumber getHigh() {
+		return interval.getHigh();
+	}
+
+	public TarsisMathNumber getLow() {
+		return interval.getLow();
+	}
+}

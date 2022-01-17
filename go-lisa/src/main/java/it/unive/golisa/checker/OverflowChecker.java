@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.math.BigInteger;
-
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
@@ -41,6 +39,7 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.math.BigInteger;
 
 public class OverflowChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron>,
 		MonolithicHeap, Apron> {

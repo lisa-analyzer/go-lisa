@@ -23,7 +23,6 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier, ExpressionInverseSet<Identifier>>
-implements ValueDomain<EqualityDomain> {
+		implements ValueDomain<EqualityDomain> {
 
 	public EqualityDomain() {
 		this(new ExpressionInverseSet<>(), null);
@@ -92,7 +91,7 @@ implements ValueDomain<EqualityDomain> {
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 
-			if (unary.getOperator() == LogicalNegation.INSTANCE) 
+			if (unary.getOperator() == LogicalNegation.INSTANCE)
 				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
 			else
 				return Satisfiability.UNKNOWN;
@@ -116,14 +115,14 @@ implements ValueDomain<EqualityDomain> {
 				if (getState(left).contains(right) || getState(right).contains(left))
 					return Satisfiability.NOT_SATISFIED;
 				return Satisfiability.UNKNOWN;
-			} else if (op == LogicalAnd.INSTANCE) 
+			} else if (op == LogicalAnd.INSTANCE)
 				return satisfies((ValueExpression) left, pp).and(satisfies((ValueExpression) right, pp));
 			else if (op == LogicalOr.INSTANCE)
 				return satisfies((ValueExpression) left, pp).or(satisfies((ValueExpression) right, pp));
 			else
 				return Satisfiability.UNKNOWN;
 		}
-		
+
 		return Satisfiability.UNKNOWN;
 	}
 

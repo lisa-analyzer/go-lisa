@@ -1,10 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
@@ -31,10 +26,14 @@ import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 public class StrictUpperBounds
-extends FunctionalLattice<StrictUpperBounds, Identifier, ExpressionInverseSet<Identifier>>
-implements ValueDomain<StrictUpperBounds> {
+		extends FunctionalLattice<StrictUpperBounds, Identifier, ExpressionInverseSet<Identifier>>
+		implements ValueDomain<StrictUpperBounds> {
 
 	public StrictUpperBounds() {
 		this(new ExpressionInverseSet<>(), null);
@@ -64,9 +63,9 @@ implements ValueDomain<StrictUpperBounds> {
 					if (cons.getValue() instanceof Integer) {
 						Integer c = (Integer) cons.getValue();
 						ExpressionInverseSet<
-						Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
+								Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
 						ExpressionInverseSet<
-						Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
+								Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
 
 						Map<Identifier, ExpressionInverseSet<Identifier>> func;
 						if (function == null)
@@ -101,9 +100,9 @@ implements ValueDomain<StrictUpperBounds> {
 					if (cons.getValue() instanceof Integer) {
 						Integer c = (Integer) cons.getValue();
 						ExpressionInverseSet<
-						Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
+								Identifier> yUB = new ExpressionInverseSet<Identifier>(getState(y).elements());
 						ExpressionInverseSet<
-						Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
+								Identifier> xUB = new ExpressionInverseSet<Identifier>(getState(id).elements());
 
 						Map<Identifier, ExpressionInverseSet<Identifier>> func;
 						if (function == null)
@@ -167,7 +166,7 @@ implements ValueDomain<StrictUpperBounds> {
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
-			if (unary.getOperator() == LogicalNegation.INSTANCE) 
+			if (unary.getOperator() == LogicalNegation.INSTANCE)
 				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
 			else
 				return Satisfiability.UNKNOWN;

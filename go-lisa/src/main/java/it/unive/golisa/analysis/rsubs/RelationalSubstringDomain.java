@@ -1,15 +1,5 @@
 package it.unive.golisa.analysis.rsubs;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -38,6 +28,14 @@ import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
 import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class RelationalSubstringDomain
 		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
@@ -201,7 +199,8 @@ public class RelationalSubstringDomain
 				return leftState.lub(rightState);
 			else if (op == LogicalOr.INSTANCE)
 				return leftState.glb(rightState);
-			else if (op == it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE || op == StringEndsWith.INSTANCE || op == StringContains.INSTANCE) {
+			else if (op == it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE
+					|| op == StringEndsWith.INSTANCE || op == StringContains.INSTANCE) {
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
 					ExpressionInverseSet<ValueExpression> rels = getRelations((ValueExpression) binary.getRight());
@@ -255,10 +254,10 @@ public class RelationalSubstringDomain
 			BinaryExpression binary = (BinaryExpression) expression;
 
 			BinaryOperator op = binary.getOperator();
-			if (op == LogicalAnd.INSTANCE) 
+			if (op == LogicalAnd.INSTANCE)
 				return satisfies((ValueExpression) binary.getLeft(), pp)
 						.and(satisfies((ValueExpression) binary.getRight(), pp));
-			else if (op == LogicalOr.INSTANCE) 
+			else if (op == LogicalOr.INSTANCE)
 
 				return satisfies((ValueExpression) binary.getLeft(), pp)
 						.or(satisfies((ValueExpression) binary.getRight(), pp));

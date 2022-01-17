@@ -17,11 +17,14 @@ public class GoChannelReceive extends UnaryExpression {
 	public GoChannelReceive(CFG cfg, CodeLocation location, Expression exp) {
 		super(cfg, location, "<-", exp);
 	}
-	
+
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
-			throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression expr)
+					throws SemanticException {
 		// TODO: go channel receive semantics
 		return state.top();
 	}

@@ -20,16 +20,20 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExpression implements GoBinaryNumericalOperation {
+public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExpression
+		implements GoBinaryNumericalOperation {
 
 	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "-", exp1, exp2);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 		ExternalSet<Type> types;
 
 		AnalysisState<A, H, V> result = state.bottom();

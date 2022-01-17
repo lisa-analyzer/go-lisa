@@ -31,7 +31,8 @@ public class GoIndex extends NativeCFG {
 				IndexOf.class);
 	}
 
-	public static class IndexOf extends it.unive.lisa.program.cfg.statement.BinaryExpression implements PluggableStatement {
+	public static class IndexOf extends it.unive.lisa.program.cfg.statement.BinaryExpression
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -49,9 +50,12 @@ public class GoIndex extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-				SymbolicExpression right) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression left,
+						SymbolicExpression right) throws SemanticException {
 			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
 				return state.bottom();
 

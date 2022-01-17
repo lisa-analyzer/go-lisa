@@ -115,7 +115,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			UnaryExpression unary = (UnaryExpression) expression;
 
 			UnaryOperator op = unary.getOperator();
-			if (op == LogicalNegation.INSTANCE) 
+			if (op == LogicalNegation.INSTANCE)
 				return false;
 			else if (op == NumericNegation.INSTANCE)
 				return processableByNumericalDomain((ValueExpression) unary.getExpression());
@@ -129,7 +129,9 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			SymbolicExpression right = binary.getRight();
 
 			BinaryOperator op = binary.getOperator();
-			if (op == NumericNonOverflowingAdd.INSTANCE || op ==  NumericNonOverflowingDiv.INSTANCE ||  op == NumericNonOverflowingMod.INSTANCE ||  op == NumericNonOverflowingMul.INSTANCE || op == NumericNonOverflowingSub.INSTANCE) 
+			if (op == NumericNonOverflowingAdd.INSTANCE || op == NumericNonOverflowingDiv.INSTANCE
+					|| op == NumericNonOverflowingMod.INSTANCE || op == NumericNonOverflowingMul.INSTANCE
+					|| op == NumericNonOverflowingSub.INSTANCE)
 				return processableByNumericalDomain((ValueExpression) left)
 						&& processableByNumericalDomain((ValueExpression) right);
 			else
@@ -160,7 +162,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		if (expression instanceof PushAny)
 			return true;
 
-		if (expression instanceof UnaryExpression) 
+		if (expression instanceof UnaryExpression)
 			return false;
 
 		if (expression instanceof BinaryExpression) {
@@ -193,9 +195,8 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 				return false;
 		}
 
-		if (expression instanceof TernaryExpression) 
+		if (expression instanceof TernaryExpression)
 			return true;
-
 
 		return false;
 	}

@@ -50,9 +50,12 @@ public class GoLen extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
-				throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression expr)
+						throws SemanticException {
 			ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
 			return state.smallStepSemantics(
 					new UnaryExpression(intType, expr, StringLength.INSTANCE, getLocation()), original);

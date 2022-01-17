@@ -51,9 +51,12 @@ public class GoReplace extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-				SymbolicExpression middle, SymbolicExpression right) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression left,
+						SymbolicExpression middle, SymbolicExpression right) throws SemanticException {
 			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
 				return state.bottom();
 
@@ -64,9 +67,10 @@ public class GoReplace extends NativeCFG {
 				return state.bottom();
 
 			return state
-					.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE),
+					.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(
+							Caches.types().mkSingletonSet(GoStringType.INSTANCE),
 							left, middle, right, StringReplace.INSTANCE, getLocation()), original);
-		
+
 		}
 	}
 }

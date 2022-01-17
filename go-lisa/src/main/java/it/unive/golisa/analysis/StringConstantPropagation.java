@@ -206,7 +206,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	protected ValueEnvironment<StringConstantPropagation> assumeBinaryExpression(
 			ValueEnvironment<StringConstantPropagation> environment, BinaryOperator operator, ValueExpression left,
 			ValueExpression right, ProgramPoint pp) throws SemanticException {
-		if (operator == StringEquals.INSTANCE || operator == ComparisonEq.INSTANCE) {	
+		if (operator == StringEquals.INSTANCE || operator == ComparisonEq.INSTANCE) {
 			if (left instanceof Identifier)
 				environment = environment.assign((Identifier) left, right, pp);
 			else if (right instanceof Identifier)

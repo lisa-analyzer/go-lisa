@@ -41,12 +41,14 @@ public class GoMake extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-			ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
+	public <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
 		// No type information is provided and just a single type
 		// is passed as argument and it should be allocated
-		if (type == null) 
+		if (type == null)
 			return state.top();
 
 		/**
@@ -108,7 +110,7 @@ public class GoMake extends NaryExpression {
 				AnalysisState<A, H, V> lenResult = state.bottom();
 				for (SymbolicExpression lenId : lenState.getComputedExpressions())
 					lenResult = lenResult
-					.lub(lenState.assign(lenId, new Constant(GoIntType.INSTANCE, length, getLocation()), this));
+							.lub(lenState.assign(lenId, new Constant(GoIntType.INSTANCE, length, getLocation()), this));
 
 				// Allocates the cap property of the slice
 				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap",
@@ -120,7 +122,7 @@ public class GoMake extends NaryExpression {
 				AnalysisState<A, H, V> capResult = state.bottom();
 				for (SymbolicExpression lenId : capState.getComputedExpressions())
 					capResult = capResult
-					.lub(capState.assign(lenId, new Constant(GoIntType.INSTANCE, cap, getLocation()), this));
+							.lub(capState.assign(lenId, new Constant(GoIntType.INSTANCE, cap, getLocation()), this));
 
 				// Allocates the ptr property of the slice
 				Variable ptrProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "ptr",

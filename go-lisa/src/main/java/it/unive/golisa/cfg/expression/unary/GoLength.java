@@ -28,11 +28,13 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 		super(cfg, location, "len", exp);
 	}
 
-
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr)
-			throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression expr)
+					throws SemanticException {
 		ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
 		AnalysisState<A, H, V> result = state.bottom();
 

@@ -1,8 +1,5 @@
 package it.unive.golisa.analysis.apron;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-
 import apron.Abstract1;
 import apron.ApronException;
 import apron.Box;
@@ -59,6 +56,8 @@ import it.unive.lisa.symbolic.value.operator.binary.TypeCast;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.math.BigInteger;
+import java.util.Arrays;
 
 public class Apron implements ValueDomain<Apron> {
 
@@ -270,13 +269,13 @@ public class Apron implements ValueDomain<Apron> {
 	}
 
 	private int toApronOperator(BinaryOperator op) {
-		if (op == StringConcat.INSTANCE || op == NumericNonOverflowingAdd.INSTANCE) 
+		if (op == StringConcat.INSTANCE || op == NumericNonOverflowingAdd.INSTANCE)
 			return Texpr1BinNode.OP_ADD;
 		else if (op == NumericNonOverflowingMul.INSTANCE)
 			return Texpr1BinNode.OP_MUL;
 		else if (op == NumericNonOverflowingSub.INSTANCE)
 			return Texpr1BinNode.OP_SUB;
-		else if (op == NumericNonOverflowingDiv.INSTANCE)		
+		else if (op == NumericNonOverflowingDiv.INSTANCE)
 			return Texpr1BinNode.OP_DIV;
 		else if (op == NumericNonOverflowingMod.INSTANCE)
 			return Texpr1BinNode.OP_MOD;
@@ -357,7 +356,7 @@ public class Apron implements ValueDomain<Apron> {
 					return assume(rewritten, pp);
 				else
 					return this;
-			} else 
+			} else
 				return this;
 
 		}
@@ -421,7 +420,7 @@ public class Apron implements ValueDomain<Apron> {
 				NumericNonOverflowingSub.INSTANCE, exp.getCodeLocation());
 
 		BinaryOperator op = exp.getOperator();
-		if (op ==  ComparisonGt.INSTANCE
+		if (op == ComparisonGt.INSTANCE
 				|| op == ComparisonGe.INSTANCE
 				|| op == ComparisonNe.INSTANCE
 				|| op == ComparisonEq.INSTANCE) {

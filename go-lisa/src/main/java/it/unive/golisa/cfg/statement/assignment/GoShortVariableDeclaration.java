@@ -48,14 +48,14 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 	}
 
 	public GoShortVariableDeclaration(CFG cfg, CodeLocation location, VariableRef var, Expression expression) {
-		super(cfg, location, ":=",  var, expression);
+		super(cfg, location, ":=", var, expression);
 	}
 
 	@Override
 	public String toString() {
 		return getLeft() + " := " + getRight();
 	}
-	
+
 	public static class NumericalTyper {
 
 		public static SymbolicExpression type(SymbolicExpression exp) {
@@ -75,9 +75,12 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 
 		// e.g., _ := f(), we just return right state
 		// FIXME: it should return the entry state

@@ -22,9 +22,11 @@ public class GoNew extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-			ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
+	public <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
 		// Following the Golang reference:
 		// The new built-in function allocates memory. The first argument is a
 		// type, not a value,

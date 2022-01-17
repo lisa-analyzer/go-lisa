@@ -7,7 +7,6 @@ import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
@@ -20,7 +19,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
-import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
@@ -61,15 +59,17 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		return "var " + getLeft() + " " + type + " = " + getRight();
 	}
 
-
 	public Type getDeclaredType() {
 		return type;
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+	protected <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
@@ -78,19 +78,19 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
 		Variable id = new Variable(idType, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
 
-			AnalysisState<A, H, V> result = state.bottom();
-			for (Type rightType : right.getTypes()) {
-				AnalysisState<A, H, V> tmp = state.bottom();
-				if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat
-						|| rightType instanceof GoNilType) {
-					Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
-					tmp = state.assign(id, new BinaryExpression(idType, right, typeCast, TypeConv.INSTANCE,
-							getRight().getLocation()), this);
-				} else if (rightType.canBeAssignedTo(type))
-					tmp = state.assign(id, right, this);
+		AnalysisState<A, H, V> result = state.bottom();
+		for (Type rightType : right.getTypes()) {
+			AnalysisState<A, H, V> tmp = state.bottom();
+			if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat
+					|| rightType instanceof GoNilType) {
+				Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
+				tmp = state.assign(id, new BinaryExpression(idType, right, typeCast, TypeConv.INSTANCE,
+						getRight().getLocation()), this);
+			} else if (rightType.canBeAssignedTo(type))
+				tmp = state.assign(id, right, this);
 
 			result = result.lub(tmp);
-			
+
 		}
 
 		if (!getRight().getMetaVariables().isEmpty())

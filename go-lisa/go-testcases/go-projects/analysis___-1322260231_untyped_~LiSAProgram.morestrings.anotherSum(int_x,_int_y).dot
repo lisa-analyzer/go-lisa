@@ -1,0 +1,12 @@
+digraph {
+	labelloc="t";
+	label="['/Users/vince/gits/go-lisa/go-lisa/go-testcases/go-projects/example/user/hello/morestrings/b.go':8:22]";
+	"node0" [shape="rect",color="black",peripheries="2",label=<return +(x, y)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['/Users/vince/gits/go-lisa/go-lisa/go-testcases/go-projects/example/user/hello/morestrings/b.go':8:22]:a: [1, 1]<BR/>['/Users/vince/gits/go-lisa/go-lisa/go-testcases/go-projects/example/user/hello/morestrings/b.go':8:22]:b: [2, 2]<BR/>ret_value@morestrings.anotherSum: [3, 3]<BR/>x: [1, 1]<BR/>y: [2, 2] ]]<BR/>}} -&gt; [ret_value@morestrings.anotherSum]>];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

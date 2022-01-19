@@ -25,7 +25,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class GoItoa extends NativeCFG {
 
 	public GoItoa(CodeLocation location, CompilationUnit strconvUnit) {
-		super(new CFGDescriptor(location, strconvUnit, false, "Itoa", GoStringType.INSTANCE,
+		super(new CFGDescriptor(location, strconvUnit, false, strconvUnit.getName() + ".Itoa", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoIntType.INSTANCE)),
 				Itoa.class);
 	}

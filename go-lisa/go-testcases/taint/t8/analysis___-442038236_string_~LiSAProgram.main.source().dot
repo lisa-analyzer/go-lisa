@@ -1,0 +1,12 @@
+digraph {
+	labelloc="t";
+	label="['go-testcases/taint/t8/t8.go':16:13]";
+	"node0" [shape="rect",color="black",peripheries="2",label=<return &quot;asd&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['go-testcases/taint/t8/t8.go':16:13]:['go-testcases/taint/t8/t8.go':15:1]:v: #<BR/>['go-testcases/taint/t8/t8.go':16:13]:v: #<BR/>ret_value@main.source: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; [ret_value@main.source]>];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

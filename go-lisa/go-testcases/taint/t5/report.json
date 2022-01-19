@@ -1,0 +1,6 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/taint/t5/t5.go':16:8] on 'untyped ~LiSAProgram::main.main()': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'v' of ~LiSAProgram::main.sink"
+  } ],
+  "files" : [ "analysis___-1058821566_string_~LiSAProgram.main.source().dot", "analysis___381546300_untyped_~LiSAProgram.main.sink(string_v).dot", "analysis___untyped_~LiSAProgram.main.main().dot" ]
+}

@@ -252,14 +252,14 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
-		if (funcName.equals("sink"))
+		if (funcName.endsWith("sink"))
 			for (Parameter p : cfgArgs)
 				p.addAnnotation(TaintChecker.SINK_ANNOTATION);
 
 		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName,
 				getGoReturnType(funcDecl.signature()), cfgArgs);
 
-		if (funcName.equals("source"))
+		if (funcName.endsWith("source"))
 			descriptor.addAnnotation(Taint.TAINTED_ANNOTATION);
 
 		return descriptor;

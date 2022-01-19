@@ -1,4 +1,3 @@
-import org.junit.Test;
 
 import it.unive.golisa.analysis.Taint;
 import it.unive.golisa.checker.TaintChecker;
@@ -10,6 +9,7 @@ import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 
@@ -26,7 +26,7 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("taint/t1", "t1.go", conf);
 	}
-	
+
 	@Test
 	public void taintTest002() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -54,7 +54,7 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("taint/t3", "t3.go", conf);
 	}
-	
+
 	@Test
 	public void taintTest004() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -68,7 +68,7 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("taint/t4", "t4.go", conf);
 	}
-	
+
 	@Test
 	public void taintTest005() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -124,7 +124,7 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("taint/t8", "t8.go", conf);
 	}
-	
+
 	@Test
 	public void taintTest009() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()

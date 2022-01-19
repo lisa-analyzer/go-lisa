@@ -46,8 +46,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
-		this.descriptor = buildCFGDescriptor(funcDecl);
-
+		this.descriptor = buildCFGDescriptor(funcDecl, packageUnit.getName());
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -62,7 +61,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
 		this.descriptor = buildCFGDescriptor(funcLit);
-
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -87,7 +85,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
 
 		// The function named "main" is the entry point of the program
-		if (cfg.getDescriptor().getName().equals("main"))
+		if (cfg.getDescriptor().getName().equals("main.main"))
 			program.addEntryPoint(cfg);
 
 		Type returnType = cfg.getDescriptor().getReturnType();
@@ -241,8 +239,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		return cfg;
 	}
 
-	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl) {
-		String funcName = funcDecl.IDENTIFIER().getText();
+	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl, String packageName) {
+		String funcName = packageName + "." + funcDecl.IDENTIFIER().getText();
 		SignatureContext signature = funcDecl.signature();
 		ParametersContext formalPars = signature.parameters();
 

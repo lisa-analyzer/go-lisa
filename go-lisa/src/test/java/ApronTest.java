@@ -1,4 +1,7 @@
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.analysis.apron.Apron.ApronDomain;
 import it.unive.golisa.checker.OverflowChecker;
@@ -9,8 +12,8 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Test;
 
+@Ignore
 public class ApronTest extends GoAnalysisTestExecutor {
 
 	@Test

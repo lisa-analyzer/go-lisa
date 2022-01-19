@@ -306,7 +306,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
 				? ((GoPointerType) receiver.getStaticType()).getBaseType().toString()
-						: receiver.getStaticType().toString();
+				: receiver.getStaticType().toString();
 
 		SourceCodeLocation location = locationOf(ctx);
 		if (program.getUnit(unitName) == null)
@@ -690,7 +690,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped()
 						? ((GoType) type).defaultValue(cfg, locationOf(ctx))
-								: visitExpression(exps.expression(i));
+						: visitExpression(exps.expression(i));
 
 				int line = getLine(ids.IDENTIFIER(i));
 				int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i))
@@ -1723,28 +1723,30 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			// Function/method call (e.g., f(1,2,3), x.f(), rand.Intv(50))
 			if (ctx.arguments() != null) {
 				Expression[] args = visitArguments(ctx.arguments());
-				
-				if (primary instanceof VariableRef) 
+
+				if (primary instanceof VariableRef)
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name
-					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false, currentUnit.getName() + "." + primary.toString(),
+					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false,
+							currentUnit.getName() + "." + primary.toString(),
 							visitArguments(ctx.arguments()));
-			
+
 				else if (primary instanceof AccessInstanceGlobal) {
 					Expression receiver = (Expression) getReceiver(ctx.primaryExpr());
-					
-				
-					if (program.getUnit(receiver.toString()) != null) 
+
+					if (program.getUnit(receiver.toString()) != null)
 						// static method call (e.g., math.Intv(50))
 						// this call is not an instance call
-						// the callee's name is concatenated to the function name
+						// the callee's name is concatenated to the function
+						// name
 						return new UnresolvedCall(cfg, locationOf(ctx), RuntimeTypesResolution.INSTANCE, false,
 								receiver.toString() + "." + getMethodName(ctx.primaryExpr()), args);
 					else {
 						// method call (e.g., x.f(1))
 						// this call is an instance call
-						// the callee needs to be resolved and it is put as first argument
+						// the callee needs to be resolved and it is put as
+						// first argument
 						args = ArrayUtils.insert(0, args, receiver);
 						return new UnresolvedCall(cfg, locationOf(ctx), RuntimeTypesResolution.INSTANCE,
 								true, getMethodName(ctx.primaryExpr()), args);
@@ -1961,13 +1963,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-				.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) keys).length));
+						.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) keys).length));
 			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 		} else {
 
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-				.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) raw).length));
+						.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) raw).length));
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw, type);
 		}
 	}
@@ -1989,7 +1991,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			result.put(firstKeyed.getLeft(), firstKeyed.getRight());
 			for (int i = 1; i < ctx.keyedElement().size(); i++) {
 				Pair<Expression,
-				Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
+						Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
 				result.put(keyed.getLeft(), keyed.getRight());
 			}
 

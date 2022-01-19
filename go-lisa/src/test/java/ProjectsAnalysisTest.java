@@ -1,4 +1,3 @@
-import org.junit.Test;
 
 import it.unive.golisa.cli.MyContextBasedAnalysis;
 import it.unive.lisa.AnalysisSetupException;
@@ -9,6 +8,7 @@ import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class ProjectsAnalysisTest extends GoAnalysisTestExecutor {
 

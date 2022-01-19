@@ -1,7 +1,4 @@
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.analysis.apron.Apron.ApronDomain;
 import it.unive.golisa.checker.DivisionByZeroChecker;
@@ -10,6 +7,8 @@ import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
+import org.junit.Ignore;
+import org.junit.Test;
 
 @Ignore
 public class DivByZeroTest extends GoAnalysisTestExecutor {

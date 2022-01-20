@@ -29,8 +29,8 @@ public class GoStructType implements GoType, UnitType, PointerType {
 			structTypes.put(name, new GoStructType(name, unit));
 	}
 
-	private final String name;
-	private final CompilationUnit unit;
+	protected final String name;
+	protected final CompilationUnit unit;
 
 	public GoStructType(String name, CompilationUnit unit) {
 		this.name = name;

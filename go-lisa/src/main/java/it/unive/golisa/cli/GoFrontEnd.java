@@ -21,18 +21,6 @@ import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.runtime.conversion.GoToInt64;
 import it.unive.golisa.cfg.runtime.conversion.GoToString;
-import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
-import it.unive.golisa.cfg.runtime.strconv.GoAtoi;
-import it.unive.golisa.cfg.runtime.strconv.GoItoa;
-import it.unive.golisa.cfg.runtime.strings.GoContains;
-import it.unive.golisa.cfg.runtime.strings.GoHasPrefix;
-import it.unive.golisa.cfg.runtime.strings.GoHasSuffix;
-import it.unive.golisa.cfg.runtime.strings.GoIndex;
-import it.unive.golisa.cfg.runtime.strings.GoIndexRune;
-import it.unive.golisa.cfg.runtime.strings.GoLen;
-import it.unive.golisa.cfg.runtime.strings.GoReplace;
-import it.unive.golisa.cfg.runtime.url.UrlPathEscape;
-import it.unive.golisa.cfg.runtime.url.UrlQueryEscape;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoQualifiedType;
@@ -98,7 +86,7 @@ import org.apache.logging.log4j.Logger;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoFrontEnd extends GoParserBaseVisitor<Object> {
+public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntimeLoader {
 
 	private static final Logger log = LogManager.getLogger(GoFrontEnd.class);
 
@@ -341,86 +329,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-		} else {
-
-			switch (module) {
-			case "strings":
-				loadStrings();
-				break;
-			case "fmt":
-				loadFmt();
-				break;
-			case "url":
-				loadUrl();
-				break;
-			case "strconv":
-				loadStrconv();
-				break;
-			default:
-				loadUnhandledLib(module);
-				break;
-			}
-		}
+		} else
+			loadRuntime(module, program, mapper);
 		return null;
-	}
-
-	private void loadUnhandledLib(String lib) {
-
-		SourceCodeLocation unknownLocation;
-		if (mapper.getPackages().contains(lib))
-			// it is a package contained in Go APIs
-			unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		else
-			unknownLocation = new SourceCodeLocation("unknown", 0, 0);
-
-		CompilationUnit cu = new CompilationUnit(unknownLocation, lib, false);
-		program.addCompilationUnit(cu);
-	}
-
-	private void loadUrl() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit url = new CompilationUnit(unknownLocation, "url", false);
-		url.addConstruct(new UrlQueryEscape(unknownLocation, url));
-		url.addConstruct(new UrlPathEscape(unknownLocation, url));
-
-		program.addCompilationUnit(url);
 	}
 
 	private void loadCore() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		packageUnit.addConstruct(new GoToString(unknownLocation, packageUnit));
 		packageUnit.addConstruct(new GoToInt64(unknownLocation, packageUnit));
-	}
-
-	private void loadStrings() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit str = new CompilationUnit(unknownLocation, "strings", false);
-		str.addConstruct(new GoHasPrefix(unknownLocation, str));
-		str.addConstruct(new GoHasSuffix(unknownLocation, str));
-		str.addConstruct(new GoContains(unknownLocation, str));
-		str.addConstruct(new GoReplace(unknownLocation, str));
-		str.addConstruct(new GoIndex(unknownLocation, str));
-		str.addConstruct(new GoIndexRune(unknownLocation, str));
-		str.addConstruct(new GoLen(unknownLocation, str));
-
-		program.addCompilationUnit(str);
-	}
-
-	private void loadStrconv() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit strconv = new CompilationUnit(unknownLocation, "strconv", false);
-		strconv.addConstruct(new GoAtoi(unknownLocation, strconv));
-		strconv.addConstruct(new GoItoa(unknownLocation, strconv));
-
-		program.addCompilationUnit(strconv);
-	}
-
-	private void loadFmt() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit fmt = new CompilationUnit(unknownLocation, "fmt", false);
-		fmt.addConstruct(new GoPrintln(unknownLocation, fmt));
-
-		program.addCompilationUnit(fmt);
 	}
 
 	@Override

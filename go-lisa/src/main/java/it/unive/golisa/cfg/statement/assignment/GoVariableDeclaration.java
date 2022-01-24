@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -81,8 +80,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		AnalysisState<A, H, V> result = state.bottom();
 		for (Type rightType : right.getTypes()) {
 			AnalysisState<A, H, V> tmp = state.bottom();
-			if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat
-					|| rightType instanceof GoNilType) {
+			if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat) {
 				Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
 				tmp = state.assign(id, new BinaryExpression(idType, right, typeCast, TypeConv.INSTANCE,
 						getRight().getLocation()), this);

@@ -1,6 +1,13 @@
 package it.unive.golisa.cli;
 
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.shim.function.Start;
+import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
+import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
+import it.unive.golisa.cfg.runtime.shim.type.Handler;
+import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
 import it.unive.golisa.cfg.runtime.strconv.GoAtoi;
 import it.unive.golisa.cfg.runtime.strconv.GoItoa;
 import it.unive.golisa.cfg.runtime.strings.GoContains;
@@ -11,6 +18,7 @@ import it.unive.golisa.cfg.runtime.strings.GoIndexRune;
 import it.unive.golisa.cfg.runtime.strings.GoLen;
 import it.unive.golisa.cfg.runtime.strings.GoReplace;
 import it.unive.golisa.cfg.runtime.time.function.Now;
+import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
 import it.unive.golisa.cfg.runtime.time.method.Day;
 import it.unive.golisa.cfg.runtime.time.method.Month;
@@ -25,6 +33,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 
 public interface GoRuntimeLoader {
+	SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 
 	default void loadRuntime(String module, Program program, GoLangAPISignatureMapper mapper) {
 		switch (module) {
@@ -43,79 +52,96 @@ public interface GoRuntimeLoader {
 		case "time":
 			loadTime(program);
 			break;
+		case "github.com/hyperledger/fabric/core/chaincode/shim":
+			loadShim(program);
 		default:
 			loadUnhandledLib(module, program, mapper);
 			break;
 		}
 	}
 
-	private void loadUnhandledLib(String lib, Program program, GoLangAPISignatureMapper mapper) {
+	private void loadShim(Program program) {
+		CompilationUnit shim = new CompilationUnit(runtimeLocation, "shim", false);
 
-		SourceCodeLocation unknownLocation;
-		if (mapper.getPackages().contains(lib))
-			// it is a package contained in Go APIs
-			unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		else
-			unknownLocation = new SourceCodeLocation("unknown", 0, 0);
+		// adding functions and methods
+		shim.addConstruct(new Start(runtimeLocation, shim));
 
-		CompilationUnit cu = new CompilationUnit(unknownLocation, lib, false);
-		program.addCompilationUnit(cu);
+		// adding types
+		program.registerType(Chaincode.INSTANCE);
+		program.registerType(ChaincodeStub.INSTANCE);
+		program.registerType(ChaincodeStubInterface.INSTANCE);
+		program.registerType(CommonIteratorInterface.INSTANCE);
+		program.registerType(Handler.INSTANCE);
+		program.registerType(TLSProperties.INSTANCE);
+		
+		program.addCompilationUnit(shim);
 	}
 
 	private void loadUrl(Program program) {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit url = new CompilationUnit(unknownLocation, "url", false);
-		url.addConstruct(new UrlQueryEscape(unknownLocation, url));
-		url.addConstruct(new UrlPathEscape(unknownLocation, url));
+		CompilationUnit url = new CompilationUnit(runtimeLocation, "url", false);
+		url.addConstruct(new UrlQueryEscape(runtimeLocation, url));
+		url.addConstruct(new UrlPathEscape(runtimeLocation, url));
 
 		program.addCompilationUnit(url);
 	}
 
 	private void loadStrings(Program program) {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit str = new CompilationUnit(unknownLocation, "strings", false);
-		str.addConstruct(new GoHasPrefix(unknownLocation, str));
-		str.addConstruct(new GoHasSuffix(unknownLocation, str));
-		str.addConstruct(new GoContains(unknownLocation, str));
-		str.addConstruct(new GoReplace(unknownLocation, str));
-		str.addConstruct(new GoIndex(unknownLocation, str));
-		str.addConstruct(new GoIndexRune(unknownLocation, str));
-		str.addConstruct(new GoLen(unknownLocation, str));
+		CompilationUnit str = new CompilationUnit(runtimeLocation, "strings", false);
+		str.addConstruct(new GoHasPrefix(runtimeLocation, str));
+		str.addConstruct(new GoHasSuffix(runtimeLocation, str));
+		str.addConstruct(new GoContains(runtimeLocation, str));
+		str.addConstruct(new GoReplace(runtimeLocation, str));
+		str.addConstruct(new GoIndex(runtimeLocation, str));
+		str.addConstruct(new GoIndexRune(runtimeLocation, str));
+		str.addConstruct(new GoLen(runtimeLocation, str));
 
 		program.addCompilationUnit(str);
 	}
 
 	private void loadStrconv(Program program) {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit strconv = new CompilationUnit(unknownLocation, "strconv", false);
-		strconv.addConstruct(new GoAtoi(unknownLocation, strconv));
-		strconv.addConstruct(new GoItoa(unknownLocation, strconv));
+		CompilationUnit strconv = new CompilationUnit(runtimeLocation, "strconv", false);
+		strconv.addConstruct(new GoAtoi(runtimeLocation, strconv));
+		strconv.addConstruct(new GoItoa(runtimeLocation, strconv));
 
 		program.addCompilationUnit(strconv);
 	}
 
 	private void loadFmt(Program program) {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit fmt = new CompilationUnit(unknownLocation, "fmt", false);
-		fmt.addConstruct(new GoPrintln(unknownLocation, fmt));
+		CompilationUnit fmt = new CompilationUnit(runtimeLocation, "fmt", false);
+		fmt.addConstruct(new GoPrintln(runtimeLocation, fmt));
 
 		program.addCompilationUnit(fmt);
 	}
 
 	private void loadTime(Program program) {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit time = new CompilationUnit(unknownLocation, "time", false);
+		CompilationUnit time = new CompilationUnit(runtimeLocation, "time", false);
 
 		// adding functions and methods
-		time.addConstruct(new Now(unknownLocation, time));
-		time.addConstruct(new Since(unknownLocation, time));
-		time.addConstruct(new Day(unknownLocation, time));
-		time.addConstruct(new Month(unknownLocation, time));
+		time.addConstruct(new Now(runtimeLocation, time));
+		time.addConstruct(new Since(runtimeLocation, time));
+		time.addConstruct(new Day(runtimeLocation, time));
+		time.addConstruct(new Month(runtimeLocation, time));
+		time.addConstruct(new Parse(runtimeLocation, time));
 
 		// adding types
 		program.registerType(Time.INSTANCE);
 		program.registerType(it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE);
 		program.registerType(Duration.INSTANCE);
+		
+		program.addCompilationUnit(time);
+	}
+
+	private void loadUnhandledLib(String lib, Program program, GoLangAPISignatureMapper mapper) {
+
+		SourceCodeLocation runTimeSourceLocation;
+		if (mapper.getPackages().contains(lib))
+			// it is a package contained in Go APIs
+			runTimeSourceLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		else
+			runTimeSourceLocation = new SourceCodeLocation("unknown", 0, 0);
+
+		CompilationUnit cu = new CompilationUnit(runTimeSourceLocation, lib, false);
+		program.addCompilationUnit(cu);
 	}
 
 }

@@ -27,7 +27,7 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 		return tupleTypes.contains(raw);
 	}
 
-	public GoTypesTuple(Parameter[] pars) {
+	public GoTypesTuple(Parameter... pars) {
 		super();
 		for (int i = 0; i < pars.length; i++)
 			this.add(pars[i]);

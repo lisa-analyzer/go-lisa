@@ -366,6 +366,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		cfg.simplify();
 
+		if (cfg.getDescriptor().getName().equals("IsExpired"))
+			program.addEntryPoint(cfg);
+		
 		currentUnit.addInstanceCFG(cfg);
 		return cfg;
 	}
@@ -676,7 +679,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			// We can safely reause the multi-short variable declaration class
 			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left,
-					right);
+					right,blockList,
+					getContainingBlock());
 			cfg.addNode(asg, visibleIds);
 
 			return Pair.of(asg, asg);
@@ -986,7 +990,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression[] left = visitExpressionList(ids);
 			Expression right = visitExpression(exps.expression(0));
 
-			GoMultiAssignment asg = new GoMultiAssignment(cfg, file, line, col, left, right, blockList);
+			GoMultiAssignment asg = new GoMultiAssignment(cfg, file, line, col, left, right, blockList, getContainingBlock());
 			cfg.addNode(asg, visibleIds);
 			return Pair.of(asg, asg);
 		} else {
@@ -1119,7 +1123,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression right = visitExpression(exps.expression(0));
 
 			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left,
-					right);
+					right, blockList, getContainingBlock());
 
 			for (VariableRef ref : left)
 				if (!GoLangUtils.refersToBlankIdentifier(ref))
@@ -2219,7 +2223,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 					GoMultiShortVariableDeclaration shortDecl = new GoMultiShortVariableDeclaration(cfg,
 							typeLoc.getSourceFile(), typeLoc.getLine(), typeLoc.getCol(), ids,
-							new GoTypeAssertion(cfg, typeLoc, typeSwitchExp, types[j]));
+							new GoTypeAssertion(cfg, typeLoc, typeSwitchExp, types[j]), blockList, getContainingBlock());
 
 					for (VariableRef id : ids)
 						if (!GoLangUtils.refersToBlankIdentifier(id))

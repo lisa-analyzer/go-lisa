@@ -5,11 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.golisa.cli.MyContextBasedAnalysis;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;
@@ -74,7 +77,19 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 				.setDumpAnalysis(true);
 
 		perform("variablescoping", "shadowing.go", conf);
+	}
+	
+	@Test
+	public void shadowingTestMultiAssignment() throws IOException, AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+				.setInferTypes(true)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new MyContextBasedAnalysis<>())
+				.setAbstractState(getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+				.setDumpAnalysis(true);
 
+		perform("variablescoping/interproc", "scoping.go", conf);
 	}
 
 	private Map<String, Set<String>> expectedResultForLoopVariableScooping() {

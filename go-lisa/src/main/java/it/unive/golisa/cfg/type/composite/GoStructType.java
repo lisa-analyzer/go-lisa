@@ -1,8 +1,14 @@
 package it.unive.golisa.cfg.type.composite;
 
-import it.unive.golisa.cfg.expression.literal.GoNil;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.Parameter;
@@ -11,10 +17,6 @@ import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 public class GoStructType implements GoType, UnitType, PointerType {
 
@@ -134,7 +136,13 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoNil(cfg, location);
+		Expression[] values = new Expression[getUnit().getGlobals().size()];
+
+		int i = 0;
+		for (Global key : this.getUnit().getGlobals()) 
+			values[i++] = (((GoType) key.getStaticType()).defaultValue(cfg, location));
+
+		return new GoNonKeyedLiteral(cfg, location, values, this);
 	}
 
 	@Override

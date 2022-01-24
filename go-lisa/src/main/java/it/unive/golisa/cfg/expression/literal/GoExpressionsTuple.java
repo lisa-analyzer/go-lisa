@@ -25,7 +25,7 @@ import it.unive.lisa.symbolic.value.Constant;
 
 public class GoExpressionsTuple extends NaryExpression {
 
-	public GoExpressionsTuple(CFG cfg, CodeLocation location, Expression[] expressions) {
+	public GoExpressionsTuple(CFG cfg, CodeLocation location, Expression... expressions) {
 		super(cfg, location, "(tuple)", expressions);
 	}
 

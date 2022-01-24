@@ -1,5 +1,16 @@
 package it.unive.golisa.cli;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.antlr.GoParser.AnonymousFieldContext;
 import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
 import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
@@ -24,7 +35,6 @@ import it.unive.golisa.antlr.GoParser.TypeNameContext;
 import it.unive.golisa.antlr.GoParser.Type_Context;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.golisa.cfg.type.GoQualifiedType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoAliasType;
@@ -58,15 +68,6 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
@@ -144,8 +145,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			}
 		}
 
-		Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
-		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
+		return visitQualifiedIdent(ctx.qualifiedIdent());
+//		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
 	}
 
 	@Override
@@ -198,8 +199,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.IDENTIFIER() != null)
 			return getGoType(ctx);
 		else {
-			Pair<String, String> pair = visitQualifiedIdent(ctx.qualifiedIdent());
-			return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
+			return visitQualifiedIdent(ctx.qualifiedIdent());
+//			return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
 		}
 	}
 
@@ -209,8 +210,11 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Pair<String, String> visitQualifiedIdent(QualifiedIdentContext ctx) {
-		return Pair.of(ctx.IDENTIFIER(0).getText(), ctx.IDENTIFIER(1).getText());
+	public GoType visitQualifiedIdent(QualifiedIdentContext ctx) {
+		for (Type type : program.getRegisteredTypes())
+			if (type.toString().equals(ctx.getText()))
+				return (GoType) type;
+		return null;
 	}
 
 	@Override

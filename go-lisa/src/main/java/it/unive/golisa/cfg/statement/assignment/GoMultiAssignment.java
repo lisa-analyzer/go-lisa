@@ -1,12 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -32,6 +25,11 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiAssignment extends Expression {
 
@@ -39,23 +37,23 @@ public class GoMultiAssignment extends Expression {
 	protected final Expression e;
 
 	/**
-	 * The chain of blocks (starting from the block containing this assignment) to the block defining the assigned variables 
+	 * The chain of blocks (starting from the block containing this assignment)
+	 * to the block defining the assigned variables
 	 */
 	private Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
 
 	private final OpenBlock containingBlock;
 
-	
 	public GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[] ids, Expression e,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {
 		super(cfg, new SourceCodeLocation(filePath, line, col));
 		this.ids = ids;
 		this.e = e;
 		this.blocksToDeclaration = new HashMap<>();
-		
+
 		for (Expression id : ids)
 			if (id instanceof VariableRef)
-			blocksToDeclaration.put((VariableRef) id, BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, id))				;
+				blocksToDeclaration.put((VariableRef) id, BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, id));
 		this.containingBlock = containingBlock;
 	}
 
@@ -98,13 +96,13 @@ public class GoMultiAssignment extends Expression {
 		AnalysisState<A, H, V> result = rightState;
 
 		for (int i = 0; i < ids.length; i++) {
-			
+
 			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
 				continue;
-			
+
 			List<BlockInfo> blockInfo = blocksToDeclaration.get(ids[i]);
 			AnalysisState<A, H, V> idState = ids[i].semantics(rightState, interprocedural, expressions);
-			
+
 			AnalysisState<A, H, V> tmp2 = rightState.bottom();
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
 				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()),
@@ -112,20 +110,21 @@ public class GoMultiAssignment extends Expression {
 				AccessChild access = new AccessChild(Caches.types().mkUniversalSet(), dereference,
 						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				AnalysisState<A, H, V> accessState = rightState.smallStepSemantics(access, this);
-				
+
 				AnalysisState<A, H, V> tmp = rightState.bottom();
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
 					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V> assign = assignScopedId(rightState, idExp, NumericalTyper.type(accessExp), blockInfo);
+						AnalysisState<A, H, V> assign = assignScopedId(rightState, idExp,
+								NumericalTyper.type(accessExp), blockInfo);
 						tmp = tmp.lub(assign);
 					}
 				}
 				tmp2 = tmp.lub(tmp2);
 			}
-			
+
 			result = tmp2;
 		}
-		
+
 		for (int i = 0; i < ids.length; i++) {
 			if (ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
 				continue;
@@ -156,11 +155,11 @@ public class GoMultiAssignment extends Expression {
 	}
 
 	private <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
-			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
+					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo)
+					throws SemanticException {
 
-		
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
 		// needs to be performed
@@ -183,7 +182,7 @@ public class GoMultiAssignment extends Expression {
 		return tmp;
 
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

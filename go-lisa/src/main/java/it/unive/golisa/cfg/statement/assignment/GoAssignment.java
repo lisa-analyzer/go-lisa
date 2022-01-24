@@ -20,7 +20,8 @@ import java.util.List;
 public class GoAssignment extends BinaryExpression {
 
 	/**
-	 * The chain of blocks (starting from the block containing this assignment) to the block defining the assigned variable 
+	 * The chain of blocks (starting from the block containing this assignment)
+	 * to the block defining the assigned variable
 	 */
 	private final List<BlockInfo> blocksToDeclaration;
 
@@ -53,11 +54,11 @@ public class GoAssignment extends BinaryExpression {
 
 	@Override
 	protected <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-			SymbolicExpression left,
-			SymbolicExpression right) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+					SymbolicExpression left,
+					SymbolicExpression right) throws SemanticException {
 		// TODO: this check should be moved in the front-end
 		if (!blocksToDeclaration.isEmpty()
 				&& blocksToDeclaration.get(blocksToDeclaration.size() - 1).isConstantDeclaration(getLeft()))
@@ -76,9 +77,9 @@ public class GoAssignment extends BinaryExpression {
 	}
 
 	private <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
-			SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
+					SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
 
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids

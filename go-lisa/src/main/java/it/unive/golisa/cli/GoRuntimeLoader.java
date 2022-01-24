@@ -73,7 +73,7 @@ public interface GoRuntimeLoader {
 		program.registerType(CommonIteratorInterface.INSTANCE);
 		program.registerType(Handler.INSTANCE);
 		program.registerType(TLSProperties.INSTANCE);
-		
+
 		program.addCompilationUnit(shim);
 	}
 
@@ -127,7 +127,7 @@ public interface GoRuntimeLoader {
 		program.registerType(Time.INSTANCE);
 		program.registerType(it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE);
 		program.registerType(Duration.INSTANCE);
-		
+
 		program.addCompilationUnit(time);
 	}
 

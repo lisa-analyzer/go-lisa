@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
-import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -65,7 +64,11 @@ public class Parse extends NativeCFG {
 //			GoExpressionsTuple tuple = new GoExpressionsTuple(getCFG(), original.getLocation(), 
 //					new PushAny(Caches.types().mkSingletonSet(Time.INSTANCE), original.getLocation()));
 			return state.smallStepSemantics(
-					new PushAny(Caches.types().mkSingletonSet(new GoTypesTuple(new Parameter(original.getLocation(), "_", Time.INSTANCE), new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE))), original.getLocation()), original);
+					new PushAny(Caches.types()
+							.mkSingletonSet(new GoTypesTuple(new Parameter(original.getLocation(), "_", Time.INSTANCE),
+									new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE))),
+							original.getLocation()),
+					original);
 		}
 	}
 }

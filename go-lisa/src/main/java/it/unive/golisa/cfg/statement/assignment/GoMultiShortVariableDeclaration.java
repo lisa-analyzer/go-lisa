@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -24,6 +20,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
@@ -32,16 +30,17 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		super(cfg, filePath, line, col, ids, e, listBlock, containingBlock);
 	}
 
-
 	@Override
 	public String toString() {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-			StatementStore<A, H, V> expressions) throws SemanticException {
+	public <A extends AbstractState<A, H, V>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+					StatementStore<A, H, V> expressions) throws SemanticException {
 		AnalysisState<A, H, V> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
@@ -61,7 +60,7 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 				AccessChild access = new AccessChild(Caches.types().mkUniversalSet(), dereference,
 						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				AnalysisState<A, H, V> accessState = result.smallStepSemantics(access, this);
-				
+
 				AnalysisState<A, H, V> tmp = rightState.bottom();
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
 					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
@@ -69,10 +68,10 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 						tmp = tmp.lub(assign);
 					}
 				}
-				
+
 				tmp2 = tmp.lub(tmp2);
 			}
-			
+
 			result = tmp2;
 		}
 

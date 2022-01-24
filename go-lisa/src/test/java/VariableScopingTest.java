@@ -3,27 +3,29 @@ import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cli.GoFrontEnd;
-import it.unive.golisa.cli.MyContextBasedAnalysis;
-import it.unive.lisa.AnalysisSetupException;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
-import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.ProgramValidationException;
-import it.unive.lisa.program.cfg.CFG;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Test;
+
+import it.unive.golisa.cfg.VariableScopingCFG;
+import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.lisa.AnalysisSetupException;
+import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
+import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.ProgramValidationException;
+import it.unive.lisa.program.cfg.CFG;
 
 public class VariableScopingTest extends GoAnalysisTestExecutor {
 
@@ -85,7 +87,7 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 		conf.setJsonOutput(true)
 				.setInferTypes(true)
 				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new MyContextBasedAnalysis<>())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())
 				.setAbstractState(
 						getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
 				.setDumpAnalysis(true);

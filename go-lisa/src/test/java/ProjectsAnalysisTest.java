@@ -1,14 +1,15 @@
 
-import it.unive.golisa.cli.MyContextBasedAnalysis;
+import org.junit.Test;
+
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Test;
 
 public class ProjectsAnalysisTest extends GoAnalysisTestExecutor {
 
@@ -19,7 +20,7 @@ public class ProjectsAnalysisTest extends GoAnalysisTestExecutor {
 				.setInferTypes(true)
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new MyContextBasedAnalysis<>())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE);
 		perform("go-projects", "a.go", conf);
 	}

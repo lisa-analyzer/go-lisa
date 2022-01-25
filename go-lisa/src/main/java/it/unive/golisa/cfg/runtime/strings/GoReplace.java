@@ -57,7 +57,8 @@ public class GoReplace extends NativeCFG {
 				V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression left,
-						SymbolicExpression middle, SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+						SymbolicExpression middle, SymbolicExpression right, StatementStore<A, H, V> expressions)
+						throws SemanticException {
 			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
 				return state.bottom();
 

@@ -58,7 +58,8 @@ public class GoKeyedLiteral extends NaryExpression {
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions) throws SemanticException {
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+					throws SemanticException {
 		// it corresponds to the analysis state after the evaluation of all the
 		// parameters of this call
 		// (the semantics of this call does not need information about the

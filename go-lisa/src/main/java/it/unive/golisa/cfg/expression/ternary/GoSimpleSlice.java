@@ -29,7 +29,8 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 			V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 					SymbolicExpression left,
-					SymbolicExpression middle, SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+					SymbolicExpression middle, SymbolicExpression right, StatementStore<A, H, V> expressions)
+					throws SemanticException {
 		AnalysisState<A, H, V> result = state.bottom();
 		for (Type leftType : left.getTypes())
 			for (Type middleType : middle.getTypes())

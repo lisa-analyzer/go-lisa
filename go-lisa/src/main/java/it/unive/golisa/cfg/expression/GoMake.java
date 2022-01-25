@@ -45,7 +45,8 @@ public class GoMake extends NaryExpression {
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions) throws SemanticException {
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+					throws SemanticException {
 		// No type information is provided and just a single type
 		// is passed as argument and it should be allocated
 		if (type == null)

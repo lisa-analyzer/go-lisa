@@ -4,6 +4,7 @@ import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
@@ -48,7 +49,7 @@ public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpr
 			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 					SymbolicExpression left,
-					SymbolicExpression right) throws SemanticException {
+					SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
 			return state.bottom();
 		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())

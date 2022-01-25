@@ -7,6 +7,7 @@ import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
@@ -60,7 +61,7 @@ public class Parse extends NativeCFG {
 				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression left,
-						SymbolicExpression right) throws SemanticException {
+						SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 //			GoExpressionsTuple tuple = new GoExpressionsTuple(getCFG(), original.getLocation(), 
 //					new PushAny(Caches.types().mkSingletonSet(Time.INSTANCE), original.getLocation()));
 			return state.smallStepSemantics(

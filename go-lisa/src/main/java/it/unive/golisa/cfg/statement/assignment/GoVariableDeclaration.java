@@ -6,6 +6,7 @@ import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
@@ -68,7 +69,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 					SymbolicExpression left,
-					SymbolicExpression right) throws SemanticException {
+					SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))

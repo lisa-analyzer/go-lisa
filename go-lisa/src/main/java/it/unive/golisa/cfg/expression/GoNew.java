@@ -4,6 +4,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -26,7 +27,7 @@ public class GoNew extends NaryExpression {
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions) throws SemanticException {
 		// Following the Golang reference:
 		// The new built-in function allocates memory. The first argument is a
 		// type, not a value,

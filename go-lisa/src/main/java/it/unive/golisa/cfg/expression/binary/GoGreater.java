@@ -4,6 +4,7 @@ import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
@@ -49,7 +50,7 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 					SymbolicExpression left,
-					SymbolicExpression right) throws SemanticException {
+					SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 		AnalysisState<A, H, V> result = state.bottom();
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type

@@ -1,5 +1,16 @@
 package it.unive.golisa.cli;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.antlr.GoParser.AnonymousFieldContext;
 import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
 import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
@@ -57,15 +68,6 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
@@ -144,7 +146,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		}
 
 		return visitQualifiedIdent(ctx.qualifiedIdent());
-//		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
+		//		return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
 	}
 
 	@Override
@@ -196,10 +198,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public GoType visitTypeName(TypeNameContext ctx) {
 		if (ctx.IDENTIFIER() != null)
 			return getGoType(ctx);
-		else {
+		else 
 			return visitQualifiedIdent(ctx.qualifiedIdent());
-//			return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(), pair.getRight()));
-		}
 	}
 
 	@Override
@@ -212,6 +212,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		for (Type type : program.getRegisteredTypes())
 			if (type.toString().equals(ctx.getText()))
 				return (GoType) type;
+		
 		return null;
 	}
 
@@ -412,7 +413,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs,
 						new GoCodeMemberVisitor(unit, file, program, constants)
-								.visitParameterDecl(formalPars.parameterDecl(i)));
+						.visitParameterDecl(formalPars.parameterDecl(i)));
 
 			descs.add(new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName,
 					getGoReturnType(ctx.result()), cfgArgs));

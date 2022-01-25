@@ -1,5 +1,30 @@
 package it.unive.golisa.cli;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -177,29 +202,6 @@ import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method
@@ -263,8 +265,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public GoCodeMemberVisitor(CompilationUnit packageUnit, MethodDeclContext ctx, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		this.file = file;
-		this.descriptor = mkDescriptor(packageUnit, ctx);
 		this.program = program;
+		this.descriptor = mkDescriptor(packageUnit, ctx);
 		this.constants = constants;
 
 		gotos = new HashMap<>();
@@ -320,6 +322,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		params = ArrayUtils.insert(0, params, receiver);
 		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
 
+		if (returnType == null)
+			returnType = Untyped.INSTANCE;
+		
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
 		Pair<Statement, Statement> body = visitMethodBlock(ctx.block());
@@ -365,8 +370,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 
 		cfg.simplify();
-
-		if (cfg.getDescriptor().getName().equals("IsExpired"))
+		
+		// TODO: to move
+		if (cfg.getDescriptor().getName().equals("Invoke") || cfg.getDescriptor().getName().equals("Init"))
 			program.addEntryPoint(cfg);
 
 		currentUnit.addInstanceCFG(cfg);
@@ -691,7 +697,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
 
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-
 				Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped()
 						? ((GoType) type).defaultValue(cfg, locationOf(ctx))
 						: visitExpression(exps.expression(i));

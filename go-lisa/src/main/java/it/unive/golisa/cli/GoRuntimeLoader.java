@@ -1,5 +1,6 @@
 package it.unive.golisa.cli;
 
+import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
@@ -52,12 +53,27 @@ public interface GoRuntimeLoader {
 		case "time":
 			loadTime(program);
 			break;
+		case "bytes":
+			loadBytes(program);
+			break;
 		case "github.com/hyperledger/fabric/core/chaincode/shim":
 			loadShim(program);
 		default:
 			loadUnhandledLib(module, program, mapper);
 			break;
 		}
+	}
+
+	private void loadBytes(Program program) {
+		CompilationUnit bytes = new CompilationUnit(runtimeLocation, "bytes", false);
+
+		// adding functions and methods
+		bytes.addConstruct(new Start(runtimeLocation, bytes));
+
+		// adding types
+		program.registerType(Buffer.INSTANCE);
+
+		program.addCompilationUnit(bytes);
 	}
 
 	private void loadShim(Program program) {

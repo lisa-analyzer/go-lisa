@@ -1,6 +1,5 @@
 package it.unive.golisa.cli;
 
-import it.unive.golisa.analysis.Taint;
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
@@ -13,7 +12,6 @@ import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
-import it.unive.golisa.checker.TaintChecker;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -253,16 +251,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
-		if (funcName.endsWith("sink"))
-			for (Parameter p : cfgArgs)
-				p.addAnnotation(TaintChecker.SINK_ANNOTATION);
-
 		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), packageName, false,
 				funcName,
 				getGoReturnType(funcDecl.signature()), cfgArgs);
-
-		if (funcName.endsWith("source"))
-			descriptor.addAnnotation(Taint.TAINTED_ANNOTATION);
 
 		return descriptor;
 	}

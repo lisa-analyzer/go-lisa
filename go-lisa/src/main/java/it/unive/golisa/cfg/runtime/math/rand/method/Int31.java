@@ -1,8 +1,7 @@
-package it.unive.golisa.cfg.runtime.shim.function;
+package it.unive.golisa.cfg.runtime.math.rand.method;
 
-import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -23,21 +22,19 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func DelState(key string) error
- * 
- * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.DelState
+ * func (r *Rand) Int31() int32
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class DelState extends NativeCFG {
+public class Int31 extends NativeCFG {
 
-	public DelState(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "DelState", GoErrorType.INSTANCE,
-				new Parameter(location, "key", GoStringType.INSTANCE)),
-				DelStateImpl.class);
+	public Int31(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, false, "Int31", GoInt32Type.INSTANCE,
+				new Parameter(location, "this", Rand.INSTANCE)),
+				Int31Impl.class);
 	}
 
-	public static class DelStateImpl extends UnaryExpression
+	public static class Int31Impl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -47,12 +44,12 @@ public class DelState extends NativeCFG {
 			original = st;
 		}
 
-		public static DelStateImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new DelStateImpl(cfg, location, params[0]);
+		public static Int31Impl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new Int31Impl(cfg, location, params[0]);
 		}
 
-		public DelStateImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "DelStateImpl", GoErrorType.INSTANCE, expr);
+		public Int31Impl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "Int31Impl", GoInt32Type.INSTANCE, expr);
 		}
 
 		@Override
@@ -63,3 +60,4 @@ public class DelState extends NativeCFG {
 		}
 	}
 }
+

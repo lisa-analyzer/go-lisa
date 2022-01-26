@@ -1,10 +1,10 @@
-package it.unive.golisa.cfg.runtime.shim.function;
+package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.checker.TaintChecker;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -26,7 +26,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func PutPrivateData(collection string, key string, value []byte) error
+ * func (*ChaincodeStub) PutPrivateData(collection string, key string, value []byte) error
  * 
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutPrivateData
  * 
@@ -38,7 +38,8 @@ public class PutPrivateData extends NativeCFG {
 		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
 				new Parameter(location, "collection", GoStringType.INSTANCE),
 					new Parameter(location, "key", GoStringType.INSTANCE), 
-						new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0))),
+						new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0)),
+							new Parameter(location, "this", ChaincodeStub.INSTANCE)),
 				PutPrivateDataImpl.class);
 	}
 

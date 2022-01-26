@@ -1,6 +1,6 @@
-package it.unive.golisa.cfg.runtime.time.function;
+package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.cfg.runtime.time.type.Duration;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,18 +20,18 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Now() Time
+ * func ExpFloat64() float64
  * 
- * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Now extends NativeCFG {
+public class ExpFloat64 extends NativeCFG {
 
-	public Now(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, "Now", Duration.INSTANCE),
-				NowImpl.class);
+	public ExpFloat64(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, false, "ExpFloat64", GoFloat64Type.INSTANCE),
+				ExpFloat64Impl.class);
 	}
 
-	public static class NowImpl extends it.unive.lisa.program.cfg.statement.NaryExpression
+	public static class ExpFloat64Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -41,12 +41,12 @@ public class Now extends NativeCFG {
 			original = st;
 		}
 
-		public static NowImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new NowImpl(cfg, location);
+		public static ExpFloat64Impl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ExpFloat64Impl(cfg, location);
 		}
 
-		public NowImpl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "NowImpl", Duration.INSTANCE);
+		public ExpFloat64Impl(CFG cfg, CodeLocation location) {
+			super(cfg, location, "ExpFloat64Impl", GoFloat64Type.INSTANCE);
 		}
 
 		@Override
@@ -60,3 +60,4 @@ public class Now extends NativeCFG {
 		}
 	}
 }
+

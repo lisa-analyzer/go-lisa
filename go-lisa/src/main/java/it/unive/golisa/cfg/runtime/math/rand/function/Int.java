@@ -1,6 +1,6 @@
-package it.unive.golisa.cfg.runtime.time.function;
+package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.cfg.runtime.time.type.Duration;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,18 +20,18 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Now() Time
+ * func Int() int
  * 
- * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Now extends NativeCFG {
+public class Int extends NativeCFG {
 
-	public Now(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, "Now", Duration.INSTANCE),
-				NowImpl.class);
+	public Int(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE),
+				IntImpl.class);
 	}
 
-	public static class NowImpl extends it.unive.lisa.program.cfg.statement.NaryExpression
+	public static class IntImpl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -41,12 +41,12 @@ public class Now extends NativeCFG {
 			original = st;
 		}
 
-		public static NowImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new NowImpl(cfg, location);
+		public static IntImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new IntImpl(cfg, location);
 		}
 
-		public NowImpl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "NowImpl", Duration.INSTANCE);
+		public IntImpl(CFG cfg, CodeLocation location) {
+			super(cfg, location, "IntImpl", GoIntType.INSTANCE);
 		}
 
 		@Override

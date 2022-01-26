@@ -27,21 +27,21 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 			
 			//Go random API
 			
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "ExpFloat64"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Float32"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Float64"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Int"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Int31"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Int31n"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Int63"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Int63n"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Intn"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "NormFloat64"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Perm"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Read"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Shuffle"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Uint32"));
-			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "rand", "Uint64"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "ExpFloat64"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Float32"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Float64"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Int"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Int31"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Int31n"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Int63"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Int63n"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Intn"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "NormFloat64"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Perm"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Read"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Shuffle"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Uint32"));
+			set.add(new MethodAnnotation(Taint.TAINTED_ANNOTATION, "math/rand", "Uint64"));
 			
 		//sinks
 			

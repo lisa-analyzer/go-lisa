@@ -1,9 +1,7 @@
-package it.unive.golisa.cfg.runtime.shim.function;
+package it.unive.golisa.cfg.runtime.math.rand.method;
 
-import it.unive.golisa.cfg.type.GoByteType;
-import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.composite.GoArrayType;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -24,21 +22,20 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func PutState(key string, value []byte) error
+ * func (r *Rand) Int63n(n int64) int64
  * 
- * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutState
- *  
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class PutState extends NativeCFG {
+public class Int63n extends NativeCFG {
 
-	public PutState(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
-				new Parameter(location, "key", GoStringType.INSTANCE), new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0))),
-				PutStateImpl.class);
+	public Int63n(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, false, "Int63n", GoInt64Type.INSTANCE,
+				new Parameter(location, "n", GoInt64Type.INSTANCE), 
+				new Parameter(location, "this", Rand.INSTANCE)),
+				IntnImpl.class);
 	}
 
-	public static class PutStateImpl extends BinaryExpression
+	public static class IntnImpl extends BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -48,12 +45,12 @@ public class PutState extends NativeCFG {
 			original = st;
 		}
 
-		public static PutStateImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new PutStateImpl(cfg, location, params[0], params[1]);
+		public static IntnImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new IntnImpl(cfg, location, params[0], params[1]);
 		}
 
-		public PutStateImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "PutStateImpl", GoErrorType.INSTANCE, expr, expr2);
+		public IntnImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+			super(cfg, location, "IntnImpl", GoInt64Type.INSTANCE, expr, expr2);
 		}
 
 		@Override

@@ -1,6 +1,6 @@
-package it.unive.golisa.cfg.runtime.time.function;
+package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.cfg.runtime.time.type.Duration;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,18 +20,18 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Now() Time
+ * func Int31() int32
  * 
- * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Now extends NativeCFG {
+public class Int31 extends NativeCFG {
 
-	public Now(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, "Now", Duration.INSTANCE),
-				NowImpl.class);
+	public Int31(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, false, "Int31", GoInt32Type.INSTANCE),
+				Int31Impl.class);
 	}
 
-	public static class NowImpl extends it.unive.lisa.program.cfg.statement.NaryExpression
+	public static class Int31Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -41,12 +41,12 @@ public class Now extends NativeCFG {
 			original = st;
 		}
 
-		public static NowImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new NowImpl(cfg, location);
+		public static Int31Impl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new Int31Impl(cfg, location);
 		}
 
-		public NowImpl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "NowImpl", Duration.INSTANCE);
+		public Int31Impl(CFG cfg, CodeLocation location) {
+			super(cfg, location, "Int31Impl", GoInt32Type.INSTANCE);
 		}
 
 		@Override
@@ -60,3 +60,4 @@ public class Now extends NativeCFG {
 		}
 	}
 }
+

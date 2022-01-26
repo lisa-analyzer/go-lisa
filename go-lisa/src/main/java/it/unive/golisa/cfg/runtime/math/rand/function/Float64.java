@@ -60,4 +60,3 @@ public class Float64 extends NativeCFG {
 		}
 	}
 }
-

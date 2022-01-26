@@ -3,10 +3,10 @@ package it.unive.golisa.annotations;
 import it.unive.lisa.program.annotations.Annotation;
 
 /**
- * 
- * 
- *
- */
+* 
+* 
+*
+*/
 public class MethodAnnotation extends CodeAnnotation {
 
 	private final String unit;
@@ -57,5 +57,4 @@ public class MethodAnnotation extends CodeAnnotation {
 		return true;
 	}
 
-	
 }

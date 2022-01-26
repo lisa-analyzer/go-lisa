@@ -27,13 +27,14 @@ public class GetFunctionAndParameters extends NativeCFG {
 
 	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimPackage) {
 		super(new CFGDescriptor(location, shimPackage, true, "GetFunctionAndParameters",
-				GoTypesTuple.lookup(new GoTypesTuple(new Parameter(location, "function", GoStringType.INSTANCE), new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))), 
+				GoTypesTuple.lookup(new GoTypesTuple(new Parameter(location, "function", GoStringType.INSTANCE),
+						new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))),
 				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
 				GetFunctionAndParametersImpl.class);
 	}
 
 	public static class GetFunctionAndParametersImpl extends UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -47,15 +48,17 @@ public class GetFunctionAndParameters extends NativeCFG {
 		}
 
 		public GetFunctionAndParametersImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "GetFunctionAndParametersImpl", GoTypesTuple.lookup(new GoTypesTuple(new Parameter(location, "function", GoStringType.INSTANCE), new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))), e);
+			super(cfg, location, "GetFunctionAndParametersImpl", GoTypesTuple.lookup(new GoTypesTuple(
+					new Parameter(location, "function", GoStringType.INSTANCE),
+					new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))), e);
 		}
 
 		@Override
 		protected <A extends AbstractState<A, H, V>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-				SymbolicExpression expr, StatementStore<A, H, V> expressions)
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression expr, StatementStore<A, H, V> expressions)
 						throws SemanticException {
 			return state.top();
 		}

@@ -60,4 +60,3 @@ public class UInt32 extends NativeCFG {
 		}
 	}
 }
-

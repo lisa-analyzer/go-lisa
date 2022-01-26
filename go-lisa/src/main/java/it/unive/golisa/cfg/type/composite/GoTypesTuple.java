@@ -1,10 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -14,6 +9,10 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 
@@ -105,10 +104,10 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
 		Parameter[] pars = new Parameter[types.length];
 		for (int i = 0; i < types.length; i++)
 			pars[i] = new Parameter(location, "_", types[i]);
-		
+
 		return GoTypesTuple.lookup(new GoTypesTuple(pars));
 	}
-	
+
 	/**
 	 * From "A tour of Go": Go's return values may be named. If so, they are
 	 * treated as variables defined at the top of the function. These names

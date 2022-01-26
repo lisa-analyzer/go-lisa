@@ -25,7 +25,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * func (*ChaincodeStub) DelPrivateData(collection string, key string) error
- * 
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.DelPrivateData
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -35,8 +34,8 @@ public class DelPrivateData extends NativeCFG {
 	public DelPrivateData(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "DelPrivateData", GoErrorType.INSTANCE,
 				new Parameter(location, "collection", GoStringType.INSTANCE),
-					new Parameter(location, "key", GoStringType.INSTANCE),
-					new Parameter(location, "this", ChaincodeStub.INSTANCE)),
+				new Parameter(location, "key", GoStringType.INSTANCE),
+				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
 				DelPrivateDataImpl.class);
 	}
 
@@ -59,10 +58,12 @@ public class DelPrivateData extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 

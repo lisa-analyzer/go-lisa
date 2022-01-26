@@ -3,19 +3,19 @@ package it.unive.golisa.annotations;
 import it.unive.lisa.program.annotations.Annotation;
 
 /**
- * 
- * 
- *
- */
+* 
+* 
+*
+*/
 public class MethodParameterAnnotation extends MethodAnnotation {
-	
+
 	protected final int param;
-		
+
 	public MethodParameterAnnotation(Annotation annotation, String unit, String name, int param) {
 		super(annotation, unit, name);
 		this.param = param;
 	}
-	
+
 	public int getParam() {
 		return param;
 	}

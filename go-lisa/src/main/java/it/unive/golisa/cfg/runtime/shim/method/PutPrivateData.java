@@ -26,8 +26,8 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func (*ChaincodeStub) PutPrivateData(collection string, key string, value []byte) error
- * 
+ * func (*ChaincodeStub) PutPrivateData(collection string, key string, value
+ * []byte) error
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutPrivateData
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -37,9 +37,9 @@ public class PutPrivateData extends NativeCFG {
 	public PutPrivateData(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
 				new Parameter(location, "collection", GoStringType.INSTANCE),
-					new Parameter(location, "key", GoStringType.INSTANCE), 
-						new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0)),
-							new Parameter(location, "this", ChaincodeStub.INSTANCE)),
+				new Parameter(location, "key", GoStringType.INSTANCE),
+				new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0)),
+				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
 				PutPrivateDataImpl.class);
 	}
 
@@ -62,10 +62,12 @@ public class PutPrivateData extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

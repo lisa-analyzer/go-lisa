@@ -60,4 +60,3 @@ public class Int31 extends NativeCFG {
 		}
 	}
 }
-

@@ -5,11 +5,11 @@ import it.unive.lisa.program.annotations.Annotation;
 public class CodeAnnotation {
 
 	public final Annotation annotation;
-	
+
 	public CodeAnnotation(Annotation annotation) {
 		this.annotation = annotation;
 	}
-	
+
 	public Annotation getAnnotation() {
 		return annotation;
 	}

@@ -24,7 +24,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * func (*ChaincodeStub) DelState(key string) error
- * 
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.DelState
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -57,9 +56,12 @@ public class DelState extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-				SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression left,
+						SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 

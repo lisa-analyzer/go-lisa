@@ -60,4 +60,3 @@ public class ExpFloat64 extends NativeCFG {
 		}
 	}
 }
-

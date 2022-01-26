@@ -60,4 +60,3 @@ public class Float32 extends NativeCFG {
 		}
 	}
 }
-

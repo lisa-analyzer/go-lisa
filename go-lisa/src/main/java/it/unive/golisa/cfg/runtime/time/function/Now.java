@@ -58,7 +58,8 @@ public class Now extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(Duration.INSTANCE), getLocation()), original);
+			return state.smallStepSemantics(
+					new PushAny(Caches.types().mkSingletonSet(Duration.INSTANCE), getLocation()), original);
 		}
 	}
 }

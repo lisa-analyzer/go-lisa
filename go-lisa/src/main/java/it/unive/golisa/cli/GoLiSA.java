@@ -14,7 +14,6 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
-
 import java.io.File;
 import java.io.IOException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -54,12 +53,12 @@ public class GoLiSA {
 			theDir.mkdirs();
 
 		try {
-			
+
 			program = GoFrontEnd.processFile(filePath);
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(new NonDeterminismAnnotationSet());
 			annotationLoader.load(program);
-			
+
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
 			System.err.println("Parsing error.");

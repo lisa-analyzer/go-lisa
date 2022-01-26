@@ -60,4 +60,3 @@ public class NormFloat64 extends NativeCFG {
 		}
 	}
 }
-

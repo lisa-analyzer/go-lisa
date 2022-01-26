@@ -31,7 +31,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Start extends NativeCFG {
 
 	public Start(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, shimUnit.getName() + ".Start", GoErrorType.INSTANCE,
+		super(new CFGDescriptor(location, shimUnit, false, "Start", GoErrorType.INSTANCE,
 				new Parameter(location, "this", Chaincode.INSTANCE)),
 				StartImpl.class);
 	}

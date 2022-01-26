@@ -31,7 +31,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Day extends NativeCFG {
 
 	public Day(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, timeUnit.getName() + ".Day",
+		super(new CFGDescriptor(location, timeUnit, false, "Day",
 				GoIntType.INSTANCE,
 				new Parameter(location, "this", Time.INSTANCE)),
 				DayImpl.class);

@@ -31,7 +31,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Month extends NativeCFG {
 
 	public Month(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, timeUnit.getName() + ".Month",
+		super(new CFGDescriptor(location, timeUnit, false, "Month",
 				it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE,
 				new Parameter(location, "this", Time.INSTANCE)),
 				MonthImpl.class);

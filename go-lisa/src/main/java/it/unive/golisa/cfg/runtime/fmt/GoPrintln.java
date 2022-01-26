@@ -23,7 +23,7 @@ import it.unive.lisa.type.Untyped;
 public class GoPrintln extends NativeCFG {
 
 	public GoPrintln(CodeLocation location, CompilationUnit fmtUnit) {
-		super(new CFGDescriptor(location, fmtUnit, false, fmtUnit.getName() + ".Println", Untyped.INSTANCE,
+		super(new CFGDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),
 				Println.class);
 	}

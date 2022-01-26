@@ -26,7 +26,7 @@ import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 public class GoContains extends NativeCFG {
 
 	public GoContains(CodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, stringUnit.getName() + ".Contains", GoBoolType.INSTANCE,
+		super(new CFGDescriptor(location, stringUnit, false, "Contains", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
 				Contains.class);

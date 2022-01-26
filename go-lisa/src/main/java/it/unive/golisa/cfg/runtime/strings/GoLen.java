@@ -28,7 +28,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 public class GoLen extends NativeCFG {
 
 	public GoLen(CodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, stringUnit.getName() + ".Len", GoIntType.INSTANCE,
+		super(new CFGDescriptor(location, stringUnit, false, "Len", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				Len.class);
 	}

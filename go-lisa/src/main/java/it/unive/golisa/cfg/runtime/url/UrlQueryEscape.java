@@ -24,7 +24,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class UrlQueryEscape extends NativeCFG {
 
 	public UrlQueryEscape(CodeLocation location, CompilationUnit urlUnit) {
-		super(new CFGDescriptor(location, urlUnit, false, urlUnit.getName() + ".QueryEscape", GoStringType.INSTANCE,
+		super(new CFGDescriptor(location, urlUnit, false, "QueryEscape", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				QueryEscape.class);
 	}

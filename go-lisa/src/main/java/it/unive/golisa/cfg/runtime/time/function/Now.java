@@ -27,7 +27,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Now extends NativeCFG {
 
 	public Now(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, timeUnit.getName() + ".Now", Duration.INSTANCE),
+		super(new CFGDescriptor(location, timeUnit, false, "Now", Duration.INSTANCE),
 				NowImpl.class);
 	}
 

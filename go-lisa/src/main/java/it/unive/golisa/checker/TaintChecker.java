@@ -65,7 +65,7 @@ public class TaintChecker implements SemanticCheck<SimpleAbstractState<Monolithi
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<Taint>>,
 			MonolithicHeap, InferenceSystem<Taint>> tool, CFG graph) {
-		Parameter[] parameters = graph.getDescriptor().getArgs();
+		Parameter[] parameters = graph.getDescriptor().getFormals();
 		for (int i = 0; i < parameters.length; i++)
 			if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 				for (Call call : tool.getCallSites(graph))

@@ -171,8 +171,6 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-import it.unive.lisa.program.cfg.statement.call.resolution.FirstRuntimeThenStaticStaticResolution;
-import it.unive.lisa.program.cfg.statement.call.resolution.RuntimeTypesResolution;
 import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
@@ -1736,8 +1734,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name
-					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.CALL_STRATEGY, false,
-							currentUnit.getName() + "." + primary.toString(),
+					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
+							currentUnit.getName(), primary.toString(),
 							visitArguments(ctx.arguments()));
 
 				else if (primary instanceof AccessInstanceGlobal) {
@@ -1748,30 +1746,30 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// this call is not an instance call
 						// the callee's name is concatenated to the function
 						// name
-						return new UnresolvedCall(cfg, locationOf(ctx), RuntimeTypesResolution.INSTANCE, false,
-								receiver.toString() + "." + getMethodName(ctx.primaryExpr()), args);
+						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
+								receiver.toString(), getMethodName(ctx.primaryExpr()), args);
 					else {
 						// method call (e.g., x.f(1))
 						// this call is an instance call
 						// the callee needs to be resolved and it is put as
-						// first argument
+						// first argument (e.g., f(x, 1))
 						args = ArrayUtils.insert(0, args, receiver);
-						return new UnresolvedCall(cfg, locationOf(ctx), RuntimeTypesResolution.INSTANCE,
-								true, getMethodName(ctx.primaryExpr()), args);
+						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
+								true, "", getMethodName(ctx.primaryExpr()), args);
 					}
 				}
 
 				// Anonymous function
 				else if (primary instanceof GoFunctionLiteral) {
 					CFG cfgLiteral = (CFG) ((GoFunctionLiteral) primary).getValue();
-					return new CFGCall(cfg, locationOf(ctx), funcName, Collections.singleton(cfgLiteral),
+					return new CFGCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, false, "", funcName, Collections.singleton(cfgLiteral),
 							args);
 				} else {
 					// need to resolve also the caller
 					args = ArrayUtils.insert(0, args, primary);
-					return new UnresolvedCall(cfg, locationOf(ctx), FirstRuntimeThenStaticStaticResolution.INSTANCE,
+					return new UnresolvedCall(cfg, locationOf(ctx),GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
 							true,
-							primary.toString(), args);
+							"", primary.toString(), args);
 				}
 			}
 
@@ -2125,7 +2123,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitFunctionLit(FunctionLitContext ctx) {
 		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
 		Type funcType = GoFunctionType
-				.lookup(new GoFunctionType(funcLit.getDescriptor().getArgs(), funcLit.getDescriptor().getReturnType()));
+				.lookup(new GoFunctionType(funcLit.getDescriptor().getFormals(), funcLit.getDescriptor().getReturnType()));
 		return new GoFunctionLiteral(cfg, locationOf(ctx), funcLit, funcType);
 	}
 

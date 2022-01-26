@@ -29,7 +29,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Since extends NativeCFG {
 
 	public Since(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, timeUnit.getName() + ".Since", Duration.INSTANCE,
+		super(new CFGDescriptor(location, timeUnit, false, "Since", Duration.INSTANCE,
 				new Parameter(location, "this", Time.INSTANCE)),
 				SinceImpl.class);
 	}

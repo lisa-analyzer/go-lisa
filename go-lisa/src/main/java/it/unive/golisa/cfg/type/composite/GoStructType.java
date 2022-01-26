@@ -59,12 +59,12 @@ public class GoStructType implements GoType, UnitType, PointerType {
 			for (CFG methodSpec : intf.getUnit().getAllCFGs()) {
 				String methodName = methodSpec.getDescriptor().getName();
 				Type methodReturnType = methodSpec.getDescriptor().getReturnType();
-				Parameter[] methodPars = methodSpec.getDescriptor().getArgs();
+				Parameter[] methodPars = methodSpec.getDescriptor().getFormals();
 				boolean match = false;
 				for (CFG structMethod : getUnit().getAllCFGs()) {
 					String funcName = structMethod.getDescriptor().getName();
 					Type funcReturnType = structMethod.getDescriptor().getReturnType();
-					Parameter[] funcPars = structMethod.getDescriptor().getArgs();
+					Parameter[] funcPars = structMethod.getDescriptor().getFormals();
 
 					if (funcName.equals(methodName) && funcReturnType.canBeAssignedTo(methodReturnType)) {
 						if (methodPars.length == 0 && funcPars.length == 1)

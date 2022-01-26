@@ -1,5 +1,13 @@
 package it.unive.golisa.cli;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.analysis.Taint;
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
@@ -17,6 +25,7 @@ import it.unive.golisa.checker.TaintChecker;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
@@ -30,12 +39,6 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function
@@ -46,7 +49,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
-		this.descriptor = buildCFGDescriptor(funcDecl, packageUnit.getName());
+		this.descriptor = buildCFGDescriptor(funcDecl, packageUnit);
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -85,7 +88,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
 
 		// The function named "main" is the entry point of the program
-		if (cfg.getDescriptor().getName().equals("main.main"))
+		if (cfg.getDescriptor().getName().equals("main"))
 			program.addEntryPoint(cfg);
 
 		Type returnType = cfg.getDescriptor().getReturnType();
@@ -239,8 +242,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		return cfg;
 	}
 
-	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl, String packageName) {
-		String funcName = packageName + "." + funcDecl.IDENTIFIER().getText();
+	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl, Unit packageName) {
+		String funcName = funcDecl.IDENTIFIER().getText();
 		SignatureContext signature = funcDecl.signature();
 		ParametersContext formalPars = signature.parameters();
 
@@ -256,7 +259,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			for (Parameter p : cfgArgs)
 				p.addAnnotation(TaintChecker.SINK_ANNOTATION);
 
-		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName,
+		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), packageName, false, funcName,
 				getGoReturnType(funcDecl.signature()), cfgArgs);
 
 		if (funcName.endsWith("source"))

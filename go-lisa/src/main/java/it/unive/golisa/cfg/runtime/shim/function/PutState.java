@@ -4,7 +4,6 @@ import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.checker.TaintChecker;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

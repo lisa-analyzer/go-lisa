@@ -7,6 +7,7 @@ import it.unive.golisa.cfg.runtime.shim.function.DelState;
 import it.unive.golisa.cfg.runtime.shim.function.PutPrivateData;
 import it.unive.golisa.cfg.runtime.shim.function.PutState;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
+import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
@@ -75,7 +76,7 @@ public interface GoRuntimeLoader {
 	private void loadShim(Program program) {
 		CompilationUnit shim = new CompilationUnit(runtimeLocation, "shim", false);
 
-		// adding functions and methods
+		// adding functions 
 		shim.addConstruct(new Start(runtimeLocation, shim));
 		shim.addConstruct(new PutState(runtimeLocation, shim));
 		shim.addConstruct(new PutPrivateData(runtimeLocation, shim));
@@ -86,10 +87,16 @@ public interface GoRuntimeLoader {
 		program.registerType(Chaincode.INSTANCE);
 		program.registerType(ChaincodeStub.INSTANCE);
 		program.registerType(ChaincodeStubInterface.INSTANCE);
+		ChaincodeStubInterface.registerMethods();
+
 		program.registerType(CommonIteratorInterface.INSTANCE);
 		program.registerType(Handler.INSTANCE);
 		program.registerType(TLSProperties.INSTANCE);
 
+		// adding ChainCodeStub methods
+		ChaincodeStub.INSTANCE.getUnit().addInstanceConstruct(new GetFunctionAndParameters(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
+		
+		
 		program.addCompilationUnit(shim);
 	}
 

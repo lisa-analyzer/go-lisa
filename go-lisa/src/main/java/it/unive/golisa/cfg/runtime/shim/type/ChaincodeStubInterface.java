@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
+import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
+import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -11,6 +13,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 
 public class ChaincodeStubInterface extends GoInterfaceType {
@@ -20,14 +23,8 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		this("ChaincodeStubInterface", buildChainCodeStubInterfaceUnit());
 	}
 
-	private ChaincodeStubInterface(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildChainCodeStubInterfaceUnit() {
+	public static void registerMethods() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit chainCodeStubInterfaceUnit = new CompilationUnit(unknownLocation, "ChaincodeStubInterface",
-				false);
 
 		// []byte
 		GoSliceType byteSliceType = GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
@@ -46,7 +43,8 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		GoTypesTuple tuple2 = new GoTypesTuple(new Parameter(unknownLocation, "_", byteSliceType),
 				new Parameter(unknownLocation, "_", GoErrorType.INSTANCE));
 
-		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetArgs",
+		CompilationUnit chainCodeStubInterfaceUnit = INSTANCE.getUnit();
+		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit , true, "GetArgs",
 				byteSliceSliceType);
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
 
@@ -55,9 +53,10 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetFunctionAndParameters",
-				tuple1);
-		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
-
+				tuple1
+				,new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE));
+		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, GetFunctionAndParametersImpl.class));
+		
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetArgsSlice",
 				tuple2);
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
@@ -103,7 +102,18 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		// - GetStateByRangeWithPagination
 		// - GetStateByPartialCompositeKey
 		// - GetStateByPartialCompositeKeyWithPagination
-		// - ...
+		// - ...		
+	}
+
+	private ChaincodeStubInterface(String name, CompilationUnit unit) {
+		super(name, unit);
+	}
+
+	private static CompilationUnit buildChainCodeStubInterfaceUnit() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		CompilationUnit chainCodeStubInterfaceUnit = new CompilationUnit(unknownLocation, "ChaincodeStubInterface",
+				false);
+		
 		return chainCodeStubInterfaceUnit;
 	}
 

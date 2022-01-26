@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
+import it.unive.golisa.annotations.MethodParameterAnnotation;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.checker.TaintChecker;
@@ -21,7 +22,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.univr.golisa.annotations.MethodParameterAnnotation;
 
 /**
  * func DelPrivateData(collection string, key string) error

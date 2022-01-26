@@ -1,6 +1,8 @@
 package it.unive.golisa.cli;
 
 import it.unive.golisa.analysis.Taint;
+import it.unive.golisa.annotations.AnnotationLoader;
+import it.unive.golisa.annotations.NonDeterminismAnnotationSet;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
@@ -12,8 +14,6 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
-import it.univr.golisa.annotations.AnnotationLoader;
-import it.univr.golisa.annotations.NonDeterminismAnnotationSet;
 
 import java.io.File;
 import java.io.IOException;

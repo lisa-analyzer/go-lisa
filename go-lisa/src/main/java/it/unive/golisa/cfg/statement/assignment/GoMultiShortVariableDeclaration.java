@@ -20,6 +20,9 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
+
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,13 +40,35 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
 	@Override
 	public <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					StatementStore<A, H, V> expressions) throws SemanticException {
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
+			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
+			StatementStore<A, H, V> expressions) throws SemanticException {
 		AnalysisState<A, H, V> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
+		// if the right state is top,
+		// we put all the variables to top
+		if (rightState.isTop()) {
+			AnalysisState<A, H, V> result = entryState;
+			
+			for (int i = 0; i < ids.length; i++) {
+				if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+					continue;
+
+				AnalysisState<A, H, V> idState = ids[i].semantics(result, interprocedural, expressions);
+				expressions.put(ids[i], idState);
+				
+				AnalysisState<A, H, V> tmp = result;
+				for (SymbolicExpression id : idState.getComputedExpressions())
+					tmp = tmp.assign((Identifier) id, new PushAny(getRuntimeTypes(), getLocation()), this);
+				
+				result = tmp;
+			}
+			
+			return result;
+		}
+		
 		AnalysisState<A, H, V> result = rightState;
 
 		for (int i = 0; i < ids.length; i++) {

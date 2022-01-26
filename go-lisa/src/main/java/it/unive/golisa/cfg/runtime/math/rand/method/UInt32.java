@@ -26,10 +26,10 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Uint32 extends NativeCFG {
+public class UInt32 extends NativeCFG {
 
-	public Uint32(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Uint32", GoUInt32Type.INSTANCE,
+	public UInt32(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, true, "Uint32", GoUInt32Type.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE)),
 				Uint32Impl.class);
 	}

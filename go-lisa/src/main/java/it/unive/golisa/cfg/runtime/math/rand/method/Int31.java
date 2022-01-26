@@ -29,7 +29,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Int31 extends NativeCFG {
 
 	public Int31(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Int31", GoInt32Type.INSTANCE,
+		super(new CFGDescriptor(location, randUnit, true, "Int31", GoInt32Type.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE)),
 				Int31Impl.class);
 	}

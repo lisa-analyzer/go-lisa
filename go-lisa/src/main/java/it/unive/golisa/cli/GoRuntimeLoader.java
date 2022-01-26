@@ -2,12 +2,27 @@ package it.unive.golisa.cli;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
-import it.unive.golisa.cfg.runtime.shim.function.DelPrivateData;
-import it.unive.golisa.cfg.runtime.shim.function.DelState;
-import it.unive.golisa.cfg.runtime.shim.function.PutPrivateData;
-import it.unive.golisa.cfg.runtime.shim.function.PutState;
+import it.unive.golisa.cfg.runtime.math.rand.method.ExpFloat64;
+import it.unive.golisa.cfg.runtime.math.rand.method.Float32;
+import it.unive.golisa.cfg.runtime.math.rand.method.Float64;
+import it.unive.golisa.cfg.runtime.math.rand.method.Int;
+import it.unive.golisa.cfg.runtime.math.rand.method.Int31;
+import it.unive.golisa.cfg.runtime.math.rand.method.Int31n;
+import it.unive.golisa.cfg.runtime.math.rand.method.Int63;
+import it.unive.golisa.cfg.runtime.math.rand.method.Int63n;
+import it.unive.golisa.cfg.runtime.math.rand.method.Intn;
+import it.unive.golisa.cfg.runtime.math.rand.method.NormFloat64;
+import it.unive.golisa.cfg.runtime.math.rand.method.Perm;
+import it.unive.golisa.cfg.runtime.math.rand.method.UInt32;
+import it.unive.golisa.cfg.runtime.math.rand.method.UInt64;
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
+import it.unive.golisa.cfg.runtime.shim.method.DelPrivateData;
+import it.unive.golisa.cfg.runtime.shim.method.DelState;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
+import it.unive.golisa.cfg.runtime.shim.method.GetState;
+import it.unive.golisa.cfg.runtime.shim.method.PutPrivateData;
+import it.unive.golisa.cfg.runtime.shim.method.PutState;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
@@ -46,6 +61,8 @@ public interface GoRuntimeLoader {
 			loadStrings(program);
 		else if(module.equals("fmt"))
 			loadFmt(program);
+		else if (module.equals("math/rand"))
+			loadMathRand(program);
 		else if(module.equals("url"))
 			loadUrl(program);
 		else if(module.equals("strconv"))
@@ -59,6 +76,46 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
+	}
+
+	private void loadMathRand(Program program) {
+		CompilationUnit mathRand = new CompilationUnit(runtimeLocation, "rand", false);
+
+		// adding functions 
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64(runtimeLocation, mathRand));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Float32(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Float64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Int(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Int31(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Int31n(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Int63(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Int63n(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Intn(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.NormFloat64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.Perm(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.UInt32(runtimeLocation, Rand.INSTANCE.getUnit()));
+		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.UInt64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		
+		// adding types
+		program.registerType(Rand.INSTANCE);
+
+		// adding rand.Rand methods
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new ExpFloat64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Float32(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Float64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int31(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int31n(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int63(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int63n(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Intn(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new NormFloat64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Perm(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt32(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		
+		
+		program.addCompilationUnit(mathRand);
 	}
 
 	private void loadBytes(Program program) {
@@ -78,10 +135,6 @@ public interface GoRuntimeLoader {
 
 		// adding functions 
 		shim.addConstruct(new Start(runtimeLocation, shim));
-		shim.addConstruct(new PutState(runtimeLocation, shim));
-		shim.addConstruct(new PutPrivateData(runtimeLocation, shim));
-		shim.addConstruct(new DelState(runtimeLocation, shim));
-		shim.addConstruct(new DelPrivateData(runtimeLocation, shim));
 		
 		// adding types
 		program.registerType(Chaincode.INSTANCE);
@@ -94,8 +147,12 @@ public interface GoRuntimeLoader {
 		program.registerType(TLSProperties.INSTANCE);
 
 		// adding ChainCodeStub methods
+		ChaincodeStub.INSTANCE.getUnit().addInstanceConstruct(new DelPrivateData(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
+		ChaincodeStub.INSTANCE.getUnit().addInstanceConstruct(new DelState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 		ChaincodeStub.INSTANCE.getUnit().addInstanceConstruct(new GetFunctionAndParameters(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		
+		ChaincodeStub.INSTANCE.getUnit().addInstanceConstruct(new PutPrivateData(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
+		ChaincodeStub.INSTANCE.getUnit().addInstanceConstruct(new PutState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
+		ChaincodeStub.INSTANCE.getUnit().addInstanceConstruct(new GetState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 		
 		program.addCompilationUnit(shim);
 	}

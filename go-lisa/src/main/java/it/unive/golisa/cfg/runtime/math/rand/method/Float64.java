@@ -29,7 +29,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Float64 extends NativeCFG {
 
 	public Float64(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Float64", GoFloat64Type.INSTANCE,
+		super(new CFGDescriptor(location, randUnit, true, "Float64", GoFloat64Type.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE)),
 				Float64Impl.class);
 	}

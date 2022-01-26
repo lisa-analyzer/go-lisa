@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -348,8 +350,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 							program.addCompilationUnit(cu);
 
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						throw new RuntimeException("Cannot find package + " + listOfFiles[i].getAbsolutePath());
 					}
 		} else
 			loadRuntime(module, program, mapper);

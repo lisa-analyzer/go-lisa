@@ -135,10 +135,10 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		Expression[] values = new Expression[getUnit().getGlobals().size()];
+		Expression[] values = new Expression[getUnit().getInstanceGlobals(true).size()];
 
 		int i = 0;
-		for (Global key : this.getUnit().getGlobals())
+		for (Global key : this.getUnit().getInstanceGlobals(true))
 			values[i++] = (((GoType) key.getStaticType()).defaultValue(cfg, location));
 
 		return new GoNonKeyedLiteral(cfg, location, values, this);

@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -20,18 +20,18 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Uint32() uint32
+ * func Uint64() uint64
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Uint32 extends NativeCFG {
+public class UInt64 extends NativeCFG {
 
-	public Uint32(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Uint32", GoUInt32Type.INSTANCE),
-				Uint32Impl.class);
+	public UInt64(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, false, "Uint64", GoUInt64Type.INSTANCE),
+				Uint64Impl.class);
 	}
 
-	public static class Uint32Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
+	public static class Uint64Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -41,12 +41,12 @@ public class Uint32 extends NativeCFG {
 			original = st;
 		}
 
-		public static Uint32Impl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Uint32Impl(cfg, location);
+		public static Uint64Impl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new Uint64Impl(cfg, location);
 		}
 
-		public Uint32Impl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "Uint32Impl", GoUInt32Type.INSTANCE);
+		public Uint64Impl(CFG cfg, CodeLocation location) {
+			super(cfg, location, "Uint64Impl", GoUInt64Type.INSTANCE);
 		}
 
 		@Override

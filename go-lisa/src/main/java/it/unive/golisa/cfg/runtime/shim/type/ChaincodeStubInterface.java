@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
-import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
+import it.unive.golisa.cfg.runtime.shim.method.GetState.GetStateImpl;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -51,7 +51,8 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "getStringArgs",
 				stringSliceType);
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
-
+		
+		// GetFunctionAndParameters
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetFunctionAndParameters",
 				tuple1
 				,new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE));
@@ -71,8 +72,9 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetState",
 				tuple2,
+				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "key", GoStringType.INSTANCE));
-		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
+		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, GetStateImpl.class));
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "PutState",
 				GoErrorType.INSTANCE,

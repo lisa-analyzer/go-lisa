@@ -1,14 +1,9 @@
 package it.unive.golisa.cfg.runtime.math.rand.type;
 
-import it.unive.golisa.cfg.expression.literal.GoInteger;
-import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A Random generator
@@ -17,41 +12,27 @@ import java.util.Collections;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Rand implements GoType {
+public class Rand extends GoStructType {
 
-	/**
-	 * Unique instance of GoInt64 type.
-	 */
 	public static final Rand INSTANCE = new Rand();
 
 	private Rand() {
+		this("Rand", buildRandUnit());
 	}
 
-	@Override
-	public boolean canBeAssignedTo(Type other) {
-		return other instanceof Rand || other.isUntyped();
+	private Rand(String name, CompilationUnit unit) {
+		super(name, unit);
 	}
 
-	@Override
-	public Type commonSupertype(Type other) {
-		if (other instanceof Rand || other.isUntyped())
-			return other;
-		return Untyped.INSTANCE;
-	}
-
-	@Override
-	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
-	}
-
-	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoInteger(cfg, location, 0);
+	private static CompilationUnit buildRandUnit() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Rand", false);
+		return randUnit;
 	}
 
 	@Override
 	public String toString() {
-		return "math/rand.Rand";
+		return "rand.Rand";
 	}
 
 	@Override
@@ -63,5 +44,4 @@ public class Rand implements GoType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-
 }

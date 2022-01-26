@@ -1,13 +1,5 @@
 package it.unive.golisa.cli;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.analysis.Taint;
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
@@ -39,6 +31,12 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function
@@ -259,7 +257,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			for (Parameter p : cfgArgs)
 				p.addAnnotation(TaintChecker.SINK_ANNOTATION);
 
-		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), packageName, false, funcName,
+		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), packageName, false,
+				funcName,
 				getGoReturnType(funcDecl.signature()), cfgArgs);
 
 		if (funcName.endsWith("source"))

@@ -1734,7 +1734,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name
-					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
+					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
+							GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
 							currentUnit.getName(), primary.toString(),
 							visitArguments(ctx.arguments()));
 
@@ -1746,7 +1747,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// this call is not an instance call
 						// the callee's name is concatenated to the function
 						// name
-						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
+						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
+								GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
 								receiver.toString(), getMethodName(ctx.primaryExpr()), args);
 					else {
 						// method call (e.g., x.f(1))
@@ -1754,7 +1756,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// the callee needs to be resolved and it is put as
 						// first argument (e.g., f(x, 1))
 						args = ArrayUtils.insert(0, args, receiver);
-						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
+						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
+								GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
 								true, "", getMethodName(ctx.primaryExpr()), args);
 					}
 				}
@@ -1762,12 +1765,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				// Anonymous function
 				else if (primary instanceof GoFunctionLiteral) {
 					CFG cfgLiteral = (CFG) ((GoFunctionLiteral) primary).getValue();
-					return new CFGCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, false, "", funcName, Collections.singleton(cfgLiteral),
+					return new CFGCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, false, "", funcName,
+							Collections.singleton(cfgLiteral),
 							args);
 				} else {
 					// need to resolve also the caller
 					args = ArrayUtils.insert(0, args, primary);
-					return new UnresolvedCall(cfg, locationOf(ctx),GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
+					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
+							GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
 							true,
 							"", primary.toString(), args);
 				}
@@ -2123,7 +2128,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitFunctionLit(FunctionLitContext ctx) {
 		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
 		Type funcType = GoFunctionType
-				.lookup(new GoFunctionType(funcLit.getDescriptor().getFormals(), funcLit.getDescriptor().getReturnType()));
+				.lookup(new GoFunctionType(funcLit.getDescriptor().getFormals(),
+						funcLit.getDescriptor().getReturnType()));
 		return new GoFunctionLiteral(cfg, locationOf(ctx), funcLit, funcType);
 	}
 

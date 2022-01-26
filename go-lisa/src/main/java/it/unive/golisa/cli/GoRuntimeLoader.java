@@ -2,6 +2,10 @@ package it.unive.golisa.cli;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.shim.function.DelPrivateData;
+import it.unive.golisa.cfg.runtime.shim.function.DelState;
+import it.unive.golisa.cfg.runtime.shim.function.PutPrivateData;
+import it.unive.golisa.cfg.runtime.shim.function.PutState;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
@@ -37,31 +41,23 @@ public interface GoRuntimeLoader {
 	SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 
 	default void loadRuntime(String module, Program program, GoLangAPISignatureMapper mapper) {
-		switch (module) {
-		case "strings":
+		if(module.equals("strings"))
 			loadStrings(program);
-			break;
-		case "fmt":
+		else if(module.equals("fmt"))
 			loadFmt(program);
-			break;
-		case "url":
+		else if(module.equals("url"))
 			loadUrl(program);
-			break;
-		case "strconv":
+		else if(module.equals("strconv"))
 			loadStrconv(program);
-			break;
-		case "time":
+		else if(module.equals("time"))
 			loadTime(program);
-			break;
-		case "bytes":
+		else if(module.equals("bytes"))
 			loadBytes(program);
-			break;
-		case "github.com/hyperledger/fabric/core/chaincode/shim":
-			loadShim(program);
-		default:
+		else if(module.startsWith("github.com/hyperledger")){
+			if(module.endsWith("/shim"))
+				loadShim(program);
+		} else
 			loadUnhandledLib(module, program, mapper);
-			break;
-		}
 	}
 
 	private void loadBytes(Program program) {
@@ -81,7 +77,11 @@ public interface GoRuntimeLoader {
 
 		// adding functions and methods
 		shim.addConstruct(new Start(runtimeLocation, shim));
-
+		shim.addConstruct(new PutState(runtimeLocation, shim));
+		shim.addConstruct(new PutPrivateData(runtimeLocation, shim));
+		shim.addConstruct(new DelState(runtimeLocation, shim));
+		shim.addConstruct(new DelPrivateData(runtimeLocation, shim));
+		
 		// adding types
 		program.registerType(Chaincode.INSTANCE);
 		program.registerType(ChaincodeStub.INSTANCE);

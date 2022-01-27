@@ -1,9 +1,10 @@
-package it.unive.golisa.cli;
+package it.unive.golisa;
 
-import it.unive.golisa.analysis.Taint;
-import it.unive.golisa.annotations.AnnotationLoader;
-import it.unive.golisa.annotations.NonDeterminismAnnotationSet;
+import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.annotation.AnnotationLoader;
+import it.unive.golisa.analysis.taint.annotation.NonDeterminismAnnotationSet;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -43,7 +44,8 @@ public class GoLiSA {
 				.setInferTypes(true)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
-				.setAbstractState(new SimpleAbstractState<>(new MonolithicHeap(), new InferenceSystem<>(new Taint())))
+				.setAbstractState(
+						new SimpleAbstractState<>(new MonolithicHeap(), new InferenceSystem<>(new TaintDomain())))
 				.addSemanticCheck(new TaintChecker());
 
 		Program program = null;

@@ -1,4 +1,4 @@
-package it.unive.golisa.analysis;
+package it.unive.golisa.analysis.taint;
 
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
@@ -17,7 +17,7 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
-public class Taint extends BaseInferredValue<Taint> {
+public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	public static final Annotation TAINTED_ANNOTATION = new Annotation("lisa.taint.Tainted");
 
@@ -27,24 +27,24 @@ public class Taint extends BaseInferredValue<Taint> {
 
 	private static final AnnotationMatcher CLEAN_MATCHER = new BasicAnnotationMatcher(CLEAN_ANNOTATION);
 
-	private static final Taint TAINTED = new Taint(true);
+	private static final TaintDomain TAINTED = new TaintDomain(true);
 
-	private static final Taint CLEAN = new Taint(false);
+	private static final TaintDomain CLEAN = new TaintDomain(false);
 
-	private static final Taint BOTTOM = new Taint(null);
+	private static final TaintDomain BOTTOM = new TaintDomain(null);
 
 	private final Boolean taint;
 
-	public Taint() {
+	public TaintDomain() {
 		this(true);
 	}
 
-	private Taint(Boolean taint) {
+	private TaintDomain(Boolean taint) {
 		this.taint = taint;
 	}
 
 	@Override
-	public Taint variable(Identifier id, ProgramPoint pp) throws SemanticException {
+	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
 			return super.variable(id, pp);
@@ -65,12 +65,12 @@ public class Taint extends BaseInferredValue<Taint> {
 	}
 
 	@Override
-	public Taint top() {
+	public TaintDomain top() {
 		return TAINTED;
 	}
 
 	@Override
-	public Taint bottom() {
+	public TaintDomain bottom() {
 		return BOTTOM;
 	}
 
@@ -79,32 +79,32 @@ public class Taint extends BaseInferredValue<Taint> {
 	}
 
 	@Override
-	protected InferredPair<Taint> evalNullConstant(Taint state, ProgramPoint pp)
+	protected InferredPair<TaintDomain> evalNullConstant(TaintDomain state, ProgramPoint pp)
 			throws SemanticException {
 		return new InferredPair<>(this, CLEAN, bottom());
 	}
 
 	@Override
-	protected InferredPair<Taint> evalNonNullConstant(Constant constant, Taint state,
+	protected InferredPair<TaintDomain> evalNonNullConstant(Constant constant, TaintDomain state,
 			ProgramPoint pp) throws SemanticException {
 		return new InferredPair<>(this, CLEAN, bottom());
 	}
 
 	@Override
-	protected InferredPair<Taint> evalUnaryExpression(UnaryOperator operator, Taint arg,
-			Taint state, ProgramPoint pp) throws SemanticException {
+	protected InferredPair<TaintDomain> evalUnaryExpression(UnaryOperator operator, TaintDomain arg,
+			TaintDomain state, ProgramPoint pp) throws SemanticException {
 		return new InferredPair<>(this, arg, bottom());
 	}
 
 	@Override
-	protected InferredPair<Taint> evalBinaryExpression(BinaryOperator operator, Taint left,
-			Taint right, Taint state, ProgramPoint pp) throws SemanticException {
+	protected InferredPair<TaintDomain> evalBinaryExpression(BinaryOperator operator, TaintDomain left,
+			TaintDomain right, TaintDomain state, ProgramPoint pp) throws SemanticException {
 		return new InferredPair<>(this, left.lub(right), bottom());
 	}
 
 	@Override
-	protected InferredPair<Taint> evalTernaryExpression(TernaryOperator operator, Taint left,
-			Taint middle, Taint right, Taint state, ProgramPoint pp)
+	protected InferredPair<TaintDomain> evalTernaryExpression(TernaryOperator operator, TaintDomain left,
+			TaintDomain middle, TaintDomain right, TaintDomain state, ProgramPoint pp)
 			throws SemanticException {
 		return new InferredPair<>(this, left.lub(middle).lub(right), bottom());
 	}
@@ -120,17 +120,17 @@ public class Taint extends BaseInferredValue<Taint> {
 	}
 
 	@Override
-	protected Taint lubAux(Taint other) throws SemanticException {
+	protected TaintDomain lubAux(TaintDomain other) throws SemanticException {
 		return TAINTED; // should never happen
 	}
 
 	@Override
-	protected Taint wideningAux(Taint other) throws SemanticException {
+	protected TaintDomain wideningAux(TaintDomain other) throws SemanticException {
 		return TAINTED; // should never happen
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(Taint other) throws SemanticException {
+	protected boolean lessOrEqualAux(TaintDomain other) throws SemanticException {
 		return false; // should never happen
 	}
 
@@ -150,7 +150,7 @@ public class Taint extends BaseInferredValue<Taint> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Taint other = (Taint) obj;
+		TaintDomain other = (TaintDomain) obj;
 		if (taint == null) {
 			if (other.taint != null)
 				return false;

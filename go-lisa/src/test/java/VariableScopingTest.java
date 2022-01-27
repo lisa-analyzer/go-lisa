@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;

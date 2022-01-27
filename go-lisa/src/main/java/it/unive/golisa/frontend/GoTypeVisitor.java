@@ -1,4 +1,4 @@
-package it.unive.golisa.cli;
+package it.unive.golisa.frontend;
 
 import it.unive.golisa.antlr.GoParser.AnonymousFieldContext;
 import it.unive.golisa.antlr.GoParser.ArrayLengthContext;

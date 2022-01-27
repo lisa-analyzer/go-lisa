@@ -2,7 +2,7 @@ import static it.unive.lisa.outputs.compare.JsonReportComparer.compare;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;

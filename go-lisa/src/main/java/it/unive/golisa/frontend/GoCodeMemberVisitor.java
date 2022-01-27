@@ -1,4 +1,4 @@
-package it.unive.golisa.cli;
+package it.unive.golisa.frontend;
 
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
@@ -139,6 +139,7 @@ import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.BlockInfo.DeclarationType;
 import it.unive.golisa.cfg.statement.block.CloseBlock;
+import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
@@ -148,7 +149,6 @@ import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.golisa.scooping.IdInfo;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;

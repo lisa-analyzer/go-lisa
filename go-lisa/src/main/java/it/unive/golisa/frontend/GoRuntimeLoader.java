@@ -1,4 +1,4 @@
-package it.unive.golisa.cli;
+package it.unive.golisa.frontend;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;

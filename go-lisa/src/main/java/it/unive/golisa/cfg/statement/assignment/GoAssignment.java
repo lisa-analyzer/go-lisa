@@ -2,7 +2,7 @@ package it.unive.golisa.cfg.statement.assignment;
 
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
-import it.unive.golisa.cli.GoSyntaxException;
+import it.unive.golisa.frontend.GoSyntaxException;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.ScopeToken;

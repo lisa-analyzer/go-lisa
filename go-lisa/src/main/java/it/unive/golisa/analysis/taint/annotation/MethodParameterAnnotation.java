@@ -1,4 +1,4 @@
-package it.unive.golisa.annotations;
+package it.unive.golisa.analysis.taint.annotation;
 
 import it.unive.lisa.program.annotations.Annotation;
 

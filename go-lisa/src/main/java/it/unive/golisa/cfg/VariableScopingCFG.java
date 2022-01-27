@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg;
 
-import it.unive.golisa.scooping.IdInfo;
+import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;

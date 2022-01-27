@@ -26,7 +26,6 @@ public class GoDeref extends UnaryExpression {
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 					SymbolicExpression expr, StatementStore<A, H, V> expressions)
 					throws SemanticException {
-		return state.top();
-
+		return state.smallStepSemantics(expr, this);
 	}
 }

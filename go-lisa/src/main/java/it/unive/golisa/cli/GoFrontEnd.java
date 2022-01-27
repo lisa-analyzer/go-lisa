@@ -241,11 +241,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 				"Global declarations"))
 			visitDeclarationContext(decl);
 
+		updateUnitReferences();
+
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...",
 				"Method declarations"))
 			visitMethodDecl(decl);
-
-		updateUnitReferences();
 
 		// method declaration must be linked to compilation unit of a
 		// declaration context, for the function declaration is not needed

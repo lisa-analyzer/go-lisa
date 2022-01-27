@@ -47,6 +47,7 @@ import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.runtime.url.UrlPathEscape;
 import it.unive.golisa.cfg.runtime.url.UrlQueryEscape;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
@@ -222,6 +223,8 @@ public interface GoRuntimeLoader {
 
 		// adding types
 		program.registerType(Time.INSTANCE);
+		GoStructType.lookup(Time.INSTANCE.getUnit().getName(), Time.INSTANCE.getUnit());
+
 		program.registerType(it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE);
 		program.registerType(Duration.INSTANCE);
 

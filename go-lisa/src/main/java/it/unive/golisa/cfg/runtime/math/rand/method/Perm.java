@@ -29,7 +29,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Perm extends NativeCFG {
 
 	public Perm(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Perm", GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)),
+		super(new CFGDescriptor(location, randUnit, false, "Perm",
+				GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)),
 				new Parameter(location, "n", GoIntType.INSTANCE)),
 				PermImpl.class);
 	}

@@ -31,7 +31,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Read extends NativeCFG {
 
 	public Read(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Read",  GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
+		super(new CFGDescriptor(location, randUnit, false, "Read",
+				GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "p", GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)))),
 				ReadImpl.class);
 	}
@@ -51,7 +52,8 @@ public class Read extends NativeCFG {
 		}
 
 		public ReadImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "ReadImpl", GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr);
+			super(cfg, location, "ReadImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr);
 		}
 
 		@Override

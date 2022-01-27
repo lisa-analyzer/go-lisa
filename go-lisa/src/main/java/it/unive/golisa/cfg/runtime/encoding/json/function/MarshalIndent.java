@@ -34,9 +34,9 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class MarshalIndent extends NativeCFG {
 
 	public MarshalIndent(CodeLocation location, CompilationUnit jsonUnit) {
-		super(new CFGDescriptor(location, jsonUnit, false, "MarshalIndent", 
+		super(new CFGDescriptor(location, jsonUnit, false, "MarshalIndent",
 				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
-				GoErrorType.INSTANCE),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface()),
 				new Parameter(location, "prefix", GoStringType.INSTANCE),
 				new Parameter(location, "indent", GoStringType.INSTANCE)),
@@ -57,16 +57,20 @@ public class MarshalIndent extends NativeCFG {
 			return new MarshalIndentImpl(cfg, location, params);
 		}
 
-		public MarshalIndentImpl(CFG cfg, CodeLocation location,Expression... params) {
-			super(cfg, location, "MarshalIndentImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
-					GoErrorType.INSTANCE), params);
+		public MarshalIndentImpl(CFG cfg, CodeLocation location, Expression... params) {
+			super(cfg, location, "MarshalIndentImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
+							GoErrorType.INSTANCE),
+					params);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

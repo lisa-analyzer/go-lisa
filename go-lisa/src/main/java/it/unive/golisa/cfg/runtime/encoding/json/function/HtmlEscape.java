@@ -57,9 +57,12 @@ public class HtmlEscape extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-				SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression left,
+						SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

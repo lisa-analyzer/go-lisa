@@ -22,7 +22,6 @@ import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
@@ -33,7 +32,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Read extends NativeCFG {
 
 	public Read(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, true, "Read",  GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
+		super(new CFGDescriptor(location, randUnit, true, "Read",
+				GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "this", Rand.INSTANCE),
 				new Parameter(location, "p", GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)))),
 				ReadImpl.class);
@@ -54,13 +54,17 @@ public class Read extends NativeCFG {
 		}
 
 		public ReadImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "ReadImpl", GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
+			super(cfg, location, "ReadImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
-				SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression left,
+						SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

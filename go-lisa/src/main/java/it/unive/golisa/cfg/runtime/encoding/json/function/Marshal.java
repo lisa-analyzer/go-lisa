@@ -54,14 +54,19 @@ public class Marshal extends NativeCFG {
 		}
 
 		public MarshalImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "MarshalImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
-					GoErrorType.INSTANCE), expr);
+			super(cfg, location, "MarshalImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
+							GoErrorType.INSTANCE),
+					expr);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr,
-				StatementStore<A, H, V> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						SymbolicExpression expr,
+						StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

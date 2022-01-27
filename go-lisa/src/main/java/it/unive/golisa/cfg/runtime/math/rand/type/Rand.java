@@ -65,7 +65,7 @@ public class Rand extends GoStructType {
 		Rand.INSTANCE.getUnit().addInstanceConstruct(new Read(runtimeLocation, Rand.INSTANCE.getUnit()));
 		Rand.INSTANCE.getUnit().addInstanceConstruct(new Seed(runtimeLocation, Rand.INSTANCE.getUnit()));
 		Rand.INSTANCE.getUnit().addInstanceConstruct(new Shuffle(runtimeLocation, Rand.INSTANCE.getUnit()));
-		
+
 	}
 
 	@Override

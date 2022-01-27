@@ -36,8 +36,8 @@ public class Shuffle extends NativeCFG {
 				new Parameter(location, "this", Rand.INSTANCE),
 				new Parameter(location, "n", GoIntType.INSTANCE),
 				new Parameter(location, "swap", GoFunctionType.lookup(
-						new GoFunctionType(VoidType.INSTANCE, 
-								new Parameter(location, "i", GoIntType.INSTANCE), 
+						new GoFunctionType(VoidType.INSTANCE,
+								new Parameter(location, "i", GoIntType.INSTANCE),
 								new Parameter(location, "j", GoIntType.INSTANCE))))),
 				ShuffleImpl.class);
 	}
@@ -56,15 +56,17 @@ public class Shuffle extends NativeCFG {
 			return new ShuffleImpl(cfg, location, params[0], params[1]);
 		}
 
-		public ShuffleImpl(CFG cfg, CodeLocation location, Expression expr,Expression expr2) {
+		public ShuffleImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
 			super(cfg, location, "ShuffleImpl", VoidType.INSTANCE, expr, expr2);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

@@ -94,7 +94,7 @@ public class GoSliceType implements GoType, PointerType {
 			instances.add(in);
 		return instances;
 	}
-	
+
 	public static GoSliceType getSliceOfBytes() {
 		return GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE));
 	}

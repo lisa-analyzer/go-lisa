@@ -42,7 +42,7 @@ public class Rand extends GoStructType {
 		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Rand", false);
 		return randUnit;
 	}
-	
+
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

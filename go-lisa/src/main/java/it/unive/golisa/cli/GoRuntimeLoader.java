@@ -19,12 +19,6 @@ import it.unive.golisa.cfg.runtime.math.rand.function.UInt32;
 import it.unive.golisa.cfg.runtime.math.rand.function.UInt64;
 import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
-import it.unive.golisa.cfg.runtime.shim.method.DelPrivateData;
-import it.unive.golisa.cfg.runtime.shim.method.DelState;
-import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
-import it.unive.golisa.cfg.runtime.shim.method.GetState;
-import it.unive.golisa.cfg.runtime.shim.method.PutPrivateData;
-import it.unive.golisa.cfg.runtime.shim.method.PutState;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
@@ -89,7 +83,7 @@ public interface GoRuntimeLoader {
 		// adding functions
 		jsonUnit.addConstruct(new Marshal(runtimeLocation, jsonUnit));
 		jsonUnit.addConstruct(new Unmarshal(runtimeLocation, jsonUnit));
-		
+
 		program.addCompilationUnit(jsonUnit);
 	}
 
@@ -126,7 +120,7 @@ public interface GoRuntimeLoader {
 		// adding types
 		program.registerType(Rand.INSTANCE);
 		Rand.registerMethods();
-		
+
 		// adding compilation units to program
 		program.addCompilationUnit(mathRand);
 	}
@@ -153,7 +147,6 @@ public interface GoRuntimeLoader {
 		program.registerType(ChaincodeStub.INSTANCE);
 		ChaincodeStub.registerMethods();
 
-
 		program.addCompilationUnit(ChaincodeStubInterface.INSTANCE.getUnit());
 		ChaincodeStubInterface.registerMethods();
 
@@ -162,7 +155,7 @@ public interface GoRuntimeLoader {
 		program.registerType(TLSProperties.INSTANCE);
 		program.registerType(ChaincodeStubInterface.INSTANCE);
 		program.registerType(Chaincode.INSTANCE);
-		
+
 		// adding compilation unit to program
 		program.addCompilationUnit(shim);
 		program.addCompilationUnit(Chaincode.INSTANCE.getUnit());

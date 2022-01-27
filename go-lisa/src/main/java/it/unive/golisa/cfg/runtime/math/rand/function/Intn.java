@@ -60,7 +60,8 @@ public class Intn extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression expr,
 						StatementStore<A, H, V> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoIntType.INSTANCE), getLocation()), original);
+			return state.smallStepSemantics(
+					new PushAny(Caches.types().mkSingletonSet(GoIntType.INSTANCE), getLocation()), original);
 		}
 	}
 }

@@ -1,10 +1,8 @@
 package it.unive.golisa.cfg.runtime.json.function;
 
-import it.unive.golisa.cfg.runtime.json.function.Marshal.MarshalImpl;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -29,7 +27,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 
 public class Unmarshal extends NativeCFG {
 	public Unmarshal(CodeLocation location, CompilationUnit jsonUnit) {
-		super(new CFGDescriptor(location, jsonUnit, false, "Unmarshal", 
+		super(new CFGDescriptor(location, jsonUnit, false, "Unmarshal",
 				GoErrorType.INSTANCE,
 				new Parameter(location, "data", GoSliceType.getSliceOfBytes()),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface())),
@@ -55,11 +53,14 @@ public class Unmarshal extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
-				throws SemanticException {
-			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoErrorType.INSTANCE), getLocation()), original);
+		public <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+						throws SemanticException {
+			return state.smallStepSemantics(
+					new PushAny(Caches.types().mkSingletonSet(GoErrorType.INSTANCE), getLocation()), original);
 		}
 	}
 }

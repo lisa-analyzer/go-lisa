@@ -27,7 +27,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Marshal extends NativeCFG {
 
 	public Marshal(CodeLocation location, CompilationUnit jsonUnit) {
-		super(new CFGDescriptor(location, jsonUnit, false, "Marshal", 
+		super(new CFGDescriptor(location, jsonUnit, false, "Marshal",
 				GoTypesTuple.getTupleTypeOf(location, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface())),
 				MarshalImpl.class);
@@ -48,14 +48,17 @@ public class Marshal extends NativeCFG {
 		}
 
 		public MarshalImpl(CFG cfg, CodeLocation location, Expression... params) {
-			super(cfg, location, "MarshalImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE), params);
+			super(cfg, location, "MarshalImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE), params);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

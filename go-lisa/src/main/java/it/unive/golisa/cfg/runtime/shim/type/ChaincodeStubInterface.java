@@ -33,11 +33,12 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		GoSliceType byteSliceSliceType = GoSliceType.lookup(GoSliceType.getSliceOfBytes());
 
 		// (string, []string)
-		GoTypesTuple tuple1 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE ,stringSliceType);
+		GoTypesTuple tuple1 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE, stringSliceType);
 
 		// ([]byte, error)
-		GoTypesTuple tuple2 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE);
-				
+		GoTypesTuple tuple2 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoSliceType.getSliceOfBytes(),
+				GoErrorType.INSTANCE);
+
 		CompilationUnit chainCodeStubInterfaceUnit = INSTANCE.getUnit();
 		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetArgs",
 				byteSliceSliceType);

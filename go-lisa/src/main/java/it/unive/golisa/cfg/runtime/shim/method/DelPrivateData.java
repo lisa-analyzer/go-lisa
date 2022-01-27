@@ -33,9 +33,9 @@ public class DelPrivateData extends NativeCFG {
 
 	public DelPrivateData(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "DelPrivateData", GoErrorType.INSTANCE,
+				new Parameter(location, "this", ChaincodeStub.INSTANCE),
 				new Parameter(location, "collection", GoStringType.INSTANCE),
-				new Parameter(location, "key", GoStringType.INSTANCE),
-				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
+				new Parameter(location, "key", GoStringType.INSTANCE)),
 				DelPrivateDataImpl.class);
 	}
 

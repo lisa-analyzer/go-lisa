@@ -30,7 +30,8 @@ public class Int31n extends NativeCFG {
 
 	public Int31n(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, true, "Int31n", GoInt32Type.INSTANCE,
-				new Parameter(location, "n", GoInt32Type.INSTANCE), new Parameter(location, "this", Rand.INSTANCE)),
+				new Parameter(location, "this", Rand.INSTANCE),
+				new Parameter(location, "n", GoInt32Type.INSTANCE)),
 				Int31nImpl.class);
 	}
 

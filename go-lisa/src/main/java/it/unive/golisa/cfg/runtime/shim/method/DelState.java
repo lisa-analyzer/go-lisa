@@ -32,8 +32,8 @@ public class DelState extends NativeCFG {
 
 	public DelState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "DelState", GoErrorType.INSTANCE,
-				new Parameter(location, "key", GoStringType.INSTANCE),
-				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
+				new Parameter(location, "this", ChaincodeStub.INSTANCE),
+				new Parameter(location, "key", GoStringType.INSTANCE)),
 				DelStateImpl.class);
 	}
 

@@ -30,8 +30,8 @@ public class Int63n extends NativeCFG {
 
 	public Int63n(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, true, "Int63n", GoInt64Type.INSTANCE,
-				new Parameter(location, "n", GoInt64Type.INSTANCE),
-				new Parameter(location, "this", Rand.INSTANCE)),
+				new Parameter(location, "this", Rand.INSTANCE),
+				new Parameter(location, "n", GoInt64Type.INSTANCE)),
 				IntnImpl.class);
 	}
 

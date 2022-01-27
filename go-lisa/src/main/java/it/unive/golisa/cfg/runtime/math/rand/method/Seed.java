@@ -20,22 +20,23 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.type.VoidType;
 
 /**
- * func (r *Rand) Intn(n int) int
+ * func (r *Rand) Seed(seed int64)
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Intn extends NativeCFG {
+public class Seed extends NativeCFG {
 
-	public Intn(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, true, "Int63n", GoInt64Type.INSTANCE,
+	public Seed(CodeLocation location, CompilationUnit randUnit) {
+		super(new CFGDescriptor(location, randUnit, true, "Seed", VoidType.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE),
-				new Parameter(location, "n", GoInt64Type.INSTANCE)),
-				Int63nImpl.class);
+				new Parameter(location, "seed", GoInt64Type.INSTANCE)),
+				SeedImpl.class);
 	}
 
-	public static class Int63nImpl extends BinaryExpression
+	public static class SeedImpl extends BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -45,21 +46,18 @@ public class Intn extends NativeCFG {
 			original = st;
 		}
 
-		public static Int63nImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Int63nImpl(cfg, location, params[0], params[1]);
+		public static SeedImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new SeedImpl(cfg, location, params[0], params[1]);
 		}
 
-		public Int63nImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "Int63nImpl", GoInt64Type.INSTANCE, expr, expr2);
+		public SeedImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+			super(cfg, location, "SeedImpl", VoidType.INSTANCE, expr, expr2);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression left,
-						SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

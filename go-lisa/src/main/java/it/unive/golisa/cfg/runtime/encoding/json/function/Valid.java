@@ -1,7 +1,8 @@
-package it.unive.golisa.cfg.runtime.math.rand.function;
+package it.unive.golisa.cfg.runtime.encoding.json.function;
 
+import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -22,19 +23,19 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Perm(n int) []int
+ * func Unmarshal(data []byte, v interface{}) error
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Perm extends NativeCFG {
+public class Valid extends NativeCFG {
 
-	public Perm(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Perm", GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)),
-				new Parameter(location, "n", GoIntType.INSTANCE)),
-				PermImpl.class);
+	public Valid(CodeLocation location, CompilationUnit jsonUnit) {
+		super(new CFGDescriptor(location, jsonUnit, false, "Valid", GoBoolType.INSTANCE,
+				new Parameter(location, "data", GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)))),
+				ValidImpl.class);
 	}
 
-	public static class PermImpl extends UnaryExpression
+	public static class ValidImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -44,21 +45,18 @@ public class Perm extends NativeCFG {
 			original = st;
 		}
 
-		public static PermImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new PermImpl(cfg, location, params[0]);
+		public static ValidImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ValidImpl(cfg, location, params[0]);
 		}
 
-		public PermImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "PermImpl", GoIntType.INSTANCE, expr);
+		public ValidImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "ValidImpl", GoBoolType.INSTANCE, expr);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression expr,
-						StatementStore<A, H, V> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression expr,
+				StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

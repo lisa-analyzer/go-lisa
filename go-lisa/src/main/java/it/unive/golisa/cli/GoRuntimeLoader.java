@@ -1,9 +1,14 @@
 package it.unive.golisa.cli;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
+import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;
+import it.unive.golisa.cfg.runtime.encoding.json.function.HtmlEscape;
+import it.unive.golisa.cfg.runtime.encoding.json.function.Indent;
+import it.unive.golisa.cfg.runtime.encoding.json.function.Marshal;
+import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
+import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
+import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
-import it.unive.golisa.cfg.runtime.json.function.Marshal;
-import it.unive.golisa.cfg.runtime.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float32;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float64;
@@ -15,8 +20,11 @@ import it.unive.golisa.cfg.runtime.math.rand.function.Int63n;
 import it.unive.golisa.cfg.runtime.math.rand.function.Intn;
 import it.unive.golisa.cfg.runtime.math.rand.function.NormFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.function.Perm;
+import it.unive.golisa.cfg.runtime.math.rand.function.Read;
 import it.unive.golisa.cfg.runtime.math.rand.function.UInt32;
 import it.unive.golisa.cfg.runtime.math.rand.function.UInt64;
+import it.unive.golisa.cfg.runtime.math.rand.method.Seed;
+import it.unive.golisa.cfg.runtime.math.rand.method.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
@@ -81,8 +89,13 @@ public interface GoRuntimeLoader {
 		CompilationUnit jsonUnit = new CompilationUnit(runtimeLocation, "json", false);
 
 		// adding functions
+		jsonUnit.addConstruct(new Compact(runtimeLocation, jsonUnit));
+		jsonUnit.addConstruct(new HtmlEscape(runtimeLocation, jsonUnit));
+		jsonUnit.addConstruct(new Indent(runtimeLocation, jsonUnit));
 		jsonUnit.addConstruct(new Marshal(runtimeLocation, jsonUnit));
+		jsonUnit.addConstruct(new MarshalIndent(runtimeLocation, jsonUnit));
 		jsonUnit.addConstruct(new Unmarshal(runtimeLocation, jsonUnit));
+		jsonUnit.addConstruct(new Valid(runtimeLocation, jsonUnit));
 
 		program.addCompilationUnit(jsonUnit);
 	}
@@ -116,6 +129,12 @@ public interface GoRuntimeLoader {
 				new UInt32(runtimeLocation, mathRand));
 		mathRand.addConstruct(
 				new UInt64(runtimeLocation, mathRand));
+		mathRand.addConstruct(
+				new Read(runtimeLocation, mathRand));
+		mathRand.addConstruct(
+				new Seed(runtimeLocation, mathRand));
+		mathRand.addConstruct(
+				new Shuffle(runtimeLocation, mathRand));
 
 		// adding types
 		program.registerType(Rand.INSTANCE);

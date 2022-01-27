@@ -36,10 +36,10 @@ public class PutPrivateData extends NativeCFG {
 
 	public PutPrivateData(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
+				new Parameter(location, "this", ChaincodeStub.INSTANCE),
 				new Parameter(location, "collection", GoStringType.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE),
-				new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0)),
-				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
+				new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0))),
 				PutPrivateDataImpl.class);
 	}
 

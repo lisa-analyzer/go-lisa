@@ -30,6 +30,11 @@ public class GoFunctionType implements GoType {
 		this.params = params;
 		this.returnType = returnType;
 	}
+	
+	public GoFunctionType(Type returnType, Parameter... params) {
+		this.params = params;
+		this.returnType = returnType;
+	}
 
 	@Override
 	public String toString() {

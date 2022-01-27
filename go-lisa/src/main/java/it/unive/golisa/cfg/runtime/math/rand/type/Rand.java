@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.math.rand.type;
 
+import it.unive.golisa.cfg.runtime.math.rand.function.Read;
 import it.unive.golisa.cfg.runtime.math.rand.method.ExpFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.method.Float32;
 import it.unive.golisa.cfg.runtime.math.rand.method.Float64;
@@ -11,6 +12,8 @@ import it.unive.golisa.cfg.runtime.math.rand.method.Int63n;
 import it.unive.golisa.cfg.runtime.math.rand.method.Intn;
 import it.unive.golisa.cfg.runtime.math.rand.method.NormFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.method.Perm;
+import it.unive.golisa.cfg.runtime.math.rand.method.Seed;
+import it.unive.golisa.cfg.runtime.math.rand.method.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.method.UInt32;
 import it.unive.golisa.cfg.runtime.math.rand.method.UInt64;
 import it.unive.golisa.cfg.type.composite.GoStructType;
@@ -59,6 +62,10 @@ public class Rand extends GoStructType {
 		Rand.INSTANCE.getUnit().addInstanceConstruct(new Perm(runtimeLocation, Rand.INSTANCE.getUnit()));
 		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt32(runtimeLocation, Rand.INSTANCE.getUnit()));
 		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt64(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Read(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Seed(runtimeLocation, Rand.INSTANCE.getUnit()));
+		Rand.INSTANCE.getUnit().addInstanceConstruct(new Shuffle(runtimeLocation, Rand.INSTANCE.getUnit()));
+		
 	}
 
 	@Override

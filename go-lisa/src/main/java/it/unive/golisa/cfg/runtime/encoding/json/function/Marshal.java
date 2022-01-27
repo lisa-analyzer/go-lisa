@@ -32,14 +32,14 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Marshal extends NativeCFG {
 
 	public Marshal(CodeLocation location, CompilationUnit jsonUnit) {
-		super(new CFGDescriptor(location, jsonUnit, false, "Valid",
+		super(new CFGDescriptor(location, jsonUnit, false, "Marshal",
 				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface())),
-				ValidImpl.class);
+				MarshalImpl.class);
 	}
 
-	public static class ValidImpl extends UnaryExpression
+	public static class MarshalImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -49,12 +49,12 @@ public class Marshal extends NativeCFG {
 			original = st;
 		}
 
-		public static ValidImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new ValidImpl(cfg, location, params[0]);
+		public static MarshalImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new MarshalImpl(cfg, location, params[0]);
 		}
 
-		public ValidImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "ValidImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
+		public MarshalImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "MarshalImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
 					GoErrorType.INSTANCE), expr);
 		}
 

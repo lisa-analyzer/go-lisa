@@ -66,7 +66,6 @@ public class GoHasPrefix extends NativeCFG {
 					.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
 							left, right, it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE,
 							getLocation()), original);
-
 		}
 	}
 }

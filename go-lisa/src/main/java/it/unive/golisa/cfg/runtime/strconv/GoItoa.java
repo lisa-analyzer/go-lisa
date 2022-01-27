@@ -23,6 +23,11 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
+/**
+ * func Itoa(i int) string
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoItoa extends NativeCFG {
 
 	public GoItoa(CodeLocation location, CompilationUnit strconvUnit) {
@@ -60,7 +65,6 @@ public class GoItoa extends NativeCFG {
 
 			return state.smallStepSemantics(
 					new PushAny(Caches.types().mkSingletonSet(GoStringType.INSTANCE), getLocation()), original);
-
 		}
 	}
 }

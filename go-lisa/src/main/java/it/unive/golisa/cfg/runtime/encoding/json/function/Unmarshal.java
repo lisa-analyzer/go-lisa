@@ -10,6 +10,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -22,6 +23,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Unmarshal(data []byte, v interface{}) error
@@ -59,7 +61,7 @@ public class Unmarshal extends NativeCFG {
 		protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
 				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoErrorType.INSTANCE), getLocation()), original);
 		}
 	}
 }

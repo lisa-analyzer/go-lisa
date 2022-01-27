@@ -2,12 +2,12 @@ package it.unive.golisa.cfg.runtime.shim.type;
 
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetState.GetStateImpl;
+import it.unive.golisa.cfg.runtime.shim.method.PutState.PutStateImpl;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -26,23 +26,18 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 	public static void registerMethods() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 
-		// []byte
-		GoSliceType byteSliceType = GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
-
 		// []string
 		GoSliceType stringSliceType = GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
 
 		// [][] byte
-		GoSliceType byteSliceSliceType = GoSliceType.lookup(new GoSliceType(byteSliceType));
+		GoSliceType byteSliceSliceType = GoSliceType.lookup(GoSliceType.getSliceOfBytes());
 
 		// (string, []string)
-		GoTypesTuple tuple1 = new GoTypesTuple(new Parameter(unknownLocation, "_", GoStringType.INSTANCE),
-				new Parameter(unknownLocation, "_", stringSliceType));
+		GoTypesTuple tuple1 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE ,stringSliceType);
 
 		// ([]byte, error)
-		GoTypesTuple tuple2 = new GoTypesTuple(new Parameter(unknownLocation, "_", byteSliceType),
-				new Parameter(unknownLocation, "_", GoErrorType.INSTANCE));
-
+		GoTypesTuple tuple2 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE);
+				
 		CompilationUnit chainCodeStubInterfaceUnit = INSTANCE.getUnit();
 		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetArgs",
 				byteSliceSliceType);
@@ -69,17 +64,20 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 				GoStringType.INSTANCE);
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
 
+		// GetState
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetState",
 				tuple2,
 				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "key", GoStringType.INSTANCE));
 		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, GetStateImpl.class));
 
+		// PutState
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "PutState",
 				GoErrorType.INSTANCE,
+				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "key", GoStringType.INSTANCE),
-				new Parameter(unknownLocation, "value", byteSliceType));
-		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
+				new Parameter(unknownLocation, "value", GoSliceType.getSliceOfBytes()));
+		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, PutStateImpl.class));
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "DelState",
 				GoErrorType.INSTANCE,
@@ -89,7 +87,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "SetStateValidationParameter",
 				GoErrorType.INSTANCE,
 				new Parameter(unknownLocation, "key", GoStringType.INSTANCE),
-				new Parameter(unknownLocation, "ep", byteSliceType));
+				new Parameter(unknownLocation, "ep", GoSliceType.getSliceOfBytes()));
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetStateValidationParameter",

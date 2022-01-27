@@ -74,7 +74,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
-
+		
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
 		Variable id = new Variable(idType, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
 

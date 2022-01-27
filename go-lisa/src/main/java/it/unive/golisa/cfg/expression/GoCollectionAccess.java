@@ -28,18 +28,18 @@ public class GoCollectionAccess extends BinaryExpression {
 					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 					SymbolicExpression left,
 					SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
-		AnalysisState<A, H, V> result = state.bottom();
-
-		AnalysisState<A, H, V> rec = state.smallStepSemantics(left, this);
-		for (SymbolicExpression expr : rec.getComputedExpressions()) {
-			AnalysisState<A, H,
-					V> tmp = rec.smallStepSemantics(
-							new AccessChild(getRuntimeTypes(),
-									new HeapDereference(getRuntimeTypes(), expr, getLocation()), right, getLocation()),
-							this);
-			result = result.lub(tmp);
-		}
-
-		return result;
+//		AnalysisState<A, H, V> result = state.bottom();
+//
+//		AnalysisState<A, H, V> rec = state.smallStepSemantics(left, this);
+//		for (SymbolicExpression expr : rec.getComputedExpressions()) {
+//			AnalysisState<A, H, V> tmp = rec.smallStepSemantics(
+//							new AccessChild(getRuntimeTypes(),
+//									new HeapDereference(getRuntimeTypes(), expr, getLocation()), right, getLocation()),
+//							this);
+//			result = result.lub(tmp);
+//		}
+//		
+//		return result;
+		return state.smallStepSemantics(left, this);
 	}
 }

@@ -1,12 +1,13 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -19,6 +20,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Intn(n int) int
@@ -28,12 +30,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Intn extends NativeCFG {
 
 	public Intn(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Int63n", GoInt64Type.INSTANCE,
-				new Parameter(location, "n", GoInt64Type.INSTANCE)),
-				Int63nImpl.class);
+		super(new CFGDescriptor(location, randUnit, false, "Intn", GoIntType.INSTANCE,
+				new Parameter(location, "n", GoIntType.INSTANCE)),
+				IntnImpl.class);
 	}
 
-	public static class Int63nImpl extends UnaryExpression
+	public static class IntnImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -43,12 +45,12 @@ public class Intn extends NativeCFG {
 			original = st;
 		}
 
-		public static Int63nImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Int63nImpl(cfg, location, params[0]);
+		public static IntnImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new IntnImpl(cfg, location, params[0]);
 		}
 
-		public Int63nImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "Int63nImpl", GoInt64Type.INSTANCE, expr);
+		public IntnImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "IntnImpl", GoIntType.INSTANCE, expr);
 		}
 
 		@Override
@@ -58,7 +60,7 @@ public class Intn extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression expr,
 						StatementStore<A, H, V> expressions) throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoIntType.INSTANCE), getLocation()), original);
 		}
 	}
 }

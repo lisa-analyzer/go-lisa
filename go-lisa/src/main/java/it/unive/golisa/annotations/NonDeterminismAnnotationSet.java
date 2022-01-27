@@ -43,11 +43,6 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 
 		// sinks
 
-		// Hyperledger Fabric API
-
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "PutState", 0));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "PutState", 1));
-
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "PutPrivateData", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "PutPrivateData", 1));
 
@@ -60,7 +55,15 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 
 	@Override
 	public Set<? extends CodeAnnotation> getAnnotationsForConstructors() {
-		return new HashSet<>();
+		Set<CodeAnnotation> set = new HashSet<>();
+
+		// Hyperledger Fabric API
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 2));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 2));
+		
+		return set;
 	}
 
 	@Override

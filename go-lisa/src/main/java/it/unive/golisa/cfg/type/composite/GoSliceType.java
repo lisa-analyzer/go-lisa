@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
+import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -92,5 +93,9 @@ public class GoSliceType implements GoType, PointerType {
 		for (GoSliceType in : sliceTypes)
 			instances.add(in);
 		return instances;
+	}
+	
+	public static GoSliceType getSliceOfBytes() {
+		return GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE));
 	}
 }

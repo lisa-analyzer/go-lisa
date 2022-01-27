@@ -1,5 +1,7 @@
 package it.unive.golisa.checker;
 
+import java.util.Collection;
+
 import it.unive.golisa.analysis.Taint;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -14,13 +16,18 @@ import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeMember;
+import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.HybridCall;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 
 public class TaintChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, InferenceSystem<Taint>>,
-		MonolithicHeap, InferenceSystem<Taint>> {
+MonolithicHeap, InferenceSystem<Taint>> {
 
 	public static final Annotation SINK_ANNOTATION = new Annotation("lisa.taint.Sink");
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
@@ -48,7 +55,7 @@ public class TaintChecker implements SemanticCheck<SimpleAbstractState<Monolithi
 	}
 
 	private static final String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th",
-			"th" };
+	"th" };
 
 	public static String ordinal(int i) {
 		switch (i % 100) {
@@ -64,7 +71,7 @@ public class TaintChecker implements SemanticCheck<SimpleAbstractState<Monolithi
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<Taint>>,
-			MonolithicHeap, InferenceSystem<Taint>> tool, CFG graph) {
+			MonolithicHeap, InferenceSystem<Taint>> tool, CFG graph) {	
 		Parameter[] parameters = graph.getDescriptor().getFormals();
 		for (int i = 0; i < parameters.length; i++)
 			if (parameters[i].getAnnotations().contains(SINK_MATCHER))
@@ -74,8 +81,8 @@ public class TaintChecker implements SemanticCheck<SimpleAbstractState<Monolithi
 						if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
 								.getInferredValue().isTainted())
 							tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-									+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-									+ parameters[i].getName() + "' of " + graph.getDescriptor().getFullName());
+							+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+							+ parameters[i].getName() + "' of " + graph.getDescriptor().getFullName());
 
 		return true;
 	}
@@ -83,7 +90,32 @@ public class TaintChecker implements SemanticCheck<SimpleAbstractState<Monolithi
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<Taint>>,
 			MonolithicHeap, InferenceSystem<Taint>> tool, CFG graph, Statement node) {
+		if (!(node instanceof UnresolvedCall))
+			return true;
+
+		UnresolvedCall call = (UnresolvedCall) node;
+		Call resolved = (Call) tool.getResolvedVersion(call);
+
+		if (resolved instanceof HybridCall) {
+			HybridCall hybrid = (HybridCall) resolved;
+
+			Collection<NativeCFG> nativeCfgs = hybrid.getNativeTargets();
+			for (NativeCFG nativeCfg : nativeCfgs) {
+				Parameter[] parameters = nativeCfg.getDescriptor().getFormals();
+				for (int i = 0; i < parameters.length; i++)
+					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
+						for (CFGWithAnalysisResults<SimpleAbstractState<MonolithicHeap, InferenceSystem<Taint>>,
+								MonolithicHeap, InferenceSystem<Taint>> result : tool.getResultOf(call.getCFG()))
+							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
+									.getInferredValue().isTainted())
+								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
+								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+								+ parameters[i].getName() + "' of " + graph.getDescriptor().getFullName());
+			}
+		}
+
 		return true;
+
 	}
 
 	@Override

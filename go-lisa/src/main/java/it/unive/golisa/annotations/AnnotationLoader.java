@@ -1,14 +1,17 @@
 package it.unive.golisa.annotations;
 
-import it.unive.lisa.program.Global;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.cfg.CFGDescriptor;
-import it.unive.lisa.program.cfg.CodeMember;
-import it.unive.lisa.program.cfg.NativeCFG;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import it.unive.lisa.program.Global;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.Unit;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMember;
+import it.unive.lisa.program.cfg.NativeCFG;
 
 public class AnnotationLoader {
 
@@ -26,8 +29,7 @@ public class AnnotationLoader {
 		this.annotationSets.add(annotationSet);
 	}
 
-	public void load(Program program) {
-
+	public void load(Unit program) {
 		Collection<CodeMember> codeMembers = program.getAllCodeMembers();
 		Collection<NativeCFG> constructs = program.getAllConstructs();
 		Collection<Global> globals = program.getAllGlobals();
@@ -37,10 +39,11 @@ public class AnnotationLoader {
 				for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 					checkAndAddAnnotation(cm.getDescriptor(), ca);
 
-		for (NativeCFG c : constructs)
+		for (NativeCFG c : constructs) {
 			for (AnnotationSet set : annotationSets)
 				for (CodeAnnotation ca : set.getAnnotationsForConstructors())
 					checkAndAddAnnotation(c.getDescriptor(), ca);
+		}
 
 		for (Global g : globals) {
 			// TODO
@@ -50,12 +53,11 @@ public class AnnotationLoader {
 	private void checkAndAddAnnotation(CFGDescriptor descriptor, CodeAnnotation ca) {
 		if (ca instanceof MethodAnnotation) {
 			MethodAnnotation ma = (MethodAnnotation) ca;
-			if (descriptor.getUnit().toString().equals(ma.getUnit())
+			if (descriptor.getUnit().getName().equals(ma.getUnit())
 					&& descriptor.getName().equals(ma.getName()))
 				if (ca instanceof MethodParameterAnnotation) {
 					MethodParameterAnnotation mpa = (MethodParameterAnnotation) ca;
-					if (mpa.getParam() < descriptor.getFormals().length)
-						descriptor.getFormals()[mpa.getParam()].addAnnotation(mpa.getAnnotation());
+					descriptor.getFormals()[mpa.getParam()].addAnnotation(mpa.getAnnotation());
 				} else
 					descriptor.addAnnotation(ma.getAnnotation());
 		}

@@ -1,10 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
-import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -35,9 +34,9 @@ public class PutState extends NativeCFG {
 
 	public PutState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
+				new Parameter(location, "this", ChaincodeStub.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE),
-				new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0)),
-				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
+				new Parameter(location, "value", GoSliceType.getSliceOfBytes())),
 				PutStateImpl.class);
 	}
 
@@ -66,7 +65,7 @@ public class PutState extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
 						throws SemanticException {
-			return state.top();
+			return state;
 		}
 	}
 }

@@ -2,19 +2,21 @@ package it.unive.golisa.cli;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
-import it.unive.golisa.cfg.runtime.math.rand.method.ExpFloat64;
-import it.unive.golisa.cfg.runtime.math.rand.method.Float32;
-import it.unive.golisa.cfg.runtime.math.rand.method.Float64;
-import it.unive.golisa.cfg.runtime.math.rand.method.Int;
-import it.unive.golisa.cfg.runtime.math.rand.method.Int31;
-import it.unive.golisa.cfg.runtime.math.rand.method.Int31n;
-import it.unive.golisa.cfg.runtime.math.rand.method.Int63;
-import it.unive.golisa.cfg.runtime.math.rand.method.Int63n;
-import it.unive.golisa.cfg.runtime.math.rand.method.Intn;
-import it.unive.golisa.cfg.runtime.math.rand.method.NormFloat64;
-import it.unive.golisa.cfg.runtime.math.rand.method.Perm;
-import it.unive.golisa.cfg.runtime.math.rand.method.UInt32;
-import it.unive.golisa.cfg.runtime.math.rand.method.UInt64;
+import it.unive.golisa.cfg.runtime.json.function.Marshal;
+import it.unive.golisa.cfg.runtime.json.function.Unmarshal;
+import it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64;
+import it.unive.golisa.cfg.runtime.math.rand.function.Float32;
+import it.unive.golisa.cfg.runtime.math.rand.function.Float64;
+import it.unive.golisa.cfg.runtime.math.rand.function.Int;
+import it.unive.golisa.cfg.runtime.math.rand.function.Int31;
+import it.unive.golisa.cfg.runtime.math.rand.function.Int31n;
+import it.unive.golisa.cfg.runtime.math.rand.function.Int63;
+import it.unive.golisa.cfg.runtime.math.rand.function.Int63n;
+import it.unive.golisa.cfg.runtime.math.rand.function.Intn;
+import it.unive.golisa.cfg.runtime.math.rand.function.NormFloat64;
+import it.unive.golisa.cfg.runtime.math.rand.function.Perm;
+import it.unive.golisa.cfg.runtime.math.rand.function.UInt32;
+import it.unive.golisa.cfg.runtime.math.rand.function.UInt64;
 import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.method.DelPrivateData;
@@ -72,6 +74,8 @@ public interface GoRuntimeLoader {
 			loadTime(program);
 		else if (module.equals("bytes"))
 			loadBytes(program);
+		else if (module.equals("encoding/json"))
+			loadJson(program);
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
@@ -79,54 +83,51 @@ public interface GoRuntimeLoader {
 			loadUnhandledLib(module, program, mapper);
 	}
 
+	private void loadJson(Program program) {
+		CompilationUnit jsonUnit = new CompilationUnit(runtimeLocation, "json", false);
+
+		// adding functions
+		jsonUnit.addConstruct(new Marshal(runtimeLocation, jsonUnit));
+		jsonUnit.addConstruct(new Unmarshal(runtimeLocation, jsonUnit));
+		
+		program.addCompilationUnit(jsonUnit);
+	}
+
 	private void loadMathRand(Program program) {
 		CompilationUnit mathRand = new CompilationUnit(runtimeLocation, "rand", false);
 
 		// adding functions
-		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64(runtimeLocation, mathRand));
+		mathRand.addConstruct(new ExpFloat64(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Float32(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Float32(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Float64(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Float64(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Int(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Int(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Int31(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Int31(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Int31n(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Int31n(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Int63(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Int63(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Int63n(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Int63n(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Intn(runtimeLocation, Rand.INSTANCE.getUnit()));
-		mathRand.addConstruct(new it.unive.golisa.cfg.runtime.math.rand.function.NormFloat64(runtimeLocation,
-				Rand.INSTANCE.getUnit()));
+				new Intn(runtimeLocation, mathRand));
+		mathRand.addConstruct(new NormFloat64(runtimeLocation,
+				mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.Perm(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new Perm(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.UInt32(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new UInt32(runtimeLocation, mathRand));
 		mathRand.addConstruct(
-				new it.unive.golisa.cfg.runtime.math.rand.function.UInt64(runtimeLocation, Rand.INSTANCE.getUnit()));
+				new UInt64(runtimeLocation, mathRand));
 
 		// adding types
 		program.registerType(Rand.INSTANCE);
-
-		// adding rand.Rand methods
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new ExpFloat64(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Float32(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Float64(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int31(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int31n(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int63(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int63n(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Intn(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new NormFloat64(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Perm(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt32(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt64(runtimeLocation, Rand.INSTANCE.getUnit()));
-
+		Rand.registerMethods();
+		
+		// adding compilation units to program
 		program.addCompilationUnit(mathRand);
 	}
 
@@ -149,30 +150,26 @@ public interface GoRuntimeLoader {
 		shim.addConstruct(new Start(runtimeLocation, shim));
 
 		// adding types
-		program.registerType(Chaincode.INSTANCE);
 		program.registerType(ChaincodeStub.INSTANCE);
-		program.registerType(ChaincodeStubInterface.INSTANCE);
+		ChaincodeStub.registerMethods();
+
+
+		program.addCompilationUnit(ChaincodeStubInterface.INSTANCE.getUnit());
 		ChaincodeStubInterface.registerMethods();
 
 		program.registerType(CommonIteratorInterface.INSTANCE);
 		program.registerType(Handler.INSTANCE);
 		program.registerType(TLSProperties.INSTANCE);
-
-		// adding ChainCodeStub methods
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new DelPrivateData(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new DelState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new GetFunctionAndParameters(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new PutPrivateData(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new PutState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new GetState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-
+		program.registerType(ChaincodeStubInterface.INSTANCE);
+		program.registerType(Chaincode.INSTANCE);
+		
+		// adding compilation unit to program
 		program.addCompilationUnit(shim);
+		program.addCompilationUnit(Chaincode.INSTANCE.getUnit());
+		program.addCompilationUnit(ChaincodeStub.INSTANCE.getUnit());
+		program.addCompilationUnit(CommonIteratorInterface.INSTANCE.getUnit());
+		program.addCompilationUnit(TLSProperties.INSTANCE.getUnit());
+		program.addCompilationUnit(Handler.INSTANCE.getUnit());
 	}
 
 	private void loadUrl(Program program) {

@@ -40,15 +40,10 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "math/rand", "Shuffle"));
 		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "math/rand", "Uint32"));
 		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "math/rand", "Uint64"));
-
-		// sinks
-
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "PutPrivateData", 0));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "PutPrivateData", 1));
-
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "DelState", 0));
-
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "shim", "DelPrivateData", 0));
+		
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "crypto/rand", "Read"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "crypto/rand", "Int"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "crypto/rand", "Prime"));
 
 		return set;
 	}
@@ -57,11 +52,41 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 	public Set<? extends CodeAnnotation> getAnnotationsForConstructors() {
 		Set<CodeAnnotation> set = new HashSet<>();
 
+		// sources
+		
+		//Go random API
+		
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "ExpFloat64"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Float32"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Float64"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Int"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Int31"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Int31n"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Int63"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Int63n"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Intn"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "NormFloat64"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Perm"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Read"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Shuffle"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Uint32"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "Rand", "Uint64"));
+		
+		// sinks
+		
 		// Hyperledger Fabric API
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 1));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 1));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 2));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 2));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutPrivateData", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutPrivateData", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelState", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelState", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelPrivateData", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelPrivateData", 0));
 
 		return set;
 	}

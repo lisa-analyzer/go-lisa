@@ -27,6 +27,7 @@ import it.unive.golisa.cfg.runtime.math.rand.method.Seed;
 import it.unive.golisa.cfg.runtime.math.rand.method.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
+import it.unive.golisa.cfg.runtime.shim.function.Success;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
@@ -162,7 +163,6 @@ public interface GoRuntimeLoader {
 		CompilationUnit bytes = new CompilationUnit(runtimeLocation, "bytes", false);
 
 		// adding functions and methods
-		bytes.addConstruct(new Start(runtimeLocation, bytes));
 
 		// adding types
 		program.registerType(Buffer.INSTANCE);
@@ -175,6 +175,8 @@ public interface GoRuntimeLoader {
 
 		// adding functions
 		shim.addConstruct(new Start(runtimeLocation, shim));
+		shim.addConstruct(new it.unive.golisa.cfg.runtime.shim.function.Error(runtimeLocation, shim));
+		shim.addConstruct(new Success(runtimeLocation, shim));
 
 		// adding types
 		program.registerType(ChaincodeStub.INSTANCE);

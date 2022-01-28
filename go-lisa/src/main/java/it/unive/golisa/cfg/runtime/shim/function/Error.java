@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
-import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.runtime.peer.type.Response;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -22,21 +22,23 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * Start chaincodes.
+ * Error response chaincodes.
  * 
- * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#Start
+ * func Error(msg string) pb.Response
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#Error
+ * 
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Start extends NativeCFG {
+public class Error extends NativeCFG {
 
-	public Start(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "Start", GoErrorType.INSTANCE,
-				new Parameter(location, "cc", Chaincode.INSTANCE)),
-				StartImpl.class);
+	public Error(CodeLocation location, CompilationUnit shimUnit) {
+		super(new CFGDescriptor(location, shimUnit, false, "Error", Response.INSTANCE,
+				new Parameter(location, "msg", GoStringType.INSTANCE)),
+				ErrorImpl.class);
 	}
 
-	public static class StartImpl extends UnaryExpression
+	public static class ErrorImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -46,12 +48,12 @@ public class Start extends NativeCFG {
 			original = st;
 		}
 
-		public static StartImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new StartImpl(cfg, location, params[0]);
+		public static ErrorImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ErrorImpl(cfg, location, params[0]);
 		}
 
-		public StartImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "StartImpl", GoErrorType.INSTANCE, e);
+		public ErrorImpl(CFG cfg, CodeLocation location, Expression e) {
+			super(cfg, location, "ErrorImpl", Response.INSTANCE, e);
 		}
 
 		@Override

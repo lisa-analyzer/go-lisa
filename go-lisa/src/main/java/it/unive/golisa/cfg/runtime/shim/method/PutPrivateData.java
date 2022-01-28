@@ -1,10 +1,10 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
-import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -39,7 +39,7 @@ public class PutPrivateData extends NativeCFG {
 				new Parameter(location, "this", ChaincodeStub.INSTANCE),
 				new Parameter(location, "collection", GoStringType.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE),
-				new Parameter(location, "value", new GoArrayType(GoByteType.INSTANCE, 0))),
+				new Parameter(location, "value", new GoArrayType(GoUInt8Type.INSTANCE, 0))),
 				PutPrivateDataImpl.class);
 	}
 

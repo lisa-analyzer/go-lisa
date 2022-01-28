@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
 import it.unive.golisa.cfg.runtime.peer.type.Response;
-import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -35,7 +35,7 @@ public class Success extends NativeCFG {
 
 	public Success(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "Success", Response.INSTANCE,
-				new Parameter(location, "payload", GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)))),
+				new Parameter(location, "payload", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),
 				SuccessImpl.class);
 	}
 

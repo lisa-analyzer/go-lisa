@@ -1,11 +1,11 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
-import it.unive.golisa.cfg.type.GoByteType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -36,7 +36,7 @@ public class GetState extends NativeCFG {
 
 	public GetState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "GetState",
-				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)),
+				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "s", ChaincodeStub.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE)),
@@ -59,7 +59,7 @@ public class GetState extends NativeCFG {
 
 		public GetStateImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "GetStateImpl", GoTypesTuple.getTupleTypeOf(location,
-					GoSliceType.lookup(new GoSliceType(GoByteType.INSTANCE)), GoErrorType.INSTANCE), params);
+					GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)), GoErrorType.INSTANCE), params);
 		}
 
 		@Override

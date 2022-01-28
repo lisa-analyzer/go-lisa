@@ -26,6 +26,14 @@ import it.unive.golisa.cfg.runtime.math.rand.function.UInt64;
 import it.unive.golisa.cfg.runtime.math.rand.method.Seed;
 import it.unive.golisa.cfg.runtime.math.rand.method.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
+import it.unive.golisa.cfg.runtime.os.file.function.Create;
+import it.unive.golisa.cfg.runtime.os.file.function.CreateTemp;
+import it.unive.golisa.cfg.runtime.os.file.function.NewFile;
+import it.unive.golisa.cfg.runtime.os.file.function.Open;
+import it.unive.golisa.cfg.runtime.os.file.function.OpenFile;
+import it.unive.golisa.cfg.runtime.os.function.ReadFile;
+import it.unive.golisa.cfg.runtime.os.type.File;
+import it.unive.golisa.cfg.runtime.os.type.FileMode;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.function.Success;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
@@ -77,6 +85,8 @@ public interface GoRuntimeLoader {
 			loadStrconv(program);
 		else if (module.equals("time"))
 			loadTime(program);
+		else if (module.equals("os"))
+			loadOs(program);
 		else if (module.equals("bytes"))
 			loadBytes(program);
 		else if (module.equals("encoding/json"))
@@ -86,6 +96,29 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
+	}
+
+	private void loadOs(Program program) {
+		CompilationUnit os = new CompilationUnit(runtimeLocation, "os", false);
+
+		// adding functions
+		os.addConstruct(new Create(runtimeLocation, os));
+		os.addConstruct(new CreateTemp(runtimeLocation, os));
+		os.addConstruct(new NewFile(runtimeLocation, os));
+		os.addConstruct(new Open(runtimeLocation, os));
+		os.addConstruct(new OpenFile(runtimeLocation, os));
+		os.addConstruct(new ReadFile(runtimeLocation, os));
+		
+		// adding types
+		program.registerType(File.INSTANCE);
+		program.registerType(FileMode.INSTANCE);
+		File.registerMethods();
+
+		// adding compilation unit to program
+		program.addCompilationUnit(os);
+		program.addCompilationUnit(File.INSTANCE.getUnit());
+		program.addCompilationUnit(FileMode.INSTANCE.getUnit());
+
 	}
 
 	private void loadCryptoRand(Program program) {

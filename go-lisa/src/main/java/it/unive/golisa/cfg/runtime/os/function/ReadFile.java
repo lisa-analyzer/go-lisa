@@ -1,7 +1,9 @@
-package it.unive.golisa.cfg.runtime.encoding.json.function;
+package it.unive.golisa.cfg.runtime.os.function;
 
-import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -23,19 +25,24 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Unmarshal(data []byte, v interface{}) error
+ * 
+ * func ReadFile(name string) ([]byte, error)
+ * 
+ * @link https://pkg.go.dev/os#ReadFile
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Valid extends NativeCFG {
+public class ReadFile extends NativeCFG {
 
-	public Valid(CodeLocation location, CompilationUnit jsonUnit) {
-		super(new CFGDescriptor(location, jsonUnit, false, "Valid", GoBoolType.INSTANCE,
-				new Parameter(location, "data", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),
-				ValidImpl.class);
+	public ReadFile(CodeLocation location, CompilationUnit shimUnit) {
+		super(new CFGDescriptor(location, shimUnit, false, "ReadFile", 
+				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+				GoErrorType.INSTANCE),
+				new Parameter(location, "name", GoStringType.INSTANCE)),
+				ReadFileImpl.class);
 	}
 
-	public static class ValidImpl extends UnaryExpression
+	public static class ReadFileImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -45,12 +52,13 @@ public class Valid extends NativeCFG {
 			original = st;
 		}
 
-		public static ValidImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new ValidImpl(cfg, location, params[0]);
+		public static ReadFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ReadFileImpl(cfg, location, params[0]);
 		}
 
-		public ValidImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "ValidImpl", GoBoolType.INSTANCE, expr);
+		public ReadFileImpl(CFG cfg, CodeLocation location, Expression e) {
+			super(cfg, location, "ReadFileImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+					GoErrorType.INSTANCE), e);
 		}
 
 		@Override
@@ -58,8 +66,8 @@ public class Valid extends NativeCFG {
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression expr,
-						StatementStore<A, H, V> expressions) throws SemanticException {
+						SymbolicExpression expr, StatementStore<A, H, V> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

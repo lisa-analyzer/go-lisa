@@ -46,6 +46,7 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntPrtType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -119,6 +120,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 				return GoUInt32Type.INSTANCE;
 			case "uint64":
 				return GoUInt64Type.INSTANCE;
+			case "uintprt":
+				return GoUIntPrtType.INSTANCE;
 			case "float32":
 				return GoFloat32Type.INSTANCE;
 			case "float64":

@@ -68,6 +68,8 @@ public interface GoRuntimeLoader {
 			loadFmt(program);
 		else if (module.equals("math/rand"))
 			loadMathRand(program);
+		else if (module.equals("crypto/rand"))
+			loadCryptoRand(program);
 		else if (module.equals("url"))
 			loadUrl(program);
 		else if (module.equals("strconv"))
@@ -83,6 +85,18 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
+	}
+
+	private void loadCryptoRand(Program program) {
+		CompilationUnit cryptoRand = new CompilationUnit(runtimeLocation, "rand", false);
+
+		// adding functions
+		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Int(runtimeLocation, cryptoRand));
+		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
+		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
+
+		// adding compilation units to program
+		program.addCompilationUnit(cryptoRand);
 	}
 
 	private void loadJson(Program program) {

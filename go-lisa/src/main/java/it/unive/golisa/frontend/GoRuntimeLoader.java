@@ -9,12 +9,22 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.io.function.Copy;
+import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
+import it.unive.golisa.cfg.runtime.io.function.CopyN;
+import it.unive.golisa.cfg.runtime.io.function.Pipe;
+import it.unive.golisa.cfg.runtime.io.function.ReadAtLeast;
+import it.unive.golisa.cfg.runtime.io.function.WriteString;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.NopCloser;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.ReadAll;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.ReadDir;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.TempDir;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.TempFile;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.WriteFile;
+import it.unive.golisa.cfg.runtime.io.type.PipeReader;
+import it.unive.golisa.cfg.runtime.io.type.PipeWriter;
+import it.unive.golisa.cfg.runtime.io.type.Reader;
+import it.unive.golisa.cfg.runtime.io.type.Writer;
 import it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float32;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float64;
@@ -83,6 +93,8 @@ public interface GoRuntimeLoader {
 			loadFmt(program);
 		else if (module.equals("math/rand"))
 			loadMathRand(program);
+		else if (module.equals("io"))
+			loadIO(program);
 		else if (module.equals("io/ioutil"))
 			loadIoutil(program);
 		else if (module.equals("crypto/rand"))
@@ -106,6 +118,22 @@ public interface GoRuntimeLoader {
 			loadUnhandledLib(module, program, mapper);
 	}
 	
+	private void loadIO(Program program) {
+		CompilationUnit io = new CompilationUnit(runtimeLocation, "io", false);
+
+		// adding functions
+		io.addConstruct(new Copy(runtimeLocation, io));
+		io.addConstruct(new CopyBuffer(runtimeLocation, io));
+		io.addConstruct(new CopyN(runtimeLocation, io));
+		io.addConstruct(new Pipe(runtimeLocation, io));
+		io.addConstruct(new ReadAll(runtimeLocation, io));
+		io.addConstruct(new ReadAtLeast(runtimeLocation, io));
+		io.addConstruct(new WriteString(runtimeLocation, io));
+
+		// adding compilation units to program
+		program.addCompilationUnit(io);
+	}
+
 	private void loadIoutil(Program program) {
 		CompilationUnit ioutil = new CompilationUnit(runtimeLocation, "ioutil", false);
 
@@ -117,6 +145,19 @@ public interface GoRuntimeLoader {
 		ioutil.addConstruct(new TempDir(runtimeLocation, ioutil));
 		ioutil.addConstruct(new TempFile(runtimeLocation, ioutil));
 		ioutil.addConstruct(new WriteFile(runtimeLocation, ioutil));
+		
+		// adding types
+		program.registerType(PipeReader.INSTANCE);
+		PipeReader.registerMethods();
+		
+		program.registerType(PipeWriter.INSTANCE);
+		PipeWriter.registerMethods();
+		
+		program.registerType(Reader.INSTANCE);
+		Reader.registerMethods();
+		
+		program.registerType(Writer.INSTANCE);
+		Writer.registerMethods();
 
 		// adding compilation units to program
 		program.addCompilationUnit(ioutil);

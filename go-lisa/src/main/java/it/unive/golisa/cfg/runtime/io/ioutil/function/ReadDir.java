@@ -1,10 +1,10 @@
-package it.unive.golisa.cfg.runtime.os.function;
+package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
+import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTypesTuple;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -25,24 +25,21 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * 
- * func ReadFile(name string) ([]byte, error)
- * 
- * @link https://pkg.go.dev/os#ReadFile
+ * func ReadDir(dirname string) ([]fs.FileInfo, error)
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class ReadFile extends NativeCFG {
+public class ReadDir extends NativeCFG {
 
-	public ReadFile(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "ReadFile", 
-				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
-				GoErrorType.INSTANCE),
-				new Parameter(location, "name", GoStringType.INSTANCE)),
-				ReadFileImpl.class);
+	public ReadDir(CodeLocation location, CompilationUnit ioUnit) {
+		super(new CFGDescriptor(location, ioUnit, false, "ReadDir",
+				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(FileInfo.INSTANCE)),
+						GoErrorType.INSTANCE),
+				new Parameter(location, "dirname", GoStringType.INSTANCE)),
+				ReadDirImpl.class);
 	}
 
-	public static class ReadFileImpl extends UnaryExpression
+	public static class ReadDirImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -52,13 +49,15 @@ public class ReadFile extends NativeCFG {
 			original = st;
 		}
 
-		public static ReadFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new ReadFileImpl(cfg, location, params[0]);
+		public static ReadDirImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ReadDirImpl(cfg, location, params[0]);
 		}
 
-		public ReadFileImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "ReadFileImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
-					GoErrorType.INSTANCE), e);
+		public ReadDirImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "ReadDirImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(FileInfo.INSTANCE)),
+							GoErrorType.INSTANCE),
+					expr);
 		}
 
 		@Override
@@ -66,8 +65,8 @@ public class ReadFile extends NativeCFG {
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression expr, StatementStore<A, H, V> expressions)
-						throws SemanticException {
+						SymbolicExpression expr,
+						StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

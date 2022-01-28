@@ -1,10 +1,6 @@
-package it.unive.golisa.cfg.runtime.os.file.function;
+package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
-import it.unive.golisa.cfg.runtime.os.type.File;
-import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -25,21 +21,19 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Create(name string) (*File, error)
- * 
- * @link https://pkg.go.dev/os#Create
+ * func NopCloser(r io.Reader) io.ReadCloser
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class Create extends NativeCFG {
+public class NopCloser extends NativeCFG {
 
-	public Create(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Create", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
-				new Parameter(location, "name", GoStringType.INSTANCE)),
-				CreateImpl.class);
+	public NopCloser(CodeLocation location, CompilationUnit ioUnit) {
+		super(new CFGDescriptor(location, ioUnit, false, "NopCloser", Reader.INSTANCE,
+				new Parameter(location, "r", Reader.INSTANCE)),
+				NopCloserImpl.class);
 	}
 
-	public static class CreateImpl extends UnaryExpression
+	public static class NopCloserImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -49,12 +43,12 @@ public class Create extends NativeCFG {
 			original = st;
 		}
 
-		public static CreateImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new CreateImpl(cfg, location, params[0]);
+		public static NopCloserImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new NopCloserImpl(cfg, location, params[0]);
 		}
 
-		public CreateImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "CreateImpl", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), expr);
+		public NopCloserImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "NopCloserImpl", Reader.INSTANCE, expr);
 		}
 
 		@Override
@@ -63,6 +57,5 @@ public class Create extends NativeCFG {
 				StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
-
 	}
 }

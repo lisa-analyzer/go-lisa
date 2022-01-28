@@ -9,6 +9,12 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
 import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.io.ioutil.function.NopCloser;
+import it.unive.golisa.cfg.runtime.io.ioutil.function.ReadAll;
+import it.unive.golisa.cfg.runtime.io.ioutil.function.ReadDir;
+import it.unive.golisa.cfg.runtime.io.ioutil.function.TempDir;
+import it.unive.golisa.cfg.runtime.io.ioutil.function.TempFile;
+import it.unive.golisa.cfg.runtime.io.ioutil.function.WriteFile;
 import it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float32;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float64;
@@ -77,6 +83,8 @@ public interface GoRuntimeLoader {
 			loadFmt(program);
 		else if (module.equals("math/rand"))
 			loadMathRand(program);
+		else if (module.equals("io/ioutil"))
+			loadIoutil(program);
 		else if (module.equals("crypto/rand"))
 			loadCryptoRand(program);
 		else if (module.equals("url"))
@@ -96,6 +104,22 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
+	}
+	
+	private void loadIoutil(Program program) {
+		CompilationUnit ioutil = new CompilationUnit(runtimeLocation, "ioutil", false);
+
+		// adding functions
+		ioutil.addConstruct(new NopCloser(runtimeLocation, ioutil));
+		ioutil.addConstruct(new ReadAll(runtimeLocation, ioutil));
+		ioutil.addConstruct(new ReadDir(runtimeLocation, ioutil));
+		ioutil.addConstruct(new ReadFile(runtimeLocation, ioutil));
+		ioutil.addConstruct(new TempDir(runtimeLocation, ioutil));
+		ioutil.addConstruct(new TempFile(runtimeLocation, ioutil));
+		ioutil.addConstruct(new WriteFile(runtimeLocation, ioutil));
+
+		// adding compilation units to program
+		program.addCompilationUnit(ioutil);
 	}
 
 	private void loadOs(Program program) {

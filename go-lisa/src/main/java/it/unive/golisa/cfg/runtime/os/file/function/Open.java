@@ -33,8 +33,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class Open extends NativeCFG {
 
-	public Open(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "Open", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+	public Open(CodeLocation location, CompilationUnit osUnit) {
+		super(new CFGDescriptor(location, osUnit, false, "Open", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				OpenImpl.class);
 	}

@@ -34,8 +34,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class CreateTemp extends NativeCFG {
 
-	public CreateTemp(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "Create", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+	public CreateTemp(CodeLocation location, CompilationUnit osUnit) {
+		super(new CFGDescriptor(location, osUnit, false, "Create", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
 				CreateTempImpl.class);

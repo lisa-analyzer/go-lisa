@@ -1,12 +1,9 @@
-package it.unive.golisa.cfg.runtime.os.file.function;
+package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
-import it.unive.golisa.cfg.runtime.os.type.File;
-import it.unive.golisa.cfg.runtime.os.type.FileMode;
+import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -26,25 +23,24 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.type.common.UInt8;
 
 /**
- * func OpenFile(name string, flag int, perm FileMode) (*File, error)
- * 
- * @link https://pkg.go.dev/os#OpenFile
+ * func WriteFile(filename string, data []byte, perm fs.FileMode) error
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class OpenFile extends NativeCFG {
+public class WriteFile extends NativeCFG {
 
-	public OpenFile(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "OpenFile", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
-				new Parameter(location, "name", GoStringType.INSTANCE),
-				new Parameter(location, "flag", GoIntType.INSTANCE),
-				new Parameter(location, "perm", FileMode.INSTANCE)),
-				OpenFileImpl.class);
+	public WriteFile(CodeLocation location, CompilationUnit ioUnit) {
+		super(new CFGDescriptor(location, ioUnit, false, "WriteFile", GoErrorType.INSTANCE,
+				new Parameter(location, "filename", GoStringType.INSTANCE),
+				new Parameter(location, "data", new GoSliceType(UInt8.INSTANCE)),
+				new Parameter(location, "perm", Reader.INSTANCE)),
+				WriteFileImpl.class);
 	}
 
-	public static class OpenFileImpl extends NaryExpression
+	public static class WriteFileImpl extends NaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -54,12 +50,12 @@ public class OpenFile extends NativeCFG {
 			original = st;
 		}
 
-		public static OpenFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new OpenFileImpl(cfg, location, params);
+		public static WriteFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new WriteFileImpl(cfg, location, params);
 		}
 
-		public OpenFileImpl(CFG cfg, CodeLocation location, Expression... params) {
-			super(cfg, location, "OpenFileImpl", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), params);
+		public WriteFileImpl(CFG cfg, CodeLocation location, Expression... params) {
+			super(cfg, location, "WriteFileImpl", GoErrorType.INSTANCE, params);
 		}
 
 		@Override
@@ -69,6 +65,5 @@ public class OpenFile extends NativeCFG {
 				throws SemanticException {
 			return state.top();
 		}
-
 	}
 }

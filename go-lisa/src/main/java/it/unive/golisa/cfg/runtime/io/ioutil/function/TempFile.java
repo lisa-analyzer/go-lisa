@@ -1,9 +1,10 @@
-package it.unive.golisa.cfg.runtime.os.file.function;
+package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
 import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntPrtType;
+import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -24,22 +25,22 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func NewFile(fd uintptr, name string) *File
- * 
- * @link https://pkg.go.dev/os#NewFile
+ * func TempFile(dir, pattern string) (f *os.File, err error)
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class NewFile extends NativeCFG {
+public class TempFile extends NativeCFG {
 
-	public NewFile(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "NewFile", new GoPointerType(File.INSTANCE),
-				new Parameter(location, "fd", GoStringType.INSTANCE),
-				new Parameter(location, "name", GoUIntPrtType.INSTANCE)),
-				NewFileImpl.class);
+	public TempFile(CodeLocation location, CompilationUnit ioUnit) {
+		super(new CFGDescriptor(location, ioUnit, false, "TempFile",
+				GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE),
+						GoErrorType.INSTANCE),
+				new Parameter(location, "dir", GoStringType.INSTANCE),
+				new Parameter(location, "pattern", GoStringType.INSTANCE)),
+				TempFileImpl.class);
 	}
 
-	public static class NewFileImpl extends BinaryExpression
+	public static class TempFileImpl extends BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -49,12 +50,13 @@ public class NewFile extends NativeCFG {
 			original = st;
 		}
 
-		public static NewFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new NewFileImpl(cfg, location, params[0], params[1]);
+		public static TempFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new TempFileImpl(cfg, location, params[0], params[1]);
 		}
 
-		public NewFileImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "NewFile", new GoPointerType(File.INSTANCE), expr, expr2);
+		public TempFileImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+			super(cfg, location, "TempFileImpl",
+					GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),	expr, expr2);
 		}
 
 		@Override
@@ -63,6 +65,5 @@ public class NewFile extends NativeCFG {
 				SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
-
 	}
 }

@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.runtime.os.function;
+package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -25,20 +25,17 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * 
- * func ReadFile(name string) ([]byte, error)
- * 
- * @link https://pkg.go.dev/os#ReadFile
+ * func ReadFile(filename string) ([]byte, error)
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class ReadFile extends NativeCFG {
 
-	public ReadFile(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "ReadFile", 
+	public ReadFile(CodeLocation location, CompilationUnit ioUnit) {
+		super(new CFGDescriptor(location, ioUnit, false, "ReadFile",
 				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
-				GoErrorType.INSTANCE),
-				new Parameter(location, "name", GoStringType.INSTANCE)),
+						GoErrorType.INSTANCE),
+				new Parameter(location, "filename", GoStringType.INSTANCE)),
 				ReadFileImpl.class);
 	}
 
@@ -56,9 +53,11 @@ public class ReadFile extends NativeCFG {
 			return new ReadFileImpl(cfg, location, params[0]);
 		}
 
-		public ReadFileImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "ReadFileImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
-					GoErrorType.INSTANCE), e);
+		public ReadFileImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "ReadFileImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+							GoErrorType.INSTANCE),
+					expr);
 		}
 
 		@Override
@@ -66,8 +65,8 @@ public class ReadFile extends NativeCFG {
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression expr, StatementStore<A, H, V> expressions)
-						throws SemanticException {
+						SymbolicExpression expr,
+						StatementStore<A, H, V> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

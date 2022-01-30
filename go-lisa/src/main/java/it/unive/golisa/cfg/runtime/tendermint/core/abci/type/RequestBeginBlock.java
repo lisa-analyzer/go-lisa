@@ -26,8 +26,8 @@ public class RequestBeginBlock extends GoStructType {
 
 	private static CompilationUnit buildRequestBeginBlockUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "RequestBeginBlock", false);
-		return randUnit;
+		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "RequestBeginBlock", false);
+		return abciUnit;
 	}
 
 	public static void registerMethods() {

@@ -1,9 +1,7 @@
 package it.unive.golisa.cfg.runtime.tendermint.core.abci.method;
 
 import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.BaseApplication;
-import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.RequestEndBlock;
 import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.ResponseCommit;
-import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.ResponseEndBlock;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -17,7 +15,6 @@ import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;

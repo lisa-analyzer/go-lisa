@@ -26,8 +26,8 @@ public class ResponseCommit extends GoStructType {
 
 	private static CompilationUnit buildRequestEndBlockUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "ResponseEndBlock", false);
-		return randUnit;
+		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "ResponseEndBlock", false);
+		return abciUnit;
 	}
 
 	public static void registerMethods() {

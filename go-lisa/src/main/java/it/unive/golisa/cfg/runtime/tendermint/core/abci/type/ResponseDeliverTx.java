@@ -26,8 +26,8 @@ public class ResponseDeliverTx extends GoStructType {
 
 	private static CompilationUnit buildResponseDeliverTxUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "ResponseDeliverTx", false);
-		return randUnit;
+		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "ResponseDeliverTx", false);
+		return abciUnit;
 	}
 
 	public static void registerMethods() {

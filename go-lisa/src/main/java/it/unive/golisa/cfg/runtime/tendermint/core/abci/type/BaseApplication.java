@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.runtime.tendermint.core.abci.type;
 
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.method.BeginBlock;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.method.Commit;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.method.DeliverTx;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.method.EndBlock;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
@@ -26,12 +30,21 @@ public class BaseApplication extends GoStructType {
 
 	private static CompilationUnit buildBaseApplicationUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "BaseApplication", false);
-		return randUnit;
+		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "BaseApplication", false);
+		return abciUnit;
 	}
 
 	public static void registerMethods() {
-		//TODO
+		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		
+		BaseApplication.INSTANCE.getUnit()
+		.addInstanceConstruct(new BeginBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
+		BaseApplication.INSTANCE.getUnit()
+		.addInstanceConstruct(new DeliverTx(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
+		BaseApplication.INSTANCE.getUnit()
+		.addInstanceConstruct(new EndBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
+		BaseApplication.INSTANCE.getUnit()
+		.addInstanceConstruct(new Commit(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
 	}
 
 	@Override

@@ -47,9 +47,19 @@ import it.unive.golisa.cfg.runtime.os.file.function.CreateTemp;
 import it.unive.golisa.cfg.runtime.os.file.function.NewFile;
 import it.unive.golisa.cfg.runtime.os.file.function.Open;
 import it.unive.golisa.cfg.runtime.os.file.function.OpenFile;
+import it.unive.golisa.cfg.runtime.os.function.Executable;
+import it.unive.golisa.cfg.runtime.os.function.Exit;
+import it.unive.golisa.cfg.runtime.os.function.Getenv;
+import it.unive.golisa.cfg.runtime.os.function.IsNotExist;
+import it.unive.golisa.cfg.runtime.os.function.MkdirAll;
 import it.unive.golisa.cfg.runtime.os.function.ReadFile;
+import it.unive.golisa.cfg.runtime.os.function.RemoveAll;
+import it.unive.golisa.cfg.runtime.os.function.Setenv;
+import it.unive.golisa.cfg.runtime.os.function.Unsetenv;
 import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.runtime.os.type.FileMode;
+import it.unive.golisa.cfg.runtime.path.filepath.function.Dir;
+import it.unive.golisa.cfg.runtime.path.filepath.function.Join;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.function.Success;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
@@ -101,6 +111,8 @@ public interface GoRuntimeLoader {
 			loadCryptoRand(program);
 		else if (module.equals("url"))
 			loadUrl(program);
+		else if (module.equals("path/filepath"))
+			loadFilePath(program);
 		else if (module.equals("strconv"))
 			loadStrconv(program);
 		else if (module.equals("time"))
@@ -118,6 +130,17 @@ public interface GoRuntimeLoader {
 			loadUnhandledLib(module, program, mapper);
 	}
 	
+	private void loadFilePath(Program program) {
+		CompilationUnit filepath = new CompilationUnit(runtimeLocation, "filepath", false);
+		
+		//adding functions
+		filepath.addConstruct(new Dir(runtimeLocation, filepath));
+		filepath.addConstruct(new Join(runtimeLocation, filepath));
+		
+		// adding compilation units to program
+		program.addCompilationUnit(filepath);
+	}
+
 	private void loadIO(Program program) {
 		CompilationUnit io = new CompilationUnit(runtimeLocation, "io", false);
 
@@ -167,12 +190,24 @@ public interface GoRuntimeLoader {
 		CompilationUnit os = new CompilationUnit(runtimeLocation, "os", false);
 
 		// adding functions
+		
+		//os/file
 		os.addConstruct(new Create(runtimeLocation, os));
 		os.addConstruct(new CreateTemp(runtimeLocation, os));
 		os.addConstruct(new NewFile(runtimeLocation, os));
 		os.addConstruct(new Open(runtimeLocation, os));
 		os.addConstruct(new OpenFile(runtimeLocation, os));
+		
+		//os
+		os.addConstruct(new Executable(runtimeLocation, os));
+		os.addConstruct(new Exit(runtimeLocation, os));
+		os.addConstruct(new Getenv(runtimeLocation, os));
+		os.addConstruct(new IsNotExist(runtimeLocation, os));
+		os.addConstruct(new MkdirAll(runtimeLocation, os));
 		os.addConstruct(new ReadFile(runtimeLocation, os));
+		os.addConstruct(new RemoveAll(runtimeLocation, os));
+		os.addConstruct(new Setenv(runtimeLocation, os));
+		os.addConstruct(new Unsetenv(runtimeLocation, os));
 		
 		// adding types
 		program.registerType(File.INSTANCE);

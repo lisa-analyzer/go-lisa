@@ -1,7 +1,6 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
@@ -34,7 +33,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoNonKeyedLiteral extends NaryExpression {
 
-	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] value, GoType staticType) {
+	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] value, Type staticType) {
 		super(cfg, location, "nonKeyedLit(" + staticType + ")", staticType, value);
 	}
 

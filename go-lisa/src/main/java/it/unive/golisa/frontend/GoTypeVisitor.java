@@ -147,8 +147,6 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		}
 
 		return visitQualifiedIdent(ctx.qualifiedIdent());
-		// return GoQualifiedType.lookup(new GoQualifiedType(pair.getLeft(),
-		// pair.getRight()));
 	}
 
 	@Override

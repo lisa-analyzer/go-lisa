@@ -44,7 +44,39 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "crypto/rand", "Read"));
 		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "crypto/rand", "Int"));
 		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "crypto/rand", "Prime"));
+		
+		//Go os API
+		
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/file", "Create"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/file", "CreateTemp"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/file", "NewFile"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/file", "Open"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/file", "OpenFile"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "Create"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "CreateTemp"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "NewFile"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "Open"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "OpenFile"));
+		
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "Executable"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "Exit"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "Getenv"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "IsNotExist"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "MkdirAll"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "ReadFile"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "RemoveAll"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "Setenv"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os", "Unsetenv"));
+		
+		//Go io API
 
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/ioutil", "ReadAll"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/ioutil", "ReadDir"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/ioutil", "ReadFile"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/ioutil", "TempDir"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/ioutil", "TempFile"));
+		set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "os/ioutil", "WriteFile"));
+		
 		return set;
 	}
 
@@ -75,19 +107,22 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 		// sinks
 		
 		// Hyperledger Fabric API
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 1));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 1));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 2));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 2));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 1));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutPrivateData", 0));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutPrivateData", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 1));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelState", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelState", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelPrivateData", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelPrivateData", 0));
+		
+		//Tendermint Core API
 
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 0));
 		return set;
 	}
 

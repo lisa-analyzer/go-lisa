@@ -107,22 +107,21 @@ public class NonDeterminismAnnotationSet extends AnnotationSet {
 		// sinks
 		
 		// Hyperledger Fabric API
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 0));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 1));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 2));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 1));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutPrivateData", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutState", 2));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutPrivateData", 1));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutPrivateData", 2));
 		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 1));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelState", 0));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelState", 0));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelPrivateData", 0));
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelPrivateData", 0));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "PutPrivateData", 2));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelState", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelState", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "DelPrivateData", 1));
+		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStubInterface", "DelPrivateData", 1));
 		
 		//Tendermint Core API
 
-		set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "ChaincodeStub", "PutState", 0));
 		return set;
 	}
 

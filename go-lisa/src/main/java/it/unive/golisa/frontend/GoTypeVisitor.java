@@ -150,10 +150,10 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitType_(Type_Context ctx) {
-		if (ctx.typeName() != null)
+	public Type visitType_(Type_Context ctx) {
+		if (ctx.typeName() != null) {
 			return visitTypeName(ctx.typeName());
-
+		}
 		if (ctx.typeLit() != null)
 			return visitTypeLit(ctx.typeLit());
 
@@ -164,7 +164,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitTypeLit(TypeLitContext ctx) {
+	public Type visitTypeLit(TypeLitContext ctx) {
 
 		if (ctx.arrayType() != null)
 			return visitArrayType(ctx.arrayType());
@@ -188,14 +188,14 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			return visitChannelType(ctx.channelType());
 
 		Object result = visitChildren(ctx);
-		if (!(result instanceof GoType))
+		if (!(result instanceof GoType) && !(result instanceof Untyped))
 			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
 		else
-			return (GoType) result;
+			return (Type) result;
 	}
 
 	@Override
-	public GoType visitTypeName(TypeNameContext ctx) {
+	public Type visitTypeName(TypeNameContext ctx) {
 		if (ctx.IDENTIFIER() != null)
 			return getGoType(ctx);
 		else
@@ -217,8 +217,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitArrayType(ArrayTypeContext ctx) {
-		GoType contentType = visitElementType(ctx.elementType());
+	public Type visitArrayType(ArrayTypeContext ctx) {
+		Type contentType = visitElementType(ctx.elementType());
 		Integer length = visitArrayLength(ctx.arrayLength());
 		return GoArrayType.lookup(new GoArrayType(contentType, length));
 	}
@@ -285,17 +285,27 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitSliceType(SliceTypeContext ctx) {
-		return GoSliceType.lookup(new GoSliceType(visitElementType(ctx.elementType())));
+		Type contentType = visitElementType(ctx.elementType());
+		contentType = contentType == null ? Untyped.INSTANCE : contentType;
+		return GoSliceType.lookup(new GoSliceType(contentType));
 	}
 
 	@Override
 	public GoType visitMapType(MapTypeContext ctx) {
-		return GoMapType.lookup(new GoMapType(visitType_(ctx.type_()), visitElementType(ctx.elementType())));
+		Type keyType = visitType_(ctx.type_());
+		keyType =  keyType == null ? Untyped.INSTANCE : keyType;
+		
+		Type elementType = visitElementType(ctx.elementType());
+		elementType =  elementType == null ? Untyped.INSTANCE : elementType;
+		
+		return GoMapType.lookup(new GoMapType(keyType, elementType));
 	}
 
 	@Override
 	public GoType visitChannelType(ChannelTypeContext ctx) {
-		GoType contentType = visitElementType(ctx.elementType());
+		Type contentType = visitElementType(ctx.elementType());
+		contentType =  contentType == null ? Untyped.INSTANCE : contentType;
+		
 		if (ctx.RECEIVE() == null)
 			return GoChannelType.lookup(new GoChannelType(contentType));
 		else if (getCol(ctx.CHAN()) < getCol(ctx.RECEIVE()))
@@ -305,13 +315,14 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitElementType(ElementTypeContext ctx) {
+	public Type visitElementType(ElementTypeContext ctx) {
 		return visitType_(ctx.type_());
 	}
 
 	@Override
-	public GoType visitPointerType(PointerTypeContext ctx) {
-		return GoPointerType.lookup(new GoPointerType(visitType_(ctx.type_())));
+	public Type visitPointerType(PointerTypeContext ctx) {
+		Type baseType = visitType_(ctx.type_());
+		return GoPointerType.lookup(new GoPointerType(baseType == null ? Untyped.INSTANCE : baseType));
 	}
 
 	@Override
@@ -321,7 +332,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.anonymousField() != null)
 			result.add(visitAnonymousField(ctx.anonymousField()));
 		else {
-			GoType fieldType = visitType_(ctx.type_());
+			Type fieldType = visitType_(ctx.type_());
 			for (TerminalNode f : ctx.identifierList().IDENTIFIER())
 				result.add(Pair.of(f.getText(), fieldType));
 		}
@@ -338,7 +349,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitLiteralType(LiteralTypeContext ctx) {
+	public Type visitLiteralType(LiteralTypeContext ctx) {
 		if (ctx.structType() != null)
 			return visitStructType(ctx.structType());
 		else if (ctx.arrayType() != null)
@@ -353,7 +364,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			// Case with ellipsis (e.g., [...]int)
 			// -1 is just a placeholder. It will be replaced with the
 			// correct size in GoCodeMemberVisitor.visitCompositeLit.
-			GoType elementType = visitElementType(ctx.elementType());
+			Type elementType = visitElementType(ctx.elementType());
 			return GoArrayType.lookup(new GoArrayType(elementType, -1));
 		}
 	}
@@ -379,7 +390,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		for (FieldDeclContext field : ctx.fieldDecl())
 			for (Pair<String, Type> fd : visitFieldDecl(field))
 				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, getLine(field), getCol(field)),
-						fd.getLeft(), fd.getRight()));
+						fd.getLeft(), fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
 		return GoStructType.lookup(unit.getName(), unit);
 	}
 
@@ -422,7 +433,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		// need to include methods of typeName
 		// TODO: this works just if the typeName is defined in the source code
 		else if (ctx.typeName() != null) {
-			GoType type = visitTypeName(ctx.typeName());
+			Type type = visitTypeName(ctx.typeName());
+
 			CompilationUnit unitType = program.getUnit(type.toString());
 
 			if (unitType != null)

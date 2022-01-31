@@ -29,13 +29,14 @@ import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 public class GoMake extends NaryExpression {
 
-	private final GoType type;
+	private final Type type;
 
-	public GoMake(CFG cfg, CodeLocation location, GoType type, Expression[] parameters) {
+	public GoMake(CFG cfg, CodeLocation location, Type type, Expression[] parameters) {
 		super(cfg, location, "make " + type, parameters);
 		this.type = type;
 	}
@@ -56,7 +57,8 @@ public class GoMake extends NaryExpression {
 		 * Slice allocation
 		 */
 		if (type instanceof GoSliceType) {
-			GoType contentType = (GoType) ((GoSliceType) type).getContentType();
+			Type contentType = ((GoSliceType) type).getContentType();
+			
 			SourceCodeLocation sliceLocation = (SourceCodeLocation) getLocation();
 			// FIXME: this is a temporary workaround. At this location, two
 			// allocations are performed, need to differentiate

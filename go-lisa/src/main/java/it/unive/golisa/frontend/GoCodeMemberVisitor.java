@@ -439,8 +439,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Parameter[] visitParameterDecl(ParameterDeclContext ctx) {
 		Parameter[] result = new Parameter[] {};
-		GoType type = visitType_(ctx.type_());
-
+		Type type = visitType_(ctx.type_());
+		type = type == null ? Untyped.INSTANCE : type;
+		
 		// the parameter's type is variadic (e.g., ...string)
 		if (ctx.ELLIPSIS() != null)
 			type = GoVariadicType.lookup(new GoVariadicType(type));
@@ -690,7 +691,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			Statement lastStmt = null;
 			Statement entryNode = null;
-			Type type = ctx.type_() == null ? Untyped.INSTANCE : visitType_(ctx.type_());
+			Type_Context typeContext = ctx.type_();
+			
+			Type type = typeContext == null ? Untyped.INSTANCE : visitType_(typeContext);
+			type = type == null ? Untyped.INSTANCE : type;
 
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped()
@@ -1717,10 +1721,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			case "make":
 				args = visitArguments(ctx.arguments());
 				if (ctx.arguments().type_() != null) {
-					GoType typeToAllocate = visitType_(ctx.arguments().type_());
+					Type typeToAllocate = visitType_(ctx.arguments().type_());
 					return new GoMake(cfg, locationOf(ctx.primaryExpr()), typeToAllocate, args);
 				} else {
-					return new GoMake(cfg, locationOf(ctx.primaryExpr()), null, args);
+					return new GoMake(cfg, locationOf(ctx.primaryExpr()), Untyped.INSTANCE, args);
 				}
 			}
 
@@ -1958,7 +1962,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Expression visitCompositeLit(CompositeLitContext ctx) {
-		GoType type = new GoTypeVisitor(file, currentUnit, program, constants).visitLiteralType(ctx.literalType());
+		Type type = new GoTypeVisitor(file, currentUnit, program, constants).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>) {
 
@@ -1985,14 +1989,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	public Object visitLiteralValue(LiteralValueContext ctx, GoType type) {
+	public Object visitLiteralValue(LiteralValueContext ctx, Type type) {
 		if (ctx.elementList() == null)
 			return new LinkedHashMap<Expression, Expression>();
 		return visitElementList(ctx.elementList(), type);
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object visitElementList(ElementListContext ctx, GoType type) {
+	public Object visitElementList(ElementListContext ctx, Type type) {
 		// All keyed or all without key
 		Object firstElement = visitKeyedElement(ctx.keyedElement(0), type);
 
@@ -2016,7 +2020,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	public Object visitKeyedElement(KeyedElementContext ctx, GoType type) {
+	public Object visitKeyedElement(KeyedElementContext ctx, Type type) {
 		if (ctx.key() != null)
 			return Pair.of(visitKey(ctx.key()), visitElement(ctx.element(), type));
 		else
@@ -2065,7 +2069,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Expression visitElement(ElementContext ctx, GoType type) {
+	public Expression visitElement(ElementContext ctx, Type type) {
 
 		if (ctx.expression() != null)
 			return visitExpression(ctx.expression());
@@ -2164,7 +2168,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return str.substring(1, str.length() - 1);
 	}
 
-	private GoType parseType(String type) {
+	private Type parseType(String type) {
 		InputStream stream = new ByteArrayInputStream(type.getBytes());
 		GoLexer lexer = null;
 
@@ -2177,7 +2181,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
 		ParseTree tree = parser.type_();
 
-		GoType t = visitType_((Type_Context) tree);
+		Type t = visitType_((Type_Context) tree);
 		try {
 			stream.close();
 		} catch (IOException e) {
@@ -2185,11 +2189,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			e.printStackTrace();
 		}
 
-		return t;
+		return t == null ? Untyped.INSTANCE : t;
 	}
 
 	@Override
-	public GoType visitType_(Type_Context ctx) {
+	public Type visitType_(Type_Context ctx) {
 		return new GoTypeVisitor(file, currentUnit, program, constants).visitType_(ctx);
 	}
 

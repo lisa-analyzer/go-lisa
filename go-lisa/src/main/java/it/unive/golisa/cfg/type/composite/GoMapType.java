@@ -14,8 +14,8 @@ import java.util.Set;
 
 public class GoMapType implements GoType, PointerType {
 
-	private GoType keyType;
-	private GoType elementType;
+	private Type keyType;
+	private Type elementType;
 
 	private static final Set<GoMapType> mapTypes = new HashSet<>();
 
@@ -25,7 +25,7 @@ public class GoMapType implements GoType, PointerType {
 		return mapTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoMapType(GoType keyType, GoType elementType) {
+	public GoMapType(Type keyType, Type elementType) {
 		this.keyType = keyType;
 		this.elementType = elementType;
 	}

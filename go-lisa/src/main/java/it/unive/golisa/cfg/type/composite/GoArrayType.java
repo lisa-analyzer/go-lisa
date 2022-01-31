@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
+import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 public class GoArrayType implements GoType, PointerType {
 
-	private GoType contentType;
+	private Type contentType;
 	private Integer length;
 
 	private static final Set<GoArrayType> arrayTypes = new HashSet<>();
@@ -26,12 +27,12 @@ public class GoArrayType implements GoType, PointerType {
 		return arrayTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoArrayType(GoType contentType, Integer length) {
+	public GoArrayType(Type contentType, Integer length) {
 		this.contentType = contentType;
 		this.length = length;
 	}
 
-	public GoType getContentType() {
+	public Type getContentType() {
 		return contentType;
 	}
 
@@ -96,7 +97,10 @@ public class GoArrayType implements GoType, PointerType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		Expression[] result = new Expression[length];
 		for (int i = 0; i < length; i++)
-			result[i] = contentType.defaultValue(cfg, location);
+			if(contentType instanceof GoType)
+				result[i] = ((GoType) contentType).defaultValue(cfg, location);
+			else 
+				result[i] = new GoUnknown(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}

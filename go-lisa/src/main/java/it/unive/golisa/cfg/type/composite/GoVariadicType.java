@@ -15,7 +15,7 @@ public class GoVariadicType implements GoType {
 
 	public static final Set<GoVariadicType> variadicTypes = new HashSet<>();
 
-	private final GoType contentType;
+	private final Type contentType;
 
 	public static GoVariadicType lookup(GoVariadicType type) {
 		if (!variadicTypes.contains(type))
@@ -23,7 +23,7 @@ public class GoVariadicType implements GoType {
 		return variadicTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoVariadicType(GoType contentType) {
+	public GoVariadicType(Type contentType) {
 		this.contentType = contentType;
 	}
 

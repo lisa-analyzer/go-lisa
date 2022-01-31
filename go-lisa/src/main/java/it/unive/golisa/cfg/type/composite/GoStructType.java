@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
+import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -12,6 +13,8 @@ import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+
+import java.rmi.UnexpectedException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -140,7 +143,10 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 		int i = 0;
 		for (Global key : fields)
-			values[i++] = (((GoType) key.getStaticType()).defaultValue(cfg, location));
+			if(key.getStaticType() instanceof GoType)
+				values[i++] = ((GoType) key.getStaticType()).defaultValue(cfg, location);
+			else
+				values[i++] = new GoUnknown(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, values, this);
 	}

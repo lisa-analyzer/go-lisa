@@ -26,13 +26,13 @@ public class GoChannelType implements GoType {
 		return channelTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoChannelType(GoType contentType) {
+	public GoChannelType(Type contentType) {
 		this.contentType = contentType;
 		this.isReceive = true;
 		this.isSend = true;
 	}
 
-	public GoChannelType(GoType contentType, boolean isSend, boolean isReceive) {
+	public GoChannelType(Type contentType, boolean isSend, boolean isReceive) {
 		this.contentType = contentType;
 		this.isSend = isSend;
 		this.isReceive = isReceive;

@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,10 +14,11 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
+import it.unive.lisa.type.Type;
 
 public class GoNew extends NaryExpression {
 
-	public GoNew(CFG cfg, SourceCodeLocation location, GoType type) {
+	public GoNew(CFG cfg, SourceCodeLocation location, Type type) {
 		super(cfg, location, "new", type);
 	}
 

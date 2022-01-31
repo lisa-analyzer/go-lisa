@@ -251,9 +251,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
+		Type returnType = getGoReturnType(funcDecl.signature());
+		
 		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), packageName, false,
 				funcName,
-				getGoReturnType(funcDecl.signature()), cfgArgs);
+				returnType, cfgArgs);
 
 		return descriptor;
 	}

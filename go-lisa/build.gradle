@@ -21,7 +21,7 @@ repositories {
 
 group = 'it.unive'
 version = '0.1'
-mainClassName = 'it.unive.golisa.cli.GoLiSA'
+mainClassName = 'it.unive.golisa.GoLiSA'
 
 dependencies {
     antlr 'org.antlr:antlr4:4.8-1'    

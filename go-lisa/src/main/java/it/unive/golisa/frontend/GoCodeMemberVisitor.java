@@ -125,6 +125,7 @@ import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRef;
+import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
@@ -697,10 +698,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			type = type == null ? Untyped.INSTANCE : type;
 
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
-				Expression exp = (exps == null || exps.expression(i) == null) && !type.isUntyped()
-						? ((GoType) type).defaultValue(cfg, locationOf(ctx))
-						: visitExpression(exps.expression(i));
-
+				Expression exp;
+				if(type.isUntyped())
+					exp = new GoUnknown(cfg, locationOf(ctx));
+				else
+					exp = (exps == null || exps.expression(i) == null) && !type.isUntyped()
+							? ((GoType) type).defaultValue(cfg, locationOf(ctx))
+							: visitExpression(exps.expression(i));
+				
 				int line = getLine(ids.IDENTIFIER(i));
 				int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i))
 						: getCol(exps.expression(i));

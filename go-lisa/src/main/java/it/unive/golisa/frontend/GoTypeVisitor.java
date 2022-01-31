@@ -92,7 +92,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * 
 	 * @return the Go type corresponding to {@ctx}
 	 */
-	private GoType getGoType(TypeNameContext ctx) {
+	private Type getGoType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
 
@@ -208,12 +208,12 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitQualifiedIdent(QualifiedIdentContext ctx) {
+	public Type visitQualifiedIdent(QualifiedIdentContext ctx) {
 		for (Type type : program.getRegisteredTypes())
 			if (type.toString().equals(ctx.getText()))
 				return (GoType) type;
 
-		return null;
+		return Untyped.INSTANCE;
 	}
 
 	@Override

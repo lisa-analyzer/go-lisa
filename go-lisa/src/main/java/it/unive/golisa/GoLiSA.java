@@ -1,10 +1,12 @@
 package it.unive.golisa;
 
+import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.golisa.analysis.taint.annotation.AnnotationLoader;
 import it.unive.golisa.analysis.taint.annotation.NonDeterminismAnnotationSet;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.golisa.loader.AnnotationLoader;
+import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -13,28 +15,55 @@ import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
+import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import java.io.File;
 import java.io.IOException;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.CommandLine;
 
 public class GoLiSA {
 
 	public static void main(String[] args) throws AnalysisSetupException {
-		if (args == null || args[0] == null) {
-			System.err.println("Input file is missing. Exiting.");
-			return;
-		}
+		
+        Options options = new Options();
 
-		String filePath = args[0];
+        Option input = new Option("i", "input", true, "input file path");
+        input.setRequired(true);
+        options.addOption(input);
 
-		if (args.length < 2) {
-			System.err.println("Output directory is missing. Exiting.");
-			return;
-		}
+        Option output = new Option("o", "output", true, "output file path");
+        output.setRequired(true);
+        options.addOption(output);
+        
+        Option framework = new Option("f", "framework", true, "framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
+        framework.setRequired(false);
+        options.addOption(framework);
 
-		String outputDir = args[1];
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("utility-name", options);
+
+            System.exit(1);
+        }
+
+		String filePath = cmd.getOptionValue("input");
+
+		String outputDir = cmd.getOptionValue("output");
+		
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
@@ -42,6 +71,7 @@ public class GoLiSA {
 		conf.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setInferTypes(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
@@ -60,7 +90,11 @@ public class GoLiSA {
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(new NonDeterminismAnnotationSet());
 			annotationLoader.load(program);
-
+			
+			EntryPointLoader entryLoader = new EntryPointLoader();
+			entryLoader.addEntryPoints( EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
+			entryLoader.load(program);
+			
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
 			System.err.println("Parsing error.");
@@ -91,4 +125,5 @@ public class GoLiSA {
 			return;
 		}
 	}
+
 }

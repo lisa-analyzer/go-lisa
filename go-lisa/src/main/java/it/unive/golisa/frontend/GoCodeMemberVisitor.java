@@ -368,10 +368,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		cfg.simplify();
 
-		// TODO: to move
-		if (cfg.getDescriptor().getName().equals("Invoke") || cfg.getDescriptor().getName().equals("Init"))
-			program.addEntryPoint(cfg);
-
 		currentUnit.addInstanceCFG(cfg);
 		return cfg;
 	}

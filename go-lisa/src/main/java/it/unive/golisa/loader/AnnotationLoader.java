@@ -1,5 +1,9 @@
-package it.unive.golisa.analysis.taint.annotation;
+package it.unive.golisa.loader;
 
+import it.unive.golisa.analysis.taint.annotation.AnnotationSet;
+import it.unive.golisa.analysis.taint.annotation.CodeAnnotation;
+import it.unive.golisa.analysis.taint.annotation.MethodAnnotation;
+import it.unive.golisa.analysis.taint.annotation.MethodParameterAnnotation;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFGDescriptor;

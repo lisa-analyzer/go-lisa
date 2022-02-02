@@ -27,20 +27,22 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	private static final AnnotationMatcher CLEAN_MATCHER = new BasicAnnotationMatcher(CLEAN_ANNOTATION);
 
-	private static final TaintDomain TAINTED = new TaintDomain(true);
+	private static final TaintDomain TOP = new TaintDomain((byte) 3);
+	
+	private static final TaintDomain TAINTED = new TaintDomain((byte) 2);
 
-	private static final TaintDomain CLEAN = new TaintDomain(false);
+	private static final TaintDomain CLEAN = new TaintDomain((byte) 1);
 
-	private static final TaintDomain BOTTOM = new TaintDomain(null);
-
-	private final Boolean taint;
+	private static final TaintDomain BOTTOM = new TaintDomain((byte) 0);
+	
+	private final byte v;
 
 	public TaintDomain() {
-		this(true);
+		this((byte) 3);
 	}
 
-	private TaintDomain(Boolean taint) {
-		this.taint = taint;
+	private TaintDomain(byte v) {
+		this.v = v;
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	@Override
 	public DomainRepresentation representation() {
 		return this == BOTTOM ? Lattice.BOTTOM_REPR
-				: this == CLEAN ? new StringRepresentation("_") : new StringRepresentation("#");
+				: this == CLEAN ? new StringRepresentation("_") : this == TAINTED ? new StringRepresentation("#") : Lattice.TOP_REPR;
 	}
 
 	@Override
@@ -87,7 +89,9 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	@Override
 	protected InferredPair<TaintDomain> evalNonNullConstant(Constant constant, TaintDomain state,
 			ProgramPoint pp) throws SemanticException {
-		return new InferredPair<>(this, CLEAN, bottom());
+		if (constant instanceof Tainted)
+			return new InferredPair<>(this, TAINTED, bottom());
+		return new InferredPair<>(this, CLEAN, bottom());		
 	}
 
 	@Override
@@ -99,14 +103,26 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	@Override
 	protected InferredPair<TaintDomain> evalBinaryExpression(BinaryOperator operator, TaintDomain left,
 			TaintDomain right, TaintDomain state, ProgramPoint pp) throws SemanticException {
-		return new InferredPair<>(this, left.lub(right), bottom());
+		if (left == TAINTED || right == TAINTED)
+			return new InferredPair<>(this, TAINTED, bottom());
+		
+		if (left == TOP || right == TOP)
+			return new InferredPair<>(this, TOP, bottom());
+		
+		return new InferredPair<>(this, CLEAN, bottom());
 	}
 
 	@Override
 	protected InferredPair<TaintDomain> evalTernaryExpression(TernaryOperator operator, TaintDomain left,
 			TaintDomain middle, TaintDomain right, TaintDomain state, ProgramPoint pp)
 			throws SemanticException {
-		return new InferredPair<>(this, left.lub(middle).lub(right), bottom());
+		if (left == TAINTED || right == TAINTED || middle == TAINTED)
+			return new InferredPair<>(this, TAINTED, bottom());
+		
+		if (left == TOP || right == TOP || middle == TOP)
+			return new InferredPair<>(this, TOP, bottom());
+		
+		return new InferredPair<>(this, CLEAN, bottom());
 	}
 
 	@Override
@@ -121,12 +137,12 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	@Override
 	protected TaintDomain lubAux(TaintDomain other) throws SemanticException {
-		return TAINTED; // should never happen
+		return TOP; // should never happen
 	}
 
 	@Override
 	protected TaintDomain wideningAux(TaintDomain other) throws SemanticException {
-		return TAINTED; // should never happen
+		return TOP; // should never happen
 	}
 
 	@Override
@@ -138,7 +154,7 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((taint == null) ? 0 : taint.hashCode());
+		result = prime * result + v;
 		return result;
 	}
 
@@ -151,10 +167,7 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 		if (getClass() != obj.getClass())
 			return false;
 		TaintDomain other = (TaintDomain) obj;
-		if (taint == null) {
-			if (other.taint != null)
-				return false;
-		} else if (!taint.equals(other.taint))
+		if (v != other.v)
 			return false;
 		return true;
 	}

@@ -67,7 +67,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -167,9 +166,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		long start = System.currentTimeMillis();
 
 		InputStream stream = new FileInputStream(getFilePath());
-
-		long l = Files.lines(Paths.get(getFilePath()), Charset.defaultCharset()).count();
-		log.info("LOCS: " + l);
+		
+		log.info("LOCS: " + Files.lines(Paths.get(getFilePath())).count());
 
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));

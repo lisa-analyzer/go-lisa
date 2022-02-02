@@ -8,6 +8,7 @@ import it.unive.golisa.antlr.GoParser.ParametersContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScopingCFG;
+import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
@@ -22,6 +23,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
+import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -98,9 +100,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 				for (Parameter par : tuple) {
 					VariableRef var = new VariableRef(cfg, par.getLocation(), par.getName());
-					GoType parType = (GoType) par.getStaticType();
-					GoShortVariableDeclaration decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var,
-							parType.defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
+					Type parType = par.getStaticType();
+					Expression decl;
+					if(parType instanceof GoType)
+						decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var,
+							((GoType) parType).defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
+					else
+						decl = new GoUnknown(cfg, (SourceCodeLocation) par.getLocation());
 
 					cfg.addNode(decl);
 

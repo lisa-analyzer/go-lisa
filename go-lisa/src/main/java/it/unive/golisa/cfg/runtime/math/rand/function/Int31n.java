@@ -7,6 +7,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -19,6 +20,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Int31n(n int32) int32
@@ -58,7 +60,7 @@ public class Int31n extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression expr,
 						StatementStore<A, H, V> expressions) throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoInt32Type.INSTANCE), getLocation()), original);
 		}
 	}
 }

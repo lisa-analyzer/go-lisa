@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
@@ -13,6 +14,7 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -25,6 +27,8 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Indent(dst *bytes.Buffer, src []byte, prefix, indent string) error
@@ -67,7 +71,9 @@ public class Indent extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
 						throws SemanticException {
-			return state.top();
+			AnalysisState<A, H, V> errorValue = state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoErrorType.INSTANCE), getLocation()), original);
+			AnalysisState<A, H, V> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			return errorValue.lub(nilValue);
 		}
 	}
 }

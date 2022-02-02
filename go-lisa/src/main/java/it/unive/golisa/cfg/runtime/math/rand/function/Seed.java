@@ -19,6 +19,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.type.VoidType;
 
 /**
@@ -59,7 +60,7 @@ public class Seed extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression expr,
 						StatementStore<A, H, V> expressions) throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new Skip(getLocation()), original);
 		}
 	}
 }

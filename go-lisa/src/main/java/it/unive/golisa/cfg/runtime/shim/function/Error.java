@@ -65,7 +65,7 @@ public class Error extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression expr, StatementStore<A, H, V> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(Caches.types().mkUniversalSet(), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(Response.INSTANCE), getLocation()), original);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -23,6 +24,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
@@ -64,8 +66,10 @@ public class Unmarshal extends NativeCFG {
 						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 						SymbolicExpression left,
 						SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
-			return state.smallStepSemantics(
-					new PushAny(Caches.types().mkSingletonSet(GoErrorType.INSTANCE), getLocation()), original);
+
+			AnalysisState<A, H, V> errorValue = state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoErrorType.INSTANCE), getLocation()), original);
+			AnalysisState<A, H, V> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			return errorValue.lub(nilValue);
 		}
 	}
 }

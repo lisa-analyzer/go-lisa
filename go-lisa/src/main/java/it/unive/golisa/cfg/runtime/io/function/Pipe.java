@@ -22,6 +22,7 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Skip;
 
 /**
  * func Pipe() (*PipeReader, *PipeWriter)
@@ -62,7 +63,7 @@ public class Pipe extends NativeCFG {
 				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
 				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
 				throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new Skip(getLocation()), original);
 		}
 
 	}

@@ -14,7 +14,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 
-import java.rmi.UnexpectedException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,10 +72,12 @@ public class GoStructType implements GoType, UnitType, PointerType {
 						if (methodPars.length == 0 && funcPars.length == 1)
 							match = true;
 						else {
-							for (int i = 0; i < methodPars.length; i++)
-								if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
-										.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
-									match = true;
+							if (methodPars.length +1 == funcPars.length) {
+								for (int i = 0; i < methodPars.length; i++)
+										if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
+												.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
+										match = true;
+							}	
 						}
 					}
 				}

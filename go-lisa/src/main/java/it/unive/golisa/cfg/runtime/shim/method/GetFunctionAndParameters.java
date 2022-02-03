@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -34,7 +35,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 	}
 
 	public static class GetFunctionAndParametersImpl extends UnaryExpression
-			implements PluggableStatement {
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -55,12 +56,12 @@ public class GetFunctionAndParameters extends NativeCFG {
 
 		@Override
 		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression expr, StatementStore<A, H, V> expressions)
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+				SymbolicExpression expr, StatementStore<A, H, V> expressions)
 						throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new Clean(getLocation()), original);
 		}
 	}
 }

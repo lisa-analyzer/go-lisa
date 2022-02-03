@@ -35,7 +35,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class NewStateEP extends NativeCFG {
 
 	public NewStateEP(CodeLocation location, CompilationUnit statebasedPackage) {
-		super(new CFGDescriptor(location, statebasedPackage, true, "NewStateEP",
+		super(new CFGDescriptor(location, statebasedPackage, false, "NewStateEP",
 				GoTypesTuple.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "policy", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),
 				NewStateEPImpl.class);

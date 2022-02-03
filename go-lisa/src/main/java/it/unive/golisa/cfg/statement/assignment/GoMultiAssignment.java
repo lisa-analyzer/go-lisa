@@ -163,7 +163,7 @@ public class GoMultiAssignment extends Expression {
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
 		// needs to be performed
-		if (blockInfo.isEmpty() || blockInfo.get(0).getOpen() != containingBlock)
+		if (blockInfo == null || blockInfo.isEmpty() || blockInfo.get(0).getOpen() != containingBlock)
 			return entryState;
 
 		AnalysisState<A, H, V> tmp = entryState;

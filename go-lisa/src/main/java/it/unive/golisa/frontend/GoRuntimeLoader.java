@@ -60,6 +60,8 @@ import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.runtime.os.type.FileMode;
 import it.unive.golisa.cfg.runtime.path.filepath.function.Dir;
 import it.unive.golisa.cfg.runtime.path.filepath.function.Join;
+import it.unive.golisa.cfg.runtime.pkg.statebased.function.NewStateEP;
+import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.function.Success;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
@@ -126,10 +128,13 @@ public interface GoRuntimeLoader {
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
+			if(module.endsWith("pkg/statebased"))
+				loadStateBased(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
 	}
 	
+
 	private void loadFilePath(Program program) {
 		CompilationUnit filepath = new CompilationUnit(runtimeLocation, "filepath", false);
 		
@@ -303,6 +308,19 @@ public interface GoRuntimeLoader {
 		program.addCompilationUnit(bytes);
 	}
 
+	private void loadStateBased(Program program) {
+		CompilationUnit statebased = new CompilationUnit(runtimeLocation, "statebased", false);
+
+		// adding functions
+		statebased.addConstruct(new NewStateEP(runtimeLocation, statebased));
+
+		// adding types
+		program.registerType(KeyEndorsementPolicy.INSTANCE);
+
+		// adding compilation unit to program
+		program.addCompilationUnit(statebased);
+	}
+	
 	private void loadShim(Program program) {
 		CompilationUnit shim = new CompilationUnit(runtimeLocation, "shim", false);
 

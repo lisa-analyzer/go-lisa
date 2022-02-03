@@ -46,7 +46,7 @@ public class GoUnknown extends Expression {
 			AnalysisState<A, H, V> state, InterproceduralAnalysis<A, H, V> interprocedural,
 			StatementStore<A, H, V> expressions) throws SemanticException {
 		
-		return state.smallStepSemantics(new PushAny(Caches.types().mkUniversalSet(), getLocation()), getParentStatement());
+		return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(Untyped.INSTANCE), getLocation()), getParentStatement());
 	}
 
 

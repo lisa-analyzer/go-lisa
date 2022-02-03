@@ -72,7 +72,7 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 				for (SymbolicExpression id : idState.getComputedExpressions()) {
 					SymbolicExpression value;
 
-					if (!isClean(rightState.getComputedExpressions())) {
+					if (isClean(rightState.getComputedExpressions())) {
 						AnalysisState<A, H, V> tmp2 = rightState.bottom();
 						for (Type type : getRuntimeTypes())
 							tmp2 = tmp2.lub(tmp.assign((Identifier) id, new Clean(type, getLocation()), this));

@@ -40,7 +40,7 @@ public class Marshal extends NativeCFG {
 	}
 
 	public static class MarshalImpl extends UnaryExpression
-			implements PluggableStatement {
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -62,12 +62,12 @@ public class Marshal extends NativeCFG {
 
 		@Override
 		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression expr,
-						StatementStore<A, H, V> expressions) throws SemanticException {
-			return state.top();
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+				SymbolicExpression expr,
+				StatementStore<A, H, V> expressions) throws SemanticException {
+			return state.smallStepSemantics(expr, original);
 		}
 	}
 }

@@ -132,7 +132,7 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	@Override
 	public boolean canProcess(SymbolicExpression expression) {
-		return !expression.getDynamicType().isPointerType();
+		return true;
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class GetState extends NativeCFG {
 	}
 
 	public static class GetStateImpl extends NaryExpression
-			implements PluggableStatement {
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -64,12 +64,17 @@ public class GetState extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
+				InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
+				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
 						throws SemanticException {
-			return state.top();
+			AnalysisState<A, H, V> result = state.bottom();
+			for (ExpressionSet<SymbolicExpression> s : params)
+				for (SymbolicExpression s1 : s)
+					result = result.lub(state.smallStepSemantics(s1, original));
+
+			return result;
 		}
 	}
 }

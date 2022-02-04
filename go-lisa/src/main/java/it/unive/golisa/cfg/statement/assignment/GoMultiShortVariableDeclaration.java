@@ -58,7 +58,7 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		// if the right state is top,
 		// we put all the variables to top
 		if (rightState.isTop() 
-				|| isClean(rightState.getComputedExpressions())) {
+				|| isClean(rightState.getComputedExpressions()) || rightState.getComputedExpressions().size() > 1) {
 			AnalysisState<A, H, V> result = entryState;
 
 			for (int i = 0; i < ids.length; i++) {
@@ -69,20 +69,22 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 				expressions.put(ids[i], idState);
 
 				AnalysisState<A, H, V> tmp = result;
-				for (SymbolicExpression id : idState.getComputedExpressions()) {
-					SymbolicExpression value;
 
+				for (SymbolicExpression id : idState.getComputedExpressions()) {
 					if (isClean(rightState.getComputedExpressions())) {
 						AnalysisState<A, H, V> tmp2 = rightState.bottom();
 						for (Type type : getRuntimeTypes())
 							tmp2 = tmp2.lub(tmp.assign((Identifier) id, new Clean(type, getLocation()), this));
 
 						tmp = tmp2;
+					} else if (rightState.isTop()) {
+						tmp = tmp.assign((Identifier) id, new PushAny(getRuntimeTypes(), getLocation()), this);
 					} else {
-						value = new PushAny(getRuntimeTypes(), getLocation());
-						tmp = tmp.assign((Identifier) id, value, this);
+						AnalysisState<A, H, V> tmp2 = rightState.bottom();
+						for (SymbolicExpression s : rightState.getComputedExpressions())
+							tmp2 = tmp2.lub(tmp.assign((Identifier) id, s, this));
+						tmp = tmp2;
 					}
-
 				}
 
 				result = tmp;

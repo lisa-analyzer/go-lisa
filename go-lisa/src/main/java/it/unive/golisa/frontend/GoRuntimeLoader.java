@@ -62,6 +62,7 @@ import it.unive.golisa.cfg.runtime.path.filepath.function.Dir;
 import it.unive.golisa.cfg.runtime.path.filepath.function.Join;
 import it.unive.golisa.cfg.runtime.pkg.statebased.function.NewStateEP;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
+import it.unive.golisa.cfg.runtime.shim.function.CreateCompositeKey;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.function.Success;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
@@ -328,7 +329,7 @@ public interface GoRuntimeLoader {
 		shim.addConstruct(new Start(runtimeLocation, shim));
 		shim.addConstruct(new it.unive.golisa.cfg.runtime.shim.function.Error(runtimeLocation, shim));
 		shim.addConstruct(new Success(runtimeLocation, shim));
-
+		shim.addConstruct(new CreateCompositeKey(runtimeLocation, shim));
 		// adding types
 		program.registerType(ChaincodeStub.INSTANCE);
 		ChaincodeStub.registerMethods();
@@ -368,7 +369,7 @@ public interface GoRuntimeLoader {
 		str.addConstruct(new GoIndex(runtimeLocation, str));
 		str.addConstruct(new GoIndexRune(runtimeLocation, str));
 		str.addConstruct(new GoLen(runtimeLocation, str));
-
+		
 		program.addCompilationUnit(str);
 	}
 

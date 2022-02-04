@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -155,9 +156,65 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			}
 
 			return result;
+		} else if (getStaticType() instanceof GoSliceType) {
+			AnalysisState<A, H, V> result = state.bottom();
+
+			GoSliceType sliceType = (GoSliceType) getStaticType();
+			Type contentType = sliceType.getContentType();
+			int sliceLenght = getSubExpressions().length;
+
+			for (SymbolicExpression containerExp : containerExps) {
+				HeapReference reference = new HeapReference(type, containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
+
+				// Assign the len property to this hid
+				Variable lenProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "len",
+						getLocation());
+				AccessChild lenAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference,
+						lenProperty, getLocation());
+				AnalysisState<A, H, V> lenState = containerState.smallStepSemantics(lenAccess, this);
+
+				AnalysisState<A, H, V> lenResult = state.bottom();
+				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+					lenResult = lenResult.lub(
+							lenState.assign(lenId, new Constant(GoIntType.INSTANCE, sliceLenght, getLocation()), this));
+
+				// Assign the cap property to this hid
+				Variable capProperty = new Variable(Caches.types().mkSingletonSet(Untyped.INSTANCE), "cap",
+						getLocation());
+				AccessChild capAccess = new AccessChild(Caches.types().mkSingletonSet(GoIntType.INSTANCE), dereference,
+						capProperty, getLocation());
+				AnalysisState<A, H, V> capState = lenResult.smallStepSemantics(capAccess, this);
+
+				AnalysisState<A, H, V> capResult = state.bottom();
+				for (SymbolicExpression lenId : capState.getComputedExpressions())
+					capResult = capResult.lub(
+							capState.assign(lenId, new Constant(GoIntType.INSTANCE, sliceLenght, getLocation()), this));
+
+				if (getSubExpressions().length == 0) {
+					result = result.lub(capResult);
+					continue;
+				}
+
+				// Allocate the heap location
+				AnalysisState<A, H, V> tmp = capResult;
+				for (int i = 0; i < sliceLenght; i++) {
+					AccessChild access = new AccessChild(Caches.types().mkSingletonSet(contentType), dereference,
+							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+					AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
+
+					for (SymbolicExpression index : accessState.getComputedExpressions())
+						for (SymbolicExpression v : params[i])
+							tmp = tmp.assign(index, NumericalTyper.type(v), this);
+				}
+
+				result = result.lub(tmp.smallStepSemantics(reference, this));
+			}
+
+			return result;
 		}
 
-		// TODO: to handle the other cases (maps, array...)
+		// TODO: to handle the other cases (maps...)
 		return state.top().smallStepSemantics(new PushAny(type, getLocation()), this);
 
 	}

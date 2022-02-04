@@ -42,5 +42,33 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain())))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf);
-	}	
+	}
+	
+	@Test
+	public void testHighThroughput() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setInferTypes(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain())))
+				.addSemanticCheck(new TaintChecker());
+		perform("cc/high-throughput", "high-throughput.go", conf);
+	}
+	
+	@Test
+	public void testCpuUse() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setInferTypes(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain())))
+				.addSemanticCheck(new TaintChecker());
+		perform("cc/cpu-use", "cpu-use.go", conf);
+	}
 }

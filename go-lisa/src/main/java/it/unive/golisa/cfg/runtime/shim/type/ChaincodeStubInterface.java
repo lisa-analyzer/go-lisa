@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
+import it.unive.golisa.cfg.runtime.shim.function.CreateCompositeKey.CreateCompositeKeyImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetState.GetStateImpl;
 import it.unive.golisa.cfg.runtime.shim.method.PutState.PutStateImpl;
@@ -79,6 +80,16 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 				new Parameter(unknownLocation, "key", GoStringType.INSTANCE),
 				new Parameter(unknownLocation, "value", GoSliceType.getSliceOfBytes()));
 		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, PutStateImpl.class));
+
+		// CreateCompositeKey
+		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "CreateCompositeKey",
+				GoTypesTuple.getTupleTypeOf(unknownLocation,GoStringType.INSTANCE,
+						GoErrorType.INSTANCE),
+				new Parameter(unknownLocation, "s", ChaincodeStubInterface.INSTANCE),
+				new Parameter(unknownLocation, "objectType", GoStringType.INSTANCE),
+				new Parameter(unknownLocation, "attributes", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))));
+		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, CreateCompositeKeyImpl.class));
+
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "DelState",
 				GoErrorType.INSTANCE,

@@ -59,7 +59,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	}
 	
 	@Test
-	public void testCpuUse() throws AnalysisException, IOException {
+	public void testMarbles02() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
 				.setInferTypes(true)
@@ -69,6 +69,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setAbstractState(
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain())))
 				.addSemanticCheck(new TaintChecker());
-		perform("cc/cpu-use", "cpu-use.go", conf);
+		perform("cc/marbles02", "marbles02.go", conf);
 	}
 }

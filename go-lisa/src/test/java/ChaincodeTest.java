@@ -71,4 +71,18 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/marbles02", "marbles02.go", conf);
 	}
+	
+	@Test
+	public void testCpuUse() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setInferTypes(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain())))
+				.addSemanticCheck(new TaintChecker());
+		perform("cc/cpu-use", "cpu-use.go", conf);
+	}
 }

@@ -127,7 +127,7 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		return true;
+		return !id.getDynamicType().isPointerType();
 	}
 
 	@Override

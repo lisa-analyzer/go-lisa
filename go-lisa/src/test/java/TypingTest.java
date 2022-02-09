@@ -9,13 +9,13 @@ public class TypingTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void testTypingDeclaration() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true).setInferTypes(true);
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true);
 		perform("typing", "typing-decl.go", conf);
 	}
 
 	@Test
 	public void testStringsTypingDeclaration() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true).setInferTypes(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())
 				.setCallGraph(new RTACallGraph());
 		perform("strings-typing", "strings.go", conf);

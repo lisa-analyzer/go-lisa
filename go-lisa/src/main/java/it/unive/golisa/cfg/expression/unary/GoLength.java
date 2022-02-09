@@ -7,8 +7,8 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -21,7 +21,6 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 
@@ -30,38 +29,30 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					SymbolicExpression expr, StatementStore<A, H, V> expressions)
-					throws SemanticException {
-		ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-		AnalysisState<A, H, V> result = state.bottom();
-
-		for (Type type : expr.getTypes()) {
+	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		AnalysisState<A, H, V, T> result = state.bottom();
+		for (Type type : expr.getRuntimeTypes()) {
 			if (type.isArrayType() || type instanceof GoSliceType) {
 				// When expr is an array or a slice, we access the len property
-				AnalysisState<A, H, V> rec = state.smallStepSemantics(expr, this);
-				AnalysisState<A, H, V> partialResult = state.bottom();
-				ExternalSet<Type> untypedType = Caches.types().mkSingletonSet(Untyped.INSTANCE);
+				AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
+				AnalysisState<A, H, V, T> partialResult = state.bottom();
 
 				for (SymbolicExpression recExpr : rec.getComputedExpressions()) {
-					HeapDereference deref = new HeapDereference(getRuntimeTypes(), recExpr, getLocation());
-					AnalysisState<A, H, V> refState = state.smallStepSemantics(deref, this);
+					HeapDereference deref = new HeapDereference(type, recExpr, getLocation());
+					AnalysisState<A, H, V, T> refState = state.smallStepSemantics(deref, this);
 
 					for (SymbolicExpression l : refState.getComputedExpressions()) {
-						AnalysisState<A, H, V> tmp = rec.smallStepSemantics(new AccessChild(getRuntimeTypes(), l,
-								new Variable(untypedType, "len", getLocation()), getLocation()), this);
+						AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(type, l,
+								new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
 						partialResult = partialResult.lub(tmp);
 					}
 				}
 				result = result.lub(partialResult);
-			}
-
-			if (type.isStringType())
+			} else if (type.isStringType())
 				result = result.lub(state.smallStepSemantics(
-						new UnaryExpression(intType, expr, StringLength.INSTANCE, getLocation()), this));
+						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));
 		}
 
 		return result;

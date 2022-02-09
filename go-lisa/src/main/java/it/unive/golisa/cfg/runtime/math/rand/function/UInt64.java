@@ -7,8 +7,8 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -30,10 +30,10 @@ public class UInt64 extends NativeCFG {
 
 	public UInt64(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Uint64", GoUInt64Type.INSTANCE),
-				Uint64Impl.class);
+				UInt64Impl.class);
 	}
 
-	public static class Uint64Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
+	public static class UInt64Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -43,22 +43,20 @@ public class UInt64 extends NativeCFG {
 			original = st;
 		}
 
-		public static Uint64Impl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Uint64Impl(cfg, location);
+		public static UInt64Impl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new UInt64Impl(cfg, location);
 		}
 
-		public Uint64Impl(CFG cfg, CodeLocation location) {
+		public UInt64Impl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "Uint64Impl", GoUInt64Type.INSTANCE);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
-						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoUInt64Type.INSTANCE), getLocation()), original);
+		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+				throws SemanticException {
+			return state.smallStepSemantics(new PushAny(GoUInt64Type.INSTANCE, getLocation()), original);
 		}
 	}
 }

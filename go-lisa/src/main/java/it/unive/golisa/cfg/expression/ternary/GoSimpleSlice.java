@@ -6,8 +6,8 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -24,23 +24,20 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> ternarySemantics(
-					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					SymbolicExpression left,
-					SymbolicExpression middle, SymbolicExpression right, StatementStore<A, H, V> expressions)
-					throws SemanticException {
-		AnalysisState<A, H, V> result = state.bottom();
-		for (Type leftType : left.getTypes())
-			for (Type middleType : middle.getTypes())
-				for (Type rightType : right.getTypes())
+	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+			StatementStore<A, H, V, T> expressions) throws SemanticException {
+		AnalysisState<A, H, V, T> result = state.bottom();
+		for (Type leftType : left.getRuntimeTypes())
+			for (Type middleType : middle.getRuntimeTypes())
+				for (Type rightType : right.getRuntimeTypes())
 					if ((leftType.isStringType() || leftType.isUntyped())
 							&& (middleType.isNumericType() || middleType.isUntyped())
 							&& (rightType.isNumericType() || rightType.isUntyped())) {
 						AnalysisState<A, H,
-								V> tmp = state.smallStepSemantics(
-										new TernaryExpression(Caches.types().mkSingletonSet(GoStringType.INSTANCE),
+								V, T> tmp = state.smallStepSemantics(
+										new TernaryExpression(GoStringType.INSTANCE,
 												left, middle, right, StringSubstring.INSTANCE, getLocation()),
 										this);
 						result = result.lub(tmp);

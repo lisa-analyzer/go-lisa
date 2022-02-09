@@ -1,5 +1,10 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
@@ -9,17 +14,12 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.PointerType;
+import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-public class GoStructType implements GoType, UnitType, PointerType {
+public class GoStructType implements GoType, UnitType, InMemoryType {
 
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
@@ -50,6 +50,8 @@ public class GoStructType implements GoType, UnitType, PointerType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
+		if (other.isUntyped())
+			return true;
 		if (other instanceof GoStructType)
 			return ((GoStructType) other).name.equals(name);
 		if (other instanceof GoInterfaceType) {
@@ -141,7 +143,7 @@ public class GoStructType implements GoType, UnitType, PointerType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		Collection<Global> fields = getUnit().getInstanceGlobals(true);
 		Expression[] values = new Expression[fields.size()];
-
+		
 		int i = 0;
 		for (Global key : fields)
 			if(key.getStaticType() instanceof GoType)
@@ -150,11 +152,6 @@ public class GoStructType implements GoType, UnitType, PointerType {
 				values[i++] = new GoUnknown(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, values, this);
-	}
-
-	@Override
-	public boolean isPointerType() {
-		return true;
 	}
 
 	@Override

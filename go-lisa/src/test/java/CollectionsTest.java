@@ -6,6 +6,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
@@ -15,8 +16,8 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void structTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval()));
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(), new InferredTypes()));
 		perform("collections/struct", "struct.go", conf);
 	}
 
@@ -25,16 +26,16 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedArrayTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval()));
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(), new InferredTypes()));
 		perform("collections/array/field-insensitive", "array.go", conf);
 	}
 
 	@Test
 	public void fieldSensitivePointBasedArrayTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval()));
+						new Interval(), new InferredTypes()));
 		perform("collections/array/field-sensitive", "array.go", conf);
 	}
 
@@ -43,26 +44,26 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedSliceTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval()));
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(), new InferredTypes()));
 		perform("collections/slice/field-insensitive", "slice.go", conf);
 	}
 
 	@Test
 	public void fieldSensitivePointBasedSliceTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true).setInferTypes(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval()));
+						new Interval(), new InferredTypes()));
 		perform("collections/slice/field-sensitive", "slice.go", conf);
 	}
 
 	@Test
 	public void interfaceTest1() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setInferTypes(true)
+				
 				.setDumpTypeInference(false)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval()))
+						new Interval(), new InferredTypes()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
@@ -72,10 +73,10 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	@Test
 	public void interfaceTest2() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setInferTypes(true)
+				
 				.setDumpTypeInference(false)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval()))
+						new Interval(), new InferredTypes()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
@@ -85,10 +86,10 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	@Test
 	public void interfaceTest3() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setInferTypes(true)
+				
 				.setDumpTypeInference(false)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval()))
+						new Interval(), new InferredTypes()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
@@ -98,10 +99,10 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	@Test
 	public void interfaceTest4() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setInferTypes(true)
+				
 				.setDumpTypeInference(false)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval()))
+						new Interval(), new InferredTypes()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));

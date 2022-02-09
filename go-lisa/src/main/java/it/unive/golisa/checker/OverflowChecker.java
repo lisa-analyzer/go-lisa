@@ -1,5 +1,7 @@
 package it.unive.golisa.checker;
 
+import java.math.BigInteger;
+
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
@@ -20,7 +22,8 @@ import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
-import it.unive.lisa.caches.Caches;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.program.CompilationUnit;
@@ -38,15 +41,13 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import java.math.BigInteger;
 
-public class OverflowChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron>,
-		MonolithicHeap, Apron> {
+public class OverflowChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+		MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> {
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		Expression leftExpression = null;
@@ -66,11 +67,11 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 
 		// Checking if each variable reference is over/under flowing
 		if (leftExpression instanceof VariableRef) {
-			Variable id = new Variable(((VariableRef) leftExpression).getRuntimeTypes(),
+			Variable id = new Variable(((VariableRef) leftExpression).getStaticType(),
 					((VariableRef) leftExpression).getName(), ((VariableRef) leftExpression).getLocation());
 
 			boolean mayBeNumeric = false;
-			for (Type type : id.getTypes())
+			for (Type type : id.getRuntimeTypes())
 				if (type.isNumericType()) {
 					mayBeNumeric = true;
 					break;
@@ -81,13 +82,12 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 
 			vType = vType == null ? id.getDynamicType() : vType;
 
-			for (CFGWithAnalysisResults<?, ?, ?> an : tool.getResultOf(graph)) {
-				AnalysisState<?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(node);
+			for (CFGWithAnalysisResults<?, ?, ?, ?> an : tool.getResultOf(graph)) {
+				AnalysisState<?, ?, ?, ?> analysisAtNode = an.getAnalysisStateAfter(node);
 				Apron ap = (Apron) analysisAtNode.getState().getValueState();
-				ExternalSet<Type> bool = Caches.types().mkSingletonSet(GoBoolType.INSTANCE);
-				BinaryExpression checkOver = new BinaryExpression(bool, id, getMaxValue(vType),
+				BinaryExpression checkOver = new BinaryExpression(GoBoolType.INSTANCE, id, getMaxValue(vType),
 						ComparisonGt.INSTANCE, leftExpression.getLocation());
-				BinaryExpression checkUnder = new BinaryExpression(bool, id, getMinValue(vType),
+				BinaryExpression checkUnder = new BinaryExpression(GoBoolType.INSTANCE, id, getMinValue(vType),
 						ComparisonLt.INSTANCE, leftExpression.getLocation());
 
 				if (!ap.containsIdentifier(id))
@@ -188,21 +188,21 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean visitCompilationUnit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CompilationUnit unit) {
 		return true;
 
@@ -210,20 +210,20 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron>, MonolithicHeap, Apron> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 
 		return true;

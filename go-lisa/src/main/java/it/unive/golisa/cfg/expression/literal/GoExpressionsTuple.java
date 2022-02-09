@@ -9,8 +9,8 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -31,43 +31,40 @@ public class GoExpressionsTuple extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> expressionSemantics(
-					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V> expressions)
+	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-
 		// Length of the expression tuple
 		int len = getSubExpressions().length;
 		Parameter[] types = new Parameter[len];
 
 		for (int i = 0; i < types.length; i++) {
 			Expression p = getSubExpressions()[i];
-			types[i] = new Parameter(p.getLocation(), "_", p.getDynamicType());
+			types[i] = new Parameter(p.getLocation(), "_", p.getStaticType());
 		}
 
 		GoTypesTuple tupleType = new GoTypesTuple(types);
 
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(tupleType), getLocation());
+		HeapAllocation created = new HeapAllocation(tupleType, getLocation());
 
 		// Allocates the new heap allocation
-		AnalysisState<A, H, V> containerState = state.smallStepSemantics(created, this);
+		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);
 		ExpressionSet<SymbolicExpression> containerExps = containerState.getComputedExpressions();
 
-		AnalysisState<A, H, V> result = state.bottom();
+		AnalysisState<A, H, V, T> result = state.bottom();
 
 		for (SymbolicExpression containerExp : containerExps) {
-			HeapReference reference = new HeapReference(Caches.types().mkSingletonSet(getStaticType()), containerExp,
+			HeapReference reference = new HeapReference(getStaticType(), containerExp,
 					getLocation());
-			HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()), reference,
+			HeapDereference dereference = new HeapDereference(getStaticType(), reference,
 					getLocation());
 
-			AnalysisState<A, H, V> tmp = containerState;
+			AnalysisState<A, H, V, T> tmp = containerState;
 			for (int i = 0; i < len; i++) {
-				AccessChild access = new AccessChild(Caches.types().mkSingletonSet(tupleType.getTypeAt(i)), dereference,
+				AccessChild access = new AccessChild(tupleType.getTypeAt(i), dereference,
 						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				AnalysisState<A, H, V> accessState = tmp.smallStepSemantics(access, this);
+				AnalysisState<A, H, V, T> accessState = tmp.smallStepSemantics(access, this);
 
 				for (SymbolicExpression index : accessState.getComputedExpressions())
 					for (SymbolicExpression v : params[i])

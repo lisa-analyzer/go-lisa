@@ -24,14 +24,14 @@ public class Chaincode extends GoInterfaceType {
 	private static CompilationUnit buildChaincodeUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit chaincodeType = new CompilationUnit(unknownLocation, "Chaincode", false);
-
-		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chaincodeType, true, "Init", Untyped.INSTANCE,
-				new Parameter(unknownLocation, "stub", ChaincodeStubInterface.INSTANCE));
-		chaincodeType.addInstanceCFG(new CFG(desc));
-
-		desc = new CFGDescriptor(unknownLocation, chaincodeType, true, "Invoke", Untyped.INSTANCE,
-				new Parameter(unknownLocation, "stub", ChaincodeStubInterface.INSTANCE));
-		chaincodeType.addInstanceCFG(new CFG(desc));
+//
+//		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chaincodeType, true, "Init", Untyped.INSTANCE,
+//				new Parameter(unknownLocation, "stub", ChaincodeStubInterface.INSTANCE));
+//		chaincodeType.addInstanceCFG(new CFG(desc));
+//
+//		desc = new CFGDescriptor(unknownLocation, chaincodeType, true, "Invoke", Untyped.INSTANCE,
+//				new Parameter(unknownLocation, "stub", ChaincodeStubInterface.INSTANCE));
+//		chaincodeType.addInstanceCFG(new CFG(desc));
 
 		return chaincodeType;
 	}

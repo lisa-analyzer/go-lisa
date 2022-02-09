@@ -5,6 +5,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -41,22 +42,20 @@ public class GoBitwiseAnd extends BinaryExpression implements GoBinaryNumericalO
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					SymbolicExpression left,
-					SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
-		AnalysisState<A, H, V> result = state.bottom();
-		for (Type leftType : left.getTypes())
-			for (Type rightType : right.getTypes())
+	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
+		AnalysisState<A, H, V, T> result = state.bottom();
+		for (Type leftType : left.getRuntimeTypes())
+			for (Type rightType : right.getRuntimeTypes())
 				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) &&
 						(rightType.isUntyped()
 								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
 					// TODO: LiSA has not symbolic expression handling bitwise,
 					// return top at the moment
-					AnalysisState<A, H, V> tmp = state
-							.smallStepSemantics(new PushAny(resultType(left, right), getLocation()), this);
+					AnalysisState<A, H, V, T> tmp = state
+							.smallStepSemantics(new PushAny(resultType(leftType, rightType), getLocation()), this);
 					result = result.lub(tmp);
 				}
 		return result;

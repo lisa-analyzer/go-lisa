@@ -101,4 +101,8 @@ public class GoFunctionType implements GoType {
 			instances.add(in);
 		return instances;
 	}
+
+	public static void clearAll() {
+		functionTypes.clear();
+	}
 }

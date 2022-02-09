@@ -6,6 +6,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -26,22 +27,19 @@ public class GoTypeAssertion extends UnaryExpression {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> unarySemantics(
-					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					SymbolicExpression expr, StatementStore<A, H, V> expressions)
-					throws SemanticException {
+	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// A type assertion provides access to an interface value's underlying
-		// concrete value,
-		// hence we need to check if the static type of the arguments is an
-		// interface
-		Type argStaticType = getSubExpressions()[0].getStaticType();
-		if (argStaticType instanceof GoInterfaceType || argStaticType instanceof Untyped)
-			for (Type exprType : expr.getTypes())
-				if (exprType.canBeAssignedTo(type))
-					return state;
+				// concrete value,
+				// hence we need to check if the static type of the arguments is an
+				// interface
+				Type argStaticType = getSubExpressions()[0].getStaticType();
+				if (argStaticType instanceof GoInterfaceType || argStaticType instanceof Untyped)
+					for (Type exprType : expr.getRuntimeTypes())
+						if (exprType.canBeAssignedTo(type))
+							return state;
 
-		return state.bottom();
+				return state.bottom();
 	}
 }

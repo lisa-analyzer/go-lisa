@@ -10,7 +10,7 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class GoNil extends Literal {
+public class GoNil extends Literal<String> {
 
 	/**
 	 * Builds a Go nil value. The location where this literal appears is unknown

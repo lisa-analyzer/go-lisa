@@ -162,6 +162,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	private Program toLiSAProgram() throws IOException {
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
+		
+		clearTypes();
+
 
 		long start = System.currentTimeMillis();
 
@@ -186,6 +189,19 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		registerGoTypes(program);
 
 		return result;
+	}
+	
+	private void clearTypes() {
+		GoArrayType.clearAll();
+		GoStructType.clearAll();
+		GoSliceType.clearAll();
+		GoPointerType.clearAll();
+		GoMapType.clearAll();
+		GoTypesTuple.clearAll();
+		GoChannelType.clearAll();
+		GoFunctionType.clearAll();
+		GoQualifiedType.clearAll();
+		GoVariadicType.clearAll();
 	}
 
 	private void registerGoTypes(Program program) {
@@ -239,7 +255,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 				"Global declarations"))
 			visitDeclarationContext(decl);
 
-		updateUnitReferences();
+		//updateUnitReferences();
 
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...",
 				"Method declarations"))

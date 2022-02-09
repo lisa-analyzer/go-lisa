@@ -1,5 +1,12 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -11,8 +18,8 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -24,12 +31,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiAssignment extends Expression {
 
@@ -83,81 +86,11 @@ public class GoMultiAssignment extends Expression {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	@Override
-	public <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					StatementStore<A, H, V> expressions)
-					throws SemanticException {
-		AnalysisState<A, H, V> rightState = e.semantics(entryState, interprocedural, expressions);
-		expressions.put(e, rightState);
 
-		AnalysisState<A, H, V> result = rightState;
-
-		for (int i = 0; i < ids.length; i++) {
-
-			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
-				continue;
-
-			List<BlockInfo> blockInfo = blocksToDeclaration.get(ids[i]);
-			AnalysisState<A, H, V> idState = ids[i].semantics(rightState, interprocedural, expressions);
-
-			AnalysisState<A, H, V> tmp2 = rightState.bottom();
-			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()),
-						retExp, getLocation());
-				AccessChild access = new AccessChild(Caches.types().mkUniversalSet(), dereference,
-						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				AnalysisState<A, H, V> accessState = rightState.smallStepSemantics(access, this);
-
-				AnalysisState<A, H, V> tmp = rightState.bottom();
-				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
-					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V> assign = assignScopedId(rightState, idExp,
-								NumericalTyper.type(accessExp), blockInfo);
-						tmp = tmp.lub(assign);
-					}
-				}
-				tmp2 = tmp.lub(tmp2);
-			}
-
-			result = tmp2;
-		}
-
-		for (int i = 0; i < ids.length; i++) {
-			if (ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
-				continue;
-
-			AnalysisState<A, H, V> idState = ids[i].semantics(result, interprocedural, expressions);
-			expressions.put(ids[i], idState);
-
-			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
-				continue;
-
-			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference dereference = new HeapDereference(Caches.types().mkSingletonSet(getStaticType()),
-						retExp, getLocation());
-				AccessChild access = new AccessChild(Caches.types().mkUniversalSet(), dereference,
-						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				AnalysisState<A, H, V> accessState = result.smallStepSemantics(access, this);
-
-				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
-					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V> assign = result.assign(idExp, NumericalTyper.type(accessExp), this);
-						result = result.lub(assign);
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	private <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> assignScopedId(AnalysisState<A, H, V> entryState,
-					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo)
+	private <A extends AbstractState<A, H, V, T>,
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> entryState,
+			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo)
 					throws SemanticException {
 
 		// if the assignment occurs in the same block in which
@@ -166,7 +99,7 @@ public class GoMultiAssignment extends Expression {
 		if (blockInfo == null || blockInfo.isEmpty() || blockInfo.get(0).getOpen() != containingBlock)
 			return entryState;
 
-		AnalysisState<A, H, V> tmp = entryState;
+		AnalysisState<A, H, V, T> tmp = entryState;
 
 		// removes the block where the declaration occurs
 		List<BlockInfo> blocksBeforeDecl = blockInfo.subList(0, blocksToDeclaration.size() - 1);
@@ -189,6 +122,73 @@ public class GoMultiAssignment extends Expression {
 		int result = super.hashCode();
 		result = prime * result + ((e == null) ? 0 : e.hashCode());
 		result = prime * result + Arrays.hashCode(ids);
+		return result;
+	}
+
+	@Override
+	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+			StatementStore<A, H, V, T> expressions) throws SemanticException {
+		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
+		expressions.put(e, rightState);
+
+		AnalysisState<A, H, V, T> result = rightState;
+
+		for (int i = 0; i < ids.length; i++) {
+
+			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
+				continue;
+
+			List<BlockInfo> blockInfo = blocksToDeclaration.get(ids[i]);
+			AnalysisState<A, H, V, T> idState = ids[i].semantics(rightState, interprocedural, expressions);
+
+			AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
+			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
+				HeapDereference dereference = new HeapDereference(getStaticType(),
+						retExp, getLocation());
+				AccessChild access = new AccessChild(Untyped.INSTANCE, dereference,
+						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				AnalysisState<A, H, V, T> accessState = rightState.smallStepSemantics(access, this);
+
+				AnalysisState<A, H, V, T> tmp = rightState.bottom();
+				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
+					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
+						AnalysisState<A, H, V, T> assign = assignScopedId(rightState, idExp,
+								NumericalTyper.type(accessExp), blockInfo);
+						tmp = tmp.lub(assign);
+					}
+				}
+				tmp2 = tmp.lub(tmp2);
+			}
+
+			result = tmp2;
+		}
+
+		for (int i = 0; i < ids.length; i++) {
+			if (ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+				continue;
+
+			AnalysisState<A, H, V, T> idState = ids[i].semantics(result, interprocedural, expressions);
+			expressions.put(ids[i], idState);
+
+			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
+				continue;
+
+			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
+				HeapDereference dereference = new HeapDereference(getStaticType(),
+						retExp, getLocation());
+				AccessChild access = new AccessChild(Untyped.INSTANCE, dereference,
+						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				AnalysisState<A, H, V, T> accessState = result.smallStepSemantics(access, this);
+
+				for (SymbolicExpression accessExp : accessState.getComputedExpressions())
+					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
+						AnalysisState<A, H, V, T> assign = result.assign(idExp, NumericalTyper.type(accessExp), this);
+						result = result.lub(assign);
+					}
+			}
+		}
+
 		return result;
 	}
 }

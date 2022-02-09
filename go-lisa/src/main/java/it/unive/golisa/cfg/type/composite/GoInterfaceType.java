@@ -1,21 +1,24 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
-public class GoInterfaceType implements GoType, UnitType, PointerType {
+public class GoInterfaceType implements GoType, UnitType, InMemoryType, PointerType {
 
 	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
@@ -106,12 +109,13 @@ public class GoInterfaceType implements GoType, UnitType, PointerType {
 	}
 
 	@Override
-	public boolean isPointerType() {
-		return true;
+	public CompilationUnit getUnit() {
+		return unit;
 	}
 
 	@Override
-	public CompilationUnit getUnit() {
-		return unit;
+	public ExternalSet<Type> getInnerTypes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

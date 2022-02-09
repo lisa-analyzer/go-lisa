@@ -6,6 +6,7 @@ import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
@@ -17,9 +18,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest001() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -32,9 +33,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest002() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -47,9 +48,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest003() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -62,9 +63,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest004() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -77,9 +78,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest005() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -92,9 +93,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest006() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -107,9 +108,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest007() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -122,9 +123,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest008() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
@@ -137,9 +138,9 @@ public class TaintAnalysisTest extends GoAnalysisTestExecutor {
 	public void taintTest009() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
-						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain()))
+						LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new TaintDomain(), new InferredTypes()))
 				.addSemanticCheck(new TaintChecker())
-				.setInferTypes(true)
+				
 				.setJsonOutput(true)
 				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)

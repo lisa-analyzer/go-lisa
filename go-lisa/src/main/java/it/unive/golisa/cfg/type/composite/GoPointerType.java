@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -9,6 +10,8 @@ import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,8 +32,9 @@ public class GoPointerType implements PointerType, GoType {
 		this.baseType = baseType;
 	}
 
-	public Type getBaseType() {
-		return baseType;
+	@Override
+	public ExternalSet<Type> getInnerTypes() {
+		return Caches.types().mkSingletonSet(baseType);
 	}
 
 	@Override
@@ -111,5 +115,9 @@ public class GoPointerType implements PointerType, GoType {
 	@Override
 	public UnitType asUnitType() {
 		return (UnitType) baseType;
+	}
+
+	public static void clearAll() {
+		pointerTypes.clear();		
 	}
 }

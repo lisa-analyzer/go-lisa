@@ -10,6 +10,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -22,9 +23,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
-import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
@@ -61,34 +60,30 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 
 		public static SymbolicExpression type(SymbolicExpression exp) {
 			if (exp.getDynamicType() instanceof GoUntypedInt) {
-				ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE, exp.getCodeLocation());
-				return new BinaryExpression(intType, exp, typeCast, TypeConv.INSTANCE, exp.getCodeLocation());
+				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoIntType.INSTANCE)), GoIntType.INSTANCE, exp.getCodeLocation());
+				return new BinaryExpression(GoIntType.INSTANCE, exp, typeCast, TypeConv.INSTANCE, exp.getCodeLocation());
 
 			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
-				ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE,
+				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE)), GoFloat32Type.INSTANCE,
 						exp.getCodeLocation());
-				return new BinaryExpression(floatType, exp, typeCast, TypeConv.INSTANCE, exp.getCodeLocation());
+				return new BinaryExpression(GoFloat32Type.INSTANCE, exp, typeCast, TypeConv.INSTANCE, exp.getCodeLocation());
 			} else
 				return exp;
 		}
 	}
 
-	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					SymbolicExpression left,
-					SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
 
+	@Override
+	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
 		// e.g., _ := f(), we just return right state
 		// FIXME: it should return the entry state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
 
-		AnalysisState<A, H, V> result = state.assign(left, NumericalTyper.type(right), this);
+		AnalysisState<A, H, V, T> result = state.assign(left, NumericalTyper.type(right), this);
 
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getRight().getMetaVariables());

@@ -10,8 +10,8 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -60,15 +60,13 @@ public class Unmarshal extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-						InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-						SymbolicExpression left,
-						SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+				throws SemanticException {
 
-			AnalysisState<A, H, V> errorValue = state.smallStepSemantics(new PushAny(Caches.types().mkSingletonSet(GoErrorType.INSTANCE), getLocation()), original);
-			AnalysisState<A, H, V> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			AnalysisState<A, H, V, T> errorValue = state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V, T> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return errorValue.lub(nilValue);
 		}
 	}

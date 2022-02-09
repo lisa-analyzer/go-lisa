@@ -1,5 +1,30 @@
 package it.unive.golisa.frontend;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -84,6 +109,7 @@ import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
+import it.unive.golisa.cfg.expression.GoNotEqual;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseNAnd;
@@ -171,34 +197,13 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method
@@ -304,8 +309,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public CFG visitCodeMember(MethodDeclContext ctx) {
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
-				? ((GoPointerType) receiver.getStaticType()).getBaseType().toString()
-				: receiver.getStaticType().toString();
+				? ((GoPointerType) receiver.getStaticType()).getInnerTypes().first().toString()
+						: receiver.getStaticType().toString();
 
 		SourceCodeLocation location = locationOf(ctx);
 		if (program.getUnit(unitName) == null)
@@ -438,7 +443,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Parameter[] result = new Parameter[] {};
 		Type type = visitType_(ctx.type_());
 		type = type == null ? Untyped.INSTANCE : type;
-		
+
 		// the parameter's type is variadic (e.g., ...string)
 		if (ctx.ELLIPSIS() != null)
 			type = GoVariadicType.lookup(new GoVariadicType(type));
@@ -689,18 +694,26 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Statement lastStmt = null;
 			Statement entryNode = null;
 			Type_Context typeContext = ctx.type_();
-			
+
 			Type type = typeContext == null ? Untyped.INSTANCE : visitType_(typeContext);
 			type = type == null ? Untyped.INSTANCE : type;
+			type = type.isInMemoryType() ? new ReferenceType(type) : type;
+
 
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Expression exp;
 				if(type.isUntyped())
 					exp = new GoUnknown(cfg, locationOf(ctx));
-				else
-					exp = (exps == null || exps.expression(i) == null) && !type.isUntyped()
-							? ((GoType) type).defaultValue(cfg, locationOf(ctx))
-							: visitExpression(exps.expression(i));
+				else {
+
+					if ((exps == null || exps.expression(i) == null) && !type.isUntyped()) {
+						if (type instanceof ReferenceType)
+							exp = ((GoType) ((ReferenceType) type).getInnerTypes().first()).defaultValue(cfg, locationOf(ctx));
+						else
+							exp = ((GoType) type).defaultValue(cfg, locationOf(ctx));
+					} else
+						exp = visitExpression(exps.expression(i));
+				}
 				
 				int line = getLine(ids.IDENTIFIER(i));
 				int col = (exps == null || exps.expression(i) == null) ? getCol(ids.IDENTIFIER(i))
@@ -772,8 +785,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// Go not equal (!=)
 		if (ctx.NOT_EQUALS() != null)
-			return new GoNot(cfg, location,
-					new GoEqual(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1))));
+			return new GoNotEqual(cfg, location, visitExpression(ctx.expression(0)), visitExpression(ctx.expression(1)));
 
 		// Go less (<)
 		if (ctx.LESS() != null)
@@ -1148,7 +1160,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from
 				// the type of exp
-				Type type = exp.getStaticType();
+				Type type = exp.getStaticType().isInMemoryType() ? new ReferenceType(exp.getStaticType()) : exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
 						type);
 
@@ -1740,7 +1752,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name
 					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
-							GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
+							GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, CallType.STATIC,
 							currentUnit.getName(), primary.toString(),
 							visitArguments(ctx.arguments()));
 
@@ -1753,7 +1765,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// the callee's name is concatenated to the function
 						// name
 						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
-								GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, false,
+								GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY, CallType.STATIC,
 								receiver.toString(), getMethodName(ctx.primaryExpr()), args);
 					else {
 						// method call (e.g., x.f(1))
@@ -1763,14 +1775,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						args = ArrayUtils.insert(0, args, receiver);
 						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
 								GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
-								true, "", getMethodName(ctx.primaryExpr()), args);
+								CallType.INSTANCE, "", getMethodName(ctx.primaryExpr()), args);
 					}
 				}
 
 				// Anonymous function
 				else if (primary instanceof GoFunctionLiteral) {
 					CFG cfgLiteral = (CFG) ((GoFunctionLiteral) primary).getValue();
-					return new CFGCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, false, "", funcName,
+					return new CFGCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, CallType.STATIC, "", funcName,
 							Collections.singleton(cfgLiteral),
 							args);
 				} else {
@@ -1778,7 +1790,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					args = ArrayUtils.insert(0, args, primary);
 					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
 							GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
-							true,
+							CallType.INSTANCE,
 							"", primary.toString(), args);
 				}
 			}
@@ -1979,13 +1991,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) keys).length));
+				.lookup(new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) keys).length));
 			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type == null ? Untyped.INSTANCE : type);
 		} else {
 
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) raw).length));
+				.lookup(new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) raw).length));
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw, type == null ? Untyped.INSTANCE : type);
 		}
 	}
@@ -2007,7 +2019,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			result.put(firstKeyed.getLeft(), firstKeyed.getRight());
 			for (int i = 1; i < ctx.keyedElement().size(); i++) {
 				Pair<Expression,
-						Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
+				Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
 				result.put(keyed.getLeft(), keyed.getRight());
 			}
 
@@ -2095,7 +2107,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 					type = GoArrayType.lookup(
-							new GoArrayType(((GoArrayType) type).getContentType(), ((Expression[]) keys).length));
+							new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) keys).length));
 				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 			} else
 				throw new IllegalStateException(
@@ -2105,7 +2117,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	private GoType getContentType(Type type) {
 		if (type instanceof GoArrayType)
-			return (GoType) ((GoArrayType) type).getContentType();
+			return (GoType) ((GoArrayType) type).getContenType();
 		if (type instanceof GoSliceType)
 			return (GoType) ((GoSliceType) type).getContentType();
 

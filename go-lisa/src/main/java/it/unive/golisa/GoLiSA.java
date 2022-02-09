@@ -22,9 +22,11 @@ import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
@@ -72,12 +74,11 @@ public class GoLiSA {
 
 		conf.setJsonOutput(true)
 				.setDumpAnalysis(true)
-				.setInferTypes(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain())))
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()), LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 
 		Program program = null;
@@ -127,5 +128,4 @@ public class GoLiSA {
 			return;
 		}
 	}
-
 }

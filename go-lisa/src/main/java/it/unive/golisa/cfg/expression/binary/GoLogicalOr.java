@@ -7,8 +7,8 @@ import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -45,12 +45,10 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-					InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> state,
-					SymbolicExpression left,
-					SymbolicExpression right, StatementStore<A, H, V> expressions) throws SemanticException {
+	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
 		// FIXME: need to check which state needs to be returned (left/right)
 		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
 			return state.bottom();
@@ -61,11 +59,11 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 			return state;
 		else if (state.satisfies(left, this) == Satisfiability.NOT_SATISFIED)
 			return state
-					.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
+					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 							left, right, LogicalOr.INSTANCE, getLocation()), this);
 		else if (state.satisfies(left, this) == Satisfiability.UNKNOWN)
 			return state.lub(state
-					.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE),
+					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 							left, right, LogicalOr.INSTANCE, getLocation()), this));
 		else
 			return state.bottom();

@@ -11,6 +11,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.CompilationUnit;
@@ -72,8 +73,8 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	public void shadowingTest() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setJsonOutput(true)
-				.setInferTypes(true)
-				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval()))
+				
+				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(), new InferredTypes()))
 				.setDumpAnalysis(true);
 
 		perform("variablescoping", "shadowing.go", conf);
@@ -83,11 +84,11 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	public void shadowingTestMultiAssignment() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setJsonOutput(true)
-				.setInferTypes(true)
+				
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())
 				.setAbstractState(
-						getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval()))
+						getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval(), new InferredTypes()))
 				.setDumpAnalysis(true);
 
 		perform("variablescoping/interproc", "scoping.go", conf);

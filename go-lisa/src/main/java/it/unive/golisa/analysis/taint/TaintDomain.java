@@ -16,6 +16,7 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.type.Type;
 
 public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
@@ -127,7 +128,10 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		return !id.getDynamicType().isPointerType();
+		for (Type t : id.getRuntimeTypes())
+			if (!(t.isInMemoryType()))
+				return true;
+		return false;
 	}
 
 	@Override

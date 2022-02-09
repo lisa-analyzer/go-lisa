@@ -7,6 +7,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
@@ -53,14 +54,12 @@ public class CloseBlock extends Statement {
 	 * the block (ex. about variable re-declarations)
 	 */
 	@Override
-	public <A extends AbstractState<A, H, V>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					StatementStore<A, H, V> expressions) throws SemanticException {
+	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+			StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// The close block does not compute any symbolic expression, so it
 		// returns the empty set
 		// just popping the scope on the analysis state
-		return new AnalysisState<A, H, V>(entryState.getState().popScope(new ScopeToken(open)), new ExpressionSet<>());
+		return new AnalysisState<A, H, V, T>(entryState.getState().popScope(new ScopeToken(open)), new ExpressionSet<>());
 	}
 }

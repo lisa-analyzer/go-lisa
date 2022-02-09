@@ -12,9 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * uintptr is an integer type that is large enough to hold the bit pattern of any pointer.
- * 
- * {@link GoUIntPrtType#INSTANCE}.
+ * uintptr is an integer type that is large enough to hold the bit pattern of
+ * any pointer. {@link GoUIntPrtType#INSTANCE}.
  * 
  * @link https://pkg.go.dev/builtin#uintptr
  * 

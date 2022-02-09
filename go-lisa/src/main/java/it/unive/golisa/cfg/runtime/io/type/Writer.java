@@ -33,8 +33,8 @@ public class Writer extends GoStructType {
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 
-		//TODO: add methods
-		
+		// TODO: add methods
+
 	}
 
 	@Override

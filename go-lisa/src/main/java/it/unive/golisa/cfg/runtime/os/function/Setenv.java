@@ -27,7 +27,6 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * 
  * func Setenv(key, value string) error
  * 
  * @link https://pkg.go.dev/os#Setenv
@@ -37,7 +36,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class Setenv extends NativeCFG {
 
 	public Setenv(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Setenv", 
+		super(new CFGDescriptor(location, osUnit, false, "Setenv",
 				GoErrorType.INSTANCE,
 				new Parameter(location, "key", GoStringType.INSTANCE),
 				new Parameter(location, "value", GoStringType.INSTANCE)),
@@ -63,12 +62,17 @@ public class Setenv extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
-			AnalysisState<A, H, V, T> readerValue =  state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
-			AnalysisState<A, H, V, T> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
+			AnalysisState<A, H, V,
+					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V, T> nilValue = state
+					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);
 		}
 	}

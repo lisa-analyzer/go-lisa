@@ -54,12 +54,16 @@ public class CloseBlock extends Statement {
 	 * the block (ex. about variable re-declarations)
 	 */
 	@Override
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-			StatementStore<A, H, V, T> expressions) throws SemanticException {
+	public <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// The close block does not compute any symbolic expression, so it
 		// returns the empty set
 		// just popping the scope on the analysis state
-		return new AnalysisState<A, H, V, T>(entryState.getState().popScope(new ScopeToken(open)), new ExpressionSet<>());
+		return new AnalysisState<A, H, V, T>(entryState.getState().popScope(new ScopeToken(open)),
+				new ExpressionSet<>());
 	}
 }

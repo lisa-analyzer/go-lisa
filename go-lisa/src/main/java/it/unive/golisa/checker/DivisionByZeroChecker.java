@@ -26,12 +26,14 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
 
-public class DivisionByZeroChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
-		MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> {
+public class DivisionByZeroChecker
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> {
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 		if (node instanceof GoDiv) {
 			GoDiv div = (GoDiv) node;
@@ -63,37 +65,43 @@ public class DivisionByZeroChecker implements SemanticCheck<SimpleAbstractState<
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public boolean visitCompilationUnit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CompilationUnit unit) {
 		return true;
 	}
 
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}

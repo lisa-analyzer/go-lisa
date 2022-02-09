@@ -1,15 +1,5 @@
 package it.unive.golisa.analysis.rsubs;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -37,6 +27,14 @@ import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
 import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class RelationalSubstringDomain
 		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>

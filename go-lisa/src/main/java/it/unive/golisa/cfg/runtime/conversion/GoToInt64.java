@@ -55,13 +55,17 @@ public class GoToInt64 extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			ExternalSet<Type> castType = Caches.types().mkSingletonSet(GoInt64Type.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoInt64Type.INSTANCE, getLocation());
 			return state.smallStepSemantics(
-					new BinaryExpression(GoInt64Type.INSTANCE, expr, typeCast, TypeConv.INSTANCE, original.getLocation()),
+					new BinaryExpression(GoInt64Type.INSTANCE, expr, typeCast, TypeConv.INSTANCE,
+							original.getLocation()),
 					original);
 		}
 	}

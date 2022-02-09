@@ -31,7 +31,7 @@ public class FileInfo extends GoStructType {
 	}
 
 	public static void registerMethods() {
-		//TODO
+		// TODO
 	}
 
 	@Override

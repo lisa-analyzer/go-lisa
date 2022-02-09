@@ -45,9 +45,12 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		// FIXME: need to check which state needs to be returned (left/right)
 		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())

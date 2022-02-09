@@ -31,7 +31,7 @@ public class File extends GoStructType {
 	}
 
 	public static void registerMethods() {
-		//TODO
+		// TODO
 	}
 
 	@Override

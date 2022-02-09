@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -12,6 +8,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoMapType implements GoType, InMemoryType {
 
@@ -118,6 +117,6 @@ public class GoMapType implements GoType, InMemoryType {
 	}
 
 	public static void clearAll() {
-		mapTypes.clear();		
+		mapTypes.clear();
 	}
 }

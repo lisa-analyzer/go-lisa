@@ -21,7 +21,6 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
-import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
@@ -66,9 +65,12 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
@@ -84,7 +86,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 				Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
 				tmp = state.assign(id, new BinaryExpression(type, right, typeCast, TypeConv.INSTANCE,
 						getRight().getLocation()), this);
-			} else 
+			} else
 				tmp = state.assign(id, right, this);
 
 			result = result.lub(tmp);

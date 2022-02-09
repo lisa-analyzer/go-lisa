@@ -25,9 +25,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * Success response chaincodes.
- * 
- * func Success(payload []byte) pb.Response
+ * Success response chaincodes. func Success(payload []byte) pb.Response
  *
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#Success
  * 
@@ -60,9 +58,12 @@ public class Success extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(new PushAny(Response.INSTANCE, getLocation()), original);
 		}
 	}

@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.math.BigInteger;
-
 import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
@@ -41,13 +39,16 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.type.Type;
+import java.math.BigInteger;
 
-public class OverflowChecker implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
-		MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> {
+public class OverflowChecker
+		implements SemanticCheck<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+				MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> {
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
 		Expression leftExpression = null;
@@ -188,21 +189,24 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean visitCompilationUnit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CompilationUnit unit) {
 		return true;
 
@@ -210,20 +214,23 @@ public class OverflowChecker implements SemanticCheck<SimpleAbstractState<Monoli
 
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>, MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<MonolithicHeap, Apron, TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, Apron, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 
 		return true;

@@ -98,9 +98,6 @@ public abstract class GoChaincodeTestExecutor {
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, folder);
 		Path target = Paths.get(expectedPath.toString(), source);
 
-
-
-		
 		Program program = null;
 		try {
 			program = GoFrontEnd.processFile(target.toString());

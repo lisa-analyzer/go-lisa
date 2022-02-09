@@ -9,7 +9,8 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 public interface GoBinaryNumericalOperation {
 
 	public default ExternalSet<Type> resultType(SymbolicExpression left, SymbolicExpression right) {
-		if (left.getRuntimeTypes().noneMatch(Type::isNumericType) && right.getRuntimeTypes().noneMatch(Type::isNumericType))
+		if (left.getRuntimeTypes().noneMatch(Type::isNumericType)
+				&& right.getRuntimeTypes().noneMatch(Type::isNumericType))
 			// if none have numeric types in them, we cannot really compute the
 			// result
 			return Caches.types().mkSingletonSet(Untyped.INSTANCE);

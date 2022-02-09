@@ -23,7 +23,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * 
  * func Dir(path string) string
  * 
  * @link https://pkg.go.dev/path/filepath#Dir
@@ -33,7 +32,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class Dir extends NativeCFG {
 
 	public Dir(CodeLocation location, CompilationUnit pathfileUnit) {
-		super(new CFGDescriptor(location, pathfileUnit, false, "Dir", 
+		super(new CFGDescriptor(location, pathfileUnit, false, "Dir",
 				GoStringType.INSTANCE,
 				new Parameter(location, "pathfileUnit", GoStringType.INSTANCE)),
 				DirImpl.class);
@@ -58,9 +57,12 @@ public class Dir extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
 	}

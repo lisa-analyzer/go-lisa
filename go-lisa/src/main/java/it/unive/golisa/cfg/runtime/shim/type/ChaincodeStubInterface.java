@@ -83,13 +83,13 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 
 		// CreateCompositeKey
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "CreateCompositeKey",
-				GoTypesTuple.getTupleTypeOf(unknownLocation,GoStringType.INSTANCE,
+				GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(unknownLocation, "s", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "objectType", GoStringType.INSTANCE),
-				new Parameter(unknownLocation, "attributes", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))));
+				new Parameter(unknownLocation, "attributes",
+						GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))));
 		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, CreateCompositeKeyImpl.class));
-
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "DelState",
 				GoErrorType.INSTANCE,

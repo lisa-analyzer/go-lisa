@@ -128,20 +128,19 @@ public interface GoRuntimeLoader {
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
-			if(module.endsWith("pkg/statebased"))
+			if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
 	}
-	
 
 	private void loadFilePath(Program program) {
 		CompilationUnit filepath = new CompilationUnit(runtimeLocation, "filepath", false);
-		
-		//adding functions
+
+		// adding functions
 		filepath.addConstruct(new Dir(runtimeLocation, filepath));
 		filepath.addConstruct(new Join(runtimeLocation, filepath));
-		
+
 		// adding compilation units to program
 		program.addCompilationUnit(filepath);
 	}
@@ -173,17 +172,17 @@ public interface GoRuntimeLoader {
 		ioutil.addConstruct(new TempDir(runtimeLocation, ioutil));
 		ioutil.addConstruct(new TempFile(runtimeLocation, ioutil));
 		ioutil.addConstruct(new WriteFile(runtimeLocation, ioutil));
-		
+
 		// adding types
 		program.registerType(PipeReader.INSTANCE);
 		PipeReader.registerMethods();
-		
+
 		program.registerType(PipeWriter.INSTANCE);
 		PipeWriter.registerMethods();
-		
+
 		program.registerType(Reader.INSTANCE);
 		Reader.registerMethods();
-		
+
 		program.registerType(Writer.INSTANCE);
 		Writer.registerMethods();
 
@@ -195,15 +194,15 @@ public interface GoRuntimeLoader {
 		CompilationUnit os = new CompilationUnit(runtimeLocation, "os", false);
 
 		// adding functions
-		
-		//os/file
+
+		// os/file
 		os.addConstruct(new Create(runtimeLocation, os));
 		os.addConstruct(new CreateTemp(runtimeLocation, os));
 		os.addConstruct(new NewFile(runtimeLocation, os));
 		os.addConstruct(new Open(runtimeLocation, os));
 		os.addConstruct(new OpenFile(runtimeLocation, os));
-		
-		//os
+
+		// os
 		os.addConstruct(new Executable(runtimeLocation, os));
 		os.addConstruct(new Exit(runtimeLocation, os));
 		os.addConstruct(new Getenv(runtimeLocation, os));
@@ -213,7 +212,7 @@ public interface GoRuntimeLoader {
 		os.addConstruct(new RemoveAll(runtimeLocation, os));
 		os.addConstruct(new Setenv(runtimeLocation, os));
 		os.addConstruct(new Unsetenv(runtimeLocation, os));
-		
+
 		// adding types
 		program.registerType(File.INSTANCE);
 		program.registerType(FileMode.INSTANCE);
@@ -232,7 +231,8 @@ public interface GoRuntimeLoader {
 		// adding functions
 		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Int(runtimeLocation, cryptoRand));
 		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
-		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
+		cryptoRand
+				.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
 
 		// adding compilation units to program
 		program.addCompilationUnit(cryptoRand);
@@ -320,7 +320,7 @@ public interface GoRuntimeLoader {
 		// adding compilation unit to program
 		program.addCompilationUnit(statebased);
 	}
-	
+
 	private void loadShim(Program program) {
 		CompilationUnit shim = new CompilationUnit(runtimeLocation, "shim", false);
 
@@ -328,7 +328,7 @@ public interface GoRuntimeLoader {
 		shim.addConstruct(new Start(runtimeLocation, shim));
 		shim.addConstruct(new it.unive.golisa.cfg.runtime.shim.function.Error(runtimeLocation, shim));
 		shim.addConstruct(new Success(runtimeLocation, shim));
-		
+
 		// adding types
 		program.registerType(ChaincodeStub.INSTANCE);
 		ChaincodeStub.registerMethods();
@@ -368,7 +368,7 @@ public interface GoRuntimeLoader {
 		str.addConstruct(new GoIndex(runtimeLocation, str));
 		str.addConstruct(new GoIndexRune(runtimeLocation, str));
 		str.addConstruct(new GoLen(runtimeLocation, str));
-		
+
 		program.addCompilationUnit(str);
 	}
 

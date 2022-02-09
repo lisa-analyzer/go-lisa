@@ -4,10 +4,6 @@ import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
-import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.type.Untyped;
 
 public class Chaincode extends GoInterfaceType {
 

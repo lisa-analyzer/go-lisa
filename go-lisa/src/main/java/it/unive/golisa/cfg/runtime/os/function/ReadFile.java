@@ -26,7 +26,6 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * 
  * func ReadFile(name string) ([]byte, error)
  * 
  * @link https://pkg.go.dev/os#ReadFile
@@ -36,9 +35,9 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class ReadFile extends NativeCFG {
 
 	public ReadFile(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "ReadFile", 
+		super(new CFGDescriptor(location, osUnit, false, "ReadFile",
 				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
-				GoErrorType.INSTANCE),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				ReadFileImpl.class);
 	}
@@ -58,14 +57,19 @@ public class ReadFile extends NativeCFG {
 		}
 
 		public ReadFileImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "ReadFileImpl", GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
-					GoErrorType.INSTANCE), e);
+			super(cfg, location, "ReadFileImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+							GoErrorType.INSTANCE),
+					e);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

@@ -73,8 +73,9 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	public void shadowingTest() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setJsonOutput(true)
-				
-				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(), new InferredTypes()))
+
+				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
+						new InferredTypes()))
 				.setDumpAnalysis(true);
 
 		perform("variablescoping", "shadowing.go", conf);
@@ -84,11 +85,12 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	public void shadowingTestMultiAssignment() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setJsonOutput(true)
-				
+
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())
 				.setAbstractState(
-						getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval(), new InferredTypes()))
+						getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(), new Interval(),
+								new InferredTypes()))
 				.setDumpAnalysis(true);
 
 		perform("variablescoping/interproc", "scoping.go", conf);

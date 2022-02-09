@@ -24,7 +24,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * 
  * func IsNotExist(err error) bool
  * 
  * @link https://pkg.go.dev/os#IsNotExist
@@ -34,7 +33,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class IsNotExist extends NativeCFG {
 
 	public IsNotExist(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "IsNotExist", 
+		super(new CFGDescriptor(location, osUnit, false, "IsNotExist",
 				GoBoolType.INSTANCE,
 				new Parameter(location, "err", GoErrorType.INSTANCE)),
 				IsNotExistImpl.class);
@@ -57,11 +56,14 @@ public class IsNotExist extends NativeCFG {
 		public IsNotExistImpl(CFG cfg, CodeLocation location, Expression e) {
 			super(cfg, location, "IsNotExistImpl", GoBoolType.INSTANCE, e);
 		}
-		
+
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoBoolType.INSTANCE, getLocation()), original);
 		}
 	}

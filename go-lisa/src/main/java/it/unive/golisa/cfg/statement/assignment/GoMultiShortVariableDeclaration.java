@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
@@ -30,6 +26,8 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
@@ -49,16 +47,17 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-			StatementStore<A, H, V, T> expressions) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
 		// if the right state is top,
 		// we put all the variables to top
-		if (rightState.isTop() 
+		if (rightState.isTop()
 				|| isClean(rightState.getComputedExpressions()) || rightState.getComputedExpressions().size() > 1) {
 			AnalysisState<A, H, V, T> result = entryState;
 
@@ -75,7 +74,8 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 					if (isClean(rightState.getComputedExpressions())) {
 						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
 						for (Type type : id.getRuntimeTypes()) {
-							AnalysisState<A, H, V, T> assign = tmp.assign((Identifier) id, new Clean(type, getLocation()), this);
+							AnalysisState<A, H, V,
+									T> assign = tmp.assign((Identifier) id, new Clean(type, getLocation()), this);
 							if (!assign.getState().getHeapState().isTop() || !assign.getState().getValueState().isTop())
 								tmp2 = tmp2.lub(assign);
 						}

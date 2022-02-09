@@ -11,7 +11,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -118,6 +117,6 @@ public class GoPointerType implements PointerType, GoType {
 	}
 
 	public static void clearAll() {
-		pointerTypes.clear();		
+		pointerTypes.clear();
 	}
 }

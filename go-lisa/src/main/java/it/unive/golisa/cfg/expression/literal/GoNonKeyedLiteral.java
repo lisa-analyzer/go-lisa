@@ -44,9 +44,12 @@ public class GoNonKeyedLiteral extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+	public <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 
 		Type type = getStaticType();
@@ -75,7 +78,8 @@ public class GoNonKeyedLiteral extends NaryExpression {
 				AnalysisState<A, H, V, T> tmp = containerState;
 
 				for (Global field : structUnit.getInstanceGlobals(true)) {
-					AccessChild access = new AccessChild(field.getStaticType(), dereference, getVariable(field), getLocation());
+					AccessChild access = new AccessChild(field.getStaticType(), dereference, getVariable(field),
+							getLocation());
 					AnalysisState<A, H, V, T> fieldState = tmp.smallStepSemantics(access, this);
 					for (SymbolicExpression id : fieldState.getComputedExpressions())
 						if (i < params.length)
@@ -102,7 +106,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(new ReferenceType(type) , containerExp, getLocation());
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				// Assign the len property to this hid

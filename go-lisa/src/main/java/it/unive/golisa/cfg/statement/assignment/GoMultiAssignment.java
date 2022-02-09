@@ -1,12 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -33,6 +26,11 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiAssignment extends Expression {
 
@@ -86,11 +84,11 @@ public class GoMultiAssignment extends Expression {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-
 	private <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> entryState,
-			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo)
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> entryState,
+					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo)
 					throws SemanticException {
 
 		// if the assignment occurs in the same block in which
@@ -126,9 +124,12 @@ public class GoMultiAssignment extends Expression {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-			StatementStore<A, H, V, T> expressions) throws SemanticException {
+	public <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 

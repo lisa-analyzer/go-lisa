@@ -1,10 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
@@ -18,6 +13,10 @@ import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class GoStructType implements GoType, UnitType, InMemoryType {
 
@@ -74,12 +73,12 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 						if (methodPars.length == 0 && funcPars.length == 1)
 							match = true;
 						else {
-							if (methodPars.length +1 == funcPars.length) {
+							if (methodPars.length + 1 == funcPars.length) {
 								for (int i = 0; i < methodPars.length; i++)
-										if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
-												.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
+									if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
+											.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
 										match = true;
-							}	
+							}
 						}
 					}
 				}
@@ -143,10 +142,10 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		Collection<Global> fields = getUnit().getInstanceGlobals(true);
 		Expression[] values = new Expression[fields.size()];
-		
+
 		int i = 0;
 		for (Global key : fields)
-			if(key.getStaticType() instanceof GoType)
+			if (key.getStaticType() instanceof GoType)
 				values[i++] = ((GoType) key.getStaticType()).defaultValue(cfg, location);
 			else
 				values[i++] = new GoUnknown(cfg, location);

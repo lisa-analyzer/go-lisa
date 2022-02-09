@@ -24,7 +24,6 @@ import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.type.VoidType;
 
 /**
- * 
  * func Exit(code int)
  * 
  * @link https://pkg.go.dev/os#Exit
@@ -34,7 +33,7 @@ import it.unive.lisa.type.VoidType;
 public class Exit extends NativeCFG {
 
 	public Exit(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Exit", 
+		super(new CFGDescriptor(location, osUnit, false, "Exit",
 				VoidType.INSTANCE,
 				new Parameter(location, "code", GoIntType.INSTANCE)),
 				ExitImpl.class);
@@ -59,9 +58,12 @@ public class Exit extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(new Skip(getLocation()), original);
 		}
 	}

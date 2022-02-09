@@ -6,7 +6,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
-
 import org.junit.Test;
 
 public class InstrumentationTest extends GoAnalysisTestExecutor {
@@ -14,7 +13,8 @@ public class InstrumentationTest extends GoAnalysisTestExecutor {
 	@Test
 	public void returnStatementInstrumentationTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(), new InferredTypes()));
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
+						new InferredTypes()));
 		perform("instrumentation/return-statement", "instrumented-returns.go", conf);
 	}
 }

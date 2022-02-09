@@ -25,11 +25,10 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 public class GoUnknown extends Expression {
 
 	/**
-	 */
+	*/
 	public GoUnknown(CFG cfg, SourceCodeLocation location) {
 		super(cfg, location, Untyped.INSTANCE);
 	}
-
 
 	@Override
 	public int setOffset(int offset) {
@@ -45,11 +44,14 @@ public class GoUnknown extends Expression {
 	public String toString() {
 		return "<UNKNOWN>";
 	}
-	
+
 	@Override
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-			StatementStore<A, H, V, T> expressions) throws SemanticException {
+	public <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		return entryState.smallStepSemantics(new PushAny(Untyped.INSTANCE, getLocation()), getParentStatement());
 	}
 }

@@ -38,7 +38,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class OpenFile extends NativeCFG {
 
 	public OpenFile(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "OpenFile", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+		super(new CFGDescriptor(location, osUnit, false, "OpenFile",
+				GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE),
 				new Parameter(location, "flag", GoIntType.INSTANCE),
 				new Parameter(location, "perm", FileMode.INSTANCE)),
@@ -60,14 +61,19 @@ public class OpenFile extends NativeCFG {
 		}
 
 		public OpenFileImpl(CFG cfg, CodeLocation location, Expression... params) {
-			super(cfg, location, "OpenFileImpl", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), params);
+			super(cfg, location, "OpenFileImpl",
+					GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+					params);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

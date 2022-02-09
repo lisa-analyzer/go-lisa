@@ -32,7 +32,9 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Prime extends NativeCFG {
 
 	public Prime(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Read",  GoTypesTuple.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE, GoErrorType.INSTANCE),
+		super(new CFGDescriptor(location, randUnit, false, "Read",
+				GoTypesTuple.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE,
+						GoErrorType.INSTANCE),
 				new Parameter(location, "rand", Reader.INSTANCE),
 				new Parameter(location, "bits", GoIntType.INSTANCE)),
 				PrimeImpl.class);
@@ -53,14 +55,18 @@ public class Prime extends NativeCFG {
 		}
 
 		public PrimeImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "PrimeImpl", GoTypesTuple.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
+			super(cfg, location, "PrimeImpl", GoTypesTuple.getTupleTypeOf(location,
+					it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

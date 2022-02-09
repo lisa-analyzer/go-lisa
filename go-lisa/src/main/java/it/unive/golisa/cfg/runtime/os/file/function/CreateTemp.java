@@ -35,7 +35,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class CreateTemp extends NativeCFG {
 
 	public CreateTemp(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Create", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+		super(new CFGDescriptor(location, osUnit, false, "Create",
+				GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
 				CreateTempImpl.class);
@@ -56,14 +57,19 @@ public class CreateTemp extends NativeCFG {
 		}
 
 		public CreateTempImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "CreateTempImpl", GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), expr, expr2);
+			super(cfg, location, "CreateTempImpl",
+					GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), expr,
+					expr2);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

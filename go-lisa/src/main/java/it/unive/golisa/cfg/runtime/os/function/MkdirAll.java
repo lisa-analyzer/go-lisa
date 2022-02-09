@@ -28,7 +28,6 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * 
  * func MkdirAll(path string, perm FileMode) error
  * 
  * @link https://pkg.go.dev/os#MkdirAll
@@ -38,7 +37,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class MkdirAll extends NativeCFG {
 
 	public MkdirAll(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "MkdirAll", 
+		super(new CFGDescriptor(location, osUnit, false, "MkdirAll",
 				GoErrorType.INSTANCE,
 				new Parameter(location, "path", GoStringType.INSTANCE),
 				new Parameter(location, "perm", FileMode.INSTANCE)),
@@ -63,14 +62,18 @@ public class MkdirAll extends NativeCFG {
 			super(cfg, location, "MkdirAllImpl", GoErrorType.INSTANCE, expr, expr2);
 		}
 
-
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
-			AnalysisState<A, H, V, T> readerValue =  state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
-			AnalysisState<A, H, V, T> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
+			AnalysisState<A, H, V,
+					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V, T> nilValue = state
+					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);
 		}
 	}

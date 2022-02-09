@@ -47,9 +47,9 @@ public class ChaincodeStub extends GoStructType {
 		ChaincodeStub.INSTANCE.getUnit()
 				.addInstanceConstruct(new GetFunctionAndParameters(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 		ChaincodeStub.INSTANCE.getUnit()
-		.addInstanceConstruct(new GetArgs(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
+				.addInstanceConstruct(new GetArgs(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 		ChaincodeStub.INSTANCE.getUnit()
-		.addInstanceConstruct(new GetStringArgs(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
+				.addInstanceConstruct(new GetStringArgs(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 		ChaincodeStub.INSTANCE.getUnit()
 				.addInstanceConstruct(new PutPrivateData(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 		ChaincodeStub.INSTANCE.getUnit()
@@ -57,7 +57,7 @@ public class ChaincodeStub extends GoStructType {
 		ChaincodeStub.INSTANCE.getUnit()
 				.addInstanceConstruct(new GetState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 		ChaincodeStub.INSTANCE.getUnit()
-		.addInstanceConstruct(new CreateCompositeKey(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
+				.addInstanceConstruct(new CreateCompositeKey(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 	}
 
 	@Override

@@ -95,6 +95,6 @@ public class GoQualifiedType implements GoType {
 	}
 
 	public static void clearAll() {
-		qualTypes.clear();		
+		qualTypes.clear();
 	}
 }

@@ -27,7 +27,8 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes []string) (string, error)
+ * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes
+ * []string) (string, error)
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -35,7 +36,7 @@ public class CreateCompositeKey extends NativeCFG {
 
 	public CreateCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "CreateCompositeKey",
-				GoTypesTuple.getTupleTypeOf(location,GoStringType.INSTANCE,
+				GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "s", ChaincodeStub.INSTANCE),
 				new Parameter(location, "objectType", GoStringType.INSTANCE),
@@ -44,7 +45,7 @@ public class CreateCompositeKey extends NativeCFG {
 	}
 
 	public static class CreateCompositeKeyImpl extends NaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -58,16 +59,20 @@ public class CreateCompositeKey extends NativeCFG {
 		}
 
 		public CreateCompositeKeyImpl(CFG cfg, CodeLocation location, Expression... params) {
-			super(cfg, location, "CreateCompositeKeyImpl", 
+			super(cfg, location, "CreateCompositeKeyImpl",
 					GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE,
-							GoErrorType.INSTANCE), params);
+							GoErrorType.INSTANCE),
+					params);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			AnalysisState<A, H, V, T> result = state.bottom();
 			for (ExpressionSet<SymbolicExpression> s : params)
 				for (SymbolicExpression s1 : s)

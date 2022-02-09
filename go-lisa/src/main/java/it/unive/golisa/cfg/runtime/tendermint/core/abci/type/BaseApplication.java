@@ -36,15 +36,15 @@ public class BaseApplication extends GoStructType {
 
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		
+
 		BaseApplication.INSTANCE.getUnit()
-		.addInstanceConstruct(new BeginBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
+				.addInstanceConstruct(new BeginBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
 		BaseApplication.INSTANCE.getUnit()
-		.addInstanceConstruct(new DeliverTx(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
+				.addInstanceConstruct(new DeliverTx(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
 		BaseApplication.INSTANCE.getUnit()
-		.addInstanceConstruct(new EndBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
+				.addInstanceConstruct(new EndBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
 		BaseApplication.INSTANCE.getUnit()
-		.addInstanceConstruct(new Commit(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
+				.addInstanceConstruct(new Commit(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
 	}
 
 	@Override

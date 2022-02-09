@@ -26,7 +26,6 @@ import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func (BaseApplication) DeliverTx(req RequestDeliverTx) ResponseDeliverTx
- * 
  * https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.DeliverTx
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -57,12 +56,15 @@ public class DeliverTx extends NativeCFG {
 		public DeliverTxImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
 			super(cfg, location, "DeliverTxImpl", ResponseDeliverTx.INSTANCE, expr, expr2);
 		}
-		
+
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.smallStepSemantics(new PushAny(ResponseDeliverTx.INSTANCE, getLocation()), original);
 		}
 	}

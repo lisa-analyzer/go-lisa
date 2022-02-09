@@ -26,7 +26,6 @@ import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func (BaseApplication) EndBlock(req RequestEndBlock) ResponseEndBlock
- * 
  * https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.EndBlock
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -57,12 +56,15 @@ public class EndBlock extends NativeCFG {
 		public EndBlockImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
 			super(cfg, location, "EndBlockImpl", ResponseEndBlock.INSTANCE, expr, expr2);
 		}
-		
+
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.smallStepSemantics(new PushAny(ResponseEndBlock.INSTANCE, getLocation()), original);
 		}
 	}

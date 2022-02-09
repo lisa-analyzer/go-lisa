@@ -60,23 +60,30 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 
 		public static SymbolicExpression type(SymbolicExpression exp) {
 			if (exp.getDynamicType() instanceof GoUntypedInt) {
-				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoIntType.INSTANCE)), GoIntType.INSTANCE, exp.getCodeLocation());
-				return new BinaryExpression(GoIntType.INSTANCE, exp, typeCast, TypeConv.INSTANCE, exp.getCodeLocation());
+				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoIntType.INSTANCE)),
+						GoIntType.INSTANCE, exp.getCodeLocation());
+				return new BinaryExpression(GoIntType.INSTANCE, exp, typeCast, TypeConv.INSTANCE,
+						exp.getCodeLocation());
 
 			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
-				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE)), GoFloat32Type.INSTANCE,
+				Constant typeCast = new Constant(
+						new TypeTokenType(Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE)),
+						GoFloat32Type.INSTANCE,
 						exp.getCodeLocation());
-				return new BinaryExpression(GoFloat32Type.INSTANCE, exp, typeCast, TypeConv.INSTANCE, exp.getCodeLocation());
+				return new BinaryExpression(GoFloat32Type.INSTANCE, exp, typeCast, TypeConv.INSTANCE,
+						exp.getCodeLocation());
 			} else
 				return exp;
 		}
 	}
 
-
 	@Override
-	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		// e.g., _ := f(), we just return right state
 		// FIXME: it should return the entry state

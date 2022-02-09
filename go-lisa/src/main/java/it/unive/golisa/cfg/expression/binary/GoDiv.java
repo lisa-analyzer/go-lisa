@@ -36,16 +36,20 @@ public class GoDiv extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type leftType : left.getRuntimeTypes())
 			for (Type rightType : right.getRuntimeTypes())
-				if (leftType.isNumericType() && rightType.isNumericType()) 
-					result = result.lub(state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
-							NumericNonOverflowingDiv.INSTANCE, getLocation()), this));
+				if (leftType.isNumericType() && rightType.isNumericType())
+					result = result.lub(
+							state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
+									NumericNonOverflowingDiv.INSTANCE, getLocation()), this));
 
 		return result;
 	}

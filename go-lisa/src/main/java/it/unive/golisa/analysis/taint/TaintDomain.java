@@ -29,13 +29,13 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	private static final AnnotationMatcher CLEAN_MATCHER = new BasicAnnotationMatcher(CLEAN_ANNOTATION);
 
 	private static final TaintDomain TOP = new TaintDomain((byte) 3);
-	
+
 	private static final TaintDomain TAINTED = new TaintDomain((byte) 2);
 
 	private static final TaintDomain CLEAN = new TaintDomain((byte) 1);
 
 	private static final TaintDomain BOTTOM = new TaintDomain((byte) 0);
-	
+
 	private final byte v;
 
 	public TaintDomain() {
@@ -64,7 +64,8 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	@Override
 	public DomainRepresentation representation() {
 		return this == BOTTOM ? Lattice.BOTTOM_REPR
-				: this == CLEAN ? new StringRepresentation("_") : this == TAINTED ? new StringRepresentation("#") : Lattice.TOP_REPR;
+				: this == CLEAN ? new StringRepresentation("_")
+						: this == TAINTED ? new StringRepresentation("#") : Lattice.TOP_REPR;
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 			ProgramPoint pp) throws SemanticException {
 		if (constant instanceof Tainted)
 			return new InferredPair<>(this, TAINTED, bottom());
-		return new InferredPair<>(this, CLEAN, bottom());		
+		return new InferredPair<>(this, CLEAN, bottom());
 	}
 
 	@Override
@@ -106,10 +107,10 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 			TaintDomain right, TaintDomain state, ProgramPoint pp) throws SemanticException {
 		if (left == TAINTED || right == TAINTED)
 			return new InferredPair<>(this, TAINTED, bottom());
-		
+
 		if (left == TOP || right == TOP)
 			return new InferredPair<>(this, TOP, bottom());
-		
+
 		return new InferredPair<>(this, CLEAN, bottom());
 	}
 
@@ -119,10 +120,10 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 			throws SemanticException {
 		if (left == TAINTED || right == TAINTED || middle == TAINTED)
 			return new InferredPair<>(this, TAINTED, bottom());
-		
+
 		if (left == TOP || right == TOP || middle == TOP)
 			return new InferredPair<>(this, TOP, bottom());
-		
+
 		return new InferredPair<>(this, CLEAN, bottom());
 	}
 

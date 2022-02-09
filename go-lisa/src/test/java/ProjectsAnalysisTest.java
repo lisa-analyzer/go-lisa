@@ -16,7 +16,8 @@ public class ProjectsAnalysisTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testProjectAnalysis001() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(), new InferredTypes()))
+				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
+						new InferredTypes()))
 				.setDumpAnalysis(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())

@@ -55,9 +55,10 @@ public class GoAssignment extends BinaryExpression {
 	}
 
 	private <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> entryState,
-			SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> entryState,
+					SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
 
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
@@ -83,9 +84,12 @@ public class GoAssignment extends BinaryExpression {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		// TODO: this check should be moved in the front-end
 		if (!blocksToDeclaration.isEmpty()

@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
@@ -13,6 +9,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GoArrayType implements GoType, InMemoryType {
 
@@ -32,11 +31,11 @@ public class GoArrayType implements GoType, InMemoryType {
 		this.contentType = contentType;
 		this.length = length;
 	}
-	
+
 	public Type getContenType() {
 		return contentType;
 	}
-	
+
 	public Integer getLength() {
 		return length;
 	}
@@ -98,9 +97,9 @@ public class GoArrayType implements GoType, InMemoryType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		Expression[] result = new Expression[length];
 		for (int i = 0; i < length; i++)
-			if(contentType instanceof GoType)
+			if (contentType instanceof GoType)
 				result[i] = ((GoType) contentType).defaultValue(cfg, location);
-			else 
+			else
 				result[i] = new GoUnknown(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, result, this);

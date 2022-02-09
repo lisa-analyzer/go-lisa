@@ -32,7 +32,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 public class Read extends NativeCFG {
 
 	public Read(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Read",  GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
+		super(new CFGDescriptor(location, randUnit, false, "Read",
+				GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "b", GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)))),
 				ReadImpl.class);
 	}
@@ -52,13 +53,17 @@ public class Read extends NativeCFG {
 		}
 
 		public ReadImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "ReadImpl", GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr);
+			super(cfg, location, "ReadImpl",
+					GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.top();
 		}
 	}

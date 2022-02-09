@@ -1,8 +1,5 @@
 package it.unive.golisa.analysis.apron;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-
 import apron.Abstract1;
 import apron.ApronException;
 import apron.Box;
@@ -58,6 +55,8 @@ import it.unive.lisa.symbolic.value.operator.binary.TypeCast;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.math.BigInteger;
+import java.util.Arrays;
 
 public class Apron implements ValueDomain<Apron> {
 

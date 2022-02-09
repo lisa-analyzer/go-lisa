@@ -1,17 +1,5 @@
 package it.unive.golisa;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.annotation.NonDeterminismAnnotationSet;
@@ -32,42 +20,53 @@ import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import java.io.File;
+import java.io.IOException;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 public class GoLiSA {
 
 	public static void main(String[] args) throws AnalysisSetupException {
-		
-        Options options = new Options();
 
-        Option input = new Option("i", "input", true, "input file path");
-        input.setRequired(true);
-        options.addOption(input);
+		Options options = new Options();
 
-        Option output = new Option("o", "output", true, "output file path");
-        output.setRequired(true);
-        options.addOption(output);
-        
-        Option framework = new Option("f", "framework", true, "framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
-        framework.setRequired(false);
-        options.addOption(framework);
+		Option input = new Option("i", "input", true, "input file path");
+		input.setRequired(true);
+		options.addOption(input);
 
-        CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd = null;
+		Option output = new Option("o", "output", true, "output file path");
+		output.setRequired(true);
+		options.addOption(output);
 
-        try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            formatter.printHelp("utility-name", options);
+		Option framework = new Option("f", "framework", true,
+				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
+		framework.setRequired(false);
+		options.addOption(framework);
 
-            System.exit(1);
-        }
+		CommandLineParser parser = new DefaultParser();
+		HelpFormatter formatter = new HelpFormatter();
+		CommandLine cmd = null;
+
+		try {
+			cmd = parser.parse(options, args);
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+			formatter.printHelp("utility-name", options);
+
+			System.exit(1);
+		}
 
 		String filePath = cmd.getOptionValue("input");
 
 		String outputDir = cmd.getOptionValue("output");
-		
+
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
@@ -78,7 +77,8 @@ public class GoLiSA {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()), LiSAFactory.getDefaultFor(TypeDomain.class)))
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 
 		Program program = null;
@@ -93,11 +93,11 @@ public class GoLiSA {
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(new NonDeterminismAnnotationSet());
 			annotationLoader.load(program);
-			
+
 			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints( EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
 			entryLoader.load(program);
-			
+
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
 			System.err.println("Parsing error.");

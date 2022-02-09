@@ -37,7 +37,7 @@ public class Parse extends NativeCFG {
 	}
 
 	public static class ParseImpl extends BinaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -56,13 +56,16 @@ public class Parse extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
 					new PushAny(new GoTypesTuple(new Parameter(original.getLocation(), "_", Time.INSTANCE),
-									new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
+							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
 							original.getLocation()),
 					original);
 		}

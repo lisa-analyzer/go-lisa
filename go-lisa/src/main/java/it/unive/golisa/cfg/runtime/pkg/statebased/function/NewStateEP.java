@@ -28,7 +28,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error)
- * 
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/pkg/statebased#NewStateEP
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -43,7 +42,7 @@ public class NewStateEP extends NativeCFG {
 	}
 
 	public static class NewStateEPImpl extends UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -57,13 +56,17 @@ public class NewStateEP extends NativeCFG {
 		}
 
 		public NewStateEPImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "NewStateEPImpl", GoTypesTuple.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE), e);
+			super(cfg, location, "NewStateEPImpl",
+					GoTypesTuple.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE), e);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(new Clean(getLocation()), original);
 		}
 	}

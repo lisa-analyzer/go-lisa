@@ -102,9 +102,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 					VariableRef var = new VariableRef(cfg, par.getLocation(), par.getName());
 					Type parType = par.getStaticType();
 					Expression decl;
-					if(parType instanceof GoType)
+					if (parType instanceof GoType)
 						decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var,
-							((GoType) parType).defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
+								((GoType) parType).defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
 					else
 						decl = new GoUnknown(cfg, (SourceCodeLocation) par.getLocation());
 
@@ -258,7 +258,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
 		Type returnType = getGoReturnType(funcDecl.signature());
-		
+
 		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), packageName, false,
 				funcName,
 				returnType, cfgArgs);

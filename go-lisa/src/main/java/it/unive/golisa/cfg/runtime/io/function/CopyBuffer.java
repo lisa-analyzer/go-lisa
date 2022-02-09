@@ -29,7 +29,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.common.UInt8;
 
 /**
- * func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err error)
+ * func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err
+ * error)
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -61,14 +62,17 @@ public class CopyBuffer extends NativeCFG {
 
 		public CopyBufferImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "CopyBufferImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE),	params);
+					GoTypesTuple.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE), params);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.top();
 		}
 	}

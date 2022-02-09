@@ -27,7 +27,6 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * 
  * func Unsetenv(key string) error
  * 
  * @link https://pkg.go.dev/os#Unsetenv
@@ -37,7 +36,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class Unsetenv extends NativeCFG {
 
 	public Unsetenv(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Unsetenv", 
+		super(new CFGDescriptor(location, osUnit, false, "Unsetenv",
 				GoErrorType.INSTANCE,
 				new Parameter(location, "key", GoStringType.INSTANCE)),
 				UnsetenvImpl.class);
@@ -62,11 +61,16 @@ public class Unsetenv extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			AnalysisState<A, H, V, T> readerValue =  state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
-			AnalysisState<A, H, V, T> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+		protected <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+			AnalysisState<A, H, V,
+					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V, T> nilValue = state
+					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);
 		}
 

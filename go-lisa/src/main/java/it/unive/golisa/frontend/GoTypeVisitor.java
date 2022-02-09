@@ -293,19 +293,19 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public GoType visitMapType(MapTypeContext ctx) {
 		Type keyType = visitType_(ctx.type_());
-		keyType =  keyType == null ? Untyped.INSTANCE : keyType;
-		
+		keyType = keyType == null ? Untyped.INSTANCE : keyType;
+
 		Type elementType = visitElementType(ctx.elementType());
-		elementType =  elementType == null ? Untyped.INSTANCE : elementType;
-		
+		elementType = elementType == null ? Untyped.INSTANCE : elementType;
+
 		return GoMapType.lookup(new GoMapType(keyType, elementType));
 	}
 
 	@Override
 	public GoType visitChannelType(ChannelTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
-		contentType =  contentType == null ? Untyped.INSTANCE : contentType;
-		
+		contentType = contentType == null ? Untyped.INSTANCE : contentType;
+
 		if (ctx.RECEIVE() == null)
 			return GoChannelType.lookup(new GoChannelType(contentType));
 		else if (getCol(ctx.CHAN()) < getCol(ctx.RECEIVE()))

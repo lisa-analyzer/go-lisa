@@ -9,6 +9,14 @@ plugins {
 
 repositories {
         mavenCentral()
+        maven {
+            name = "GitHubPackages"
+            url 'https://maven.pkg.github.com/UniVE-SSV/lisa'
+            credentials {
+				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            	password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }  
 }
 
 group = 'it.unive'
@@ -18,15 +26,14 @@ mainClassName = 'it.unive.golisa.GoLiSA'
 dependencies {
     antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
-    
-	implementation fileTree(dir: 'libs', include: '*.jar')
-
+    implementation 'com.github.unive-ssv:lisa-core:0.1b5-SNAPSHOT'
+    implementation 'com.github.unive-ssv:lisa-sdk:0.1b5-SNAPSHOT'
+    implementation 'com.github.unive-ssv:lisa-imp:0.1b5-SNAPSHOT'
     implementation 'com.github.unive-ssv:tarsis:1.0'
     
     applicationDefaultJvmArgs = ["-Djava.library.path=/Users/vince/apron/lib:/usr/local/opt/gmp/lib -ea"]
     
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
-	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
     
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'

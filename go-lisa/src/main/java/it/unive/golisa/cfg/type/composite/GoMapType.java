@@ -93,7 +93,7 @@ public class GoMapType implements GoType, InMemoryType {
 
 	@Override
 	public boolean isPointerType() {
-		return true;
+		return false;
 	}
 
 	@Override

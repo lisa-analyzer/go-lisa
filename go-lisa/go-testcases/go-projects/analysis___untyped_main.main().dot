@@ -1,7 +1,9 @@
 digraph {
-	labelloc="t";
-	label="['/Users/vince/gits/go-lisa/go-lisa/go-testcases/go-projects/example/user/hello/morestrings/b.go':8:22]";
-	"node0" [shape="rect",color="black",peripheries="2",label=<return +(x, y)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['/Users/vince/gits/go-lisa/go-lisa/go-testcases/go-projects/example/user/hello/morestrings/b.go':8:22]:a: [1, 1]<BR/>['/Users/vince/gits/go-lisa/go-lisa/go-testcases/go-projects/example/user/hello/morestrings/b.go':8:22]:b: [2, 2]<BR/>ret_value@morestrings.anotherSum: [3, 3]<BR/>x: [1, 1]<BR/>y: [2, 2] ]]<BR/>}} -&gt; [ret_value@morestrings.anotherSum]>];
+	"node0" [shape="rect",color="black",label=<x := morestrings::sum(1, 2)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ x: [3, 3]<BR/>[stack: [3, 3]] ]]<BR/>}} -&gt; [x]>];
+	"node1" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ x: [3, 3]<BR/>y: [4, 4]<BR/>[stack: _|_] ]]<BR/>}} -&gt; [skip]>];
+	"node2" [shape="rect",color="gray",label=<y := main::sum(1, 2)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ x: [3, 3]<BR/>y: [4, 4]<BR/>[stack: [4, 4]] ]]<BR/>}} -&gt; [y]>];
+	"node0" -> "node2" [color="black"];
+	"node2" -> "node1" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

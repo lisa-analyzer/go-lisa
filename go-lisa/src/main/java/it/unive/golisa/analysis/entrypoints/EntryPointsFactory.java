@@ -21,7 +21,7 @@ public class EntryPointsFactory {
 
 			@Override
 			protected void build(Set<String> entryPoints) {
-				entryPoints.add("Main");
+				entryPoints.add("main");
 			}
 		};
 	}

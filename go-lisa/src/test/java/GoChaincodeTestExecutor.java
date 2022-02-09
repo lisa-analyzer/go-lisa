@@ -2,23 +2,26 @@ import static it.unive.lisa.outputs.compare.JsonReportComparer.compare;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
-import it.unive.golisa.analysis.taint.annotation.NonDeterminismAnnotationSet;
-import it.unive.golisa.frontend.GoFrontEnd;
-import it.unive.golisa.loader.AnnotationLoader;
-import it.unive.golisa.loader.EntryPointLoader;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.outputs.JsonReport;
-import it.unive.lisa.program.Program;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.apache.commons.io.FileUtils;
+
+import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
+import it.unive.golisa.analysis.taint.annotation.AnnotationSet;
+import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.golisa.loader.AnnotationLoader;
+import it.unive.golisa.loader.EntryPointLoader;
+import it.unive.lisa.AnalysisException;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.imp.ParsingException;
+import it.unive.lisa.outputs.JsonReport;
+import it.unive.lisa.program.Program;
 
 public abstract class GoChaincodeTestExecutor {
 
@@ -51,9 +54,9 @@ public abstract class GoChaincodeTestExecutor {
 	 *                          be ignored, as it will be overwritten by the
 	 *                          computed workdir)
 	 */
-	protected void perform(String folder, String source, LiSAConfiguration configuration) {
+	protected void perform(String folder, String source, LiSAConfiguration configuration, AnnotationSet annSet) {
 		System.out.println("Testing " + getCaller());
-		performAux(folder, null, source, configuration);
+		performAux(folder, null, source, configuration, annSet);
 	}
 
 	/**
@@ -87,13 +90,13 @@ public abstract class GoChaincodeTestExecutor {
 	 *                          be ignored, as it will be overwritten by the
 	 *                          computed workdir)
 	 */
-	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration) {
+	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration, AnnotationSet annSet) {
 		System.out.println("Testing " + getCaller());
-		performAux(folder, subfolder, source, configuration);
+		performAux(folder, subfolder, source, configuration, annSet);
 
 	}
 
-	private void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration) {
+	private void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration, AnnotationSet annSet) {
 		Path expectedPath = Paths.get(EXPECTED_RESULTS_DIR, folder);
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, folder);
 		Path target = Paths.get(expectedPath.toString(), source);
@@ -102,7 +105,7 @@ public abstract class GoChaincodeTestExecutor {
 		try {
 			program = GoFrontEnd.processFile(target.toString());
 			AnnotationLoader annotationLoader = new AnnotationLoader();
-			annotationLoader.addAnnotationSet(new NonDeterminismAnnotationSet());
+			annotationLoader.addAnnotationSet(annSet);
 			annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();

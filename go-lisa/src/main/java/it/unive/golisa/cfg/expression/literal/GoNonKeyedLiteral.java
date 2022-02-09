@@ -61,7 +61,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 
 		if (getStaticType() instanceof GoStructType) {
 			// Retrieve the struct type (that is a compilation unit)
-			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
+			CompilationUnit structUnit = ((GoStructType) type).getUnit();
 
 			AnalysisState<A, H, V, T> result = state.bottom();
 
@@ -161,7 +161,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			int sliceLenght = getSubExpressions().length;
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(type, containerExp, getLocation());
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				// Assign the len property to this hid

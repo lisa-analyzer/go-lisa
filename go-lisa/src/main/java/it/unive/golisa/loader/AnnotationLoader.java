@@ -1,5 +1,10 @@
 package it.unive.golisa.loader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import it.unive.golisa.analysis.taint.annotation.AnnotationSet;
 import it.unive.golisa.analysis.taint.annotation.CodeAnnotation;
 import it.unive.golisa.analysis.taint.annotation.MethodAnnotation;
@@ -9,10 +14,6 @@ import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.NativeCFG;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 public class AnnotationLoader {
 

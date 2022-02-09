@@ -1,5 +1,11 @@
 
+import java.io.IOException;
+
+import org.junit.Test;
+
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.annotation.AnnotationSet;
+import it.unive.golisa.analysis.taint.annotation.NonDeterminismAnnotationSet;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
@@ -12,11 +18,11 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import java.io.IOException;
-import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
-
+	
+	private final AnnotationSet annSet = new NonDeterminismAnnotationSet();
+	
 	@Test
 	public void testBoleto() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -29,7 +35,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
-		perform("cc/boleto", "boleto.go", conf);
+		perform("cc/boleto", "boleto.go", conf, annSet);
 	}
 
 	@Test
@@ -44,7 +50,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
-		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf);
+		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
 	}
 
 	@Test
@@ -59,7 +65,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
-		perform("cc/high-throughput", "high-throughput.go", conf);
+		perform("cc/high-throughput", "high-throughput.go", conf, annSet);
 	}
 
 	@Test
@@ -74,7 +80,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
-		perform("cc/marbles02", "marbles02.go", conf);
+		perform("cc/marbles02", "marbles02.go", conf, annSet);
 	}
 
 	@Test
@@ -88,6 +94,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
-		perform("cc/cpu-use", "cpu-use.go", conf);
+		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
 	}
 }

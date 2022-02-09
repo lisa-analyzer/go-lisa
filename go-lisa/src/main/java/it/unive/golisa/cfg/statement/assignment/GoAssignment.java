@@ -104,7 +104,6 @@ public class GoAssignment extends BinaryExpression {
 			result = result.forgetIdentifiers(getRight().getMetaVariables());
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-
 		return result;
 	}
 }

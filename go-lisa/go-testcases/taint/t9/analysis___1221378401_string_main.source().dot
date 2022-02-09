@@ -1,7 +1,7 @@
 digraph {
 	labelloc="t";
 	label="['go-testcases/taint/t9/t9.go':24:13]";
-	"node0" [shape="rect",color="black",peripheries="2",label=<return &quot;asd&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['go-testcases/taint/t9/t9.go':24:13]:['go-testcases/taint/t9/t9.go':16:1]:n: _<BR/>['go-testcases/taint/t9/t9.go':24:13]:call_ret_value@'go-testcases/taint/t9/t9.go':23:8: _|_<BR/>['go-testcases/taint/t9/t9.go':24:13]:n: _<BR/>ret_value@main.source: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; [ret_value@main.source]>];
+	"node0" [shape="rect",color="black",peripheries="2",label=<return &quot;asd&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['go-testcases/taint/t9/t9.go':24:13]:['go-testcases/taint/t9/t9.go':16:1]:n: _<BR/>['go-testcases/taint/t9/t9.go':24:13]:n: _<BR/>ret_value@source: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; [ret_value@source]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

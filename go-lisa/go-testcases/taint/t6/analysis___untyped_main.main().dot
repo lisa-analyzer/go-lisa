@@ -1,13 +1,13 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<v := [unresolved]main.source()<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ v: #<BR/>[inferred: #, state: _|_] ]]<BR/>}} -&gt; [v]>];
+	"node0" [shape="rect",color="black",label=<v := main::source()<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ v: #<BR/>[inferred: #, state: _|_] ]]<BR/>}} -&gt; [v]>];
 	"node1" [shape="rect",color="gray",label=<Open block: 'go-testcases/taint/t6/t6.go':15:1<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['go-testcases/taint/t6/t6.go':15:1]:v: #<BR/>v: #<BR/>[inferred: #, state: _|_] ]]<BR/>}} -&gt; [['go-testcases/taint/t6/t6.go':15:1]:v, v]>];
-	"node2" [shape="rect",color="gray",label=<Close block: 'go-testcases/taint/t6/t6.go':15:1<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ v: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; []>];
-	"node3" [shape="rect",color="gray",label=<v = &quot;Hello World!&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['go-testcases/taint/t6/t6.go':15:1]:v: _<BR/>v: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; [v]>];
-	"node4" [shape="rect",color="gray",label=<[unresolved]main.sink(v)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ call_ret_value@'go-testcases/taint/t6/t6.go':18:7: _|_<BR/>v: _<BR/>[inferred: _|_, state: _|_] ]]<BR/>}} -&gt; [call_ret_value@'go-testcases/taint/t6/t6.go':18:7]>];
-	"node5" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ call_ret_value@'go-testcases/taint/t6/t6.go':18:7: _|_<BR/>v: _<BR/>[inferred: _|_, state: _|_] ]]<BR/>}} -&gt; [skip]>];
-	"node1" -> "node3" [color="black"];
-	"node2" -> "node4" [color="black"];
-	"node3" -> "node2" [color="black"];
+	"node2" [shape="rect",color="gray",label=<v = &quot;Hello World!&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['go-testcases/taint/t6/t6.go':15:1]:v: _<BR/>v: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; [v]>];
+	"node3" [shape="rect",color="gray",label=<Close block: 'go-testcases/taint/t6/t6.go':15:1<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ v: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; []>];
+	"node4" [shape="rect",color="gray",label=<main::sink(v)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ v: _<BR/>[inferred: _|_, state: _|_] ]]<BR/>}} -&gt; [call_ret_value@'go-testcases/taint/t6/t6.go':18:7]>];
+	"node5" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ v: _<BR/>[inferred: _|_, state: _|_] ]]<BR/>}} -&gt; [skip]>];
+	"node1" -> "node2" [color="black"];
+	"node2" -> "node3" [color="black"];
+	"node3" -> "node4" [color="black"];
 	"node4" -> "node5" [color="black"];
 	"node0" -> "node1" [color="black"];
 subgraph cluster_legend {

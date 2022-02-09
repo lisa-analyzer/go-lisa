@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_~LiSAProgram.anonymousFunction0(i_int).dot", "untyped_~LiSAProgram.main().dot", "untyped_~LiSAProgram.say(string_s).dot" ]
+  "files" : [ "untyped_main.main().dot", "untyped_main.say(string_s).dot", "untyped_~LiSAProgram.anonymousFunction0(i_int).dot" ]
 }

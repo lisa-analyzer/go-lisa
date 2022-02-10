@@ -1,7 +1,13 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -12,23 +18,19 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
-public class GoInterfaceType implements GoType, UnitType, InMemoryType, PointerType {
+public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
 	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
-	private static final String EMPTY_INTERFACE_NAME = "EMPTY_INTERFACE";
-
 	public static GoInterfaceType lookup(String name, CompilationUnit unit) {
+		if (name.equals(EmptyInterface.EMPTY_INTERFACE_NAME))
+			return interfaces.computeIfAbsent(name, x -> new EmptyInterface());
 		return interfaces.computeIfAbsent(name, x -> new GoInterfaceType(name, unit));
 	}
 
 	public static GoInterfaceType getEmptyInterface() {
-		return GoInterfaceType.get(EMPTY_INTERFACE_NAME);
+		return GoInterfaceType.get(EmptyInterface.EMPTY_INTERFACE_NAME);
 	}
 
 	private final String name;
@@ -48,7 +50,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType, PointerT
 	}
 
 	public boolean isEmptyInterface() {
-		return name.equals(EMPTY_INTERFACE_NAME);
+		return name.equals(EmptyInterface.EMPTY_INTERFACE_NAME);
 	}
 
 	@Override
@@ -111,10 +113,33 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType, PointerT
 	public CompilationUnit getUnit() {
 		return unit;
 	}
-
-	@Override
-	public ExternalSet<Type> getInnerTypes() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private static class EmptyInterface extends GoInterfaceType implements PointerType {
+		
+		private static final String EMPTY_INTERFACE_NAME = "EMPTY_INTERFACE";
+		
+		public EmptyInterface() {
+			super(EMPTY_INTERFACE_NAME, null);
+		}
+		
+		@Override
+		public ExternalSet<Type> getInnerTypes() {
+			return Caches.types().mkSingletonSet(this);
+		}
+		
+		@Override
+		public String toString() {
+			return "interface{}";
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			return this instanceof EmptyInterface;
+		}
+		
+		@Override
+		public int hashCode() {
+			return 1;
+		}
 	}
 }

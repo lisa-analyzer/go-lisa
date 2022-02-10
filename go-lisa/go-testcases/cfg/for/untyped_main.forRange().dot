@@ -1,16 +1,24 @@
 digraph {
 	"node0" [shape="rect",color="black",label=<var pow untyped = nonKeyedLit([4]int)(1, 2, 4, 8)>];
-	"node1" [shape="rect",color="gray",label=<i = +(i, 1)>];
-	"node2" [shape="rect",color="gray",label=<[unresolved]Printf(&quot;i = %d\\n&quot;, i)>];
+	"node1" [shape="rect",color="gray",label=<fmt::Printf(&quot;2**%d = %d\\n&quot;, i, v)>];
+	"node2" [shape="rect",color="gray",label=<i = +(i, 1)>];
 	"node3" [shape="rect",color="gray",label=<i := 0>];
-	"node4" [shape="rect",color="gray",label=<range(&lt;(i, len(pow)))>];
-	"node5" [shape="rect",color="black",peripheries="2",label=<ret>];
+	"node4" [shape="rect",color="gray",label=<Close block: 'go-testcases/cfg/for/go-for.go':44:23>];
+	"node5" [shape="rect",color="gray",label=<range(&lt;(i, len(pow)))>];
+	"node6" [shape="rect",color="black",peripheries="2",label=<ret>];
+	"node7" [shape="rect",color="gray",label=<v := pow::0(pow, 0)>];
+	"node8" [shape="rect",color="gray",label=<Open block: 'go-testcases/cfg/for/go-for.go':44:23>];
+	"node9" [shape="rect",color="gray",label=<v = pow::i(pow, i)>];
 	"node1" -> "node4" [color="black"];
-	"node2" -> "node1" [color="black"];
-	"node3" -> "node4" [color="black"];
+	"node2" -> "node9" [color="black"];
+	"node3" -> "node7" [color="black"];
+	"node4" -> "node2" [color="black"];
+	"node5" -> "node6" [color="red",style="dashed"];
+	"node5" -> "node8" [color="blue",style="dashed"];
+	"node7" -> "node5" [color="black"];
 	"node0" -> "node3" [color="black"];
-	"node4" -> "node2" [color="blue",style="dashed"];
-	"node4" -> "node5" [color="red",style="dashed"];
+	"node8" -> "node1" [color="black"];
+	"node9" -> "node5" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

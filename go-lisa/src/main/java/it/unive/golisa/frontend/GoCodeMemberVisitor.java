@@ -699,7 +699,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Expression exp;
-				if (type.isUntyped())
+				if (type.isUntyped() && exps == null)
 					exp = new GoUnknown(cfg, locationOf(ctx));
 				else {
 

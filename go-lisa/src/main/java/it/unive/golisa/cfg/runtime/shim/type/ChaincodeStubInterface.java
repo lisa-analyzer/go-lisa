@@ -3,6 +3,7 @@ package it.unive.golisa.cfg.runtime.shim.type;
 import it.unive.golisa.cfg.runtime.shim.function.CreateCompositeKey.CreateCompositeKeyImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetState.GetStateImpl;
+import it.unive.golisa.cfg.runtime.shim.method.GetStringArgs.GetStringArgsImpl;
 import it.unive.golisa.cfg.runtime.shim.method.PutState.PutStateImpl;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -28,10 +29,10 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 
 		// []string
-		GoSliceType stringSliceType = GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
+		GoSliceType stringSliceType = GoSliceType.getSliceOfStrings();
 
 		// [][] byte
-		GoSliceType byteSliceSliceType = GoSliceType.lookup(GoSliceType.getSliceOfBytes());
+		GoSliceType byteSliceSliceType = GoSliceType.getSliceOfSliceOfBytes();
 
 		// (string, []string)
 		GoTypesTuple tuple1 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE, stringSliceType);
@@ -44,10 +45,11 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetArgs",
 				byteSliceSliceType);
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
-
-		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "getStringArgs",
-				stringSliceType);
-		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
+		
+		// GetStringArgs
+		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetStringArgs",
+				stringSliceType, new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE));
+		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, GetStringArgsImpl.class));
 
 		// GetFunctionAndParameters
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetFunctionAndParameters",
@@ -85,7 +87,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "CreateCompositeKey",
 				GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
-				new Parameter(unknownLocation, "s", ChaincodeStubInterface.INSTANCE),
+				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "objectType", GoStringType.INSTANCE),
 				new Parameter(unknownLocation, "attributes",
 						GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))));

@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.caches.Caches;
@@ -97,10 +98,6 @@ public class GoSliceType implements GoType, PointerType {
 		return instances;
 	}
 
-	public static GoSliceType getSliceOfBytes() {
-		return GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
-	}
-
 	@Override
 	public ExternalSet<Type> getInnerTypes() {
 		return Caches.types().mkSingletonSet(contentType);
@@ -108,5 +105,20 @@ public class GoSliceType implements GoType, PointerType {
 
 	public static void clearAll() {
 		sliceTypes.clear();
+	}
+	
+	// []byte
+	public static GoSliceType getSliceOfBytes() {
+		return GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
+	}
+	
+	// [][]byte
+	public static GoSliceType getSliceOfSliceOfBytes() {
+		return GoSliceType.lookup(new GoSliceType(new GoSliceType(GoUInt8Type.INSTANCE)));
+	}
+	
+	// []string
+	public static GoSliceType getSliceOfStrings() {
+		return GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
 	}
 }

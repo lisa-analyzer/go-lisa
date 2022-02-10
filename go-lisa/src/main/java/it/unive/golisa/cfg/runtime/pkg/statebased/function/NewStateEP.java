@@ -25,6 +25,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.type.Untyped;
 
 /**
  * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error)
@@ -67,7 +68,7 @@ public class NewStateEP extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new Clean(getLocation()), original);
+			return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 		}
 	}
 }

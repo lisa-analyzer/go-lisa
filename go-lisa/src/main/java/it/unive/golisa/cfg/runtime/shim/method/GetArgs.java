@@ -66,7 +66,7 @@ public class GetArgs extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new Clean(getLocation()), original);
+			return state.smallStepSemantics(new Clean(GoSliceType.getSliceOfSliceOfBytes(),getLocation()), original);
 		}
 	}
 }

@@ -35,7 +35,7 @@ public class GetStringArgs extends NativeCFG {
 
 	public GetStringArgs(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "GetStringArgs",
-				new GoSliceType(GoStringType.INSTANCE),
+				GoSliceType.getSliceOfStrings(),
 				new Parameter(location, "s", ChaincodeStub.INSTANCE)),
 				GetStringArgsImpl.class);
 	}
@@ -66,7 +66,7 @@ public class GetStringArgs extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new Clean(getLocation()), original);
+			return state.smallStepSemantics(new Clean(GoSliceType.getSliceOfStrings(), getLocation()), original);
 		}
 	}
 }

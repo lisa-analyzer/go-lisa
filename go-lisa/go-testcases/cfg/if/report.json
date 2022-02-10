@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_~LiSAProgram.asgs().dot", "untyped_~LiSAProgram.elseIf().dot", "untyped_~LiSAProgram.elseIfAsgs().dot", "untyped_~LiSAProgram.ifWithAsg().dot", "untyped_~LiSAProgram.ifWithoutElse().dot", "untyped_~LiSAProgram.simpleIf().dot" ]
+  "files" : [ "untyped_main.asgs().dot", "untyped_main.elseIf().dot", "untyped_main.elseIfAsgs().dot", "untyped_main.ifWithAsg().dot", "untyped_main.ifWithoutElse().dot", "untyped_main.simpleIf().dot" ]
 }

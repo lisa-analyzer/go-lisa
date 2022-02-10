@@ -1,8 +1,6 @@
 package it.unive.golisa.cfg.runtime.strings;
 
-import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -23,14 +21,15 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
+import it.unive.lisa.type.Type;
 
 public class GoReplace extends NativeCFG {
 
 	public GoReplace(CodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, "Replace", GoBoolType.INSTANCE,
+		super(new CFGDescriptor(location, stringUnit, false, "Replace", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
-				new Parameter(location, "that", GoIntType.INSTANCE),
-				new Parameter(location, "other", GoIntType.INSTANCE)),
+				new Parameter(location, "that", GoStringType.INSTANCE),
+				new Parameter(location, "other", GoStringType.INSTANCE)),
 				Replace.class);
 	}
 
@@ -53,25 +52,29 @@ public class GoReplace extends NativeCFG {
 
 		@Override
 		protected <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
-						StatementStore<A, H, V, T> expressions) throws SemanticException {
-			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
-				return state.bottom();
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+				StatementStore<A, H, V, T> expressions) throws SemanticException {
 
-			if (!middle.getDynamicType().isStringType() && !middle.getDynamicType().isUntyped())
-				return state.bottom();
-
-			if (!right.getDynamicType().isStringType() && !right.getDynamicType().isUntyped())
-				return state.bottom();
-
-			return state
-					.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(
-							GoStringType.INSTANCE,
-							left, middle, right, StringReplace.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V, T> result = state.bottom();
+			for (Type leftType : left.getRuntimeTypes())
+				for (Type middleType : middle.getRuntimeTypes())
+					for (Type rightType : right.getRuntimeTypes())
+						if (!leftType.isStringType() && !leftType.isUntyped())
+							continue;
+						else if (!middleType.isStringType() && !middleType.isUntyped())
+							continue;
+						else if (!rightType.isStringType() && !rightType.isUntyped())
+							continue;
+						else
+							result = result.lub(state
+									.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(
+											GoStringType.INSTANCE,
+											left, middle, right, StringReplace.INSTANCE, getLocation()), original));
+			return result;
 		}
 	}
 }

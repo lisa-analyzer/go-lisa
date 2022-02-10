@@ -1,0 +1,24 @@
+digraph {
+	"node0" [shape="rect",color="black",label=<a := &quot;abc&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>[stack: [string]] ]]<BR/>}} -&gt; [a]>];
+	"node1" [shape="rect",color="gray",label=<b := &quot;bcd&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>b: [string]<BR/>[stack: [string]] ]]<BR/>}} -&gt; [b]>];
+	"node2" [shape="rect",color="gray",label=<y := strings::HasPrefix(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>b: [string]<BR/>x: [bool]<BR/>y: [bool]<BR/>[stack: [bool]] ]]<BR/>}} -&gt; [y]>];
+	"node3" [shape="rect",color="gray",label=<w := strings::Index(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>b: [string]<BR/>w: [int32]<BR/>x: [bool]<BR/>y: [bool]<BR/>z: [bool]<BR/>[stack: [int32]] ]]<BR/>}} -&gt; [w]>];
+	"node4" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>b: [string]<BR/>j: [string]<BR/>w: [int32]<BR/>x: [bool]<BR/>y: [bool]<BR/>z: [bool]<BR/>[stack: _|_] ]]<BR/>}} -&gt; [skip]>];
+	"node5" [shape="rect",color="gray",label=<j := strings::Replace(a, b, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>b: [string]<BR/>j: [string]<BR/>w: [int32]<BR/>x: [bool]<BR/>y: [bool]<BR/>z: [bool]<BR/>[stack: [string]] ]]<BR/>}} -&gt; [j]>];
+	"node6" [shape="rect",color="gray",label=<x := strings::Contains(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>b: [string]<BR/>x: [bool]<BR/>[stack: [bool]] ]]<BR/>}} -&gt; [x]>];
+	"node7" [shape="rect",color="gray",label=<z := strings::HasSuffix(a, b)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ a: [string]<BR/>b: [string]<BR/>x: [bool]<BR/>y: [bool]<BR/>z: [bool]<BR/>[stack: [bool]] ]]<BR/>}} -&gt; [z]>];
+	"node1" -> "node6" [color="black"];
+	"node2" -> "node7" [color="black"];
+	"node3" -> "node5" [color="black"];
+	"node5" -> "node4" [color="black"];
+	"node6" -> "node2" [color="black"];
+	"node7" -> "node3" [color="black"];
+	"node0" -> "node1" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

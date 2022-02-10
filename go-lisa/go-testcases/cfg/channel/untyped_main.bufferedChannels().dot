@@ -1,15 +1,15 @@
 digraph {
 	"node0" [shape="rect",color="black",label=<messages := make chan string(2)>];
-	"node1" [shape="rect",color="gray",label=<&lt;-(messages, &quot;buffered&quot;)>];
-	"node2" [shape="rect",color="gray",label=<&lt;-(messages, &quot;channel&quot;)>];
-	"node3" [shape="rect",color="gray",label=<[unresolved]Println(&lt;-(messages))>];
-	"node4" [shape="rect",color="black",peripheries="2",label=<ret>];
-	"node5" [shape="rect",color="gray",label=<[unresolved]Println(&lt;-(messages))>];
-	"node1" -> "node2" [color="black"];
-	"node2" -> "node3" [color="black"];
-	"node3" -> "node5" [color="black"];
-	"node0" -> "node1" [color="black"];
-	"node5" -> "node4" [color="black"];
+	"node1" [shape="rect",color="gray",label=<fmt::Println(&lt;-(messages))>];
+	"node2" [shape="rect",color="gray",label=<fmt::Println(&lt;-(messages))>];
+	"node3" [shape="rect",color="gray",label=<&lt;-(messages, &quot;channel&quot;)>];
+	"node4" [shape="rect",color="gray",label=<&lt;-(messages, &quot;buffered&quot;)>];
+	"node5" [shape="rect",color="black",peripheries="2",label=<ret>];
+	"node1" -> "node5" [color="black"];
+	"node2" -> "node1" [color="black"];
+	"node0" -> "node4" [color="black"];
+	"node3" -> "node2" [color="black"];
+	"node4" -> "node3" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

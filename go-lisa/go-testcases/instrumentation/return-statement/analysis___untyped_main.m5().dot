@@ -1,9 +1,9 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<x := 0<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ x: [0, 0] ]]<BR/>}} -&gt; [x]>];
-	"node1" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [skip]>];
-	"node2" [shape="rect",color="gray",label=<[unresolved]Println(x)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [open_call_ret_value@'go-testcases/instrumentation/return-statement/instrumented-returns.go':18:14]>];
-	"node0" -> "node2" [color="black"];
-	"node2" -> "node1" [color="black"];
+	"node0" [shape="rect",color="black",label=<x := 0<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ x: [0, 0]<BR/>[stack: [0, 0]] ]]<BR/>}} -&gt; [x]>];
+	"node1" [shape="rect",color="gray",label=<fmt::Println(x)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ <BR/>[stack: [-Inf, +Inf]] ]]<BR/>}} -&gt; [open_call_ret_value@'go-testcases/instrumentation/return-statement/instrumented-returns.go':18:14]>];
+	"node2" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ <BR/>[stack: _|_] ]]<BR/>}} -&gt; [skip]>];
+	"node1" -> "node2" [color="black"];
+	"node0" -> "node1" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

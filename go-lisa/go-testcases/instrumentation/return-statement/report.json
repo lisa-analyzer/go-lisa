@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___untyped_~LiSAProgram.m2(int_a).dot", "analysis___untyped_~LiSAProgram.m3(int_a).dot", "analysis___untyped_~LiSAProgram.m4(int_a).dot", "analysis___untyped_~LiSAProgram.m5().dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "analysis___untyped_main.m2(int_a).dot", "analysis___untyped_main.m3(int_a).dot", "analysis___untyped_main.m4(int_a).dot", "analysis___untyped_main.m5().dot", "analysis___untyped_main.main().dot" ]
 }

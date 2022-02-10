@@ -1,24 +1,15 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<y = 0>];
+	"node0" [shape="rect",color="black",label=<||(||(||(==(0, tag), ==(1, tag)), ==(2, tag)), ==(3, tag))>];
 	"node1" [shape="rect",color="black",peripheries="2",label=<ret>];
-	"node2" [shape="rect",color="gray",label=<+(y, 2)>];
-	"node3" [shape="rect",color="gray",label=<==(2, x)>];
-	"node4" [shape="rect",color="gray",label=<+(y, 1)>];
-	"node5" [shape="rect",color="gray",label=<+(y, 4)>];
-	"node6" [shape="rect",color="gray",label=<==(1, x)>];
-	"node7" [shape="rect",color="gray",label=<+(y, 3)>];
-	"node8" [shape="rect",color="gray",label=<==(3, x)>];
+	"node2" [shape="rect",color="gray",label=<main::s2()>];
+	"node3" [shape="rect",color="gray",label=<||(||(||(==(4, tag), ==(5, tag)), ==(6, tag)), ==(7, tag))>];
+	"node4" [shape="rect",color="gray",label=<main::s1()>];
 	"node2" -> "node1" [color="black"];
+	"node3" -> "node1" [color="red",style="dashed"];
 	"node3" -> "node2" [color="blue",style="dashed"];
-	"node3" -> "node8" [color="red",style="dashed"];
+	"node0" -> "node3" [color="red",style="dashed"];
+	"node0" -> "node4" [color="blue",style="dashed"];
 	"node4" -> "node1" [color="black"];
-	"node5" -> "node1" [color="black"];
-	"node0" -> "node6" [color="black"];
-	"node6" -> "node3" [color="red",style="dashed"];
-	"node6" -> "node4" [color="blue",style="dashed"];
-	"node7" -> "node1" [color="black"];
-	"node8" -> "node5" [color="red",style="dashed"];
-	"node8" -> "node7" [color="blue",style="dashed"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

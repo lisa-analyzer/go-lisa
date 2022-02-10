@@ -3,7 +3,6 @@ package it.unive.golisa.cfg.runtime.shim.method;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -35,7 +34,7 @@ public class GetArgs extends NativeCFG {
 
 	public GetArgs(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "GetArgs",
-				new GoSliceType(new GoSliceType(GoUInt8Type.INSTANCE)),
+				GoSliceType.getSliceOfSliceOfBytes(),
 				new Parameter(location, "s", ChaincodeStub.INSTANCE)),
 				GetArgsImpl.class);
 	}
@@ -55,7 +54,7 @@ public class GetArgs extends NativeCFG {
 		}
 
 		public GetArgsImpl(CFG cfg, CodeLocation location, Expression... params) {
-			super(cfg, location, "GetArgsImpl", new GoSliceType(new GoSliceType(GoUInt8Type.INSTANCE)), params);
+			super(cfg, location, "GetArgsImpl", GoSliceType.getSliceOfSliceOfBytes(), params);
 		}
 
 		@Override

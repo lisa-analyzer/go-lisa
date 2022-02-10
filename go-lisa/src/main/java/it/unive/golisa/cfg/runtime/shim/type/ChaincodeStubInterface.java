@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
 import it.unive.golisa.cfg.runtime.shim.function.CreateCompositeKey.CreateCompositeKeyImpl;
+import it.unive.golisa.cfg.runtime.shim.method.GetArgs.GetArgsImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetState.GetStateImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetStringArgs.GetStringArgsImpl;
@@ -40,11 +41,13 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		// ([]byte, error)
 		GoTypesTuple tuple2 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoSliceType.getSliceOfBytes(),
 				GoErrorType.INSTANCE);
-
+		
+		// GetArgs
 		CompilationUnit chainCodeStubInterfaceUnit = INSTANCE.getUnit();
 		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetArgs",
-				byteSliceSliceType);
-		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
+				byteSliceSliceType,
+				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE));
+		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, GetArgsImpl.class));
 		
 		// GetStringArgs
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "GetStringArgs",

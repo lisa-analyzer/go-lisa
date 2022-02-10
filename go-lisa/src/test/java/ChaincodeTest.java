@@ -110,4 +110,32 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/sacc", "sacc.go", conf, annSet);
 	}
+	
+	@Test
+	public void testMyCC() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new TaintChecker());
+		perform("cc/mycc", "mycc.go", conf, annSet);
+	}
+	
+	@Test
+	public void testChaincode() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new TaintChecker());
+		perform("cc/chaincode", "chaincode.go", conf, annSet);
+	}
 }

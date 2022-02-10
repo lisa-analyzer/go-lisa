@@ -105,16 +105,6 @@ public class GoArrayType implements GoType, InMemoryType {
 		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
 
-//	@Override
-//	public boolean isPointerType() {
-//		return true;
-//	}
-
-	@Override
-	public boolean isArrayType() {
-		return true;
-	}
-
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoArrayType in : arrayTypes)

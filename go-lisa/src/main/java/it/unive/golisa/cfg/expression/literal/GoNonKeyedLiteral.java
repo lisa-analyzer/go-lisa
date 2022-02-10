@@ -108,7 +108,6 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			for (SymbolicExpression containerExp : containerExps) {
 				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
-
 				// Assign the len property to this hid
 				Variable lenProperty = new Variable(Untyped.INSTANCE, "len",
 						getLocation());
@@ -149,6 +148,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 						for (SymbolicExpression v : params[i])
 							tmp = tmp.assign(index, NumericalTyper.type(v), this);
 				}
+				
 				result = result.lub(tmp.smallStepSemantics(reference, this));
 			}
 

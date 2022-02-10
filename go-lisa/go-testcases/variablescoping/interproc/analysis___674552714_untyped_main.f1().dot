@@ -1,7 +1,7 @@
 digraph {
 	labelloc="t";
 	label="['go-testcases/variablescoping/interproc/scoping.go':13:12]";
-	"node0" [shape="rect",color="black",peripheries="2",label=<return (tuple)(1, 2)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/variablescoping/interproc/scoping.go':4:11] ]]<BR/>value [[ heap[s]:pp@'go-testcases/variablescoping/interproc/scoping.go':4:11[0]: [1, 1]<BR/>heap[s]:pp@'go-testcases/variablescoping/interproc/scoping.go':4:11[1]: [2, 2] ]]<BR/>}} -&gt; [ret_value@main.f1]>];
+	"node0" [shape="rect",color="black",peripheries="2",label=<return (tuple)(1, 2)<BR/>{{<BR/>heap [[ ret_value@f1: [heap[s]:pp@'go-testcases/variablescoping/interproc/scoping.go':4:11] ]]<BR/>value [[ heap[s]:pp@'go-testcases/variablescoping/interproc/scoping.go':4:11[0]: [1, 1]<BR/>heap[s]:pp@'go-testcases/variablescoping/interproc/scoping.go':4:11[1]: [2, 2]<BR/>[stack: _|_] ]]<BR/>}} -&gt; [ret_value@f1]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

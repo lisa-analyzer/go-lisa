@@ -353,13 +353,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 			for (int i = 0; i < listOfFiles.length; i++)
 				if (listOfFiles[i].getName().endsWith(".go"))
 					try {
-						Program moduleProgram = GoFrontEnd.processFile(listOfFiles[i].getAbsolutePath());
+						Program moduleProgram = GoFrontEnd.processFile(listOfFiles[i].toString());
 
 						for (CompilationUnit cu : moduleProgram.getUnits())
 							program.addCompilationUnit(cu);
 
 					} catch (IOException e) {
-						throw new RuntimeException("Cannot find package + " + listOfFiles[i].getAbsolutePath());
+						throw new RuntimeException("Cannot find package + " + listOfFiles[i]);
 					}
 		} else
 			loadRuntime(module, program, mapper);

@@ -1534,6 +1534,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			} else {
 				defaultBlock = caseBlock;
 				conditions[i] = null;
+				block.mergeWith(body);
 			}
 
 			if (caseBlock.getRight() instanceof GoFallThrough)
@@ -1562,7 +1563,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
-		cfs.add(new Switch(matrix, entryNode, exitNode, body.getNodes()));
+		// TODO: the switch itself does not use any guard and it's just a way to
+		// shorten each case's condition. The only benefit would be to keep
+		// track of the whole construct (default branch included), do we
+		// need/want to do it?
+		// cfs.add(new Switch(matrix, entryNode, exitNode, body.getNodes()));
 		for (int i = 0; i < ncases; i++)
 			if (conditions[i] != null)
 				// null is the default case
@@ -1733,9 +1738,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		AdjacencyMatrix<Statement, Edge, CFG> body = new AdjacencyMatrix<>();
 		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> inner = visitBlock(ctx.block());
 		body.mergeWith(inner.getMiddle());
-		addEdge(new SequentialEdge(inner.getRight(), idxPost), body);
-		addEdge(new SequentialEdge(idxPost, valPost), body);
 		block.mergeWith(body);
+		addEdge(new SequentialEdge(inner.getRight(), idxPost), block);
+		addEdge(new SequentialEdge(idxPost, valPost), block);
 
 		// Build the range condition
 		GoLess rangeCondition = new GoLess(cfg, location, idxRange,
@@ -1774,6 +1779,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			// for block
 			init = visitSimpleStmt(ctx.forClause().simpleStmt(0));
 			block.mergeWith(init.getMiddle());
+			entryNode = init.getLeft();
 			storeIds(entryNode);
 		}
 
@@ -2470,10 +2476,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					storeIds(caseBooleanGuard);
 					addEdge(new SequentialEdge(shortDecl, caseBooleanGuard), body);
 
-					addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()), body);
-					addEdge(new SequentialEdge(caseBlock.getRight(), exitNode), body);
-
 					block.mergeWith(body);
+					addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()), block);
+					addEdge(new SequentialEdge(caseBlock.getRight(), exitNode), block);
+
 					if (entryNode == null)
 						entryNode = shortDecl;
 					else
@@ -2486,6 +2492,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			} else {
 				defaultBlock = caseBlock;
 				conditions[i] = null;
+				block.mergeWith(body);
 			}
 
 			cases[i] = case_;

@@ -153,4 +153,32 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/chaincode", "chaincode.go", conf, annSet);
 	}
+
+	@Test
+	public void testImplicit() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new TaintChecker());
+		perform("cc/implicit-flow", "taint", "implicit.go", conf, annSet);
+	}
+
+	@Test
+	public void testImplicitNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new IntegrityNIChecker());
+		perform("cc/implicit-flow", "ni", "implicit.go", conf, annSet);
+	}
 }

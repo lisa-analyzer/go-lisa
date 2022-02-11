@@ -80,10 +80,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	}
 
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
+		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
+		
 		Statement entryNode = null;
 		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
 				Statement> body = new BaseCodeVisitor(file, program, constants, currentUnit, cfg, cfg.getDescriptor(),
-						cfg.getAdjacencyMatrix()).visitMethodBlock(ctx.block());
+						matrix).visitMethodBlock(ctx.block());
+		matrix.mergeWith(body.getMiddle());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -129,7 +132,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		}
 
 		cfg.getEntrypoints().add(entryNode);
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 
 		// If the function body does not have exit points
 		// a return statement is added

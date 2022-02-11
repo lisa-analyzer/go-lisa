@@ -161,9 +161,11 @@ public class GoCodeMemberVisitor {
 
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
+		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
 				Statement> body = new BaseCodeVisitor(file, program, constants, currentUnit, cfg, cfg.getDescriptor(),
-						cfg.getAdjacencyMatrix()).visitMethodBlock(ctx.block());
+						matrix).visitMethodBlock(ctx.block());
+		matrix.mergeWith(body.getMiddle());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -173,7 +175,6 @@ public class GoCodeMemberVisitor {
 
 		// If the method body does not have exit points
 		// a return statement is added
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 		if (cfg.getAllExitpoints().isEmpty()) {
 			Ret ret = new Ret(cfg, descriptor.getLocation());
 			if (cfg.getNodesCount() == 0) {

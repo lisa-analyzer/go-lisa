@@ -80,13 +80,10 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	}
 
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
-		
+
 		Statement entryNode = null;
 		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
-				Statement> body = new BaseCodeVisitor(file, program, constants, currentUnit, cfg, cfg.getDescriptor(),
-						matrix).visitMethodBlock(ctx.block());
-		matrix.mergeWith(body.getMiddle());
+				Statement> body = visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -98,6 +95,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = cfg.getDescriptor().getReturnType();
 
+		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 		if (!(returnType instanceof GoTypesTuple))
 			entryNode = body.getLeft();
 		else {
@@ -118,13 +116,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 					cfg.addNode(decl);
 
 					if (lastStmt != null)
-						BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, decl), cfg.getAdjacencyMatrix());
+						addEdge(new SequentialEdge(lastStmt, decl), matrix);
 					else
 						entryNode = decl;
 					lastStmt = decl;
 				}
 
-				BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, body.getLeft()), cfg.getAdjacencyMatrix());
+				addEdge(new SequentialEdge(lastStmt, body.getLeft()), matrix);
 				cfg.getEntrypoints().add(entryNode);
 
 			} else
@@ -173,8 +171,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
 		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
-				Statement> body = new BaseCodeVisitor(file, program, constants, currentUnit, cfg, cfg.getDescriptor(),
-						cfg.getAdjacencyMatrix()).visitMethodBlock(ctx.block());
+				Statement> body = visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -182,6 +179,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = cfg.getDescriptor().getReturnType();
 
+		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 		if (!(returnType instanceof GoTypesTuple))
 			entryNode = body.getLeft();
 		else {
@@ -198,13 +196,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 					cfg.addNode(decl);
 
 					if (lastStmt != null)
-						BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, decl), cfg.getAdjacencyMatrix());
+						addEdge(new SequentialEdge(lastStmt, decl), matrix);
 					else
 						entryNode = decl;
 					lastStmt = decl;
 				}
 
-				BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, body.getLeft()), cfg.getAdjacencyMatrix());
+				addEdge(new SequentialEdge(lastStmt, body.getLeft()), matrix);
 				cfg.getEntrypoints().add(entryNode);
 
 			} else
@@ -213,7 +211,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		cfg.getEntrypoints().add(entryNode);
 
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 
 		// If the function body does not have exit points
 		// a return statement is added

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class EntryPointLoader {
+public class EntryPointLoader implements Loader {
 
 	List<EntryPointSet> entrypointSets;
 
@@ -20,6 +20,7 @@ public class EntryPointLoader {
 
 	}
 
+	@Override
 	public void load(Program program) {
 		Collection<CFG> cfgs = program.getAllCFGs();
 

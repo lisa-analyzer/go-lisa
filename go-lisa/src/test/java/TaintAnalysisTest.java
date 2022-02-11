@@ -5,11 +5,11 @@ import java.util.Set;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.golisa.analysis.taint.annotation.AnnotationSet;
-import it.unive.golisa.analysis.taint.annotation.CodeAnnotation;
-import it.unive.golisa.analysis.taint.annotation.MethodAnnotation;
-import it.unive.golisa.analysis.taint.annotation.MethodParameterAnnotation;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.loader.annotation.AnnotationSet;
+import it.unive.golisa.loader.annotation.CodeAnnotation;
+import it.unive.golisa.loader.annotation.MethodAnnotation;
+import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;

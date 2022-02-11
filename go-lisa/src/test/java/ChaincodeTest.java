@@ -3,10 +3,12 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.golisa.analysis.taint.annotation.AnnotationSet;
-import it.unive.golisa.analysis.taint.annotation.NonDeterminismAnnotationSet;
+import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.loader.annotation.AnnotationSet;
+import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
@@ -20,14 +22,13 @@ import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
-	
+
 	private final AnnotationSet annSet = new NonDeterminismAnnotationSet();
-	
+
 	@Test
 	public void testBoleto() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
@@ -35,7 +36,21 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
-		perform("cc/boleto", "boleto.go", conf, annSet);
+		perform("cc/boleto", "taint", "boleto.go", conf, annSet);
+	}
+
+	@Test
+	public void testBoletoNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new IntegrityNIChecker());
+		perform("cc/boleto", "ni", "boleto.go", conf, annSet);
 	}
 
 	@Test
@@ -96,7 +111,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
 	}
-	
+
 	@Test
 	public void testSacc() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -110,7 +125,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/sacc", "sacc.go", conf, annSet);
 	}
-	
+
 	@Test
 	public void testMyCC() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -124,7 +139,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/mycc", "mycc.go", conf, annSet);
 	}
-	
+
 	@Test
 	public void testChaincode() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()

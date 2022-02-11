@@ -1,4 +1,4 @@
-package it.unive.golisa.analysis.taint.annotation;
+package it.unive.golisa.loader.annotation;
 
 import java.util.Set;
 

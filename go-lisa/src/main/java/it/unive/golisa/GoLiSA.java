@@ -1,12 +1,24 @@
 package it.unive.golisa;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.golisa.analysis.taint.annotation.NonDeterminismAnnotationSet;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
+import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -20,16 +32,6 @@ import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
-import java.io.File;
-import java.io.IOException;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 public class GoLiSA {
 

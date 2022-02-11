@@ -12,10 +12,10 @@ import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
-import it.unive.golisa.analysis.taint.annotation.AnnotationSet;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
+import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;

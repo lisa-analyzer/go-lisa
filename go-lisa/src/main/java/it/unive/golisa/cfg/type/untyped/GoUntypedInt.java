@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.type.untyped;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -38,7 +39,8 @@ public class GoUntypedInt implements GoType, NumericType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return other instanceof GoType && other.isNumericType() || other.isUntyped();
+		return other instanceof GoType && other.isNumericType() || other.isUntyped()
+				|| (other instanceof GoSliceType && canBeAssignedTo(((GoSliceType) other).getContentType()));
 	}
 
 	@Override

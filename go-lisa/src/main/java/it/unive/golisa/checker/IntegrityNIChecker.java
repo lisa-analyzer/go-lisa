@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
+import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
@@ -18,6 +19,7 @@ import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -106,45 +108,50 @@ public class IntegrityNIChecker implements
 		if (resolved instanceof NativeCall) {
 			NativeCall nativeCfg = (NativeCall) resolved;
 			Collection<NativeCFG> nativeCfgs = nativeCfg.getTargets();
-			for (NativeCFG n : nativeCfgs) {
-
-				Parameter[] parameters = n.getDescriptor().getFormals();
-				for (int i = 0; i < parameters.length; i++)
-					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
-						for (CFGWithAnalysisResults<
-								SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
-										TypeEnvironment<InferredTypes>>,
-								MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
-								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-									.getInferredValue().isLowIntegrity())
-								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-
-			}
+			for (NativeCFG n : nativeCfgs)
+				try {
+					process(tool, call, resolved, n.getDescriptor());
+				} catch (SemanticException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		} else if (resolved instanceof CFGCall) {
 			CFGCall cfg = (CFGCall) resolved;
-			for (CFG n : cfg.getTargets()) {
-				Parameter[] parameters = n.getDescriptor().getFormals();
-				for (int i = 0; i < parameters.length; i++)
-					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
-						for (CFGWithAnalysisResults<
-								SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
-										TypeEnvironment<InferredTypes>>,
-								MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
-								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-									.getInferredValue().isLowIntegrity())
-								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-
-			}
+			for (CFG n : cfg.getTargets())
+				try {
+					process(tool, call, resolved, n.getDescriptor());
+				} catch (SemanticException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 
 		return true;
 
+	}
+
+	private void process(CheckToolWithAnalysisResults<
+			SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+			MonolithicHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			UnresolvedCall call, Call resolved, CFGDescriptor desc) throws SemanticException {
+		Parameter[] parameters = desc.getFormals();
+		for (int i = 0; i < parameters.length; i++)
+			if (parameters[i].getAnnotations().contains(SINK_MATCHER))
+				for (CFGWithAnalysisResults<
+						SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
+								TypeEnvironment<InferredTypes>>,
+						MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+					if (result.getAnalysisStateAfter(call.getParameters()[i])
+							.getState().getValueState().getInferredValue().isLowIntegrity())
+						tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
+								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+								+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+					if (result.getAnalysisStateBefore(call).getState().getValueState().getExecutionState()
+							.isLowIntegrity())
+						tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
+								+ " resulting in an implicit flow");
+				}
 	}
 
 	@Override

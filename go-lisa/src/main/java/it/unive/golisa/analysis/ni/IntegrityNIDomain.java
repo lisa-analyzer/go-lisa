@@ -16,8 +16,10 @@ import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
@@ -146,6 +148,36 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 			return new InferredPair<>(this, variable, state(environment.getExecutionState(), pp));
 		else
 			return new InferredPair<>(this, environment.getState(id), state(environment.getExecutionState(), pp));
+	}
+
+	@Override
+	protected InferredPair<IntegrityNIDomain> evalPushAny(PushAny pushAny, IntegrityNIDomain state, ProgramPoint pp)
+			throws SemanticException {
+		return new InferredPair<>(this, LOW, state(state, pp));
+	}
+
+	@Override
+	protected InferredPair<IntegrityNIDomain> evalTypeConv(BinaryExpression conv, IntegrityNIDomain left,
+			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
+		if (left == LOW || right == LOW)
+			return new InferredPair<>(this, LOW, state(state, pp));
+
+		if (left == TOP || right == TOP)
+			return new InferredPair<>(this, TOP, state(state, pp));
+
+		return new InferredPair<>(this, HIGH, state(state, pp));
+	}
+
+	@Override
+	protected InferredPair<IntegrityNIDomain> evalTypeCast(BinaryExpression cast, IntegrityNIDomain left,
+			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
+		if (left == LOW || right == LOW)
+			return new InferredPair<>(this, LOW, state(state, pp));
+
+		if (left == TOP || right == TOP)
+			return new InferredPair<>(this, TOP, state(state, pp));
+
+		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
 	@Override

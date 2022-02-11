@@ -3,8 +3,10 @@ package it.unive.golisa.cfg;
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import java.util.Collection;
 import java.util.HashMap;
@@ -71,5 +73,23 @@ public class VariableScopingCFG extends CFG {
 	 */
 	public Map<String, Set<IdInfo>> getVisibleIds(Statement node) {
 		return scopingMap.get(node);
+	}
+	
+	@Override
+	public Collection<Statement> getGuards(ProgramPoint pp) {
+		// TODO remove this when the fix will be available in lisa
+		Collection<Statement> guards = super.getGuards(pp);
+		if (!guards.isEmpty())
+			return guards;
+		
+		if (pp instanceof Call) {
+			Call original = (Call) pp;
+			while (original.getSource() != null)
+				original = original.getSource();
+			if (original != pp)
+				return super.getGuards(original);
+		}
+		
+		return guards;
 	}
 }

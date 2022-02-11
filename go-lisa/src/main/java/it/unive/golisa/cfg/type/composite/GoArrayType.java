@@ -10,6 +10,7 @@ import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -114,10 +115,7 @@ public class GoArrayType implements GoType, InMemoryType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoArrayType in : arrayTypes)
-			instances.add(in);
-		return instances;
+		return Collections.singleton(this);
 	}
 
 	public static void clearAll() {

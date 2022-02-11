@@ -7,6 +7,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GoTypesTuple extends ArrayList<Parameter> implements GoType {
+public class GoTypesTuple extends ArrayList<Parameter> implements GoType, InMemoryType {
 
 	public static final Set<GoTypesTuple> tupleTypes = new HashSet<>();
 

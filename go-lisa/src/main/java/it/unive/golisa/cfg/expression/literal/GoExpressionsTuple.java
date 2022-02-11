@@ -23,6 +23,7 @@ import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.type.ReferenceType;
 
 public class GoExpressionsTuple extends NaryExpression {
 
@@ -58,7 +59,7 @@ public class GoExpressionsTuple extends NaryExpression {
 		AnalysisState<A, H, V, T> result = state.bottom();
 
 		for (SymbolicExpression containerExp : containerExps) {
-			HeapReference reference = new HeapReference(getStaticType(), containerExp,
+			HeapReference reference = new HeapReference(new ReferenceType(getStaticType()), containerExp,
 					getLocation());
 			HeapDereference dereference = new HeapDereference(getStaticType(), reference,
 					getLocation());

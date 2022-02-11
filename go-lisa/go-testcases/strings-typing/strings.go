@@ -5,10 +5,10 @@ import "strings"
 func main() {
 	a := "abc"
 	b := "bcd"
-	x := Contains(a,b)
-	y := HasPrefix(a,b)
-	z := HasSuffix(a,b)
-	w := Index(a,b)
-	j := Replace(a,b,b)
+	x := strings.Contains(a,b)
+	y := strings.HasPrefix(a,b)
+	z := strings.HasSuffix(a,b)
+	w := strings.Index(a,b)
+	j := strings.Replace(a,b,b)
 	return
 }

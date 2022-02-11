@@ -86,7 +86,6 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		// e.g., _ := f(), we just return right state
-		// FIXME: it should return the entry state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
 

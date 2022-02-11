@@ -58,9 +58,8 @@ public class VariableScopingCFG extends CFG {
 	 * @param node       the node to add
 	 * @param visibleIds the IDs visible to collect
 	 */
-	public void addNode(Statement node, Map<String, Set<IdInfo>> visibleIds) {
+	public void registerScoping(Statement node, Map<String, Set<IdInfo>> visibleIds) {
 		scopingMap.put(node, new HashMap<>(visibleIds));
-		super.addNode(node);
 	}
 
 	/**

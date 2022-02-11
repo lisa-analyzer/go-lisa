@@ -1,5 +1,14 @@
 package it.unive.golisa.frontend;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
@@ -31,12 +40,6 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function
@@ -76,10 +79,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		super(unit, file, program, constants);
 	}
 
-	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 		Statement entryNode = null;
-		Pair<Statement, Statement> body = visitMethodBlock(ctx.block());
+		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+				Statement> body = new BaseCodeVisitor(file, program, constants, currentUnit, cfg, cfg.getDescriptor(),
+						cfg.getAdjacencyMatrix()).visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -111,13 +115,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 					cfg.addNode(decl);
 
 					if (lastStmt != null)
-						addEdge(new SequentialEdge(lastStmt, decl));
+						BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, decl), cfg.getAdjacencyMatrix());
 					else
 						entryNode = decl;
 					lastStmt = decl;
 				}
 
-				addEdge(new SequentialEdge(lastStmt, body.getLeft()));
+				BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, body.getLeft()), cfg.getAdjacencyMatrix());
 				cfg.getEntrypoints().add(entryNode);
 
 			} else
@@ -166,7 +170,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
-		Pair<Statement, Statement> body = visitMethodBlock(ctx.block());
+		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+				Statement> body = new BaseCodeVisitor(file, program, constants, currentUnit, cfg, cfg.getDescriptor(),
+						cfg.getAdjacencyMatrix()).visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
 			// we must call cfg.addEdge, and not addEdge
@@ -190,13 +196,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 					cfg.addNode(decl);
 
 					if (lastStmt != null)
-						addEdge(new SequentialEdge(lastStmt, decl));
+						BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, decl), cfg.getAdjacencyMatrix());
 					else
 						entryNode = decl;
 					lastStmt = decl;
 				}
 
-				addEdge(new SequentialEdge(lastStmt, body.getLeft()));
+				BaseCodeVisitor.addEdge(new SequentialEdge(lastStmt, body.getLeft()), cfg.getAdjacencyMatrix());
 				cfg.getEntrypoints().add(entryNode);
 
 			} else
@@ -299,7 +305,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		return new GoCodeMemberVisitor(currentUnit, file, program, constants).visitResult(signature.result());
 	}
 
-	@Override
 	public GoType visitFunctionType(FunctionTypeContext ctx) {
 		SignatureContext sign = ctx.signature();
 		Type returnType = getGoReturnType(sign);

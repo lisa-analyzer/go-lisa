@@ -111,7 +111,67 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
 	}
+	
+	@Test
+	public void testCpuUseNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+//				.setDumpAnalysis(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new IntegrityNIChecker());
+		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
+	}
+	
+	@Test
+	public void testMarblesChaincodeNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+//				.setDumpAnalysis(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new IntegrityNIChecker());
+		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
+	}
+	
+	@Test
+	public void testMarbles02NI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+//				.setDumpAnalysis(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new IntegrityNIChecker());
+		perform("cc/marbles02", "marbles02.go", conf, annSet);
+	}
 
+	@Test
+	public void testTommyStarkNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setJsonOutput(true)
+//				.setDumpAnalysis(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setCallGraph(new RTACallGraph())
+				.setAbstractState(
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new IntegrityNIChecker());
+		perform("cc/tommystark", "contract_chaincode.go", conf, annSet);
+	}
+	
 	@Test
 	public void testSacc() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()

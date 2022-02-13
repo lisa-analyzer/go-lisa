@@ -13,7 +13,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
@@ -51,6 +53,10 @@ public class GoLiSA {
 				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
 		framework.setRequired(false);
 		options.addOption(framework);
+		
+		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
+		analysis_opt.setRequired(true);
+		options.addOption(analysis_opt);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -60,7 +66,7 @@ public class GoLiSA {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
-			formatter.printHelp("utility-name", options);
+			formatter.printHelp("help", options);
 
 			System.exit(1);
 		}
@@ -68,21 +74,38 @@ public class GoLiSA {
 		String filePath = cmd.getOptionValue("input");
 
 		String outputDir = cmd.getOptionValue("output");
+		
+		String analysis = cmd.getOptionValue("analysis");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
-
-		conf.setJsonOutput(true)
-				.setDumpAnalysis(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+		conf.setJsonOutput(true);
+		conf.setDumpAnalysis(true);
+		
+		switch(analysis) {
+		
+			case "taint":
+				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+						.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+						.setCallGraph(new RTACallGraph())
+						.setAbstractState(
+								new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+										LiSAFactory.getDefaultFor(TypeDomain.class)))
+						.addSemanticCheck(new TaintChecker());
+				break;
+			case "non-iterference":
+				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker());
-
+				.addSemanticCheck(new IntegrityNIChecker());
+				break;
+				
+		}
+		
 		Program program = null;
 
 		File theDir = new File(outputDir);

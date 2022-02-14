@@ -84,8 +84,7 @@ public class GoLiSA {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
-		conf.setJsonOutput(true);
-		conf.setDumpAnalysis(true);
+		conf.setDumpAnalysis(false);
 		
 		switch(analysis) {
 		
@@ -106,6 +105,9 @@ public class GoLiSA {
 				
 		}
 		
+		conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+		conf.setCallGraph(new RTACallGraph());
+		
 		Program program = null;
 
 		File theDir = new File(outputDir);
@@ -123,9 +125,8 @@ public class GoLiSA {
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
 			entryLoader.load(program);
 			
-			if (!program.getEntryPoints().isEmpty()) {
-				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
-				conf.setCallGraph(new RTACallGraph());
+			if (program.getEntryPoints().isEmpty()) {
+				return;
 			} else 
 				LOG.warn("Entry point not found - Applying intraprocedural analysis");
 

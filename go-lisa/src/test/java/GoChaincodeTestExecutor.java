@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.frontend.GoFrontEnd;
@@ -107,7 +108,10 @@ public abstract class GoChaincodeTestExecutor {
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annSet);
 			annotationLoader.load(program);
-
+			
+			if (program.getEntryPoints().isEmpty())
+				return;
+				
 			EntryPointLoader entryLoader = new EntryPointLoader();
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("HYPERLEDGER-FABRIC"));
 			entryLoader.load(program);
@@ -144,6 +148,8 @@ public abstract class GoChaincodeTestExecutor {
 		}
 
 		File expFile = Paths.get(expectedPath.toString(), "report.json").toFile();
+		if(!expFile.exists())
+			expFile = Paths.get(expectedPath.toString()+File.separator+FilenameUtils.removeExtension(source), "report.json").toFile();
 		File actFile = Paths.get(actualPath.toString(), "report.json").toFile();
 		try (FileReader l = new FileReader(expFile); FileReader r = new FileReader(actFile)) {
 			JsonReport expected = JsonReport.read(l);

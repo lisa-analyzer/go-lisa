@@ -11,6 +11,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -36,6 +38,8 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 
 public class GoLiSA {
+
+	private static final Logger LOG = LogManager.getLogger(GoLiSA.class);
 
 	public static void main(String[] args) throws AnalysisSetupException {
 
@@ -87,17 +91,13 @@ public class GoLiSA {
 		
 			case "taint":
 				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-						.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
-						.setCallGraph(new RTACallGraph())
 						.setAbstractState(
 								new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
 										LiSAFactory.getDefaultFor(TypeDomain.class)))
 						.addSemanticCheck(new TaintChecker());
 				break;
-			case "non-iterference":
+			case "non-interference":
 				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
-				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
@@ -122,6 +122,12 @@ public class GoLiSA {
 			EntryPointLoader entryLoader = new EntryPointLoader();
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
 			entryLoader.load(program);
+			
+			if (!program.getEntryPoints().isEmpty()) {
+				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+				conf.setCallGraph(new RTACallGraph());
+			} else 
+				LOG.warn("Entry point not found - Applying intraprocedural analysis");
 
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred

@@ -113,30 +113,30 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	public CompilationUnit getUnit() {
 		return unit;
 	}
-	
+
 	private static class EmptyInterface extends GoInterfaceType implements PointerType {
-		
+
 		private static final String EMPTY_INTERFACE_NAME = "EMPTY_INTERFACE";
-		
+
 		public EmptyInterface() {
-			super(EMPTY_INTERFACE_NAME, null);
+			super(EMPTY_INTERFACE_NAME, it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
 		}
-		
+
 		@Override
 		public ExternalSet<Type> getInnerTypes() {
 			return Caches.types().mkSingletonSet(this);
 		}
-		
+
 		@Override
 		public String toString() {
 			return "interface{}";
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			return this instanceof EmptyInterface;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return 1;

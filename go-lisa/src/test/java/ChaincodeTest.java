@@ -232,7 +232,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testImplicitNI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-//				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())

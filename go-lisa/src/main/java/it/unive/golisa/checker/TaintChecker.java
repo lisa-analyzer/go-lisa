@@ -117,7 +117,7 @@ MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 									.getInferredValue().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-								+ parameters[i].getName() + "' of " + graph.getDescriptor().getFullName());
+								+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
 
 			}
 		} else if (resolved instanceof CFGCall) {
@@ -135,7 +135,7 @@ MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 									.getInferredValue().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-								+ parameters[i].getName() + "' of " +  graph.getDescriptor().getFullName());
+								+ parameters[i].getName() + "' of " +  resolved.getFullTargetName());
 
 			}
 		}

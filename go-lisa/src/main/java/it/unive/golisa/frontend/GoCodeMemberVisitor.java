@@ -1317,7 +1317,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		block.addNode(breakSt);
 		storeIds(breakSt);
 
-		addEdge(new SequentialEdge(breakSt, exitPoints.get(entryPoints.size() - 1)), block);
+		Statement exit = exitPoints.get(exitPoints.size() - 1);
+		block.addNode(exit);
+		addEdge(new SequentialEdge(breakSt, exit), block);
 		return Triple.of(breakSt, block, breakSt);
 	}
 
@@ -1329,7 +1331,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		block.addNode(continueSt);
 		storeIds(continueSt);
 
-		addEdge(new SequentialEdge(continueSt, entryPoints.get(entryPoints.size() - 1)), block);
+		Statement entry = entryPoints.get(entryPoints.size() - 1);
+		block.addNode(entry);
+		addEdge(new SequentialEdge(continueSt, entry), block);
 		return Triple.of(continueSt, block, continueSt);
 	}
 

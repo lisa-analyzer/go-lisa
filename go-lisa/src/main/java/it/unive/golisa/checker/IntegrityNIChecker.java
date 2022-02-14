@@ -147,7 +147,8 @@ public class IntegrityNIChecker implements
 						tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 								+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-					if (result.getAnalysisStateBefore(call).getState().getValueState().getExecutionState()
+					if (result.getAnalysisStateAfter(call.getParameters()[call.getParameters().length - 1]).getState()
+							.getValueState().getExecutionState()
 							.isLowIntegrity())
 						tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
 								+ " resulting in an implicit flow");

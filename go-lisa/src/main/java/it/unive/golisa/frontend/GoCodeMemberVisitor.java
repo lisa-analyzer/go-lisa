@@ -1949,8 +1949,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 							visitArguments(ctx.arguments()));
 
 				else if (primary instanceof AccessInstanceGlobal) {
-					Expression receiver = (Expression) getReceiver(ctx.primaryExpr());
-
+					Expression receiver = ((AccessInstanceGlobal) primary).getReceiver();
+					String methodName = ((AccessInstanceGlobal) primary).getTarget().getName();
+					
 					if (program.getUnit(receiver.toString()) != null)
 						// static method call (e.g., math.Intv(50))
 						// this call is not an instance call
@@ -1959,7 +1960,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
 								GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
 								CallType.STATIC,
-								receiver.toString(), getMethodName(ctx.primaryExpr()), args);
+								receiver.toString(), methodName, args);
 					else {
 						// method call (e.g., x.f(1))
 						// this call is an instance call
@@ -1968,7 +1969,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						args = ArrayUtils.insert(0, args, receiver);
 						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
 								GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
-								CallType.INSTANCE, "", getMethodName(ctx.primaryExpr()), args);
+								CallType.INSTANCE, "", methodName, args);
 					}
 				}
 
@@ -2018,14 +2019,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 
 		throw new IllegalStateException("Illegal state: primaryExpr rule has no other productions.");
-	}
-
-	private String getMethodName(PrimaryExprContext primary) {
-		return primary.IDENTIFIER().getText();
-	}
-
-	private Object getReceiver(PrimaryExprContext primary) {
-		return visitPrimaryExpr(primary.primaryExpr());
 	}
 
 	@Override

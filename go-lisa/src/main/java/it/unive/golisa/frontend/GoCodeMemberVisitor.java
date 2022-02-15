@@ -2577,6 +2577,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		for (CommClauseContext clause : ctx.commClause()) {
 			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> inner = visitCommClause(clause);
+			block.mergeWith(inner.getMiddle());
 			addEdge(new SequentialEdge(entry, inner.getLeft()), block);
 			addEdge(new SequentialEdge(inner.getRight(), exit), block);
 		}

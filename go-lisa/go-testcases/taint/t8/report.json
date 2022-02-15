@@ -1,6 +1,6 @@
 {
   "warnings" : [ {
-    "message" : "['go-testcases/taint/t8/t8.go':23:7] on 'untyped main::main()': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'v' of main::sink"
+    "message" : "['go-testcases/taint/t8/t8.go':23:7] on 'untyped main::main()': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'v' of main::main"
   } ],
   "files" : [ "analysis___-442038236_string_main.source().dot", "analysis___-443885278_string_main.source().dot", "analysis___2064040344_untyped_main.sink(string_v).dot", "analysis___2064785057_untyped_main.sink(string_v).dot", "analysis___untyped_main.main().dot" ]
 }

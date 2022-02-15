@@ -91,20 +91,20 @@ public class GoMultiAssignment extends Expression {
 	private <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> entryState,
-					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo)
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,
+					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
 					throws SemanticException {
 
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
 		// needs to be performed
 		if (blockInfo == null || blockInfo.isEmpty() || blockInfo.get(0).getOpen() != containingBlock)
-			return entryState;
+			return rightState;
 
-		AnalysisState<A, H, V, T> tmp = entryState;
+		AnalysisState<A, H, V, T> tmp = rightState;
 
 		// removes the block where the declaration occurs
-		List<BlockInfo> blocksBeforeDecl = blockInfo.subList(0, blocksToDeclaration.size() - 1);
+		List<BlockInfo> blocksBeforeDecl = blockInfo.subList(0, blocksToDeclaration.get(at).size() - 1);
 
 		for (int i = 0; i < blocksBeforeDecl.size(); i++) {
 			SymbolicExpression idToAssign = expr1;
@@ -159,7 +159,7 @@ public class GoMultiAssignment extends Expression {
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
 					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 						AnalysisState<A, H, V, T> assign = assignScopedId(rightState, idExp,
-								NumericalTyper.type(accessExp), blockInfo);
+								NumericalTyper.type(accessExp), blockInfo, ids[i]);
 						tmp = tmp.lub(assign);
 					}
 				}

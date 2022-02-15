@@ -108,9 +108,6 @@ public abstract class GoChaincodeTestExecutor {
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annSet);
 			annotationLoader.load(program);
-			
-			if (program.getEntryPoints().isEmpty())
-				return;
 				
 			EntryPointLoader entryLoader = new EntryPointLoader();
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("HYPERLEDGER-FABRIC"));

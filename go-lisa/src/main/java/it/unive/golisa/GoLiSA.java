@@ -61,6 +61,10 @@ public class GoLiSA {
 		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
 		analysis_opt.setRequired(true);
 		options.addOption(analysis_opt);
+		
+		Option skipNoEntry_opt = new Option("-s", "skipNoEntry", false, "skip the analysis if the program has no entry points");
+		skipNoEntry_opt.setRequired(false);
+		options.addOption(skipNoEntry_opt);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -80,6 +84,8 @@ public class GoLiSA {
 		String outputDir = cmd.getOptionValue("output");
 		
 		String analysis = cmd.getOptionValue("analysis");
+		
+		boolean skipNoEntry = cmd.hasOption("skipNoEntry");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
@@ -105,9 +111,6 @@ public class GoLiSA {
 				
 		}
 		
-		conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
-		conf.setCallGraph(new RTACallGraph());
-		
 		Program program = null;
 
 		File theDir = new File(outputDir);
@@ -125,10 +128,12 @@ public class GoLiSA {
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
 			entryLoader.load(program);
 			
-			if (program.getEntryPoints().isEmpty()) {
-				return;
+			if ( !skipNoEntry && !program.getEntryPoints().isEmpty()) {
+				LOG.warn("Entry points not found - Applying intraprocedural analysis");
+				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+				conf.setCallGraph(new RTACallGraph());
 			} else 
-				LOG.warn("Entry point not found - Applying intraprocedural analysis");
+				LOG.info("Entry points not found!");
 
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred

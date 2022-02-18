@@ -134,6 +134,18 @@ public class IntegrityNIChecker implements
 			SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
 			MonolithicHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			UnresolvedCall call, Call resolved, CFGDescriptor desc) throws SemanticException {
+		if(desc.getAnnotations().contains(SINK_MATCHER))
+			for (CFGWithAnalysisResults<
+					SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
+					MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
+					TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+				if (result.getAnalysisStateAfter(call).getState()
+						.getValueState().getExecutionState()
+						.isLowIntegrity())
+					tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
+							+ " resulting in an implicit flow");
+			}
 		Parameter[] parameters = desc.getFormals();
 		for (int i = 0; i < parameters.length; i++)
 			if (parameters[i].getAnnotations().contains(SINK_MATCHER))

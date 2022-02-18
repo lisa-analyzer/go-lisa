@@ -5,7 +5,7 @@ import org.junit.Test;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.loader.annotation.AnnotationSet;
-import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
@@ -20,7 +20,7 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 
-	private final AnnotationSet annSet = new NonDeterminismAnnotationSet();
+	private final AnnotationSet annSet = new HyperledgerFabricNonDeterminismAnnotationSet();
 
 	@Test
 	public void test_1() throws AnalysisException, IOException {

@@ -1,6 +1,7 @@
 package it.unive.golisa.frontend;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
+import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;
 import it.unive.golisa.cfg.runtime.encoding.json.function.HtmlEscape;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Indent;
@@ -130,8 +131,19 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 			if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
+		}else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
+			if (module.endsWith("/errors"))
+				loadCosmosErrors(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
+	}
+
+	private void loadCosmosErrors(Program program) {
+		CompilationUnit sdkerrors = new CompilationUnit(runtimeLocation, "sdkerrors", false);
+		// adding functions
+		sdkerrors.addConstruct(new Wrap(runtimeLocation, sdkerrors));
+		// adding compilation units to program
+		program.addCompilationUnit(sdkerrors);
 	}
 
 	private void loadFilePath(Program program) {

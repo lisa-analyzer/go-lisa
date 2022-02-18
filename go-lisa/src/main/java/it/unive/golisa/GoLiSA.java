@@ -2,6 +2,7 @@ package it.unive.golisa;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.cli.CommandLine;
@@ -11,10 +12,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
+import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -22,6 +25,8 @@ import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
+import it.unive.golisa.loader.annotation.CodeAnnotation;
+import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
@@ -36,6 +41,8 @@ import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CFGDescriptor;
 
 public class GoLiSA {
 
@@ -61,11 +68,11 @@ public class GoLiSA {
 		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
 		analysis_opt.setRequired(true);
 		options.addOption(analysis_opt);
-		
-		Option skipNoEntry_opt = new Option("-s", "skipNoEntry", false, "skip the analysis if the program has no entry points");
-		skipNoEntry_opt.setRequired(false);
-		options.addOption(skipNoEntry_opt);
 
+		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
+		dump_opt.setRequired(false);
+		options.addOption(dump_opt);
+		
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
@@ -84,13 +91,11 @@ public class GoLiSA {
 		String outputDir = cmd.getOptionValue("output");
 		
 		String analysis = cmd.getOptionValue("analysis");
-		
-		boolean skipNoEntry = cmd.hasOption("skipNoEntry");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
-		conf.setDumpAnalysis(false);
+		conf.setDumpAnalysis(cmd.hasOption(dump_opt));
 		
 		switch(analysis) {
 		
@@ -119,17 +124,28 @@ public class GoLiSA {
 
 		try {
 
+			NonDeterminismAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory.getAnnotationSets(cmd.getOptionValue("framework"));
 			program = GoFrontEnd.processFile(filePath);
 			AnnotationLoader annotationLoader = new AnnotationLoader();
-			annotationLoader.addAnnotationSet(new NonDeterminismAnnotationSet());
+			annotationLoader.addAnnotationSet(annotationSet);
 			annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
 			entryLoader.load(program);
 			
-			if ( !skipNoEntry && !program.getEntryPoints().isEmpty()) {
-				LOG.warn("Entry points not found - Applying intraprocedural analysis");
+			if(!entryLoader.isEntryFound()) {
+				Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations = annotationLoader.getAppliedAnnotations();
+				
+				//if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations, annotationSet)) {
+					Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program, appliedAnnotations, annotationSet);
+					for(CFG c : cfgs)
+						program.addEntryPoint(c);
+				//}
+			}
+				
+			
+			if (!program.getEntryPoints().isEmpty()) {
 				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
 				conf.setCallGraph(new RTACallGraph());
 			} else 
@@ -165,4 +181,5 @@ public class GoLiSA {
 			return;
 		}
 	}
+
 }

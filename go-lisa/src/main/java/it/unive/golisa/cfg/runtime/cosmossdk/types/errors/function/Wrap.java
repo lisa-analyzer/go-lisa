@@ -33,7 +33,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 public class Wrap extends NativeCFG {
 
 	public Wrap(CodeLocation location, CompilationUnit errorsUnit) {
-		super(new CFGDescriptor(location, errorsUnit, true, "Wrap", GoErrorType.INSTANCE,
+		super(new CFGDescriptor(location, errorsUnit, false, "Wrap", GoErrorType.INSTANCE,
 				new Parameter(location, "err", GoErrorType.INSTANCE),
 				new Parameter(location, "description", GoStringType.INSTANCE)),
 				WrapImpl.class);

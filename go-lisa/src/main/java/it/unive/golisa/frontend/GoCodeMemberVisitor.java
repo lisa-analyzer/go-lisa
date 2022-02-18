@@ -323,10 +323,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				: receiver.getStaticType().toString();
 
 		SourceCodeLocation location = locationOf(ctx);
-		if (program.getUnit(unitName) == null)
+		if (program.getUnit(unitName) == null) {
 			// TODO: unknown unit
 			currentUnit = new CompilationUnit(location, unitName, false);
-		else
+			program.addCompilationUnit(currentUnit);
+		} else
 			currentUnit = program.getUnit(unitName);
 
 		String methodName = ctx.IDENTIFIER().getText();

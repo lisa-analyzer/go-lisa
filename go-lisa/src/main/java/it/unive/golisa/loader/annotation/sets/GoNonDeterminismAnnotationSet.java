@@ -1,8 +1,16 @@
 package it.unive.golisa.loader.annotation.sets;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.golisa.golang.util.GoLangAPISignatureLoader;
 
 public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet{
 
@@ -13,32 +21,35 @@ public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet{
 
 	static {
 		
-		Map<String, Set<String>> map = new HashMap<>();
+		URL url = GoNonDeterminismAnnotationSet.class.getResource("/for-analysis/nondeterm_sources.txt");
+		
+		try {
+			Map<String, Set<String>> map = new HashMap<>();
+			
+			GoLangAPISignatureLoader loader = new GoLangAPISignatureLoader(url);
+			
+			for(Entry<String, ? extends Set<FuncGoLangApiSignature>> e : loader.getFunctionAPIs().entrySet())
+				for(FuncGoLangApiSignature sig :  e.getValue()) {
+						map.putIfAbsent(e.getKey(), new HashSet<>());
+						map.get(e.getKey()).add(sig.getName());
+				}
+			
+			SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map);
 
-		// Go time API
-		map.put("time", Set.of("Now", "Since", "Until"));
+			map = new HashMap<>();
 
-		// Go random API
-		map.put("math/rand", Set.of("ExpFloat64", "Float32", "Float64", "Int", "Int31", "Int31n", "Int63",
-				"Int63n", "Intn", "NormFloat64", "Perm", "Read", "Shuffle", "Uint32", "Uint64"));
-		map.put("crypto/rand", Set.of("Int", "Prime", "Read"));
+			for(Entry<String, ? extends Set<MethodGoLangApiSignature>> e : loader.getMethodAPIs().entrySet())
+				for(MethodGoLangApiSignature sig :  e.getValue()) {
+						map.putIfAbsent(sig.getReceiver().replace("*", ""), new HashSet<>());
+						map.get(sig.getReceiver().replace("*", "")).add(sig.getName());
+				}
 
-		// Go os API
-		map.put("os/file", Set.of("Create", "CreateTemp", "NewFile", "Open", "OpenFile"));
-		map.put("os", Set.of("Create", "CreateTemp", "NewFile", "Open", "OpenFile", "Executable", "Exit",
-				"Getenv", "IsNotExist", "MkdirAll", "ReadFile", "RemoveAll", "Setenv", "Unsetenv"));
+			SOURCE_CONSTRUCTORS_ANNOTATIONS.put(Kind.METHOD, map);
 
-		// Go io API
-		map.put("os/ioutil", Set.of("ReadAll", "ReadDir", "ReadFile", "TempDir", "TempFile", "WriteFile"));
-
-		SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map);
-
-		map = new HashMap<>();
-
-		// Go random API
-		map.put("Rand", Set.of("ExpFloat64", "Float32", "Float64", "Int", "Int31", "Int31n", "Int63", "Int63n", "Intn",
-				"NormFloat64", "Perm", "Read", "Shuffle", "Uint32", "Uint64"));
-
-		SOURCE_CONSTRUCTORS_ANNOTATIONS.put(Kind.METHOD, map);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

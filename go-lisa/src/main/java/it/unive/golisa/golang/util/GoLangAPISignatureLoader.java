@@ -33,12 +33,12 @@ public class GoLangAPISignatureLoader {
 	Map<String, Set<MethodGoLangApiSignature>> methodsAPIs;
 	Map<String, Set<FuncGoLangApiSignature>> functionsAPIs;
 			
-	public GoLangAPISignatureLoader(URL url) throws FileNotFoundException, IOException {
-		loadFile(url);
+	public GoLangAPISignatureLoader(InputStream input) throws FileNotFoundException, IOException {
+		loadFile(input);
 	}
 	
-	private void loadFile(URL url) throws FileNotFoundException, IOException {
-		loadedAPIs = parseGoAPIFile(new FileInputStream(url.getPath()));
+	private void loadFile(InputStream input) throws FileNotFoundException, IOException {
+		loadedAPIs = parseGoAPIFile(input);
 	}
 
 	private static Map<String, ? extends Set<GoLangApiSignature>> parseGoAPIFile(InputStream inputStream)

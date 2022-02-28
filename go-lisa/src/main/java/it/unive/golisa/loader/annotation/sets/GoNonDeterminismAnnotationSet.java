@@ -1,6 +1,8 @@
 package it.unive.golisa.loader.annotation.sets;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,12 +23,14 @@ public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet{
 
 	static {
 		
-		URL url = GoNonDeterminismAnnotationSet.class.getResource("/for-analysis/nondeterm_sources.txt");
+		
 		
 		try {
+			InputStream input = GoNonDeterminismAnnotationSet.class.getResourceAsStream("/for-analysis/nondeterm_sources.txt");
+			
 			Map<String, Set<String>> map = new HashMap<>();
 			
-			GoLangAPISignatureLoader loader = new GoLangAPISignatureLoader(url);
+			GoLangAPISignatureLoader loader = new GoLangAPISignatureLoader(input);
 			
 			for(Entry<String, ? extends Set<FuncGoLangApiSignature>> e : loader.getFunctionAPIs().entrySet())
 				for(FuncGoLangApiSignature sig :  e.getValue()) {

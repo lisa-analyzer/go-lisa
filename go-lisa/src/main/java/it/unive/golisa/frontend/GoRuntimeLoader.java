@@ -1,6 +1,7 @@
 package it.unive.golisa.frontend;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
+import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
 import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;
 import it.unive.golisa.cfg.runtime.encoding.json.function.HtmlEscape;
@@ -94,6 +95,7 @@ import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 
@@ -133,6 +135,7 @@ public interface GoRuntimeLoader {
 			if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
 		}else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
+			loadCosmosTypes(program);
 			if (module.endsWith("/errors"))
 				loadCosmosErrors(program);
 		} else
@@ -145,6 +148,11 @@ public interface GoRuntimeLoader {
 		sdkerrors.addConstruct(new Wrap(runtimeLocation, sdkerrors));
 		// adding compilation units to program
 		program.addCompilationUnit(sdkerrors);
+	}
+	
+	private void loadCosmosTypes(Program program) {
+		program.registerType(Grant.INSTANCE);
+		GoStructType.lookup(Grant.INSTANCE.getUnit().getName(), Grant.INSTANCE.getUnit());
 	}
 
 	private void loadFilePath(Program program) {

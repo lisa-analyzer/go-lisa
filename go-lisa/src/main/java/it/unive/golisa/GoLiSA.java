@@ -19,9 +19,8 @@ import org.apache.logging.log4j.Logger;
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.checker.BreakConsensusGoSmartContractChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
-import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
@@ -59,23 +58,16 @@ public class GoLiSA {
 		Option output = new Option("o", "output", true, "output file path");
 		output.setRequired(true);
 		options.addOption(output);
-
-		Option framework = new Option("f", "framework", true,
-				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
-		framework.setRequired(false);
-		options.addOption(framework);
 		
-		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
+		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (semantic, syntactic)");
 		analysis_opt.setRequired(true);
 		options.addOption(analysis_opt);
-
-		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
-		dump_opt.setRequired(false);
-		options.addOption(dump_opt);
 		
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
+		
+		
 
 		try {
 			cmd = parser.parse(options, args);
@@ -90,67 +82,62 @@ public class GoLiSA {
 
 		String outputDir = cmd.getOptionValue("output");
 		
+		File theDir = new File(outputDir);
+		if (!theDir.exists())
+			theDir.mkdirs();
+		
 		String analysis = cmd.getOptionValue("analysis");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
-		conf.setDumpAnalysis(cmd.hasOption(dump_opt));
-		
-		switch(analysis) {
-		
-			case "taint":
-				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-						.setAbstractState(
-								new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
-										LiSAFactory.getDefaultFor(TypeDomain.class)))
-						.addSemanticCheck(new TaintChecker());
-				break;
-			case "non-interference":
-				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new IntegrityNIChecker());
-				break;
-				
-		}
 		
 		Program program = null;
-
-		File theDir = new File(outputDir);
-		if (!theDir.exists())
-			theDir.mkdirs();
-
+		
 		try {
-
-			NonDeterminismAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory.getAnnotationSets(cmd.getOptionValue("framework"));
-			program = GoFrontEnd.processFile(filePath);
-			AnnotationLoader annotationLoader = new AnnotationLoader();
-			annotationLoader.addAnnotationSet(annotationSet);
-			annotationLoader.load(program);
-
-			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
-			entryLoader.load(program);
+			switch(analysis) {
 			
-			if(!entryLoader.isEntryFound()) {
-				Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations = annotationLoader.getAppliedAnnotations();
-				
-				//if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations, annotationSet)) {
-					Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program, appliedAnnotations, annotationSet);
-					for(CFG c : cfgs)
-						program.addEntryPoint(c);
-				//}
+				case "semantic":
+					conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+					.setAbstractState(
+							new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+									LiSAFactory.getDefaultFor(TypeDomain.class)))
+					.addSemanticCheck(new IntegrityNIChecker());
+						
+					NonDeterminismAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory.getAnnotationSets("COSMOS-SDK");
+					program = GoFrontEnd.processFile(filePath);
+					AnnotationLoader annotationLoader = new AnnotationLoader();
+					annotationLoader.addAnnotationSet(annotationSet);
+					annotationLoader.load(program);
+	
+					EntryPointLoader entryLoader = new EntryPointLoader();
+					entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("COSMOS-SDK"));
+					entryLoader.load(program);
+						
+					if(!entryLoader.isEntryFound()) {
+						Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations = annotationLoader.getAppliedAnnotations();
+						
+							Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program, appliedAnnotations, annotationSet);
+							for(CFG c : cfgs)
+								program.addEntryPoint(c);
+					}
+							
+						
+					if (!program.getEntryPoints().isEmpty()) {
+						conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+						conf.setCallGraph(new RTACallGraph());
+					} else 
+						LOG.info("Entry points not found!");
+					
+					break;
+					
+				case "syntactic":
+					conf.addSyntacticCheck(new BreakConsensusGoSmartContractChecker());
+					program = GoFrontEnd.processFile(filePath);
+	
+					break;
+					
 			}
-				
-			
-			if (!program.getEntryPoints().isEmpty()) {
-				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
-				conf.setCallGraph(new RTACallGraph());
-			} else 
-				LOG.info("Entry points not found!");
-
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
 			System.err.println("Parsing error.");
@@ -170,7 +157,7 @@ public class GoLiSA {
 			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());
 			return;
 		}
-
+		
 		LiSA lisa = new LiSA(conf);
 
 		try {

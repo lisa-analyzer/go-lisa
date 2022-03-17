@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.unknown;
 
+import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -28,6 +29,10 @@ public class GoUnknown extends Expression {
 	*/
 	public GoUnknown(CFG cfg, SourceCodeLocation location) {
 		super(cfg, location, Untyped.INSTANCE);
+	}
+	
+	public GoUnknown(CFG cfg, SourceCodeLocation location, GoType type) {
+		super(cfg, location, type);
 	}
 
 	@Override

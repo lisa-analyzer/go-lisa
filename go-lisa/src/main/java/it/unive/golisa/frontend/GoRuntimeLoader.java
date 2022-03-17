@@ -86,6 +86,7 @@ import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
 import it.unive.golisa.cfg.runtime.time.method.Day;
 import it.unive.golisa.cfg.runtime.time.method.Month;
+import it.unive.golisa.cfg.runtime.time.method.Sub;
 import it.unive.golisa.cfg.runtime.time.method.Unix;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
@@ -95,7 +96,6 @@ import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 
@@ -418,6 +418,7 @@ public interface GoRuntimeLoader {
 		time.addConstruct(new Month(runtimeLocation, time));
 		time.addConstruct(new Parse(runtimeLocation, time));	
 		time.addInstanceConstruct(new Unix(runtimeLocation, time));
+		time.addInstanceConstruct(new Sub(runtimeLocation, time));
 
 		// adding types
 		program.registerType(Time.INSTANCE);

@@ -32,7 +32,7 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
@@ -99,8 +99,9 @@ public class GoLiSA {
 			
 				case "semantic":
 					conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+					.setDumpAnalysis(true)
 					.setAbstractState(
-							new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+							new SimpleAbstractState<>(new MonolithicHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
 									LiSAFactory.getDefaultFor(TypeDomain.class)))
 					.addSemanticCheck(new IntegrityNIChecker());
 						

@@ -1,14 +1,15 @@
 package it.unive.golisa.cfg.runtime.time.type;
 
-import it.unive.golisa.cfg.expression.literal.GoInteger;
+import java.util.Collection;
+import java.util.Collections;
+
+import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A Duration represents the elapsed time between two instants as an int64
@@ -48,7 +49,7 @@ public class Duration implements GoType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoInteger(cfg, location, 0);
+		return new GoUnknown(cfg, location, Duration.INSTANCE);
 	}
 
 	@Override

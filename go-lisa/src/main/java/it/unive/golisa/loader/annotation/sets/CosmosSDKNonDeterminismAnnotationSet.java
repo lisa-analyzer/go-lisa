@@ -25,6 +25,10 @@ public class CosmosSDKNonDeterminismAnnotationSet extends NonDeterminismAnnotati
 				"UndefinedCodespace", "ABCIError", "New", "Wrap", 
 				"Wrapf", "Recover", "WithType"));
 
+		map.put("sdkErr", Set.of("SuccessABCICode", "Register", "ABCIInfo", "Redact",
+				"UndefinedCodespace", "ABCIError", "New", "Wrap", 
+				"Wrapf", "Recover", "WithType"));
+		
 		SINK_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map);
 
 		map = new HashMap<>();

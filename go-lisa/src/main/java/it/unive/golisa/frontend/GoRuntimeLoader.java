@@ -84,6 +84,7 @@ import it.unive.golisa.cfg.runtime.strings.GoReplace;
 import it.unive.golisa.cfg.runtime.time.function.Now;
 import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
+import it.unive.golisa.cfg.runtime.time.method.Before;
 import it.unive.golisa.cfg.runtime.time.method.Day;
 import it.unive.golisa.cfg.runtime.time.method.Month;
 import it.unive.golisa.cfg.runtime.time.method.Sub;
@@ -143,7 +144,7 @@ public interface GoRuntimeLoader {
 	}
 
 	private void loadCosmosErrors(Program program) {
-		CompilationUnit sdkerrors = new CompilationUnit(runtimeLocation, "sdkerrors", false);
+		CompilationUnit sdkerrors = new CompilationUnit(runtimeLocation, "sdkErr", false);
 		// adding functions
 		sdkerrors.addConstruct(new Wrap(runtimeLocation, sdkerrors));
 		// adding compilation units to program
@@ -419,6 +420,7 @@ public interface GoRuntimeLoader {
 		time.addConstruct(new Parse(runtimeLocation, time));	
 		time.addInstanceConstruct(new Unix(runtimeLocation, time));
 		time.addInstanceConstruct(new Sub(runtimeLocation, time));
+		time.addInstanceConstruct(new Before(runtimeLocation, time));
 
 		// adding types
 		program.registerType(Time.INSTANCE);

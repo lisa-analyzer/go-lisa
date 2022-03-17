@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.runtime.time.method;
 
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
+import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -23,17 +24,17 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
-public class Sub extends NativeCFG {
+public class Before extends NativeCFG {
 
-	public Sub(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, true, "Sub",
-				Duration.INSTANCE,
+	public Before(CodeLocation location, CompilationUnit timeUnit) {
+		super(new CFGDescriptor(location, timeUnit, true, "Before",
+				GoBoolType.INSTANCE,
 				new Parameter(location, "this", Time.INSTANCE),
 				new Parameter(location, "u", Time.INSTANCE)),
-				SubImpl.class);
+				BeforeImpl.class);
 	}
 
-	public static class SubImpl extends BinaryExpression
+	public static class BeforeImpl extends BinaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -43,12 +44,12 @@ public class Sub extends NativeCFG {
 			original = st;
 		}
 
-		public static SubImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new SubImpl(cfg, location, params[0], params[1]);
+		public static BeforeImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new BeforeImpl(cfg, location, params[0], params[1]);
 		}
 
-		public SubImpl(CFG cfg, CodeLocation location, Expression e1, Expression e2) {
-			super(cfg, location, "SubImpl", Duration.INSTANCE, e1, e2);
+		public BeforeImpl(CFG cfg, CodeLocation location, Expression e1, Expression e2) {
+			super(cfg, location, "BeforeImpl", Duration.INSTANCE, e1, e2);
 		}
 
 		@Override
@@ -57,7 +58,7 @@ public class Sub extends NativeCFG {
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(Duration.INSTANCE, getLocation()), original);
+					new PushAny(GoBoolType.INSTANCE, getLocation()), original);
 		}
 	}
 }

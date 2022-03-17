@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import it.unive.golisa.cfg.expression.binary.GoChannelSend;
-import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
-import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
@@ -15,14 +12,12 @@ import it.unive.lisa.checks.syntactic.CheckTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
-import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
+import it.unive.lisa.program.cfg.statement.call.Call;
 
 public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
@@ -45,18 +40,11 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 	private void checkIssuesRelatedToGoLangAPI(CheckTool tool, CFG graph, Statement node) {
 		
-		if(node instanceof UnresolvedCall) {
-			if(matchRandomStatement((UnresolvedCall) node))
+		if(node instanceof Call) {
+			if(matchRandomStatement((Call) node))
 				tool.warnOn(node, "Random method detected!");
-			if(matchSystemTimestampStatement((UnresolvedCall) node))
+			if(matchSystemTimestampStatement((Call) node))
 				tool.warnOn(node, "System time detected!");
-		}
-		
-		if(matchConcurrencyStatement(node))
-			tool.warnOn(node, "Concurrecy behavior detected!");
-		
-		if(node instanceof AccessInstanceGlobal) {
-			System.out.print("");//TODO:
 		}
 		
 		checkIssuesRelatedToExternalEnviroments(tool, graph, node);
@@ -66,26 +54,21 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 	private void checkIssuesRelatedToExternalEnviroments(CheckTool tool, CFG graph, Statement node) {
 		
-		if (node instanceof UnresolvedCall) {
+		if (node instanceof Call) {
 			
-			if(matchFileSystemApi((UnresolvedCall) node))
+			if(matchFileSystemApi((Call) node))
 				tool.warnOn(node, "Use of file system API detected!");
-			if(matchDataBaseApi((UnresolvedCall) node))
+			if(matchDataBaseApi((Call) node))
 				tool.warnOn(node, "Use of database API detected!");
-			if(matchNetworkApi((UnresolvedCall) node))
+			if(matchNetworkApi((Call) node))
 				tool.warnOn(node, "Use of network API detected!");
-			if(matchOsApi((UnresolvedCall) node))
+			if(matchOsApi((Call) node))
 				tool.warnOn(node, "Use of OS API detected!");
 		}
 		
-		if(node instanceof AccessInstanceGlobal) {
-			System.out.print("");//TODO:
-		}
-		
-		
 	}
 
-	private boolean matchOsApi(UnresolvedCall call) {
+	private boolean matchOsApi(Call call) {
 
 		return matchAnyPackageSignatures("os", call, true)
 				|| matchAnyPackageSignatures("internal", call, true)
@@ -93,17 +76,17 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 				|| matchAnyPackageSignatures("internal", call, true);
 	}
 
-	private boolean matchNetworkApi(UnresolvedCall call) {
+	private boolean matchNetworkApi(Call call) {
 
 		return matchAnyPackageSignatures("net", call, true);
 	}
 
-	private boolean matchDataBaseApi(UnresolvedCall call) {
+	private boolean matchDataBaseApi(Call call) {
 		
 		return matchAnyPackageSignatures("database", call, true);
 	}
 
-	private boolean matchFileSystemApi(UnresolvedCall call) {
+	private boolean matchFileSystemApi(Call call) {
 		
 		return matchAnyPackageSignatures("io", call, true)
 				|| matchAnyPackageSignatures("embed", call, true)
@@ -111,7 +94,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 						|| matchAnyPackageSignatures("compress", call, true);
 	}
 	
-	private boolean matchAnyPackageSignatures(String packageName, UnresolvedCall call, boolean checkSubPackages){
+	private boolean matchAnyPackageSignatures(String packageName, Call call, boolean checkSubPackages){
 		Map<String, Set<FuncGoLangApiSignature>> mapf = GoLangUtils.getGoLangApiFunctionSignatures();
 		Map<String, Set<MethodGoLangApiSignature>> mapm = GoLangUtils.getGoLangApiMethodSignatures();
 		
@@ -127,7 +110,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		return false;
 	}
 
-	private boolean matchSignature(GoLangApiSignature goLangApiSignature,  UnresolvedCall call) {
+	private boolean matchSignature(GoLangApiSignature goLangApiSignature,  Call call) {
 		
 		String signatureName = null;
 		if(goLangApiSignature instanceof FuncGoLangApiSignature)
@@ -136,44 +119,44 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 			signatureName = ((MethodGoLangApiSignature) goLangApiSignature).getName(); 
 		
 		if( signatureName != null && signatureName.equals(call.getTargetName()) 
-					&& call.getParameters().length > 1 
-					&& call.getParameters()[0] instanceof VariableRef) {
+				&& ( (call.getQualifier() != null && !call.getQualifier().isEmpty())
+					|| (call.getParameters().length > 1 
+					&& call.getParameters()[0] instanceof VariableRef))) {
 				
-				VariableRef var = (VariableRef) call.getParameters()[0];
-				if(goLangApiSignature.getPackage().contains(var.getName()))
-					return true;			
+			String s = "";	
+			if(call.getQualifier() != null && !call.getQualifier().isEmpty())
+				s = call.getQualifier();
+			else
+				s = ((VariableRef) call.getParameters()[0]).getName();
+			
+			if(goLangApiSignature.getPackage().contains(s))
+				return true;			
 		}
 		
 		return false;
 	}
 	
 	/*
-	 * Concurrency. Goroutines and channels introduce concurrency into Go chaincodes. The concurrency may
-	 * lead to non-deterministic behavior and race condition problems.The following code snippet suffers from such
-	 * vulnerability.
-	 */
-	private boolean matchConcurrencyStatement(Statement node) {
-		return node instanceof GoRoutine || node instanceof GoChannelReceive || node instanceof GoChannelSend;
-	}
-
-
-
-	/*
 	 * System timestamp. In Go, timestamp-based libraries leads to inconsistent computation between
 	 * peers, leading to a lack of consensus. For example, the time library in Go allows peers to get the current timestamp
 	 * at a given time. It is unlikely that all peers execute a transaction at the same time and receives a similar timestamp.
 	 */
-	private boolean matchSystemTimestampStatement(UnresolvedCall call) {
+	private boolean matchSystemTimestampStatement(Call call) {
 		
 		List<String> SYSTEM_TIME_SIGNATURES = List.of("Now", "Since", "Until");
 		
 		if( SYSTEM_TIME_SIGNATURES.contains(call.getTargetName()) 
-				&& call.getParameters().length > 1 
-				&& call.getParameters()[0] instanceof VariableRef) {
+				&& ((call.getQualifier() != null  && !call.getQualifier().isEmpty()) || ( call.getParameters().length > 1 
+									&& call.getParameters()[0] instanceof VariableRef))) {
 			
-			VariableRef var = (VariableRef) call.getParameters()[0];
-			if(var.getName().equals("time"))
-				return true;			
+			String s = "";
+			if(call.getQualifier() != null && !call.getQualifier().isEmpty())
+				s = call.getQualifier();
+			else
+				s = ((VariableRef) call.getParameters()[0]).getName();
+			
+			if(s.equals("time"))
+				return true;	
 		}
 
 		return false;
@@ -182,7 +165,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	/*
 	 * Random number generation. Go has built-in support for random number generation in the standard library.
 	 */
-	private boolean matchRandomStatement(UnresolvedCall call) {
+	private boolean matchRandomStatement(Call call) {
 
 		return  matchAnyPackageSignatures("rand", call, true);
 	}
@@ -198,29 +181,8 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public boolean visitCompilationUnit(CheckTool tool, CompilationUnit unit) {
-		
-		if(checkExternalLibraries(tool, unit))
-			tool.warnOn(unit, "Possible external library detected!");
+	public boolean visitCompilationUnit(CheckTool tool, CompilationUnit unit) {	
 		return true;
-	}
-
-	private boolean checkExternalLibraries(CheckTool tool, CompilationUnit unit) {
-
-		if(unit.getLocation() instanceof SourceCodeLocation) {
-			SourceCodeLocation scl = (SourceCodeLocation) unit.getLocation();
-			if( scl.getSourceFile() != null && !scl.getSourceFile().equals(GoLangUtils.GO_UNKNOWN_SOURCE)
-					|| !unit.getName().contains(".") || isWhiteListRepo(unit))
-				return false;
-		}
-		
-		return true;
-		
-	}
-
-	private boolean isWhiteListRepo(CompilationUnit unit) {
-		List<String> whitelist = List.of("github.com/golang/", "golang.org/", "github.com/google/go", "google.golang.org/", "github.com/cosmos/", "github.com/hyperledger/");
-		return whitelist.parallelStream().anyMatch(p -> unit.getName().startsWith(p));
 	}
 
 	@Override

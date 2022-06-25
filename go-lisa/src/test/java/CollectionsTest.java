@@ -1,24 +1,31 @@
 
+import org.junit.Test;
+
+import it.unive.golisa.analysis.heap.GoAbstractState;
+import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Test;
 
 public class CollectionsTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void structTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
-						new InferredTypes()));
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new Interval()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)));
 		perform("collections/struct", "struct.go", conf);
 	}
 
@@ -28,8 +35,10 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	@Test
 	public void fieldInsensitivedPointBasedArrayTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
-						new InferredTypes()));
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new Interval()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)));
 		perform("collections/array/field-insensitive", "array.go", conf);
 	}
 

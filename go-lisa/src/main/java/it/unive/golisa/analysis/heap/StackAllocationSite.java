@@ -7,9 +7,8 @@ import it.unive.lisa.type.Type;
 public class StackAllocationSite extends GoAllocationSite {
 
 	public StackAllocationSite(Type staticType, String locationName, boolean isWeak, CodeLocation location) {
-		super(staticType, locationName, isWeak, location);
+		this(staticType, locationName, null, isWeak, location);
 	}
-
 
 	public StackAllocationSite(Type staticType, String locationName, SymbolicExpression field, boolean isWeak,
 			CodeLocation location) {

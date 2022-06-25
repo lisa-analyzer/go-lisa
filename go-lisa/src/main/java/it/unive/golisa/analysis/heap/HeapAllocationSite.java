@@ -7,7 +7,7 @@ import it.unive.lisa.type.Type;
 public class HeapAllocationSite extends GoAllocationSite {
 
 	public HeapAllocationSite(Type staticType, String locationName, boolean isWeak, CodeLocation location) {
-		super(staticType, locationName, isWeak, location);
+		this(staticType, locationName, null, isWeak, location);
 	}
 	
 	public HeapAllocationSite(Type staticType, String locationName, SymbolicExpression field, boolean isWeak,

@@ -5,40 +5,28 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 
-public abstract class GoAllocationSite extends AllocationSite {
-
-	public GoAllocationSite(Type staticType, String locationName, boolean isWeak, CodeLocation location) {
-		super(staticType, locationName, isWeak, location);
-	}
-//
-//	@Override
-//	public int hashCode() {
-//		final int prime = 31;
-//		int result = prime + ((getName() == null) ? 0 : getName().hashCode());
-//		result = prime * result + (isWeak() ? 1231 : 1237);
-//		return result;
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (obj instanceof GoAllocationSite) {
-//			GoAllocationSite other = (GoAllocationSite) obj;
-//			if (getName() == null) {
-//				if (other.getName() != null)
-//					return false;
-//			} else if (!other.getName().equals(other.getName()))
-//				return false;
-//			if (isWeak() != other.isWeak())
-//				return false;
-//			return true;
-//		}
-//		return false;
-//	}
-
+/**
+ * A heap identifier that track also the source location where it has been
+ * allocated and a field (optional). This class is used in
+ * {@link GoPointBasedHeap} and {@link GoFieldSensitivePointBasedHeap}.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ */
+public class GoAllocationSite extends AllocationSite {
+	
+	/**
+	 * Builds an allocation site from its source code location and its field and
+	 * specifying if it is weak.
+	 * 
+	 * @param staticType   the static type of this allocation site
+	 * @param locationName the source code location string representation where
+	 *                         this allocation site has been allocated
+	 * @param field        the field of this allocation site
+	 * @param isWeak       boolean value specifying if this allocation site is
+	 *                         weak
+	 * @param location     the code location of the statement that has generated
+	 *                         this expression
+	 */
 	public GoAllocationSite(Type staticType, String locationName, SymbolicExpression field, boolean isWeak,
 			CodeLocation location) {
 		super(staticType, locationName, field, isWeak, location);

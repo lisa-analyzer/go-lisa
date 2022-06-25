@@ -53,10 +53,15 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	 * @param heapEnv the heap environment that this instance tracks
 	 */
 	protected GoPointBasedHeap(HeapEnvironment<GoAllocationSites> heapEnv) {
-		this.heapEnv = heapEnv;
+		this(heapEnv, new HashSet<>());
 	}
 
-	public Pair<HeapLocation, HeapLocation> copies;
+	public GoPointBasedHeap(HeapEnvironment<GoAllocationSites> heapEnv, Set<Pair<HeapLocation, HeapLocation>> copies) {
+		this.heapEnv = heapEnv;
+		this.decouples = copies;
+	}
+
+	protected final Set<Pair<HeapLocation, HeapLocation>> decouples;
 
 	/**
 	 * Builds a point-based heap from a reference one.
@@ -96,7 +101,8 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 						StackAllocationSite copySiteRight = new StackAllocationSite(Untyped.INSTANCE, star_y.getCodeLocation().toString(), star_y.isWeak(), star_y.getCodeLocation());
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, copySite, pp);
 						result = result.lub(from(new GoPointBasedHeap(heap)));	
-						result.copies = Pair.of(copySite, copySiteRight);
+						result.decouples.add(Pair.of(copySite, copySiteRight));
+
 					} else {
 						// plain assignment just if star_y is a real heap allocation site
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, star_y, pp);
@@ -172,7 +178,14 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 
 	@Override
 	protected GoPointBasedHeap lubAux(GoPointBasedHeap other) throws SemanticException {
-		return from(new GoPointBasedHeap(heapEnv.lub(other.heapEnv)));
+		Set<Pair<HeapLocation, HeapLocation>> lubCopies = new HashSet<>();
+		
+		for (Pair<HeapLocation, HeapLocation> p : this.decouples)
+			lubCopies.add(p);
+		for (Pair<HeapLocation, HeapLocation> p : other.decouples)
+			lubCopies.add(p);
+
+		return from(new GoPointBasedHeap(heapEnv.lub(other.heapEnv), lubCopies));
 	}
 
 	@Override
@@ -364,5 +377,9 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 
 			return result;
 		}
+	}
+
+	public Set<Pair<HeapLocation, HeapLocation>> getDecouples() {
+		return decouples;
 	}
 }

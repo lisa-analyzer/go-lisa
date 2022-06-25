@@ -1,5 +1,7 @@
 package it.unive.golisa.analysis.heap;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -10,6 +12,7 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
@@ -74,12 +77,12 @@ implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 			throws SemanticException {
 		GoPointBasedHeap heap = heapState.assign(id, expression, pp);
 		ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
-		V value;
-		if (heap.copies != null)
-			value = valueState.assign(heap.copies.getLeft(), heap.copies.getRight(), pp);
-		else
-			value = valueState;
+		V value = valueState;
 
+		for (Pair<HeapLocation, HeapLocation> p : heap.getDecouples())
+			value = value.assign(p.getLeft(), p.getRight(), pp);
+		heap.getDecouples().clear();
+		
 		T type = typeState;
 		if (heap.getSubstitution() != null && !heap.getSubstitution().isEmpty()) {
 			type = type.applySubstitution(heap.getSubstitution(), pp);

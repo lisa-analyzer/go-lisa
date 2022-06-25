@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
+import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -119,7 +119,7 @@ public class GoLiSA {
 		default:
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 			.setAbstractState(
-					new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new Interval()),
+					new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(), new ValueEnvironment<>(new Interval()),
 							LiSAFactory.getDefaultFor(TypeDomain.class))).setDumpAnalysis(true);
 			break;
 

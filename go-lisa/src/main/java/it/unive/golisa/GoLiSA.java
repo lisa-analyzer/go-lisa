@@ -18,6 +18,8 @@ import org.apache.logging.log4j.Logger;
 
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
+import it.unive.golisa.analysis.heap.GoAbstractState;
+import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -35,6 +37,8 @@ import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
@@ -64,7 +68,7 @@ public class GoLiSA {
 				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
 		framework.setRequired(false);
 		options.addOption(framework);
-		
+
 		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
 		analysis_opt.setRequired(true);
 		options.addOption(analysis_opt);
@@ -72,7 +76,7 @@ public class GoLiSA {
 		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
 		dump_opt.setRequired(false);
 		options.addOption(dump_opt);
-		
+
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
@@ -89,33 +93,39 @@ public class GoLiSA {
 		String filePath = cmd.getOptionValue("input");
 
 		String outputDir = cmd.getOptionValue("output");
-		
+
 		String analysis = cmd.getOptionValue("analysis");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
-		conf.setDumpAnalysis(cmd.hasOption(dump_opt));
-		
+
 		switch(analysis) {
-		
-			case "taint":
-				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-						.setAbstractState(
-								new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
-										LiSAFactory.getDefaultFor(TypeDomain.class)))
-						.addSemanticCheck(new TaintChecker());
-				break;
-			case "non-interference":
-				conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new IntegrityNIChecker());
-				break;
-				
+
+		case "taint":
+			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+			.setAbstractState(
+					new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+							LiSAFactory.getDefaultFor(TypeDomain.class)))
+			.addSemanticCheck(new TaintChecker());
+			break;
+		case "non-interference":
+			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+			.setAbstractState(
+					new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+							LiSAFactory.getDefaultFor(TypeDomain.class)))
+			.addSemanticCheck(new IntegrityNIChecker());
+			break;
+		default:
+			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+			.setAbstractState(
+					new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new Interval()),
+							LiSAFactory.getDefaultFor(TypeDomain.class))).setDumpAnalysis(true);
+			break;
+
+
 		}
-		
+
 		Program program = null;
 
 		File theDir = new File(outputDir);
@@ -133,18 +143,18 @@ public class GoLiSA {
 			EntryPointLoader entryLoader = new EntryPointLoader();
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
 			entryLoader.load(program);
-			
+
 			if(!entryLoader.isEntryFound()) {
 				Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations = annotationLoader.getAppliedAnnotations();
-				
+
 				//if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations, annotationSet)) {
-					Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program, appliedAnnotations, annotationSet);
-					for(CFG c : cfgs)
-						program.addEntryPoint(c);
+				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program, appliedAnnotations, annotationSet);
+				for(CFG c : cfgs)
+					program.addEntryPoint(c);
 				//}
 			}
-				
-			
+
+
 			if (!program.getEntryPoints().isEmpty()) {
 				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
 				conf.setCallGraph(new RTACallGraph());

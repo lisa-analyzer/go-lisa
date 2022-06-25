@@ -1,11 +1,5 @@
 package it.unive.golisa.analysis.heap;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
@@ -25,7 +19,10 @@ import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 
@@ -90,8 +87,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 										star_y.getCodeLocation());
 								newCopies.add(Pair.of(copySite, copySiteRight));
 							}
-						} 
-						else if (star_y.getStaticType() instanceof GoArrayType) {
+						} else if (star_y.getStaticType() instanceof GoArrayType) {
 							GoArrayType array = (GoArrayType) star_y.getStaticType();
 							Type contentType = array.getContenType();
 
@@ -106,7 +102,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 										star_y.getCodeLocation());
 								newCopies.add(Pair.of(copySite, copySiteRight));
 							}
-							
+
 							Variable field = new Variable(GoInt32Type.INSTANCE, "len",
 									exp.getCodeLocation());
 							StackAllocationSite copySite = new StackAllocationSite(GoInt32Type.INSTANCE,
@@ -116,17 +112,17 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 									star_y.getCodeLocation().toString(), field, star_y.isWeak(),
 									star_y.getCodeLocation());
 							newCopies.add(Pair.of(copySite, copySiteRight));
-							
-							 field = new Variable(GoInt32Type.INSTANCE, "cap",
+
+							field = new Variable(GoInt32Type.INSTANCE, "cap",
 									exp.getCodeLocation());
-							 copySite = new StackAllocationSite(GoInt32Type.INSTANCE,
+							copySite = new StackAllocationSite(GoInt32Type.INSTANCE,
 									id.getCodeLocation().toString(), field, star_y.isWeak(),
 									id.getCodeLocation());
-							 copySiteRight = new StackAllocationSite(GoInt32Type.INSTANCE,
+							copySiteRight = new StackAllocationSite(GoInt32Type.INSTANCE,
 									star_y.getCodeLocation().toString(), field, star_y.isWeak(),
 									star_y.getCodeLocation());
 							newCopies.add(Pair.of(copySite, copySiteRight));
-						} 
+						}
 
 						StackAllocationSite copySite = new StackAllocationSite(star_y.getStaticType(),
 								id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());

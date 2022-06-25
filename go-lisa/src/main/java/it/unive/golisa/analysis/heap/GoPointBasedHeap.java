@@ -21,7 +21,6 @@ import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.type.Untyped;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +34,8 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	 * each identifier.
 	 */
 	protected final HeapEnvironment<GoAllocationSites> heapEnv;
+
+	protected final Set<Pair<HeapLocation, HeapLocation>> decouples;
 
 	/**
 	 * Builds a new instance of field-insensitive point-based heap.
@@ -57,8 +58,6 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		this.heapEnv = heapEnv;
 		this.decouples = copies;
 	}
-
-	protected final Set<Pair<HeapLocation, HeapLocation>> decouples;
 
 	/**
 	 * Builds a point-based heap from a reference one.
@@ -95,13 +94,13 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 						// in other case, where star_y is a stack alloacation
 						// site, we should
 						// copy
-						StackAllocationSite copySite = new StackAllocationSite(star_y.getStaticType(),
+						StackAllocationSite cloneSite = new StackAllocationSite(star_y.getStaticType(),
 								id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());
-						StackAllocationSite copySiteRight = new StackAllocationSite(star_y.getStaticType(),
+						StackAllocationSite toClone = new StackAllocationSite(star_y.getStaticType(),
 								star_y.getCodeLocation().toString(), star_y.isWeak(), star_y.getCodeLocation());
-						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, copySite, pp);
+						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, cloneSite, pp);
 						result = result.lub(from(new GoPointBasedHeap(heap)));
-						result.decouples.add(Pair.of(copySite, copySiteRight));
+						result.decouples.add(Pair.of(cloneSite, toClone));
 
 					} else {
 						// plain assignment just if star_y is a real heap

@@ -76,7 +76,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 			throws SemanticException {
 		GoPointBasedHeap heap = heapState.assign(id, expression, pp);
 		ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
-		
+
 		V value = valueState;
 		T type = typeState;
 
@@ -88,7 +88,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 			p.getRight().setRuntimeTypes(rt);
 			value = value.assign(p.getLeft(), p.getRight(), pp);
 		}
-		
+
 		heap.getDecouples().clear();
 
 		if (heap.getSubstitution() != null && !heap.getSubstitution().isEmpty()) {

@@ -7,7 +7,6 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -16,10 +15,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.symbolic.value.Variable;
-import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoCollectionAccess extends BinaryExpression {
 
@@ -35,28 +31,27 @@ public class GoCollectionAccess extends BinaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		
+
 		AnalysisState<A, H, V, T> result = state.bottom();
 
 		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);
 		for (SymbolicExpression expr : rec.getComputedExpressions()) {
 			AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(
-							new AccessChild(Untyped.INSTANCE,
-									new HeapDereference(getStaticType(), expr, getLocation()), right, getLocation()),
-							this);
+					new AccessChild(Untyped.INSTANCE,
+							new HeapDereference(getStaticType(), expr, getLocation()), right, getLocation()),
+					this);
 			result = result.lub(tmp);
 		}
-		
+
 		return result;
 	}
 
 	public Expression getReceiver() {
 		return getLeft();
 	}
-	
+
 	public Expression getTarget() {
 		return getRight();
 	}
-	
-		
+
 }

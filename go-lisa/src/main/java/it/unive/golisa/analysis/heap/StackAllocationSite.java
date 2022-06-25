@@ -14,4 +14,14 @@ public class StackAllocationSite extends GoAllocationSite {
 			CodeLocation location) {
 		super(staticType, locationName, field, isWeak, location);
 	}
+
+//	@Override
+//	public SymbolicExpression pushScope(ScopeToken token) {
+//		return new OutOfScopeIdentifier(this, token, getCodeLocation());
+//	}
+//
+//	@Override
+//	public SymbolicExpression popScope(ScopeToken token) throws SemanticException {
+//		return null;
+//	}
 }

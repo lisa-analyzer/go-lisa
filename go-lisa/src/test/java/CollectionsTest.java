@@ -59,8 +59,10 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	@Test
 	public void fieldInsensitivedPointBasedSliceTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
-						new InferredTypes()));
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new Interval()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)));
 		perform("collections/slice/field-insensitive", "slice.go", conf);
 	}
 

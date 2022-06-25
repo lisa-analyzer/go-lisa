@@ -11,10 +11,11 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
-public class GoSliceType implements GoType {
+public class GoSliceType implements GoType, InMemoryType {
 
 	private Type contentType;
 

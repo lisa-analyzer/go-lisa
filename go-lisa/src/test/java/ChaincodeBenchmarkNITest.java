@@ -1,5 +1,6 @@
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -18,6 +19,7 @@ import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
+@Ignore
 public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 
 	private final AnnotationSet annSet = new HyperledgerFabricNonDeterminismAnnotationSet();

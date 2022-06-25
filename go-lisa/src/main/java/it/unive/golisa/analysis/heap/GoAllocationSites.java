@@ -151,7 +151,7 @@ public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocatio
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		return id.getDynamicType().isPointerType() || id.getDynamicType().isUntyped();
+		return id.getDynamicType().isInMemoryType() || id.getDynamicType().isUntyped();
 	}
 
 	@Override

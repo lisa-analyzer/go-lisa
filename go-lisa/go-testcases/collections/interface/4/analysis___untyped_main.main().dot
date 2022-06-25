@@ -1,11 +1,11 @@
 digraph {
-	"node0" [shape="rect",color="black",label=<var i EMPTY_INTERFACE = &quot;hello&quot;<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ #TOP# ]]<BR/>}} -&gt; [i]>];
-	"node1" [shape="rect",color="gray",label=<s := .(string)(i)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ s: [-Inf, +Inf] ]]<BR/>}} -&gt; [s]>];
-	"node2" [shape="rect",color="gray",label=<f := .(float64)(i)<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; []>];
-	"node3" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; [skip]>];
+	"node0" [shape="rect",color="black",label=<var i interface{} = &quot;hello&quot;<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ i: [-Inf, +Inf]<BR/>[stack: [-Inf, +Inf]] ]]<BR/>}} -&gt; [i]>];
+	"node1" [shape="rect",color="gray",label=<s := .(string)(i)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ i: [-Inf, +Inf]<BR/>s: [-Inf, +Inf]<BR/>[stack: [-Inf, +Inf]] ]]<BR/>}} -&gt; [s]>];
+	"node2" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; [skip]>];
+	"node3" [shape="rect",color="gray",label=<f := .(float64)(i)<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; []>];
 	"node0" -> "node1" [color="black"];
-	"node1" -> "node2" [color="black"];
-	"node2" -> "node3" [color="black"];
+	"node1" -> "node3" [color="black"];
+	"node3" -> "node2" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

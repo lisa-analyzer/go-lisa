@@ -128,7 +128,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 							newCopies.add(Pair.of(copySite, copySiteRight));
 						} 
 
-						StackAllocationSite copySite = new StackAllocationSite(Untyped.INSTANCE,
+						StackAllocationSite copySite = new StackAllocationSite(star_y.getStaticType(),
 								id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, copySite, pp);
 

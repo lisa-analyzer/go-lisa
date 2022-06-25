@@ -49,4 +49,14 @@ public class GoCollectionAccess extends BinaryExpression {
 		
 		return result;
 	}
+
+	public Expression getReceiver() {
+		return getLeft();
+	}
+	
+	public Expression getTarget() {
+		return getRight();
+	}
+	
+		
 }

@@ -123,7 +123,7 @@ public class GoKeyedLiteral extends NaryExpression {
 			AnalysisState<A, H, V, T> result = state.bottom();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
+				HeapReference reference = new HeapReference(type, containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				if (getSubExpressions().length == 0) {

@@ -121,7 +121,7 @@ public class GoLiSA {
 		default:
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 					.setAbstractState(
-							new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+							new GoAbstractState<>(new GoPointBasedHeap(),
 									new ValueEnvironment<>(new Interval()),
 									LiSAFactory.getDefaultFor(TypeDomain.class)))
 					.setDumpAnalysis(true);

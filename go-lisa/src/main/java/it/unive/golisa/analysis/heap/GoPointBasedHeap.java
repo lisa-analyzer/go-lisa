@@ -21,7 +21,6 @@ import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Untyped;
 import java.util.Collections;
 import java.util.HashSet;
@@ -96,9 +95,9 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 						// in other case, where star_y is a stack alloacation
 						// site, we should
 						// copy
-						StackAllocationSite copySite = new StackAllocationSite(Untyped.INSTANCE,
+						StackAllocationSite copySite = new StackAllocationSite(star_y.getStaticType(),
 								id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());
-						StackAllocationSite copySiteRight = new StackAllocationSite(Untyped.INSTANCE,
+						StackAllocationSite copySiteRight = new StackAllocationSite(star_y.getStaticType(),
 								star_y.getCodeLocation().toString(), star_y.isWeak(), star_y.getCodeLocation());
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, copySite, pp);
 						result = result.lub(from(new GoPointBasedHeap(heap)));
@@ -324,8 +323,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 
 			for (ValueExpression loc : arg)
 				if (loc instanceof GoAllocationSite) {
-					MemoryPointer e = new MemoryPointer(
-							new ReferenceType(loc.getStaticType()),
+					MemoryPointer e = new MemoryPointer(loc.getStaticType(),
 							(GoAllocationSite) loc,
 							loc.getCodeLocation());
 					if (expression.hasRuntimeTypes())
@@ -368,8 +366,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		private Set<ValueExpression> resolveIdentifier(Identifier v) {
 			Set<ValueExpression> result = new HashSet<>();
 			for (GoAllocationSite site : heapEnv.getState(v)) {
-				MemoryPointer e = new MemoryPointer(
-						new ReferenceType(site.getStaticType()),
+				MemoryPointer e = new MemoryPointer(site.getStaticType(),
 						site,
 						site.getCodeLocation());
 				if (v.hasRuntimeTypes())

@@ -1,7 +1,7 @@
 digraph {
 	labelloc="t";
 	label="[['go-testcases/collections/interface/1/interface.go':22:20]]";
-	"node0" [shape="rect",color="black",peripheries="2",label=<return [unresolved]perim(g)<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35[height]: [4, 4]<BR/>heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35[width]: [3, 3]<BR/>ret_value@measure: [14, 14] ]]<BR/>}} -&gt; [ret_value@measure]>];
+	"node0" [shape="rect",color="black",peripheries="2",label=<return perim(g)<BR/>{{<BR/>heap [[ ['go-testcases/collections/interface/1/interface.go':22:20]:ret: [heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35]<BR/>g: [heap[s]:pp@'go-testcases/collections/interface/1/interface.go':16:13] ]]<BR/>value [[ heap[s]:pp@'go-testcases/collections/interface/1/interface.go':11:6[height]: [4, 4]<BR/>heap[s]:pp@'go-testcases/collections/interface/1/interface.go':11:6[width]: [3, 3]<BR/>heap[s]:pp@'go-testcases/collections/interface/1/interface.go':16:13[height]: [4, 4]<BR/>heap[s]:pp@'go-testcases/collections/interface/1/interface.go':16:13[width]: [3, 3]<BR/>heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35[height]: [4, 4]<BR/>heap[s]:pp@'go-testcases/collections/interface/1/interface.go':21:35[width]: [3, 3]<BR/>ret_value@measure: [14, 14]<BR/>[stack: [14, 14]] ]]<BR/>}} -&gt; [ret_value@measure]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

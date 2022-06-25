@@ -2,6 +2,7 @@
 import org.junit.Test;
 
 import it.unive.golisa.analysis.heap.GoAbstractState;
+import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
@@ -45,8 +46,10 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	@Test
 	public void fieldSensitivePointBasedArrayTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval(), new InferredTypes()));
+				.setAbstractState(
+						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+								new ValueEnvironment<>(new Interval()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)));
 		perform("collections/array/field-sensitive", "array.go", conf);
 	}
 

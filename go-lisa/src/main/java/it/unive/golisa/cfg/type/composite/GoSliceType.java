@@ -1,22 +1,20 @@
 package it.unive.golisa.cfg.type.composite;
 
-import it.unive.golisa.cfg.expression.literal.GoNil;
-import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
-import it.unive.lisa.caches.Caches;
-import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.PointerType;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GoSliceType implements GoType, PointerType {
+import it.unive.golisa.cfg.expression.literal.GoNil;
+import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
+
+public class GoSliceType implements GoType {
 
 	private Type contentType;
 
@@ -96,11 +94,6 @@ public class GoSliceType implements GoType, PointerType {
 		for (GoSliceType in : sliceTypes)
 			instances.add(in);
 		return instances;
-	}
-
-	@Override
-	public ExternalSet<Type> getInnerTypes() {
-		return Caches.types().mkSingletonSet(contentType);
 	}
 
 	public static void clearAll() {

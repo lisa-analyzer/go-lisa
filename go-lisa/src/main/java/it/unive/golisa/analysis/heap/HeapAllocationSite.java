@@ -9,7 +9,7 @@ public class HeapAllocationSite extends GoAllocationSite {
 	public HeapAllocationSite(Type staticType, String locationName, boolean isWeak, CodeLocation location) {
 		this(staticType, locationName, null, isWeak, location);
 	}
-	
+
 	public HeapAllocationSite(Type staticType, String locationName, SymbolicExpression field, boolean isWeak,
 			CodeLocation location) {
 		super(staticType, locationName, field, isWeak, location);

@@ -1,12 +1,5 @@
 package it.unive.golisa.loader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
@@ -16,15 +9,19 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.NativeCFG;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class AnnotationLoader implements Loader {
 
 	protected final List<AnnotationSet> annotationSets;
-	
-	protected final  Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations;
-	
+
+	protected final Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations;
 
 	public AnnotationLoader() {
 		annotationSets = new ArrayList<>();
@@ -37,7 +34,7 @@ public class AnnotationLoader implements Loader {
 	}
 
 	public void addAnnotationSet(AnnotationSet... annotationSet) {
-		for(AnnotationSet as : annotationSet)
+		for (AnnotationSet as : annotationSet)
 			this.annotationSets.add(as);
 	}
 
@@ -62,8 +59,8 @@ public class AnnotationLoader implements Loader {
 			// TODO
 		}
 	}
-	
-	public Set<Pair<CodeAnnotation, CFGDescriptor>> getAppliedAnnotations(){
+
+	public Set<Pair<CodeAnnotation, CFGDescriptor>> getAppliedAnnotations() {
 		return appliedAnnotations;
 	}
 
@@ -77,7 +74,7 @@ public class AnnotationLoader implements Loader {
 					descriptor.getFormals()[mpa.getParam()].addAnnotation(mpa.getAnnotation());
 				} else
 					descriptor.addAnnotation(ma.getAnnotation());
-				
+
 				appliedAnnotations.add(Pair.of(ca, descriptor));
 			}
 		}

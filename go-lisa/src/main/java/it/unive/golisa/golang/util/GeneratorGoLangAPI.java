@@ -1,5 +1,11 @@
 package it.unive.golisa.golang.util;
 
+import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.GoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,20 +22,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.GoLangApiSignature;
-import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 
 //TODO: to use during the GoLiSA build in order to generate Go Classes
 public class GeneratorGoLangAPI {

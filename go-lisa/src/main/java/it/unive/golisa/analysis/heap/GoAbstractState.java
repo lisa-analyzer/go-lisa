@@ -1,7 +1,5 @@
 package it.unive.golisa.analysis.heap;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -17,11 +15,12 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class GoAbstractState<V extends ValueDomain<V>,
-T extends TypeDomain<T>>
-extends BaseLattice<GoAbstractState<V, T>>
-implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
+		T extends TypeDomain<T>>
+		extends BaseLattice<GoAbstractState<V, T>>
+		implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 
 	/**
 	 * The domain containing information regarding heap structures
@@ -82,7 +81,7 @@ implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 		for (Pair<HeapLocation, HeapLocation> p : heap.getDecouples())
 			value = value.assign(p.getLeft(), p.getRight(), pp);
 		heap.getDecouples().clear();
-		
+
 		T type = typeState;
 		if (heap.getSubstitution() != null && !heap.getSubstitution().isEmpty()) {
 			type = type.applySubstitution(heap.getSubstitution(), pp);

@@ -74,14 +74,14 @@ public class VariableScopingCFG extends CFG {
 	public Map<String, Set<IdInfo>> getVisibleIds(Statement node) {
 		return scopingMap.get(node);
 	}
-	
+
 	@Override
 	public Collection<Statement> getGuards(ProgramPoint pp) {
 		// TODO remove this when the fix will be available in lisa
 		Collection<Statement> guards = super.getGuards(pp);
 		if (!guards.isEmpty())
 			return guards;
-		
+
 		if (pp instanceof Call) {
 			Call original = (Call) pp;
 			while (original.getSource() != null)
@@ -89,7 +89,7 @@ public class VariableScopingCFG extends CFG {
 			if (original != pp)
 				return super.getGuards(original);
 		}
-		
+
 		return guards;
 	}
 }

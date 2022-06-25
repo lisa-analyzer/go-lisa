@@ -1,12 +1,5 @@
 package it.unive.golisa.analysis.heap;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -30,6 +23,11 @@ import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 
@@ -95,24 +93,28 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 					result = result.lub(from(new GoPointBasedHeap(heap)));
 				} else {
 					if (star_y instanceof StackAllocationSite && sss.heapEnv.getKeys().contains(expression)) {
-						// in other case, where star_y is a stack alloacation site, we should
+						// in other case, where star_y is a stack alloacation
+						// site, we should
 						// copy
-						StackAllocationSite copySite = new StackAllocationSite(Untyped.INSTANCE, id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());
-						StackAllocationSite copySiteRight = new StackAllocationSite(Untyped.INSTANCE, star_y.getCodeLocation().toString(), star_y.isWeak(), star_y.getCodeLocation());
+						StackAllocationSite copySite = new StackAllocationSite(Untyped.INSTANCE,
+								id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());
+						StackAllocationSite copySiteRight = new StackAllocationSite(Untyped.INSTANCE,
+								star_y.getCodeLocation().toString(), star_y.isWeak(), star_y.getCodeLocation());
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, copySite, pp);
-						result = result.lub(from(new GoPointBasedHeap(heap)));	
+						result = result.lub(from(new GoPointBasedHeap(heap)));
 						result.decouples.add(Pair.of(copySite, copySiteRight));
 
 					} else {
-						// plain assignment just if star_y is a real heap allocation site
+						// plain assignment just if star_y is a real heap
+						// allocation site
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, star_y, pp);
 						result = result.lub(from(new GoPointBasedHeap(heap)));
 					}
 				}
-			} else if (exp instanceof AllocationSite) {			
+			} else if (exp instanceof AllocationSite) {
 				HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, exp, pp);
 				result = result.lub(from(new GoPointBasedHeap(heap)));
-			}	else
+			} else
 				result = result.lub(sss);
 
 		return result;
@@ -179,7 +181,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	@Override
 	protected GoPointBasedHeap lubAux(GoPointBasedHeap other) throws SemanticException {
 		Set<Pair<HeapLocation, HeapLocation>> lubCopies = new HashSet<>();
-		
+
 		for (Pair<HeapLocation, HeapLocation> p : this.decouples)
 			lubCopies.add(p);
 		for (Pair<HeapLocation, HeapLocation> p : other.decouples)
@@ -317,7 +319,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		@Override
 		public ExpressionSet<ValueExpression> visit(HeapReference expression, ExpressionSet<ValueExpression> arg,
 				Object... params)
-						throws SemanticException {
+				throws SemanticException {
 			Set<ValueExpression> result = new HashSet<>();
 
 			for (ValueExpression loc : arg)
@@ -337,7 +339,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		@Override
 		public ExpressionSet<ValueExpression> visit(HeapDereference expression, ExpressionSet<ValueExpression> arg,
 				Object... params)
-						throws SemanticException {
+				throws SemanticException {
 			Set<ValueExpression> result = new HashSet<>();
 
 			for (ValueExpression ref : arg)

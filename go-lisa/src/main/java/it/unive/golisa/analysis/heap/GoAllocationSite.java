@@ -13,7 +13,7 @@ import it.unive.lisa.type.Type;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoAllocationSite extends AllocationSite {
-	
+
 	/**
 	 * Builds an allocation site from its source code location and its field and
 	 * specifying if it is weak.

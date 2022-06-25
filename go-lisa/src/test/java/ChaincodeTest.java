@@ -1,8 +1,4 @@
 
-import java.io.IOException;
-
-import org.junit.Test;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -20,6 +16,8 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.io.IOException;
+import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
@@ -111,7 +109,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
 	}
-	
+
 	@Test
 	public void testCpuUseNI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -126,7 +124,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
 	}
-	
+
 	@Test
 	public void testMarblesChaincodeNI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -141,7 +139,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
 	}
-	
+
 	@Test
 	public void testMarbles02NI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -171,7 +169,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/tommystark", "contract_chaincode.go", conf, annSet);
 	}
-	
+
 	@Test
 	public void testSacc() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()

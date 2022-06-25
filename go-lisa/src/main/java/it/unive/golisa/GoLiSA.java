@@ -1,21 +1,5 @@
 package it.unive.golisa;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.heap.GoAbstractState;
@@ -47,6 +31,20 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GoLiSA {
 
@@ -100,29 +98,31 @@ public class GoLiSA {
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
 
-		switch(analysis) {
+		switch (analysis) {
 
 		case "taint":
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-			.setAbstractState(
-					new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
-							LiSAFactory.getDefaultFor(TypeDomain.class)))
-			.addSemanticCheck(new TaintChecker());
+					.setAbstractState(
+							new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+									LiSAFactory.getDefaultFor(TypeDomain.class)))
+					.addSemanticCheck(new TaintChecker());
 			break;
 		case "non-interference":
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-			.setAbstractState(
-					new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-							LiSAFactory.getDefaultFor(TypeDomain.class)))
-			.addSemanticCheck(new IntegrityNIChecker());
+					.setAbstractState(
+							new SimpleAbstractState<>(new PointBasedHeap(),
+									new InferenceSystem<>(new IntegrityNIDomain()),
+									LiSAFactory.getDefaultFor(TypeDomain.class)))
+					.addSemanticCheck(new IntegrityNIChecker());
 			break;
 		default:
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-			.setAbstractState(
-					new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(), new ValueEnvironment<>(new Interval()),
-							LiSAFactory.getDefaultFor(TypeDomain.class))).setDumpAnalysis(true);
+					.setAbstractState(
+							new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+									new ValueEnvironment<>(new Interval()),
+									LiSAFactory.getDefaultFor(TypeDomain.class)))
+					.setDumpAnalysis(true);
 			break;
-
 
 		}
 
@@ -134,7 +134,8 @@ public class GoLiSA {
 
 		try {
 
-			NonDeterminismAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory.getAnnotationSets(cmd.getOptionValue("framework"));
+			NonDeterminismAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory
+					.getAnnotationSets(cmd.getOptionValue("framework"));
 			program = GoFrontEnd.processFile(filePath);
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annotationSet);
@@ -144,21 +145,22 @@ public class GoLiSA {
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
 			entryLoader.load(program);
 
-			if(!entryLoader.isEntryFound()) {
+			if (!entryLoader.isEntryFound()) {
 				Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations = annotationLoader.getAppliedAnnotations();
 
-				//if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations, annotationSet)) {
-				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program, appliedAnnotations, annotationSet);
-				for(CFG c : cfgs)
+				// if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations,
+				// annotationSet)) {
+				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
+						appliedAnnotations, annotationSet);
+				for (CFG c : cfgs)
 					program.addEntryPoint(c);
-				//}
+				// }
 			}
-
 
 			if (!program.getEntryPoints().isEmpty()) {
 				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
 				conf.setCallGraph(new RTACallGraph());
-			} else 
+			} else
 				LOG.info("Entry points not found!");
 
 		} catch (ParseCancellationException e) {

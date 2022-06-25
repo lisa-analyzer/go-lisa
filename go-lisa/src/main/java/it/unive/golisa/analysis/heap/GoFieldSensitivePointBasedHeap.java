@@ -1,11 +1,5 @@
 package it.unive.golisa.analysis.heap;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.SemanticException;
@@ -23,6 +17,10 @@ import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 
@@ -66,45 +64,53 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 					// become aliases
 					Identifier star_x = ((MemoryPointer) id).getReferencedLocation();
 					HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(star_x, star_y, pp);
-					result = result.lub(new GoFieldSensitivePointBasedHeap(heap));	
+					result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 				} else {
 					if (star_y instanceof StackAllocationSite && sss.heapEnv.getKeys().contains(expression)) {
-						// in other case, where star_y is a stack allocation site, we should
+						// in other case, where star_y is a stack allocation
+						// site, we should
 						// copy
 
 						if (star_y.getStaticType() instanceof GoStructType) {
 							GoStructType struct = (GoStructType) star_y.getStaticType();
 							Collection<Global> fields = struct.getUnit().getInstanceGlobals(isBottom());
 							Set<Pair<HeapLocation, HeapLocation>> newCopies = new HashSet<>();
-							
+
 							for (Global f : fields) {
-								StackAllocationSite copySite = new StackAllocationSite(f.getStaticType(), id.getCodeLocation().toString(), getVariable(f), star_y.isWeak(), id.getCodeLocation());
-								StackAllocationSite copySiteRight = new StackAllocationSite(f.getStaticType(), star_y.getCodeLocation().toString(), getVariable(f), star_y.isWeak(), star_y.getCodeLocation());
+								StackAllocationSite copySite = new StackAllocationSite(f.getStaticType(),
+										id.getCodeLocation().toString(), getVariable(f), star_y.isWeak(),
+										id.getCodeLocation());
+								StackAllocationSite copySiteRight = new StackAllocationSite(f.getStaticType(),
+										star_y.getCodeLocation().toString(), getVariable(f), star_y.isWeak(),
+										star_y.getCodeLocation());
 								HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, copySite, pp);
 
-								result = result.lub(new GoFieldSensitivePointBasedHeap(heap));	
+								result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 								newCopies.add(Pair.of(copySite, copySiteRight));
 							}
 							result.decouples.addAll(newCopies);
 						} else {
-							StackAllocationSite copySite = new StackAllocationSite(Untyped.INSTANCE, id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());
-							StackAllocationSite copySiteRight = new StackAllocationSite(Untyped.INSTANCE, star_y.getCodeLocation().toString(), star_y.isWeak(), star_y.getCodeLocation());
+							StackAllocationSite copySite = new StackAllocationSite(Untyped.INSTANCE,
+									id.getCodeLocation().toString(), star_y.isWeak(), id.getCodeLocation());
+							StackAllocationSite copySiteRight = new StackAllocationSite(Untyped.INSTANCE,
+									star_y.getCodeLocation().toString(), star_y.isWeak(), star_y.getCodeLocation());
 							HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, copySite, pp);
 
-							result = result.lub(new GoFieldSensitivePointBasedHeap(heap));	
+							result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 							result.decouples.add(Pair.of(copySite, copySiteRight));
 						}
 
 					} else {
-						// plain assignment just if star_y is a real heap allocation site
+						// plain assignment just if star_y is a real heap
+						// allocation site
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, star_y, pp);
-						result = result.lub(new GoFieldSensitivePointBasedHeap(heap));	
+						result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 					}
 				}
-			} else if (exp instanceof AllocationSite) {			
+			} else if (exp instanceof AllocationSite) {
 				HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, exp, pp);
 				result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
-			}	else
+			} else
 				result = result.lub(sss);
 
 		return result;
@@ -140,7 +146,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 							target,
 							site.isWeak(),
 							site.getCodeLocation());
-				} else  {
+				} else {
 					e = new HeapAllocationSite(
 							expression.getStaticType(),
 							site.getLocationName(),
@@ -148,7 +154,6 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 							site.isWeak(),
 							site.getCodeLocation());
 				}
-
 
 				if (expression.hasRuntimeTypes())
 					e.setRuntimeTypes(expression.getRuntimeTypes());
@@ -180,10 +185,12 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 						expression.getStaticType(),
 						pp,
 						weak,
-						expression.getCodeLocation());;
+						expression.getCodeLocation());
+				;
 			}
 
-			//			 = new AllocationSite(expression.getStaticType(), pp, weak, expression.getCodeLocation());
+			// = new AllocationSite(expression.getStaticType(), pp, weak,
+			// expression.getCodeLocation());
 			if (expression.hasRuntimeTypes())
 				id.setRuntimeTypes(expression.getRuntimeTypes());
 			return new ExpressionSet<>(id);
@@ -198,7 +205,6 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 			return null;
 		}
 	}
-	
 
 	private SymbolicExpression getVariable(Global global) {
 		return new Variable(global.getStaticType(), global.getName(),

@@ -148,7 +148,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 						for (SymbolicExpression v : params[i])
 							tmp = tmp.assign(index, NumericalTyper.type(v), this);
 				}
-				
+
 				result = result.lub(tmp.smallStepSemantics(reference, this));
 			}
 

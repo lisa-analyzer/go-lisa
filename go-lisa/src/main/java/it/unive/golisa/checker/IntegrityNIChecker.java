@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticException;
@@ -28,6 +26,7 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import java.util.Collection;
 
 public class IntegrityNIChecker implements
 		SemanticCheck<
@@ -134,7 +133,7 @@ public class IntegrityNIChecker implements
 			SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
 			MonolithicHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			UnresolvedCall call, Call resolved, CFGDescriptor desc) throws SemanticException {
-		if(desc.getAnnotations().contains(SINK_MATCHER))
+		if (desc.getAnnotations().contains(SINK_MATCHER))
 			for (CFGWithAnalysisResults<
 					SimpleAbstractState<MonolithicHeap, InferenceSystem<IntegrityNIDomain>,
 							TypeEnvironment<InferredTypes>>,

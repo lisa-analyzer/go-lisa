@@ -106,17 +106,17 @@ public class GoSliceType implements GoType, PointerType {
 	public static void clearAll() {
 		sliceTypes.clear();
 	}
-	
+
 	// []byte
 	public static GoSliceType getSliceOfBytes() {
 		return GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
 	}
-	
+
 	// [][]byte
 	public static GoSliceType getSliceOfSliceOfBytes() {
 		return GoSliceType.lookup(new GoSliceType(new GoSliceType(GoUInt8Type.INSTANCE)));
 	}
-	
+
 	// []string
 	public static GoSliceType getSliceOfStrings() {
 		return GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));

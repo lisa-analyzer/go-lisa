@@ -2,16 +2,6 @@ import static it.unive.lisa.outputs.compare.JsonReportComparer.compare;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
@@ -23,6 +13,14 @@ import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.imp.ParsingException;
 import it.unive.lisa.outputs.JsonReport;
 import it.unive.lisa.program.Program;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 public abstract class GoChaincodeTestExecutor {
 
@@ -91,13 +89,15 @@ public abstract class GoChaincodeTestExecutor {
 	 *                          be ignored, as it will be overwritten by the
 	 *                          computed workdir)
 	 */
-	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration, AnnotationSet annSet) {
+	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration,
+			AnnotationSet annSet) {
 		System.out.println("Testing " + getCaller());
 		performAux(folder, subfolder, source, configuration, annSet);
 
 	}
 
-	private void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration, AnnotationSet annSet) {
+	private void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration,
+			AnnotationSet annSet) {
 		Path expectedPath = Paths.get(EXPECTED_RESULTS_DIR, folder);
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, folder);
 		Path target = Paths.get(expectedPath.toString(), source);
@@ -108,7 +108,7 @@ public abstract class GoChaincodeTestExecutor {
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annSet);
 			annotationLoader.load(program);
-				
+
 			EntryPointLoader entryLoader = new EntryPointLoader();
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("HYPERLEDGER-FABRIC"));
 			entryLoader.load(program);
@@ -145,8 +145,9 @@ public abstract class GoChaincodeTestExecutor {
 		}
 
 		File expFile = Paths.get(expectedPath.toString(), "report.json").toFile();
-		if(!expFile.exists())
-			expFile = Paths.get(expectedPath.toString()+File.separator+FilenameUtils.removeExtension(source), "report.json").toFile();
+		if (!expFile.exists())
+			expFile = Paths.get(expectedPath.toString() + File.separator + FilenameUtils.removeExtension(source),
+					"report.json").toFile();
 		File actFile = Paths.get(actualPath.toString(), "report.json").toFile();
 		try (FileReader l = new FileReader(expFile); FileReader r = new FileReader(actFile)) {
 			JsonReport expected = JsonReport.read(l);

@@ -1,9 +1,4 @@
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.Test;
-
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.loader.annotation.AnnotationSet;
@@ -19,11 +14,14 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.Test;
 
 public class TaintAnalysisTest extends GoChaincodeTestExecutor {
-	
+
 	private final AnnotationSet annSet = new SimpleTaintAnnotationSet();
-	
+
 	@Test
 	public void taintTest001() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -167,7 +165,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("taint/t9", "t9.go", conf, annSet);
 	}
-	
+
 	private class SimpleTaintAnnotationSet extends AnnotationSet {
 
 		public SimpleTaintAnnotationSet() {

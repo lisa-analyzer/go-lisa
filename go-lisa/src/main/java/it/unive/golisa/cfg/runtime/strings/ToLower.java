@@ -22,14 +22,15 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
-public class ToLower extends NativeCFG  {
+public class ToLower extends NativeCFG {
 	public ToLower(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "ToLower", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				Len.class);
 	}
 
-	public static class ToLowerImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression implements PluggableStatement {
+	public static class ToLowerImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
+			implements PluggableStatement {
 
 		private Statement original;
 

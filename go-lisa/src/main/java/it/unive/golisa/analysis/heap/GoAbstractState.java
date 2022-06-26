@@ -19,9 +19,9 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class GoAbstractState<V extends ValueDomain<V>,
-T extends TypeDomain<T>>
-extends BaseLattice<GoAbstractState<V, T>>
-implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
+		T extends TypeDomain<T>>
+		extends BaseLattice<GoAbstractState<V, T>>
+		implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 
 	/**
 	 * The domain containing information regarding heap structures
@@ -105,7 +105,7 @@ implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 			expr.setRuntimeTypes(rt);
 
 			if (expr instanceof MemoryPointer)
-				value = value.assign(id , ((MemoryPointer) expr).getReferencedLocation(), pp);
+				value = value.assign(id, ((MemoryPointer) expr).getReferencedLocation(), pp);
 			else
 				value = value.assign(id, expr, pp);
 		}

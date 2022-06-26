@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -26,6 +24,7 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import java.util.Collection;
 
 public class TaintChecker implements
 		SemanticCheck<GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
@@ -43,8 +42,8 @@ public class TaintChecker implements
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
@@ -58,8 +57,8 @@ public class TaintChecker implements
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
@@ -88,8 +87,8 @@ public class TaintChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
@@ -107,7 +106,8 @@ public class TaintChecker implements
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 						for (CFGWithAnalysisResults<
 								GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-								GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+								GoPointBasedHeap, InferenceSystem<TaintDomain>,
+								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
 							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
 									.getInferredValue().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
@@ -123,7 +123,8 @@ public class TaintChecker implements
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 						for (CFGWithAnalysisResults<
 								GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-								GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+								GoPointBasedHeap, InferenceSystem<TaintDomain>,
+								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
 							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
 									.getInferredValue().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
@@ -140,8 +141,8 @@ public class TaintChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}

@@ -220,8 +220,6 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 				;
 			}
 
-			// = new AllocationSite(expression.getStaticType(), pp, weak,
-			// expression.getCodeLocation());
 			if (expression.hasRuntimeTypes())
 				id.setRuntimeTypes(expression.getRuntimeTypes());
 			return new ExpressionSet<>(id);

@@ -104,7 +104,10 @@ implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 			id.setRuntimeTypes(rt);
 			expr.setRuntimeTypes(rt);
 
-			value = value.assign(id, expr, pp);
+			if (expr instanceof MemoryPointer)
+				value = value.assign(id , ((MemoryPointer) expr).getReferencedLocation(), pp);
+			else
+				value = value.assign(id, expr, pp);
 		}
 
 		return new GoAbstractState<>(heap, value, type);

@@ -48,7 +48,7 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	}
 
 	@Test
-	public void testForLoopVariableScooping() throws IOException, ProgramValidationException {
+	public void testForLoopVariableScoping() throws IOException, ProgramValidationException {
 		assertTrue((new File("go-testcases/variablescoping/scoping.go")).exists());
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
 		prog.validateAndFinalize();

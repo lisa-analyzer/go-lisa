@@ -3,6 +3,7 @@ package it.unive.golisa.analysis.heap;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
@@ -122,6 +123,20 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 									star_y.getCodeLocation().toString(), field, star_y.isWeak(),
 									star_y.getCodeLocation());
 							newCopies.add(Pair.of(copySite, copySiteRight));
+						} else if (star_y.getStaticType() instanceof GoTypesTuple) {
+							GoTypesTuple array = (GoTypesTuple) star_y.getStaticType();
+
+							for (int i = 0; i < array.size(); i++) {
+								Variable field = new Variable(array.get(i).getStaticType(), i + "",
+										exp.getCodeLocation());
+								StackAllocationSite copySite = new StackAllocationSite(array.get(i).getStaticType(),
+										id.getCodeLocation().toString(), field, star_y.isWeak(),
+										id.getCodeLocation());
+								StackAllocationSite copySiteRight = new StackAllocationSite(array.get(i).getStaticType(),
+										star_y.getCodeLocation().toString(), field, star_y.isWeak(),
+										star_y.getCodeLocation());
+								newCopies.add(Pair.of(copySite, copySiteRight));
+							}
 						}
 
 						StackAllocationSite copySite = new StackAllocationSite(star_y.getStaticType(),

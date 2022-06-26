@@ -1,10 +1,12 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.analysis.taint.Clean;
-import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -19,15 +21,9 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
@@ -100,37 +96,6 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 			return result;
 		}
 
-		AnalysisState<A, H, V, T> result = rightState;
-
-		for (int i = 0; i < ids.length; i++) {
-			if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
-				continue;
-
-			AnalysisState<A, H, V, T> idState = ids[i].semantics(result, interprocedural, expressions);
-			expressions.put(ids[i], idState);
-
-			AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference dereference = new HeapDereference(getStaticType(),
-						retExp, getLocation());
-				AccessChild access = new AccessChild(Untyped.INSTANCE, dereference,
-						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				AnalysisState<A, H, V, T> accessState = result.smallStepSemantics(access, this);
-
-				AnalysisState<A, H, V, T> tmp = rightState.bottom();
-				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
-					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V, T> assign = result.assign(idExp, NumericalTyper.type(accessExp), this);
-						tmp = tmp.lub(assign);
-					}
-				}
-
-				tmp2 = tmp.lub(tmp2);
-			}
-
-			result = tmp2;
-		}
-
-		return result;
+		return super.semantics(entryState, interprocedural, expressions);
 	}
 }

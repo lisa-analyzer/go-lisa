@@ -41,7 +41,7 @@ public class GoMultiAssignment extends Expression {
 	 * The chain of blocks (starting from the block containing this assignment)
 	 * to the block defining the assigned variables
 	 */
-	private Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
+	protected Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
 
 	private final OpenBlock containingBlock;
 
@@ -88,7 +88,7 @@ public class GoMultiAssignment extends Expression {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	private <A extends AbstractState<A, H, V, T>,
+	protected <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,

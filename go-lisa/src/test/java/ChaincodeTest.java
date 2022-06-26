@@ -60,7 +60,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testMarblesChaincode() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())

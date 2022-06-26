@@ -12,7 +12,7 @@ func blankAssig(){
 
 
 //https://golang.org/doc/effective_go#maps
-fun mapTest(tz string) {
+func mapTest(tz string) {
 
 	var timeZone = map[string]int{
     "UTC":  0*60*60,

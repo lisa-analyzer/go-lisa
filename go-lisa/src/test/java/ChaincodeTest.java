@@ -14,11 +14,7 @@ import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnn
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
-import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
@@ -33,7 +29,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testBoleto() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
@@ -52,8 +47,10 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
+				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/boleto", "ni", "boleto.go", conf, annSet);
@@ -68,7 +65,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
@@ -83,7 +81,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/high-throughput", "high-throughput.go", conf, annSet);
@@ -98,7 +97,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/marbles02", "marbles02.go", conf, annSet);
@@ -112,7 +112,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
@@ -122,12 +123,12 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testCpuUseNI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-//				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
@@ -137,12 +138,12 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testMarblesChaincodeNI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-//				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
@@ -152,12 +153,12 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testMarbles02NI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-//				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/marbles02", "marbles02.go", conf, annSet);
@@ -167,12 +168,12 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testTommyStarkNI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
-//				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/tommystark", "contract_chaincode.go", conf, annSet);
@@ -186,7 +187,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/sacc", "sacc.go", conf, annSet);
@@ -200,7 +202,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/mycc", "mycc.go", conf, annSet);
@@ -214,7 +217,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/chaincode", "chaincode.go", conf, annSet);
@@ -228,7 +232,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/implicit-flow", "taint", "implicit.go", conf, annSet);
@@ -242,7 +247,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new IntegrityNIDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new IntegrityNIChecker());
 		perform("cc/implicit-flow", "ni", "implicit.go", conf, annSet);

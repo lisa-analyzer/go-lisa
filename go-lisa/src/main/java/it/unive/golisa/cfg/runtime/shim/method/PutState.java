@@ -3,7 +3,6 @@ package it.unive.golisa.cfg.runtime.shim.method;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -24,6 +23,7 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.type.Untyped;
 
 /**
  * func (*ChaincodeStub) PutState(key string, value []byte) error
@@ -37,7 +37,7 @@ public class PutState extends NativeCFG {
 		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE),
-				new Parameter(location, "value", GoSliceType.getSliceOfBytes())),
+				new Parameter(location, "value", Untyped.INSTANCE)),
 				PutStateImpl.class);
 	}
 

@@ -12,15 +12,16 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class GoAbstractState<V extends ValueDomain<V>,
-		T extends TypeDomain<T>>
-		extends BaseLattice<GoAbstractState<V, T>>
-		implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
+T extends TypeDomain<T>>
+extends BaseLattice<GoAbstractState<V, T>>
+implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 
 	/**
 	 * The domain containing information regarding heap structures
@@ -128,7 +129,11 @@ public class GoAbstractState<V extends ValueDomain<V>,
 			ExternalSet<Type> rt = type.getInferredRuntimeTypes();
 			expr.setRuntimeTypes(rt);
 
-			value = value.smallStepSemantics(expr, pp);
+			if (expr instanceof MemoryPointer)
+				value = value.smallStepSemantics(((MemoryPointer) expr).getReferencedLocation(), pp);
+			else
+				value = value.smallStepSemantics(expr, pp);
+
 		}
 
 		return new GoAbstractState<>(heap, value, type);

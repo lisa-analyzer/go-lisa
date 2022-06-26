@@ -18,6 +18,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.type.Untyped;
 
 public class ChaincodeStubInterface extends GoInterfaceType {
 	public static final ChaincodeStubInterface INSTANCE = new ChaincodeStubInterface();
@@ -83,7 +84,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 				GoErrorType.INSTANCE,
 				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "key", GoStringType.INSTANCE),
-				new Parameter(unknownLocation, "value", GoSliceType.getSliceOfBytes()));
+				new Parameter(unknownLocation, "value", Untyped.INSTANCE));
 		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, PutStateImpl.class));
 
 		// CreateCompositeKey

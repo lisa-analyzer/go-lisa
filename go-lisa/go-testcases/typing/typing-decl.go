@@ -33,7 +33,7 @@ func relTyping() {
 	var c int =  x * y
 	b := x < 2
 	d := 2.2
-	e := c < 2.3
+	e := c < 2.3 // cannot be performed 
 	return
 }
 

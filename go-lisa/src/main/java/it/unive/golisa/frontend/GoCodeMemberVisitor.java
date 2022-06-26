@@ -516,7 +516,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		block.mergeWith(res.getMiddle());
 
 		updateVisileIds(backup, res.getRight());
-		if (isReturnStmt(res.getRight())) {
+		if (isReturnStmt(res.getRight()) || isGoTo(res.getRight())) {
 			addEdge(new SequentialEdge(open, res.getLeft()), block);
 			return Triple.of(open, block, res.getRight());
 		}

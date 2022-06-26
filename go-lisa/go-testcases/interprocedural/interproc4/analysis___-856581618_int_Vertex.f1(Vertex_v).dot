@@ -1,7 +1,7 @@
 digraph {
 	labelloc="t";
 	label="['go-testcases/interprocedural/interproc4/interprocedural.go':20:14]";
-	"node0" [shape="rect",color="black",peripheries="2",label=<return +(*(v::X, v::X), *(v::Y, v::Y))<BR/>{{<BR/>heap [[ [heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':19:17] ]]<BR/>value [[ heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':19:17[X]: [3, 3]<BR/>heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':19:17[Y]: [4, 4]<BR/>ret_value@f1: [25, 25] ]]<BR/>}} -&gt; [ret_value@f1]>];
+	"node0" [shape="rect",color="black",peripheries="2",label=<return +(*(v::X(v, X), v::X(v, X)), *(v::Y(v, Y), v::Y(v, Y)))<BR/>{{<BR/>heap [[ ['go-testcases/interprocedural/interproc4/interprocedural.go':20:14]:v: [heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':19:17]<BR/>v: [heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':14:6] ]]<BR/>value [[ heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':14:6[X]: [3, 3]<BR/>heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':14:6[Y]: [4, 4]<BR/>heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':19:17[X]: [3, 3]<BR/>heap[s]:pp@'go-testcases/interprocedural/interproc4/interprocedural.go':19:17[Y]: [4, 4]<BR/>ret_value@f1: [25, 25]<BR/>[stack: [25, 25]] ]]<BR/>}} -&gt; [ret_value@f1]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

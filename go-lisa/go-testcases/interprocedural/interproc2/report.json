@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___-369273001_[int__,_int__]_~LiSAProgram.f().dot", "analysis___-370195468_untyped_~LiSAProgram.build(int_a,_int_b,_int_c).dot", "analysis___-371119020_untyped_~LiSAProgram.build(int_a,_int_b,_int_c).dot", "analysis___1378260616_untyped_~LiSAProgram.identity([3]int_x).dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "analysis___-369273001_[int__,_int__]_main.f().dot", "analysis___-370195468_untyped_main.build(int_a,_int_b,_int_c).dot", "analysis___-371119020_untyped_main.build(int_a,_int_b,_int_c).dot", "analysis___1378260616_untyped_main.identity([3]int_x).dot", "analysis___untyped_main.main().dot" ]
 }

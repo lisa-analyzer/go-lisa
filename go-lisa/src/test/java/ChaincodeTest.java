@@ -1,4 +1,10 @@
 
+import java.io.IOException;
+
+import org.junit.Test;
+
+import it.unive.golisa.analysis.heap.GoAbstractState;
+import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -11,13 +17,13 @@ import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import java.io.IOException;
-import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
@@ -27,11 +33,13 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testBoleto() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setJsonOutput(true)
+				.setDumpAnalysis(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/boleto", "taint", "boleto.go", conf, annSet);

@@ -15,6 +15,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Untyped;
 
 public class GoCollectionAccess extends BinaryExpression {
@@ -31,7 +32,10 @@ public class GoCollectionAccess extends BinaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-
+		
+		if (getLeft().toString().startsWith("args"))
+			return state.smallStepSemantics(new PushAny(Untyped.INSTANCE, getLocation()), this);
+		
 		AnalysisState<A, H, V, T> result = state.bottom();
 
 		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);
@@ -53,5 +57,4 @@ public class GoCollectionAccess extends BinaryExpression {
 	public Expression getTarget() {
 		return getRight();
 	}
-
 }

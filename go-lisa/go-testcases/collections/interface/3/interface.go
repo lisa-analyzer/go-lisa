@@ -20,7 +20,7 @@ func (e Emp) GetFullName(name string) string {
 
 // PrintSalary method to calculate employee salary
 func (e Emp) GetSalary(basic int, tax int) int {
-	var salary = (basic * tax) / 100
+	var salary int32 = (basic * tax) / 100
 	return basic - salary
 }
 

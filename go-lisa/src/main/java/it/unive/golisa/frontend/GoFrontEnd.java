@@ -185,7 +185,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		stream.close();
 
 		program.addCompilationUnit(it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
-		
+
 		// Register all the types
 		registerGoTypes(program);
 

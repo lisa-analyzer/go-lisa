@@ -43,3 +43,12 @@ func forAlloc() {
 	
 	return
 }
+
+func aliasing() {
+	v1 := Vertex{1, 2}
+	v2 := v1
+	// v1 and v2 are different values
+	v3 := new(Vertex)
+	v4 := v3
+	// v3 and v4 points to the same value
+}

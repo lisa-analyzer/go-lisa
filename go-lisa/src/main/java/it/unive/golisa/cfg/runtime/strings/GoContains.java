@@ -34,7 +34,7 @@ public class GoContains extends NativeCFG {
 	}
 
 	public static class Contains extends it.unive.lisa.program.cfg.statement.BinaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -53,19 +53,19 @@ public class GoContains extends NativeCFG {
 
 		@Override
 		protected <A extends AbstractState<A, H, V, T>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>,
-		T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 
 			AnalysisState<A, H, V, T> result = state.bottom();
-			for (Type leftType: left.getRuntimeTypes())
-				for (Type rightType: right.getRuntimeTypes())
+			for (Type leftType : left.getRuntimeTypes())
+				for (Type rightType : right.getRuntimeTypes())
 					if (!leftType.isStringType() && !leftType.isUntyped())
 						continue;
-					else if (!rightType.isStringType() && !rightType .isUntyped())
+					else if (!rightType.isStringType() && !rightType.isUntyped())
 						continue;
 					else
 						result = result.lub(state

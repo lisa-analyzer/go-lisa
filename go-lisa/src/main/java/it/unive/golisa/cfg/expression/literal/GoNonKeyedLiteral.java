@@ -28,7 +28,6 @@ import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
-import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
@@ -66,7 +65,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			AnalysisState<A, H, V, T> result = state.bottom();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
+				HeapReference reference = new HeapReference(type, containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				if (getSubExpressions().length == 0) {
@@ -106,7 +105,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
+				HeapReference reference = new HeapReference(type, containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 				// Assign the len property to this hid
 				Variable lenProperty = new Variable(Untyped.INSTANCE, "len",
@@ -148,7 +147,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 						for (SymbolicExpression v : params[i])
 							tmp = tmp.assign(index, NumericalTyper.type(v), this);
 				}
-				
+
 				result = result.lub(tmp.smallStepSemantics(reference, this));
 			}
 
@@ -161,7 +160,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			int sliceLenght = getSubExpressions().length;
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
+				HeapReference reference = new HeapReference(type, containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				// Assign the len property to this hid

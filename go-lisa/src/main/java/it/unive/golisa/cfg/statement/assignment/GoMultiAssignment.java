@@ -56,7 +56,7 @@ public class GoMultiAssignment extends Expression {
 			if (id instanceof VariableRef)
 				blocksToDeclaration.put((VariableRef) id, BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, id));
 		this.containingBlock = containingBlock;
-		
+
 		this.e.setParentStatement(this);
 		for (Expression id : ids)
 			id.setParentStatement(this);

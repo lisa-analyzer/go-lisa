@@ -1,23 +1,19 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
-import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
@@ -114,17 +110,12 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		return unit;
 	}
 
-	private static class EmptyInterface extends GoInterfaceType implements PointerType {
+	private static class EmptyInterface extends GoInterfaceType {
 
 		private static final String EMPTY_INTERFACE_NAME = "EMPTY_INTERFACE";
 
 		public EmptyInterface() {
 			super(EMPTY_INTERFACE_NAME, it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
-		}
-
-		@Override
-		public ExternalSet<Type> getInnerTypes() {
-			return Caches.types().mkSingletonSet(this);
 		}
 
 		@Override

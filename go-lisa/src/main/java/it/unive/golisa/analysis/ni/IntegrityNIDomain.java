@@ -1,8 +1,5 @@
 package it.unive.golisa.analysis.ni;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
@@ -25,6 +22,8 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 

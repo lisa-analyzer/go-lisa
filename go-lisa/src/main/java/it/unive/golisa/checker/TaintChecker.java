@@ -1,11 +1,9 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
+import it.unive.golisa.analysis.heap.GoAbstractState;
+import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
@@ -26,33 +24,32 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import java.util.Collection;
 
 public class TaintChecker implements
-SemanticCheck<SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
+		SemanticCheck<GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+				GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 
 	public static final Annotation SINK_ANNOTATION = new Annotation("lisa.taint.Sink");
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
 
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
+			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap,
-			InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CompilationUnit unit) {
 		return true;
 	}
@@ -60,13 +57,13 @@ MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	private static final String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th",
-	"th" };
+			"th" };
 
 	public static String ordinal(int i) {
 		switch (i % 100) {
@@ -82,23 +79,22 @@ MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool, CFG graph) {
+			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool, CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
 
 		UnresolvedCall call = (UnresolvedCall) node;
 		Call resolved = (Call) tool.getResolvedVersion(call);
-
 
 		if (resolved instanceof NativeCall) {
 			NativeCall nativeCfg = (NativeCall) resolved;
@@ -109,15 +105,14 @@ MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 				for (int i = 0; i < parameters.length; i++)
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 						for (CFGWithAnalysisResults<
-								SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>,
-								TypeEnvironment<InferredTypes>>,
-								MonolithicHeap, InferenceSystem<TaintDomain>,
+								GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+								GoPointBasedHeap, InferenceSystem<TaintDomain>,
 								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
 							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
 									.getInferredValue().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-								+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
 
 			}
 		} else if (resolved instanceof CFGCall) {
@@ -127,15 +122,14 @@ MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 				for (int i = 0; i < parameters.length; i++)
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 						for (CFGWithAnalysisResults<
-								SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>,
-								TypeEnvironment<InferredTypes>>,
-								MonolithicHeap, InferenceSystem<TaintDomain>,
+								GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+								GoPointBasedHeap, InferenceSystem<TaintDomain>,
 								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
 							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
 									.getInferredValue().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-								+ parameters[i].getName() + "' of " +  resolved.getFullTargetName());
+										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
 
 			}
 		}
@@ -147,8 +141,8 @@ MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			MonolithicHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}

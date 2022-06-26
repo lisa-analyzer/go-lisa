@@ -81,6 +81,7 @@ import it.unive.golisa.cfg.runtime.strings.GoIndex;
 import it.unive.golisa.cfg.runtime.strings.GoIndexRune;
 import it.unive.golisa.cfg.runtime.strings.GoLen;
 import it.unive.golisa.cfg.runtime.strings.GoReplace;
+import it.unive.golisa.cfg.runtime.strings.ToLower;
 import it.unive.golisa.cfg.runtime.time.function.Now;
 import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
@@ -95,7 +96,6 @@ import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 
@@ -134,7 +134,7 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 			if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
-		}else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
+		} else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
 			loadCosmosTypes(program);
 			if (module.endsWith("/errors"))
 				loadCosmosErrors(program);
@@ -149,7 +149,7 @@ public interface GoRuntimeLoader {
 		// adding compilation units to program
 		program.addCompilationUnit(sdkerrors);
 	}
-	
+
 	private void loadCosmosTypes(Program program) {
 		program.registerType(Grant.INSTANCE);
 		GoStructType.lookup(Grant.INSTANCE.getUnit().getName(), Grant.INSTANCE.getUnit());
@@ -389,6 +389,7 @@ public interface GoRuntimeLoader {
 		str.addConstruct(new GoIndex(runtimeLocation, str));
 		str.addConstruct(new GoIndexRune(runtimeLocation, str));
 		str.addConstruct(new GoLen(runtimeLocation, str));
+		str.addConstruct(new ToLower(runtimeLocation, str));
 
 		program.addCompilationUnit(str);
 	}
@@ -416,7 +417,7 @@ public interface GoRuntimeLoader {
 		time.addConstruct(new Since(runtimeLocation, time));
 		time.addConstruct(new Day(runtimeLocation, time));
 		time.addConstruct(new Month(runtimeLocation, time));
-		time.addConstruct(new Parse(runtimeLocation, time));	
+		time.addConstruct(new Parse(runtimeLocation, time));
 		time.addInstanceConstruct(new Unix(runtimeLocation, time));
 
 		// adding types

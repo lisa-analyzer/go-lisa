@@ -1,31 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -180,7 +154,6 @@ import it.unive.golisa.cfg.type.composite.GoTypesTuple;
 import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.SyntheticLocation;
@@ -204,12 +177,34 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
 import it.unive.lisa.program.cfg.statement.literal.TrueLiteral;
-import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method
@@ -521,7 +516,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		block.mergeWith(res.getMiddle());
 
 		updateVisileIds(backup, res.getRight());
-		if (isReturnStmt(res.getRight())) {
+		if (isReturnStmt(res.getRight()) || isGoTo(res.getRight())) {
 			addEdge(new SequentialEdge(open, res.getLeft()), block);
 			return Triple.of(open, block, res.getRight());
 		}
@@ -736,7 +731,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			Type type = typeContext == null ? Untyped.INSTANCE : visitType_(typeContext);
 			type = type == null ? Untyped.INSTANCE : type;
-			type = type.isInMemoryType() ? new ReferenceType(type) : type;
+//			type = type.isInMemoryType() ? new ReferenceType(type) : type;
 
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Expression exp;
@@ -745,11 +740,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else {
 
 					if ((exps == null || exps.expression(i) == null) && !type.isUntyped()) {
-						if (type instanceof ReferenceType)
-							exp = ((GoType) ((ReferenceType) type).getInnerTypes().first()).defaultValue(cfg,
-									locationOf(ctx));
-						else
-							exp = ((GoType) type).defaultValue(cfg, locationOf(ctx));
+//						if (type instanceof ReferenceType)
+//							exp = ((GoType) ((ReferenceType) type).getInnerTypes().first()).defaultValue(cfg,
+//									locationOf(ctx));
+//						else
+						exp = ((GoType) type).defaultValue(cfg, locationOf(ctx));
 					} else
 						exp = visitExpression(exps.expression(i));
 				}
@@ -1221,8 +1216,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from
 				// the type of exp
-				Type type = exp.getStaticType().isInMemoryType() ? new ReferenceType(exp.getStaticType())
-						: exp.getStaticType();
+				Type type = // exp.getStaticType().isInMemoryType() ? new
+							// ReferenceType(exp.getStaticType())
+//						: 
+						exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
 						type);
 
@@ -1949,10 +1946,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 							currentUnit.getName(), primary.toString(),
 							visitArguments(ctx.arguments()));
 
-				else if (primary instanceof AccessInstanceGlobal) {
-					Expression receiver = ((AccessInstanceGlobal) primary).getReceiver();
-					String methodName = ((AccessInstanceGlobal) primary).getTarget().getName();
-					
+				else if (primary instanceof GoCollectionAccess) {
+					Expression receiver = ((GoCollectionAccess) primary).getReceiver();
+					String methodName = ((GoCollectionAccess) primary).getTarget().toString();
+
 					if (program.getUnit(receiver.toString()) != null)
 						// static method call (e.g., math.Intv(50))
 						// this call is not an instance call
@@ -1999,8 +1996,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			// Field access x.f
 			else if (ctx.IDENTIFIER() != null) {
-				Global index = new Global(locationOf(ctx.IDENTIFIER()), ctx.IDENTIFIER().getText(), Untyped.INSTANCE);
-				return new AccessInstanceGlobal(cfg, locationOf(ctx), (Expression) primary, index);
+				VariableRef i = new VariableRef(cfg, locationOf(ctx.IDENTIFIER()), ctx.IDENTIFIER().getText());
+				return new GoCollectionAccess(cfg, locationOf(ctx), primary, i);
 			}
 
 			// Simple slice expression a[l:h]
@@ -2009,7 +2006,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				if (args.getRight() == null)
 					return new GoSimpleSlice(cfg, locationOf(ctx), primary, args.getLeft(),
-							new GoLength(cfg, locationOf(ctx), (Expression) primary));
+							new GoLength(cfg, locationOf(ctx), primary));
 				else
 					return new GoSimpleSlice(cfg, locationOf(ctx), primary, args.getLeft(), args.getRight());
 			}

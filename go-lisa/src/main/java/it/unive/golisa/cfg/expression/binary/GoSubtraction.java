@@ -37,12 +37,15 @@ public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExp
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		AnalysisState<A, H, V, T> result = state.bottom();
+
 		for (Type leftType : left.getRuntimeTypes())
-			for (Type rightType : right.getRuntimeTypes())
-				if (leftType.isNumericType() && rightType.isNumericType())
-					result = result.lub(
-							state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
-									NumericNonOverflowingSub.INSTANCE, getLocation()), this));
+			for (Type rightType : right.getRuntimeTypes()) {
+				if (leftType.isNumericType() || rightType.isNumericType())
+					result = result.lub(state.smallStepSemantics(
+							new BinaryExpression(resultType(leftType, rightType), left, right,
+									NumericNonOverflowingSub.INSTANCE, getLocation()),
+							this));
+			}
 
 		return result;
 	}

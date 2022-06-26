@@ -1,18 +1,16 @@
 package it.unive.golisa.loader;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import it.unive.golisa.analysis.entrypoints.EntryPointSet;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class EntryPointLoader implements Loader {
 
 	List<EntryPointSet> entrypointSets;
-	
+
 	boolean noEntry;
 
 	public EntryPointLoader() {
@@ -35,7 +33,7 @@ public class EntryPointLoader implements Loader {
 				noEntry = false;
 			}
 	}
-	
+
 	public boolean isEntryFound() {
 		return !noEntry;
 	}

@@ -1,12 +1,16 @@
 package it.unive.golisa.golang.util;
 
+import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.GoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,27 +20,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
-
-import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.GoLangApiSignature;
-import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 
 public class GoLangAPISignatureLoader {
 
 	Map<String, ? extends Set<GoLangApiSignature>> loadedAPIs;
-	
+
 	Map<String, Set<MethodGoLangApiSignature>> methodsAPIs;
 	Map<String, Set<FuncGoLangApiSignature>> functionsAPIs;
-			
+
 	public GoLangAPISignatureLoader(InputStream input) throws FileNotFoundException, IOException {
 		loadFile(input);
 	}
-	
+
 	private void loadFile(InputStream input) throws FileNotFoundException, IOException {
 		loadedAPIs = parseGoAPIFile(input);
 	}
@@ -182,36 +178,35 @@ public class GoLangAPISignatureLoader {
 							: new String[] { m.group(4) });
 		return null;
 	}
-	
+
 	public Map<String, ? extends Set<MethodGoLangApiSignature>> getMethodAPIs() {
-		if(methodsAPIs == null)
+		if (methodsAPIs == null)
 			computeMethodsAPIs();
 		return methodsAPIs;
 	}
-	
-	
+
 	private void computeMethodsAPIs() {
 		methodsAPIs = new HashMap<>();
-		for(Entry<? extends String, ? extends Set<GoLangApiSignature>> e : loadedAPIs.entrySet())
-			for(GoLangApiSignature sig :  e.getValue())
-				if(sig instanceof MethodGoLangApiSignature){
+		for (Entry<? extends String, ? extends Set<GoLangApiSignature>> e : loadedAPIs.entrySet())
+			for (GoLangApiSignature sig : e.getValue())
+				if (sig instanceof MethodGoLangApiSignature) {
 					methodsAPIs.putIfAbsent(e.getKey(), new HashSet<>());
 					methodsAPIs.get(e.getKey()).add((MethodGoLangApiSignature) sig);
 				}
-		
+
 	}
 
 	public Map<String, ? extends Set<FuncGoLangApiSignature>> getFunctionAPIs() {
-		if(functionsAPIs == null)
+		if (functionsAPIs == null)
 			computeFunctionsAPIs();
 		return functionsAPIs;
 	}
-	
+
 	private void computeFunctionsAPIs() {
 		functionsAPIs = new HashMap<>();
-		for(Entry<? extends String, ? extends Set<GoLangApiSignature>> e : loadedAPIs.entrySet())
-			for(GoLangApiSignature sig :  e.getValue())
-				if(sig instanceof FuncGoLangApiSignature){
+		for (Entry<? extends String, ? extends Set<GoLangApiSignature>> e : loadedAPIs.entrySet())
+			for (GoLangApiSignature sig : e.getValue())
+				if (sig instanceof FuncGoLangApiSignature) {
 					functionsAPIs.putIfAbsent(e.getKey(), new HashSet<>());
 					functionsAPIs.get(e.getKey()).add((FuncGoLangApiSignature) sig);
 				}

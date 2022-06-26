@@ -3,7 +3,6 @@ package it.unive.golisa.cfg.type.composite;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -11,18 +10,15 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
-import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class GoStructType implements GoType, UnitType, InMemoryType, PointerType {
+public class GoStructType implements GoType, UnitType, InMemoryType {
 
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
@@ -179,10 +175,5 @@ public class GoStructType implements GoType, UnitType, InMemoryType, PointerType
 
 	public static void clearAll() {
 		structTypes.clear();
-	}
-
-	@Override
-	public ExternalSet<Type> getInnerTypes() {
-		return Caches.types().mkSingletonSet(this);
 	}
 }

@@ -12,7 +12,7 @@ public class FrameworkNonDeterminismAnnotationSetFactory {
 
 		if (framework != null) {
 			NonDeterminismAnnotationSet specificFrameworkAnnotationSet = null;
-			
+
 			if (framework.equalsIgnoreCase("HYPERLEDGER-FABRIC")) {
 				specificFrameworkAnnotationSet = new HyperledgerFabricNonDeterminismAnnotationSet();
 
@@ -22,11 +22,12 @@ public class FrameworkNonDeterminismAnnotationSetFactory {
 			} else if (framework.equalsIgnoreCase("COSMOS-SDK")) {
 				specificFrameworkAnnotationSet = new CosmosSDKNonDeterminismAnnotationSet();
 			}
-			
-			if(specificFrameworkAnnotationSet != null)
-				return new NonDeterminismAnnotationSet[] {new GoNonDeterminismAnnotationSet(), specificFrameworkAnnotationSet};
+
+			if (specificFrameworkAnnotationSet != null)
+				return new NonDeterminismAnnotationSet[] { new GoNonDeterminismAnnotationSet(),
+						specificFrameworkAnnotationSet };
 		}
-		
-		return new NonDeterminismAnnotationSet[] {new GoNonDeterminismAnnotationSet()};
+
+		return new NonDeterminismAnnotationSet[] { new GoNonDeterminismAnnotationSet() };
 	}
 }

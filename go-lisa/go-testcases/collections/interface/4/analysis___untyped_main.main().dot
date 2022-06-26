@@ -1,7 +1,11 @@
 digraph {
-	labelloc="t";
-	label="['go-testcases/taint/t3/t3.go':16:14]";
-	"node0" [shape="rect",color="black",peripheries="2",label=<return &quot;asd&quot;<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ ['go-testcases/taint/t3/t3.go':16:14]:['go-testcases/taint/t3/t3.go':15:1]:v: _<BR/>['go-testcases/taint/t3/t3.go':16:14]:v: _<BR/>ret_value@source: _<BR/>[inferred: _, state: _|_] ]]<BR/>}} -&gt; [ret_value@source]>];
+	"node0" [shape="rect",color="black",label=<var i interface{} = &quot;hello&quot;<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ i: [-Inf, +Inf]<BR/>[stack: [-Inf, +Inf]] ]]<BR/>}} -&gt; [i]>];
+	"node1" [shape="rect",color="gray",label=<s := .(string)(i)<BR/>{{<BR/>heap [[ #TOP# ]]<BR/>value [[ i: [-Inf, +Inf]<BR/>s: [-Inf, +Inf]<BR/>[stack: [-Inf, +Inf]] ]]<BR/>}} -&gt; [s]>];
+	"node2" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; [skip]>];
+	"node3" [shape="rect",color="gray",label=<f := .(float64)(i)<BR/>{{<BR/>heap [[ _|_ ]]<BR/>value [[ _|_ ]]<BR/>}} -&gt; []>];
+	"node0" -> "node1" [color="black"];
+	"node1" -> "node3" [color="black"];
+	"node3" -> "node2" [color="black"];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

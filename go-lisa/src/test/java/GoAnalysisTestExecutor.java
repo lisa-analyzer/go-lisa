@@ -9,7 +9,6 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.outputs.JsonReport;
 import it.unive.lisa.program.Program;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

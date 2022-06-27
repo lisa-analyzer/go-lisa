@@ -9,7 +9,11 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+
+import java.io.IOException;
+
 import org.junit.Test;
 
 public class InterproceduralTest extends GoAnalysisTestExecutor {
@@ -111,5 +115,20 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc7", "interprocedural.go", conf);
+	}
+	
+	@Test
+	public void testInteproc8() throws IOException, AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
+				.setAbstractState(
+						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+								new ValueEnvironment<>(new Interval()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.setDumpAnalysis(true);
+
+		perform("interprocedural/interproc8", "interprocedural.go", conf);
 	}
 }

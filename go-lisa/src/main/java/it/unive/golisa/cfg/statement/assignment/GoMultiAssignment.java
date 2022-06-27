@@ -106,7 +106,7 @@ public class GoMultiAssignment extends Expression {
 		// removes the block where the declaration occurs
 		List<BlockInfo> blocksBeforeDecl = blockInfo.subList(0, blocksToDeclaration.get(at).size() - 1);
 
-		for (int i = 0; i < blocksBeforeDecl.size(); i++) {
+		for (int i = 1; i < blocksBeforeDecl.size(); i++) {
 			SymbolicExpression idToAssign = expr1;
 
 			for (int j = blocksBeforeDecl.size() - 1 - i; j >= 0; j--)
@@ -169,6 +169,8 @@ public class GoMultiAssignment extends Expression {
 			result = tmp2;
 		}
 
+		
+		AnalysisState<A, H, V, T> finalResult = result;
 		for (int i = 0; i < ids.length; i++) {
 			if (ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
 				continue;
@@ -179,6 +181,8 @@ public class GoMultiAssignment extends Expression {
 			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
 				continue;
 
+			AnalysisState<A, H, V, T> partialResult = entryState.bottom();
+
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
 				HeapDereference dereference = new HeapDereference(getStaticType(),
 						retExp, getLocation());
@@ -188,12 +192,13 @@ public class GoMultiAssignment extends Expression {
 
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions())
 					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V, T> assign = result.assign(idExp, NumericalTyper.type(accessExp), this);
-						result = result.lub(assign);
+						AnalysisState<A, H, V, T> assign = finalResult.assign(idExp, NumericalTyper.type(accessExp), this);
+						partialResult = partialResult.lub(assign);
 					}
+				finalResult = partialResult;
 			}
 		}
 
-		return result;
+		return finalResult;
 	}
 }

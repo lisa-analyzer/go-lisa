@@ -88,22 +88,6 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 		perform("variablescoping", "shadowing.go", conf);
 	}
 
-	@Test
-	public void shadowingTestMultiAssignment() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setJsonOutput(true)
-
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
-				.setAbstractState(
-						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true);
-
-		perform("variablescoping/interproc", "scoping.go", conf);
-	}
-
 	private Map<String, Set<String>> expectedResultForLoopVariableScooping() {
 
 		Map<String, Set<String>> expectedResult = new HashMap<>();

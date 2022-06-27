@@ -146,14 +146,20 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 						result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 						result.decouples.addAll(newCopies);
 
-					} else {
-						// plain assignment just if star_y is a real heap
+					} 
+//					else if (exp instanceof StackAllocationSite){
+//						result = result.lub(sss);
+//					} 
+					else {
+						// plain assignment just if star_y is a heap
 						// allocation site
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, star_y, pp);
 						result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 					}
 				}
-			} else if (exp instanceof AllocationSite) {
+			} 
+			
+			else if (exp instanceof HeapAllocationSite) {
 				HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, exp, pp);
 				result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 			} else

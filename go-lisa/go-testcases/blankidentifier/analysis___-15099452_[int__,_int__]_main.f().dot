@@ -1,5 +1,7 @@
 digraph {
-	"node0" [shape="rect",color="black",peripheries="2",label=<return (tuple)(1, 2)<BR/>{{<BR/>heap [[ monolith ]]<BR/>value [[ heap[w]:heap: [1, 2]<BR/>ret_value@f: _|_ ]]<BR/>}} -&gt; [ret_value@f]>];
+	labelloc="t";
+	label="['go-testcases/blankidentifier/blankidentifier.go':9:14]";
+	"node0" [shape="rect",color="black",peripheries="2",label=<return (tuple)(1, 2)<BR/>{{<BR/>heap [[ ret_value@f: [heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10] ]]<BR/>value [[ heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]: [1, 1]<BR/>heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]: [2, 2]<BR/>[stack: _|_] ]]<BR/>}} -&gt; [ret_value@f]>];
 subgraph cluster_legend {
 	label="Legend";
 	style=dotted;

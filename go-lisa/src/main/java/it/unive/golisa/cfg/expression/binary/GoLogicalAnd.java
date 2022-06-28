@@ -22,7 +22,7 @@ import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
  * instances of {@link GoBoolType}. The semantics of a Go logical and implements
  * a short-circuit logics.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 

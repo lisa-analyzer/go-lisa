@@ -28,7 +28,7 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 /**
  * Go variable declaration class (e.g., var x int = 5).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 

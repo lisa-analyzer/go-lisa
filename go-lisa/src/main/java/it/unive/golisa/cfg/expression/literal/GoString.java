@@ -9,7 +9,7 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
  * A Go string value. The static type of a Go string value is
  * {@link GoStringType}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoString extends Literal<String> {
 

@@ -22,7 +22,7 @@ import it.unive.lisa.type.Type;
  * expression is definite {@link GoBoolType} and its operand must be instance of
  * {@link GoBoolType}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoNot extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 

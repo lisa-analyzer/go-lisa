@@ -10,7 +10,7 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
  * Go float value class. The static type of a Go float value is
  * {@link GoFloat64Type}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoFloat extends Literal<Double> {
 

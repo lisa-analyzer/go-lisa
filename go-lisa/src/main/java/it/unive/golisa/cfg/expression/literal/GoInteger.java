@@ -9,7 +9,7 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
  * Go integer value class. The static type of a Go integer value is
  * {@link GoBoolInt}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoInteger extends Literal<Object> {
 

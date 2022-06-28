@@ -23,7 +23,7 @@ import it.unive.lisa.type.Type;
  * the Golang specification:
  * {@link https://golang.org/ref/spec#Comparison_operators}
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoLess extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 

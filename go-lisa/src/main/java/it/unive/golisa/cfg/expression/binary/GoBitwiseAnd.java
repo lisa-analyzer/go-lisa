@@ -19,7 +19,7 @@ import it.unive.lisa.type.Type;
 /**
  * A Go bit-wise and expression (e.g., x & y). 
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoBitwiseAnd extends BinaryExpression implements GoBinaryNumericalOperation {
 

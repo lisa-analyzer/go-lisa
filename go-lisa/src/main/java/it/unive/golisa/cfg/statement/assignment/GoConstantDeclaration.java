@@ -9,7 +9,7 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 /**
  * A Go constant declaration class (e.g., const x int = 5).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoConstantDeclaration extends Assignment {
 

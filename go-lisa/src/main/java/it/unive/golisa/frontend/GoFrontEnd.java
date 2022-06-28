@@ -87,7 +87,7 @@ import org.apache.logging.log4j.Logger;
  * @GoFrontEnd manages the translation from a Go program to the corresponding
  *                 LiSA @CFG.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntimeLoader {
 

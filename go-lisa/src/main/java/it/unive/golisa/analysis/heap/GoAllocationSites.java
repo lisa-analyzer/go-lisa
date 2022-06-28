@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 /**
  * A heap domain tracking sets of {@link AllocationSite}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocationSite>
 		implements NonRelationalHeapDomain<GoAllocationSites> {

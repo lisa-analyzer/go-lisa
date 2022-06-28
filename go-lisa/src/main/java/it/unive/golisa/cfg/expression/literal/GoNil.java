@@ -8,7 +8,7 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
 /**
  * A Go nil value.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoNil extends Literal<String> {
 

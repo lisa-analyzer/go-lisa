@@ -31,7 +31,7 @@ import it.unive.lisa.symbolic.value.PushAny;
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#Start
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Start extends NativeCFG {
 

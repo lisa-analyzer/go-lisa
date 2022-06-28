@@ -22,7 +22,7 @@ import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 /**
  * Go unary plus native function class (e.g., +(5 - 3), +5).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoPlus extends UnaryExpression {
 

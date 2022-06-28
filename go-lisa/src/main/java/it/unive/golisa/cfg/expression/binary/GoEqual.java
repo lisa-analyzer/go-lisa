@@ -18,30 +18,22 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go equal function call (e1 == e2). The static type of this expression is
- * definitely {@link GoBoolType}. The semantics of Go equal expression follows
- * the Golang specification:
- * {@link https://golang.org/ref/spec#Comparison_operators}
+ * A Go equal expression (e.g., x == y).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
-	 * Builds a Go equals expression at a given location in the program.
-	 * 
-	 * @param cfg        the cfg that this expression belongs to
-	 * @param sourceFile the source file where this expression happens. If
-	 *                       unknown, use {@code null}
-	 * @param line       the line number where this expression happens in the
-	 *                       source file. If unknown, use {@code -1}
-	 * @param col        the column where this expression happens in the source
-	 *                       file. If unknown, use {@code -1}
-	 * @param exp1       left-hand side operand
-	 * @param exp2       right-hand side operand
+	 * Builds the equal expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
 	 */
-	public GoEqual(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "==", GoBoolType.INSTANCE, exp1, exp2);
+	public GoEqual(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, "==", GoBoolType.INSTANCE, left, right);
 	}
 
 	@Override

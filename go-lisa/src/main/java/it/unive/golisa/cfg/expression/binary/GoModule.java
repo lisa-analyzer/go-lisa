@@ -19,7 +19,7 @@ import it.unive.lisa.type.Type;
 /**
  * A Go module expression (e.g., x % 5).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoModule extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 

@@ -10,7 +10,7 @@ import it.unive.lisa.type.Type;
  * allocated and a field (optional). This class is used in
  * {@link GoPointBasedHeap} and {@link GoFieldSensitivePointBasedHeap}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoAllocationSite extends AllocationSite {
 

@@ -23,7 +23,7 @@ import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
  * instances of {@link GoBoolType}. The semantics of a Go logical or implements
  * a short-circuit logics.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 

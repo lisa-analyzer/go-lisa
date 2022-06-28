@@ -9,7 +9,7 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
  * A Go Boolean value. The static type of a Go Boolean value is
  * {@link GoBoolType}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoBoolean extends Literal<Boolean> {
 

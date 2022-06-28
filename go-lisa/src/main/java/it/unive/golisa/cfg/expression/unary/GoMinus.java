@@ -18,7 +18,7 @@ import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
 /**
  * Go unary minus native function class (e.g., -(5 + 3), -5).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoMinus extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 

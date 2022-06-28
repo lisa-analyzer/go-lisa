@@ -17,7 +17,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 /**
  * A Go right shift function call (e.g., e1 >> e2).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoRightShift extends BinaryExpression {
 

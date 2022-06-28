@@ -37,6 +37,5 @@ public class GoBitwiseNot extends UnaryExpression {
 		// at the moment
 		return state.smallStepSemantics(
 				new PushAny(expr.getDynamicType(), getLocation()), this);
-
 	}
 }

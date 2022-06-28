@@ -32,16 +32,15 @@ public class GoExpressionsTuple extends NaryExpression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		// Length of the expression tuple
 		int len = getSubExpressions().length;
 		Parameter[] types = new Parameter[len];
-
 		for (int i = 0; i < types.length; i++) {
 			Expression p = getSubExpressions()[i];
 			types[i] = new Parameter(p.getLocation(), "_", p.getStaticType());
@@ -53,6 +52,7 @@ public class GoExpressionsTuple extends NaryExpression {
 
 		// Allocates the new heap allocation
 		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);
+
 		ExpressionSet<SymbolicExpression> containerExps = containerState.getComputedExpressions();
 
 		AnalysisState<A, H, V, T> result = state.bottom();

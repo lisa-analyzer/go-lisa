@@ -66,6 +66,7 @@ public class GoToInt64 extends NativeCFG {
 			return state.smallStepSemantics(
 					new BinaryExpression(GoInt64Type.INSTANCE, expr, typeCast, TypeConv.INSTANCE,
 							original.getLocation()),
+
 					original);
 		}
 	}

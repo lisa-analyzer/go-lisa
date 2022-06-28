@@ -96,5 +96,4 @@ public class GoVariadicType implements GoType {
 	public static void clearAll() {
 		variadicTypes.clear();
 	}
-
 }

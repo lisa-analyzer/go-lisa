@@ -50,7 +50,6 @@ public class GoDiv extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 					result = result.lub(
 							state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
 									NumericNonOverflowingDiv.INSTANCE, getLocation()), this));
-
 		return result;
 	}
 }

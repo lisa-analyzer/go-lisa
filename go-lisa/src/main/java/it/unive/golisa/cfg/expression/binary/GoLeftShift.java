@@ -46,7 +46,7 @@ public class GoLeftShift extends BinaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO too coarse
+		return state.top();
 	}
 }

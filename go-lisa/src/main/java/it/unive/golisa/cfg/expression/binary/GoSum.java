@@ -53,7 +53,6 @@ public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 					type = resultType(leftType, rightType);
 				} else
 					continue;
-
 				result = result.lub(state.smallStepSemantics(
 						new BinaryExpression(type, left, right, op, getLocation()), this));
 			}

@@ -1,5 +1,15 @@
 package it.unive.golisa.analysis.rsubs;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -27,14 +37,6 @@ import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
 import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import org.apache.commons.lang3.ArrayUtils;
 
 public class RelationalSubstringDomain
 		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
@@ -325,7 +327,6 @@ public class RelationalSubstringDomain
 					result.addAll(getAllSubstrings((String) ((Constant) exps[j]).getValue()));
 				else
 					result.add(exps[j]);
-
 				partial = new BinaryExpression(GoStringType.INSTANCE, partial, exps[j],
 						StringConcat.INSTANCE, exps[j].getCodeLocation());
 				result.add(partial);

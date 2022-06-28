@@ -113,7 +113,6 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
-
 			UnaryOperator op = unary.getOperator();
 			if (op == LogicalNegation.INSTANCE)
 				return false;

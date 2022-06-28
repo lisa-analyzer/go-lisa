@@ -42,7 +42,6 @@ public class GoPlus extends UnaryExpression {
 
 		Constant zero = new Constant(GoUntypedInt.INSTANCE,
 				new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0), getLocation());
-
 		return state.smallStepSemantics(
 				new BinaryExpression(zero.getDynamicType(), zero, expr,
 						NumericNonOverflowingAdd.INSTANCE, getLocation()),

@@ -31,7 +31,7 @@ public class UrlPathEscape extends NativeCFG {
 	}
 
 	public static class PathEscape extends UnaryExpression implements PluggableStatement {
-
+	
 		private Statement original;
 
 		@Override

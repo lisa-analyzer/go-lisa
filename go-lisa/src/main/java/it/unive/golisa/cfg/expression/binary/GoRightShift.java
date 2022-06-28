@@ -31,11 +31,11 @@ public class GoRightShift extends BinaryExpression {
 	 *                       source file. If unknown, use {@code -1}
 	 * @param col        the column where this expression happens in the source
 	 *                       file. If unknown, use {@code -1}
-	 * @param exp1       left-hand side operand
-	 * @param exp2       right-hand side operand
+	 * @param left       left-hand side operand
+	 * @param right       right-hand side operand
 	 */
-	public GoRightShift(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, ">>", exp1, exp2);
+	public GoRightShift(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, ">>", left, right);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class GoRightShift extends BinaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO too coarse
+		return state.top();
 	}
 }

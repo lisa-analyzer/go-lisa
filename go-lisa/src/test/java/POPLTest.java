@@ -71,7 +71,6 @@ public class POPLTest {
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setJsonOutput(true)
-
 				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
 						new InferredTypes()))
 				.setDumpAnalysis(true)

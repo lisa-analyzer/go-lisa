@@ -55,6 +55,7 @@ public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpressio
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type leftType : left.getRuntimeTypes())
 			for (Type rightType : right.getRuntimeTypes())
+
 				if (rightType.canBeAssignedTo(leftType) || leftType.canBeAssignedTo(rightType)) {
 					// TODO: not covering composite types (e.g., channels,
 					// arrays, structs...)

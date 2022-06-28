@@ -1,5 +1,12 @@
 package it.unive.golisa.analysis;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -23,12 +30,6 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier, ExpressionInverseSet<Identifier>>
 		implements ValueDomain<EqualityDomain> {

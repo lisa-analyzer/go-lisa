@@ -8,15 +8,10 @@ plugins {
 }
 
 repositories {
-        mavenCentral()
-        maven {
-            name = "GitHubPackages"
-            url 'https://maven.pkg.github.com/UniVE-SSV/lisa'
-            credentials {
-				username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            	password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-        }  
+    mavenCentral()
+    maven {
+        url 'https://plugins.gradle.org/m2/'
+    }
 }
 
 group = 'it.unive'
@@ -30,16 +25,18 @@ dependencies {
     implementation 'com.github.unive-ssv:lisa-sdk:0.1b5'
     implementation 'com.github.unive-ssv:lisa-imp:0.1b5'
     implementation 'com.github.unive-ssv:tarsis:1.0'
+<<<<<<< HEAD
       
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
+=======
+	implementation 'com.github.unive-ssv:lisa-sdk:0.1b2'
+	implementation 'com.github.unive-ssv:lisa-core:0.1b2'
+>>>>>>> refs/heads/master
     
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
 	compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0.1'
-	
 }
-
-
 
 jar {
     manifest {

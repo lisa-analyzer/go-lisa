@@ -62,7 +62,6 @@ public class GoItoa extends NativeCFG {
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 				return state.bottom();
-
 			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
 	}

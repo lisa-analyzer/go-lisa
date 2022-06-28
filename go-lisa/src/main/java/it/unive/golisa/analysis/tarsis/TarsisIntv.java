@@ -107,7 +107,6 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	@Override
 	protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right,
 			ProgramPoint pp) {
-
 		if (operator != NumericNonOverflowingDiv.INSTANCE && (left.isTop() || right.isTop()))
 			// with div, we can return zero or bottom even if one of the
 			// operands is top

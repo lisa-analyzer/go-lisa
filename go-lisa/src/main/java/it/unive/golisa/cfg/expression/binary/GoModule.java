@@ -17,7 +17,7 @@ import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMod;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go module function call (e1 % e2).
+ * A Go module expression (e.g., x % 5).
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */

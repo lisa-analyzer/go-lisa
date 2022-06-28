@@ -1,4 +1,6 @@
 
+import org.junit.Test;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
@@ -8,7 +10,6 @@ import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
-import org.junit.Test;
 
 public class HeapTest extends GoAnalysisTestExecutor {
 

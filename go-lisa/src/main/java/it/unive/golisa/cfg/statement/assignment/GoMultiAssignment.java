@@ -1,5 +1,12 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -26,11 +33,6 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiAssignment extends Expression {
 
@@ -94,7 +96,6 @@ public class GoMultiAssignment extends Expression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,
 					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
 					throws SemanticException {
-
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
 		// needs to be performed

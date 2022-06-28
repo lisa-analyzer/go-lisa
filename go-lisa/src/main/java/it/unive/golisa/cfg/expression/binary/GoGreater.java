@@ -67,6 +67,7 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 									.smallStepSemantics(
 											new BinaryExpression(GoBoolType.INSTANCE,
 													left, right, ComparisonGt.INSTANCE, getLocation()),
+
 											this);
 					result = result.lub(tmp);
 				}

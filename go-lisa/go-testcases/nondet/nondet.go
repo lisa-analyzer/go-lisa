@@ -4,7 +4,7 @@ import (
     "fmt"
     "math/rand"
     "time"
-	"os"
+    "os"
 )
 
 func Invoke( stub shim.ChaincodeStubInterface ) {

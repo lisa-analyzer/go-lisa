@@ -90,7 +90,6 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 			return state;
 
 		AnalysisState<A, H, V, T> result = state.assign(left, NumericalTyper.type(right), this);
-
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getRight().getMetaVariables());
 		if (!getLeft().getMetaVariables().isEmpty())

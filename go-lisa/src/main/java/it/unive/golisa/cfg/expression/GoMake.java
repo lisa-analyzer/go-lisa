@@ -58,7 +58,6 @@ public class GoMake extends NaryExpression {
 		 */
 		if (type instanceof GoSliceType) {
 			Type contentType = ((GoSliceType) type).getContentType();
-
 			SourceCodeLocation sliceLocation = (SourceCodeLocation) getLocation();
 			// FIXME: this is a temporary workaround. At this location, two
 			// allocations are performed, need to differentiate
@@ -121,7 +120,6 @@ public class GoMake extends NaryExpression {
 				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, sliceDeref,
 						capProperty, getLocation());
 				AnalysisState<A, H, V, T> capState = lenResult.smallStepSemantics(capAccess, this);
-
 				AnalysisState<A, H, V, T> capResult = state.bottom();
 				for (SymbolicExpression lenId : capState.getComputedExpressions())
 					capResult = capResult
@@ -133,7 +131,6 @@ public class GoMake extends NaryExpression {
 				AccessChild ptrAccess = new AccessChild(arrayType, sliceDeref,
 						ptrProperty, getLocation());
 				AnalysisState<A, H, V, T> ptrState = capResult.smallStepSemantics(ptrAccess, this);
-
 				AnalysisState<A, H, V, T> ptrResult = state.bottom();
 				for (SymbolicExpression ptrId : ptrState.getComputedExpressions())
 					for (SymbolicExpression arrayId : arraySemantics.getComputedExpressions())

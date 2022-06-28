@@ -67,7 +67,6 @@ public class GoHasSuffix extends NativeCFG {
 			return state
 					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 							left, right, StringEndsWith.INSTANCE, getLocation()), original);
-
 		}
 	}
 }

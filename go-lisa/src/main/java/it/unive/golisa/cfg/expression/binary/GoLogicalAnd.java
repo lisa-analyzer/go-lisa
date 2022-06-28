@@ -55,7 +55,6 @@ public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpr
 			return state.bottom();
 		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())
 			return state.bottom();
-
 		return state
 				.smallStepSemantics(
 						new BinaryExpression(GoBoolType.INSTANCE, left, right,

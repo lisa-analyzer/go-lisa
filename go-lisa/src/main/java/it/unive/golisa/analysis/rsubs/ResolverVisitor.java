@@ -53,6 +53,7 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 			throws SemanticException {
 
 		if (expression.getOperator() == StringConcat.INSTANCE) {
+
 			if (left != null && right != null)
 				return left + right;
 			return null;

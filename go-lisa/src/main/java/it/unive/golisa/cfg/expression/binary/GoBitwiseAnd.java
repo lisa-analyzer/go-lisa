@@ -43,6 +43,7 @@ public class GoBitwiseAnd extends BinaryExpression implements GoBinaryNumericalO
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+
 					throws SemanticException {
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type leftType : left.getRuntimeTypes())

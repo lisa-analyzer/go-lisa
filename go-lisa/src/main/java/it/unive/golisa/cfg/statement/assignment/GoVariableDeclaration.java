@@ -71,6 +71,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+
 					throws SemanticException {
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
@@ -90,7 +91,6 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 				tmp = state.assign(id, right, this);
 
 			result = result.lub(tmp);
-
 		}
 
 		if (!getRight().getMetaVariables().isEmpty())

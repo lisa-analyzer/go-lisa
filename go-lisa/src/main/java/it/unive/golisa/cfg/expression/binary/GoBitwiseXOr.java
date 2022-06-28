@@ -23,7 +23,7 @@ import it.unive.lisa.type.Type;
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoBitwiseXOr extends BinaryExpression implements GoBinaryNumericalOperation {
-
+	
 	/**
 	 * Builds a Go XOR expression at a given location in the program.
 	 * 

@@ -60,6 +60,7 @@ public class GoHasPrefix extends NativeCFG {
 			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
 				return state.bottom();
 
+
 			if (!right.getDynamicType().isStringType() && !right.getDynamicType().isUntyped())
 				return state.bottom();
 

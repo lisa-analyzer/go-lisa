@@ -60,10 +60,6 @@ public class GoKeyedLiteral extends NaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		// it corresponds to the analysis state after the evaluation of all the
-		// parameters of this call
-		// (the semantics of this call does not need information about the
-		// intermediate analysis states)
 		Type type = getStaticType();
 		HeapAllocation created = new HeapAllocation(type, getLocation());
 

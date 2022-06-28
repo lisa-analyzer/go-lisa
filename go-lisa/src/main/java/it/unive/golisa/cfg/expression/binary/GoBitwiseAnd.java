@@ -17,15 +17,14 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go and function function call. e1 & e2 copies a bit to the result if it
- * exists in both operands.
+ * A Go bit-wise and expression (e.g., x & y). 
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
 public class GoBitwiseAnd extends BinaryExpression implements GoBinaryNumericalOperation {
 
 	/**
-	 * Builds the and expression.
+	 * Builds the bit-wise and expression.
 	 *
 	 * @param cfg      the {@link CFG} where this expression lies
 	 * @param location the location where this expression is defined

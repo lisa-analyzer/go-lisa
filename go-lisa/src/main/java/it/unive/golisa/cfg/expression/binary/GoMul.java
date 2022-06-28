@@ -17,22 +17,22 @@ import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMul;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go numerical multiplication function call (e1 * e2).
+ * A Go multiplication expression (e.g., x * y).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoMul extends it.unive.lisa.program.cfg.statement.BinaryExpression implements GoBinaryNumericalOperation {
 
 	/**
-	 * Builds a Go multiplication expression. The location where this expression
-	 * appears is unknown (i.e. no source file/line/column is available).
-	 * 
-	 * @param cfg  the cfg that this expression belongs to
-	 * @param exp1 left-hand side operand
-	 * @param exp2 right-hand side operand
+	 * Builds the multiplication expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
 	 */
-	public GoMul(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "*", exp1, exp2);
+	public GoMul(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, "*", left, right);
 	}
 
 	@Override

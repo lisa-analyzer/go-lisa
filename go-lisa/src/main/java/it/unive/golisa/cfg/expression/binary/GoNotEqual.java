@@ -1,4 +1,4 @@
-package it.unive.golisa.cfg.expression;
+package it.unive.golisa.cfg.expression.binary;
 
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;

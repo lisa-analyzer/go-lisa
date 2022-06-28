@@ -15,27 +15,22 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * A Go left shift function call (e1 << e2).
+ * A Go left shift expression (e.g., e1 << e2).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoLeftShift extends BinaryExpression {
 
 	/**
-	 * Builds a Go left shift expression at a given location in the program.
-	 * 
-	 * @param cfg        the cfg that this expression belongs to
-	 * @param sourceFile the source file where this expression happens. If
-	 *                       unknown, use {@code null}
-	 * @param line       the line number where this expression happens in the
-	 *                       source file. If unknown, use {@code -1}
-	 * @param col        the column where this expression happens in the source
-	 *                       file. If unknown, use {@code -1}
-	 * @param exp1       left-hand side operand
-	 * @param exp2       right-hand side operand
+	 * Builds the left shift expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
 	 */
-	public GoLeftShift(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "<<", exp1, exp2);
+	public GoLeftShift(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, "<<", left, right);
 	}
 
 	@Override

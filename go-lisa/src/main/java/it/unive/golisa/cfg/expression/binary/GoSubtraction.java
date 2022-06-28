@@ -17,13 +17,21 @@ import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go numerical subtraction function call (e1 - e2).
+ * A Go numerical subtraction expression (e.g., x - y).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExpression
 		implements GoBinaryNumericalOperation {
 
+	/**
+	 * Builds the subtraction expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
+	 */
 	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
 		super(cfg, location, "-", exp1, exp2);
 	}

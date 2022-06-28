@@ -20,14 +20,22 @@ import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go numerical sum function call (e1 + e2).
+ * A Go numerical sum expression (e.g., x + y).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression implements GoBinaryNumericalOperation {
-
-	public GoSum(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "+", exp1, exp2);
+	
+	/**
+	 * Builds the sum expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
+	 */
+	public GoSum(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, "+", left, right);
 	}
 
 	@Override

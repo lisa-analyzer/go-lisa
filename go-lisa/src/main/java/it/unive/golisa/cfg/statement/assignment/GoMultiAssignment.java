@@ -1,12 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -33,6 +26,11 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiAssignment extends Expression {
 
@@ -170,7 +168,6 @@ public class GoMultiAssignment extends Expression {
 			result = tmp2;
 		}
 
-		
 		AnalysisState<A, H, V, T> finalResult = result;
 		for (int i = 0; i < ids.length; i++) {
 			if (ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
@@ -193,7 +190,8 @@ public class GoMultiAssignment extends Expression {
 
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions())
 					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V, T> assign = finalResult.assign(idExp, NumericalTyper.type(accessExp), this);
+						AnalysisState<A, H, V,
+								T> assign = finalResult.assign(idExp, NumericalTyper.type(accessExp), this);
 						partialResult = partialResult.lub(assign);
 					}
 				finalResult = partialResult;

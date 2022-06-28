@@ -132,7 +132,8 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 								StackAllocationSite copySite = new StackAllocationSite(array.get(i).getStaticType(),
 										id.getCodeLocation().toString(), field, star_y.isWeak(),
 										id.getCodeLocation());
-								StackAllocationSite copySiteRight = new StackAllocationSite(array.get(i).getStaticType(),
+								StackAllocationSite copySiteRight = new StackAllocationSite(
+										array.get(i).getStaticType(),
 										star_y.getCodeLocation().toString(), field, star_y.isWeak(),
 										star_y.getCodeLocation());
 								newCopies.add(Pair.of(copySite, copySiteRight));
@@ -146,7 +147,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 						result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 						result.decouples.addAll(newCopies);
 
-					} 
+					}
 //					else if (exp instanceof StackAllocationSite){
 //						result = result.lub(sss);
 //					} 
@@ -157,8 +158,8 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 						result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 					}
 				}
-			} 
-			
+			}
+
 			else if (exp instanceof HeapAllocationSite) {
 				HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, exp, pp);
 				result = result.lub(new GoFieldSensitivePointBasedHeap(heap));

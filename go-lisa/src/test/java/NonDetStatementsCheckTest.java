@@ -12,9 +12,9 @@ public class NonDetStatementsCheckTest extends GoAnalysisTestExecutor {
 				.addSyntacticCheck(new BreakConsensusGoSmartContractChecker());
 //		for (int i = 0; i < 50; i++) {
 //			System.err.println(i);
-		// FIXME this nondeterministically fails (1/5-6) because inside Invoke 
+		// FIXME this nondeterministically fails (1/5-6) because inside Invoke
 		// an untyped is added
-		perform("nondet", "nondet.go", conf); 
+		perform("nondet", "nondet.go", conf);
 //		}
 	}
 }

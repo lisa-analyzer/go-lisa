@@ -175,7 +175,6 @@ public class GoNonKeyedLiteral extends NaryExpression {
 					lenResult = lenResult.lub(
 							lenState.assign(lenId, new Constant(GoIntType.INSTANCE, sliceLenght, getLocation()), this));
 
-
 				// Assign the cap property to this hid
 				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
 						getLocation());

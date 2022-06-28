@@ -387,8 +387,4 @@
         <setting id="org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_annotation" value="do not insert"/>
         <setting id="org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_switch" value="insert"/>
     </profile>
-<<<<<<< HEAD
 </profiles>
-=======
-</profiles>
->>>>>>> refs/heads/master

@@ -34,7 +34,7 @@ public class GoIndex extends NativeCFG {
 
 	public static class IndexOf extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
-	
+
 		private Statement original;
 
 		@Override

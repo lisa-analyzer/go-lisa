@@ -32,7 +32,7 @@ public class GoRightShift extends BinaryExpression {
 	 * @param col        the column where this expression happens in the source
 	 *                       file. If unknown, use {@code -1}
 	 * @param left       left-hand side operand
-	 * @param right       right-hand side operand
+	 * @param right      right-hand side operand
 	 */
 	public GoRightShift(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
 		super(cfg, location, ">>", left, right);

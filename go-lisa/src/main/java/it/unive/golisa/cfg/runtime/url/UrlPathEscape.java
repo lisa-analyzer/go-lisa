@@ -24,6 +24,12 @@ import it.unive.lisa.symbolic.value.PushAny;
 
 public class UrlPathEscape extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param urlUnit  the unit to which this native cfg belongs to
+	 */
 	public UrlPathEscape(CodeLocation location, CompilationUnit urlUnit) {
 		super(new CFGDescriptor(location, urlUnit, false, "PathEscape", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),

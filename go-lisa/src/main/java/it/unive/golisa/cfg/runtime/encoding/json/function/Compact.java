@@ -29,12 +29,18 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Compact(dst *bytes.Buffer, src []byte) error
+ * func Compact(dst *bytes.Buffer, src []byte) error.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Compact extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param jsonUnit the unit to which this native cfg belongs to
+	 */
 	public Compact(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Compact", GoErrorType.INSTANCE,
 				new Parameter(location, "dst", new GoPointerType(Buffer.INSTANCE)),

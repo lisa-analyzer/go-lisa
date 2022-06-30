@@ -23,12 +23,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Now() Time
+ * func Now() Time.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Now extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param timeUnit the unit to which this native cfg belongs to
+	 */
 	public Now(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Now", Duration.INSTANCE),
 				NowImpl.class);

@@ -22,7 +22,7 @@ import java.util.Collections;
 public class Buffer implements GoType {
 
 	/**
-	 * Unique instance of Buffer type.
+	 * Unique instance of the Buffer type.
 	 */
 	public static final Buffer INSTANCE = new Buffer();
 

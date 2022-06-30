@@ -24,7 +24,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Wrap(err error, description string) error
+ * func Wrap(err error, description string) error.
  * 
  * @link https://pkg.go.dev/github.com/cosmos/cosmos-sdk/errors#Wrap
  * 
@@ -32,6 +32,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Wrap extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Wrap(CodeLocation location, CompilationUnit errorsUnit) {
 		super(new CFGDescriptor(location, errorsUnit, false, "Wrap", GoErrorType.INSTANCE,
 				new Parameter(location, "err", GoErrorType.INSTANCE),

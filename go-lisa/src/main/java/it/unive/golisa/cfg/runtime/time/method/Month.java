@@ -23,7 +23,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * Month returns the month of the year specified by t. func (t Time) Month()
- * Month
+ * Month.
  * 
  * @link https://pkg.go.dev/time#Time.Month
  * 
@@ -31,6 +31,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class Month extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param timeUnit the unit to which this native cfg belongs to
+	 */
 	public Month(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Month",
 				it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE,

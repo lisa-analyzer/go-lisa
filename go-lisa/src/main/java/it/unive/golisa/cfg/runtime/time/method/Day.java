@@ -23,7 +23,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * Day returns the day of the month specified by t. func (t Time) Day() int
+ * Day returns the day of the month specified by t. func (t Time) Day() int.
  * 
  * @link https://pkg.go.dev/time#Time.Day
  * 
@@ -31,6 +31,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class Day extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param timeUnit the unit to which this native cfg belongs to
+	 */
 	public Day(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Day",
 				GoIntType.INSTANCE,

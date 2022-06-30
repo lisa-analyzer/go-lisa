@@ -24,12 +24,18 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Int(rand io.Reader, max *big.Int) (n *big.Int, err error)
+ * func Int(rand io.Reader, max *big.Int) (n *big.Int, err error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Int extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Int(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Read",
 				GoTupleType.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE,

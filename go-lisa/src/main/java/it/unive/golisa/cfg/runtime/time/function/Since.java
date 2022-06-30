@@ -24,12 +24,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Since(t Time) Duration
+ * func Since(t Time) Duration.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Since extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param timeUnit the unit to which this native cfg belongs to
+	 */
 	public Since(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Since", Duration.INSTANCE,
 				new Parameter(location, "this", Time.INSTANCE)),

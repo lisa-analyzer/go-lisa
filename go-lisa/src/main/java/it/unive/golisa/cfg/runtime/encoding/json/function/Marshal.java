@@ -26,12 +26,18 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Marshal(v interface{}) ([]byte, error)
+ * func Marshal(v interface{}) ([]byte, error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Marshal extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param jsonUnit the unit to which this native cfg belongs to
+	 */
 	public Marshal(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Marshal",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),

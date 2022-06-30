@@ -25,6 +25,12 @@ import it.unive.lisa.symbolic.value.PushAny;
 
 public class Unix extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param timeUnit the unit to which this native cfg belongs to
+	 */
 	public Unix(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, true, "Unix",
 				GoInt64Type.INSTANCE,

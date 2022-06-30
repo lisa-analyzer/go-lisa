@@ -27,12 +27,18 @@ import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.type.VoidType;
 
 /**
- * func HtmlEscape(dst *bytes.Buffer, src []byte)
+ * func HtmlEscape(dst *bytes.Buffer, src []byte).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class HtmlEscape extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param jsonUnit the unit to which this native cfg belongs to
+	 */
 	public HtmlEscape(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "HtmlEscape", VoidType.INSTANCE,
 				new Parameter(location, "dst", new GoPointerType(Buffer.INSTANCE)),

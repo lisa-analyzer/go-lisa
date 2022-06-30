@@ -31,12 +31,18 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Indent(dst *bytes.Buffer, src []byte, prefix, indent string) error
+ * func Indent(dst *bytes.Buffer, src []byte, prefix, indent string) error.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Indent extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param jsonUnit the unit to which this native cfg belongs to
+	 */
 	public Indent(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Indent", GoErrorType.INSTANCE,
 				new Parameter(location, "dst", new GoPointerType(Buffer.INSTANCE)),

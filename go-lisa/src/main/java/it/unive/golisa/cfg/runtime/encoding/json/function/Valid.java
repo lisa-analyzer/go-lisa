@@ -28,12 +28,18 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Unmarshal(data []byte, v interface{}) error
+ * func Unmarshal(data []byte, v interface{}) error.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Valid extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param jsonUnit the unit to which this native cfg belongs to
+	 */
 	public Valid(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Valid", GoBoolType.INSTANCE,
 				new Parameter(location, "data", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),

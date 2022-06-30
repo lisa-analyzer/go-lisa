@@ -27,6 +27,12 @@ import it.unive.lisa.symbolic.value.PushAny;
 
 public class Parse extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param timeUnit the unit to which this native cfg belongs to
+	 */
 	public Parse(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Parse",
 				new GoTupleType(new Parameter(location, "_", Time.INSTANCE),

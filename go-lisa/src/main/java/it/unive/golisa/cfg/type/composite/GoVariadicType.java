@@ -93,6 +93,9 @@ public class GoVariadicType implements GoType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the variadic types.
+	 */
 	public static void clearAll() {
 		variadicTypes.clear();
 	}

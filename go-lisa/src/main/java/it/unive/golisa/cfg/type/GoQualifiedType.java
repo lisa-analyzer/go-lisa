@@ -94,6 +94,9 @@ public class GoQualifiedType implements GoType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the qualified types.
+	 */
 	public static void clearAll() {
 		qualTypes.clear();
 	}

@@ -46,6 +46,11 @@ public class ReadDir extends NativeCFG {
 				ReadDirImpl.class);
 	}
 
+	/**
+	 * The ReadDir implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadDirImpl extends UnaryExpression
 			implements PluggableStatement {
 

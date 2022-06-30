@@ -47,6 +47,11 @@ public class TempFile extends NativeCFG {
 				TempFileImpl.class);
 	}
 
+	/**
+	 * The TempFile implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class TempFileImpl extends BinaryExpression
 			implements PluggableStatement {
 

@@ -52,6 +52,11 @@ public class CopyBuffer extends NativeCFG {
 				CopyBufferImpl.class);
 	}
 
+	/**
+	 * The CopyBuffer implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CopyBufferImpl extends NaryExpression
 			implements PluggableStatement {
 

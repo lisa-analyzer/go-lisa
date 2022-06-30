@@ -33,10 +33,20 @@ public class GoArrayType implements GoType, InMemoryType {
 		this.length = length;
 	}
 
+	/**
+	 * Yields the content type.
+	 * 
+	 * @return the content type
+	 */
 	public Type getContenType() {
 		return contentType;
 	}
 
+	/**
+	 * Yields the length
+	 * 
+	 * @return the length
+	 */
 	public Integer getLength() {
 		return length;
 	}
@@ -106,6 +116,11 @@ public class GoArrayType implements GoType, InMemoryType {
 		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
 
+	/**
+	 * Yields all the array types.
+	 * 
+	 * @return all the array types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoArrayType in : arrayTypes)
@@ -118,6 +133,9 @@ public class GoArrayType implements GoType, InMemoryType {
 		return Collections.singleton(this);
 	}
 
+	/**
+	 * Clears all the array types.
+	 */
 	public static void clearAll() {
 		arrayTypes.clear();
 	}

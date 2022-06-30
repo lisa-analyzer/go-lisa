@@ -45,6 +45,11 @@ public class TempDir extends NativeCFG {
 				TempDirImpl.class);
 	}
 
+	/**
+	 * The TempDir implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class TempDirImpl extends BinaryExpression
 			implements PluggableStatement {
 

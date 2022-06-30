@@ -47,6 +47,11 @@ public class Copy extends NativeCFG {
 				CopyImpl.class);
 	}
 
+	/**
+	 * The Copy implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CopyImpl extends BinaryExpression
 			implements PluggableStatement {
 

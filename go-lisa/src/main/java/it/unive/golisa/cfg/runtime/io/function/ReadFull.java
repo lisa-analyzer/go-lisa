@@ -48,6 +48,11 @@ public class ReadFull extends NativeCFG {
 				ReadFullImpl.class);
 	}
 
+	/**
+	 * The ReadFull implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadFullImpl extends BinaryExpression
 			implements PluggableStatement {
 

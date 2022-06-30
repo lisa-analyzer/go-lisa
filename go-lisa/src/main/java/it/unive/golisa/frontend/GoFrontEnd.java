@@ -84,8 +84,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * @GoFrontEnd manages the translation from a Go program to the corresponding
- *                 LiSA @CFG.
+ * This class manages the translation from a Go program to the corresponding
+ * LiSA {@link CFG}.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -105,29 +105,29 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	private GoLangAPISignatureMapper mapper = GoLangAPISignatureMapper.getGoApiSignatures();
 
 	/**
-	 * The parameter assigning strategy for calls
+	 * The parameter assigning strategy for calls.
 	 */
 	public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY = OrderPreservingAssigningStrategy.INSTANCE;
 
 	/**
 	 * The strategy of traversing super-unit to search for target call
-	 * implementation
+	 * implementation.
 	 */
 	public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY = SingleInheritanceTraversalStrategy.INSTANCE;
 
 	/**
-	 * The parameter matching strategy for matching function calls
+	 * The parameter matching strategy for matching function calls.
 	 */
 	public static final ParameterMatchingStrategy FUNCTION_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
 
 	/**
-	 * The parameter matching strategy for matching method calls
+	 * The parameter matching strategy for matching method calls.
 	 */
 	public static final ParameterMatchingStrategy METHOD_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
 
 	/**
-	 * Builds an instance of @GoToCFG for a given Go program given at the
-	 * location filePath.
+	 * Builds a Go frontend for a given Go program given at the location
+	 * {@code filePath}.
 	 * 
 	 * @param filePath file path to a Go program.
 	 */
@@ -147,17 +147,28 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		return filePath;
 	}
 
+	/**
+	 * Processes the Go program located at {@code filePath} and returns the LiSA
+	 * program corresponding to the parsed file
+	 * 
+	 * @param filePath the file path
+	 * 
+	 * @return the LiSA program corresponding to the parsed file
+	 * 
+	 * @throws IOException if something wrong happens while reading the file
+	 */
 	public static Program processFile(String filePath) throws IOException {
 		return new GoFrontEnd(filePath).toLiSAProgram();
 	}
 
 	/**
-	 * Returns the collection of @CFG in a Go program at filePath.
+	 * Returns a {@link Program} corresponding to the Go program located to
+	 * {@code filePath}.
 	 * 
-	 * @return collection of @CFG in file
+	 * @return a {@link Program} corresponding to the Go program located to
+	 *             {@code filePath}
 	 * 
-	 * @throws IOException if {@code stream} to file cannot be written to or
-	 *                         closed
+	 * @throws IOException if something wrong happens while reading the file
 	 */
 	private Program toLiSAProgram() throws IOException {
 		log.info("Go front-end setup...");

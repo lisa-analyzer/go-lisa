@@ -46,6 +46,11 @@ public class ReadAll extends NativeCFG {
 				ReadAllImpl.class);
 	}
 
+	/**
+	 * The ReadAll implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadAllImpl extends UnaryExpression
 			implements PluggableStatement {
 

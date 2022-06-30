@@ -18,10 +18,7 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go less function call (e1 < e2). The static type of this expression is
- * definitely {@link GoBoolType}. The semantics of Go less expression follows
- * the Golang specification:
- * {@link https://golang.org/ref/spec#Comparison_operators}
+ * A Go less than expression (e.g., x < y)
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */

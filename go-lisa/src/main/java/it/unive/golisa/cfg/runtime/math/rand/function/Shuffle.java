@@ -41,6 +41,11 @@ public class Shuffle extends NativeCFG {
 				ShuffleImpl.class);
 	}
 
+	/**
+	 * The Shuffle implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ShuffleImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -51,12 +56,29 @@ public class Shuffle extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the parameters
+		 */
 		public static ShuffleImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ShuffleImpl(cfg, location, params[0], params[1]);
 		}
 
-		public ShuffleImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "ShuffleImpl", VoidType.INSTANCE, expr, expr2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side expression
+		 * @param right    the left-hand side expression
+		 */
+		public ShuffleImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "ShuffleImpl", VoidType.INSTANCE, left, right);
 		}
 
 		@Override

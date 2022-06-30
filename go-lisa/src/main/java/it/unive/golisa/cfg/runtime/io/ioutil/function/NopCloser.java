@@ -43,6 +43,11 @@ public class NopCloser extends NativeCFG {
 				NopCloserImpl.class);
 	}
 
+	/**
+	 * The NopCloser implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class NopCloserImpl extends UnaryExpression
 			implements PluggableStatement {
 

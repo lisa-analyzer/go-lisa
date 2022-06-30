@@ -113,6 +113,11 @@ public class GoSliceType implements GoType, InMemoryType {
 		return instances;
 	}
 
+	/**
+	 * Yields all the slice types.
+	 * 
+	 * @return all the slice types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoSliceType in : sliceTypes)
@@ -120,6 +125,9 @@ public class GoSliceType implements GoType, InMemoryType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the slice types.
+	 */
 	public static void clearAll() {
 		sliceTypes.clear();
 	}

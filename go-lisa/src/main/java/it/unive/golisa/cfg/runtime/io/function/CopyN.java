@@ -49,6 +49,11 @@ public class CopyN extends NativeCFG {
 				CopyNImpl.class);
 	}
 
+	/**
+	 * The CopyN implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CopyNImpl extends NaryExpression
 			implements PluggableStatement {
 

@@ -22,17 +22,28 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Uint32() uint32
+ * func Uint32() uint32.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class UInt32 extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public UInt32(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Uint32", GoUInt32Type.INSTANCE),
 				UInt32Impl.class);
 	}
 
+	/**
+	 * The UInt32 implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class UInt32Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
@@ -43,10 +54,25 @@ public class UInt32 extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the parameters
+		 */
 		public static UInt32Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new UInt32Impl(cfg, location);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 */
 		public UInt32Impl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "Uint32Impl", GoUInt32Type.INSTANCE);
 		}

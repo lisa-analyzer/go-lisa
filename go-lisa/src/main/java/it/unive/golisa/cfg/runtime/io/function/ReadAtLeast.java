@@ -50,6 +50,11 @@ public class ReadAtLeast extends NativeCFG {
 				ReadAtLeastImpl.class);
 	}
 
+	/**
+	 * The ReadAtLeast implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadAtLeastImpl extends NaryExpression
 			implements PluggableStatement {
 

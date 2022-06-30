@@ -50,6 +50,11 @@ public class WriteFile extends NativeCFG {
 				WriteFileImpl.class);
 	}
 
+	/**
+	 * The WriteFile implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class WriteFileImpl extends NaryExpression
 			implements PluggableStatement {
 

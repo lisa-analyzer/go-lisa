@@ -45,6 +45,11 @@ public class Pipe extends NativeCFG {
 				PipeImpl.class);
 	}
 
+	/**
+	 * The Pipe implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PipeImpl extends NaryExpression
 			implements PluggableStatement {
 

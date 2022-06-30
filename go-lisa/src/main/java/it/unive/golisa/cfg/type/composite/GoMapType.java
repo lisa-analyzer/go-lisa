@@ -101,6 +101,11 @@ public class GoMapType implements GoType, InMemoryType {
 		return new GoNil(cfg, location);
 	}
 
+	/**
+	 * Yields all the map types.
+	 * 
+	 * @return all the map types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoMapType in : mapTypes)
@@ -116,6 +121,9 @@ public class GoMapType implements GoType, InMemoryType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the map types.
+	 */
 	public static void clearAll() {
 		mapTypes.clear();
 	}

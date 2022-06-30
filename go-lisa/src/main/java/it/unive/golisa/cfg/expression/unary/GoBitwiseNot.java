@@ -16,8 +16,20 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 
+/**
+ * A Go bitwise unary not expression (e.g., ^x).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoBitwiseNot extends UnaryExpression {
 
+	/**
+	 * Builds the bitwise not expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression
+	 */
 	public GoBitwiseNot(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "^", exp.getStaticType(), exp);
 	}

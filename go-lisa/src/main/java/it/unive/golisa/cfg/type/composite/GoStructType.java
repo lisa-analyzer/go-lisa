@@ -187,6 +187,11 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		return unit;
 	}
 
+	/**
+	 * Yields all the struct types.
+	 * 
+	 * @return all the struct types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoStructType in : structTypes.values())
@@ -202,6 +207,9 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the struct types.
+	 */
 	public static void clearAll() {
 		structTypes.clear();
 	}

@@ -46,6 +46,11 @@ public class ReadFile extends NativeCFG {
 				ReadFileImpl.class);
 	}
 
+	/**
+	 * The ReadFile implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadFileImpl extends UnaryExpression
 			implements PluggableStatement {
 

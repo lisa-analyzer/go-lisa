@@ -24,18 +24,29 @@ import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.type.VoidType;
 
 /**
- * func Seed(seed int64)
+ * func Seed(seed int64).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Seed extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Seed(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Seed", VoidType.INSTANCE,
 				new Parameter(location, "seed", GoInt64Type.INSTANCE)),
 				SeedImpl.class);
 	}
 
+	/**
+	 * Seed implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class SeedImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -46,10 +57,26 @@ public class Seed extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static SeedImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new SeedImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public SeedImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "SeedImpl", VoidType.INSTANCE, expr);
 		}

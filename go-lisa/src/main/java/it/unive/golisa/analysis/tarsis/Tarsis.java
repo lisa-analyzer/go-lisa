@@ -47,6 +47,11 @@ import it.unive.tarsis.AutomatonString;
 import it.unive.tarsis.automata.Automata;
 import it.unive.tarsis.automata.Automaton;
 
+/**
+ * The Tarsis abstract domain.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDomain<Tarsis> {
 
 	private static final Tarsis TOP = new Tarsis();
@@ -59,6 +64,9 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	private final boolean isTop;
 	private final boolean isBottom;
 
+	/**
+	 * Builds the top abstract value.
+	 */
 	public Tarsis() {
 		this(new AutomatonString(), new TarsisIntv(), true, false);
 	}

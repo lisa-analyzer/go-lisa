@@ -47,6 +47,11 @@ public class WriteString extends NativeCFG {
 				WriteStringImpl.class);
 	}
 
+	/**
+	 * The WriteString implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class WriteStringImpl extends BinaryExpression
 			implements PluggableStatement {
 

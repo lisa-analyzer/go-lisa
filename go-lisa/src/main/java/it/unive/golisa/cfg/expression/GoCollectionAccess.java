@@ -61,10 +61,20 @@ public class GoCollectionAccess extends BinaryExpression {
 		return result;
 	}
 
+	/**
+	 * Yields the recevier of this access expression.
+	 * 
+	 * @return the recevier of this access expression.
+	 */
 	public Expression getReceiver() {
 		return getLeft();
 	}
 
+	/**
+	 * Yields the target of this access expression.
+	 * 
+	 * @return the target of this access expression.
+	 */
 	public Expression getTarget() {
 		return getRight();
 	}

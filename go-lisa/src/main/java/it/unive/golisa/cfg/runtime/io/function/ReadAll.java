@@ -26,12 +26,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.common.UInt8;
 
 /**
- * func ReadAll(r Reader) ([]byte, error)
+ * func ReadAll(r Reader) ([]byte, error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class ReadAll extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public ReadAll(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadAll",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(UInt8.INSTANCE)),

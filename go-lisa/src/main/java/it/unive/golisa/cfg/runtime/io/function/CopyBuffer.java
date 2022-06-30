@@ -29,13 +29,19 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.common.UInt8;
 
 /**
- * func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err
+ * func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err.
  * error)
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class CopyBuffer extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public CopyBuffer(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "CopyBuffer",
 				GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE,

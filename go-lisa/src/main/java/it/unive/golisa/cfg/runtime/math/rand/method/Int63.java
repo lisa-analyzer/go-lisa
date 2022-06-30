@@ -24,12 +24,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (r *Rand) Int63() int64
+ * func (r *Rand) Int63() int64.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Int63 extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Int63(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, true, "Int63", GoInt64Type.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE)),

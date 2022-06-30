@@ -34,6 +34,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class Open extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public Open(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Open",
 				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),

@@ -27,7 +27,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Setenv(key, value string) error
+ * func Setenv(key, value string) error.
  * 
  * @link https://pkg.go.dev/os#Setenv
  * 
@@ -35,6 +35,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Setenv extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public Setenv(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Setenv",
 				GoErrorType.INSTANCE,

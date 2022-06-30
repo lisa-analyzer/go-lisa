@@ -27,7 +27,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func RemoveAll(path string) error
+ * func RemoveAll(path string) error.
  * 
  * @link https://pkg.go.dev/os#RemoveAll
  * 
@@ -35,6 +35,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class RemoveAll extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public RemoveAll(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "RemoveAll",
 				GoErrorType.INSTANCE,

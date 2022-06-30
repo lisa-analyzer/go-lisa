@@ -31,6 +31,12 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoToString extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param pkgUnit  the unit to which this native cfg belongs to
+	 */
 	public GoToString(CodeLocation location, CompilationUnit pkgUnit) {
 		super(new CFGDescriptor(location, pkgUnit, false, "string", GoStringType.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),

@@ -24,12 +24,18 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func TempDir(dir, pattern string) (name string, err error)
+ * func TempDir(dir, pattern string) (name string, err error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class TempDir extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public TempDir(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "TempDir",
 				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,

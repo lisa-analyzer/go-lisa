@@ -27,7 +27,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Unsetenv(key string) error
+ * func Unsetenv(key string) error.
  * 
  * @link https://pkg.go.dev/os#Unsetenv
  * 
@@ -35,6 +35,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Unsetenv extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public Unsetenv(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Unsetenv",
 				GoErrorType.INSTANCE,

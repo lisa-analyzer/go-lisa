@@ -24,12 +24,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (r *Rand) Int31n(n int32) int32
+ * func (r *Rand) Int31n(n int32) int32.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Int31n extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Int31n(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, true, "Int31n", GoInt32Type.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE),

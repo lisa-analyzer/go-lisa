@@ -27,12 +27,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.common.UInt8;
 
 /**
- * func ReadFull(r Reader, buf []byte) (n int, err error)
+ * func ReadFull(r Reader, buf []byte) (n int, err error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class ReadFull extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public ReadFull(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadFull",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,

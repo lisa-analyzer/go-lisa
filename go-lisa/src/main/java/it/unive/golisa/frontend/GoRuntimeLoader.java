@@ -10,7 +10,7 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Marshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
-import it.unive.golisa.cfg.runtime.fmt.GoPrintln;
+import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.io.function.Copy;
 import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
 import it.unive.golisa.cfg.runtime.io.function.CopyN;
@@ -72,8 +72,8 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.Handler;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
-import it.unive.golisa.cfg.runtime.strconv.GoAtoi;
-import it.unive.golisa.cfg.runtime.strconv.GoItoa;
+import it.unive.golisa.cfg.runtime.strconv.Atoi;
+import it.unive.golisa.cfg.runtime.strconv.Itoa;
 import it.unive.golisa.cfg.runtime.strings.GoContains;
 import it.unive.golisa.cfg.runtime.strings.GoHasPrefix;
 import it.unive.golisa.cfg.runtime.strings.GoHasSuffix;
@@ -401,15 +401,15 @@ public interface GoRuntimeLoader {
 
 	private void loadStrconv(Program program) {
 		CompilationUnit strconv = new CompilationUnit(runtimeLocation, "strconv", false);
-		strconv.addConstruct(new GoAtoi(runtimeLocation, strconv));
-		strconv.addConstruct(new GoItoa(runtimeLocation, strconv));
+		strconv.addConstruct(new Atoi(runtimeLocation, strconv));
+		strconv.addConstruct(new Itoa(runtimeLocation, strconv));
 
 		program.addCompilationUnit(strconv);
 	}
 
 	private void loadFmt(Program program) {
 		CompilationUnit fmt = new CompilationUnit(runtimeLocation, "fmt", false);
-		fmt.addConstruct(new GoPrintln(runtimeLocation, fmt));
+		fmt.addConstruct(new Println(runtimeLocation, fmt));
 
 		program.addCompilationUnit(fmt);
 	}

@@ -25,7 +25,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Getenv(key string) string
+ * func Getenv(key string) string.
  * 
  * @link https://pkg.go.dev/os#Getenv
  * 
@@ -33,6 +33,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Getenv extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public Getenv(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Getenv",
 				GoStringType.INSTANCE,

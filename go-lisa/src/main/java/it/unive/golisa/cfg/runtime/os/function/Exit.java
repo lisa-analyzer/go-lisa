@@ -24,7 +24,7 @@ import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.type.VoidType;
 
 /**
- * func Exit(code int)
+ * func Exit(code int).
  * 
  * @link https://pkg.go.dev/os#Exit
  * 
@@ -32,6 +32,12 @@ import it.unive.lisa.type.VoidType;
  */
 public class Exit extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public Exit(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Exit",
 				VoidType.INSTANCE,

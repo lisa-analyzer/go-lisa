@@ -24,7 +24,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Executable() (string, error)
+ * func Executable() (string, error).
  * 
  * @link https://pkg.go.dev/os#Executable
  * 
@@ -32,6 +32,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class Executable extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public Executable(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Executable",
 				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,

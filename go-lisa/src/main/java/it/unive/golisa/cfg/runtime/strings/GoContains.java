@@ -26,6 +26,12 @@ import it.unive.lisa.type.Type;
 
 public class GoContains extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location   the location where this native cfg is defined
+	 * @param stringUnit the unit to which this native cfg belongs to
+	 */
 	public GoContains(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Contains", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),

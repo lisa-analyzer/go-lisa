@@ -25,6 +25,12 @@ import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
 
 public class GoHasSuffix extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
+	 */
 	public GoHasSuffix(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "HasSuffix", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),

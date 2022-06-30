@@ -28,12 +28,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.common.UInt8;
 
 /**
- * func ReadAtLeast(r Reader, buf []byte, min int) (n int, err error)
+ * func ReadAtLeast(r Reader, buf []byte, min int) (n int, err error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class ReadAtLeast extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public ReadAtLeast(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadAtLeast",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,

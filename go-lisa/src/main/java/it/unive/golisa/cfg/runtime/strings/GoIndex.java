@@ -25,6 +25,12 @@ import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
 
 public class GoIndex extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
+	 */
 	public GoIndex(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Index", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),

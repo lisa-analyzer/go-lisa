@@ -21,15 +21,21 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
-public class GoPrintln extends NativeCFG {
+public class Println extends NativeCFG {
 
-	public GoPrintln(CodeLocation location, CompilationUnit fmtUnit) {
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param fmtUnit  the unit to which this native cfg belongs to
+	 */
+	public Println(CodeLocation location, CompilationUnit fmtUnit) {
 		super(new CFGDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),
-				Println.class);
+				PrintlnImpl.class);
 	}
 
-	public static class Println extends UnaryExpression implements PluggableStatement {
+	public static class PrintlnImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -38,11 +44,11 @@ public class GoPrintln extends NativeCFG {
 			original = st;
 		}
 
-		public static Println build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Println(cfg, location, params[0]);
+		public static PrintlnImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new PrintlnImpl(cfg, location, params[0]);
 		}
 
-		public Println(CFG cfg, CodeLocation location, Expression arg) {
+		public PrintlnImpl(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "Println", Untyped.INSTANCE, arg);
 		}
 

@@ -26,12 +26,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Skip;
 
 /**
- * func Pipe() (*PipeReader, *PipeWriter)
+ * func Pipe() (*PipeReader, *PipeWriter).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Pipe extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public Pipe(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "Pipe",
 				GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),

@@ -11,6 +11,12 @@ import it.unive.lisa.program.cfg.Parameter;
 
 public class GoIndexRune extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
+	 */
 	public GoIndexRune(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "IndexRune", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),

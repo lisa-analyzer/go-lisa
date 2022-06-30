@@ -26,12 +26,18 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func ReadDir(dirname string) ([]fs.FileInfo, error)
+ * func ReadDir(dirname string) ([]fs.FileInfo, error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class ReadDir extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public ReadDir(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadDir",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(FileInfo.INSTANCE)),

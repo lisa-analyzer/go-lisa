@@ -24,7 +24,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func IsNotExist(err error) bool
+ * func IsNotExist(err error) bool.
  * 
  * @link https://pkg.go.dev/os#IsNotExist
  * 
@@ -32,6 +32,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class IsNotExist extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public IsNotExist(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "IsNotExist",
 				GoBoolType.INSTANCE,

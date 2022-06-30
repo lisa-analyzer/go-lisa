@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Big integer
+ * A big integer type.
  * 
  * @link https://pkg.go.dev/math/big#Int
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class Int extends GoStructType {
 
+	/**
+	 * Unique instance of a big integer type.
+	 */
 	public static final Int INSTANCE = new Int();
 
 	private Int() {

@@ -23,6 +23,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 public class ToLower extends NativeCFG {
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
+	 */
 	public ToLower(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "ToLower", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),

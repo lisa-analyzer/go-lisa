@@ -26,7 +26,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func ReadFile(filename string) ([]byte, error) Belongs to the io package.
+ * func ReadFile(filename string) ([]byte, error). Belongs to the io package.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */

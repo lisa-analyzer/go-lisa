@@ -25,6 +25,12 @@ import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 
 public class GoLen extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
+	 */
 	public GoLen(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Len", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),

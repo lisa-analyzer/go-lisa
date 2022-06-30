@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A File Info
+ * A FileInfo type.
  * 
  * @link https://pkg.go.dev/io/fs#FileInfo
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class FileInfo extends GoStructType {
 
+	/**
+	 * Unique instance of FileInfo type.
+	 */
 	public static final FileInfo INSTANCE = new FileInfo();
 
 	private FileInfo() {

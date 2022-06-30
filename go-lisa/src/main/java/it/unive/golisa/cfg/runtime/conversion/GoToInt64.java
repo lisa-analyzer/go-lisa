@@ -31,6 +31,12 @@ import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 public class GoToInt64 extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param pkgUnit  the unit to which this native cfg belongs to
+	 */
 	public GoToInt64(CodeLocation location, CompilationUnit pkgUnit) {
 		super(new CFGDescriptor(location, pkgUnit, false, "int64", GoInt64Type.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),

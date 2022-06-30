@@ -25,12 +25,18 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func NopCloser(r io.Reader) io.ReadCloser
+ * func NopCloser(r io.Reader) io.ReadCloser.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class NopCloser extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public NopCloser(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "NopCloser", Reader.INSTANCE,
 				new Parameter(location, "r", Reader.INSTANCE)),

@@ -28,7 +28,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func MkdirAll(path string, perm FileMode) error
+ * func MkdirAll(path string, perm FileMode) error.
  * 
  * @link https://pkg.go.dev/os#MkdirAll
  * 
@@ -36,6 +36,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class MkdirAll extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public MkdirAll(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "MkdirAll",
 				GoErrorType.INSTANCE,

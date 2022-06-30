@@ -26,7 +26,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func ReadFile(name string) ([]byte, error)
+ * func ReadFile(name string) ([]byte, error).
  * 
  * @link https://pkg.go.dev/os#ReadFile
  * 
@@ -34,6 +34,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class ReadFile extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public ReadFile(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "ReadFile",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),

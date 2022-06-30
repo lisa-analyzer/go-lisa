@@ -25,6 +25,12 @@ import it.unive.lisa.type.Type;
 
 public class GoReplace extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
+	 */
 	public GoReplace(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Replace", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),

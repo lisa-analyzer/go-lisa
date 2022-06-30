@@ -26,12 +26,18 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func TempFile(dir, pattern string) (f *os.File, err error)
+ * func TempFile(dir, pattern string) (f *os.File, err error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class TempFile extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public TempFile(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "TempFile",
 				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE),

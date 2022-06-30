@@ -34,6 +34,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class NewFile extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param osUnit   the unit to which this native cfg belongs to
+	 */
 	public NewFile(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "NewFile", new GoPointerType(File.INSTANCE),
 				new Parameter(location, "fd", GoStringType.INSTANCE),

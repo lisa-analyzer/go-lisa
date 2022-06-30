@@ -27,12 +27,18 @@ import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.type.VoidType;
 
 /**
- * func (r *Rand) Shuffle(n int, swap func(i, j int))
+ * func (r *Rand) Shuffle(n int, swap func(i, j int)).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Shuffle extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Shuffle(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, true, "Shuffle", VoidType.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE),

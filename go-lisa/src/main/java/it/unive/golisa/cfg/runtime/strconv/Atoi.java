@@ -24,19 +24,25 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Itoa(i int) string
+ * func Atoi(s string) int.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoItoa extends NativeCFG {
+public class Atoi extends NativeCFG {
 
-	public GoItoa(CodeLocation location, CompilationUnit strconvUnit) {
-		super(new CFGDescriptor(location, strconvUnit, false, "Itoa", GoStringType.INSTANCE,
-				new Parameter(location, "this", GoIntType.INSTANCE)),
-				Itoa.class);
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
+	 */
+	public Atoi(CodeLocation location, CompilationUnit strconvUnit) {
+		super(new CFGDescriptor(location, strconvUnit, false, "Atoi", GoIntType.INSTANCE,
+				new Parameter(location, "this", GoStringType.INSTANCE)),
+				AtoiImpl.class);
 	}
 
-	public static class Itoa extends UnaryExpression implements PluggableStatement {
+	public static class AtoiImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -45,12 +51,12 @@ public class GoItoa extends NativeCFG {
 			original = st;
 		}
 
-		public static Itoa build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Itoa(cfg, location, params[0]);
+		public static AtoiImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new AtoiImpl(cfg, location, params[0]);
 		}
 
-		public Itoa(CFG cfg, CodeLocation location, Expression exp1) {
-			super(cfg, location, "Itoa", GoStringType.INSTANCE, exp1);
+		public AtoiImpl(CFG cfg, CodeLocation location, Expression exp1) {
+			super(cfg, location, "Atoi", GoIntType.INSTANCE, exp1);
 		}
 
 		@Override
@@ -60,9 +66,9 @@ public class GoItoa extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
+			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
 				return state.bottom();
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
 		}
 	}
 }

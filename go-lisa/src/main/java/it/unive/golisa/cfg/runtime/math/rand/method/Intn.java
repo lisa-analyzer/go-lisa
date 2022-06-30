@@ -44,6 +44,11 @@ public class Intn extends NativeCFG {
 				IntnImpl.class);
 	}
 
+	/**
+	 * The Intn implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class IntnImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -54,6 +59,14 @@ public class Intn extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static IntnImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new IntnImpl(cfg, location, params[0], params[1]);
 		}

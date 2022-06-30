@@ -48,6 +48,11 @@ public class Unsetenv extends NativeCFG {
 				UnsetenvImpl.class);
 	}
 
+	/**
+	 * The Unsetenv implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class UnsetenvImpl extends UnaryExpression
 			implements PluggableStatement {
 

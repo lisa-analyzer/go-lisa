@@ -35,6 +35,11 @@ public class Println extends NativeCFG {
 				PrintlnImpl.class);
 	}
 
+	/**
+	 * The Println implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PrintlnImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
@@ -44,6 +49,14 @@ public class Println extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static PrintlnImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PrintlnImpl(cfg, location, params[0]);
 		}

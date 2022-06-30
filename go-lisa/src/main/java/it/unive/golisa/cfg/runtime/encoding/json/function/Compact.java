@@ -48,6 +48,11 @@ public class Compact extends NativeCFG {
 				CompactImpl.class);
 	}
 
+	/**
+	 * The Compact implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CompactImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -58,6 +63,14 @@ public class Compact extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static CompactImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new CompactImpl(cfg, location, params[0], params[1]);
 		}

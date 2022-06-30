@@ -25,7 +25,7 @@ import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.type.VoidType;
 
 /**
- * func Shuffle(n int, swap func(i, j int))
+ * func Shuffle(n int, swap func(i, j int)).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */

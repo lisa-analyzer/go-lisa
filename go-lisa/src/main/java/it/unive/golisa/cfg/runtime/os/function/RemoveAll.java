@@ -48,6 +48,11 @@ public class RemoveAll extends NativeCFG {
 				RemoveAllImpl.class);
 	}
 
+	/**
+	 * The RemoveAll implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class RemoveAllImpl extends UnaryExpression
 			implements PluggableStatement {
 

@@ -28,8 +28,9 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error)
- * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/pkg/statebased#NewStateEP
+ * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error).
+ * 
+ * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/pkg/statebased#NewStateEP
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -42,6 +43,11 @@ public class NewStateEP extends NativeCFG {
 				NewStateEPImpl.class);
 	}
 
+	/**
+	 * The NewStateEP implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class NewStateEPImpl extends UnaryExpression
 			implements PluggableStatement {
 

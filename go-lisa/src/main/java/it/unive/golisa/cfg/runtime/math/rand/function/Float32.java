@@ -33,6 +33,11 @@ public class Float32 extends NativeCFG {
 				Float32Impl.class);
 	}
 
+	/**
+	 * The Float32 implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class Float32Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
@@ -43,6 +48,14 @@ public class Float32 extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static Float32Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Float32Impl(cfg, location);
 		}

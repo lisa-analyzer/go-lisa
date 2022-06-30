@@ -45,6 +45,11 @@ public class Executable extends NativeCFG {
 				ExecutableImpl.class);
 	}
 
+	/**
+	 * The Executable implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ExecutableImpl extends NaryExpression
 			implements PluggableStatement {
 

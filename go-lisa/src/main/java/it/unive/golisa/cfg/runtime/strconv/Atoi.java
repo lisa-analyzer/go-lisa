@@ -42,6 +42,11 @@ public class Atoi extends NativeCFG {
 				AtoiImpl.class);
 	}
 
+	/**
+	 * The Atoi implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class AtoiImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;

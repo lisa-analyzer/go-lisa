@@ -50,6 +50,11 @@ public class MkdirAll extends NativeCFG {
 				MkdirAllImpl.class);
 	}
 
+	/**
+	 * The MkdirAll implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class MkdirAllImpl extends BinaryExpression
 			implements PluggableStatement {
 

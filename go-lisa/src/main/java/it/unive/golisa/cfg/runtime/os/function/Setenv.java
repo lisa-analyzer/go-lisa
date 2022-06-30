@@ -49,6 +49,11 @@ public class Setenv extends NativeCFG {
 				SetenvImpl.class);
 	}
 
+	/**
+	 * The Setenv implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class SetenvImpl extends BinaryExpression
 			implements PluggableStatement {
 

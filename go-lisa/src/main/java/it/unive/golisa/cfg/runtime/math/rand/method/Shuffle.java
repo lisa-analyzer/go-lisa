@@ -50,6 +50,11 @@ public class Shuffle extends NativeCFG {
 				ShuffleImpl.class);
 	}
 
+	/**
+	 * The Shuffle implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ShuffleImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -60,6 +65,14 @@ public class Shuffle extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ShuffleImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ShuffleImpl(cfg, location, params[0], params[1]);
 		}

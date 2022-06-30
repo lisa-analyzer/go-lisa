@@ -50,6 +50,11 @@ public class MarshalIndent extends NativeCFG {
 				MarshalIndentImpl.class);
 	}
 
+	/**
+	 * The MarshalIndent implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class MarshalIndentImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -60,6 +65,14 @@ public class MarshalIndent extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static MarshalIndentImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new MarshalIndentImpl(cfg, location, params);
 		}

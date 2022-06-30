@@ -47,6 +47,11 @@ public class Open extends NativeCFG {
 				OpenImpl.class);
 	}
 
+	/**
+	 * The Open implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class OpenImpl extends UnaryExpression
 			implements PluggableStatement {
 

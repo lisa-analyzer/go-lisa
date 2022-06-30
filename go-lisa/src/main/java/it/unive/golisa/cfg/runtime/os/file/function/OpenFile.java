@@ -52,6 +52,11 @@ public class OpenFile extends NativeCFG {
 				OpenFileImpl.class);
 	}
 
+	/**
+	 * The OpenFile implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class OpenFileImpl extends NaryExpression
 			implements PluggableStatement {
 

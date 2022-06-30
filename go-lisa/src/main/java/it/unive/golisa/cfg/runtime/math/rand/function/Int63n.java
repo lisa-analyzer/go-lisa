@@ -23,7 +23,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Int63n(n int64) int64
+ * func Int63n(n int64) int64.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -35,6 +35,11 @@ public class Int63n extends NativeCFG {
 				IntnImpl.class);
 	}
 
+	/**
+	 * The Int63n implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class IntnImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -45,6 +50,14 @@ public class Int63n extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static IntnImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new IntnImpl(cfg, location, params[0]);
 		}

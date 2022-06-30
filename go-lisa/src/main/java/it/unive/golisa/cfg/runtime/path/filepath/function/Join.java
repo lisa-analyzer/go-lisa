@@ -24,7 +24,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Join(elem ...string) string
+ * func Join(elem ...string) string.
  * 
  * @link https://pkg.go.dev/path/filepath#Join
  * 
@@ -39,6 +39,11 @@ public class Join extends NativeCFG {
 				DirImpl.class);
 	}
 
+	/**
+	 * The Join implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class DirImpl extends UnaryExpression
 			implements PluggableStatement {
 

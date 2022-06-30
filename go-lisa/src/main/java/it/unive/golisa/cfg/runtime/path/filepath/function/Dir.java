@@ -23,7 +23,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Dir(path string) string
+ * func Dir(path string) string.
  * 
  * @link https://pkg.go.dev/path/filepath#Dir
  * 
@@ -38,6 +38,11 @@ public class Dir extends NativeCFG {
 				DirImpl.class);
 	}
 
+	/**
+	 * The Dir implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class DirImpl extends UnaryExpression
 			implements PluggableStatement {
 

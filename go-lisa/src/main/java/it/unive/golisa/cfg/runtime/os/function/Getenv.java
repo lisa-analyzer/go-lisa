@@ -46,6 +46,11 @@ public class Getenv extends NativeCFG {
 				GetenvImpl.class);
 	}
 
+	/**
+	 * The Getenv implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class GetenvImpl extends UnaryExpression
 			implements PluggableStatement {
 

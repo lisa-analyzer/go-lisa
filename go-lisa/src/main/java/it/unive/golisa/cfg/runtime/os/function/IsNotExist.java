@@ -45,6 +45,11 @@ public class IsNotExist extends NativeCFG {
 				IsNotExistImpl.class);
 	}
 
+	/**
+	 * The IsNotExist implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class IsNotExistImpl extends UnaryExpression
 			implements PluggableStatement {
 

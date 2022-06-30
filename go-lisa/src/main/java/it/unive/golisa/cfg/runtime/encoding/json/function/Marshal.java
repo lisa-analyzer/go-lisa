@@ -46,6 +46,11 @@ public class Marshal extends NativeCFG {
 				MarshalImpl.class);
 	}
 
+	/**
+	 * The Marshal implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class MarshalImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -56,6 +61,14 @@ public class Marshal extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static MarshalImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new MarshalImpl(cfg, location, params[0]);
 		}

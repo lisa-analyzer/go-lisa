@@ -42,6 +42,11 @@ public class Int63 extends NativeCFG {
 				Int63Impl.class);
 	}
 
+	/**
+	 * The Int63 implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class Int63Impl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -52,6 +57,14 @@ public class Int63 extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static Int63Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Int63Impl(cfg, location, params[0]);
 		}

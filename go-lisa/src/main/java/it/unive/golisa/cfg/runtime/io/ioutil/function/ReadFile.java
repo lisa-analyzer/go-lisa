@@ -61,6 +61,14 @@ public class ReadFile extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ReadFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ReadFileImpl(cfg, location, params[0]);
 		}

@@ -47,6 +47,11 @@ public class NewFile extends NativeCFG {
 				NewFileImpl.class);
 	}
 
+	/**
+	 * The NewFile implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class NewFileImpl extends BinaryExpression
 			implements PluggableStatement {
 

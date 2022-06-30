@@ -52,6 +52,11 @@ public class Indent extends NativeCFG {
 				IndentImpl.class);
 	}
 
+	/**
+	 * The Indent implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class IndentImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -62,6 +67,14 @@ public class Indent extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static IndentImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new IndentImpl(cfg, location, params);
 		}

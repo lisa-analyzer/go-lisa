@@ -39,10 +39,15 @@ public class UInt64 extends NativeCFG {
 	public UInt64(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, true, "Uint64", GoUInt64Type.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE)),
-				Uint64Impl.class);
+				UInt64Impl.class);
 	}
 
-	public static class Uint64Impl extends UnaryExpression
+	/**
+	 * The UInt64 implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class UInt64Impl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -52,11 +57,19 @@ public class UInt64 extends NativeCFG {
 			original = st;
 		}
 
-		public static Uint64Impl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Uint64Impl(cfg, location, params[0]);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
+		public static UInt64Impl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new UInt64Impl(cfg, location, params[0]);
 		}
 
-		public Uint64Impl(CFG cfg, CodeLocation location, Expression expr) {
+		public UInt64Impl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "Uint64Impl", GoUInt64Type.INSTANCE, expr);
 		}
 

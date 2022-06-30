@@ -48,6 +48,11 @@ public class CreateTemp extends NativeCFG {
 				CreateTempImpl.class);
 	}
 
+	/**
+	 * The CreateTemp implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CreateTempImpl extends BinaryExpression
 			implements PluggableStatement {
 

@@ -42,6 +42,11 @@ public class ExpFloat64 extends NativeCFG {
 				ExpFloat64Impl.class);
 	}
 
+	/**
+	 * The ExpFloat64 implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ExpFloat64Impl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -52,6 +57,14 @@ public class ExpFloat64 extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ExpFloat64Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ExpFloat64Impl(cfg, location, params[0]);
 		}

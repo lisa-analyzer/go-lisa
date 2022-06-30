@@ -35,6 +35,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Start extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public Start(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "Start", GoErrorType.INSTANCE,
 				new Parameter(location, "cc", Chaincode.INSTANCE)),

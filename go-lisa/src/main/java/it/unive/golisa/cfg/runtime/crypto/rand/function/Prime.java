@@ -56,6 +56,14 @@ public class Prime extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static PrimeImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PrimeImpl(cfg, location, params[0], params[1]);
 		}

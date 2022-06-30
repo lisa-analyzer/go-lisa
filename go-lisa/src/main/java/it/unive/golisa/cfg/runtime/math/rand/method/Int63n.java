@@ -43,6 +43,11 @@ public class Int63n extends NativeCFG {
 				Int63nImpl.class);
 	}
 
+	/**
+	 * The Int63n implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class Int63nImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -53,6 +58,14 @@ public class Int63n extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static Int63nImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Int63nImpl(cfg, location, params[0], params[1]);
 		}

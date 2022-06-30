@@ -46,6 +46,11 @@ public class Read extends NativeCFG {
 				ReadImpl.class);
 	}
 
+	/**
+	 * The Read implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -56,6 +61,14 @@ public class Read extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ReadImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ReadImpl(cfg, location, params[0], params[1]);
 		}

@@ -26,7 +26,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Create(name string) (*File, error)
+ * func Create(name string) (*File, error).
  * 
  * @link https://pkg.go.dev/os#Create
  * 
@@ -47,6 +47,11 @@ public class Create extends NativeCFG {
 				CreateImpl.class);
 	}
 
+	/**
+	 * The Create implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CreateImpl extends UnaryExpression
 			implements PluggableStatement {
 

@@ -47,6 +47,11 @@ public class Unmarshal extends NativeCFG {
 				UnmarshalImpl.class);
 	}
 
+	/**
+	 * The Unmarshal implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class UnmarshalImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -57,6 +62,14 @@ public class Unmarshal extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static UnmarshalImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new UnmarshalImpl(cfg, location, params[0], params[1]);
 		}

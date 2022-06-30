@@ -25,7 +25,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Read(p []byte) (n int, err error)
+ * func Read(p []byte) (n int, err error).
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -38,6 +38,11 @@ public class Read extends NativeCFG {
 				ReadImpl.class);
 	}
 
+	/**
+	 * The Read implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -48,6 +53,14 @@ public class Read extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ReadImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ReadImpl(cfg, location, params[0]);
 		}

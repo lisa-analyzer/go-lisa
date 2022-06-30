@@ -45,6 +45,11 @@ public class Exit extends NativeCFG {
 				ExitImpl.class);
 	}
 
+	/**
+	 * The Exit implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ExitImpl extends UnaryExpression
 			implements PluggableStatement {
 

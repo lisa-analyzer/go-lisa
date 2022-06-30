@@ -42,6 +42,11 @@ public class Int extends NativeCFG {
 				IntImpl.class);
 	}
 
+	/**
+	 * The Int implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class IntImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -52,6 +57,14 @@ public class Int extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static IntImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new IntImpl(cfg, location, params[0]);
 		}

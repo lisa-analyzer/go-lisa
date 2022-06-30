@@ -22,7 +22,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func Int31() int32
+ * func Int31() int32.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -33,6 +33,11 @@ public class Int31 extends NativeCFG {
 				Int31Impl.class);
 	}
 
+	/**
+	 * The Int32 implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class Int31Impl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 
@@ -43,10 +48,25 @@ public class Int31 extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static Int31Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Int31Impl(cfg, location);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 */
 		public Int31Impl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "Int31Impl", GoInt32Type.INSTANCE);
 		}

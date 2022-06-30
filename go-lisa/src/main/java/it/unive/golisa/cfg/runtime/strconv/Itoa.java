@@ -42,6 +42,11 @@ public class Itoa extends NativeCFG {
 				ItoaImpl.class);
 	}
 
+	/**
+	 * The Itoa implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ItoaImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;

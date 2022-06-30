@@ -44,6 +44,11 @@ public class Seed extends NativeCFG {
 				SeedImpl.class);
 	}
 
+	/**
+	 * The Seed implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class SeedImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -54,6 +59,14 @@ public class Seed extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static SeedImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new SeedImpl(cfg, location, params[0], params[1]);
 		}

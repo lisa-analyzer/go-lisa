@@ -22,8 +22,14 @@ import java.util.Set;
  */
 public class Pentagons implements ValueDomain<Pentagons> {
 
+	/**
+	 * The environment tracking intervals values.
+	 */
 	protected ValueEnvironment<TarsisIntv> left;
 
+	/**
+	 * The strict upper bound domain.
+	 */
 	protected StrictUpperBounds right;
 
 	/**

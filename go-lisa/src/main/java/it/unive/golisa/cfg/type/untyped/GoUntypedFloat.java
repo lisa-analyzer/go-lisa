@@ -11,6 +11,11 @@ import it.unive.lisa.type.Untyped;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * A Go untyped float type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoUntypedFloat implements GoType, NumericType {
 
 	/**

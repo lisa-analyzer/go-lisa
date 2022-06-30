@@ -15,12 +15,20 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 
+/**
+ * The reduced product between Tarsis, string constant propagation and RSub.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<RelTarsis> {
 
 	private final ValueEnvironment<Tarsis> tarsis;
 	private final ValueEnvironment<StringConstantPropagation> constant;
 	private final RelationalSubstringDomain rsubs;
 
+	/**
+	 * Builds the top abstract value.
+	 */
 	public RelTarsis() {
 		this(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(),
 				new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));

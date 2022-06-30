@@ -14,22 +14,46 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A Go slice type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoSliceType implements GoType, InMemoryType {
 
 	private Type contentType;
 
 	private static final Set<GoSliceType> sliceTypes = new HashSet<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoSliceType}.
+	 * 
+	 * @param type the slice type to look up
+	 * 
+	 * @return the unique instance of {@link GoSliceType} representing the slice
+	 *             type with the given name
+	 */
 	public static GoSliceType lookup(GoSliceType type) {
 		if (!sliceTypes.contains(type))
 			sliceTypes.add(type);
 		return sliceTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
+	/**
+	 * Builds the slice type.
+	 * 
+	 * @param contentType the content type
+	 */
 	public GoSliceType(Type contentType) {
 		this.contentType = contentType;
 	}
 
+	/**
+	 * Yields the content type.
+	 * 
+	 * @return the content type
+	 */
 	public Type getContentType() {
 		return contentType;
 	}
@@ -100,17 +124,29 @@ public class GoSliceType implements GoType, InMemoryType {
 		sliceTypes.clear();
 	}
 
-	// []byte
+	/**
+	 * Yields the slice type []byte.
+	 * 
+	 * @return the slice type []byte
+	 */
 	public static GoSliceType getSliceOfBytes() {
 		return GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
 	}
 
-	// [][]byte
+	/**
+	 * Yields the slice type [][]byte.
+	 * 
+	 * @return the slice type [][]byte
+	 */
 	public static GoSliceType getSliceOfSliceOfBytes() {
 		return GoSliceType.lookup(new GoSliceType(new GoSliceType(GoUInt8Type.INSTANCE)));
 	}
 
-	// []string
+	/**
+	 * Yields the slice type []string.
+	 * 
+	 * @return the slice type []string
+	 */
 	public static GoSliceType getSliceOfStrings() {
 		return GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
 	}

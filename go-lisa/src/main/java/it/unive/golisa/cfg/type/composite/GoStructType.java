@@ -61,8 +61,15 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		this.unit = unit;
 	}
 
-	public static boolean hasStructType(String structType) {
-		return structTypes.containsKey(structType);
+	/**
+	 * Checks whether a struct type named {@code name} has been already built.
+	 * 
+	 * @param name the name of the struct type
+	 * 
+	 * @return whether a struct type named {@code name} has been already built.
+	 */
+	public static boolean hasStructType(String name) {
+		return structTypes.containsKey(name);
 	}
 
 	public static GoStructType get(String structType) {

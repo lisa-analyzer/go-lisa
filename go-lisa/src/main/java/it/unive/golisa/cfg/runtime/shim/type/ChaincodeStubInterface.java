@@ -10,7 +10,7 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -37,10 +37,10 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		GoSliceType byteSliceSliceType = GoSliceType.getSliceOfSliceOfBytes();
 
 		// (string, []string)
-		GoTypesTuple tuple1 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE, stringSliceType);
+		GoTupleType tuple1 = GoTupleType.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE, stringSliceType);
 
 		// ([]byte, error)
-		GoTypesTuple tuple2 = GoTypesTuple.getTupleTypeOf(unknownLocation, GoSliceType.getSliceOfBytes(),
+		GoTupleType tuple2 = GoTupleType.getTupleTypeOf(unknownLocation, GoSliceType.getSliceOfBytes(),
 				GoErrorType.INSTANCE);
 
 		// GetArgs
@@ -89,7 +89,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 
 		// CreateCompositeKey
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "CreateCompositeKey",
-				GoTypesTuple.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE,
+				GoTupleType.getTupleTypeOf(unknownLocation, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "objectType", GoStringType.INSTANCE),

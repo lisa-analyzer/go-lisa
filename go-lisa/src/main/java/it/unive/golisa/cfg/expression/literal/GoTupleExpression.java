@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -58,7 +58,7 @@ public class GoTupleExpression extends NaryExpression {
 			types[i] = new Parameter(p.getLocation(), "_", p.getStaticType());
 		}
 
-		GoTypesTuple tupleType = new GoTypesTuple(types);
+		GoTupleType tupleType = new GoTupleType(types);
 
 		HeapAllocation created = new HeapAllocation(tupleType, getLocation());
 

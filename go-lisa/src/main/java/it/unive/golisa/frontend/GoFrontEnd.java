@@ -34,7 +34,7 @@ import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
@@ -198,7 +198,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoSliceType.clearAll();
 		GoPointerType.clearAll();
 		GoMapType.clearAll();
-		GoTypesTuple.clearAll();
+		GoTupleType.clearAll();
 		GoChannelType.clearAll();
 		GoFunctionType.clearAll();
 		GoQualifiedType.clearAll();
@@ -229,7 +229,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoSliceType.all().forEach(program::registerType);
 		GoPointerType.all().forEach(program::registerType);
 		GoMapType.all().forEach(program::registerType);
-		GoTypesTuple.all().forEach(program::registerType);
+		GoTupleType.all().forEach(program::registerType);
 		GoChannelType.all().forEach(program::registerType);
 		GoFunctionType.all().forEach(program::registerType);
 		GoQualifiedType.all().forEach(program::registerType);

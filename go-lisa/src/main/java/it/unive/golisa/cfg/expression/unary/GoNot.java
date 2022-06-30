@@ -18,14 +18,19 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.type.Type;
 
 /**
- * Go unary not native function class (e.g., !(x > y)). The static type of this
- * expression is definite {@link GoBoolType} and its operand must be instance of
- * {@link GoBoolType}.
+ * Go unary not Boolean expression (e.g., !(x > y))
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoNot extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 
+	/**
+	 * Builds the unary not Boolean expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression
+	 */
 	public GoNot(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "!", GoBoolType.INSTANCE, exp);
 	}

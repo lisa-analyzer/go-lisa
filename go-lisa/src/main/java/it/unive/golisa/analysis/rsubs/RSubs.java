@@ -49,6 +49,12 @@ import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.symbolic.value.operator.unary.TypeOf;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
+/**
+ * The reduced product between relational substring abstract domain and
+ * intervals.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 	private static final RSubs TOP = new RSubs(true, false);
@@ -60,6 +66,9 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	private final boolean isTop;
 	private final boolean isBottom;
 
+	/**
+	 * Builds the top abstract value.
+	 */
 	public RSubs() {
 		this(new RelationalSubstringDomain(), new ValueEnvironment<Interval>(new Interval()), true, false);
 	}

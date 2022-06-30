@@ -2,7 +2,7 @@ package it.unive.golisa.cfg.runtime.crypto.rand.function;
 
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -33,7 +33,7 @@ public class Prime extends NativeCFG {
 
 	public Prime(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Read",
-				GoTypesTuple.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE,
+				GoTupleType.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "rand", Reader.INSTANCE),
 				new Parameter(location, "bits", GoIntType.INSTANCE)),
@@ -55,7 +55,7 @@ public class Prime extends NativeCFG {
 		}
 
 		public PrimeImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "PrimeImpl", GoTypesTuple.getTupleTypeOf(location,
+			super(cfg, location, "PrimeImpl", GoTupleType.getTupleTypeOf(location,
 					it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
 		}
 

@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.runtime.io.function;
 import it.unive.golisa.cfg.runtime.io.type.PipeReader;
 import it.unive.golisa.cfg.runtime.io.type.PipeWriter;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -34,7 +34,7 @@ public class Pipe extends NativeCFG {
 
 	public Pipe(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "Pipe",
-				GoTypesTuple.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
 						new GoPointerType(PipeWriter.INSTANCE))),
 				PipeImpl.class);
 	}
@@ -55,7 +55,7 @@ public class Pipe extends NativeCFG {
 
 		public PipeImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PipeImpl",
-					GoTypesTuple.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
 							new GoPointerType(PipeWriter.INSTANCE)),
 					params);
 		}

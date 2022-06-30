@@ -14,12 +14,21 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+/**
+ * The pentagons abstract domain, corresponding to the reduced product between
+ * intervals and strict upper bounds abstract domains.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Pentagons implements ValueDomain<Pentagons> {
 
 	protected ValueEnvironment<TarsisIntv> left;
 
 	protected StrictUpperBounds right;
 
+	/**
+	 * Builds the top pentagon.
+	 */
 	public Pentagons() {
 		this(new ValueEnvironment<TarsisIntv>(new TarsisIntv()), new StrictUpperBounds());
 	}

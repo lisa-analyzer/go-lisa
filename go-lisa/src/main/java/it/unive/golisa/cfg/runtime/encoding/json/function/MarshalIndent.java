@@ -4,7 +4,7 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -36,7 +36,7 @@ public class MarshalIndent extends NativeCFG {
 
 	public MarshalIndent(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "MarshalIndent",
-				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface()),
 				new Parameter(location, "prefix", GoStringType.INSTANCE),
@@ -60,7 +60,7 @@ public class MarshalIndent extends NativeCFG {
 
 		public MarshalIndentImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "MarshalIndentImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 							GoErrorType.INSTANCE),
 					params);
 		}

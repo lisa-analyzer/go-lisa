@@ -15,21 +15,27 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GoTypesTuple extends ArrayList<Parameter> implements GoType, InMemoryType {
+/**
+ * A tuple of types (e.g., (int, Vertex, float32)).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
+@SuppressWarnings("serial")
+public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemoryType {
 
-	public static final Set<GoTypesTuple> tupleTypes = new HashSet<>();
+	private static final Set<GoTupleType> tupleTypes = new HashSet<>();
 
-	public static GoTypesTuple lookup(GoTypesTuple type) {
+	public static GoTupleType lookup(GoTupleType type) {
 		if (!tupleTypes.contains(type))
 			tupleTypes.add(type);
 		return tupleTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public static boolean hasTupleType(GoTypesTuple raw) {
+	public static boolean hasTupleType(GoTupleType raw) {
 		return tupleTypes.contains(raw);
 	}
 
-	public GoTypesTuple(Parameter... pars) {
+	public GoTupleType(Parameter... pars) {
 		super();
 		for (int i = 0; i < pars.length; i++)
 			this.add(pars[i]);
@@ -41,8 +47,8 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType, InMemo
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		if (other instanceof GoTypesTuple) {
-			GoTypesTuple that = (GoTypesTuple) other;
+		if (other instanceof GoTupleType) {
+			GoTupleType that = (GoTupleType) other;
 
 			if (that.size() != size())
 				return false;
@@ -58,8 +64,8 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType, InMemo
 
 	@Override
 	public Type commonSupertype(Type other) {
-		if (other instanceof GoTypesTuple) {
-			GoTypesTuple that = (GoTypesTuple) other;
+		if (other instanceof GoTupleType) {
+			GoTupleType that = (GoTupleType) other;
 			return this.canBeAssignedTo(that) ? this : that.canBeAssignedTo(this) ? that : Untyped.INSTANCE;
 		}
 
@@ -78,7 +84,7 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType, InMemo
 
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
-		for (GoTypesTuple in : tupleTypes)
+		for (GoTupleType in : tupleTypes)
 			instances.add(in);
 		return instances;
 	}
@@ -86,7 +92,7 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType, InMemo
 	@Override
 	public Collection<Type> allInstances() {
 		Collection<Type> instances = new HashSet<>();
-		for (GoTypesTuple in : tupleTypes)
+		for (GoTupleType in : tupleTypes)
 			instances.add(in);
 		return instances;
 	}
@@ -96,12 +102,12 @@ public class GoTypesTuple extends ArrayList<Parameter> implements GoType, InMemo
 		return super.toString();
 	}
 
-	public static GoTypesTuple getTupleTypeOf(CodeLocation location, Type... types) {
+	public static GoTupleType getTupleTypeOf(CodeLocation location, Type... types) {
 		Parameter[] pars = new Parameter[types.length];
 		for (int i = 0; i < types.length; i++)
 			pars[i] = new Parameter(location, "_", types[i]);
 
-		return GoTypesTuple.lookup(new GoTypesTuple(pars));
+		return GoTupleType.lookup(new GoTupleType(pars));
 	}
 
 	/**

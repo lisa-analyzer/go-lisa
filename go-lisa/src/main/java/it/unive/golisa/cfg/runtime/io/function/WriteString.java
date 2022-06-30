@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.runtime.io.function;
 import it.unive.golisa.cfg.runtime.io.type.Writer;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -34,7 +34,7 @@ public class WriteString extends NativeCFG {
 
 	public WriteString(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "WriteString",
-				GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE,
+				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "w", Writer.INSTANCE),
 				new Parameter(location, "s", GoStringType.INSTANCE)),
@@ -57,7 +57,7 @@ public class WriteString extends NativeCFG {
 
 		public WriteStringImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
 			super(cfg, location, "WriteStringImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
+					GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
 		}
 
 		@Override

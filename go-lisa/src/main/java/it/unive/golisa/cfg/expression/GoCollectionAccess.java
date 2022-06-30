@@ -17,8 +17,21 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A Go access expression (e.g., x.y).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoCollectionAccess extends BinaryExpression {
 
+	/**
+	 * Builds the access expression.
+	 * 
+	 * @param cfg       the {@link CFG} where this expression lies
+	 * @param location  the location where this expression is defined
+	 * @param container the left-hand side of this expression
+	 * @param child     the right-hand side of this expression
+	 */
 	public GoCollectionAccess(CFG cfg, SourceCodeLocation location, Expression container, Expression child) {
 		super(cfg, location, container + "::" + child, container, child);
 	}

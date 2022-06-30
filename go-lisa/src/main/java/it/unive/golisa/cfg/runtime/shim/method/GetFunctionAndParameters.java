@@ -4,7 +4,7 @@ import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -30,7 +30,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 
 	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimPackage) {
 		super(new CFGDescriptor(location, shimPackage, true, "GetFunctionAndParameters",
-				GoTypesTuple.lookup(new GoTypesTuple(new Parameter(location, "function", GoStringType.INSTANCE),
+				GoTupleType.lookup(new GoTupleType(new Parameter(location, "function", GoStringType.INSTANCE),
 						new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))),
 				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
 				GetFunctionAndParametersImpl.class);
@@ -51,7 +51,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 		}
 
 		public GetFunctionAndParametersImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "GetFunctionAndParametersImpl", GoTypesTuple.lookup(new GoTypesTuple(
+			super(cfg, location, "GetFunctionAndParametersImpl", GoTupleType.lookup(new GoTupleType(
 					new Parameter(location, "function", GoStringType.INSTANCE),
 					new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))), e);
 		}

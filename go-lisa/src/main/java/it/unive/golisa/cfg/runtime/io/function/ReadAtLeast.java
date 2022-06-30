@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.runtime.io.function;
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -36,7 +36,7 @@ public class ReadAtLeast extends NativeCFG {
 
 	public ReadAtLeast(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadAtLeast",
-				GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE,
+				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "r", Reader.INSTANCE),
 				new Parameter(location, "buf", GoSliceType.lookup(new GoSliceType(UInt8.INSTANCE))),
@@ -60,7 +60,7 @@ public class ReadAtLeast extends NativeCFG {
 
 		public ReadAtLeastImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "ReadAtLeastImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), params);
+					GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), params);
 		}
 
 		@Override

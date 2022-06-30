@@ -22,8 +22,20 @@ import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A Go len expression (e.g., len(x)).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 
+	/**
+	 * Builds the len expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression
+	 */
 	public GoLength(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "len", exp);
 	}

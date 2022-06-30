@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.runtime.time.function;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -29,7 +29,7 @@ public class Parse extends NativeCFG {
 
 	public Parse(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Parse",
-				new GoTypesTuple(new Parameter(location, "_", Time.INSTANCE),
+				new GoTupleType(new Parameter(location, "_", Time.INSTANCE),
 						new Parameter(location, "_", GoErrorType.INSTANCE)),
 				new Parameter(location, "layout", GoStringType.INSTANCE),
 				new Parameter(location, "value", GoStringType.INSTANCE)),
@@ -51,7 +51,7 @@ public class Parse extends NativeCFG {
 		}
 
 		public ParseImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "ParseImpl", new GoTypesTuple(new Parameter(location, "_", Time.INSTANCE),
+			super(cfg, location, "ParseImpl", new GoTupleType(new Parameter(location, "_", Time.INSTANCE),
 					new Parameter(location, "_", GoErrorType.INSTANCE)), left, right);
 		}
 
@@ -64,7 +64,7 @@ public class Parse extends NativeCFG {
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(new GoTypesTuple(new Parameter(original.getLocation(), "_", Time.INSTANCE),
+					new PushAny(new GoTupleType(new Parameter(original.getLocation(), "_", Time.INSTANCE),
 							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
 							original.getLocation()),
 					original);

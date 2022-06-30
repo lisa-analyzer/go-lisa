@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.runtime.encoding.json.function;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -34,7 +34,7 @@ public class Marshal extends NativeCFG {
 
 	public Marshal(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Marshal",
-				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface())),
 				MarshalImpl.class);
@@ -56,7 +56,7 @@ public class Marshal extends NativeCFG {
 
 		public MarshalImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "MarshalImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 							GoErrorType.INSTANCE),
 					expr);
 		}

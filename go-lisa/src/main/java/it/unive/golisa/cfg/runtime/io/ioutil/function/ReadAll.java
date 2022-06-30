@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.runtime.io.ioutil.function;
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -34,7 +34,7 @@ public class ReadAll extends NativeCFG {
 
 	public ReadAll(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadAll",
-				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "r", Reader.INSTANCE)),
 				ReadAllImpl.class);
@@ -56,7 +56,7 @@ public class ReadAll extends NativeCFG {
 
 		public ReadAllImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadAllImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 							GoErrorType.INSTANCE),
 					expr);
 		}

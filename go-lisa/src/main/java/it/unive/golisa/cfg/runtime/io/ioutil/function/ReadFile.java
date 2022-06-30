@@ -3,7 +3,7 @@ package it.unive.golisa.cfg.runtime.io.ioutil.function;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -26,15 +26,21 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func ReadFile(filename string) ([]byte, error)
+ * func ReadFile(filename string) ([]byte, error) Belongs to the io package.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class ReadFile extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param ioUnit   the unit to which this native cfg belongs to
+	 */
 	public ReadFile(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadFile",
-				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "filename", GoStringType.INSTANCE)),
 				ReadFileImpl.class);
@@ -56,7 +62,7 @@ public class ReadFile extends NativeCFG {
 
 		public ReadFileImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadFileImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
 							GoErrorType.INSTANCE),
 					expr);
 		}

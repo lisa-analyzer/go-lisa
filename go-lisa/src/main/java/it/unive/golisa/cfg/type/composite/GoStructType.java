@@ -18,10 +18,26 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * A Go struct type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoStructType implements GoType, UnitType, InMemoryType {
 
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoStructType} representing a struct type with the given
+	 * {@code name}, representing the given {@code unit}.
+	 * 
+	 * @param name the name of the struct type
+	 * @param unit the unit underlying this type
+	 * 
+	 * @return the unique instance of {@link GoStructType} representing the
+	 *             struct type with the given name
+	 */
 	public static GoStructType lookup(String name, CompilationUnit unit) {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
 	}
@@ -31,9 +47,15 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 			structTypes.put(name, new GoStructType(name, unit));
 	}
 
-	protected final String name;
-	protected final CompilationUnit unit;
+	private final String name;
+	private final CompilationUnit unit;
 
+	/**
+	 * Builds the struct type.
+	 * 
+	 * @param name name of the struct type
+	 * @param unit the compilation unit of the struct type.
+	 */
 	public GoStructType(String name, CompilationUnit unit) {
 		this.name = name;
 		this.unit = unit;

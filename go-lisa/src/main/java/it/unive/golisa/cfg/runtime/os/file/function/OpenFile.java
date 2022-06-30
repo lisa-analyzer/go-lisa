@@ -5,7 +5,7 @@ import it.unive.golisa.cfg.runtime.os.type.FileMode;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -39,7 +39,7 @@ public class OpenFile extends NativeCFG {
 
 	public OpenFile(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "OpenFile",
-				GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE),
 				new Parameter(location, "flag", GoIntType.INSTANCE),
 				new Parameter(location, "perm", FileMode.INSTANCE)),
@@ -62,7 +62,7 @@ public class OpenFile extends NativeCFG {
 
 		public OpenFileImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "OpenFileImpl",
-					GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 					params);
 		}
 

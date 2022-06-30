@@ -4,7 +4,7 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -37,7 +37,7 @@ public class CreateCompositeKey extends NativeCFG {
 
 	public CreateCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "CreateCompositeKey",
-				GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE,
+				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "this", ChaincodeStub.INSTANCE),
 				new Parameter(location, "objectType", GoStringType.INSTANCE),
@@ -61,7 +61,7 @@ public class CreateCompositeKey extends NativeCFG {
 
 		public CreateCompositeKeyImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "CreateCompositeKeyImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE,
+					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 							GoErrorType.INSTANCE),
 					params);
 		}

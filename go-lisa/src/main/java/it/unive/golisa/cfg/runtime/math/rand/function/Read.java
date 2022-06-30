@@ -2,7 +2,7 @@ package it.unive.golisa.cfg.runtime.math.rand.function;
 
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -33,7 +33,7 @@ public class Read extends NativeCFG {
 
 	public Read(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Read",
-				GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "p", GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)))),
 				ReadImpl.class);
 	}
@@ -54,7 +54,7 @@ public class Read extends NativeCFG {
 
 		public ReadImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr);
+					GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr);
 		}
 
 		@Override

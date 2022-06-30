@@ -2,7 +2,7 @@ package it.unive.golisa.cfg.runtime.os.function;
 
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -34,7 +34,7 @@ public class Executable extends NativeCFG {
 
 	public Executable(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Executable",
-				GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE,
+				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE)),
 				ExecutableImpl.class);
 	}
@@ -54,7 +54,7 @@ public class Executable extends NativeCFG {
 		}
 
 		public ExecutableImpl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "ReadFileImpl", GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE,
+			super(cfg, location, "ReadFileImpl", GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 					GoErrorType.INSTANCE));
 		}
 

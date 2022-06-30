@@ -2,7 +2,7 @@ package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -32,7 +32,7 @@ public class TempDir extends NativeCFG {
 
 	public TempDir(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "TempDir",
-				GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE,
+				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
@@ -55,7 +55,7 @@ public class TempDir extends NativeCFG {
 
 		public TempDirImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
 			super(cfg, location, "TempDirImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoStringType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
+					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
 		}
 
 		@Override

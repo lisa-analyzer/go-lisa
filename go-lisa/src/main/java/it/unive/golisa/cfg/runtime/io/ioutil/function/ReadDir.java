@@ -4,7 +4,7 @@ import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -34,7 +34,7 @@ public class ReadDir extends NativeCFG {
 
 	public ReadDir(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadDir",
-				GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(FileInfo.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(FileInfo.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dirname", GoStringType.INSTANCE)),
 				ReadDirImpl.class);
@@ -56,7 +56,7 @@ public class ReadDir extends NativeCFG {
 
 		public ReadDirImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadDirImpl",
-					GoTypesTuple.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(FileInfo.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(FileInfo.INSTANCE)),
 							GoErrorType.INSTANCE),
 					expr);
 		}

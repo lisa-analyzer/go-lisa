@@ -4,7 +4,7 @@ import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -36,7 +36,7 @@ public class Open extends NativeCFG {
 
 	public Open(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Open",
-				GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				OpenImpl.class);
 	}
@@ -57,7 +57,7 @@ public class Open extends NativeCFG {
 
 		public OpenImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "OpenImpl",
-					GoTypesTuple.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
 					expr);
 		}
 

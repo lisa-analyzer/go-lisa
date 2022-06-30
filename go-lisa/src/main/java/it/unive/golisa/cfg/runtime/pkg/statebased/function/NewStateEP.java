@@ -4,7 +4,7 @@ import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -37,7 +37,7 @@ public class NewStateEP extends NativeCFG {
 
 	public NewStateEP(CodeLocation location, CompilationUnit statebasedPackage) {
 		super(new CFGDescriptor(location, statebasedPackage, false, "NewStateEP",
-				GoTypesTuple.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "policy", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),
 				NewStateEPImpl.class);
 	}
@@ -58,7 +58,7 @@ public class NewStateEP extends NativeCFG {
 
 		public NewStateEPImpl(CFG cfg, CodeLocation location, Expression e) {
 			super(cfg, location, "NewStateEPImpl",
-					GoTypesTuple.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE), e);
+					GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE), e);
 		}
 
 		@Override

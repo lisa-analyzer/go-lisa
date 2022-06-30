@@ -150,7 +150,7 @@ import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
@@ -486,7 +486,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.type_() != null)
 			return visitType_(ctx.type_());
 		else {
-			return new GoTypesTuple(visitParameters(ctx.parameters()));
+			return new GoTupleType(visitParameters(ctx.parameters()));
 		}
 	}
 
@@ -1286,8 +1286,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return Triple.of(ret, block, ret);
 		} else {
 			Type returnType = cfg.getDescriptor().getReturnType();
-			if (returnType instanceof GoTypesTuple) {
-				GoTypesTuple tuple = (GoTypesTuple) returnType;
+			if (returnType instanceof GoTupleType) {
+				GoTupleType tuple = (GoTupleType) returnType;
 
 				if (tuple.isNamedValues()) {
 					Expression[] result = new Expression[tuple.size()];

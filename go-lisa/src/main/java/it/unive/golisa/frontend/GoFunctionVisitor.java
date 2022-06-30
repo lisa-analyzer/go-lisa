@@ -12,7 +12,7 @@ import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
-import it.unive.golisa.cfg.type.composite.GoTypesTuple;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -96,10 +96,10 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Type returnType = cfg.getDescriptor().getReturnType();
 
 		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
-		if (!(returnType instanceof GoTypesTuple))
+		if (!(returnType instanceof GoTupleType))
 			entryNode = body.getLeft();
 		else {
-			GoTypesTuple tuple = (GoTypesTuple) returnType;
+			GoTupleType tuple = (GoTupleType) returnType;
 			if (tuple.isNamedValues()) {
 				Statement lastStmt = null;
 
@@ -180,10 +180,10 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Type returnType = cfg.getDescriptor().getReturnType();
 
 		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
-		if (!(returnType instanceof GoTypesTuple))
+		if (!(returnType instanceof GoTupleType))
 			entryNode = body.getLeft();
 		else {
-			GoTypesTuple tuple = (GoTypesTuple) returnType;
+			GoTupleType tuple = (GoTupleType) returnType;
 			if (tuple.isNamedValues()) {
 				Statement lastStmt = null;
 

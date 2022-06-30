@@ -36,15 +36,24 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import org.apache.commons.lang3.ArrayUtils;
 
+/**
+ * The relational string abstract domain, tracking definite information about
+ * which string expressions are substring of a string variable.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class RelationalSubstringDomain
 		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
 		implements ValueDomain<RelationalSubstringDomain> {
 
+	/**
+	 * Builds the top abstract value.
+	 */
 	public RelationalSubstringDomain() {
 		this(new ExpressionInverseSet<ValueExpression>(), null);
 	}
 
-	protected RelationalSubstringDomain(ExpressionInverseSet<ValueExpression> lattice,
+	private RelationalSubstringDomain(ExpressionInverseSet<ValueExpression> lattice,
 			Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
 		super(lattice, function);
 	}

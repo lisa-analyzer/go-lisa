@@ -30,13 +30,28 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+/**
+ * The equality domain, tracking definite information about which variables are
+ * equals to another one.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier, ExpressionInverseSet<Identifier>>
 		implements ValueDomain<EqualityDomain> {
 
+	/**
+	 * Builds the domain.
+	 */
 	public EqualityDomain() {
 		this(new ExpressionInverseSet<>(), null);
 	}
 
+	/**
+	 * Builds the domain.
+	 * 
+	 * @param lattice  the underlying lattice
+	 * @param function the function to clone
+	 */
 	private EqualityDomain(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		super(lattice, function);

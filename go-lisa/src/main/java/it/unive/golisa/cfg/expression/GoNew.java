@@ -23,13 +23,13 @@ import it.unive.lisa.type.Type;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoNew extends NaryExpression {
-	
+
 	/**
 	 * Builds the new expression.
 	 * 
 	 * @param cfg      the {@link CFG} where this expression lies
 	 * @param location the location where this expression is defined
-	 * @param type the type to allocate
+	 * @param type     the type to allocate
 	 */
 	public GoNew(CFG cfg, SourceCodeLocation location, Type type) {
 		super(cfg, location, "new", type);

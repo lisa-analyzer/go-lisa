@@ -1,4 +1,4 @@
-package it.unive.golisa.scooping;
+package it.unive.golisa.scoping;
 
 import it.unive.lisa.program.cfg.statement.VariableRef;
 

@@ -31,14 +31,28 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+/**
+ * The strict upper bound relational abstract domain.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class StrictUpperBounds
 		extends FunctionalLattice<StrictUpperBounds, Identifier, ExpressionInverseSet<Identifier>>
 		implements ValueDomain<StrictUpperBounds> {
 
+	/**
+	 * Builds the string upper bounds.
+	 */
 	public StrictUpperBounds() {
 		this(new ExpressionInverseSet<>(), null);
 	}
 
+	/**
+	 * Builds the string upper bounds.
+	 * 
+	 * @param lattice  the underlying lattice
+	 * @param function the function to clone
+	 */
 	private StrictUpperBounds(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		super(lattice, function);

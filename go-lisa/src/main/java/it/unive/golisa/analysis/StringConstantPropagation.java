@@ -23,6 +23,11 @@ import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
+/**
+ * The string constant propagation abstract domain.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class StringConstantPropagation extends BaseNonRelationalValueDomain<StringConstantPropagation> {
 
 	private static final StringConstantPropagation TOP = new StringConstantPropagation(true, false);
@@ -30,21 +35,36 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 
 	private final boolean isTop, isBottom;
 
+	/**
+	 * The string constant representing a value of this domain element.
+	 */
 	private final String value;
 
 	/**
-	 * Builds the top abstract value.
+	 * Builds the string constant propagation.
 	 */
 	public StringConstantPropagation() {
 		this(null, true, false);
 	}
 
+	/**
+	 * Builds the string constant propagation.
+	 * 
+	 * @param value    the string value of this domain
+	 * @param isTop    if it is top
+	 * @param isBottom if it is bottom
+	 */
 	private StringConstantPropagation(String value, boolean isTop, boolean isBottom) {
 		this.value = value;
 		this.isTop = isTop;
 		this.isBottom = isBottom;
 	}
 
+	/**
+	 * Builds the string constant propagation.
+	 * 
+	 * @param value the string value of this domain
+	 */
 	private StringConstantPropagation(String value) {
 		this(value, false, false);
 	}
@@ -198,6 +218,11 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 			return Satisfiability.UNKNOWN;
 	}
 
+	/**
+	 * Yields the string value.
+	 * 
+	 * @return the string value
+	 */
 	public String getString() {
 		return value;
 	}

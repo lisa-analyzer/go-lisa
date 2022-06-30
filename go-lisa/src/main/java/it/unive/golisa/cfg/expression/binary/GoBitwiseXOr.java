@@ -17,7 +17,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go bit-wise xor expression (e.g., x ^ y). 
+ * A Go bit-wise xor expression (e.g., x ^ y).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */

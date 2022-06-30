@@ -40,7 +40,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 /**
- * An {@link GoParserBaseVisitor} that will parse the code of an Go function
+ * An {@link GoParserBaseVisitor} that will parse the code of an Go function.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 class GoFunctionVisitor extends GoCodeMemberVisitor {
 

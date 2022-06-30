@@ -66,6 +66,7 @@ checkstyleTest.enabled = false
 checkstyleMain {
     finalizedBy 'checkstyleErrorMessage'
     exclude 'it/unive/golisa/antlr/*.java'
+    exclude 'it/unive/golisa/golang/util/*.java'
     reports {
         xml.enabled false
         html.enabled false

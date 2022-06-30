@@ -46,10 +46,22 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The Go frontend for LiSA.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoLiSA {
 
 	private static final Logger LOG = LogManager.getLogger(GoLiSA.class);
 
+	/**
+	 * Entry point of {@link GoLiSA}.
+	 * 
+	 * @param args the arguments
+	 * 
+	 * @throws AnalysisSetupException if something goes wrong with the analysis
+	 */
 	public static void main(String[] args) throws AnalysisSetupException {
 
 		Options options = new Options();

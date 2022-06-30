@@ -24,9 +24,21 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
 
-public class GoExpressionsTuple extends NaryExpression {
+/**
+ * A Go tuple expression (e.g., (5, 3, 7).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
+public class GoTupleExpression extends NaryExpression {
 
-	public GoExpressionsTuple(CFG cfg, CodeLocation location, Expression... expressions) {
+	/**
+	 * Builds a Go tuple expression.
+	 * 
+	 * @param cfg         the {@link CFG} where this expression lies
+	 * @param location    the location where this expression is defined
+	 * @param expressions the expressions composing the tuple
+	 */
+	public GoTupleExpression(CFG cfg, CodeLocation location, Expression... expressions) {
 		super(cfg, location, "(tuple)", expressions);
 	}
 

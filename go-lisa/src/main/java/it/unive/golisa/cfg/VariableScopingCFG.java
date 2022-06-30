@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * A control flow graph, that has {@link Statement}s as nodes and {@link Edge}s
  * as edges. It also can contains a mapping between the statements and the IDs
- * visible in those statements
+ * visible in those statements.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -24,7 +24,7 @@ public class VariableScopingCFG extends CFG {
 
 	/**
 	 * The mapping between the statements and the IDs visible in those
-	 * statements
+	 * statements.
 	 */
 	private final Map<Statement, Map<String, Set<IdInfo>>> scopingMap;
 

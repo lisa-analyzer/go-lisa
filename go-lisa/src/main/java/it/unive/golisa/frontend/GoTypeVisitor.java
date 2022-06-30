@@ -68,15 +68,20 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * An {@link GoParserBaseVisitor} managing type parsing.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
-	protected final String file;
+	private final String file;
 
-	protected final CompilationUnit unit;
+	private final CompilationUnit unit;
 
-	protected final Program program;
+	private final Program program;
 
-	protected final Map<String, ExpressionContext> constants;
+	private final Map<String, ExpressionContext> constants;
 
 	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
@@ -86,11 +91,11 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	/**
-	 * Given a type context, returns the corresponding Go type.
+	 * Given a type context {@code ctx}, yields the corresponding Go type.
 	 * 
 	 * @param ctx the type context
 	 * 
-	 * @return the Go type corresponding to {@ctx}
+	 * @return the Go type corresponding to {@code ctx}
 	 */
 	private Type getGoType(TypeNameContext ctx) {
 

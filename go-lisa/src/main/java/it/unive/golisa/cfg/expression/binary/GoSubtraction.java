@@ -32,8 +32,8 @@ public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExp
 	 * @param left     the left-hand side of this expression
 	 * @param right    the right-hand side of this expression
 	 */
-	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "-", exp1, exp2);
+	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, "-", left, right);
 	}
 
 	@Override

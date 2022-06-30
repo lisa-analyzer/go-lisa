@@ -25,7 +25,7 @@ import it.unive.lisa.type.Type;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression implements GoBinaryNumericalOperation {
-	
+
 	/**
 	 * Builds the sum expression.
 	 *

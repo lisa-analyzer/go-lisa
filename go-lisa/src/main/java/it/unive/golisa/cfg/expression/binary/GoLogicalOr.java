@@ -18,7 +18,7 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 
 /**
- * A Go Boolean logical oe expression (e.g., x && y). 
+ * A Go Boolean logical oe expression (e.g., x && y).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */

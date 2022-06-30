@@ -6,20 +6,18 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
- * A Go string value. The static type of a Go string value is
- * {@link GoStringType}.
+ * A Go string literal value.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoString extends Literal<String> {
 
 	/**
-	 * Builds a Go string value. The location where this Go string value appears
-	 * is unknown (i.e. no source file/line/column is available). The static
-	 * type of a Go string value is {@link GoStringType}.
+	 * Builds a Go string literal value.
 	 * 
-	 * @param cfg   the cfg that this Go string belongs to
-	 * @param value the string value
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param value    the string value
 	 */
 	public GoString(CFG cfg, SourceCodeLocation location, String value) {
 		super(cfg, location, value, GoStringType.INSTANCE);

@@ -5,8 +5,16 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Tendermint Core non deterministic assotation set.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class TendermintCoreNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
 
+	/**
+	 * Builds the annotation set.
+	 */
 	public TendermintCoreNonDeterminismAnnotationSet() {
 		super("tendermint-core");
 	}

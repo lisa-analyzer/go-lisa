@@ -109,7 +109,6 @@ import it.unive.golisa.cfg.expression.binary.GoSubtraction;
 import it.unive.golisa.cfg.expression.binary.GoSum;
 import it.unive.golisa.cfg.expression.binary.GoTypeAssertion;
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
-import it.unive.golisa.cfg.expression.literal.GoExpressionsTuple;
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.expression.literal.GoFunctionLiteral;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
@@ -118,6 +117,7 @@ import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.literal.GoRune;
 import it.unive.golisa.cfg.expression.literal.GoString;
+import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.expression.ternary.GoSimpleSlice;
 import it.unive.golisa.cfg.expression.unary.GoBitwiseNot;
 import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
@@ -1277,7 +1277,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (expressionList.expression().size() == 1)
 				ret = new GoReturn(cfg, location, visitExpression(expressionList.expression(0)));
 			else {
-				GoExpressionsTuple tupleExp = new GoExpressionsTuple(cfg, location,
+				GoTupleExpression tupleExp = new GoTupleExpression(cfg, location,
 						visitExpressionList(expressionList));
 				ret = new GoReturn(cfg, location, tupleExp);
 			}
@@ -1294,7 +1294,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					for (int i = 0; i < tuple.size(); i++)
 						result[i] = new VariableRef(cfg, location, tuple.get(i).getName(), Untyped.INSTANCE);
 
-					GoReturn ret = new GoReturn(cfg, location, new GoExpressionsTuple(cfg, location, result));
+					GoReturn ret = new GoReturn(cfg, location, new GoTupleExpression(cfg, location, result));
 					block.addNode(ret);
 					storeIds(ret);
 					return Triple.of(ret, block, ret);

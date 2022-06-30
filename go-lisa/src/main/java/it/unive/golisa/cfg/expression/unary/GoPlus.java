@@ -20,12 +20,19 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 
 /**
- * Go unary plus native function class (e.g., +(5 - 3), +5).
+ * A Go unary plus expression (e.g., +x).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoPlus extends UnaryExpression {
 
+	/**
+	 * Builds the unary plus expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression
+	 */
 	public GoPlus(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "+", exp);
 	}

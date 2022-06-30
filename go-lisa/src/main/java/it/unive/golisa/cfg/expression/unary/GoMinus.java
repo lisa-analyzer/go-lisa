@@ -16,12 +16,19 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
 
 /**
- * Go unary minus native function class (e.g., -(5 + 3), -5).
+ * The Go unary minus expression (e.g., -x).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoMinus extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 
+	/**
+	 * Builds the unary minus expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression
+	 */
 	public GoMinus(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "-", exp);
 	}

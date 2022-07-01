@@ -1,5 +1,6 @@
 package it.unive.golisa.analysis.tarsis;
 
+import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
@@ -26,18 +27,32 @@ import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
+/**
+ * The overflow-insensitive interval abstract domain, approximating integer
+ * values as the minimum integer interval containing them. It is implemented as
+ * a {@link BaseNonRelationalValueDomain}, handling top and bottom values for
+ * the expression evaluation and bottom values for the expression
+ * satisfiability. Top and bottom cases for least upper bounds, widening and
+ * less or equals operations are handled by {@link BaseLattice} in
+ * {@link BaseLattice#lub}, {@link BaseLattice#widening} and
+ * {@link BaseLattice#lessOrEqual} methods, respectively.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ */
 public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 
 	private static final TarsisIntv ZERO = new TarsisIntv(TarsisIntInterval.ZERO);
 	private static final TarsisIntv TOP = new TarsisIntv(TarsisIntInterval.INFINITY);
 	private static final TarsisIntv BOTTOM = new TarsisIntv(null);
 
-	final TarsisIntInterval interval;
+	private final TarsisIntInterval interval;
 
-	private TarsisIntv(TarsisIntInterval interval) {
-		this.interval = interval;
-	}
-
+	/**
+	 * Builds the interval.
+	 * 
+	 * @param low  the lower bound
+	 * @param high the higher bound
+	 */
 	public TarsisIntv(TarsisMathNumber low, TarsisMathNumber high) {
 		this(new TarsisIntInterval(low, high));
 	}
@@ -47,6 +62,10 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	 */
 	public TarsisIntv() {
 		this(TarsisIntInterval.INFINITY);
+	}
+
+	private TarsisIntv(TarsisIntInterval interval) {
+		this.interval = interval;
 	}
 
 	@Override
@@ -316,26 +335,58 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 			return environment;
 	}
 
+	/**
+	 * Checks whether {@code this} interval is finite.
+	 * 
+	 * @return whether {@code this} interval is finite
+	 */
 	public boolean isFinite() {
 		return interval.isFinite();
 	}
 
+	/**
+	 * Yields the sum between {@code this} and {@code other} interval.
+	 * 
+	 * @param other the other interval
+	 * 
+	 * @return the sum between {@code this} and {@code other} interval
+	 */
 	public TarsisIntv plus(TarsisIntv other) {
 		return new TarsisIntv(this.interval.plus(other.interval));
 	}
 
+	/**
+	 * Yields the high value of {@code this} interval as integer.
+	 * 
+	 * @return the high value of {@code this} interval as integer
+	 */
 	public int getHighNumber() {
 		return interval.getHigh().getNumber();
 	}
 
+	/**
+	 * Yields the low value of {@code this} interval as integer.
+	 * 
+	 * @return the low value of {@code this} interval as integer
+	 */
 	public int getLowNumber() {
 		return interval.getLow().getNumber();
 	}
 
+	/**
+	 * Yields the high value of {@code this} interval.
+	 * 
+	 * @return the high value of {@code this} interval
+	 */
 	public TarsisMathNumber getHigh() {
 		return interval.getHigh();
 	}
 
+	/**
+	 * Yields the low value of {@code this} interval.
+	 * 
+	 * @return the low value of {@code this} interval
+	 */
 	public TarsisMathNumber getLow() {
 		return interval.getLow();
 	}

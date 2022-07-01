@@ -236,7 +236,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected final Map<String, ExpressionContext> constants;
 
 	/**
-	 * Current compilation unit to parse
+	 * Current compilation unit to parse.
 	 */
 	protected CompilationUnit currentUnit;
 
@@ -245,15 +245,23 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	private final LinkedList<BlockInfo> blockList = new LinkedList<>();
 
 	/**
-	 * Stack of loop exit points (used for break statements)
+	 * Stack of loop exit points (used for break statements).
 	 */
 	private final List<Statement> exitPoints = new ArrayList<>();
 
 	/**
-	 * Stack of loop entry points (used for continues statements)
+	 * Stack of loop entry points (used for continue statements).
 	 */
 	private final List<Statement> entryPoints = new ArrayList<>();
 
+	/**
+	 * Builds the code member visitor.
+	 * 
+	 * @param unit      the current unit
+	 * @param file      the file path
+	 * @param program   the program
+	 * @param constants constant mapping
+	 */
 	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		this.file = file;
@@ -412,26 +420,68 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return res;
 	}
 
+	/**
+	 * Yields the line of a parse rule context.
+	 * 
+	 * @param ctx the parse rule context
+	 * 
+	 * @return the line of a parse rule context
+	 */
 	static protected int getLine(ParserRuleContext ctx) {
 		return ctx.getStart().getLine();
 	}
 
+	/**
+	 * Yields the line of a terminal node.
+	 * 
+	 * @param ctx the terminal node
+	 * 
+	 * @return the line of a terminal node
+	 */
 	static protected int getLine(TerminalNode ctx) {
 		return ctx.getSymbol().getLine();
 	}
 
+	/**
+	 * Yields the column of a parse rule context.
+	 * 
+	 * @param ctx the parse rule context
+	 * 
+	 * @return the column of a parse rule context
+	 */
 	static protected int getCol(ParserRuleContext ctx) {
 		return ctx.getStop().getCharPositionInLine();
 	}
 
+	/**
+	 * Yields the column of a terminal node.
+	 * 
+	 * @param ctx the terminal node
+	 * 
+	 * @return the column of a terminal node
+	 */
 	static protected int getCol(TerminalNode ctx) {
 		return ctx.getSymbol().getCharPositionInLine();
 	}
 
+	/**
+	 * Yields the source code location of a parse rule context.
+	 * 
+	 * @param ctx the parse rule context
+	 * 
+	 * @return the source code location of a parse rule context
+	 */
 	protected SourceCodeLocation locationOf(ParserRuleContext ctx) {
 		return new SourceCodeLocation(file, getLine(ctx), getCol(ctx));
 	}
 
+	/**
+	 * Yields the source code location of a terminal node.
+	 * 
+	 * @param ctx the terminal node
+	 * 
+	 * @return the source code location of a terminal node
+	 */
 	protected SourceCodeLocation locationOf(TerminalNode ctx) {
 		return new SourceCodeLocation(file, getLine(ctx), getCol(ctx));
 	}
@@ -593,7 +643,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(entryNode, block, lastStmt);
 	}
 
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitStatementListOfSwitchCase(
+	private Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitStatementListOfSwitchCase(
 			StatementListContext ctx) {
 		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
 
@@ -732,7 +782,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			Type type = typeContext == null ? Untyped.INSTANCE : visitType_(typeContext);
 			type = type == null ? Untyped.INSTANCE : type;
-//			type = type.isInMemoryType() ? new ReferenceType(type) : type;
 
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Expression exp;
@@ -741,10 +790,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else {
 
 					if ((exps == null || exps.expression(i) == null) && !type.isUntyped()) {
-//						if (type instanceof ReferenceType)
-//							exp = ((GoType) ((ReferenceType) type).getInnerTypes().first()).defaultValue(cfg,
-//									locationOf(ctx));
-//						else
 						exp = ((GoType) type).defaultValue(cfg, locationOf(ctx));
 					} else
 						exp = visitExpression(exps.expression(i));
@@ -1219,10 +1264,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from
 				// the type of exp
-				Type type = // exp.getStaticType().isInMemoryType() ? new
-							// ReferenceType(exp.getStaticType())
-//						: 
-						exp.getStaticType();
+				Type type = exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
 						type);
 
@@ -2192,7 +2234,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	public Object visitLiteralValue(LiteralValueContext ctx, Type type) {
+	private Object visitLiteralValue(LiteralValueContext ctx, Type type) {
 		if (ctx.elementList() == null)
 			return new LinkedHashMap<Expression, Expression>();
 		return visitElementList(ctx.elementList(), type);
@@ -2223,7 +2265,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	public Object visitKeyedElement(KeyedElementContext ctx, Type type) {
+	private Object visitKeyedElement(KeyedElementContext ctx, Type type) {
 		if (ctx.key() != null)
 			return Pair.of(visitKey(ctx.key()), visitElement(ctx.element(), type));
 		else

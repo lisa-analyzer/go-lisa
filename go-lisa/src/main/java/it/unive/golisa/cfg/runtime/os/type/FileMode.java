@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A File Mode
+ * A FileMode type.
  * 
  * @link https://pkg.go.dev/os#FileMode
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class FileMode extends GoStructType {
 
+	/**
+	 * Unique instance of FileMode type.
+	 */
 	public static final FileMode INSTANCE = new FileMode();
 
 	private FileMode() {

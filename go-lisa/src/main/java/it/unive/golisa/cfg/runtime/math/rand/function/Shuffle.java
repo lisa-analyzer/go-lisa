@@ -31,6 +31,12 @@ import it.unive.lisa.type.VoidType;
  */
 public class Shuffle extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Shuffle(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Shuffle", VoidType.INSTANCE,
 				new Parameter(location, "n", GoIntType.INSTANCE),

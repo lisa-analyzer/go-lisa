@@ -36,6 +36,12 @@ import it.unive.lisa.type.Untyped;
  */
 public class NewStateEP extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location          the location where this native cfg is defined
+	 * @param statebasedPackage the unit to which this native cfg belongs to
+	 */
 	public NewStateEP(CodeLocation location, CompilationUnit statebasedPackage) {
 		super(new CFGDescriptor(location, statebasedPackage, false, "NewStateEP",
 				GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE),

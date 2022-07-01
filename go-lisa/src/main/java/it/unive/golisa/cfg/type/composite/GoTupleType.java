@@ -27,7 +27,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 
 	/**
 	 * Yields a unique instance (either an existing one or a fresh one) of
-	 * {@link GoTupleType} representing a tuple type
+	 * {@link GoTupleType} representing a tuple type.
 	 * 
 	 * @param type the tuple type to lookup
 	 * 
@@ -41,11 +41,11 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	}
 
 	/**
-	 * Checks whether a tuple type named {@code name} has been already built.
+	 * Checks whether a tuple type {@code raw} has been already built.
 	 * 
-	 * @param name the name of the tuple type
+	 * @param raw the tuple type
 	 * 
-	 * @return whether a tuple type named {@code name} has been already built.
+	 * @return whether a tuple type {@code name} has been already built.
 	 */
 	public static boolean hasTupleType(GoTupleType raw) {
 		return tupleTypes.contains(raw);

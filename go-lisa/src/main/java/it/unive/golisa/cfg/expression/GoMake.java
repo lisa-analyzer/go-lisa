@@ -66,9 +66,7 @@ public class GoMake extends NaryExpression {
 		if (type == null)
 			return state.top();
 
-		/**
-		 * Slice allocation
-		 */
+		// slice allocation
 		if (type instanceof GoSliceType) {
 			Type contentType = ((GoSliceType) type).getContentType();
 			SourceCodeLocation sliceLocation = (SourceCodeLocation) getLocation();
@@ -155,16 +153,12 @@ public class GoMake extends NaryExpression {
 			return result;
 		}
 
-		/**
-		 * Channel allocation
-		 */
+		// channel allocation
 		if (type instanceof GoChannelType)
 			return state.top().smallStepSemantics(new PushAny(type, getLocation()),
 					this);
 
-		/**
-		 * Map allocation
-		 */
+		// map allocation
 		if (type instanceof GoMapType)
 			return state.top().smallStepSemantics(new PushAny(type, getLocation()),
 					this);

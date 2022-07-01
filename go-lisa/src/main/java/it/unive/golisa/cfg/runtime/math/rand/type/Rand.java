@@ -31,7 +31,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 public class Rand extends GoStructType {
 
 	/**
-	 * Unique instance of Rand.
+	 * Unique instance of Rand type.
 	 */
 	public static final Rand INSTANCE = new Rand();
 
@@ -49,6 +49,9 @@ public class Rand extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers the methods of Rand type.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

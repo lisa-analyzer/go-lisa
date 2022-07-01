@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A PipeReader
+ * A PipeReader type.
  * 
  * @link https://pkg.go.dev/io#PipeReader
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class PipeReader extends GoStructType {
 
+	/**
+	 * Unique instance of PipeReader.
+	 */
 	public static final PipeReader INSTANCE = new PipeReader();
 
 	private PipeReader() {
@@ -30,6 +33,9 @@ public class PipeReader extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers methods of PipeReader.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

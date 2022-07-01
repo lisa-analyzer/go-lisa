@@ -56,29 +56,29 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	private static final AnnotationMatcher HIGH_MATCHER = new BasicAnnotationMatcher(HIGH_ANNOTATION);
 
 	/**
-	 * The top element
+	 * The top state.
 	 */
 	private static final IntegrityNIDomain TOP = new IntegrityNIDomain((byte) 3);
 
 	/**
-	 * The low element
+	 * The low state.
 	 */
 	private static final IntegrityNIDomain LOW = new IntegrityNIDomain((byte) 2);
 
 	/**
-	 * The high element
+	 * The high state.
 	 */
 	private static final IntegrityNIDomain HIGH = new IntegrityNIDomain((byte) 1);
 
 	/**
-	 * The bottom element
+	 * The bottom state.
 	 */
 	private static final IntegrityNIDomain BOTTOM = new IntegrityNIDomain((byte) 0);
 
 	private final byte v;
 
 	/**
-	 * The guards of statements
+	 * The guards of statements.
 	 */
 	private final Map<ProgramPoint, IntegrityNIDomain> guards;
 
@@ -91,10 +91,10 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	/**
-	 * Builds a new instance of non interference, referring to a specific element
-	 * of the lattice.
+	 * Builds a new instance of non interference, referring to a specific
+	 * element of the lattice.
 	 * 
-	 * @param v,  the {@code byte} representing the element
+	 * @param v the {@code byte} representing the element
 	 */
 	private IntegrityNIDomain(byte v) {
 		this.v = v;
@@ -134,8 +134,9 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	/**
-	 * Yields true if the state is low
-	 * @return true if the the state is low
+	 * Yields true if the state is low.
+	 * 
+	 * @return {@code true} if the the state is low, otherwise {@code false}
 	 */
 	public boolean isLowIntegrity() {
 		return this == LOW;
@@ -285,12 +286,14 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	/**
-	 * Yields the computed state
+	 * Yields the computed state.
 	 * 
-	 * @param state
-	 * @param pp
-	 * @return
-	 * @throws SemanticException
+	 * @param state the state used to compute the returned state
+	 * @param pp    the program point
+	 * 
+	 * @return the returned state after the computation
+	 * 
+	 * @throws SemanticException the exception triggered by lub operator
 	 */
 	private IntegrityNIDomain state(IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		Map<ProgramPoint, IntegrityNIDomain> guards = new IdentityHashMap<>();

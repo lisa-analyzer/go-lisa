@@ -19,29 +19,56 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 
 /**
- * The taint domain, used for the taint analysis
- *
+ * The taint domain, used for the taint analysis.
  */
 public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
+	/**
+	 * The annotation Tainted.
+	 */
 	public static final Annotation TAINTED_ANNOTATION = new Annotation("lisa.taint.Tainted");
 
+	/**
+	 * The matcher for the Tainted annotation.
+	 */
 	private static final AnnotationMatcher TAINTED_MATCHER = new BasicAnnotationMatcher(TAINTED_ANNOTATION);
 
+	/**
+	 * The annotation Clean.
+	 */
 	public static final Annotation CLEAN_ANNOTATION = new Annotation("lisa.taint.Clean");
 
+	/**
+	 * The matcher for the Clean annotation.
+	 */
 	private static final AnnotationMatcher CLEAN_MATCHER = new BasicAnnotationMatcher(CLEAN_ANNOTATION);
 
+	/**
+	 * The top state.
+	 */
 	private static final TaintDomain TOP = new TaintDomain((byte) 3);
 
+	/**
+	 * The top state.
+	 */
 	private static final TaintDomain TAINTED = new TaintDomain((byte) 2);
 
+	/**
+	 * The clean state.
+	 */
 	private static final TaintDomain CLEAN = new TaintDomain((byte) 1);
 
+	/**
+	 * The bottom state.
+	 */
 	private static final TaintDomain BOTTOM = new TaintDomain((byte) 0);
 
 	private final byte v;
 
+	/**
+	 * Builds a new instance of taint, referring to the top element
+	 * of the lattice.
+	 */
 	public TaintDomain() {
 		this((byte) 3);
 	}
@@ -83,7 +110,8 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	}
 
 	/**
-	 * Yields if the state is tatinted
+	 * Yields if the state is tainted.
+	 * 
 	 * @return {@code true} if is tainted, otherwise {@code false}
 	 */
 	public boolean isTainted() {

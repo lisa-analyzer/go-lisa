@@ -22,6 +22,13 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
+/**
+ * func ToLower(s string) string.
+ * 
+ * @link https://pkg.go.dev/strings#ToLower
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class ToLower extends NativeCFG {
 
 	/**

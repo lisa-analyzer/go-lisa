@@ -23,6 +23,13 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
 
+/**
+ * func Index(s, substr string) int.
+ * 
+ * @link https://pkg.go.dev/strings#Index
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Index extends NativeCFG {
 
 	/**

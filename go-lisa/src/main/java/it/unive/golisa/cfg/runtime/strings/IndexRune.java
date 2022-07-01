@@ -9,6 +9,13 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 
+/**
+ * func IndexRune(s string, r rune) int.
+ * 
+ * @link https://pkg.go.dev/strings#IndexRune
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class IndexRune extends NativeCFG {
 
 	/**

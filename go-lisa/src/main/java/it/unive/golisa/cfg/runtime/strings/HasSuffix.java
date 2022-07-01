@@ -23,6 +23,13 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
 
+/**
+ * func HasSuffix(s, suffix string) bool.
+ * 
+ * @link https://pkg.go.dev/strings#HasSuffix
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class HasSuffix extends NativeCFG {
 
 	/**

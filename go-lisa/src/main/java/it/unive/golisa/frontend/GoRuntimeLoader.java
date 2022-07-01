@@ -82,6 +82,7 @@ import it.unive.golisa.cfg.runtime.strings.IndexRune;
 import it.unive.golisa.cfg.runtime.strings.Len;
 import it.unive.golisa.cfg.runtime.strings.Replace;
 import it.unive.golisa.cfg.runtime.strings.ToLower;
+import it.unive.golisa.cfg.runtime.strings.ToUpper;
 import it.unive.golisa.cfg.runtime.time.function.Now;
 import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
@@ -395,6 +396,7 @@ public interface GoRuntimeLoader {
 		str.addConstruct(new IndexRune(runtimeLocation, str));
 		str.addConstruct(new Len(runtimeLocation, str));
 		str.addConstruct(new ToLower(runtimeLocation, str));
+		str.addConstruct(new ToUpper(runtimeLocation, str));
 
 		program.addCompilationUnit(str);
 	}

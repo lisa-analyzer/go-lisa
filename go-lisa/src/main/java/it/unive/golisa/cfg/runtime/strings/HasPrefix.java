@@ -22,6 +22,13 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 
+/**
+ * func HasPrefix(s, prefix string) bool.
+ * 
+ * @link https://pkg.go.dev/strings#HasPrefix
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class HasPrefix extends NativeCFG {
 
 	/**

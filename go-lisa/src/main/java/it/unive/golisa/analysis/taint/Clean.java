@@ -6,7 +6,6 @@ import it.unive.lisa.type.Type;
 
 /**
  * The class represents the clean constant
- *
  */
 public class Clean extends Constant {
 

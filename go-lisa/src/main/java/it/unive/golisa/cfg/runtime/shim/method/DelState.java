@@ -28,13 +28,20 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (*ChaincodeStub) DelState(key string) error
- * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.DelState
+ * func (*ChaincodeStub) DelState(key string) error.
+ * 
+ * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.DelState
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class DelState extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public DelState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "DelState", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.INSTANCE),
@@ -42,6 +49,11 @@ public class DelState extends NativeCFG {
 				DelStateImpl.class);
 	}
 
+	/**
+	 * The DelState implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class DelStateImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -52,12 +64,22 @@ public class DelState extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static DelStateImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new DelStateImpl(cfg, location, params[0], params[1]);
 		}
 
-		public DelStateImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "DelStateImpl", GoErrorType.INSTANCE, expr, expr2);
+		public DelStateImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "DelStateImpl", GoErrorType.INSTANCE, left, right);
 		}
 
 		@Override

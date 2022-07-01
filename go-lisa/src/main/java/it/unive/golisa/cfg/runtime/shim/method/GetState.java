@@ -35,6 +35,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class GetState extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public GetState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "GetState",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
@@ -44,6 +50,11 @@ public class GetState extends NativeCFG {
 				GetStateImpl.class);
 	}
 
+	/**
+	 * The GetState implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class GetStateImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -54,10 +65,30 @@ public class GetState extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static GetStateImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new GetStateImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public GetStateImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "GetStateImpl", GoTupleType.getTupleTypeOf(location,
 					GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)), GoErrorType.INSTANCE), params);

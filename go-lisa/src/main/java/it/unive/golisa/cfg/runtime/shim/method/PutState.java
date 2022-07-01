@@ -33,6 +33,12 @@ import it.unive.lisa.type.Untyped;
  */
 public class PutState extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public PutState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.INSTANCE),
@@ -41,6 +47,11 @@ public class PutState extends NativeCFG {
 				PutStateImpl.class);
 	}
 
+	/**
+	 * The PutState implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PutStateImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -51,10 +62,28 @@ public class PutState extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static PutStateImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PutStateImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public PutStateImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PutStateImpl", GoErrorType.INSTANCE, params);
 		}

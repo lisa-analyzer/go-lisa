@@ -39,6 +39,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class PutPrivateData extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public PutPrivateData(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.INSTANCE),
@@ -48,6 +54,11 @@ public class PutPrivateData extends NativeCFG {
 				PutPrivateDataImpl.class);
 	}
 
+	/**
+	 * The PutPrivateData implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PutPrivateDataImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -58,10 +69,28 @@ public class PutPrivateData extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static PutPrivateDataImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PutPrivateDataImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public PutPrivateDataImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PutPrivateDataImpl", GoErrorType.INSTANCE, params);
 		}

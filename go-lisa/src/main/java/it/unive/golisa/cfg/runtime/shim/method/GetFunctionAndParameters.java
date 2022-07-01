@@ -28,6 +28,12 @@ import it.unive.lisa.type.Untyped;
 
 public class GetFunctionAndParameters extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimPackage) {
 		super(new CFGDescriptor(location, shimPackage, true, "GetFunctionAndParameters",
 				GoTupleType.lookup(new GoTupleType(new Parameter(location, "function", GoStringType.INSTANCE),
@@ -36,6 +42,11 @@ public class GetFunctionAndParameters extends NativeCFG {
 				GetFunctionAndParametersImpl.class);
 	}
 
+	/**
+	 * The GetFunctionAndParameters implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class GetFunctionAndParametersImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -46,14 +57,33 @@ public class GetFunctionAndParameters extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static GetFunctionAndParametersImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new GetFunctionAndParametersImpl(cfg, location, params[0]);
 		}
 
-		public GetFunctionAndParametersImpl(CFG cfg, CodeLocation location, Expression e) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public GetFunctionAndParametersImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "GetFunctionAndParametersImpl", GoTupleType.lookup(new GoTupleType(
 					new Parameter(location, "function", GoStringType.INSTANCE),
-					new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))), e);
+					new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))),
+					expr);
 		}
 
 		@Override

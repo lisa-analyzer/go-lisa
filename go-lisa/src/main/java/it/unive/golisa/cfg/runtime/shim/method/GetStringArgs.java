@@ -33,6 +33,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class GetStringArgs extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public GetStringArgs(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "GetStringArgs",
 				GoSliceType.getSliceOfStrings(),
@@ -40,6 +46,11 @@ public class GetStringArgs extends NativeCFG {
 				GetStringArgsImpl.class);
 	}
 
+	/**
+	 * The GetStringArgs implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class GetStringArgsImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -50,10 +61,28 @@ public class GetStringArgs extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static GetStringArgsImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new GetStringArgsImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public GetStringArgsImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "GetStringArgsImpl", new GoSliceType(GoStringType.INSTANCE), params);
 		}

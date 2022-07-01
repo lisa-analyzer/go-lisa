@@ -47,6 +47,11 @@ public class Start extends NativeCFG {
 				StartImpl.class);
 	}
 
+	/**
+	 * The Start implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class StartImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -57,12 +62,30 @@ public class Start extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static StartImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new StartImpl(cfg, location, params[0]);
 		}
 
-		public StartImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "StartImpl", GoErrorType.INSTANCE, e);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public StartImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "StartImpl", GoErrorType.INSTANCE, expr);
 		}
 
 		@Override

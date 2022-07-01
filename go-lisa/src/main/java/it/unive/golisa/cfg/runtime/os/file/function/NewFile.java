@@ -26,7 +26,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func NewFile(fd uintptr, name string) *File
+ * func NewFile(fd uintptr, name string) *File.
  * 
  * @link https://pkg.go.dev/os#NewFile
  * 

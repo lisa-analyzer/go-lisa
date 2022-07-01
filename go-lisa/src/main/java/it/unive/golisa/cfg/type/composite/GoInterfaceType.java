@@ -41,6 +41,11 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		return interfaces.computeIfAbsent(name, x -> new GoInterfaceType(name, unit));
 	}
 
+	/**
+	 * Yields the empty interface.
+	 * 
+	 * @return the empty interface
+	 */
 	public static GoInterfaceType getEmptyInterface() {
 		return GoInterfaceType.get(EmptyInterface.EMPTY_INTERFACE_NAME);
 	}

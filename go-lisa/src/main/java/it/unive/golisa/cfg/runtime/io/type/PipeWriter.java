@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A PipeWriter
+ * A PipeWriter type.
  * 
  * @link https://pkg.go.dev/io#PipeWriter
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class PipeWriter extends GoStructType {
 
+	/**
+	 * Unique instance of PipeWriter type.
+	 */
 	public static final PipeWriter INSTANCE = new PipeWriter();
 
 	private PipeWriter() {
@@ -30,6 +33,9 @@ public class PipeWriter extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers the method of the PipeWriter type.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

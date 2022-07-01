@@ -28,6 +28,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Int31 extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Int31(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Int31", GoInt32Type.INSTANCE),
 				Int31Impl.class);

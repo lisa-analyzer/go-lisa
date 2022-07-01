@@ -41,11 +41,13 @@ public class GoAssignment extends BinaryExpression {
 	 * Builds the assignment, assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
 	 * 
-	 * @param cfg        the cfg that this statement belongs to
-	 * @param location   the location where this statement is defined within the
-	 *                       source file
-	 * @param target     the target of the assignment
-	 * @param expression the expression to assign to {@code target}
+	 * @param cfg             the cfg that this statement belongs to
+	 * @param location        the location where this statement is defined
+	 *                            within the source file
+	 * @param target          the target of the assignment
+	 * @param expression      the expression to assign to {@code target}
+	 * @param listBlock       list of block information
+	 * @param containingBlock the block containing this assignment
 	 */
 	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {

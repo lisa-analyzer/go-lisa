@@ -27,7 +27,7 @@ public class GoSliceType implements GoType, InMemoryType {
 
 	/**
 	 * Yields a unique instance (either an existing one or a fresh one) of
-	 * {@link GoSliceType} representing a slice type
+	 * {@link GoSliceType} representing a slice type.
 	 * 
 	 * @param type the slice type to lookup
 	 * 

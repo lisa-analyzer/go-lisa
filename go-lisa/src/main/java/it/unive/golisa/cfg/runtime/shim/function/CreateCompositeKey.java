@@ -28,12 +28,18 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes
- * []string) (string, error)
+ * []string) (string, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class CreateCompositeKey extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public CreateCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "CreateCompositeKey",
 				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,

@@ -29,7 +29,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func OpenFile(name string, flag int, perm FileMode) (*File, error)
+ * func OpenFile(name string, flag int, perm FileMode) (*File, error).
  * 
  * @link https://pkg.go.dev/os#OpenFile
  * 

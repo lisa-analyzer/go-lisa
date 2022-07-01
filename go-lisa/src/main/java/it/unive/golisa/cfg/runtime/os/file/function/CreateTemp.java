@@ -26,7 +26,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func CreateTemp(dir, pattern string) (*File, error)
+ * func CreateTemp(dir, pattern string) (*File, error).
  * 
  * @link https://pkg.go.dev/os#CreateTemp
  * 

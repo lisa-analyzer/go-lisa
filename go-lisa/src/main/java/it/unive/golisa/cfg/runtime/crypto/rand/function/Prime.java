@@ -46,6 +46,11 @@ public class Prime extends NativeCFG {
 				PrimeImpl.class);
 	}
 
+	/**
+	 * The Prime implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PrimeImpl extends BinaryExpression
 			implements PluggableStatement {
 

@@ -69,6 +69,14 @@ public class Int63 extends NativeCFG {
 			return new Int63Impl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public Int63Impl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "Int63Impl", GoInt64Type.INSTANCE, expr);
 		}

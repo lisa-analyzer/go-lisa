@@ -60,10 +60,25 @@ public class Executable extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ExecutableImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ExecutableImpl(cfg, location);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 */
 		public ExecutableImpl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "ReadFileImpl", GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 					GoErrorType.INSTANCE));

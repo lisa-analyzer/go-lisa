@@ -63,12 +63,28 @@ public class RemoveAll extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static RemoveAllImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new RemoveAllImpl(cfg, location, params[0]);
 		}
 
-		public RemoveAllImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "RemoveAllImpl", GoErrorType.INSTANCE, e);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public RemoveAllImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "RemoveAllImpl", GoErrorType.INSTANCE, expr);
 		}
 
 		@Override

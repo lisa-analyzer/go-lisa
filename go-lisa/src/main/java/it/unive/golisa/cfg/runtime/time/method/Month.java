@@ -54,12 +54,28 @@ public class Month extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static MonthImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new MonthImpl(cfg, location, params[0]);
 		}
 
-		public MonthImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "MonthImpl", it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE, e);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public MonthImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "MonthImpl", it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE, expr);
 		}
 
 		@Override

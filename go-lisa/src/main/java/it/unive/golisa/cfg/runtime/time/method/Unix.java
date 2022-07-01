@@ -47,11 +47,27 @@ public class Unix extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static UnixImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new UnixImpl(cfg, location, params);
 		}
 
-		public UnixImpl(CFG cfg, CodeLocation location, Expression[] params) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
+		public UnixImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "UnixImpl", GoInt64Type.INSTANCE, params[0]);
 		}
 

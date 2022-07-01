@@ -62,6 +62,14 @@ public class Int31n extends NativeCFG {
 			return new Int31nImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public Int31nImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "IntnImpl", GoInt32Type.INSTANCE, expr);
 		}

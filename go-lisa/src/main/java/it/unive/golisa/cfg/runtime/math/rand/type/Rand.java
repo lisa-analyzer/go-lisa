@@ -22,14 +22,17 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Random generator
+ * A Random generator.
  * 
- * @link https://pkg.go.dev/math/rand#Rand Rand
+ * @link https://pkg.go.dev/math/rand#Rand
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Rand extends GoStructType {
 
+	/**
+	 * Unique instance of Rand.
+	 */
 	public static final Rand INSTANCE = new Rand();
 
 	private Rand() {

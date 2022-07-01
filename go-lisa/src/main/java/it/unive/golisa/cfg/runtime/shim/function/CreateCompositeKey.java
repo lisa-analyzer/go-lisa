@@ -54,10 +54,26 @@ public class CreateCompositeKey extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static CreateCompositeKeyImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new CreateCompositeKeyImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public CreateCompositeKeyImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "CreateCompositeKeyImpl",
 					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,

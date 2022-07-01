@@ -45,12 +45,28 @@ public class UrlQueryEscape extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static QueryEscape build(CFG cfg, CodeLocation location, Expression... params) {
 			return new QueryEscape(cfg, location, params[0]);
 		}
 
-		public QueryEscape(CFG cfg, CodeLocation location, Expression exp1) {
-			super(cfg, location, "QueryEscape", GoStringType.INSTANCE, exp1);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public QueryEscape(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "QueryEscape", GoStringType.INSTANCE, expr);
 		}
 
 		@Override

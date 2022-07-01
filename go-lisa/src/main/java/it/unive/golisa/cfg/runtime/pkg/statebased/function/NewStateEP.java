@@ -58,13 +58,29 @@ public class NewStateEP extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static NewStateEPImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new NewStateEPImpl(cfg, location, params[0]);
 		}
 
-		public NewStateEPImpl(CFG cfg, CodeLocation location, Expression e) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public NewStateEPImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "NewStateEPImpl",
-					GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE), e);
+					GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE), expr);
 		}
 
 		@Override

@@ -45,12 +45,28 @@ public class UrlPathEscape extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static PathEscape build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PathEscape(cfg, location, params[0]);
 		}
 
-		public PathEscape(CFG cfg, CodeLocation location, Expression exp) {
-			super(cfg, location, "PathEscape", GoStringType.INSTANCE, exp);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public PathEscape(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "PathEscape", GoStringType.INSTANCE, expr);
 		}
 
 		@Override

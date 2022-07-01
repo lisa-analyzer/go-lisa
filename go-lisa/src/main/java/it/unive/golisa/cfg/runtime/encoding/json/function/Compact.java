@@ -75,8 +75,8 @@ public class Compact extends NativeCFG {
 			return new CompactImpl(cfg, location, params[0], params[1]);
 		}
 
-		public CompactImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "CompactImpl", GoErrorType.INSTANCE, expr, expr2);
+		public CompactImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "CompactImpl", GoErrorType.INSTANCE, left, right);
 		}
 
 		@Override

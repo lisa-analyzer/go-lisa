@@ -56,12 +56,28 @@ public class Itoa extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ItoaImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ItoaImpl(cfg, location, params[0]);
 		}
 
-		public ItoaImpl(CFG cfg, CodeLocation location, Expression exp1) {
-			super(cfg, location, "Itoa", GoStringType.INSTANCE, exp1);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public ItoaImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "Itoa", GoStringType.INSTANCE, expr);
 		}
 
 		@Override

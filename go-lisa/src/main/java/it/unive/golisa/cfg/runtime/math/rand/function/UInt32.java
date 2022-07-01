@@ -60,7 +60,7 @@ public class UInt32 extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param expr     the parameters
+		 * @param params   the parameters
 		 */
 		public static UInt32Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new UInt32Impl(cfg, location);

@@ -60,12 +60,28 @@ public class Exit extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ExitImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ExitImpl(cfg, location, params[0]);
 		}
 
-		public ExitImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "ExitImpl", VoidType.INSTANCE, e);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expr
+		 */
+		public ExitImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "ExitImpl", VoidType.INSTANCE, expr);
 		}
 
 		@Override

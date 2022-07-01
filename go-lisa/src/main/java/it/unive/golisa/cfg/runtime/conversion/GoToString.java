@@ -43,6 +43,11 @@ public class GoToString extends NativeCFG {
 				ToString.class);
 	}
 
+	/**
+	 * The GoToString implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ToString extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
@@ -52,10 +57,26 @@ public class GoToString extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static ToString build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ToString(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public ToString(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "string", GoStringType.INSTANCE, arg);
 		}

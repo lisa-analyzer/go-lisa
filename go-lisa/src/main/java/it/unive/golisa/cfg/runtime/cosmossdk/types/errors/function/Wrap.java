@@ -45,6 +45,11 @@ public class Wrap extends NativeCFG {
 				WrapImpl.class);
 	}
 
+	/**
+	 * The Wrap implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class WrapImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -55,12 +60,29 @@ public class Wrap extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static WrapImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new WrapImpl(cfg, location, params[0], params[1]);
 		}
 
-		public WrapImpl(CFG cfg, CodeLocation location, Expression expr1, Expression expr2) {
-			super(cfg, location, "WrapImpl", GoErrorType.INSTANCE, expr1, expr2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
+		 */
+		public WrapImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "WrapImpl", GoErrorType.INSTANCE, left, right);
 		}
 
 		@Override

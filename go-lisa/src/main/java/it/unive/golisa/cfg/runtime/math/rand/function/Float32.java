@@ -60,6 +60,13 @@ public class Float32 extends NativeCFG {
 			return new Float32Impl(cfg, location);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 */
 		public Float32Impl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "Float32Impl", GoFloat32Type.INSTANCE);
 		}

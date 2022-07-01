@@ -54,12 +54,28 @@ public class Day extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static DayImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new DayImpl(cfg, location, params[0]);
 		}
 
-		public DayImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "DayImpl", it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE, e);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public DayImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "DayImpl", it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE, expr);
 		}
 
 		@Override

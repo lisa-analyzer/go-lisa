@@ -45,6 +45,11 @@ public class Int extends NativeCFG {
 				IntImpl.class);
 	}
 
+	/**
+	 * The Int implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class IntImpl extends BinaryExpression
 			implements PluggableStatement {
 

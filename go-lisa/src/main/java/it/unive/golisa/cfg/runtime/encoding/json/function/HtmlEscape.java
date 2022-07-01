@@ -73,8 +73,8 @@ public class HtmlEscape extends NativeCFG {
 			return new HtmlEscapeImpl(cfg, location, params[0], params[1]);
 		}
 
-		public HtmlEscapeImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "HtmlEscapeImpl", VoidType.INSTANCE, expr, expr2);
+		public HtmlEscapeImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "HtmlEscapeImpl", VoidType.INSTANCE, left, right);
 		}
 
 		@Override

@@ -52,10 +52,26 @@ public class Since extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static SinceImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new SinceImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public SinceImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "SinceImpl", Duration.INSTANCE, expr);
 		}

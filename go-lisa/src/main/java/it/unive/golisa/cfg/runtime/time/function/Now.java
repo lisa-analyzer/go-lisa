@@ -50,10 +50,25 @@ public class Now extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static NowImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new NowImpl(cfg, location);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 */
 		public NowImpl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "NowImpl", Time.INSTANCE);
 		}

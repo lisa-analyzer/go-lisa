@@ -60,6 +60,13 @@ public class Float64 extends NativeCFG {
 			return new Float64Impl(cfg, location);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 */
 		public Float64Impl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "Float64Impl", GoFloat64Type.INSTANCE);
 		}

@@ -70,8 +70,17 @@ public class Int63n extends NativeCFG {
 			return new Int63nImpl(cfg, location, params[0], params[1]);
 		}
 
-		public Int63nImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "IntnImpl", GoInt64Type.INSTANCE, expr, expr2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pugglable statement
+		 * @param right    the right-hand side of this pugglable statement
+		 */
+		public Int63nImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "IntnImpl", GoInt64Type.INSTANCE, left, right);
 		}
 
 		@Override

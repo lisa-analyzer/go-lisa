@@ -63,14 +63,31 @@ public class CreateTemp extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static CreateTempImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new CreateTempImpl(cfg, location, params[0], params[1]);
 		}
 
-		public CreateTempImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
+		 */
+		public CreateTempImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "CreateTempImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), expr,
-					expr2);
+					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), left,
+					right);
 		}
 
 		@Override

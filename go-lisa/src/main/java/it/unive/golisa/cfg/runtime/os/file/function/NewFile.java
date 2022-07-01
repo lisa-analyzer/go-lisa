@@ -62,12 +62,29 @@ public class NewFile extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public static NewFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new NewFileImpl(cfg, location, params[0], params[1]);
 		}
 
-		public NewFileImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "NewFile", new GoPointerType(File.INSTANCE), expr, expr2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
+		 */
+		public NewFileImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "NewFile", new GoPointerType(File.INSTANCE), left, right);
 		}
 
 		@Override

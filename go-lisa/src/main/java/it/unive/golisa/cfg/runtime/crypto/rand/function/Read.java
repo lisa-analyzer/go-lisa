@@ -44,6 +44,11 @@ public class Read extends NativeCFG {
 				ReadImpl.class);
 	}
 
+	/**
+	 * The Read implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ReadImpl extends UnaryExpression
 			implements PluggableStatement {
 

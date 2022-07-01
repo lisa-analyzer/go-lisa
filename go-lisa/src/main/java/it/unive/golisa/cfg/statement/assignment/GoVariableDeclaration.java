@@ -40,12 +40,9 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	 * the program.
 	 * 
 	 * @param cfg        the cfg that this declaration belongs to
-	 * @param sourceFile the source file where this declaration happens. If
-	 *                       unknown, use {@code null}
-	 * @param line       the line number where this declaration happens in the
-	 *                       source file. If unknown, use {@code -1}
-	 * @param col        the column where this statement happens in the source
-	 *                       file. If unknown, use {@code -1}
+	 * @param location   the location where this statement is defined within the
+	 *                       source file
+	 * @param type       the type of this declaration
 	 * @param var        the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
@@ -60,6 +57,11 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		return "var " + getLeft() + " " + type + " = " + getRight();
 	}
 
+	/**
+	 * Yields the type of the declaration.
+	 * 
+	 * @return the type of the declaration
+	 */
 	public Type getDeclaredType() {
 		return type;
 	}

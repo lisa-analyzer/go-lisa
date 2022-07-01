@@ -15,10 +15,26 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A Go interface type.
+ *
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
 	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoInterfaceType} representing an interface type with the given
+	 * {@code name}, representing the given {@code unit}.
+	 * 
+	 * @param name the name of the interface type
+	 * @param unit the unit underlying this type
+	 * 
+	 * @return the unique instance of {@link GoInterfaceType} representing the
+	 *             interface type with the given name
+	 */
 	public static GoInterfaceType lookup(String name, CompilationUnit unit) {
 		if (name.equals(EmptyInterface.EMPTY_INTERFACE_NAME))
 			return interfaces.computeIfAbsent(name, x -> new EmptyInterface());
@@ -37,14 +53,35 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		this.name = name;
 	}
 
-	public static boolean hasStructType(String structType) {
-		return interfaces.containsKey(structType);
+	/**
+	 * Checks whether an interface type named {@code name} has been already
+	 * built.
+	 * 
+	 * @param name the name of the interface type
+	 * 
+	 * @return whether an interface type named {@code name} has been already
+	 *             built.
+	 */
+	public static boolean hasInterfaceType(String intfType) {
+		return interfaces.containsKey(intfType);
 	}
 
+	/**
+	 * Yields a Go interface type from given name.
+	 * 
+	 * @param structType the name
+	 * 
+	 * @return a Go interface type from given name
+	 */
 	public static GoInterfaceType get(String interfaceName) {
 		return interfaces.get(interfaceName);
 	}
 
+	/**
+	 * Checks whether this interface is empty.
+	 * 
+	 * @return whether this interface is emtpy
+	 */
 	public boolean isEmptyInterface() {
 		return name.equals(EmptyInterface.EMPTY_INTERFACE_NAME);
 	}

@@ -12,6 +12,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A Go map type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoMapType implements GoType, InMemoryType {
 
 	private Type keyType;
@@ -19,6 +24,15 @@ public class GoMapType implements GoType, InMemoryType {
 
 	private static final Set<GoMapType> mapTypes = new HashSet<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoMapType} representing a map type
+	 * 
+	 * @param type the map type to lookup
+	 * 
+	 * @return the unique instance of {@link GoMapType} representing the map
+	 *             type given as argument
+	 */
 	public static GoMapType lookup(GoMapType type) {
 		if (!mapTypes.contains(type))
 			mapTypes.add(type);
@@ -30,10 +44,20 @@ public class GoMapType implements GoType, InMemoryType {
 		this.elementType = elementType;
 	}
 
+	/**
+	 * Yields the key type of this map type.
+	 * 
+	 * @return the key type of this map type
+	 */
 	public Type getKeyType() {
 		return keyType;
 	}
 
+	/**
+	 * Yields the element type of this map type.
+	 * 
+	 * @return the element type of this map type
+	 */
 	public Type getElementType() {
 		return elementType;
 	}

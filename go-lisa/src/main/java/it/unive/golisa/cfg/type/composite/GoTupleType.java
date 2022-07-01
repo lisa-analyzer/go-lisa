@@ -25,22 +25,50 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 
 	private static final Set<GoTupleType> tupleTypes = new HashSet<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoTupleType} representing a tuple type
+	 * 
+	 * @param type the tuple type to lookup
+	 * 
+	 * @return the unique instance of {@link GoTupleType} representing the tuple
+	 *             type given as argument
+	 */
 	public static GoTupleType lookup(GoTupleType type) {
 		if (!tupleTypes.contains(type))
 			tupleTypes.add(type);
 		return tupleTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
+	/**
+	 * Checks whether a tuple type named {@code name} has been already built.
+	 * 
+	 * @param name the name of the tuple type
+	 * 
+	 * @return whether a tuple type named {@code name} has been already built.
+	 */
 	public static boolean hasTupleType(GoTupleType raw) {
 		return tupleTypes.contains(raw);
 	}
 
+	/**
+	 * Builds a tuple type.
+	 * 
+	 * @param pars the parameters
+	 */
 	public GoTupleType(Parameter... pars) {
 		super();
 		for (int i = 0; i < pars.length; i++)
 			this.add(pars[i]);
 	}
 
+	/**
+	 * Yields the type at the {@code i}-position of the tuple.
+	 * 
+	 * @param i the position
+	 * 
+	 * @return the type at the {@code i}-position of the tuple
+	 */
 	public Type getTypeAt(int i) {
 		return this.get(i).getStaticType();
 	}
@@ -82,6 +110,11 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 		return new GoTupleExpression(cfg, location, exps);
 	}
 
+	/**
+	 * Yields all the tuple types.
+	 * 
+	 * @return all the tuple types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoTupleType in : tupleTypes)
@@ -102,6 +135,14 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 		return super.toString();
 	}
 
+	/**
+	 * Builds a tuple type.
+	 * 
+	 * @param location location of this tuple type
+	 * @param types    types of the tuple
+	 * 
+	 * @return a tuple type
+	 */
 	public static GoTupleType getTupleTypeOf(CodeLocation location, Type... types) {
 		Parameter[] pars = new Parameter[types.length];
 		for (int i = 0; i < types.length; i++)
@@ -116,11 +157,16 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * should be used to document the meaning of the return values. A return
 	 * statement without arguments returns the named return values. This is
 	 * known as a "naked" return.
+	 * 
+	 * @return if this tuple type has named parameters
 	 */
 	public boolean isNamedValues() {
 		return !get(0).getName().equals("_");
 	}
 
+	/**
+	 * Clears all the tuple types.
+	 */
 	public static void clearAll() {
 		tupleTypes.clear();
 	}

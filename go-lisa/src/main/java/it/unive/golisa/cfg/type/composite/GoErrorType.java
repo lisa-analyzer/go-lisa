@@ -11,10 +11,15 @@ import it.unive.lisa.type.Untyped;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * The Go error type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoErrorType implements GoType {
 
 	/**
-	 * Unique instance of GoError type.
+	 * Unique instance of Go error type.
 	 */
 	public static final GoErrorType INSTANCE = new GoErrorType();
 

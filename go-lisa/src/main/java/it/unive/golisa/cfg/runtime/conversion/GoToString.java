@@ -29,6 +29,11 @@ import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
+/**
+ * String casting.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoToString extends NativeCFG {
 
 	/**
@@ -79,8 +84,8 @@ public class GoToString extends NativeCFG {
 		 *                     defined
 		 * @param expr     the expression
 		 */
-		public ToString(CFG cfg, CodeLocation location, Expression arg) {
-			super(cfg, location, "string", GoStringType.INSTANCE, arg);
+		public ToString(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "string", GoStringType.INSTANCE, expr);
 		}
 
 		@Override

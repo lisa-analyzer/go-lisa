@@ -13,6 +13,7 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
@@ -25,9 +26,20 @@ import org.apache.commons.lang3.StringUtils;
 
 public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
-	public GoMultiShortVariableDeclaration(CFG cfg, String filePath, int line, int col, Expression[] ids,
+	/**
+	 * Builds a multi-short variable declaration.
+	 * 
+	 * @param cfg             the cfg that this statement belongs to
+	 * @param location        the location where this statement is defined
+	 *                            within the source file
+	 * @param ids             identifiers to assign
+	 * @param e               expression to assign
+	 * @param listBlock       list of block informations
+	 * @param containingBlock the block to which this assignment belongs to
+	 */
+	public GoMultiShortVariableDeclaration(CFG cfg, SourceCodeLocation location, Expression[] ids,
 			Expression e, List<BlockInfo> listBlock, OpenBlock containingBlock) {
-		super(cfg, filePath, line, col, ids, e, listBlock, containingBlock);
+		super(cfg, location, ids, e, listBlock, containingBlock);
 	}
 
 	@Override

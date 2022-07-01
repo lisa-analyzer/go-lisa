@@ -72,6 +72,13 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		return structTypes.containsKey(name);
 	}
 
+	/**
+	 * Yields a Go struct type from given name.
+	 * 
+	 * @param structType the name
+	 * 
+	 * @return a Go struct type from given name
+	 */
 	public static GoStructType get(String structType) {
 		return structTypes.get(structType);
 	}

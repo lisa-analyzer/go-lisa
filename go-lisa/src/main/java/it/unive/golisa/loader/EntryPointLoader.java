@@ -11,7 +11,6 @@ import java.util.List;
  * The loader of entrypoints in programs
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
- *
  */
 public class EntryPointLoader implements Loader {
 
@@ -21,7 +20,8 @@ public class EntryPointLoader implements Loader {
 	List<EntryPointSet> entrypointSets;
 
 	/**
-	 * The field indicates after a load if there is no entry loaded in the program
+	 * The field indicates after a load if there is no entry loaded in the
+	 * program
 	 */
 	boolean noEntry;
 
@@ -32,6 +32,7 @@ public class EntryPointLoader implements Loader {
 
 	/**
 	 * The method add the entry points to load.
+	 * 
 	 * @param entryPoints the entry points to add in the loader.
 	 */
 	public void addEntryPoints(EntryPointSet entryPoints) {
@@ -52,6 +53,7 @@ public class EntryPointLoader implements Loader {
 
 	/**
 	 * After a load, yields true if found an entry point in the program
+	 * 
 	 * @return true, if found an entry point in the program after a load
 	 */
 	public boolean isEntryFound() {

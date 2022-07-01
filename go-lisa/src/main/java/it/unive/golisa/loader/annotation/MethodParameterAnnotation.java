@@ -3,11 +3,9 @@ package it.unive.golisa.loader.annotation;
 import it.unive.lisa.program.annotations.Annotation;
 
 /**
- * 
  * The class represents a method parameter annotation
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
- * 
  */
 public class MethodParameterAnnotation extends MethodAnnotation {
 
@@ -18,10 +16,11 @@ public class MethodParameterAnnotation extends MethodAnnotation {
 
 	/**
 	 * Builds an instance of method parameter annotation
+	 * 
 	 * @param annotation the annotation
-	 * @param unit the unit of method
-	 * @param name the method name
-	 * @param param the param position
+	 * @param unit       the unit of method
+	 * @param name       the method name
+	 * @param param      the param position
 	 */
 	public MethodParameterAnnotation(Annotation annotation, String unit, String name, int param) {
 		super(annotation, unit, name);
@@ -30,6 +29,7 @@ public class MethodParameterAnnotation extends MethodAnnotation {
 
 	/**
 	 * Yields the param position
+	 * 
 	 * @return the param position
 	 */
 	public int getParam() {

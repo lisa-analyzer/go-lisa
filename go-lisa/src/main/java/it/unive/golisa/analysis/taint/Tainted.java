@@ -6,7 +6,6 @@ import it.unive.lisa.type.Untyped;
 
 /**
  * The tainted constant
- *
  */
 public class Tainted extends Constant {
 

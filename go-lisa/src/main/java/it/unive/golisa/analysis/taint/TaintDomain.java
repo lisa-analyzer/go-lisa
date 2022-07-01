@@ -20,7 +20,6 @@ import it.unive.lisa.type.Type;
 
 /**
  * The taint domain, used for the taint analysis
- *
  */
 public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
@@ -84,6 +83,7 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	/**
 	 * Yields if the state is tatinted
+	 * 
 	 * @return {@code true} if is tainted, otherwise {@code false}
 	 */
 	public boolean isTainted() {

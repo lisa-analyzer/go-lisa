@@ -13,6 +13,7 @@ public class CodeAnnotation {
 
 	/**
 	 * Builds a code annotation
+	 * 
 	 * @param annotation the annotation
 	 */
 	public CodeAnnotation(Annotation annotation) {

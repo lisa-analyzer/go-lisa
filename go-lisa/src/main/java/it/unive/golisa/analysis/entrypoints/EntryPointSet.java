@@ -4,11 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This class represents the set of entry point signatures 
- * for a program/application/framework.
+ * This class represents the set of entry point signatures for a
+ * program/application/framework.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
- * 
  */
 public abstract class EntryPointSet {
 	private final Set<String> entryPoints;

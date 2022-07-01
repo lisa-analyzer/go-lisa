@@ -91,10 +91,10 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	/**
-	 * Builds a new instance of non interference, referring to a specific element
-	 * of the lattice.
+	 * Builds a new instance of non interference, referring to a specific
+	 * element of the lattice.
 	 * 
-	 * @param v,  the {@code byte} representing the element
+	 * @param v, the {@code byte} representing the element
 	 */
 	private IntegrityNIDomain(byte v) {
 		this.v = v;
@@ -135,6 +135,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 	/**
 	 * Yields true if the state is low
+	 * 
 	 * @return true if the the state is low
 	 */
 	public boolean isLowIntegrity() {
@@ -289,7 +290,9 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	 * 
 	 * @param state
 	 * @param pp
+	 * 
 	 * @return
+	 * 
 	 * @throws SemanticException
 	 */
 	private IntegrityNIDomain state(IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {

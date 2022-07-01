@@ -23,18 +23,21 @@ public abstract class AnnotationSet {
 
 	/**
 	 * Yields the annotations for code members
+	 * 
 	 * @return the annotations for code members
 	 */
 	public abstract Set<? extends CodeAnnotation> getAnnotationsForCodeMembers();
 
 	/**
 	 * Yields the annotations for constructors
+	 * 
 	 * @return the annotations for constructors
 	 */
 	public abstract Set<? extends CodeAnnotation> getAnnotationsForConstructors();
 
 	/**
 	 * Yields the annotations for globals
+	 * 
 	 * @return the annotations for globals
 	 */
 	public abstract Set<? extends CodeAnnotation> getAnnotationsForGlobals();

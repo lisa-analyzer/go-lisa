@@ -79,8 +79,8 @@ public class GoToInt64 extends NativeCFG {
 		 *                     defined
 		 * @param expr     the expression
 		 */
-		public ToInt64(CFG cfg, CodeLocation location, Expression arg) {
-			super(cfg, location, "int64", GoInt64Type.INSTANCE, arg);
+		public ToInt64(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "int64", GoInt64Type.INSTANCE, expr);
 		}
 
 		@Override

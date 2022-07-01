@@ -75,7 +75,7 @@ public class BlockInfo {
 	/**
 	 * Yields the {@link OpenBlock} of the block concerning this information.
 	 * 
-	 * @return the {@link OpenBlock} of the block concerning this information.
+	 * @return the {@link OpenBlock} of the block concerning this information
 	 */
 	public OpenBlock getOpen() {
 		return open;

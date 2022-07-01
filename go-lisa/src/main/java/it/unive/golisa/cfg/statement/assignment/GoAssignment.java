@@ -19,16 +19,21 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import java.util.List;
 
+/**
+ * A Go assignment.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoAssignment extends BinaryExpression {
 
 	/**
 	 * The chain of blocks (starting from the block containing this assignment)
-	 * to the block defining the assigned variable
+	 * to the block defining the assigned variable.
 	 */
 	private final List<BlockInfo> blocksToDeclaration;
 
 	/**
-	 * The open block related to the block that contains this assignment
+	 * The open block related to the block that contains this assignment.
 	 */
 	private final OpenBlock containingBlock;
 
@@ -36,11 +41,13 @@ public class GoAssignment extends BinaryExpression {
 	 * Builds the assignment, assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
 	 * 
-	 * @param cfg        the cfg that this statement belongs to
-	 * @param location   the location where this statement is defined within the
-	 *                       source file. If unknown, use {@code null}
-	 * @param target     the target of the assignment
-	 * @param expression the expression to assign to {@code target}
+	 * @param cfg             the cfg that this statement belongs to
+	 * @param location        the location where this statement is defined
+	 *                            within the source file
+	 * @param target          the target of the assignment
+	 * @param expression      the expression to assign to {@code target}
+	 * @param listBlock       list of block information
+	 * @param containingBlock the block containing this assignment
 	 */
 	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {

@@ -75,6 +75,14 @@ public class ReadFile extends NativeCFG {
 			return new ReadFileImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public ReadFileImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadFileImpl",
 					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),

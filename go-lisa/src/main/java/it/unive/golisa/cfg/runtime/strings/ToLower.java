@@ -27,8 +27,8 @@ public class ToLower extends NativeCFG {
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location    the location where this native cfg is defined
-	 * @param strconvUnit the unit to which this native cfg belongs to
+	 * @param location   the location where this native cfg is defined
+	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
 	public ToLower(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "ToLower", GoStringType.INSTANCE,
@@ -36,6 +36,11 @@ public class ToLower extends NativeCFG {
 				Len.class);
 	}
 
+	/**
+	 * The ToLower implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ToLowerImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
 			implements PluggableStatement {
 
@@ -46,10 +51,28 @@ public class ToLower extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static ToLowerImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ToLowerImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public ToLowerImpl(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "ToLower", GoStringType.INSTANCE, arg);
 		}

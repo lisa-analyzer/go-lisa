@@ -716,7 +716,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression right = visitExpression(exps.expression(0));
 
 			// We can safely reause the multi-short variable declaration class
-			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left,
+			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg,
+					new SourceCodeLocation(file, line, col), left,
 					right, blockList,
 					getContainingBlock());
 			block.addNode(asg);
@@ -1058,7 +1059,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression[] left = visitExpressionList(ids);
 			Expression right = visitExpression(exps.expression(0));
 
-			GoMultiAssignment asg = new GoMultiAssignment(cfg, file, line, col, left, right, blockList,
+			GoMultiAssignment asg = new GoMultiAssignment(cfg, new SourceCodeLocation(file, line, col), left, right,
+					blockList,
 					getContainingBlock());
 			block.addNode(asg);
 			storeIds(asg);
@@ -1196,7 +1198,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			Expression right = visitExpression(exps.expression(0));
 
-			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg, file, line, col, left,
+			GoMultiShortVariableDeclaration asg = new GoMultiShortVariableDeclaration(cfg,
+					new SourceCodeLocation(file, line, col), left,
 					right, blockList, getContainingBlock());
 
 			for (VariableRef ref : left)
@@ -1233,7 +1236,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
 				}
 
-				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
+				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg,
+						new SourceCodeLocation(file, line, col), target, exp);
 				block.addNode(asg);
 				storeIds(asg);
 
@@ -2333,8 +2337,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitFunctionLit(FunctionLitContext ctx) {
 		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
 		Type funcType = GoFunctionType
-				.lookup(new GoFunctionType(funcLit.getDescriptor().getFormals(),
-						funcLit.getDescriptor().getReturnType()));
+				.lookup(new GoFunctionType(funcLit.getDescriptor().getReturnType(),
+						funcLit.getDescriptor().getFormals()));
 		return new GoFunctionLiteral(cfg, locationOf(ctx), funcLit, funcType);
 	}
 
@@ -2454,7 +2458,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					VariableRef[] ids = new VariableRef[] { typeSwitchVar, typeSwitchCheck };
 
 					GoMultiShortVariableDeclaration shortDecl = new GoMultiShortVariableDeclaration(cfg,
-							typeLoc.getSourceFile(), typeLoc.getLine(), typeLoc.getCol(), ids,
+							new SourceCodeLocation(typeLoc.getSourceFile(), typeLoc.getLine(), typeLoc.getCol()), ids,
 							new GoTypeAssertion(cfg, typeLoc, typeSwitchExp, types[j]), blockList,
 							getContainingBlock());
 

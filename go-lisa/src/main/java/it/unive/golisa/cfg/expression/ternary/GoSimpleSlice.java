@@ -17,8 +17,21 @@ import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.type.Type;
 
+/**
+ * A Go slice expression (e.g., s[1:5]).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryExpression {
-
+	/**
+	 * Builds a Go slice expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left expression
+	 * @param middle   the middle expression
+	 * @param right    the right expression
+	 */
 	public GoSimpleSlice(CFG cfg, SourceCodeLocation location, Expression left, Expression middle, Expression right) {
 		super(cfg, location, "slice", left, middle, right);
 	}

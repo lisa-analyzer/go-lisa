@@ -31,10 +31,23 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A Go make expression (e.g., make([]int, 5)).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoMake extends NaryExpression {
 
 	private final Type type;
 
+	/**
+	 * Builds the make expression.
+	 * 
+	 * @param cfg        the {@link CFG} where this expression lies
+	 * @param location   the location where this expression is defined
+	 * @param type       the type to allocate
+	 * @param parameters the parameters
+	 */
 	public GoMake(CFG cfg, CodeLocation location, Type type, Expression[] parameters) {
 		super(cfg, location, "make " + type, parameters);
 		this.type = type;
@@ -53,9 +66,7 @@ public class GoMake extends NaryExpression {
 		if (type == null)
 			return state.top();
 
-		/**
-		 * Slice allocation
-		 */
+		// slice allocation
 		if (type instanceof GoSliceType) {
 			Type contentType = ((GoSliceType) type).getContentType();
 			SourceCodeLocation sliceLocation = (SourceCodeLocation) getLocation();
@@ -142,16 +153,12 @@ public class GoMake extends NaryExpression {
 			return result;
 		}
 
-		/**
-		 * Channel allocation
-		 */
+		// channel allocation
 		if (type instanceof GoChannelType)
 			return state.top().smallStepSemantics(new PushAny(type, getLocation()),
 					this);
 
-		/**
-		 * Map allocation
-		 */
+		// map allocation
 		if (type instanceof GoMapType)
 			return state.top().smallStepSemantics(new PushAny(type, getLocation()),
 					this);

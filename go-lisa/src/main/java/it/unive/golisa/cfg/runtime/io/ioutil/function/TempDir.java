@@ -74,9 +74,18 @@ public class TempDir extends NativeCFG {
 			return new TempDirImpl(cfg, location, params[0], params[1]);
 		}
 
-		public TempDirImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
+		public TempDirImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "TempDirImpl",
-					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
+					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE, GoErrorType.INSTANCE), left, right);
 		}
 
 		@Override

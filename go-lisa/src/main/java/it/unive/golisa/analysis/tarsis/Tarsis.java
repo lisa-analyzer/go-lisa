@@ -187,7 +187,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		return bottom();
 	}
 
-	protected Tarsis evalNonNullConstant(Constant constant, ProgramPoint pp) {
+	private Tarsis evalNonNullConstant(Constant constant, ProgramPoint pp) {
 		if (constant.getValue() instanceof String) {
 			String str = (String) constant.getValue();
 			return new Tarsis(new AutomatonString(str), intValue.bottom(), false, false);
@@ -205,7 +205,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		return top();
 	}
 
-	protected Tarsis evalUnaryExpression(UnaryOperator operator, Tarsis arg, ProgramPoint pp) {
+	private Tarsis evalUnaryExpression(UnaryOperator operator, Tarsis arg, ProgramPoint pp) {
 		if (operator == NumericNegation.INSTANCE)
 			return new Tarsis(bottomString(),
 					intValue.evalUnaryExpression(NumericNegation.INSTANCE, arg.intValue, pp));
@@ -217,7 +217,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			return top();
 	}
 
-	protected Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right, ProgramPoint pp)
+	private Tarsis evalBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right, ProgramPoint pp)
 			throws SemanticException {
 		if (operator == StringIndexOf.INSTANCE) {
 			Automaton leftAutomaton = left.stringValue.getAutomaton();
@@ -249,7 +249,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			return top();
 	}
 
-	protected Tarsis evalTernaryExpression(TernaryOperator operator, Tarsis left, Tarsis middle, Tarsis right) {
+	private Tarsis evalTernaryExpression(TernaryOperator operator, Tarsis left, Tarsis middle, Tarsis right) {
 		if (operator == StringReplace.INSTANCE)
 			return new Tarsis(left.stringValue.replace(middle.stringValue, right.stringValue), intValue.bottom());
 		else if (operator == StringSubstring.INSTANCE) {
@@ -272,23 +272,23 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			return top();
 	}
 
-	protected Satisfiability satisfiesAbstractValue(Tarsis value, ProgramPoint pp) {
+	private Satisfiability satisfiesAbstractValue(Tarsis value, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesNullConstant(ProgramPoint pp) {
+	private Satisfiability satisfiesNullConstant(ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesNonNullConstant(Constant constant, ProgramPoint pp) {
+	private Satisfiability satisfiesNonNullConstant(Constant constant, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesUnaryExpression(UnaryOperator operator, Tarsis arg, ProgramPoint pp) {
+	private Satisfiability satisfiesUnaryExpression(UnaryOperator operator, Tarsis arg, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right,
+	private Satisfiability satisfiesBinaryExpression(BinaryOperator operator, Tarsis left, Tarsis right,
 			ProgramPoint pp) {
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
@@ -322,7 +322,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 			return Satisfiability.UNKNOWN;
 	}
 
-	protected Satisfiability satisfiesTernaryExpression(TernaryOperator operator, Tarsis left, Tarsis middle,
+	private Satisfiability satisfiesTernaryExpression(TernaryOperator operator, Tarsis left, Tarsis middle,
 			Tarsis right, ProgramPoint pp) {
 		return Satisfiability.UNKNOWN;
 	}

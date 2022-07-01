@@ -25,6 +25,22 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * A field-sensitive point-based heap implementation for Go that abstracts heap
+ * locations depending on their allocation sites, namely the position of the
+ * code where heap locations are generated. All heap locations that are
+ * generated at the same allocation sites are abstracted into a single unique
+ * heap identifier. The analysis is field-sensitive in the sense that all the
+ * field accesses, with the same field, to a specific allocation site are
+ * abstracted into a single heap identifier. The implementation follows X. Rival
+ * and K. Yi, "Introduction to Static Analysis An Abstract Interpretation
+ * Perspective", Section 8.3.4
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * 
+ * @see <a href=
+ *          "https://mitpress.mit.edu/books/introduction-static-analysis">https://mitpress.mit.edu/books/introduction-static-analysis</a>
+ */
 public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 
 	/**
@@ -71,8 +87,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 				} else {
 					if (star_y instanceof StackAllocationSite && sss.heapEnv.getKeys().contains(expression)) {
 						// in other case, where star_y is a stack allocation
-						// site, we should
-						// copy
+						// site, we should copy
 						Set<Pair<HeapLocation, HeapLocation>> newCopies = new HashSet<>();
 
 						if (star_y.getStaticType() instanceof GoStructType) {
@@ -147,11 +162,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 						result = result.lub(new GoFieldSensitivePointBasedHeap(heap));
 						result.decouples.addAll(newCopies);
 
-					}
-//					else if (exp instanceof StackAllocationSite){
-//						result = result.lub(sss);
-//					} 
-					else {
+					} else {
 						// plain assignment just if star_y is a heap
 						// allocation site
 						HeapEnvironment<GoAllocationSites> heap = sss.heapEnv.assign(id, star_y, pp);

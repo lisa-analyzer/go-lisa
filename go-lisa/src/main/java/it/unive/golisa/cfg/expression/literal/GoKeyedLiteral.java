@@ -32,10 +32,24 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A Go keyed literal (e.g., {x: 1, y: 2, z: 3}).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoKeyedLiteral extends NaryExpression {
 
 	private final Expression[] keys;
 
+	/**
+	 * Builds the keyed literal.
+	 * 
+	 * @param cfg        the {@link CFG} where this expression lies
+	 * @param location   the location where this expression is defined
+	 * @param keys       the keys of the keyed literal
+	 * @param values     the expressions of the keyed literal
+	 * @param staticType the static type of this keyed literal
+	 */
 	public GoKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] keys, Expression[] values,
 			Type staticType) {
 		super(cfg, location, "keyedLiteral(" + staticType + ")", staticType, values);

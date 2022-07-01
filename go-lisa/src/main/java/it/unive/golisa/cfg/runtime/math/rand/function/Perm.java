@@ -30,6 +30,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Perm extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Perm(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Perm",
 				GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)),

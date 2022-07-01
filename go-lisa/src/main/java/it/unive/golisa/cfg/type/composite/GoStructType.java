@@ -42,6 +42,12 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
 	}
 
+	/**
+	 * Updates the reference to a struct type.
+	 * 
+	 * @param name name of the struct type to be updated
+	 * @param unit the compilation unit to update
+	 */
 	public static void updateReference(String name, CompilationUnit unit) {
 		if (structTypes.containsKey(name))
 			structTypes.put(name, new GoStructType(name, unit));
@@ -72,6 +78,13 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		return structTypes.containsKey(name);
 	}
 
+	/**
+	 * Yields a Go struct type from given name.
+	 * 
+	 * @param structType the name
+	 * 
+	 * @return a Go struct type from given name
+	 */
 	public static GoStructType get(String structType) {
 		return structTypes.get(structType);
 	}

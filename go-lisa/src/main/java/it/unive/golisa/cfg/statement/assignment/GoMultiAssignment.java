@@ -32,22 +32,45 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * A Go multi-assignment.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoMultiAssignment extends Expression {
 
+	/**
+	 * The identifiers to assign.
+	 */
 	protected final Expression[] ids;
+
+	/**
+	 * The expressions to assign.
+	 */
 	protected final Expression e;
 
 	/**
 	 * The chain of blocks (starting from the block containing this assignment)
-	 * to the block defining the assigned variables
+	 * to the block defining the assigned variables.
 	 */
 	protected Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
 
 	private final OpenBlock containingBlock;
 
-	public GoMultiAssignment(CFG cfg, String filePath, int line, int col, Expression[] ids, Expression e,
+	/**
+	 * Builds a multi-assignment.
+	 * 
+	 * @param cfg             the cfg that this statement belongs to
+	 * @param location        the location where this statement is defined
+	 *                            within the source file
+	 * @param ids             identifiers to assign
+	 * @param e               expression to assign
+	 * @param listBlock       list of block informations
+	 * @param containingBlock the block to which this assignment belongs to
+	 */
+	public GoMultiAssignment(CFG cfg, SourceCodeLocation location, Expression[] ids, Expression e,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {
-		super(cfg, new SourceCodeLocation(filePath, line, col));
+		super(cfg, location);
 		this.ids = ids;
 		this.e = e;
 		this.blocksToDeclaration = new HashMap<>();
@@ -88,7 +111,7 @@ public class GoMultiAssignment extends Expression {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	protected <A extends AbstractState<A, H, V, T>,
+	private <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,

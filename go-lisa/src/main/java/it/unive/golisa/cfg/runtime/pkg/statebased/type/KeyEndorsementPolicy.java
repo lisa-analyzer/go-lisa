@@ -5,8 +5,16 @@ import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
+/**
+ * A KeyEndorsementPolicy type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class KeyEndorsementPolicy extends GoInterfaceType {
 
+	/**
+	 * Unique instance of KeyEndorsementPolicy type.
+	 */
 	public static final KeyEndorsementPolicy INSTANCE = new KeyEndorsementPolicy();
 
 	private KeyEndorsementPolicy() {

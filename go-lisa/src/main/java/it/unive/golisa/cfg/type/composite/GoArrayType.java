@@ -14,6 +14,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A Go array type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoArrayType implements GoType, InMemoryType {
 
 	private Type contentType;
@@ -21,6 +26,15 @@ public class GoArrayType implements GoType, InMemoryType {
 
 	private static final Set<GoArrayType> arrayTypes = new HashSet<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoArrayType} representing an array type.
+	 * 
+	 * @param type the array type to lookup
+	 * 
+	 * @return the unique instance of {@link GoArrayType} representing the array
+	 *             type given as argument
+	 */
 	public static GoArrayType lookup(GoArrayType type) {
 		if (!arrayTypes.contains(type))
 			arrayTypes.add(type);
@@ -43,7 +57,7 @@ public class GoArrayType implements GoType, InMemoryType {
 	}
 
 	/**
-	 * Yields the length
+	 * Yields the length.
 	 * 
 	 * @return the length
 	 */

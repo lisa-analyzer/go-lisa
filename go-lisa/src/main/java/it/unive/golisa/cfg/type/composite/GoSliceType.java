@@ -27,12 +27,12 @@ public class GoSliceType implements GoType, InMemoryType {
 
 	/**
 	 * Yields a unique instance (either an existing one or a fresh one) of
-	 * {@link GoSliceType}.
+	 * {@link GoSliceType} representing a slice type.
 	 * 
-	 * @param type the slice type to look up
+	 * @param type the slice type to lookup
 	 * 
 	 * @return the unique instance of {@link GoSliceType} representing the slice
-	 *             type with the given name
+	 *             type given as argument
 	 */
 	public static GoSliceType lookup(GoSliceType type) {
 		if (!sliceTypes.contains(type))

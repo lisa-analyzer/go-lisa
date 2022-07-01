@@ -32,6 +32,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Join extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location     the location where this native cfg is defined
+	 * @param pathfileUnit the unit to which this native cfg belongs to
+	 */
 	public Join(CodeLocation location, CompilationUnit pathfileUnit) {
 		super(new CFGDescriptor(location, pathfileUnit, false, "Dir",
 				GoStringType.INSTANCE,

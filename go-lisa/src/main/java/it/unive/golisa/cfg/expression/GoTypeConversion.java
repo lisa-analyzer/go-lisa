@@ -21,17 +21,26 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
+/**
+ * A Go type casting (e.g., (string) x).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoTypeConversion extends UnaryExpression {
 
 	private Type type;
 
+	/**
+	 * Builds the type casting expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param type     the type
+	 * @param exp      the expression to cast to {@code type}
+	 */
 	public GoTypeConversion(CFG cfg, SourceCodeLocation location, Type type, Expression exp) {
 		super(cfg, location, "(" + type + ")", exp);
 		this.type = type;
-	}
-
-	public Type getType() {
-		return type;
 	}
 
 	@Override
@@ -45,6 +54,5 @@ public class GoTypeConversion extends UnaryExpression {
 		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
 		return state.smallStepSemantics(
 				new BinaryExpression(type, expr, typeCast, TypeCast.INSTANCE, getLocation()), this);
-
 	}
 }

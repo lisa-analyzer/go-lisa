@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A I/O Writer
+ * A I/O Writer type.
  * 
  * @link https://pkg.go.dev/io#Writer
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class Writer extends GoStructType {
 
+	/**
+	 * Unique instance of Writer type.
+	 */
 	public static final Writer INSTANCE = new Writer();
 
 	private Writer() {
@@ -30,6 +33,9 @@ public class Writer extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers methods of Writer.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

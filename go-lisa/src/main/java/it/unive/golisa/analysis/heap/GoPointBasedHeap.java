@@ -27,6 +27,19 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * A field-insensitive point-based heap implementation for Go that abstracts
+ * heap locations depending on their allocation sites, namely the position of
+ * the code where heap locations are generated. All heap locations that are
+ * generated at the same allocation sites are abstracted into a single unique
+ * heap identifier. The implementation follows X. Rival and K. Yi, "Introduction
+ * to Static Analysis An Abstract Interpretation Perspective", Section 8.3.4
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * 
+ * @see <a href=
+ *          "https://mitpress.mit.edu/books/introduction-static-analysis">https://mitpress.mit.edu/books/introduction-static-analysis</a>
+ */
 public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 
 	/**
@@ -35,6 +48,10 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	 */
 	protected final HeapEnvironment<GoAllocationSites> heapEnv;
 
+	/**
+	 * A set of pair tracking which heap location values must be copied by the
+	 * value domain.
+	 */
 	protected final Set<Pair<HeapLocation, HeapLocation>> decouples;
 
 	/**
@@ -54,6 +71,13 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		this(heapEnv, new HashSet<>());
 	}
 
+	/**
+	 * Builds a new instance of field-insensitive point-based heap from its heap
+	 * environment.
+	 * 
+	 * @param heapEnv the heap environment that this instance tracks
+	 * @param copies  the set of pairs of heap location to decouple
+	 */
 	public GoPointBasedHeap(HeapEnvironment<GoAllocationSites> heapEnv, Set<Pair<HeapLocation, HeapLocation>> copies) {
 		this.heapEnv = heapEnv;
 		this.decouples = copies;
@@ -377,6 +401,11 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		}
 	}
 
+	/**
+	 * Yields the set of pair of heap locations to decouple.
+	 * 
+	 * @return the set of pair of heap locations to decouple
+	 */
 	public Set<Pair<HeapLocation, HeapLocation>> getDecouples() {
 		return decouples;
 	}

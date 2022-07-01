@@ -44,6 +44,11 @@ public class Day extends NativeCFG {
 				DayImpl.class);
 	}
 
+	/**
+	 * The Day implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class DayImpl extends UnaryExpression
 			implements PluggableStatement {
 

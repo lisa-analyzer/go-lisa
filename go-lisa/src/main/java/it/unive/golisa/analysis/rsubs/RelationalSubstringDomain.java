@@ -413,6 +413,18 @@ public class RelationalSubstringDomain
 		return new RelationalSubstringDomain(lattice, function);
 	}
 
+	/**
+	 * Yields a new instance of this domain where the costant information given
+	 * in {@code cs} is propagated.
+	 * 
+	 * @param cs the constant propagation instance
+	 * 
+	 * @return a new instance of this domain where the costant information given
+	 *             in {@code cs} is propagated
+	 * 
+	 * @throws SemanticException if something wrong happens during the
+	 *                               propagation
+	 */
 	public RelationalSubstringDomain propagateConstants(ValueEnvironment<StringConstantPropagation> cs)
 			throws SemanticException {
 

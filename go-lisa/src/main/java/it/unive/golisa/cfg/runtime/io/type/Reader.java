@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A I/O Reader
+ * A I/O Reader type.
  * 
  * @link https://pkg.go.dev/io#Reader
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class Reader extends GoStructType {
 
+	/**
+	 * Unique instance of Reader type.
+	 */
 	public static final Reader INSTANCE = new Reader();
 
 	private Reader() {
@@ -30,6 +33,9 @@ public class Reader extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers methods of Reader.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

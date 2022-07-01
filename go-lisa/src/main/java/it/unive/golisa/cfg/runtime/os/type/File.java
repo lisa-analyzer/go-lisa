@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A File
+ * A File type.
  * 
  * @link https://pkg.go.dev/os#File
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class File extends GoStructType {
 
+	/**
+	 * Unique instance of File type.
+	 */
 	public static final File INSTANCE = new File();
 
 	private File() {
@@ -30,6 +33,9 @@ public class File extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers the method of the File type.
+	 */
 	public static void registerMethods() {
 		// TODO
 	}

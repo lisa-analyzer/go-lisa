@@ -14,7 +14,6 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -29,24 +28,13 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 
 	/**
 	 * Builds a Go variable declaration with initialization, assigning
-	 * {@code expression} to {@code target}, happening at the given location in
-	 * the program.
+	 * {@code expression} to {@code target}.
 	 * 
 	 * @param cfg        the cfg that this declaration belongs to
-	 * @param sourceFile the source file where this declaration happens. If
-	 *                       unknown, use {@code null}
-	 * @param line       the line number where this declaration happens in the
-	 *                       source file. If unknown, use {@code -1}
-	 * @param col        the column where this statement happens in the source
-	 *                       file. If unknown, use {@code -1}
+	 * @param location   the location where this statement is defined
 	 * @param var        the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoShortVariableDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef var,
-			Expression expression) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), ":=", var, expression);
-	}
-
 	public GoShortVariableDeclaration(CFG cfg, CodeLocation location, VariableRef var, Expression expression) {
 		super(cfg, location, ":=", var, expression);
 	}
@@ -56,8 +44,21 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		return getLeft() + " := " + getRight();
 	}
 
+	/**
+	 * Numerical typer class.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class NumericalTyper {
 
+		/**
+		 * Types an expression (if it is untyped (int or float), this method
+		 * returns it as typed).
+		 * 
+		 * @param exp the expression to type
+		 * 
+		 * @return the typed expression
+		 */
 		public static SymbolicExpression type(SymbolicExpression exp) {
 			if (exp.getDynamicType() instanceof GoUntypedInt) {
 				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoIntType.INSTANCE)),

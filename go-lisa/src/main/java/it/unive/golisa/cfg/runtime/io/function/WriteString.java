@@ -76,9 +76,18 @@ public class WriteString extends NativeCFG {
 			return new WriteStringImpl(cfg, location, params[0], params[1]);
 		}
 
-		public WriteStringImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
+		public WriteStringImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "WriteStringImpl",
-					GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
+					GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), left, right);
 		}
 
 		@Override

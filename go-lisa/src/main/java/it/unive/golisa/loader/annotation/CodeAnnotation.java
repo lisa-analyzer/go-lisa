@@ -2,10 +2,19 @@ package it.unive.golisa.loader.annotation;
 
 import it.unive.lisa.program.annotations.Annotation;
 
+/**
+ * The class represents a code annotation
+ * 
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ */
 public class CodeAnnotation {
 
 	public final Annotation annotation;
 
+	/**
+	 * Builds a code annotation
+	 * @param annotation the annotation
+	 */
 	public CodeAnnotation(Annotation annotation) {
 		this.annotation = annotation;
 	}

@@ -5,6 +5,11 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * The class represents a set of annotations
+ *
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ */
 public abstract class AnnotationSet {
 
 	protected enum Kind {
@@ -16,9 +21,21 @@ public abstract class AnnotationSet {
 	protected static final Map<Kind,
 			Map<String, Set<Pair<String, Integer>>>> CONSTRUCTOR_PARAMETER_ANNOTATIONS = new HashMap<>();
 
+	/**
+	 * Yields the annotations for code members
+	 * @return the annotations for code members
+	 */
 	public abstract Set<? extends CodeAnnotation> getAnnotationsForCodeMembers();
 
+	/**
+	 * Yields the annotations for constructors
+	 * @return the annotations for constructors
+	 */
 	public abstract Set<? extends CodeAnnotation> getAnnotationsForConstructors();
 
+	/**
+	 * Yields the annotations for globals
+	 * @return the annotations for globals
+	 */
 	public abstract Set<? extends CodeAnnotation> getAnnotationsForGlobals();
 }

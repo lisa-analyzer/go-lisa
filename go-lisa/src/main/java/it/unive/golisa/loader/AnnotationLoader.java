@@ -17,10 +17,22 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * The class represents an annotation loader for programs.
+ * 
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ *
+ */
 public class AnnotationLoader implements Loader {
 
+	/**
+	 * The sets of annotations used by the loader
+	 */
 	protected final List<AnnotationSet> annotationSets;
 
+	/**
+	 * The set of annotations applied after the calling of load method by the loader
+	 */
 	protected final Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations;
 
 	public AnnotationLoader() {
@@ -33,8 +45,12 @@ public class AnnotationLoader implements Loader {
 		this.annotationSets.addAll(Arrays.asList(annotationSets));
 	}
 
-	public void addAnnotationSet(AnnotationSet... annotationSet) {
-		for (AnnotationSet as : annotationSet)
+	/**
+	 * The method add the annotation sets to load in a program.
+	 * @param annotationSets the entry annotation sets to add in the loader.
+	 */
+	public void addAnnotationSet(AnnotationSet... annotationSets) {
+		for (AnnotationSet as : annotationSets)
 			this.annotationSets.add(as);
 	}
 
@@ -60,10 +76,19 @@ public class AnnotationLoader implements Loader {
 		}
 	}
 
+	/**
+	 * Yields the annotations applied after a load.
+	 * @return the annotations applied after a load.
+	 */
 	public Set<Pair<CodeAnnotation, CFGDescriptor>> getAppliedAnnotations() {
 		return appliedAnnotations;
 	}
 
+	/**
+	 * The method checks checks and adds an annotation to a descriptor
+	 * @param descriptor the descriptor
+	 * @param ca the code annotation
+	 */
 	private void checkAndAddAnnotation(CFGDescriptor descriptor, CodeAnnotation ca) {
 		if (ca instanceof MethodAnnotation) {
 			MethodAnnotation ma = (MethodAnnotation) ca;

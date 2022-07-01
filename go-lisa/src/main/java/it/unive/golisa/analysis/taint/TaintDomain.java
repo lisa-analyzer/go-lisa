@@ -18,6 +18,10 @@ import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 
+/**
+ * The taint domain, used for the taint analysis
+ *
+ */
 public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	public static final Annotation TAINTED_ANNOTATION = new Annotation("lisa.taint.Tainted");
@@ -78,6 +82,10 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 		return BOTTOM;
 	}
 
+	/**
+	 * Yields if the state is tatinted
+	 * @return {@code true} if is tainted, otherwise {@code false}
+	 */
 	public boolean isTainted() {
 		return this == TAINTED;
 	}

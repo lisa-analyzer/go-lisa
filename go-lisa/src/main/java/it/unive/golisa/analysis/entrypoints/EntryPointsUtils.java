@@ -16,8 +16,21 @@ import java.util.LinkedList;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * The class contains utility methods to handle sets of entry points.
+ * 
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ *
+ */
 public class EntryPointsUtils {
 
+	/**
+	 * The method checks if in an annotation set are present at least one 
+	 * source and one sink annotation for a non-determinism analysis.
+	 * @param appliedAnnotations, the set of annotations to check
+	 * @param annotationSets, the set of annotation to find (sink/source)
+	 * @return {@code true} if exist at least a source and a sink annotation, otherwise {@code false}.
+	 */
 	public static boolean containsPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
 			NonDeterminismAnnotationSet... annotationSets) {
@@ -40,6 +53,12 @@ public class EntryPointsUtils {
 		return atLeastOneSource && atLeastOneDestination;
 	}
 
+	/**
+	 * Yields the descriptor set of possible entry points for the analysis
+	 * @param appliedAnnotations the applied annotations 
+	 * @param annotationSets the set of annotation related to the analysis of non-determinism 
+	 * @return the set of descriptors
+	 */
 	private static Set<CFGDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
 			NonDeterminismAnnotationSet... annotationSets) {
@@ -57,6 +76,13 @@ public class EntryPointsUtils {
 		return descriptors;
 	}
 
+	/**
+	 * Compute the entry points from the possible entry points for the analysis
+	 * @param program the program the applied annotations 
+	 * @param appliedAnnotations the set of annotation related to the analysis of non-determinism 
+	 * @param annotationSets
+	 * @return the set of entry points
+	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
 			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
 			NonDeterminismAnnotationSet... annotationSets) {
@@ -84,11 +110,19 @@ public class EntryPointsUtils {
 
 	}
 
+	/**
+	 * The class represents the extractor of possible entry points
+	 *
+	 */
 	private static class PossibleEntryPointExtractor
 			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
 
 		final Set<CFGDescriptor> descriptors;
 
+		/**
+		 * Builds an instance of the extractor of possible entry points
+		 * @param descriptors the descriptors
+		 */
 		public PossibleEntryPointExtractor(Set<CFGDescriptor> descriptors) {
 			this.descriptors = descriptors;
 		}
@@ -101,13 +135,19 @@ public class EntryPointsUtils {
 		@Override
 		public boolean visit(Collection<Statement> tool, CFG graph, Statement node) {
 
-			if (matchSignatureDescriptor(graph, node, tool))
+			if (matchSignatureDescriptor(node, tool))
 				tool.add(node);
 
 			return true;
 		}
 
-		private boolean matchSignatureDescriptor(CFG graph, Statement node, Collection<Statement> tool) {
+		/**
+		 * Check if a node is a call, and in case checks if the signature match with te descriptors
+		 * @param node the statement
+		 * @param tool the tool
+		 * @return {@code true} when the signature match, otherwise {@code false}
+		 */
+		private boolean matchSignatureDescriptor(Statement node, Collection<Statement> tool) {
 			if (node instanceof Call)
 				if (descriptors.stream().anyMatch(d -> d.getFullName().equals(((Call) node).getFullTargetName())
 						&& d.getFormals().length == ((Call) node).getParameters().length))

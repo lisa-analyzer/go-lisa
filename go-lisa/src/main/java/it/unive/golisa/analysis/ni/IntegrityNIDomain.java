@@ -25,32 +25,77 @@ import it.unive.lisa.type.Type;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+/**
+ * The type-system based implementation of the non interference analysis.
+ * 
+ * @author <a href="mailto:luca.negrini@unive.it">Luca Negrini</a>
+ * 
+ * @see <a href=
+ *          "https://en.wikipedia.org/wiki/Non-interference_(security)">Non-interference</a>
+ */
 public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
+	/**
+	 * The annotation Low.
+	 */
 	public static final Annotation LOW_ANNOTATION = new Annotation("lisa.intni.Low");
 
+	/**
+	 * The matcher of the Low annotation.
+	 */
 	private static final AnnotationMatcher LOW_MATCHER = new BasicAnnotationMatcher(LOW_ANNOTATION);
 
+	/**
+	 * The annotation High.
+	 */
 	public static final Annotation HIGH_ANNOTATION = new Annotation("lisa.intni.High");
 
+	/**
+	 * The matcher of the High annotation.
+	 */
 	private static final AnnotationMatcher HIGH_MATCHER = new BasicAnnotationMatcher(HIGH_ANNOTATION);
 
+	/**
+	 * The top element
+	 */
 	private static final IntegrityNIDomain TOP = new IntegrityNIDomain((byte) 3);
 
+	/**
+	 * The low element
+	 */
 	private static final IntegrityNIDomain LOW = new IntegrityNIDomain((byte) 2);
 
+	/**
+	 * The high element
+	 */
 	private static final IntegrityNIDomain HIGH = new IntegrityNIDomain((byte) 1);
 
+	/**
+	 * The bottom element
+	 */
 	private static final IntegrityNIDomain BOTTOM = new IntegrityNIDomain((byte) 0);
 
 	private final byte v;
 
+	/**
+	 * The guards of statements
+	 */
 	private final Map<ProgramPoint, IntegrityNIDomain> guards;
 
+	/**
+	 * Builds a new instance of non interference, referring to the top element
+	 * of the lattice.
+	 */
 	public IntegrityNIDomain() {
 		this((byte) 3);
 	}
 
+	/**
+	 * Builds a new instance of non interference, referring to a specific element
+	 * of the lattice.
+	 * 
+	 * @param v,  the {@code byte} representing the element
+	 */
 	private IntegrityNIDomain(byte v) {
 		this.v = v;
 		this.guards = new IdentityHashMap<>();
@@ -88,6 +133,10 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 		return BOTTOM;
 	}
 
+	/**
+	 * Yields true if the state is low
+	 * @return true if the the state is low
+	 */
 	public boolean isLowIntegrity() {
 		return this == LOW;
 	}
@@ -235,6 +284,14 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 		return true;
 	}
 
+	/**
+	 * Yields the computed state
+	 * 
+	 * @param state
+	 * @param pp
+	 * @return
+	 * @throws SemanticException
+	 */
 	private IntegrityNIDomain state(IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		Map<ProgramPoint, IntegrityNIDomain> guards = new IdentityHashMap<>();
 		for (ProgramPoint guard : pp.getCFG().getGuards(pp))

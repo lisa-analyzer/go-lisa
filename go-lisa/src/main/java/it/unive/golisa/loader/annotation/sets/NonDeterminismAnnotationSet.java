@@ -15,8 +15,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * The class represents the set of annotations for the non-determinism analysis 
+ * 
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ *
+ */
 public class NonDeterminismAnnotationSet extends FrameworkAnnotationSet {
 
+	/**
+	 * Builds an instance of annotation set for non-determinism related to a framework
+	 * 
+	 * @param framework the target framework
+	 */
 	public NonDeterminismAnnotationSet(String framework) {
 		super(framework);
 	}
@@ -98,6 +109,10 @@ public class NonDeterminismAnnotationSet extends FrameworkAnnotationSet {
 		return new HashSet<>();
 	}
 
+	/**
+	 * Yields the annotation set of sources (sources)
+	 * @return the annotation set of sources
+	 */
 	public Set<? extends CodeAnnotation> getAnnotationForSources() {
 		Set<CodeAnnotation> set = new HashSet<>();
 
@@ -120,6 +135,10 @@ public class NonDeterminismAnnotationSet extends FrameworkAnnotationSet {
 		return set;
 	}
 
+	/**
+	 * Yields the annotation set of destinations (sinks)
+	 * @return the annotation set of destinations (sinks)
+	 */
 	public Set<? extends CodeAnnotation> getAnnotationForDestinations() {
 		Set<CodeAnnotation> set = new HashSet<>();
 

@@ -6,8 +6,20 @@ import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnn
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.golisa.loader.annotation.sets.TendermintCoreNonDeterminismAnnotationSet;
 
+/**
+ * 
+ * The class represents the factory of annotation set of a target frameworks
+ * 
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ * 
+ */
 public class FrameworkNonDeterminismAnnotationSetFactory {
 
+	/**
+	 * Yields the annotation set for a specific framework
+	 * @param framework the target framework
+	 * @return the set of annotationq
+	 */
 	public static NonDeterminismAnnotationSet[] getAnnotationSets(String framework) {
 
 		if (framework != null) {

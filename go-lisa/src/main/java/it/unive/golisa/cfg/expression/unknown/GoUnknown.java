@@ -25,7 +25,11 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 public class GoUnknown extends Expression {
 
 	/**
-	*/
+	 * Builds an unknonw expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 */
 	public GoUnknown(CFG cfg, SourceCodeLocation location) {
 		super(cfg, location, Untyped.INSTANCE);
 	}

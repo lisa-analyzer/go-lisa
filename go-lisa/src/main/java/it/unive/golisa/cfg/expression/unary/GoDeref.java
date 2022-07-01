@@ -14,8 +14,20 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
+/**
+ * A Go dereferencing expression (e.g., &x).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoDeref extends UnaryExpression {
 
+	/**
+	 * Builds the dereferencing expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression to dereference
+	 */
 	public GoDeref(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "&", exp);
 	}

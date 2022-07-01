@@ -39,7 +39,14 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class GoMultiAssignment extends Expression {
 
+	/**
+	 * The identifiers to assign.
+	 */
 	protected final Expression[] ids;
+
+	/**
+	 * The expressions to assign.
+	 */
 	protected final Expression e;
 
 	/**
@@ -104,7 +111,7 @@ public class GoMultiAssignment extends Expression {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	protected <A extends AbstractState<A, H, V, T>,
+	private <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,

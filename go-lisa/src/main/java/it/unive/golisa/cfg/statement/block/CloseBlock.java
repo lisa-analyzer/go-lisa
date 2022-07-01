@@ -16,6 +16,11 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
+/**
+ * A close block statement.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class CloseBlock extends Statement {
 
 	private OpenBlock open;
@@ -25,12 +30,12 @@ public class CloseBlock extends Statement {
 	 * 
 	 * @param cfg      the cfg that this statement belongs to
 	 * @param location the location where this statement is defined within the
-	 *                     source file. If unknown, use {@code null}
+	 *                     source file
+	 * @param open     the open block with which this close block matches
 	 */
 	public CloseBlock(CFG cfg, CodeLocation location, OpenBlock open) {
 		super(cfg, location);
 		this.open = open;
-
 	}
 
 	@Override
@@ -51,7 +56,7 @@ public class CloseBlock extends Statement {
 
 	/**
 	 * Semantics of an close block is to restore the values of open block after
-	 * the block (ex. about variable re-declarations)
+	 * the block (e.g., about variable re-declarations)
 	 */
 	@Override
 	public <A extends AbstractState<A, H, V, T>,

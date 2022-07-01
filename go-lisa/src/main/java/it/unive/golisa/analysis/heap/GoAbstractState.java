@@ -18,6 +18,16 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * An abstract state of the analysis for Go, composed by a value state modeling
+ * values of program variables and memory locations. The heap state is a
+ * {@link GoPointBasedHeap}.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * 
+ * @param <V> the type of {@link ValueDomain} embedded in this state
+ * @param <T> the type of {@link TypeDomain} embedded in this state
+ */
 public class GoAbstractState<V extends ValueDomain<V>,
 		T extends TypeDomain<T>>
 		extends BaseLattice<GoAbstractState<V, T>>
@@ -367,5 +377,4 @@ public class GoAbstractState<V extends ValueDomain<V>,
 
 		return valueState.getDomainInstance(domain);
 	}
-
 }

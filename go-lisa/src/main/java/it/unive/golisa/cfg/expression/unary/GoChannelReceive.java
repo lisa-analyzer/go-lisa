@@ -14,8 +14,20 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
+/**
+ * A Go channel receive expression (e.g., <-x).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoChannelReceive extends UnaryExpression {
 
+	/**
+	 * Builds the channel receive expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression from which receive
+	 */
 	public GoChannelReceive(CFG cfg, CodeLocation location, Expression exp) {
 		super(cfg, location, "<-", exp);
 	}

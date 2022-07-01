@@ -26,7 +26,7 @@ public class GoMapType implements GoType, InMemoryType {
 
 	/**
 	 * Yields a unique instance (either an existing one or a fresh one) of
-	 * {@link GoMapType} representing a map type
+	 * {@link GoMapType} representing a map type.
 	 * 
 	 * @param type the map type to lookup
 	 * 
@@ -39,6 +39,12 @@ public class GoMapType implements GoType, InMemoryType {
 		return mapTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
+	/**
+	 * Builds a map type.
+	 * 
+	 * @param keyType     key type
+	 * @param elementType element type
+	 */
 	public GoMapType(Type keyType, Type elementType) {
 		this.keyType = keyType;
 		this.elementType = elementType;

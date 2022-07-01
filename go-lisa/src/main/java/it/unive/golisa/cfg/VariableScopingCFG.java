@@ -55,7 +55,7 @@ public class VariableScopingCFG extends CFG {
 
 	/**
 	 * Adds the given node to the set of nodes, and collect IDs visible in that
-	 * node
+	 * node.
 	 * 
 	 * @param node       the node to add
 	 * @param visibleIds the IDs visible to collect
@@ -65,7 +65,7 @@ public class VariableScopingCFG extends CFG {
 	}
 
 	/**
-	 * Yields the IDs visible from a statement
+	 * Yields the IDs visible from a statement.
 	 * 
 	 * @param node the node to add
 	 * 

@@ -17,10 +17,23 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A Go type assertion (e.g., x.(string)).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoTypeAssertion extends UnaryExpression {
 
 	private final Type type;
 
+	/**
+	 * Builds the type assertion expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression
+	 * @param type     the type to assert
+	 */
 	public GoTypeAssertion(CFG cfg, SourceCodeLocation location, Expression exp, Type type) {
 		super(cfg, location, ".(" + type + ")", exp);
 		this.type = type;

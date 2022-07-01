@@ -31,10 +31,23 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A Go non-keyed literal (e.g., {1, 2, 3}).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoNonKeyedLiteral extends NaryExpression {
 
-	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] value, Type staticType) {
-		super(cfg, location, "nonKeyedLit(" + staticType + ")", staticType, value);
+	/**
+	 * Builds the non-keyed literal.
+	 * 
+	 * @param cfg        the {@link CFG} where this expression lies
+	 * @param location   the location where this expression is defined
+	 * @param values     the expressions of the non-keyed literal
+	 * @param staticType the static type of this non-keyed literal
+	 */
+	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] values, Type staticType) {
+		super(cfg, location, "nonKeyedLit(" + staticType + ")", staticType, values);
 	}
 
 	private SymbolicExpression getVariable(Global global) {

@@ -31,10 +31,23 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A Go make expression (e.g., make([]int, 5)).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoMake extends NaryExpression {
 
 	private final Type type;
 
+	/**
+	 * Builds the make expression.
+	 * 
+	 * @param cfg        the {@link CFG} where this expression lies
+	 * @param location   the location where this expression is defined
+	 * @param type       the type to allocate
+	 * @param parameters the parameters
+	 */
 	public GoMake(CFG cfg, CodeLocation location, Type type, Expression[] parameters) {
 		super(cfg, location, "make " + type, parameters);
 		this.type = type;

@@ -1236,7 +1236,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
 				}
 
-				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg, file, line, col, target, exp);
+				GoShortVariableDeclaration asg = new GoShortVariableDeclaration(cfg,
+						new SourceCodeLocation(file, line, col), target, exp);
 				block.addNode(asg);
 				storeIds(asg);
 

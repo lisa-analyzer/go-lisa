@@ -6,8 +6,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Return;
 
 /**
- * Go return statement class (e.g., var x int = 5). TODO: at the moment, we
- * handle only the case when {@code expression} is a single expressin
+ * Go return statement class (e.g., return 5)
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */

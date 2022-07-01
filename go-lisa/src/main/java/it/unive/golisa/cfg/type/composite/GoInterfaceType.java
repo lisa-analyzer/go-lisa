@@ -48,6 +48,12 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	private final String name;
 	private final CompilationUnit unit;
 
+	/**
+	 * Builds an interface type.
+	 * 
+	 * @param name the name of the interface type
+	 * @param unit the corresponding unit
+	 */
 	public GoInterfaceType(String name, CompilationUnit unit) {
 		this.unit = unit;
 		this.name = name;
@@ -57,7 +63,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * Checks whether an interface type named {@code name} has been already
 	 * built.
 	 * 
-	 * @param name the name of the interface type
+	 * @param intfType the name of the interface type
 	 * 
 	 * @return whether an interface type named {@code name} has been already
 	 *             built.
@@ -69,7 +75,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	/**
 	 * Yields a Go interface type from given name.
 	 * 
-	 * @param structType the name
+	 * @param interfaceName the name
 	 * 
 	 * @return a Go interface type from given name
 	 */

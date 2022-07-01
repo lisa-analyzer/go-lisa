@@ -15,14 +15,19 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
+/**
+ * An open block statement.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class OpenBlock extends Statement {
 
 	/**
-	 * Builds the open of a code block
+	 * Builds the open of a code block.
 	 * 
 	 * @param cfg      the cfg that this statement belongs to
 	 * @param location the location where this statement is defined within the
-	 *                     source file. If unknown, use {@code null}
+	 *                     source file
 	 */
 	public OpenBlock(CFG cfg, CodeLocation location) {
 		super(cfg, location);

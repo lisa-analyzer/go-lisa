@@ -23,22 +23,27 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
 
-public class GoHasSuffix extends NativeCFG {
+public class HasSuffix extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location    the location where this native cfg is defined
-	 * @param strconvUnit the unit to which this native cfg belongs to
+	 * @param location   the location where this native cfg is defined
+	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
-	public GoHasSuffix(CodeLocation location, CompilationUnit stringUnit) {
+	public HasSuffix(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "HasSuffix", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
-				HasSuffix.class);
+				HasSuffixImpl.class);
 	}
 
-	public static class HasSuffix extends it.unive.lisa.program.cfg.statement.BinaryExpression
+	/**
+	 * The HasSuffix implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class HasSuffixImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -48,12 +53,31 @@ public class GoHasSuffix extends NativeCFG {
 			original = st;
 		}
 
-		public static HasSuffix build(CFG cfg, CodeLocation location, Expression... params) {
-			return new HasSuffix(cfg, location, params[0], params[1]);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
+		public static HasSuffixImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new HasSuffixImpl(cfg, location, params[0], params[1]);
 		}
 
-		public HasSuffix(CFG cfg, CodeLocation location, Expression exp1, Expression exp2) {
-			super(cfg, location, "HasSuffix", GoBoolType.INSTANCE, exp1, exp2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
+		 */
+		public HasSuffixImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "HasSuffix", GoBoolType.INSTANCE, left, right);
 		}
 
 		@Override

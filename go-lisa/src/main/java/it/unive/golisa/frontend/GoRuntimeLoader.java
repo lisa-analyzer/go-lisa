@@ -74,13 +74,13 @@ import it.unive.golisa.cfg.runtime.shim.type.Handler;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
 import it.unive.golisa.cfg.runtime.strconv.Atoi;
 import it.unive.golisa.cfg.runtime.strconv.Itoa;
-import it.unive.golisa.cfg.runtime.strings.GoContains;
-import it.unive.golisa.cfg.runtime.strings.GoHasPrefix;
-import it.unive.golisa.cfg.runtime.strings.GoHasSuffix;
-import it.unive.golisa.cfg.runtime.strings.GoIndex;
-import it.unive.golisa.cfg.runtime.strings.GoIndexRune;
-import it.unive.golisa.cfg.runtime.strings.GoLen;
-import it.unive.golisa.cfg.runtime.strings.GoReplace;
+import it.unive.golisa.cfg.runtime.strings.Contains;
+import it.unive.golisa.cfg.runtime.strings.HasPrefix;
+import it.unive.golisa.cfg.runtime.strings.HasSuffix;
+import it.unive.golisa.cfg.runtime.strings.Index;
+import it.unive.golisa.cfg.runtime.strings.IndexRune;
+import it.unive.golisa.cfg.runtime.strings.Len;
+import it.unive.golisa.cfg.runtime.strings.Replace;
 import it.unive.golisa.cfg.runtime.strings.ToLower;
 import it.unive.golisa.cfg.runtime.time.function.Now;
 import it.unive.golisa.cfg.runtime.time.function.Parse;
@@ -387,13 +387,13 @@ public interface GoRuntimeLoader {
 
 	private void loadStrings(Program program) {
 		CompilationUnit str = new CompilationUnit(runtimeLocation, "strings", false);
-		str.addConstruct(new GoHasPrefix(runtimeLocation, str));
-		str.addConstruct(new GoHasSuffix(runtimeLocation, str));
-		str.addConstruct(new GoContains(runtimeLocation, str));
-		str.addConstruct(new GoReplace(runtimeLocation, str));
-		str.addConstruct(new GoIndex(runtimeLocation, str));
-		str.addConstruct(new GoIndexRune(runtimeLocation, str));
-		str.addConstruct(new GoLen(runtimeLocation, str));
+		str.addConstruct(new HasPrefix(runtimeLocation, str));
+		str.addConstruct(new HasSuffix(runtimeLocation, str));
+		str.addConstruct(new Contains(runtimeLocation, str));
+		str.addConstruct(new Replace(runtimeLocation, str));
+		str.addConstruct(new Index(runtimeLocation, str));
+		str.addConstruct(new IndexRune(runtimeLocation, str));
+		str.addConstruct(new Len(runtimeLocation, str));
 		str.addConstruct(new ToLower(runtimeLocation, str));
 
 		program.addCompilationUnit(str);

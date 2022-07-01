@@ -21,10 +21,8 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.operator.binary.StringContains;
-import it.unive.lisa.type.Type;
 
-public class GoContains extends NativeCFG {
+public class HasPrefix extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
@@ -32,14 +30,19 @@ public class GoContains extends NativeCFG {
 	 * @param location   the location where this native cfg is defined
 	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
-	public GoContains(CodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, "Contains", GoBoolType.INSTANCE,
+	public HasPrefix(CodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "HasPrefix", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
-				Contains.class);
+				HasPrefixImpl.class);
 	}
 
-	public static class Contains extends it.unive.lisa.program.cfg.statement.BinaryExpression
+	/**
+	 * The HasPrefix implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class HasPrefixImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -49,12 +52,31 @@ public class GoContains extends NativeCFG {
 			original = st;
 		}
 
-		public static Contains build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Contains(cfg, location, params[0], params[1]);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
+		public static HasPrefixImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new HasPrefixImpl(cfg, location, params[0], params[1]);
 		}
 
-		public Contains(CFG cfg, CodeLocation location, Expression exp1, Expression exp2) {
-			super(cfg, location, "Contains", GoBoolType.INSTANCE, exp1, exp2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
+		 */
+		public HasPrefixImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "HasPrefix", GoBoolType.INSTANCE, left, right);
 		}
 
 		@Override
@@ -65,19 +87,16 @@ public class GoContains extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
+			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
+				return state.bottom();
 
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (Type leftType : left.getRuntimeTypes())
-				for (Type rightType : right.getRuntimeTypes())
-					if (!leftType.isStringType() && !leftType.isUntyped())
-						continue;
-					else if (!rightType.isStringType() && !rightType.isUntyped())
-						continue;
-					else
-						result = result.lub(state
-								.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-										left, right, StringContains.INSTANCE, getLocation()), original));
-			return result;
+			if (!right.getDynamicType().isStringType() && !right.getDynamicType().isUntyped())
+				return state.bottom();
+
+			return state
+					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
+							left, right, it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE,
+							getLocation()), original);
 		}
 	}
 }

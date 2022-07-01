@@ -23,22 +23,27 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
 
-public class GoIndex extends NativeCFG {
+public class Index extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location    the location where this native cfg is defined
-	 * @param strconvUnit the unit to which this native cfg belongs to
+	 * @param location   the location where this native cfg is defined
+	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
-	public GoIndex(CodeLocation location, CompilationUnit stringUnit) {
+	public Index(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Index", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
-				IndexOf.class);
+				IndexOfImpl.class);
 	}
 
-	public static class IndexOf extends it.unive.lisa.program.cfg.statement.BinaryExpression
+	/**
+	 * The Index implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class IndexOfImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -48,12 +53,31 @@ public class GoIndex extends NativeCFG {
 			original = st;
 		}
 
-		public static IndexOf build(CFG cfg, CodeLocation location, Expression... params) {
-			return new IndexOf(cfg, location, params[0], params[1]);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
+		public static IndexOfImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new IndexOfImpl(cfg, location, params[0], params[1]);
 		}
 
-		public IndexOf(CFG cfg, CodeLocation location, Expression exp1, Expression exp2) {
-			super(cfg, location, "Index", GoIntType.INSTANCE, exp1, exp2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
+		 */
+		public IndexOfImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "Index", GoIntType.INSTANCE, left, right);
 		}
 
 		@Override

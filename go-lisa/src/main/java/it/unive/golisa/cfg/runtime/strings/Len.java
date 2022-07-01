@@ -23,21 +23,27 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 
-public class GoLen extends NativeCFG {
+public class Len extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location    the location where this native cfg is defined
-	 * @param strconvUnit the unit to which this native cfg belongs to
+	 * @param location   the location where this native cfg is defined
+	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
-	public GoLen(CodeLocation location, CompilationUnit stringUnit) {
+	public Len(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Len", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
-				Len.class);
+				LenImpl.class);
 	}
 
-	public static class Len extends it.unive.lisa.program.cfg.statement.UnaryExpression implements PluggableStatement {
+	/**
+	 * The Len implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class LenImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -46,12 +52,30 @@ public class GoLen extends NativeCFG {
 			original = st;
 		}
 
-		public static Len build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Len(cfg, location, params[0]);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
+		public static LenImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new LenImpl(cfg, location, params[0]);
 		}
 
-		public Len(CFG cfg, CodeLocation location, Expression arg) {
-			super(cfg, location, "Len", GoIntType.INSTANCE, arg);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public LenImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "Len", GoIntType.INSTANCE, expr);
 		}
 
 		@Override

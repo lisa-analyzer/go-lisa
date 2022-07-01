@@ -23,23 +23,28 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.type.Type;
 
-public class GoReplace extends NativeCFG {
+public class Replace extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location    the location where this native cfg is defined
-	 * @param strconvUnit the unit to which this native cfg belongs to
+	 * @param location   the location where this native cfg is defined
+	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
-	public GoReplace(CodeLocation location, CompilationUnit stringUnit) {
+	public Replace(CodeLocation location, CompilationUnit stringUnit) {
 		super(new CFGDescriptor(location, stringUnit, false, "Replace", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "that", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
-				Replace.class);
+				ReplaceImpl.class);
 	}
 
-	public static class Replace extends TernaryExpression implements PluggableStatement {
+	/**
+	 * The Replace implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class ReplaceImpl extends TernaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -48,11 +53,31 @@ public class GoReplace extends NativeCFG {
 			original = st;
 		}
 
-		public static Replace build(CFG cfg, CodeLocation location, Expression... params) {
-			return new Replace(cfg, location, params[0], params[1], params[2]);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
+		public static ReplaceImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ReplaceImpl(cfg, location, params[0], params[1], params[2]);
 		}
 
-		public Replace(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param middle   the middle-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
+		 */
+		public ReplaceImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
 			super(cfg, location, "Replace", left, middle, right);
 		}
 

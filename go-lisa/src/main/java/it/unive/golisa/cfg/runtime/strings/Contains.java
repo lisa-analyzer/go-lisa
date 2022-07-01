@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.runtime.strings;
 
-import it.unive.golisa.cfg.runtime.strings.Len.LenImpl;
+import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -20,9 +20,11 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.operator.binary.StringContains;
+import it.unive.lisa.type.Type;
 
-public class ToLower extends NativeCFG {
+public class Contains extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
@@ -30,18 +32,19 @@ public class ToLower extends NativeCFG {
 	 * @param location   the location where this native cfg is defined
 	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
-	public ToLower(CodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, "ToLower", GoStringType.INSTANCE,
-				new Parameter(location, "this", GoStringType.INSTANCE)),
-				LenImpl.class);
+	public Contains(CodeLocation location, CompilationUnit stringUnit) {
+		super(new CFGDescriptor(location, stringUnit, false, "Contains", GoBoolType.INSTANCE,
+				new Parameter(location, "this", GoStringType.INSTANCE),
+				new Parameter(location, "other", GoStringType.INSTANCE)),
+				ContainsImpl.class);
 	}
 
 	/**
-	 * The ToLower implementation.
+	 * The Contains implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class ToLowerImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
+	public static class ContainsImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -61,8 +64,8 @@ public class ToLower extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static ToLowerImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new ToLowerImpl(cfg, location, params[0]);
+		public static ContainsImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new ContainsImpl(cfg, location, params[0], params[1]);
 		}
 
 		/**
@@ -71,20 +74,34 @@ public class ToLower extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param expr     the expression
+		 * @param left     the left-hand side of this pluggable statement
+		 * @param right    the right-hand side of this pluggable statement
 		 */
-		public ToLowerImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "ToLower", GoStringType.INSTANCE, expr);
+		public ContainsImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "Contains", GoBoolType.INSTANCE, left, right);
 		}
 
 		@Override
 		protected <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
+
+			AnalysisState<A, H, V, T> result = state.bottom();
+			for (Type leftType : left.getRuntimeTypes())
+				for (Type rightType : right.getRuntimeTypes())
+					if (!leftType.isStringType() && !leftType.isUntyped())
+						continue;
+					else if (!rightType.isStringType() && !rightType.isUntyped())
+						continue;
+					else
+						result = result.lub(state
+								.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
+										left, right, StringContains.INSTANCE, getLocation()), original));
+			return result;
 		}
 	}
 }

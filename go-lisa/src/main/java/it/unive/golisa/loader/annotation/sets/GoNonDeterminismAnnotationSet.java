@@ -12,15 +12,16 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * The class represents the set of annotations for the non-determinism analysis related to Go APIs
+ * The class represents the set of annotations for the non-determinism analysis
+ * related to Go APIs.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
- *
  */
 public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
 
 	/**
-	 * Builds an instance of an annotation set for non-determinism related toGo
+	 * Builds an instance of an annotation set for non-determinism related to
+	 * Go.
 	 */
 	public GoNonDeterminismAnnotationSet() {
 		super("go-runtimes");

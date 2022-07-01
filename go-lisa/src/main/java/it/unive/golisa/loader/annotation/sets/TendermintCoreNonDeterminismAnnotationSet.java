@@ -6,15 +6,16 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * The class represents the set of annotations for the non-determinism analysis related to Tendermint Core
+ * The class represents the set of annotations for the non-determinism analysis
+ * related to Tendermint Core.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
- *
  */
 public class TendermintCoreNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
 
 	/**
-	 * Builds an instance of an annotation set for non-determinism related to Tendermint Core
+	 * Builds an instance of an annotation set for non-determinism related to
+	 * Tendermint Core.
 	 */
 	public TendermintCoreNonDeterminismAnnotationSet() {
 		super("tendermint-core");

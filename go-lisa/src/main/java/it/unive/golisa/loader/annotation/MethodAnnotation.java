@@ -3,22 +3,21 @@ package it.unive.golisa.loader.annotation;
 import it.unive.lisa.program.annotations.Annotation;
 
 /**
- * 
- * The class represents a method annotation
+ * The class represents a method annotation.
  *
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
- * 
  */
 public class MethodAnnotation extends CodeAnnotation {
 
 	private final String unit;
 	private final String name;
-	
+
 	/**
-	 * Builds an instance of method annotation
+	 * Builds an instance of method annotation.
+	 * 
 	 * @param annotation the annotation
-	 * @param unit the unit of method
-	 * @param name the method name
+	 * @param unit       the unit of method
+	 * @param name       the method name
 	 */
 	public MethodAnnotation(Annotation annotation, String unit, String name) {
 		super(annotation);
@@ -27,7 +26,8 @@ public class MethodAnnotation extends CodeAnnotation {
 	}
 
 	/**
-	 * Yields the unit
+	 * Yields the unit.
+	 * 
 	 * @return the unit
 	 */
 	public String getUnit() {
@@ -35,7 +35,8 @@ public class MethodAnnotation extends CodeAnnotation {
 	}
 
 	/**
-	 * Yields the method name
+	 * Yields the method name.
+	 * 
 	 * @return the method name
 	 */
 	public String getName() {

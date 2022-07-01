@@ -35,8 +35,8 @@ public class Wrap extends NativeCFG {
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location the location where this native cfg is defined
-	 * @param randUnit the unit to which this native cfg belongs to
+	 * @param location   the location where this native cfg is defined
+	 * @param errorsUnit the unit to which this native cfg belongs to
 	 */
 	public Wrap(CodeLocation location, CompilationUnit errorsUnit) {
 		super(new CFGDescriptor(location, errorsUnit, false, "Wrap", GoErrorType.INSTANCE,

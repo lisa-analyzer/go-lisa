@@ -28,13 +28,20 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * func CreateCompositeKey(objectType string, attributes []string) (string,
- * error)
- * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CreateCompositeKey
+ * error).
+ * 
+ * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CreateCompositeKey
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class CreateCompositeKey extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public CreateCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "CreateCompositeKey",
 				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
@@ -45,6 +52,11 @@ public class CreateCompositeKey extends NativeCFG {
 				CreateCompositeKeyImpl.class);
 	}
 
+	/**
+	 * The CreateCompositeKey implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CreateCompositeKeyImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -55,10 +67,28 @@ public class CreateCompositeKey extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static CreateCompositeKeyImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new CreateCompositeKeyImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public CreateCompositeKeyImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "CreateCompositeKeyImpl",
 					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,

@@ -32,12 +32,23 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Error extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public Error(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "Error", Response.INSTANCE,
 				new Parameter(location, "msg", GoStringType.INSTANCE)),
 				ErrorImpl.class);
 	}
 
+	/**
+	 * The Error implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ErrorImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -48,12 +59,30 @@ public class Error extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static ErrorImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ErrorImpl(cfg, location, params[0]);
 		}
 
-		public ErrorImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "ErrorImpl", Response.INSTANCE, e);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public ErrorImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "ErrorImpl", Response.INSTANCE, expr);
 		}
 
 		@Override

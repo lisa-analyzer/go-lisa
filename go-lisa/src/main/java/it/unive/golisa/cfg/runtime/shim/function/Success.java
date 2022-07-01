@@ -33,12 +33,23 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Success extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public Success(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "Success", Response.INSTANCE,
 				new Parameter(location, "payload", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),
 				SuccessImpl.class);
 	}
 
+	/**
+	 * The Success implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class SuccessImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -49,12 +60,30 @@ public class Success extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static SuccessImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new SuccessImpl(cfg, location, params[0]);
 		}
 
-		public SuccessImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "SuccessImpl", Response.INSTANCE, e);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
+		public SuccessImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "SuccessImpl", Response.INSTANCE, expr);
 		}
 
 		@Override

@@ -50,6 +50,11 @@ public class CreateCompositeKey extends NativeCFG {
 				CreateCompositeKeyImpl.class);
 	}
 
+	/**
+	 * The CreateCompositeKey implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CreateCompositeKeyImpl extends NaryExpression
 			implements PluggableStatement {
 

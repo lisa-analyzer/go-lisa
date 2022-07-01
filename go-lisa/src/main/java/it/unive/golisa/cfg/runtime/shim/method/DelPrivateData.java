@@ -36,6 +36,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class DelPrivateData extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public DelPrivateData(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "DelPrivateData", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.INSTANCE),
@@ -44,6 +50,11 @@ public class DelPrivateData extends NativeCFG {
 				DelPrivateDataImpl.class);
 	}
 
+	/**
+	 * The DelPrivateData implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class DelPrivateDataImpl extends NaryExpression
 			implements PluggableStatement {
 
@@ -54,10 +65,28 @@ public class DelPrivateData extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static DelPrivateDataImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new DelPrivateDataImpl(cfg, location, params[0], params[1]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public DelPrivateDataImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "DelPrivateDataImpl", GoErrorType.INSTANCE, params);
 		}

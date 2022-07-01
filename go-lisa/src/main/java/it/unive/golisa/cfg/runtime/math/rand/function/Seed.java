@@ -64,6 +64,8 @@ public class Seed extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static SeedImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new SeedImpl(cfg, location, params[0]);

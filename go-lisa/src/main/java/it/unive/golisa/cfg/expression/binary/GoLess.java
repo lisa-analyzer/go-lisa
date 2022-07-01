@@ -18,7 +18,7 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go less than expression (e.g., x < y)
+ * A Go less than expression (e.g., x < y).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */

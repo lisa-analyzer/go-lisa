@@ -71,6 +71,8 @@ public class CopyN extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static CopyNImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new CopyNImpl(cfg, location, params);

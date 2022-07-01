@@ -13,13 +13,12 @@ import it.unive.lisa.program.cfg.statement.literal.Literal;
 public class GoNil extends Literal<String> {
 
 	/**
-	 * Builds a Go nil value. The location where this literal appears is unknown
-	 * (i.e. no source file/line/column is available).
+	 * Builds a Go nil value.
 	 * 
-	 * @param cfg the cfg that this literal belongs to
+	 * @param cfg      the cfg that this literal belongs to
+	 * @param location the location where this expression is defined
 	 */
 	public GoNil(CFG cfg, SourceCodeLocation location) {
 		super(cfg, location, "nil", GoNilType.INSTANCE);
 	}
-
 }

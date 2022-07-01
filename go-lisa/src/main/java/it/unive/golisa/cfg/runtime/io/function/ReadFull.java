@@ -70,6 +70,8 @@ public class ReadFull extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static ReadFullImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ReadFullImpl(cfg, location, params[0], params[1]);

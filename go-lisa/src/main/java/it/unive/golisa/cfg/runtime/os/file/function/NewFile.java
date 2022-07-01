@@ -69,6 +69,8 @@ public class NewFile extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static NewFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new NewFileImpl(cfg, location, params[0], params[1]);

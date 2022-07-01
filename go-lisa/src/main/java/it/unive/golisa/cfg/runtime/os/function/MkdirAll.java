@@ -72,6 +72,8 @@ public class MkdirAll extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static MkdirAllImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new MkdirAllImpl(cfg, location, params[0], params[1]);

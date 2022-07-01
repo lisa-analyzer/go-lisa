@@ -74,6 +74,8 @@ public class OpenFile extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static OpenFileImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new OpenFileImpl(cfg, location, params);

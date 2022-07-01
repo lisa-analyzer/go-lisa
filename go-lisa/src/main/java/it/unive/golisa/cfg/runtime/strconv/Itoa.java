@@ -63,6 +63,8 @@ public class Itoa extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static ItoaImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ItoaImpl(cfg, location, params[0]);

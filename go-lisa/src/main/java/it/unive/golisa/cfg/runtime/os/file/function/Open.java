@@ -69,6 +69,8 @@ public class Open extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static OpenImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new OpenImpl(cfg, location, params[0]);

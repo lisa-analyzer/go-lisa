@@ -59,6 +59,8 @@ public class Since extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static SinceImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new SinceImpl(cfg, location, params[0]);

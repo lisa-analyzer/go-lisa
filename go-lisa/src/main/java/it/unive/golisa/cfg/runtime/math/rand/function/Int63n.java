@@ -57,6 +57,8 @@ public class Int63n extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static IntnImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new IntnImpl(cfg, location, params[0]);

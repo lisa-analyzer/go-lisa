@@ -64,6 +64,8 @@ public class GoToString extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static ToString build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ToString(cfg, location, params[0]);

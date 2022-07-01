@@ -68,6 +68,8 @@ public class Marshal extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static MarshalImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new MarshalImpl(cfg, location, params[0]);

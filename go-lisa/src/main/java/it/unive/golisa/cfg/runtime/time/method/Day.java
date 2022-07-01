@@ -61,6 +61,8 @@ public class Day extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static DayImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new DayImpl(cfg, location, params[0]);

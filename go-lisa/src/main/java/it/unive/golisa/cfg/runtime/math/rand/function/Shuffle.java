@@ -63,6 +63,8 @@ public class Shuffle extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param expr     the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static ShuffleImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ShuffleImpl(cfg, location, params[0], params[1]);

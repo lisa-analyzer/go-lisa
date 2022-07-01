@@ -65,6 +65,8 @@ public class NopCloser extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static NopCloserImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new NopCloserImpl(cfg, location, params[0]);

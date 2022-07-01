@@ -64,6 +64,8 @@ public class Float64 extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static Float64Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Float64Impl(cfg, location, params[0]);

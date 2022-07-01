@@ -52,6 +52,8 @@ public class UrlPathEscape extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static PathEscape build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PathEscape(cfg, location, params[0]);

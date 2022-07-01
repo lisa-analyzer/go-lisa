@@ -65,6 +65,8 @@ public class Perm extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static PermImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new PermImpl(cfg, location, params[0], params[1]);

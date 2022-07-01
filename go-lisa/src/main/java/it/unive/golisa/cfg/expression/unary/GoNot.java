@@ -18,7 +18,7 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.type.Type;
 
 /**
- * Go unary not Boolean expression (e.g., !(x > y))
+ * Go unary not Boolean expression (e.g., !(x > y)).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */

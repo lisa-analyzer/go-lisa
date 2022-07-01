@@ -55,6 +55,8 @@ public class Float32 extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static Float32Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new Float32Impl(cfg, location);

@@ -57,6 +57,8 @@ public class Now extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static NowImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new NowImpl(cfg, location);

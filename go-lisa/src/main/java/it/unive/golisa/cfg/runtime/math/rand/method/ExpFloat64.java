@@ -64,6 +64,8 @@ public class ExpFloat64 extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
 		 */
 		public static ExpFloat64Impl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new ExpFloat64Impl(cfg, location, params[0]);

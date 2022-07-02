@@ -1,5 +1,6 @@
 # GoLiSA
 [![GitHub license](https://img.shields.io/github/license/UniVE-SSV/go-lisa)](https://github.com/UniVE-SSV/go-lisa/blob/master/LICENSE)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/UniVE-SSV/go-lisa/Gradle%20Build%20(master%20branch))
 ![GitHub last commit](https://img.shields.io/github/last-commit/UniVE-SSV/go-lisa)
 ![GitHub issues](https://img.shields.io/github/issues-raw/UniVE-SSV/go-lisa)
 

@@ -1,5 +1,7 @@
 # GoLiSA
+[![GitHub license](https://img.shields.io/github/license/UniVE-SSV/go-lisa)](https://github.com/UniVE-SSV/go-lisa/blob/master/LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/UniVE-SSV/go-lisa)
+![GitHub issues](https://img.shields.io/github/issues-raw/UniVE-SSV/go-lisa)
 
 GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications (OOPSLA 2022)
 

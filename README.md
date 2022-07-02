@@ -1,5 +1,9 @@
 # GoLiSA
-GoLiSA: A Static Analyzer for Go Smart Contracts and DApps (ECOOP 2022)
+[![GitHub license](https://img.shields.io/github/license/UniVE-SSV/go-lisa)](https://github.com/UniVE-SSV/go-lisa/blob/master/LICENSE)
+![GitHub last commit](https://img.shields.io/github/last-commit/UniVE-SSV/go-lisa)
+![GitHub issues](https://img.shields.io/github/issues-raw/UniVE-SSV/go-lisa)
+
+GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications (OOPSLA 2022)
 
 ## How to use GoLiSA
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) and it expects four paramaters:

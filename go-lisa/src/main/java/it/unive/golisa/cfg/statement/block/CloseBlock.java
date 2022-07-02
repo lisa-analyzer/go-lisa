@@ -26,7 +26,7 @@ public class CloseBlock extends Statement {
 	private OpenBlock open;
 
 	/**
-	 * Builds the close of a code block
+	 * Builds the close of a code block.
 	 * 
 	 * @param cfg      the cfg that this statement belongs to
 	 * @param location the location where this statement is defined within the
@@ -56,7 +56,7 @@ public class CloseBlock extends Statement {
 
 	/**
 	 * Semantics of an close block is to restore the values of open block after
-	 * the block (e.g., about variable re-declarations)
+	 * the block (e.g., about variable re-declarations).
 	 */
 	@Override
 	public <A extends AbstractState<A, H, V, T>,

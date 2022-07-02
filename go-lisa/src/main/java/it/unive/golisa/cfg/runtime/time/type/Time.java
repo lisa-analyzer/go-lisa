@@ -7,8 +7,16 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 
+/**
+ * A Time type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Time extends GoStructType {
 
+	/**
+	 * Unique instance of a {@link Time} type.
+	 */
 	public static final Time INSTANCE = new Time();
 
 	private Time() {

@@ -207,25 +207,40 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 /**
- * A {@link GoParserBaseVisitor} that will parse the code of an Go method
+ * A {@link GoParserBaseVisitor} that will parse the code of an Go method.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
+	/**
+	 * The path file.
+	 */
 	protected final String file;
 
+	/**
+	 * The entry points.
+	 */
 	protected final Collection<Statement> entrypoints;
 
+	/**
+	 * Mapping between goto statements and label to which they have to jump to.
+	 */
 	protected final Map<Statement, String> gotos;
 
+	/**
+	 * Mapping between statements and their labels.
+	 */
 	protected final Map<String, Statement> labeledStmt;
-	
+
 	/**
 	 * The current cfg.
 	 */
 	protected VariableScopingCFG cfg;
 
-	protected CFGDescriptor descriptor;
-
+	/**
+	 * The current program.
+	 */
 	protected final Program program;
 
 	protected static int c = 0;
@@ -236,7 +251,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * Current compilation unit to parse.
 	 */
 	protected CompilationUnit currentUnit;
-	
+
 	/**
 	 * Block deep.
 	 */
@@ -255,12 +270,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	private AdjacencyMatrix<Statement, Edge, CFG> matrix;
 
 	private final LinkedList<BlockInfo> blockList = new LinkedList<>();
-	
+
 	private final Collection<ControlFlowStructure> cfs;
 
 	private final Map<String, Set<IdInfo>> visibleIds;
 
-	
 	/**
 	 * Builds the code member visitor.
 	 * 
@@ -288,7 +302,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.program = program;
-		this.descriptor = mkDescriptor(packageUnit, ctx);
 		this.constants = constants;
 
 		gotos = new HashMap<>();
@@ -296,7 +309,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(descriptor, entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(mkDescriptor(packageUnit, ctx), entrypoints, new AdjacencyMatrix<>());
 
 		visibleIds = new HashMap<>();
 		this.blockDeep = 0;
@@ -305,7 +318,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	protected void initializeVisibleIds() {
-		for (VariableTableEntry par : descriptor.getVariables())
+		for (VariableTableEntry par : cfg.getDescriptor().getVariables())
 			if (!GoLangUtils.refersToBlankIdentifier(par.createReference(cfg))) {
 				visibleIds.putIfAbsent(par.getName(), new HashSet<IdInfo>());
 				visibleIds.get(par.getName()).add(new IdInfo(par.createReference(cfg), blockDeep));
@@ -363,7 +376,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// a return statement is added
 		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret = new Ret(cfg, descriptor.getLocation());
+			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 			if (cfg.getNodesCount() == 0) {
 				// empty method, so the ret is also the entrypoint
 				matrix.addNode(ret);
@@ -379,7 +392,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				for (Statement st : preExits)
 					matrix.addEdge(new SequentialEdge(st, ret));
 
-				for (VariableTableEntry entry : descriptor.getVariables())
+				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
 					if (preExits.contains(entry.getScopeEnd()))
 						entry.setScopeEnd(ret);
 			}
@@ -387,7 +400,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		for (Statement st : matrix.getExits())
 			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
-				Ret ret = new Ret(cfg, descriptor.getLocation());
+				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
@@ -595,7 +608,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (!backup.containsKey(id.getKey())) {
 				for (IdInfo idInfo : id.getValue()) {
 					VariableRef ref = idInfo.getRef();
-					descriptor.addVariable(new VariableTableEntry(ref.getLocation(),
+					cfg.getDescriptor().addVariable(new VariableTableEntry(ref.getLocation(),
 							0, ref.getRootStatement(), last, id.getKey(), Untyped.INSTANCE));
 					toRemove.putIfAbsent(id.getKey(), new HashSet<IdInfo>());
 					toRemove.get(id.getKey()).add(idInfo);

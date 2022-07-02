@@ -19,8 +19,8 @@ import it.unive.golisa.antlr.GoParser.String_Context;
 import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.runtime.conversion.GoToInt64;
 import it.unive.golisa.cfg.runtime.conversion.GoToString;
+import it.unive.golisa.cfg.runtime.conversion.ToInt64;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoQualifiedType;
@@ -77,7 +77,6 @@ import java.util.Map;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -93,9 +92,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private static final Logger log = LogManager.getLogger(GoFrontEnd.class);
 
-	/**
-	 * Go program file path.
-	 */
 	private final String filePath;
 
 	private final Program program;
@@ -103,6 +99,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	private Map<String, ExpressionContext> constants;
 
 	private GoLangAPISignatureMapper mapper = GoLangAPISignatureMapper.getGoApiSignatures();
+
+	private CompilationUnit packageUnit;
 
 	/**
 	 * The parameter assigning strategy for calls.
@@ -149,7 +147,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	/**
 	 * Processes the Go program located at {@code filePath} and returns the LiSA
-	 * program corresponding to the parsed file
+	 * program corresponding to the parsed file.
 	 * 
 	 * @param filePath the file path
 	 * 
@@ -247,8 +245,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoVariadicType.all().forEach(program::registerType);
 	}
 
-	CompilationUnit packageUnit;
-
 	@Override
 	public Program visitSourceFile(SourceFileContext ctx) {
 		String packageName = visitPackageClause(ctx.packageClause());
@@ -318,19 +314,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
 			CompilationUnit unit = new CompilationUnit(
-					new SourceCodeLocation(filePath, getLine(typeSpec), getCol(typeSpec)), unitName, false);
+					new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(typeSpec),
+							GoCodeMemberVisitor.getCol(typeSpec)),
+					unitName, false);
 			units.add(unit);
 			new GoTypeVisitor(filePath, unit, program, constants).visitTypeSpec(typeSpec);
 		}
 		return units;
-	}
-
-	private int getLine(ParserRuleContext ctx) {
-		return ctx.getStart().getLine();
-	}
-
-	private int getCol(ParserRuleContext ctx) {
-		return ctx.getStop().getCharPositionInLine();
 	}
 
 	@Override
@@ -382,7 +372,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	private void loadCore() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		packageUnit.addConstruct(new GoToString(unknownLocation, packageUnit));
-		packageUnit.addConstruct(new GoToInt64(unknownLocation, packageUnit));
+		packageUnit.addConstruct(new ToInt64(unknownLocation, packageUnit));
 	}
 
 	@Override

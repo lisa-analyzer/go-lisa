@@ -91,8 +91,8 @@ import it.unive.golisa.cfg.runtime.time.method.Month;
 import it.unive.golisa.cfg.runtime.time.method.Unix;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
-import it.unive.golisa.cfg.runtime.url.UrlPathEscape;
-import it.unive.golisa.cfg.runtime.url.UrlQueryEscape;
+import it.unive.golisa.cfg.runtime.url.PathEscape;
+import it.unive.golisa.cfg.runtime.url.QueryEscape;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -107,13 +107,13 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public interface GoRuntimeLoader {
 	SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	
+
 	/**
 	 * Loads a package.
 	 * 
-	 * @param module the name of the package to load
+	 * @param module  the name of the package to load
 	 * @param program the program
-	 * @param mapper a mapper 
+	 * @param mapper  a mapper
 	 */
 	default void loadRuntime(String module, Program program, GoLangAPISignatureMapper mapper) {
 		if (module.equals("strings"))
@@ -387,8 +387,8 @@ public interface GoRuntimeLoader {
 
 	private void loadUrl(Program program) {
 		CompilationUnit url = new CompilationUnit(runtimeLocation, "url", false);
-		url.addConstruct(new UrlQueryEscape(runtimeLocation, url));
-		url.addConstruct(new UrlPathEscape(runtimeLocation, url));
+		url.addConstruct(new QueryEscape(runtimeLocation, url));
+		url.addConstruct(new PathEscape(runtimeLocation, url));
 
 		program.addCompilationUnit(url);
 	}

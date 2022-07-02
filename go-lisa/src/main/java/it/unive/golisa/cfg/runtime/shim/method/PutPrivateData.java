@@ -32,7 +32,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func (*ChaincodeStub) PutPrivateData(collection string, key string, value
- * []byte) error
+ * []byte) error.
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutPrivateData
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -55,7 +55,7 @@ public class PutPrivateData extends NativeCFG {
 	}
 
 	/**
-	 * The PutPrivateData implementation.
+	 * The {@link PutPrivateData} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

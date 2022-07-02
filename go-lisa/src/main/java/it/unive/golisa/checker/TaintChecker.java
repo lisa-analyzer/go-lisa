@@ -26,11 +26,23 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import java.util.Collection;
 
+/**
+ * A Go taint checker.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class TaintChecker implements
 		SemanticCheck<GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
 				GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
 
+	/**
+	 * Sink annotation.
+	 */
 	public static final Annotation SINK_ANNOTATION = new Annotation("lisa.taint.Sink");
+
+	/**
+	 * Sink matcher.
+	 */
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
 
 	@Override

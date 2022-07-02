@@ -31,6 +31,12 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class Read extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Read(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Read",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
@@ -39,7 +45,7 @@ public class Read extends NativeCFG {
 	}
 
 	/**
-	 * The Read implementation.
+	 * The {@link Read} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

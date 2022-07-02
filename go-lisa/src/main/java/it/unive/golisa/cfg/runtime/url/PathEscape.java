@@ -22,7 +22,14 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
-public class UrlPathEscape extends NativeCFG {
+/**
+ * func PathEscape(s string) string.
+ * 
+ * @link https://pkg.go.dev/net/url#PathEscape
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
+public class PathEscape extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
@@ -30,13 +37,18 @@ public class UrlPathEscape extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param urlUnit  the unit to which this native cfg belongs to
 	 */
-	public UrlPathEscape(CodeLocation location, CompilationUnit urlUnit) {
+	public PathEscape(CodeLocation location, CompilationUnit urlUnit) {
 		super(new CFGDescriptor(location, urlUnit, false, "PathEscape", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
-				PathEscape.class);
+				PathEscapeImpl.class);
 	}
 
-	public static class PathEscape extends UnaryExpression implements PluggableStatement {
+	/**
+	 * The {@link PathEscape} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class PathEscapeImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -55,8 +67,8 @@ public class UrlPathEscape extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static PathEscape build(CFG cfg, CodeLocation location, Expression... params) {
-			return new PathEscape(cfg, location, params[0]);
+		public static PathEscapeImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new PathEscapeImpl(cfg, location, params[0]);
 		}
 
 		/**
@@ -67,7 +79,7 @@ public class UrlPathEscape extends NativeCFG {
 		 *                     defined
 		 * @param expr     the expression
 		 */
-		public PathEscape(CFG cfg, CodeLocation location, Expression expr) {
+		public PathEscapeImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "PathEscape", GoStringType.INSTANCE, expr);
 		}
 

@@ -50,7 +50,7 @@ public class Parse extends NativeCFG {
 	}
 
 	/**
-	 * The Parse implementation.
+	 * The {@link Parse} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -78,6 +78,15 @@ public class Parse extends NativeCFG {
 			return new ParseImpl(cfg, location, params[0], params[1]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
 		public ParseImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "ParseImpl", new GoTupleType(new Parameter(location, "_", Time.INSTANCE),
 					new Parameter(location, "_", GoErrorType.INSTANCE)), left, right);

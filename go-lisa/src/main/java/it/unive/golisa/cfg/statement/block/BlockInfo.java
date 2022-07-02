@@ -16,6 +16,11 @@ import java.util.Map.Entry;
  */
 public class BlockInfo {
 
+	/**
+	 * Declaration type.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public enum DeclarationType {
 		CONSTANT,
 		VARIABLE,
@@ -27,6 +32,11 @@ public class BlockInfo {
 
 	private final OpenBlock open;
 
+	/**
+	 * Builds a block information.
+	 * 
+	 * @param open the open block to which this class refers to
+	 */
 	public BlockInfo(OpenBlock open) {
 		refs = new HashMap<>();
 		this.open = open;
@@ -36,6 +46,16 @@ public class BlockInfo {
 		return refs;
 	}
 
+	/**
+	 * Yields a list of {@link BlockInfo} to reach the first declaration of
+	 * {@code exp}.
+	 * 
+	 * @param listBlock the block list information
+	 * @param exp       the expression
+	 * 
+	 * @return a list of {@link BlockInfo} to reach the first declaration of
+	 *             {@code exp}
+	 */
 	public static List<BlockInfo> getListOfBlocksBeforeDeclaration(List<BlockInfo> listBlock, Expression exp) {
 		List<BlockInfo> openBlocks = new ArrayList<>();
 		if (exp instanceof VariableRef) {

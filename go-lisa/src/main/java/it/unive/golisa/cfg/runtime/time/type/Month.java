@@ -19,6 +19,9 @@ import java.util.Collections;
  */
 public class Month implements GoType {
 
+	/**
+	 * Unique instance of the {@link Month} type.
+	 */
 	public static final Month INSTANCE = new Month();
 
 	private Month() {

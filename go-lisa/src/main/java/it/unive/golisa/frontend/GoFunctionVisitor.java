@@ -50,11 +50,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
-		this.descriptor = buildCFGDescriptor(funcDecl, packageUnit);
+//		this.descriptor = ;
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(descriptor, entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(buildCFGDescriptor(funcDecl, packageUnit), entrypoints, new AdjacencyMatrix<>());
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -64,11 +64,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
-		this.descriptor = buildCFGDescriptor(funcLit);
+//		this.descriptor = ;
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(descriptor, entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(buildCFGDescriptor(funcLit), entrypoints, new AdjacencyMatrix<>());
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -134,7 +134,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// If the function body does not have exit points
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret = new Ret(cfg, descriptor.getLocation());
+			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 			if (cfg.getNodesCount() == 0) {
 				// empty method, so the ret is also the entrypoint
 				matrix.addNode(ret);
@@ -150,7 +150,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 				for (Statement st : preExits)
 					matrix.addEdge(new SequentialEdge(st, ret));
 
-				for (VariableTableEntry entry : descriptor.getVariables())
+				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
 					if (preExits.contains(entry.getScopeEnd()))
 						entry.setScopeEnd(ret);
 			}
@@ -158,7 +158,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		for (Statement st : matrix.getExits())
 			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
-				Ret ret = new Ret(cfg, descriptor.getLocation());
+				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
@@ -214,7 +214,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// If the function body does not have exit points
 		// a return statement is added
 		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret = new Ret(cfg, descriptor.getLocation());
+			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 			if (cfg.getNodesCount() == 0) {
 				// empty method, so the ret is also the entrypoint
 				matrix.addNode(ret);
@@ -230,7 +230,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 				for (Statement st : preExits)
 					matrix.addEdge(new SequentialEdge(st, ret));
 
-				for (VariableTableEntry entry : descriptor.getVariables())
+				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
 					if (preExits.contains(entry.getScopeEnd()))
 						entry.setScopeEnd(ret);
 			}
@@ -238,7 +238,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		for (Statement st : matrix.getExits())
 			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
-				Ret ret = new Ret(cfg, descriptor.getLocation());
+				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));

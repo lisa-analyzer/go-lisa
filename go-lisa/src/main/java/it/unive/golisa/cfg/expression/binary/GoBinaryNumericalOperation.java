@@ -1,42 +1,25 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import it.unive.lisa.caches.Caches;
-import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
+/**
+ * Class for computing the result type of a numerical expression.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public interface GoBinaryNumericalOperation {
 
-	public default ExternalSet<Type> resultType(SymbolicExpression left, SymbolicExpression right) {
-		if (left.getRuntimeTypes().noneMatch(Type::isNumericType)
-				&& right.getRuntimeTypes().noneMatch(Type::isNumericType))
-			// if none have numeric types in them, we cannot really compute the
-			// result
-			return Caches.types().mkSingletonSet(Untyped.INSTANCE);
-
-		ExternalSet<Type> result = Caches.types().mkEmptySet();
-		for (Type t1 : left.getRuntimeTypes().filter(type -> type.isNumericType() || type.isUntyped()))
-			for (Type t2 : right.getRuntimeTypes().filter(type -> type.isNumericType() || type.isUntyped()))
-				if (t1.isUntyped() && t2.isUntyped())
-					// we do not really consider this case,
-					// it will fall back into the last corner case before return
-					continue;
-				else if (t1.isUntyped())
-					result.add(t2);
-				else if (t2.isUntyped())
-					result.add(t1);
-				else if (t1.canBeAssignedTo(t2))
-					result.add(t2);
-				else if (t2.canBeAssignedTo(t1))
-					result.add(t1);
-				else
-					result.add(Untyped.INSTANCE);
-		if (result.isEmpty())
-			result.add(Untyped.INSTANCE);
-		return result;
-	}
-
+	/**
+	 * Yields the result type of a binary numerical operation between
+	 * {@code left} and {@code right}.
+	 * 
+	 * @param left  the left type
+	 * @param right the right type
+	 * 
+	 * @return the result type of a binary numerical operation between
+	 *             {@code left} and {@code right}
+	 */
 	public default Type resultType(Type left, Type right) {
 		if (!left.isNumericType() && !right.isNumericType())
 			// if none have numeric types in them, we cannot really compute the

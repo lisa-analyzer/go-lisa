@@ -46,7 +46,15 @@ import org.apache.commons.lang3.tuple.Triple;
  */
 class GoFunctionVisitor extends GoCodeMemberVisitor {
 
-	// side-effect on packageUnit
+	/**
+	 * Builds a function visitor (side-effects on packageUnit).
+	 * 
+	 * @param funcDecl    the function declaration context to visit
+	 * @param packageUnit the current unit
+	 * @param file        the file path
+	 * @param program     the current program
+	 * @param constants   the constant mapping
+	 */
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
@@ -59,7 +67,15 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		packageUnit.addCFG(cfg);
 	}
 
-	// side-effect on packageUnit
+	/**
+	 * Builds a function visitor (side-effects on packageUnit).
+	 * 
+	 * @param funcLit     the function literal context to visit
+	 * @param packageUnit the current unit
+	 * @param file        the file path
+	 * @param program     the current program
+	 * @param constants   the constant mapping
+	 */
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
@@ -85,6 +101,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		super(unit, file, program, constants);
 	}
 
+	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 
 		Statement entryNode = null;

@@ -42,6 +42,12 @@ public class GoArrayType implements GoType, InMemoryType {
 		return arrayTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
+	/**
+	 * Builds an array type.
+	 * 
+	 * @param contentType the content type
+	 * @param length      the length
+	 */
 	public GoArrayType(Type contentType, Integer length) {
 		this.contentType = contentType;
 		this.length = length;

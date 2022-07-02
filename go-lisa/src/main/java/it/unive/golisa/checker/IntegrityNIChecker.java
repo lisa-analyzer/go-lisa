@@ -28,12 +28,24 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import java.util.Collection;
 
+/**
+ * A non-interference integrity checker.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class IntegrityNIChecker implements
 		SemanticCheck<
 				GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
 				GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> {
 
+	/**
+	 * The sink annotation.
+	 */
 	public static final Annotation SINK_ANNOTATION = new Annotation("lisa.intni.Sink");
+
+	/**
+	 * The sink matcher.
+	 */
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
 
 	@Override
@@ -68,7 +80,7 @@ public class IntegrityNIChecker implements
 	private static final String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th",
 			"th" };
 
-	public static String ordinal(int i) {
+	private static String ordinal(int i) {
 		switch (i % 100) {
 		case 11:
 		case 12:

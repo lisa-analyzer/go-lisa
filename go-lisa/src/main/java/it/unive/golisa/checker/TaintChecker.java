@@ -77,7 +77,7 @@ public class TaintChecker implements
 	private static final String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th",
 			"th" };
 
-	public static String ordinal(int i) {
+	private static String ordinal(int i) {
 		switch (i % 100) {
 		case 11:
 		case 12:

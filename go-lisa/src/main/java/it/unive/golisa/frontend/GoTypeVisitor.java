@@ -63,7 +63,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -83,6 +82,14 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	private final Map<String, ExpressionContext> constants;
 
+	/**
+	 * Builds a type visitor.
+	 * 
+	 * @param file      the file path
+	 * @param unit      the current unit
+	 * @param program   the current program
+	 * @param constants the constant mapping
+	 */
 	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.unit = unit;
@@ -394,7 +401,9 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public GoStructType visitStructType(StructTypeContext ctx) {
 		for (FieldDeclContext field : ctx.fieldDecl())
 			for (Pair<String, Type> fd : visitFieldDecl(field))
-				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field), GoCodeMemberVisitor.getCol(field)),
+				unit.addInstanceGlobal(new Global(
+						new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
+								GoCodeMemberVisitor.getCol(field)),
 						fd.getLeft(), fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
 		return GoStructType.lookup(unit.getName(), unit);
 	}

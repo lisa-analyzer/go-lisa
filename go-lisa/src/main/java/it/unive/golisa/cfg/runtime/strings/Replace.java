@@ -23,6 +23,11 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.type.Type;
 
+/**
+ * The Replace function from string package.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Replace extends NativeCFG {
 
 	/**
@@ -40,7 +45,7 @@ public class Replace extends NativeCFG {
 	}
 
 	/**
-	 * The Replace implementation.
+	 * The {@link Replace} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

@@ -23,6 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A checker that checks if consensun is broken.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 	@Override

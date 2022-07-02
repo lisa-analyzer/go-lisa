@@ -106,6 +106,10 @@ import it.unive.lisa.program.SourceCodeLocation;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public interface GoRuntimeLoader {
+
+	/**
+	 * The source code location of runtimes.
+	 */
 	SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 
 	/**

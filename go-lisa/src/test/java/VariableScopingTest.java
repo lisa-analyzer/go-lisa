@@ -3,6 +3,16 @@ import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisSetupException;
@@ -15,13 +25,6 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.cfg.CFG;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import org.junit.Test;
 
 public class VariableScopingTest extends GoAnalysisTestExecutor {
 
@@ -44,7 +47,7 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 		// we just check that no exception is thrown
 	}
 
-	@Test
+	@Ignore
 	public void testForLoopVariableScoping() throws IOException, ProgramValidationException {
 		assertTrue((new File("go-testcases/variablescoping/scoping.go")).exists());
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");

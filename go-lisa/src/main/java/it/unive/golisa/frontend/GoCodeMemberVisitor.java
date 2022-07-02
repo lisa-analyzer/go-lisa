@@ -628,6 +628,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(open, block, close);
 	}
 
+	/**
+	 * Updates the visible ids.
+	 * 
+	 * @param backup the current visible ids
+	 * @param last   the statement
+	 */
 	protected void updateVisileIds(Map<String, Set<IdInfo>> backup, Statement last) {
 
 		Map<String, Set<IdInfo>> toRemove = new HashMap<>();
@@ -2295,16 +2301,25 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return visitElementList(ctx.elementList(), type);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Visits a element list context.
+	 * 
+	 * @param ctx  the context
+	 * @param type the type of the first element
+	 * 
+	 * @return the visit result
+	 */
 	public Object visitElementList(ElementListContext ctx, Type type) {
 		// All keyed or all without key
 		Object firstElement = visitKeyedElement(ctx.keyedElement(0), type);
 
 		if (firstElement instanceof Pair<?, ?>) {
 			LinkedHashMap<Expression, Expression> result = new LinkedHashMap<>();
+			@SuppressWarnings("unchecked")
 			Pair<Expression, Expression> firstKeyed = (Pair<Expression, Expression>) firstElement;
 			result.put(firstKeyed.getLeft(), firstKeyed.getRight());
 			for (int i = 1; i < ctx.keyedElement().size(); i++) {
+				@SuppressWarnings("unchecked")
 				Pair<Expression,
 						Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
 				result.put(keyed.getLeft(), keyed.getRight());

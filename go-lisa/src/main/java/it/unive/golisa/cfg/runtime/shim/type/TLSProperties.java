@@ -9,8 +9,16 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 
+/**
+ * A TLSProperties type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class TLSProperties extends GoStructType {
 
+	/**
+	 * Unique instance of the {@link TLSProperties} type.
+	 */
 	public static final TLSProperties INSTANCE = new TLSProperties();
 
 	private TLSProperties() {

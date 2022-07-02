@@ -15,10 +15,22 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
+/**
+ * A Go routine.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoRoutine extends Statement {
 
 	private final Call call;
 
+	/**
+	 * Builds a Go routine.
+	 * 
+	 * @param cfg      the {@link CFG} where this statement lies
+	 * @param location the location where this statement is defined
+	 * @param call     the call
+	 */
 	public GoRoutine(CFG cfg, CodeLocation location, Call call) {
 		super(cfg, location);
 		this.call = call;

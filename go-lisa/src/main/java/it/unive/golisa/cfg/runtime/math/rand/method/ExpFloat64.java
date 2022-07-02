@@ -43,7 +43,7 @@ public class ExpFloat64 extends NativeCFG {
 	}
 
 	/**
-	 * The ExpFloat64 implementation.
+	 * The {@link ExpFloat64} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

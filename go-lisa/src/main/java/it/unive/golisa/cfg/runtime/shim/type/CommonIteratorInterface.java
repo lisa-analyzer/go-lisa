@@ -9,8 +9,16 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 
+/**
+ * A CommonIteratorInterface type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class CommonIteratorInterface extends GoInterfaceType {
 
+	/**
+	 * Unique instance of {@link CommonIteratorInterface} type.
+	 */
 	public static final CommonIteratorInterface INSTANCE = new CommonIteratorInterface();
 
 	private CommonIteratorInterface() {

@@ -28,13 +28,19 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Int extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Int(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE),
 				IntImpl.class);
 	}
 
 	/**
-	 * The Int implementation.
+	 * The {@link Int} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

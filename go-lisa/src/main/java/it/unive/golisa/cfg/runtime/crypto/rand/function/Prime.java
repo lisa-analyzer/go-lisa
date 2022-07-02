@@ -75,9 +75,18 @@ public class Prime extends NativeCFG {
 			return new PrimeImpl(cfg, location, params[0], params[1]);
 		}
 
-		public PrimeImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
+		public PrimeImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "PrimeImpl", GoTupleType.getTupleTypeOf(location,
-					it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE, GoErrorType.INSTANCE), expr, expr2);
+					it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE, GoErrorType.INSTANCE), left, right);
 		}
 
 		@Override

@@ -5,7 +5,16 @@ import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
+/**
+ * A Handler type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Handler extends GoStructType {
+
+	/**
+	 * Unique instance of the {@link Handler} type.
+	 */
 	public static final Handler INSTANCE = new Handler();
 
 	private Handler() {

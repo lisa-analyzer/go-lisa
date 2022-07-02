@@ -28,13 +28,19 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class ExpFloat64 extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public ExpFloat64(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "ExpFloat64", GoFloat64Type.INSTANCE),
 				ExpFloat64Impl.class);
 	}
 
 	/**
-	 * The ExpFloat64 implementation.
+	 * The {@link ExpFloat64} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

@@ -15,7 +15,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 public class FileInfo extends GoStructType {
 
 	/**
-	 * Unique instance of FileInfo type.
+	 * Unique instance of {@link FileInfo} type.
 	 */
 	public static final FileInfo INSTANCE = new FileInfo();
 
@@ -33,6 +33,9 @@ public class FileInfo extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers the methods of the {@link FileInfo} type.
+	 */
 	public static void registerMethods() {
 		// TODO
 	}

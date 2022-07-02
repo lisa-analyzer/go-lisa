@@ -29,6 +29,12 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Intn extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param randUnit the unit to which this native cfg belongs to
+	 */
 	public Intn(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Intn", GoIntType.INSTANCE,
 				new Parameter(location, "n", GoIntType.INSTANCE)),
@@ -36,7 +42,7 @@ public class Intn extends NativeCFG {
 	}
 
 	/**
-	 * The Intn implementation.
+	 * The {@link Intn} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

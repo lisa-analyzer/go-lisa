@@ -411,6 +411,11 @@ public class TarsisMathNumber implements Comparable<TarsisMathNumber> {
 		return isNaN() ? "NaN" : isMinusInfinity() ? "-Inf" : isPlusInfinity() ? "+Inf" : number.toString();
 	}
 
+	/**
+	 * Yields the integer value {@code this}.
+	 * 
+	 * @return the integer value {@code this}
+	 */
 	public int getNumber() {
 		return number.intValue();
 	}

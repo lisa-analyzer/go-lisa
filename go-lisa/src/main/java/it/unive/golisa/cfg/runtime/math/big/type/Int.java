@@ -33,6 +33,9 @@ public class Int extends GoStructType {
 		return randUnit;
 	}
 
+	/**
+	 * Registers the methods of a {@link Int} type.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

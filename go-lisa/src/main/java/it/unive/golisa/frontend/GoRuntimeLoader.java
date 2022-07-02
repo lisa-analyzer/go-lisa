@@ -107,7 +107,14 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public interface GoRuntimeLoader {
 	SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
+	
+	/**
+	 * Loads a package.
+	 * 
+	 * @param module the name of the package to load
+	 * @param program the program
+	 * @param mapper a mapper 
+	 */
 	default void loadRuntime(String module, Program program, GoLangAPISignatureMapper mapper) {
 		if (module.equals("strings"))
 			loadStrings(program);

@@ -86,8 +86,6 @@ public class GetState extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
-		 * 
-		 * @return the pluggable statement
 		 */
 		public GetStateImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "GetStateImpl", GoTupleType.getTupleTypeOf(location,

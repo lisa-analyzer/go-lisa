@@ -47,7 +47,7 @@ public class ReadAll extends NativeCFG {
 	}
 
 	/**
-	 * The ReadAll implementation.
+	 * The {@link ReadAll} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

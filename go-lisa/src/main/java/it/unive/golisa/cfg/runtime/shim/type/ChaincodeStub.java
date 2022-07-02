@@ -16,7 +16,16 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 
+/**
+ * A ChaincodeStub type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class ChaincodeStub extends GoStructType {
+
+	/**
+	 * Unique instance of the {@link ChaincodeStub} type.
+	 */
 	public static final ChaincodeStub INSTANCE = new ChaincodeStub();
 
 	private ChaincodeStub() {
@@ -37,6 +46,9 @@ public class ChaincodeStub extends GoStructType {
 		return chaincodeStubUnit;
 	}
 
+	/**
+	 * Registers the methods of the {@link ChaincodeStub} type.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

@@ -26,7 +26,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func (s *ChaincodeStub) GetStringArgs() []string
+ * func (s *ChaincodeStub) GetStringArgs() []string.
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStringArgs
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -47,7 +47,7 @@ public class GetStringArgs extends NativeCFG {
 	}
 
 	/**
-	 * The GetStringArgs implementation.
+	 * The {@link GetStringArgs} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

@@ -39,8 +39,8 @@ public class BeginBlock extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
-	public BeginBlock(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, true, "BeginBlock", ResponseBeginBlock.INSTANCE,
+	public BeginBlock(CodeLocation location, CompilationUnit abciUnit) {
+		super(new CFGDescriptor(location, abciUnit, true, "BeginBlock", ResponseBeginBlock.INSTANCE,
 				new Parameter(location, "this", BaseApplication.INSTANCE),
 				new Parameter(location, "req", RequestBeginBlock.INSTANCE)),
 				BeginBlockImpl.class);
@@ -61,12 +61,31 @@ public class BeginBlock extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static BeginBlockImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new BeginBlockImpl(cfg, location, params[0], params[1]);
 		}
 
-		public BeginBlockImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "BeginBlockImpl", ResponseBeginBlock.INSTANCE, expr, expr2);
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
+		public BeginBlockImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "BeginBlockImpl", ResponseBeginBlock.INSTANCE, left, right);
 		}
 
 		@Override

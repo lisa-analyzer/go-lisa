@@ -26,6 +26,14 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * func (s *ChaincodeStub) GetFunctionAndParameters() (function string, params
+ * []string).
+ * 
+ * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetFunctionAndParameters
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GetFunctionAndParameters extends NativeCFG {
 
 	/**
@@ -34,8 +42,8 @@ public class GetFunctionAndParameters extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
-	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimPackage) {
-		super(new CFGDescriptor(location, shimPackage, true, "GetFunctionAndParameters",
+	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimUnit) {
+		super(new CFGDescriptor(location, shimUnit, true, "GetFunctionAndParameters",
 				GoTupleType.lookup(new GoTupleType(new Parameter(location, "function", GoStringType.INSTANCE),
 						new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))),
 				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
@@ -43,7 +51,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 	}
 
 	/**
-	 * The GetFunctionAndParameters implementation.
+	 * The {@link GetFunctionAndParameters} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

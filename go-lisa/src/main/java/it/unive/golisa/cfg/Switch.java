@@ -8,10 +8,24 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import java.util.Collection;
 
+/**
+ * A switch control flow structure.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Switch extends ControlFlowStructure {
 
 	private final Collection<Statement> cases;
 
+	/**
+	 * Builds the switch control flow structure.
+	 * 
+	 * @param cfgMatrix     the matrix behind this control flow structure
+	 * @param condition     the switch condition
+	 * @param firstFollower the first follower of this control flow structure
+	 * @param cases         the cases associated with this control flow
+	 *                          structure
+	 */
 	public Switch(AdjacencyMatrix<Statement, Edge, CFG> cfgMatrix, Statement condition, Statement firstFollower,
 			Collection<Statement> cases) {
 		super(cfgMatrix, condition, firstFollower);

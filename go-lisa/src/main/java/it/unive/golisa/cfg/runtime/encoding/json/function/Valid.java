@@ -75,6 +75,14 @@ public class Valid extends NativeCFG {
 			return new ValidImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public ValidImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ValidImpl", GoBoolType.INSTANCE, expr);
 		}

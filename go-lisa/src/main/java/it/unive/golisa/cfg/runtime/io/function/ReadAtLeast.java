@@ -51,7 +51,7 @@ public class ReadAtLeast extends NativeCFG {
 	}
 
 	/**
-	 * The ReadAtLeast implementation.
+	 * The {@link ReadAtLeast} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -79,6 +79,14 @@ public class ReadAtLeast extends NativeCFG {
 			return new ReadAtLeastImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public ReadAtLeastImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "ReadAtLeastImpl",
 					GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), params);

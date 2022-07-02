@@ -26,7 +26,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func Open(name string) (*File, error)
+ * func Open(name string) (*File, error).
  * 
  * @link https://pkg.go.dev/os#File
  * 
@@ -48,7 +48,7 @@ public class Open extends NativeCFG {
 	}
 
 	/**
-	 * The Open implementation.
+	 * The {@link Open} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

@@ -21,12 +21,19 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.type.Untyped;
 
 public class ChaincodeStubInterface extends GoInterfaceType {
+
+	/**
+	 * Unique instanceo of {@link ChaincodeStubInterface} type.
+	 */
 	public static final ChaincodeStubInterface INSTANCE = new ChaincodeStubInterface();
 
 	private ChaincodeStubInterface() {
 		this("ChaincodeStubInterface", buildChainCodeStubInterfaceUnit());
 	}
 
+	/**
+	 * Registers methods of the {@link ChaincodeStubInterface} type.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

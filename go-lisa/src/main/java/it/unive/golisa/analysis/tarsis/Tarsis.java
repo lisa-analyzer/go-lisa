@@ -479,6 +479,18 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 		return new Tarsis(stringValue, intValue.glb(other.intValue));
 	}
 
+	/**
+	 * Yields the evaluation of a type conversion expression.
+	 * 
+	 * @param conv  the type conversion expression
+	 * @param left  the left expression, namely the expression to be casted
+	 * @param right the right expression, namely the types to which left should
+	 *                  be converted
+	 * @param pp    the program point that where this operation is being
+	 *                  evaluated
+	 * 
+	 * @return the evaluation of the type conversion expression
+	 */
 	protected Tarsis evalTypeConv(BinaryExpression conv, Tarsis left, Tarsis right, ProgramPoint pp) {
 		return conv.getRuntimeTypes().isEmpty() ? bottom() : left;
 	}

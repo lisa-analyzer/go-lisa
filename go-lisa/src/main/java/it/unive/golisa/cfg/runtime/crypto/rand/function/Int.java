@@ -37,7 +37,7 @@ public class Int extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Int(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Read",
+		super(new CFGDescriptor(location, randUnit, false, "Int",
 				GoTupleType.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "rand", Reader.INSTANCE),

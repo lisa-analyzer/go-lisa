@@ -215,14 +215,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	protected final Collection<Statement> entrypoints;
 
-	protected final Collection<ControlFlowStructure> cfs;
-
-	private final Map<String, Set<IdInfo>> visibleIds;
-
 	protected final Map<Statement, String> gotos;
 
 	protected final Map<String, Statement> labeledStmt;
-
+	
+	/**
+	 * The current cfg.
+	 */
 	protected VariableScopingCFG cfg;
 
 	protected CFGDescriptor descriptor;
@@ -231,18 +230,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	protected static int c = 0;
 
-	protected int blockDeep;
-
 	protected final Map<String, ExpressionContext> constants;
 
 	/**
 	 * Current compilation unit to parse.
 	 */
 	protected CompilationUnit currentUnit;
-
-	private AdjacencyMatrix<Statement, Edge, CFG> matrix;
-
-	private final LinkedList<BlockInfo> blockList = new LinkedList<>();
+	
+	/**
+	 * Block deep.
+	 */
+	private int blockDeep;
 
 	/**
 	 * Stack of loop exit points (used for break statements).
@@ -254,6 +252,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 */
 	private final List<Statement> entryPoints = new ArrayList<>();
 
+	private AdjacencyMatrix<Statement, Edge, CFG> matrix;
+
+	private final LinkedList<BlockInfo> blockList = new LinkedList<>();
+	
+	private final Collection<ControlFlowStructure> cfs;
+
+	private final Map<String, Set<IdInfo>> visibleIds;
+
+	
 	/**
 	 * Builds the code member visitor.
 	 * 
@@ -1411,7 +1418,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitDeferStmt(DeferStmtContext ctx) {
 		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
-		GoDefer defer = new GoDefer(cfg, file, getLine(ctx), getCol(ctx), visitExpression(ctx.expression()));
+		GoDefer defer = new GoDefer(cfg, new SourceCodeLocation(file, getLine(ctx), getCol(ctx)),
+				visitExpression(ctx.expression()));
 		block.addNode(defer);
 		storeIds(defer);
 		return Triple.of(defer, block, defer);

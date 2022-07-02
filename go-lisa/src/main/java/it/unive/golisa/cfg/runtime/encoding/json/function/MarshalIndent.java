@@ -86,8 +86,6 @@ public class MarshalIndent extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
-		 * 
-		 * @return the pluggable statement
 		 */
 		public MarshalIndentImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "MarshalIndentImpl",

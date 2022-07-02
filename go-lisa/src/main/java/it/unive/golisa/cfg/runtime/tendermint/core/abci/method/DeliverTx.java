@@ -75,6 +75,15 @@ public class DeliverTx extends NativeCFG {
 			return new DeliverTxImpl(cfg, location, params[0], params[1]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
 		public DeliverTxImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "DeliverTxImpl", ResponseDeliverTx.INSTANCE, left, right);
 		}

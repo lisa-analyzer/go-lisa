@@ -48,7 +48,7 @@ public class TempFile extends NativeCFG {
 	}
 
 	/**
-	 * The TempFile implementation.
+	 * The {@link TempFile} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -76,10 +76,19 @@ public class TempFile extends NativeCFG {
 			return new TempFileImpl(cfg, location, params[0], params[1]);
 		}
 
-		public TempFileImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
+		public TempFileImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "TempFileImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), expr,
-					expr2);
+					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), left,
+					right);
 		}
 
 		@Override

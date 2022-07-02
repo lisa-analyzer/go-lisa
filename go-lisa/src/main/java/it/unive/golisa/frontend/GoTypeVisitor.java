@@ -313,7 +313,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 		if (ctx.RECEIVE() == null)
 			return GoChannelType.lookup(new GoChannelType(contentType));
-		else if (getCol(ctx.CHAN()) < getCol(ctx.RECEIVE()))
+		else if (GoCodeMemberVisitor.getCol(ctx.CHAN()) < GoCodeMemberVisitor.getCol(ctx.RECEIVE()))
 			return GoChannelType.lookup(new GoChannelType(contentType, true, false));
 
 		return GoChannelType.lookup(new GoChannelType(contentType, false, true));
@@ -374,27 +374,27 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	static protected int getLine(ParserRuleContext ctx) {
-		return ctx.getStart().getLine();
-	}
-
-	static protected int getLine(TerminalNode ctx) {
-		return ctx.getSymbol().getLine();
-	}
-
-	static protected int getCol(ParserRuleContext ctx) {
-		return ctx.getStop().getCharPositionInLine();
-	}
-
-	static protected int getCol(TerminalNode ctx) {
-		return ctx.getSymbol().getCharPositionInLine();
-	}
+//	static protected int getLine(ParserRuleContext ctx) {
+//		return ctx.getStart().getLine();
+//	}
+//
+//	static protected int getLine(TerminalNode ctx) {
+//		return ctx.getSymbol().getLine();
+//	}
+//
+//	static protected int getCol(ParserRuleContext ctx) {
+//		return ctx.getStop().getCharPositionInLine();
+//	}
+//
+//	static protected int getCol(TerminalNode ctx) {
+//		return ctx.getSymbol().getCharPositionInLine();
+//	}
 
 	@Override
 	public GoStructType visitStructType(StructTypeContext ctx) {
 		for (FieldDeclContext field : ctx.fieldDecl())
 			for (Pair<String, Type> fd : visitFieldDecl(field))
-				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, getLine(field), getCol(field)),
+				unit.addInstanceGlobal(new Global(new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field), GoCodeMemberVisitor.getCol(field)),
 						fd.getLeft(), fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
 		return GoStructType.lookup(unit.getName(), unit);
 	}
@@ -421,8 +421,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			String funcName = ctx.IDENTIFIER().getText();
 			ParametersContext formalPars = ctx.parameters();
 
-			int line = getLine(ctx);
-			int col = getCol(ctx);
+			int line = GoCodeMemberVisitor.getLine(ctx);
+			int col = GoCodeMemberVisitor.getCol(ctx);
 
 			Parameter[] cfgArgs = new Parameter[] {};
 

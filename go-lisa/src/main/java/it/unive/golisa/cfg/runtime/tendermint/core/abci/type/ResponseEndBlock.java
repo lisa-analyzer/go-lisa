@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Response of End Block
+ * A Response of end block type.
  * 
  * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#ResponseEndBlock
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class ResponseEndBlock extends GoStructType {
 
+	/**
+	 * Unique instance of {@link ResponseEndBlock} type.
+	 */
 	public static final ResponseEndBlock INSTANCE = new ResponseEndBlock();
 
 	private ResponseEndBlock() {
@@ -30,6 +33,9 @@ public class ResponseEndBlock extends GoStructType {
 		return abciUnit;
 	}
 
+	/**
+	 * Registers methods of the {@link ResponseEndBlock} type.
+	 */
 	public static void registerMethods() {
 		// TODO
 	}

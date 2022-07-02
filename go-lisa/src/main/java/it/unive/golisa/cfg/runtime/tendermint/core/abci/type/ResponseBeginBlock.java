@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Response of Begin Block
+ * A Response of Begin Block type.
  * 
  * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#ResponseBeginBlock
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class ResponseBeginBlock extends GoStructType {
 
+	/**
+	 * Unique instance of {@link ResponseBeginBlock} type.
+	 */
 	public static final ResponseBeginBlock INSTANCE = new ResponseBeginBlock();
 
 	private ResponseBeginBlock() {
@@ -30,6 +33,9 @@ public class ResponseBeginBlock extends GoStructType {
 		return abciUnit;
 	}
 
+	/**
+	 * Registers methods of the {@link ResponseBeginBlock} type.
+	 */
 	public static void registerMethods() {
 		// TODO
 	}

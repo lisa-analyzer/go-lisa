@@ -25,6 +25,13 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
+/**
+ * func Parse(layout, value string) (Time, error).
+ * 
+ * @link https://pkg.go.dev/time#Parse
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Parse extends NativeCFG {
 
 	/**
@@ -42,6 +49,11 @@ public class Parse extends NativeCFG {
 				ParseImpl.class);
 	}
 
+	/**
+	 * The Parse implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ParseImpl extends BinaryExpression
 			implements PluggableStatement {
 

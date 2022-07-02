@@ -44,6 +44,11 @@ public class Month extends NativeCFG {
 				MonthImpl.class);
 	}
 
+	/**
+	 * The Month implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class MonthImpl extends UnaryExpression
 			implements PluggableStatement {
 

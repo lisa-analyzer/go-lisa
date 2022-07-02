@@ -25,13 +25,20 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (BaseApplication) BeginBlock(req RequestBeginBlock) ResponseBeginBlock
- * https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.BeginBlock
+ * func (BaseApplication) BeginBlock(req RequestBeginBlock) ResponseBeginBlock.
+ * 
+ * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.BeginBlock
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class BeginBlock extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param abciUnit the unit to which this native cfg belongs to
+	 */
 	public BeginBlock(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "BeginBlock", ResponseBeginBlock.INSTANCE,
 				new Parameter(location, "this", BaseApplication.INSTANCE),
@@ -39,6 +46,11 @@ public class BeginBlock extends NativeCFG {
 				BeginBlockImpl.class);
 	}
 
+	/**
+	 * The {@link BeginBlock} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class BeginBlockImpl extends BinaryExpression
 			implements PluggableStatement {
 

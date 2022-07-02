@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Response of DeliverTx
+ * A Response of DeliverTx type.
  * 
  * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#ResponseDeliverTx
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class ResponseDeliverTx extends GoStructType {
 
+	/**
+	 * Unique instance of the {@link ResponseDeliverTx} type.
+	 */
 	public static final ResponseDeliverTx INSTANCE = new ResponseDeliverTx();
 
 	private ResponseDeliverTx() {
@@ -30,6 +33,9 @@ public class ResponseDeliverTx extends GoStructType {
 		return abciUnit;
 	}
 
+	/**
+	 * Registers the methods of the {@link ResponseDeliverTx} type.
+	 */
 	public static void registerMethods() {
 		// TODO
 	}

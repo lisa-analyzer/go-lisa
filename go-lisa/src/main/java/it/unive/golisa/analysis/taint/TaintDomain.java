@@ -66,8 +66,8 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	private final byte v;
 
 	/**
-	 * Builds a new instance of taint, referring to the top element
-	 * of the lattice.
+	 * Builds a new instance of taint, referring to the top element of the
+	 * lattice.
 	 */
 	public TaintDomain() {
 		this((byte) 3);

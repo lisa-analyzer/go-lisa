@@ -24,19 +24,31 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (BaseApplication) Commit() ResponseCommit
- * https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.Commit
+ * func (BaseApplication) Commit() ResponseCommit.
+ * 
+ * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.Commit
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Commit extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param abciUnit the unit to which this native cfg belongs to
+	 */
 	public Commit(CodeLocation location, CompilationUnit abciUnit) {
 		super(new CFGDescriptor(location, abciUnit, true, "EndBlock", ResponseCommit.INSTANCE,
 				new Parameter(location, "this", BaseApplication.INSTANCE)),
 				CommitImpl.class);
 	}
 
+	/**
+	 * The {@link Commit} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class CommitImpl extends UnaryExpression
 			implements PluggableStatement {
 
@@ -47,10 +59,28 @@ public class Commit extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static CommitImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new CommitImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param expr     the expression
+		 */
 		public CommitImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "CommitImpl", ResponseCommit.INSTANCE, expr);
 		}

@@ -25,13 +25,20 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (BaseApplication) EndBlock(req RequestEndBlock) ResponseEndBlock
- * https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.EndBlock
+ * func (BaseApplication) EndBlock(req RequestEndBlock) ResponseEndBlock.
+ * 
+ * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.EndBlock
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class EndBlock extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param abciUnit the unit to which this native cfg belongs to
+	 */
 	public EndBlock(CodeLocation location, CompilationUnit abciUnit) {
 		super(new CFGDescriptor(location, abciUnit, true, "EndBlock", ResponseEndBlock.INSTANCE,
 				new Parameter(location, "this", BaseApplication.INSTANCE),
@@ -39,6 +46,11 @@ public class EndBlock extends NativeCFG {
 				EndBlockImpl.class);
 	}
 
+	/**
+	 * The {@link EndBlock} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class EndBlockImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -49,12 +61,22 @@ public class EndBlock extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static EndBlockImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new EndBlockImpl(cfg, location, params[0], params[1]);
 		}
 
-		public EndBlockImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "EndBlockImpl", ResponseEndBlock.INSTANCE, expr, expr2);
+		public EndBlockImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "EndBlockImpl", ResponseEndBlock.INSTANCE, left, right);
 		}
 
 		@Override

@@ -11,6 +11,7 @@ public class Tainted extends Constant {
 
 	/**
 	 * Builds the instance of tainted.
+	 * 
 	 * @param location the location
 	 */
 	public Tainted(CodeLocation location) {

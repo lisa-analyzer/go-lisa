@@ -42,6 +42,11 @@ public class Since extends NativeCFG {
 				SinceImpl.class);
 	}
 
+	/**
+	 * The Since implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class SinceImpl extends UnaryExpression
 			implements PluggableStatement {
 

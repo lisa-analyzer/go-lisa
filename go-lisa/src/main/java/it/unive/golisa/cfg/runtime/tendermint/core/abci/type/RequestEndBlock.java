@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Request of End Block
+ * A Request of End Block type.
  * 
  * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#RequestEndBlock
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class RequestEndBlock extends GoStructType {
 
+	/**
+	 * Unique instance of the {@link RequestEndBlock} type.
+	 */
 	public static final RequestEndBlock INSTANCE = new RequestEndBlock();
 
 	private RequestEndBlock() {
@@ -30,6 +33,9 @@ public class RequestEndBlock extends GoStructType {
 		return abciUnit;
 	}
 
+	/**
+	 * Registers the methods of the {@link RequestEndBlock} type.
+	 */
 	public static void registerMethods() {
 		// TODO
 	}

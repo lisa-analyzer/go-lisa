@@ -40,6 +40,11 @@ public class Now extends NativeCFG {
 				NowImpl.class);
 	}
 
+	/**
+	 * The Now implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class NowImpl extends it.unive.lisa.program.cfg.statement.NaryExpression
 			implements PluggableStatement {
 

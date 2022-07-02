@@ -6,7 +6,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Request of Begin Block
+ * A Request of Begin Block.
  * 
  * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#RequestBeginBlock
  * 
@@ -14,6 +14,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class RequestBeginBlock extends GoStructType {
 
+	/**
+	 * Unique instance of the {@link RequestBeginBlock} type.
+	 */
 	public static final RequestBeginBlock INSTANCE = new RequestBeginBlock();
 
 	private RequestBeginBlock() {
@@ -30,6 +33,9 @@ public class RequestBeginBlock extends GoStructType {
 		return abciUnit;
 	}
 
+	/**
+	 * Registers the type of the {@link RequestBeginBlock} type.
+	 */
 	public static void registerMethods() {
 		// TODO
 	}

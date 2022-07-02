@@ -10,7 +10,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 
 /**
- * A Base Application
+ * A Base Application type.
  * 
  * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication
  * 
@@ -18,6 +18,9 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class BaseApplication extends GoStructType {
 
+	/**
+	 * Unique instance of the {@link BaseApplication} type.
+	 */
 	public static final BaseApplication INSTANCE = new BaseApplication();
 
 	private BaseApplication() {
@@ -34,6 +37,9 @@ public class BaseApplication extends GoStructType {
 		return abciUnit;
 	}
 
+	/**
+	 * Registers the methods of the {@link BaseApplication} type.
+	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 

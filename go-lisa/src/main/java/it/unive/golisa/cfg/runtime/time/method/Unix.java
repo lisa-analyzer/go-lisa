@@ -23,6 +23,13 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
+/**
+ * func (t Time) Unix() int64.
+ * 
+ * @link https://pkg.go.dev/time#Time.Unix
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Unix extends NativeCFG {
 
 	/**
@@ -38,6 +45,11 @@ public class Unix extends NativeCFG {
 				UnixImpl.class);
 	}
 
+	/**
+	 * The {@link Unix} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class UnixImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;

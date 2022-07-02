@@ -25,13 +25,20 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (BaseApplication) DeliverTx(req RequestDeliverTx) ResponseDeliverTx
- * https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.DeliverTx
+ * func (BaseApplication) DeliverTx(req RequestDeliverTx) ResponseDeliverTx.
+ * 
+ * @link https://pkg.go.dev/github.com/tendermint/tendermint/abci/types#BaseApplication.DeliverTx
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class DeliverTx extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param abciUnit the unit to which this native cfg belongs to
+	 */
 	public DeliverTx(CodeLocation location, CompilationUnit abciUnit) {
 		super(new CFGDescriptor(location, abciUnit, true, "DeliverTx", ResponseDeliverTx.INSTANCE,
 				new Parameter(location, "this", BaseApplication.INSTANCE),
@@ -39,6 +46,11 @@ public class DeliverTx extends NativeCFG {
 				DeliverTxImpl.class);
 	}
 
+	/**
+	 * The {@link DeliverTx} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class DeliverTxImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -49,12 +61,22 @@ public class DeliverTx extends NativeCFG {
 			original = st;
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public static DeliverTxImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new DeliverTxImpl(cfg, location, params[0], params[1]);
 		}
 
-		public DeliverTxImpl(CFG cfg, CodeLocation location, Expression expr, Expression expr2) {
-			super(cfg, location, "DeliverTxImpl", ResponseDeliverTx.INSTANCE, expr, expr2);
+		public DeliverTxImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "DeliverTxImpl", ResponseDeliverTx.INSTANCE, left, right);
 		}
 
 		@Override

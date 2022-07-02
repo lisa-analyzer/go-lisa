@@ -171,6 +171,7 @@ import it.unive.lisa.program.cfg.edge.TrueEdge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
+import it.unive.lisa.program.cfg.statement.Return;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
@@ -243,8 +244,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 */
 	protected final Program program;
 
+	/**
+	 * Counter used to give a name to anonymous functions.
+	 */
 	protected static int c = 0;
 
+	/**
+	 * Mapping from constant names to their expression contexts.
+	 */
 	protected final Map<String, ExpressionContext> constants;
 
 	/**
@@ -298,7 +305,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		this.currentUnit = unit;
 	}
 
-	public GoCodeMemberVisitor(CompilationUnit packageUnit, MethodDeclContext ctx, String file, Program program,
+	/**
+	 * Builds the code member visitor.
+	 * 
+	 * @param unit      the current unit
+	 * @param ctx       the method declaration context to visit
+	 * @param file      the file path
+	 * @param program   the program
+	 * @param constants constant mapping
+	 */
+	public GoCodeMemberVisitor(CompilationUnit unit, MethodDeclContext ctx, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		this.file = file;
 		this.program = program;
@@ -309,7 +325,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(mkDescriptor(packageUnit, ctx), entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(mkDescriptor(unit, ctx), entrypoints, new AdjacencyMatrix<>());
 
 		visibleIds = new HashMap<>();
 		this.blockDeep = 0;
@@ -317,6 +333,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		initializeVisibleIds();
 	}
 
+	/**
+	 * Initializes the visible identifiers.
+	 */
 	protected void initializeVisibleIds() {
 		for (VariableTableEntry par : cfg.getDescriptor().getVariables())
 			if (!GoLangUtils.refersToBlankIdentifier(par.createReference(cfg))) {
@@ -412,6 +431,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return cfg;
 	}
 
+	/**
+	 * Visits a method block.
+	 * 
+	 * @param ctx the block context to visit
+	 * 
+	 * @return the adjacency matrix behind the visited block, together with the
+	 *             entry and the exit nodes
+	 */
 	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitMethodBlock(BlockContext ctx) {
 		this.matrix = this.cfg.getAdjacencyMatrix();
 
@@ -1522,7 +1549,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return stmt instanceof GoTo;
 	}
 
-	public static void addEdge(Edge edge, AdjacencyMatrix<Statement, Edge, CFG> block) {
+	/**
+	 * Adds the edge iff the source is not an instance of {@link Return} of
+	 * {@link GoTo} statements.
+	 * 
+	 * @param edge  the edge to be added
+	 * @param block the current {@link AdjacencyMatrix}
+	 */
+	protected static void addEdge(Edge edge, AdjacencyMatrix<Statement, Edge, CFG> block) {
 		if (!isReturnStmt(edge.getSource()) && !isGoTo(edge.getSource()))
 			block.addEdge(edge);
 	}
@@ -2337,7 +2371,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Expression visitElement(ElementContext ctx, Type type) {
+	private Expression visitElement(ElementContext ctx, Type type) {
 
 		if (ctx.expression() != null)
 			return visitExpression(ctx.expression());

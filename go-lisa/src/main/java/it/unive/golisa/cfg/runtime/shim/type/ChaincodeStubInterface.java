@@ -20,10 +20,15 @@ import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * A ChaincodeStubInterface type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class ChaincodeStubInterface extends GoInterfaceType {
 
 	/**
-	 * Unique instanceo of {@link ChaincodeStubInterface} type.
+	 * Unique instance of {@link ChaincodeStubInterface} type.
 	 */
 	public static final ChaincodeStubInterface INSTANCE = new ChaincodeStubInterface();
 

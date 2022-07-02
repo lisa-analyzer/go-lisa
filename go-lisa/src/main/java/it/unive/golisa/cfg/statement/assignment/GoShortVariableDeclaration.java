@@ -24,6 +24,11 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.TypeTokenType;
 
+/**
+ * A Go short variable declaration statement.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**

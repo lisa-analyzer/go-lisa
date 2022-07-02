@@ -24,6 +24,11 @@ import it.unive.lisa.type.Type;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * A Go multi short variable declaration statement.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
 	/**

@@ -67,6 +67,7 @@ checkstyleMain {
     finalizedBy 'checkstyleErrorMessage'
     exclude 'it/unive/golisa/antlr/*.java'
     exclude 'it/unive/golisa/golang/util/*.java'
+    exclude 'it/unive/golisa/golang/api/signature/*.java'
     reports {
         xml.enabled false
         html.enabled false

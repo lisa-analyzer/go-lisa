@@ -50,7 +50,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
-//		this.descriptor = ;
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -64,7 +63,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(packageUnit, file, program, constants);
-//		this.descriptor = ;
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -74,6 +72,14 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		packageUnit.addCFG(cfg);
 	}
 
+	/**
+	 * Builds the function visitor.
+	 * 
+	 * @param unit      the current unit
+	 * @param file      the current file path
+	 * @param program   the current program
+	 * @param constants the constant mapping
+	 */
 	public GoFunctionVisitor(CompilationUnit unit, String file, Program program,
 			Map<String, ExpressionContext> constants) {
 		super(unit, file, program, constants);
@@ -168,6 +174,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		return Pair.of(entryNode, body.getRight());
 	}
 
+	/**
+	 * Builds a {@link CFG} for an anonymous function.
+	 * 
+	 * @param ctx the function literal context to visit
+	 * 
+	 * @return a {@link CFG} for an anonymous function
+	 */
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
 		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
@@ -248,7 +261,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		return cfg;
 	}
 
-	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl, Unit packageName) {
+	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl, Unit unit) {
 		String funcName = funcDecl.IDENTIFIER().getText();
 		SignatureContext signature = funcDecl.signature();
 		ParametersContext formalPars = signature.parameters();
@@ -263,7 +276,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = getGoReturnType(funcDecl.signature());
 
-		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), packageName, false,
+		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), unit, false,
 				funcName,
 				returnType, cfgArgs);
 
@@ -303,6 +316,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		return new GoCodeMemberVisitor(currentUnit, file, program, constants).visitResult(signature.result());
 	}
 
+	/**
+	 * Visits the return type of a function.
+	 * 
+	 * @param ctx the function type context to visit
+	 * 
+	 * @return the return type
+	 */
 	public GoType visitFunctionType(FunctionTypeContext ctx) {
 		SignatureContext sign = ctx.signature();
 		Type returnType = getGoReturnType(sign);

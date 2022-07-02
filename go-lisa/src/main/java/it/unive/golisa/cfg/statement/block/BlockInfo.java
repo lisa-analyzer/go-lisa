@@ -22,9 +22,25 @@ public class BlockInfo {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public enum DeclarationType {
+
+		/**
+		 * Constant variable declaration.
+		 */
 		CONSTANT,
+
+		/**
+		 * Variable declaration.
+		 */
 		VARIABLE,
+
+		/**
+		 * Short variable declaration.
+		 */
 		SHORT_VARIABLE,
+
+		/**
+		 * Multi variable declaration.
+		 */
 		MULTI_SHORT_VARIABLE
 	}
 
@@ -101,7 +117,13 @@ public class BlockInfo {
 		return open;
 	}
 
-	public void addVarDeclaration(VariableRef ref, DeclarationType type) {
-		refs.put(ref, type);
+	/**
+	 * Adds a variable declaration to {@code this} block information.
+	 * 
+	 * @param var  the declared variable
+	 * @param type the type declaration
+	 */
+	public void addVarDeclaration(VariableRef var, DeclarationType type) {
+		refs.put(var, type);
 	}
 }

@@ -2,20 +2,42 @@ package it.unive.golisa.cfg.statement.block;
 
 import it.unive.lisa.program.cfg.statement.VariableRef;
 
+/**
+ * Information about a variable, i.e., at which block deep the variable is
+ * declared.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class IdInfo {
 
-	private final VariableRef ref;
+	private final VariableRef var;
 	private final int blockDeep;
 
-	public IdInfo(VariableRef ref, int blockDeep) {
-		this.ref = ref;
+	/**
+	 * Builds a identifier information.
+	 * 
+	 * @param var       the variable
+	 * @param blockDeep the block deep at which the variable is declared
+	 */
+	public IdInfo(VariableRef var, int blockDeep) {
+		this.var = var;
 		this.blockDeep = blockDeep;
 	}
 
+	/**
+	 * Yields the variable.
+	 * 
+	 * @return the variable
+	 */
 	public VariableRef getRef() {
-		return ref;
+		return var;
 	}
 
+	/**
+	 * Yields the block deep.
+	 * 
+	 * @return the block deep
+	 */
 	public int getBlockDeep() {
 		return blockDeep;
 	}
@@ -25,7 +47,7 @@ public class IdInfo {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + blockDeep;
-		result = prime * result + ((ref == null) ? 0 : ref.hashCode());
+		result = prime * result + ((var == null) ? 0 : var.hashCode());
 		return result;
 	}
 
@@ -40,11 +62,11 @@ public class IdInfo {
 		IdInfo other = (IdInfo) obj;
 		if (blockDeep != other.blockDeep)
 			return false;
-		if (ref == null) {
-			if (other.ref != null)
+		if (var == null) {
+			if (other.var != null)
 				return false;
 		} else {
-			if (ref.getName().equals(other.ref.getName()))
+			if (var.getName().equals(other.var.getName()))
 				return true;
 		}
 

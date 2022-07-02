@@ -46,7 +46,7 @@ public class Int extends NativeCFG {
 	}
 
 	/**
-	 * The Int implementation.
+	 * The {@link Int} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

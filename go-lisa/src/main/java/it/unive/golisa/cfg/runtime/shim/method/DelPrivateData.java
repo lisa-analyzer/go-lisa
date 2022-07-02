@@ -29,7 +29,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (*ChaincodeStub) DelPrivateData(collection string, key string) error
+ * func (*ChaincodeStub) DelPrivateData(collection string, key string) error.
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.DelPrivateData
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -51,7 +51,7 @@ public class DelPrivateData extends NativeCFG {
 	}
 
 	/**
-	 * The DelPrivateData implementation.
+	 * The {@link DelPrivateData} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

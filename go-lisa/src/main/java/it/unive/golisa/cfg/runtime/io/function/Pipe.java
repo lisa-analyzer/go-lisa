@@ -46,7 +46,7 @@ public class Pipe extends NativeCFG {
 	}
 
 	/**
-	 * The Pipe implementation.
+	 * The {@link Pipe} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -74,6 +74,14 @@ public class Pipe extends NativeCFG {
 			return new PipeImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public PipeImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PipeImpl",
 					GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),

@@ -53,7 +53,7 @@ public class CopyBuffer extends NativeCFG {
 	}
 
 	/**
-	 * The CopyBuffer implementation.
+	 * The {@link CopyBuffer} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -81,6 +81,14 @@ public class CopyBuffer extends NativeCFG {
 			return new CopyBufferImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public CopyBufferImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "CopyBufferImpl",
 					GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE), params);

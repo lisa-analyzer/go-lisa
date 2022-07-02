@@ -28,7 +28,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func (s *ChaincodeStub) GetState(key string) ([]byte, error)
+ * func (s *ChaincodeStub) GetState(key string) ([]byte, error).
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetState
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
@@ -51,7 +51,7 @@ public class GetState extends NativeCFG {
 	}
 
 	/**
-	 * The GetState implementation.
+	 * The {@link GetState} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

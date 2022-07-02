@@ -7,6 +7,9 @@ import it.unive.lisa.program.SourceCodeLocation;
 
 public class Chaincode extends GoInterfaceType {
 
+	/**
+	 * Unique instance of the {@link Chaincode} type.
+	 */
 	public static final Chaincode INSTANCE = new Chaincode();
 
 	private Chaincode() {

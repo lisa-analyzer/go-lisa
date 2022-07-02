@@ -26,7 +26,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func (*ChaincodeStub) PutState(key string, value []byte) error
+ * func (*ChaincodeStub) PutState(key string, value []byte) error.
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutState
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -48,7 +48,7 @@ public class PutState extends NativeCFG {
 	}
 
 	/**
-	 * The PutState implementation.
+	 * The {@link PutState} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

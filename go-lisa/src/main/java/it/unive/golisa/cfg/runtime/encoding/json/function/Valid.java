@@ -47,7 +47,7 @@ public class Valid extends NativeCFG {
 	}
 
 	/**
-	 * The Valid implementation.
+	 * The {@link Valid} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

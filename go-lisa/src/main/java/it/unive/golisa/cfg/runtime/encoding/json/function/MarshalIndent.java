@@ -79,6 +79,16 @@ public class MarshalIndent extends NativeCFG {
 			return new MarshalIndentImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 * 
+		 * @return the pluggable statement
+		 */
 		public MarshalIndentImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "MarshalIndentImpl",
 					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),

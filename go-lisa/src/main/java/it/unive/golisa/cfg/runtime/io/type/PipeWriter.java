@@ -15,7 +15,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 public class PipeWriter extends GoStructType {
 
 	/**
-	 * Unique instance of PipeWriter type.
+	 * Unique instance of {@link PipeWriter} type.
 	 */
 	public static final PipeWriter INSTANCE = new PipeWriter();
 
@@ -34,7 +34,7 @@ public class PipeWriter extends GoStructType {
 	}
 
 	/**
-	 * Registers the method of the PipeWriter type.
+	 * Registers the method of the {@link PipeWriter} type.
 	 */
 	public static void registerMethods() {
 		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);

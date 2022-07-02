@@ -49,7 +49,7 @@ public class Compact extends NativeCFG {
 	}
 
 	/**
-	 * The Compact implementation.
+	 * The {@link Compact} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -77,6 +77,15 @@ public class Compact extends NativeCFG {
 			return new CompactImpl(cfg, location, params[0], params[1]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param left     the left-hand side of this expression
+		 * @param right    the right-hand side of this expression
+		 */
 		public CompactImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "CompactImpl", GoErrorType.INSTANCE, left, right);
 		}

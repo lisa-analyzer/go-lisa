@@ -21,6 +21,11 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * The Println function from fmt package.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Println extends NativeCFG {
 
 	/**
@@ -36,7 +41,7 @@ public class Println extends NativeCFG {
 	}
 
 	/**
-	 * The Println implementation.
+	 * The {@link Println} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -63,6 +68,14 @@ public class Println extends NativeCFG {
 			return new PrintlnImpl(cfg, location, params[0]);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param arg      the expression
+		 */
 		public PrintlnImpl(CFG cfg, CodeLocation location, Expression arg) {
 			super(cfg, location, "Println", Untyped.INSTANCE, arg);
 		}

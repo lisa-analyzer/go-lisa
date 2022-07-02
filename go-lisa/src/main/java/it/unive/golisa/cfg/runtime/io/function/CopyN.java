@@ -50,7 +50,7 @@ public class CopyN extends NativeCFG {
 	}
 
 	/**
-	 * The CopyN implementation.
+	 * The {@link CopyN} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -78,6 +78,14 @@ public class CopyN extends NativeCFG {
 			return new CopyNImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public CopyNImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "CopyNImpl",
 					GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE), params);

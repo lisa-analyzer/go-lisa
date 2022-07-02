@@ -53,7 +53,7 @@ public class Indent extends NativeCFG {
 	}
 
 	/**
-	 * The Indent implementation.
+	 * The {@link Indent} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -81,6 +81,14 @@ public class Indent extends NativeCFG {
 			return new IndentImpl(cfg, location, params);
 		}
 
+		/**
+		 * Builds the pluggable statement.
+		 * 
+		 * @param cfg      the {@link CFG} where this pluggable statement lies
+		 * @param location the location where this pluggable statement is
+		 *                     defined
+		 * @param params   the parameters
+		 */
 		public IndentImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "IndentImpl", GoErrorType.INSTANCE, params);
 		}

@@ -4,25 +4,20 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.NoOp;
 
+/**
+ * A goto statement (e.g., goto L;).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoTo extends NoOp {
 
+	/**
+	 * Builds the goto statement.
+	 * 
+	 * @param cfg      the {@link CFG} where this statement lies
+	 * @param location the location where this statement is defined
+	 */
 	public GoTo(CFG cfg, CodeLocation location) {
 		super(cfg, location);
-	}
-
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		return true;
 	}
 }

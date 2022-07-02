@@ -16,14 +16,16 @@ repositories {
 
 group = 'it.unive'
 version = '0.1'
-mainClassName = 'it.unive.golisa.cli.GoLiSA'
+mainClassName = 'it.unive.golisa.GoLiSA'
 
 dependencies {
     antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
-    implementation 'com.github.unive-ssv:tarsis:1.0'
-	implementation 'com.github.unive-ssv:lisa-sdk:0.1b2'
-	implementation 'com.github.unive-ssv:lisa-core:0.1b2'
+    implementation 'com.github.unive-ssv:lisa-core:0.1b5'
+    implementation 'com.github.unive-ssv:lisa-sdk:0.1b5'
+    implementation 'com.github.unive-ssv:lisa-imp:0.1b5'
+    implementation 'com.github.unive-ssv:tarsis:1.0'      
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
     
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
 	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
@@ -63,6 +65,9 @@ checkstyleTest.enabled = false
 
 checkstyleMain {
     finalizedBy 'checkstyleErrorMessage'
+    exclude 'it/unive/golisa/antlr/*.java'
+    exclude 'it/unive/golisa/golang/util/*.java'
+    exclude 'it/unive/golisa/golang/api/signature/*.java'
     reports {
         xml.enabled false
         html.enabled false

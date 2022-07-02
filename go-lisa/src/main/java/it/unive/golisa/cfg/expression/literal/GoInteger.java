@@ -6,19 +6,18 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
- * Go integer value class. The static type of a Go integer value is
- * {@link GoBoolInt}.
+ * A Go integer literal value.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoInteger extends Literal<Object> {
 
 	/**
-	 * Builds a Go integer value. The location where this Go integer value
-	 * appears is unknown (i.e. no source file/line/column is available).
+	 * Builds a Go integer literal value.
 	 * 
-	 * @param cfg   the cfg that this Go integer belongs to
-	 * @param value the integer value
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param value    the integer value
 	 */
 	public GoInteger(CFG cfg, SourceCodeLocation location, Object value) {
 		super(cfg, location, value, GoUntypedInt.INSTANCE);

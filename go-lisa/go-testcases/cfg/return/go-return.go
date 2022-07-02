@@ -5,7 +5,7 @@ import "fmt"
 func returnInLoop() int {
 	
 	for i := 0; i < 10; i++ {
-		i = i - 1;
+		i = i - 1
 	}
 	
 	return i;

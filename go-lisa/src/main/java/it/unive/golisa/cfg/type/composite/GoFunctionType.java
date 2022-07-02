@@ -13,6 +13,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * A Go function type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoFunctionType implements GoType {
 
 	private Parameter[] params;
@@ -20,13 +25,28 @@ public class GoFunctionType implements GoType {
 
 	private static final Set<GoFunctionType> functionTypes = new HashSet<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoFunctionType} representing a function type.
+	 * 
+	 * @param type the function type to lookup
+	 * 
+	 * @return the unique instance of {@link GoFunctionType} representing the
+	 *             function type given as argument
+	 */
 	public static GoFunctionType lookup(GoFunctionType type) {
 		if (!functionTypes.contains(type))
 			functionTypes.add(type);
 		return functionTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoFunctionType(Parameter[] params, Type returnType) {
+	/**
+	 * Builds the function type.
+	 * 
+	 * @param returnType the return type
+	 * @param params     the parameters
+	 */
+	public GoFunctionType(Type returnType, Parameter... params) {
 		this.params = params;
 		this.returnType = returnType;
 	}
@@ -82,6 +102,11 @@ public class GoFunctionType implements GoType {
 		return new GoNil(cfg, location);
 	}
 
+	/**
+	 * Yields all the function types.
+	 * 
+	 * @return all the function types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoFunctionType in : functionTypes)
@@ -97,6 +122,9 @@ public class GoFunctionType implements GoType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the function types.
+	 */
 	public static void clearAll() {
 		functionTypes.clear();
 	}

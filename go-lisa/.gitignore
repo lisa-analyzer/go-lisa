@@ -12,6 +12,9 @@ gradle-app.setting
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
+# Avoid ignoring libs folder
+!libs/**/*
+
 *target*
 *.jar
 *.war
@@ -44,3 +47,4 @@ local.properties
 diagrams/
 /go-outputs/
 /bin/
+/gradle.properties

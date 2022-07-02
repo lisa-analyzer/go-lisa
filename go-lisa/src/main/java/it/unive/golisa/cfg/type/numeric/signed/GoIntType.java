@@ -21,7 +21,7 @@ import java.util.Collections;
  * 
  * @link https://www.golang-book.com/books/intro/3
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoIntType implements NumericType, GoType {
 

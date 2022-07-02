@@ -1,0 +1,6 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/cc/cpu-use/cpu-use.go':168:35] on 'untyped SimpleChaincode::AddUsage(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ ]
+}

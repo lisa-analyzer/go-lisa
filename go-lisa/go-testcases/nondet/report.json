@@ -1,6 +1,0 @@
-{
-  "warnings" : [ {
-    "message" : "['go-testcases/nondet/nondet.go':17:27] on 'untyped ~LiSAProgram::main()': [EXPRESSION] Random method detected!"
-  } ],
-  "files" : [ "typing___untyped_~LiSAProgram.Invoke(shim.ChaincodeStubInterface_stub).dot", "typing___untyped_~LiSAProgram.main().dot" ]
-}

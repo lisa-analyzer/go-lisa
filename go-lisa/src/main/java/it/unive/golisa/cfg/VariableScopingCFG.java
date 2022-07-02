@@ -1,10 +1,12 @@
 package it.unive.golisa.cfg;
 
-import it.unive.golisa.scooping.IdInfo;
+import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,7 +16,7 @@ import java.util.Set;
 /**
  * A control flow graph, that has {@link Statement}s as nodes and {@link Edge}s
  * as edges. It also can contains a mapping between the statements and the IDs
- * visible in those statements
+ * visible in those statements.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -22,7 +24,7 @@ public class VariableScopingCFG extends CFG {
 
 	/**
 	 * The mapping between the statements and the IDs visible in those
-	 * statements
+	 * statements.
 	 */
 	private final Map<Statement, Map<String, Set<IdInfo>>> scopingMap;
 
@@ -53,18 +55,17 @@ public class VariableScopingCFG extends CFG {
 
 	/**
 	 * Adds the given node to the set of nodes, and collect IDs visible in that
-	 * node
+	 * node.
 	 * 
 	 * @param node       the node to add
 	 * @param visibleIds the IDs visible to collect
 	 */
-	public void addNode(Statement node, Map<String, Set<IdInfo>> visibleIds) {
+	public void registerScoping(Statement node, Map<String, Set<IdInfo>> visibleIds) {
 		scopingMap.put(node, new HashMap<>(visibleIds));
-		super.addNode(node);
 	}
 
 	/**
-	 * Yields the IDs visible from a statement
+	 * Yields the IDs visible from a statement.
 	 * 
 	 * @param node the node to add
 	 * 
@@ -72,5 +73,23 @@ public class VariableScopingCFG extends CFG {
 	 */
 	public Map<String, Set<IdInfo>> getVisibleIds(Statement node) {
 		return scopingMap.get(node);
+	}
+
+	@Override
+	public Collection<Statement> getGuards(ProgramPoint pp) {
+		// TODO remove this when the fix will be available in lisa
+		Collection<Statement> guards = super.getGuards(pp);
+		if (!guards.isEmpty())
+			return guards;
+
+		if (pp instanceof Call) {
+			Call original = (Call) pp;
+			while (original.getSource() != null)
+				original = original.getSource();
+			if (original != pp)
+				return super.getGuards(original);
+		}
+
+		return guards;
 	}
 }

@@ -6,10 +6,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Return;
 
 /**
- * Go return statement class (e.g., var x int = 5). TODO: at the moment, we
- * handle only the case when {@code expression} is a single expressin
+ * Go return statement class (e.g., return 5).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoReturn extends Return {
 
@@ -17,6 +16,7 @@ public class GoReturn extends Return {
 	 * Builds a Go return statement.
 	 * 
 	 * @param cfg        the cfg that this statement belongs to
+	 * @param location   the location where this expression is defined
 	 * @param expression the expression to be returned
 	 */
 	public GoReturn(CFG cfg, SourceCodeLocation location, Expression expression) {

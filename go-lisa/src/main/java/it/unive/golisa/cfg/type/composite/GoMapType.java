@@ -5,35 +5,65 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.PointerType;
+import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GoMapType implements GoType, PointerType {
+/**
+ * A Go map type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
+public class GoMapType implements GoType, InMemoryType {
 
-	private GoType keyType;
-	private GoType elementType;
+	private Type keyType;
+	private Type elementType;
 
 	private static final Set<GoMapType> mapTypes = new HashSet<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoMapType} representing a map type.
+	 * 
+	 * @param type the map type to lookup
+	 * 
+	 * @return the unique instance of {@link GoMapType} representing the map
+	 *             type given as argument
+	 */
 	public static GoMapType lookup(GoMapType type) {
 		if (!mapTypes.contains(type))
 			mapTypes.add(type);
 		return mapTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoMapType(GoType keyType, GoType elementType) {
+	/**
+	 * Builds a map type.
+	 * 
+	 * @param keyType     key type
+	 * @param elementType element type
+	 */
+	public GoMapType(Type keyType, Type elementType) {
 		this.keyType = keyType;
 		this.elementType = elementType;
 	}
 
+	/**
+	 * Yields the key type of this map type.
+	 * 
+	 * @return the key type of this map type
+	 */
 	public Type getKeyType() {
 		return keyType;
 	}
 
+	/**
+	 * Yields the element type of this map type.
+	 * 
+	 * @return the element type of this map type
+	 */
 	public Type getElementType() {
 		return elementType;
 	}
@@ -93,7 +123,7 @@ public class GoMapType implements GoType, PointerType {
 
 	@Override
 	public boolean isPointerType() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -101,6 +131,11 @@ public class GoMapType implements GoType, PointerType {
 		return new GoNil(cfg, location);
 	}
 
+	/**
+	 * Yields all the map types.
+	 * 
+	 * @return all the map types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoMapType in : mapTypes)
@@ -116,6 +151,9 @@ public class GoMapType implements GoType, PointerType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the map types.
+	 */
 	public static void clearAll() {
 		mapTypes.clear();
 	}

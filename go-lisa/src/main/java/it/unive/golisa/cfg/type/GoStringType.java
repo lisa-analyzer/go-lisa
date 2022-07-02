@@ -17,7 +17,7 @@ import java.util.Collections;
  * are unique. The unique instance of this type can be retrieved by
  * {@link GoStringType#INSTANCE}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoStringType implements StringType, GoType {
 

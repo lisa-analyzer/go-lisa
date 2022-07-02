@@ -16,14 +16,16 @@ import it.unive.lisa.type.Untyped;
 import java.util.Collection;
 import java.util.Collections;
 
-/*
- * nil is a valid value for the following. - Pointers - Unsafe pointers -
- * Interfaces - Channels - Maps - Slices - Functions
+/**
+ * The Go nil type. nil is a valid value for the following type: pointers,
+ * unsafe pointers, interfaces, channels, maps, slices, functions.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoNilType implements GoType {
 
 	/**
-	 * Unique instance of GoInt16 type.
+	 * Unique instance of Go nil type.
 	 */
 	public static final GoNilType INSTANCE = new GoNilType();
 
@@ -82,5 +84,4 @@ public class GoNilType implements GoType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-
 }

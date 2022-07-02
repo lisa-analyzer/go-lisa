@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___untyped_~LiSAProgram.alias().dot", "analysis___untyped_~LiSAProgram.allocs().dot", "analysis___untyped_~LiSAProgram.defaultArray().dot", "analysis___untyped_~LiSAProgram.emptyAllocs().dot", "analysis___untyped_~LiSAProgram.matrix().dot" ]
+  "files" : [ "analysis___untyped_array.alias().dot", "analysis___untyped_array.allocs().dot", "analysis___untyped_array.defaultArray().dot", "analysis___untyped_array.emptyAllocs().dot" ]
 }

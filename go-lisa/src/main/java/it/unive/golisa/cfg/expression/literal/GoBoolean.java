@@ -6,19 +6,18 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
- * A Go Boolean value. The static type of a Go Boolean value is
- * {@link GoBoolType}.
+ * A Go Boolean literal value.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoBoolean extends Literal<Boolean> {
 
 	/**
-	 * Builds a Go boolean value. The location where this Go integer value
-	 * appears is unknown (i.e. no source file/line/column is available).
+	 * Builds a Go Boolean literal value.
 	 * 
-	 * @param cfg   the cfg that this Go integer belongs to
-	 * @param value the Boolean value
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param value    the Boolean value
 	 */
 	public GoBoolean(CFG cfg, SourceCodeLocation location, Boolean value) {
 		super(cfg, location, value, GoBoolType.INSTANCE);

@@ -11,19 +11,38 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * A Go variadic type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoVariadicType implements GoType {
 
-	public static final Set<GoVariadicType> variadicTypes = new HashSet<>();
+	private static final Set<GoVariadicType> variadicTypes = new HashSet<>();
 
-	private final GoType contentType;
+	private final Type contentType;
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoVariadicType} representing a variadic type.
+	 * 
+	 * @param type the variadic type to lookup
+	 * 
+	 * @return the unique instance of {@link GoVariadicType} representing the
+	 *             function type given as argument
+	 */
 	public static GoVariadicType lookup(GoVariadicType type) {
 		if (!variadicTypes.contains(type))
 			variadicTypes.add(type);
 		return variadicTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoVariadicType(GoType contentType) {
+	/**
+	 * Builds a variadic type.
+	 * 
+	 * @param contentType the content type
+	 */
+	public GoVariadicType(Type contentType) {
 		this.contentType = contentType;
 	}
 
@@ -78,6 +97,11 @@ public class GoVariadicType implements GoType {
 		return null;
 	}
 
+	/**
+	 * Yields all the variadic types.
+	 * 
+	 * @return all the variadic types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoVariadicType in : variadicTypes)
@@ -93,6 +117,9 @@ public class GoVariadicType implements GoType {
 		return instances;
 	}
 
+	/**
+	 * Clears all the variadic types.
+	 */
 	public static void clearAll() {
 		variadicTypes.clear();
 	}

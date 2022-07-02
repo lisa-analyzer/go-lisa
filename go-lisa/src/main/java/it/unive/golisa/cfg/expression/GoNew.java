@@ -1,39 +1,54 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.call.NativeCall;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapAllocation;
+import it.unive.lisa.type.Type;
 
-public class GoNew extends NativeCall {
+/**
+ * A Go new expression, allocation an object in the heap (e.g., new(Vertex)).
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
+public class GoNew extends NaryExpression {
 
-	public GoNew(CFG cfg, SourceCodeLocation location, GoType type) {
+	/**
+	 * Builds the new expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param type     the type to allocate
+	 */
+	public GoNew(CFG cfg, SourceCodeLocation location, Type type) {
 		super(cfg, location, "new", type);
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V>,
+	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> callSemantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					AnalysisState<A, H, V>[] computedStates,
-					ExpressionSet<SymbolicExpression>[] params) throws SemanticException {
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
 		// Following the Golang reference:
 		// The new built-in function allocates memory. The first argument is a
 		// type, not a value,
 		// and the value returned is a pointer to a newly allocated zero value
-		// of that type.
-		HeapAllocation created = new HeapAllocation(Caches.types().mkSingletonSet(getStaticType()), getLocation());
-		return entryState.smallStepSemantics(created, this);
+		// of that type. pointer =
+		HeapAllocation created = new HeapAllocation(new GoPointerType(getStaticType()), getLocation());
+		return state.smallStepSemantics(created, this);
 	}
 }

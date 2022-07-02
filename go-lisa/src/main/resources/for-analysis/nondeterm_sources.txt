@@ -1,0 +1,1178 @@
+pkg net/url, method (*URL) IsAbs() bool
+pkg net/url, method (Values) Encode() string
+pkg net/url, method (*Userinfo) Username() string
+pkg net/url, method (*Userinfo) Password() string, bool(string, bool)
+pkg net/url, method (*Userinfo) String() string
+pkg net/url, method (*URL) Query() Values
+pkg net/url, method (*URL) RequestURI() string
+pkg net/url, method (EscapeError) Error() string
+pkg net/url, method (*Error) Error() string
+pkg net/url, method (*URL) ResolveReference(*URL) *URL
+pkg net/url, method (*URL) Parse(string) *URL, error(*URL, error)
+pkg net/url, method (Values) Get(string) string
+pkg net/url, method (*URL) String() string
+pkg archive/tar, method (*Writer) Write([]uint8) int, error(int, error)
+pkg archive/tar, method (*Writer) Flush() error
+pkg archive/tar, method (*Reader) Read([]uint8) int, error(int, error)
+pkg archive/tar, method (*Writer) Close() error
+pkg archive/tar, method (*Writer) WriteHeader(*Header) error
+pkg archive/tar, method (*Reader) Next() *Header, error(*Header, error)
+pkg compress/flate, method (*Writer) Write([]uint8) int, error(int, error)
+pkg compress/flate, method (*Writer) Flush() error
+pkg compress/flate, method (CorruptInputError) Error() string
+pkg compress/flate, method (*Writer) Close() error
+pkg compress/flate, method (*ReadError) Error() string
+pkg compress/flate, method (*WriteError) Error() string
+pkg compress/flate, method (InternalError) Error() string
+pkg compress/zlib, method (*Writer) Write([]uint8) int, error(int, error)
+pkg compress/zlib, method (*Writer) Flush() error
+pkg compress/zlib, method (*Writer) Close() error
+pkg net/mail, method (Header) AddressList(string) []*Address, error([]*Address, error)
+pkg net/mail, method (Header) Get(string) string
+pkg net/mail, method (*Address) String() string
+pkg net/mail, method (Header) Date() time.Time, error(time.Time, error)
+pkg runtime/pprof, method (*Profile) Count() int
+pkg runtime/pprof, method (*Profile) Name() string
+pkg runtime/pprof, method (*Profile) WriteTo(io.Writer, int) error
+pkg syscall, method (*DLL) Release() error
+pkg syscall, method (WaitStatus) Signaled() bool
+pkg syscall, method (*Proc) Call(...uintptr) uintptr, uintptr, error(uintptr, uintptr, error)
+pkg syscall, method (*LazyDLL) Handle() uintptr
+pkg syscall, method (*DLLError) Error() string
+pkg syscall, method (WaitStatus) Exited() bool
+pkg syscall, method (Token) Close() error
+pkg syscall, method (*RawSockaddrAny) Sockaddr() Sockaddr, error(Sockaddr, error)
+pkg syscall, method (*Timeval) Unix() int64, int64(int64, int64)
+pkg syscall, method (*SID) LookupAccount(string) string, string, uint32, error(string, string, uint32, error)
+pkg syscall, method (WaitStatus) Stopped() bool
+pkg syscall, method (WaitStatus) ExitStatus() int
+pkg syscall, method (Token) GetTokenUser() *Tokenuser, error(*Tokenuser, error)
+pkg syscall, method (Signal) String() string
+pkg syscall, method (Errno) Error() string
+pkg syscall, method (Errno) Temporary() bool
+pkg syscall, method (*Filetime) Nanoseconds() int64
+pkg syscall, method (*Proc) Addr() uintptr
+pkg syscall, method (*Timeval) Nanoseconds() int64
+pkg syscall, method (Token) GetTokenPrimaryGroup() *Tokenprimarygroup, error(*Tokenprimarygroup, error)
+pkg syscall, method (*LazyDLL) Load() error
+pkg syscall, method (WaitStatus) TrapCause() int
+pkg syscall, method (*PtraceRegs) PC() uint64
+pkg syscall, method (Token) GetUserProfileDirectory() string, error(string, error)
+pkg syscall, method (*DLL) FindProc(string) *Proc, error(*Proc, error)
+pkg syscall, method (WaitStatus) CoreDump() bool
+pkg syscall, method (*SID) Copy() *SID, error(*SID, error)
+pkg syscall, method (Errno) Timeout() bool
+pkg syscall, method (*Timeval) Nano() int64
+pkg syscall, method (WaitStatus) Signal() Signal
+pkg syscall, method (*SID) String() string, error(string, error)
+pkg syscall, method (*Timespec) Unix() int64, int64(int64, int64)
+pkg syscall, method (*LazyProc) Addr() uintptr
+pkg syscall, method (WaitStatus) Continued() bool
+pkg syscall, method (*DLL) MustFindProc(string) *Proc
+pkg syscall, method (*SID) Len() int
+pkg syscall, method (*LazyProc) Find() error
+pkg syscall, method (WaitStatus) StopSignal() Signal
+pkg syscall, method (*Timespec) Nano() int64
+pkg syscall, method (*LazyDLL) NewProc(string) *LazyProc
+pkg syscall, method (*LazyProc) Call(...uintptr) uintptr, uintptr, error(uintptr, uintptr, error)
+pkg compress/bzip2, method (StructuralError) Error() string
+pkg math/rand, method (*Rand) Float64() float64
+pkg math/rand, method (*Rand) Int31n(int32) int32
+pkg math/rand, method (*Rand) Perm(int) []int
+pkg math/rand, method (*Rand) Int63n(int64) int64
+pkg math/rand, method (*Rand) Int31() int32
+pkg math/rand, method (*Rand) Int() int
+pkg math/rand, method (*Rand) Float32() float32
+pkg math/rand, method (*Zipf) Uint64() uint64
+pkg math/rand, method (*Rand) Uint32() uint32
+pkg math/rand, method (*Rand) Intn(int) int
+pkg math/rand, method (*Rand) ExpFloat64() float64
+pkg math/rand, method (*Rand) NormFloat64() float64
+pkg math/rand, method (*Rand) Int63() int64
+pkg archive/zip, method (*File) FileInfo() os.FileInfo
+pkg archive/zip, method (*File) Open() io.ReadCloser, error(io.ReadCloser, error)
+pkg archive/zip, method (*Writer) Create(string) io.Writer, error(io.Writer, error)
+pkg archive/zip, method (*ReadCloser) Close() error
+pkg archive/zip, method (*File) ModTime() time.Time
+pkg archive/zip, method (*File) Mode() os.FileMode
+pkg archive/zip, method (*FileHeader) Mode() os.FileMode
+pkg archive/zip, method (*FileHeader) ModTime() time.Time
+pkg archive/zip, method (*Writer) Close() error
+pkg archive/zip, method (*Writer) CreateHeader(*FileHeader) io.Writer, error(io.Writer, error)
+pkg archive/zip, method (*FileHeader) FileInfo() os.FileInfo
+pkg database/sql/driver, method (RowsAffected) RowsAffected() int64, error(int64, error)
+pkg database/sql/driver, method (NotNull) ConvertValue(interface{}) Value, error(Value, error)
+pkg database/sql/driver, method (RowsAffected) LastInsertId() int64, error(int64, error)
+pkg database/sql/driver, method (Null) ConvertValue(interface{}) Value, error(Value, error)
+pkg debug/gosym, method (UnknownFileError) Error() string
+pkg debug/gosym, method (*Table) PCToLine(uint64) string, int, *Func(string, int, *Func)
+pkg debug/gosym, method (*Sym) PackageName() string
+pkg debug/gosym, method (*Sym) BaseName() string
+pkg debug/gosym, method (*Table) SymByAddr(uint64) *Sym
+pkg debug/gosym, method (*UnknownLineError) Error() string
+pkg debug/gosym, method (*Table) PCToFunc(uint64) *Func
+pkg debug/gosym, method (*Table) LookupSym(string) *Sym
+pkg debug/gosym, method (*LineTable) LineToPC(int, uint64) uint64
+pkg debug/gosym, method (*LineTable) PCToLine(uint64) int
+pkg debug/gosym, method (*Sym) Static() bool
+pkg debug/gosym, method (*Table) LookupFunc(string) *Func
+pkg debug/gosym, method (Func) ReceiverName() string
+pkg debug/gosym, method (*Sym) ReceiverName() string
+pkg debug/gosym, method (Func) PackageName() string
+pkg debug/gosym, method (*Table) LineToPC(string, int) uint64, *Func, error(uint64, *Func, error)
+pkg debug/gosym, method (Func) BaseName() string
+pkg debug/gosym, method (Func) Static() bool
+pkg debug/gosym, method (*DecodingError) Error() string
+pkg os/exec, method (ExitError) String() string
+pkg os/exec, method (*Cmd) Wait() error
+pkg os/exec, method (ExitError) Exited() bool
+pkg os/exec, method (*Cmd) CombinedOutput() []uint8, error([]uint8, error)
+pkg os/exec, method (ExitError) Sys() interface{}
+pkg os/exec, method (*Cmd) StdinPipe() io.WriteCloser, error(io.WriteCloser, error)
+pkg os/exec, method (ExitError) Success() bool
+pkg os/exec, method (ExitError) Pid() int
+pkg os/exec, method (*ExitError) Error() string
+pkg os/exec, method (ExitError) SysUsage() interface{}
+pkg os/exec, method (*Cmd) Start() error
+pkg os/exec, method (*Cmd) Output() []uint8, error([]uint8, error)
+pkg os/exec, method (*Cmd) StdoutPipe() io.ReadCloser, error(io.ReadCloser, error)
+pkg os/exec, method (*Error) Error() string
+pkg os/exec, method (ExitError) SystemTime() time.Duration
+pkg os/exec, method (ExitError) UserTime() time.Duration
+pkg os/exec, method (*Cmd) StderrPipe() io.ReadCloser, error(io.ReadCloser, error)
+pkg os/exec, method (*Cmd) Run() error
+pkg compress/gzip, method (*Writer) Write([]uint8) int, error(int, error)
+pkg compress/gzip, method (*Reader) Read([]uint8) int, error(int, error)
+pkg compress/gzip, method (*Writer) Close() error
+pkg compress/gzip, method (*Reader) Close() error
+pkg net/http/httptest, method (*ResponseRecorder) Header() http.Header
+pkg net/http/httptest, method (*ResponseRecorder) Write([]uint8) int, error(int, error)
+pkg embed, method (FS) ReadDir(string) []fs.DirEntry, error([]fs.DirEntry, error)
+pkg embed, method (FS) ReadFile(string) []uint8, error([]uint8, error)
+pkg embed, method (FS) Open(string) fs.File, error(fs.File, error)
+pkg io, method (*PipeWriter) Write([]uint8) int, error(int, error)
+pkg io, method (*SectionReader) ReadAt([]uint8, int64) int, error(int, error)
+pkg io, method (*PipeWriter) CloseWithError(error) error
+pkg io, method (*PipeWriter) Close() error
+pkg io, method (*SectionReader) Size() int64
+pkg io, method (*PipeReader) Close() error
+pkg io, method (*PipeReader) CloseWithError(error) error
+pkg io, method (*LimitedReader) Read([]uint8) int, error(int, error)
+pkg io, method (*PipeReader) Read([]uint8) int, error(int, error)
+pkg io, method (*SectionReader) Read([]uint8) int, error(int, error)
+pkg io, method (*SectionReader) Seek(int64, int) int64, error(int64, error)
+pkg net/http/cookiejar, method (*Jar) Cookies(*url.URL) []*http.Cookie
+pkg runtime/cgo, method (Handle) Value() interface{}
+pkg bufio, method (ReadWriter) WriteByte(uint8) error
+pkg bufio, method (*Reader) UnreadRune() error
+pkg bufio, method (*Reader) Read([]uint8) int, error(int, error)
+pkg bufio, method (*Reader) ReadByte() uint8, error(uint8, error)
+pkg bufio, method (ReadWriter) Available() int
+pkg bufio, method (*Writer) WriteByte(uint8) error
+pkg bufio, method (*Writer) Available() int
+pkg bufio, method (*Reader) ReadString(uint8) string, error(string, error)
+pkg bufio, method (*Writer) Write([]uint8) int, error(int, error)
+pkg bufio, method (*Writer) Buffered() int
+pkg bufio, method (ReadWriter) Peek(int) []uint8, error([]uint8, error)
+pkg bufio, method (*Writer) WriteString(string) int, error(int, error)
+pkg bufio, method (*Reader) UnreadByte() error
+pkg bufio, method (ReadWriter) ReadLine() []uint8, bool, error([]uint8, bool, error)
+pkg bufio, method (ReadWriter) WriteRune(int32) int, error(int, error)
+pkg bufio, method (*Reader) ReadRune() int32, int, error(int32, int, error)
+pkg bufio, method (*Reader) ReadSlice(uint8) []uint8, error([]uint8, error)
+pkg bufio, method (ReadWriter) ReadByte() uint8, error(uint8, error)
+pkg bufio, method (ReadWriter) ReadBytes(uint8) []uint8, error([]uint8, error)
+pkg bufio, method (*Reader) Buffered() int
+pkg bufio, method (ReadWriter) UnreadByte() error
+pkg bufio, method (*Writer) Flush() error
+pkg bufio, method (*Reader) Peek(int) []uint8, error([]uint8, error)
+pkg bufio, method (ReadWriter) ReadString(uint8) string, error(string, error)
+pkg bufio, method (ReadWriter) ReadRune() int32, int, error(int32, int, error)
+pkg bufio, method (ReadWriter) ReadSlice(uint8) []uint8, error([]uint8, error)
+pkg bufio, method (ReadWriter) WriteString(string) int, error(int, error)
+pkg bufio, method (ReadWriter) Flush() error
+pkg bufio, method (*Writer) WriteRune(int32) int, error(int, error)
+pkg bufio, method (ReadWriter) UnreadRune() error
+pkg bufio, method (*Reader) ReadBytes(uint8) []uint8, error([]uint8, error)
+pkg bufio, method (ReadWriter) Write([]uint8) int, error(int, error)
+pkg bufio, method (*Reader) ReadLine() []uint8, bool, error([]uint8, bool, error)
+pkg bufio, method (ReadWriter) Read([]uint8) int, error(int, error)
+pkg net/textproto, method (*Reader) ReadLineBytes() []uint8, error([]uint8, error)
+pkg net/textproto, method (MIMEHeader) Get(string) string
+pkg net/textproto, method (*Conn) ReadLineBytes() []uint8, error([]uint8, error)
+pkg net/textproto, method (*Conn) DotReader() io.Reader
+pkg net/textproto, method (*Conn) ReadContinuedLine() string, error(string, error)
+pkg net/textproto, method (*Conn) ReadResponse(int) int, string, error(int, string, error)
+pkg net/textproto, method (*Conn) ReadCodeLine(int) int, string, error(int, string, error)
+pkg net/textproto, method (*Conn) ReadDotBytes() []uint8, error([]uint8, error)
+pkg net/textproto, method (*Reader) DotReader() io.Reader
+pkg net/textproto, method (*Conn) Next() uint
+pkg net/textproto, method (*Reader) ReadLine() string, error(string, error)
+pkg net/textproto, method (*Conn) ReadDotLines() []string, error([]string, error)
+pkg net/textproto, method (*Error) Error() string
+pkg net/textproto, method (*Reader) ReadCodeLine(int) int, string, error(int, string, error)
+pkg net/textproto, method (*Reader) ReadContinuedLine() string, error(string, error)
+pkg net/textproto, method (*Reader) ReadResponse(int) int, string, error(int, string, error)
+pkg net/textproto, method (*Reader) ReadDotLines() []string, error([]string, error)
+pkg net/textproto, method (*Reader) ReadMIMEHeader() MIMEHeader, error(MIMEHeader, error)
+pkg net/textproto, method (*Conn) ReadMIMEHeader() MIMEHeader, error(MIMEHeader, error)
+pkg net/textproto, method (*Conn) Close() error
+pkg net/textproto, method (*Conn) ReadContinuedLineBytes() []uint8, error([]uint8, error)
+pkg net/textproto, method (ProtocolError) Error() string
+pkg net/textproto, method (*Conn) DotWriter() io.WriteCloser
+pkg net/textproto, method (*Writer) DotWriter() io.WriteCloser
+pkg net/textproto, method (*Conn) ReadLine() string, error(string, error)
+pkg net/textproto, method (*Conn) Cmd(string, ...interface{}) uint, error(uint, error)
+pkg net/textproto, method (*Pipeline) Next() uint
+pkg net/textproto, method (*Conn) PrintfLine(string, ...interface{}) error
+pkg net/textproto, method (*Reader) ReadDotBytes() []uint8, error([]uint8, error)
+pkg net/textproto, method (*Writer) PrintfLine(string, ...interface{}) error
+pkg net/textproto, method (*Reader) ReadContinuedLineBytes() []uint8, error([]uint8, error)
+pkg net, method (*DNSConfigError) Timeout() bool
+pkg net, method (*UDPConn) SetReadBuffer(int) error
+pkg net, method (*IPConn) Read([]uint8) int, error(int, error)
+pkg net, method (*UnixConn) Read([]uint8) int, error(int, error)
+pkg net, method (IP) IsGlobalUnicast() bool
+pkg net, method (UnknownNetworkError) Timeout() bool
+pkg net, method (*TCPConn) LocalAddr() Addr
+pkg net, method (*UDPAddr) String() string
+pkg net, method (*UnixAddr) Network() string
+pkg net, method (IP) To16() IP
+pkg net, method (UnknownNetworkError) Temporary() bool
+pkg net, method (*UDPConn) ReadFrom([]uint8) int, Addr, error(int, Addr, error)
+pkg net, method (*UnixConn) SetReadDeadline(time.Time) error
+pkg net, method (*TCPConn) SetWriteBuffer(int) error
+pkg net, method (IP) IsLinkLocalMulticast() bool
+pkg net, method (*UnixConn) ReadMsgUnix([]uint8, []uint8) int, int, int, *UnixAddr, error(int, int, int, *UnixAddr, error)
+pkg net, method (*TCPListener) Accept() Conn, error(Conn, error)
+pkg net, method (*IPConn) RemoteAddr() Addr
+pkg net, method (Flags) String() string
+pkg net, method (*IPConn) SetReadDeadline(time.Time) error
+pkg net, method (*UnixConn) Write([]uint8) int, error(int, error)
+pkg net, method (*DNSConfigError) Temporary() bool
+pkg net, method (IP) IsLinkLocalUnicast() bool
+pkg net, method (IP) IsLoopback() bool
+pkg net, method (*IPAddr) Network() string
+pkg net, method (IP) Mask(IPMask) IP
+pkg net, method (*IPNet) Contains(IP) bool
+pkg net, method (*OpError) Error() string
+pkg net, method (*UnixAddr) String() string
+pkg net, method (*DNSError) Error() string
+pkg net, method (*TCPConn) CloseWrite() error
+pkg net, method (*ParseError) Error() string
+pkg net, method (*UnixConn) SetWriteDeadline(time.Time) error
+pkg net, method (*UDPConn) RemoteAddr() Addr
+pkg net, method (*IPNet) String() string
+pkg net, method (*UnixListener) Addr() Addr
+pkg net, method (*TCPConn) ReadFrom(io.Reader) int64, error(int64, error)
+pkg net, method (*IPConn) SetReadBuffer(int) error
+pkg net, method (*IPConn) ReadFromIP([]uint8) int, *IPAddr, error(int, *IPAddr, error)
+pkg net, method (IPMask) String() string
+pkg net, method (*TCPListener) AcceptTCP() *TCPConn, error(*TCPConn, error)
+pkg net, method (*TCPListener) Close() error
+pkg net, method (IP) IsUnspecified() bool
+pkg net, method (*UDPConn) SetDeadline(time.Time) error
+pkg net, method (*OpError) Temporary() bool
+pkg net, method (*DNSError) Temporary() bool
+pkg net, method (*UnixListener) Close() error
+pkg net, method (*OpError) Timeout() bool
+pkg net, method (*UDPConn) File() *os.File, error(*os.File, error)
+pkg net, method (*Interface) Addrs() []Addr, error([]Addr, error)
+pkg net, method (*UnixConn) RemoteAddr() Addr
+pkg net, method (IP) DefaultMask() IPMask
+pkg net, method (*UnixListener) Accept() Conn, error(Conn, error)
+pkg net, method (InvalidAddrError) Temporary() bool
+pkg net, method (InvalidAddrError) Error() string
+pkg net, method (*TCPConn) File() *os.File, error(*os.File, error)
+pkg net, method (*TCPConn) SetReadBuffer(int) error
+pkg net, method (*TCPConn) CloseRead() error
+pkg net, method (*TCPConn) Write([]uint8) int, error(int, error)
+pkg net, method (*IPConn) Write([]uint8) int, error(int, error)
+pkg net, method (UnknownNetworkError) Error() string
+pkg net, method (*UDPConn) Write([]uint8) int, error(int, error)
+pkg net, method (*IPConn) File() *os.File, error(*os.File, error)
+pkg net, method (*TCPConn) SetWriteDeadline(time.Time) error
+pkg net, method (*UnixConn) ReadFrom([]uint8) int, Addr, error(int, Addr, error)
+pkg net, method (*TCPConn) SetDeadline(time.Time) error
+pkg net, method (*IPConn) SetWriteDeadline(time.Time) error
+pkg net, method (*TCPConn) SetLinger(int) error
+pkg net, method (*UnixConn) SetDeadline(time.Time) error
+pkg net, method (*IPConn) LocalAddr() Addr
+pkg net, method (*TCPAddr) Network() string
+pkg net, method (*IPConn) SetDeadline(time.Time) error
+pkg net, method (*UnixConn) LocalAddr() Addr
+pkg net, method (InvalidAddrError) Timeout() bool
+pkg net, method (*TCPConn) RemoteAddr() Addr
+pkg net, method (IP) Equal(IP) bool
+pkg net, method (*UDPConn) SetWriteDeadline(time.Time) error
+pkg net, method (*IPConn) SetWriteBuffer(int) error
+pkg net, method (*DNSError) Timeout() bool
+pkg net, method (*UnixConn) SetWriteBuffer(int) error
+pkg net, method (*IPNet) Network() string
+pkg net, method (*UnixConn) WriteTo([]uint8, Addr) int, error(int, error)
+pkg net, method (IP) IsInterfaceLocalMulticast() bool
+pkg net, method (*IPConn) WriteToIP([]uint8, *IPAddr) int, error(int, error)
+pkg net, method (*TCPConn) SetReadDeadline(time.Time) error
+pkg net, method (*UDPConn) SetWriteBuffer(int) error
+pkg net, method (IP) IsMulticast() bool
+pkg net, method (*DNSConfigError) Error() string
+pkg net, method (*UnixListener) SetDeadline(time.Time) error
+pkg net, method (*AddrError) Error() string
+pkg net, method (*UnixConn) File() *os.File, error(*os.File, error)
+pkg net, method (*TCPConn) SetKeepAlive(bool) error
+pkg net, method (*UnixListener) AcceptUnix() *UnixConn, error(*UnixConn, error)
+pkg net, method (*UnixConn) Close() error
+pkg net, method (*IPConn) ReadFrom([]uint8) int, Addr, error(int, Addr, error)
+pkg net, method (*UnixConn) ReadFromUnix([]uint8) int, *UnixAddr, error(int, *UnixAddr, error)
+pkg net, method (HardwareAddr) String() string
+pkg net, method (*UDPConn) Read([]uint8) int, error(int, error)
+pkg net, method (*UnixConn) SetReadBuffer(int) error
+pkg net, method (*UDPConn) SetReadDeadline(time.Time) error
+pkg net, method (*Interface) MulticastAddrs() []Addr, error([]Addr, error)
+pkg net, method (*TCPListener) File() *os.File, error(*os.File, error)
+pkg net, method (*UnixListener) File() *os.File, error(*os.File, error)
+pkg net, method (IPMask) Size() int, int(int, int)
+pkg net, method (*UDPConn) Close() error
+pkg net, method (*TCPListener) SetDeadline(time.Time) error
+pkg net, method (*AddrError) Timeout() bool
+pkg net, method (*UDPConn) LocalAddr() Addr
+pkg net, method (*UnixConn) WriteMsgUnix([]uint8, []uint8, *UnixAddr) int, int, error(int, int, error)
+pkg net, method (*UnixConn) WriteToUnix([]uint8, *UnixAddr) int, error(int, error)
+pkg net, method (IP) To4() IP
+pkg net, method (*IPConn) WriteTo([]uint8, Addr) int, error(int, error)
+pkg net, method (*UDPConn) ReadFromUDP([]uint8) int, *UDPAddr, error(int, *UDPAddr, error)
+pkg net, method (*UDPAddr) Network() string
+pkg net, method (*TCPAddr) String() string
+pkg net, method (*AddrError) Temporary() bool
+pkg net, method (*TCPConn) SetNoDelay(bool) error
+pkg net, method (*UDPConn) WriteToUDP([]uint8, *UDPAddr) int, error(int, error)
+pkg net, method (*TCPConn) Read([]uint8) int, error(int, error)
+pkg net, method (*UDPConn) WriteTo([]uint8, Addr) int, error(int, error)
+pkg net, method (*TCPListener) Addr() Addr
+pkg net, method (IP) String() string
+pkg net, method (*IPAddr) String() string
+pkg net, method (*TCPConn) Close() error
+pkg net, method (*IPConn) Close() error
+pkg runtime, method (*MemProfileRecord) Stack() []uintptr
+pkg runtime, method (*Func) Entry() uintptr
+pkg runtime, method (*Func) FileLine(uintptr) string, int(string, int)
+pkg runtime, method (*TypeAssertionError) Error() string
+pkg runtime, method (*StackRecord) Stack() []uintptr
+pkg runtime, method (*MemProfileRecord) InUseBytes() int64
+pkg runtime, method (*MemProfileRecord) InUseObjects() int64
+pkg runtime, method (*Func) Name() string
+pkg database/sql, method (*Tx) Query(string, ...interface{}) *Rows, error(*Rows, error)
+pkg database/sql, method (*Tx) Stmt(*Stmt) *Stmt
+pkg database/sql, method (*Tx) Exec(string, ...interface{}) Result, error(Result, error)
+pkg database/sql, method (NullInt64) Value() driver.Value, error(driver.Value, error)
+pkg database/sql, method (*Stmt) Exec(...interface{}) Result, error(Result, error)
+pkg database/sql, method (*Rows) Scan(...interface{}) error
+pkg database/sql, method (*NullFloat64) Scan(interface{}) error
+pkg database/sql, method (NullString) Value() driver.Value, error(driver.Value, error)
+pkg database/sql, method (*Tx) Prepare(string) *Stmt, error(*Stmt, error)
+pkg database/sql, method (*DB) Begin() *Tx, error(*Tx, error)
+pkg database/sql, method (*Rows) Next() bool
+pkg database/sql, method (*Stmt) Query(...interface{}) *Rows, error(*Rows, error)
+pkg database/sql, method (*Stmt) Close() error
+pkg database/sql, method (NullFloat64) Value() driver.Value, error(driver.Value, error)
+pkg database/sql, method (*Row) Scan(...interface{}) error
+pkg database/sql, method (*Rows) Close() error
+pkg database/sql, method (*Tx) Rollback() error
+pkg database/sql, method (*DB) QueryRow(string, ...interface{}) *Row
+pkg database/sql, method (*Tx) QueryRow(string, ...interface{}) *Row
+pkg database/sql, method (*DB) Close() error
+pkg database/sql, method (*DB) Driver() driver.Driver
+pkg database/sql, method (*NullInt64) Scan(interface{}) error
+pkg database/sql, method (*Rows) Err() error
+pkg database/sql, method (*DB) Query(string, ...interface{}) *Rows, error(*Rows, error)
+pkg database/sql, method (*DB) Prepare(string) *Stmt, error(*Stmt, error)
+pkg database/sql, method (*Stmt) QueryRow(...interface{}) *Row
+pkg database/sql, method (*Tx) Commit() error
+pkg database/sql, method (*NullString) Scan(interface{}) error
+pkg database/sql, method (*DB) Exec(string, ...interface{}) Result, error(Result, error)
+pkg database/sql, method (NullBool) Value() driver.Value, error(driver.Value, error)
+pkg database/sql, method (*NullBool) Scan(interface{}) error
+pkg database/sql, method (*Rows) Columns() []string, error([]string, error)
+pkg net/rpc, method (*Client) Call(string, interface{}, interface{}) error
+pkg net/rpc, method (*Server) Register(interface{}) error
+pkg net/rpc, method (*Server) RegisterName(string, interface{}) error
+pkg net/rpc, method (*Server) ServeRequest(ServerCodec) error
+pkg net/rpc, method (*Client) Go(string, interface{}, interface{}, chan *Call) *Call
+pkg net/rpc, method (ServerError) Error() string
+pkg net/rpc, method (*Client) Close() error
+pkg os/user, method (UnknownUserIdError) Error() string
+pkg os/user, method (UnknownUserError) Error() string
+pkg runtime/metrics, method (Value) Kind() ValueKind
+pkg runtime/metrics, method (Value) Float64() float64
+pkg runtime/metrics, method (Value) Uint64() uint64
+pkg runtime/metrics, method (Value) Float64Histogram() *Float64Histogram
+pkg net/smtp, method (*Client) Quit() error
+pkg net/smtp, method (*Client) Verify(string) error
+pkg net/smtp, method (*Client) Mail(string) error
+pkg net/smtp, method (*Client) Extension(string) bool, string(bool, string)
+pkg net/smtp, method (*Client) StartTLS(*tls.Config) error
+pkg net/smtp, method (*Client) Auth(Auth) error
+pkg net/smtp, method (*Client) Rcpt(string) error
+pkg net/smtp, method (*Client) Data() io.WriteCloser, error(io.WriteCloser, error)
+pkg net/smtp, method (*Client) Reset() error
+pkg os, method (FileMode) Perm() FileMode
+pkg os, method (*ProcessState) String() string
+pkg os, method (*Process) Wait() *ProcessState, error(*ProcessState, error)
+pkg os, method (*File) Sync() error
+pkg os, method (*File) Read([]uint8) int, error(int, error)
+pkg os, method (*Process) Kill() error
+pkg os, method (*ProcessState) Sys() interface{}
+pkg os, method (FileMode) IsDir() bool
+pkg os, method (*File) Seek(int64, int) int64, error(int64, error)
+pkg os, method (FileMode) String() string
+pkg os, method (*File) Name() string
+pkg os, method (*LinkError) Error() string
+pkg os, method (*PathError) Error() string
+pkg os, method (*Process) Signal(Signal) error
+pkg os, method (*SyscallError) Error() string
+pkg os, method (*File) Chmod(FileMode) error
+pkg os, method (*File) Fd() uintptr
+pkg os, method (*Process) Release() error
+pkg os, method (*File) Chown(int, int) error
+pkg os, method (*ProcessState) SystemTime() time.Duration
+pkg os, method (*ProcessState) UserTime() time.Duration
+pkg os, method (*ProcessState) Exited() bool
+pkg os, method (*ProcessState) Success() bool
+pkg os, method (*ProcessState) Pid() int
+pkg os, method (*File) ReadAt([]uint8, int64) int, error(int, error)
+pkg os, method (*File) Stat() FileInfo, error(FileInfo, error)
+pkg os, method (*File) Readdir(int) []FileInfo, error([]FileInfo, error)
+pkg os, method (*File) Close() error
+pkg os, method (*File) Readdirnames(int) []string, error([]string, error)
+pkg os, method (*ProcessState) SysUsage() interface{}
+pkg os, method (*File) WriteString(string) int, error(int, error)
+pkg os, method (*File) Truncate(int64) error
+pkg os, method (*File) Chdir() error
+pkg os, method (*File) Write([]uint8) int, error(int, error)
+pkg os, method (*File) WriteAt([]uint8, int64) int, error(int, error)
+pkg net/http/httputil, method (*ClientConn) Do(*http.Request) *http.Response, error(*http.Response, error)
+pkg net/http/httputil, method (*ClientConn) Write(*http.Request) error
+pkg net/http/httputil, method (*ClientConn) Pending() int
+pkg net/http/httputil, method (*ClientConn) Read(*http.Request) *http.Response, error(*http.Response, error)
+pkg net/http/httputil, method (*ServerConn) Pending() int
+pkg net/http/httputil, method (*ServerConn) Write(*http.Request, *http.Response) error
+pkg net/http/httputil, method (*ClientConn) Hijack() net.Conn, *bufio.Reader(net.Conn, *bufio.Reader)
+pkg net/http/httputil, method (*ClientConn) Close() error
+pkg net/http/httputil, method (*ServerConn) Hijack() net.Conn, *bufio.Reader(net.Conn, *bufio.Reader)
+pkg net/http/httputil, method (*ServerConn) Close() error
+pkg net/http/httputil, method (*ServerConn) Read() *http.Request, error(*http.Request, error)
+pkg net/http, method (*Client) Post(string, string, io.Reader) *Response, error(*Response, error)
+pkg net/http, method (*Server) Serve(net.Listener) error
+pkg net/http, method (Dir) Open(string) File, error(File, error)
+pkg net/http, method (*Request) FormValue(string) string
+pkg net/http, method (*Request) ParseForm() error
+pkg net/http, method (*Client) PostForm(string, url.Values) *Response, error(*Response, error)
+pkg net/http, method (*Request) UserAgent() string
+pkg net/http, method (Header) Write(io.Writer) error
+pkg net/http, method (*Client) Head(string) *Response, error(*Response, error)
+pkg net/http, method (*Response) Location() *url.URL, error(*url.URL, error)
+pkg net/http, method (*Request) Referer() string
+pkg net/http, method (*Response) Write(io.Writer) error
+pkg net/http, method (*Request) Write(io.Writer) error
+pkg net/http, method (*Request) ParseMultipartForm(int64) error
+pkg net/http, method (*Transport) RoundTrip(*Request) *Response, error(*Response, error)
+pkg net/http, method (*Request) Cookie(string) *Cookie, error(*Cookie, error)
+pkg net/http, method (*Request) WriteProxy(io.Writer) error
+pkg net/http, method (*Cookie) String() string
+pkg net/http, method (*Response) Cookies() []*Cookie
+pkg net/http, method (*Request) Cookies() []*Cookie
+pkg net/http, method (Header) WriteSubset(io.Writer, map[string]bool) error
+pkg net/http, method (*ProtocolError) Error() string
+pkg net/http, method (Header) Get(string) string
+pkg net/http, method (*Client) Get(string) *Response, error(*Response, error)
+pkg net/http, method (*Request) FormFile(string) multipart.File, *multipart.FileHeader, error(multipart.File, *multipart.FileHeader, error)
+pkg net/http, method (*Request) MultipartReader() *multipart.Reader, error(*multipart.Reader, error)
+pkg net/http, method (*Server) ListenAndServeTLS(string, string) error
+pkg net/http, method (*Server) ListenAndServe() error
+pkg net/http, method (*Client) Do(*Request) *Response, error(*Response, error)
+pkg net/http, method (*Request) ProtoAtLeast(int, int) bool
+pkg net/http, method (*Response) ProtoAtLeast(int, int) bool
+pkg database/sql/driver, func IsValue(interface{}) bool
+pkg database/sql/driver, func IsScanValue(interface{}) bool
+pkg debug/gosym, func NewTable([]uint8, *LineTable) *Table, error(*Table, error)
+pkg debug/gosym, func NewLineTable([]uint8, uint64) *LineTable
+pkg os/exec, func Command(string, ...string) *Cmd
+pkg os/exec, func LookPath(string) string, error(string, error)
+pkg net/rpc/jsonrpc, func Dial(string, string) *rpc.Client, error(*rpc.Client, error)
+pkg net/rpc/jsonrpc, func NewServerCodec(io.ReadWriteCloser) rpc.ServerCodec
+pkg net/rpc/jsonrpc, func NewClient(io.ReadWriteCloser) *rpc.Client
+pkg net/rpc/jsonrpc, func NewClientCodec(io.ReadWriteCloser) rpc.ClientCodec
+pkg compress/gzip, func NewReader(io.Reader) *Reader, error(*Reader, error)
+pkg compress/gzip, func NewWriterLevel(io.Writer, int) *Writer, error(*Writer, error)
+pkg compress/gzip, func NewWriter(io.Writer) *Writer
+pkg testing/iotest, func TruncateWriter(io.Writer, int64) io.Writer
+pkg testing/iotest, func DataErrReader(io.Reader) io.Reader
+pkg testing/iotest, func NewReadLogger(string, io.Reader) io.Reader
+pkg testing/iotest, func NewWriteLogger(string, io.Writer) io.Writer
+pkg testing/iotest, func OneByteReader(io.Reader) io.Reader
+pkg testing/iotest, func HalfReader(io.Reader) io.Reader
+pkg testing/iotest, func TimeoutReader(io.Reader) io.Reader
+pkg net/http/httptest, func NewRecorder() *ResponseRecorder
+pkg net/http/httptest, func NewUnstartedServer(http.Handler) *Server
+pkg net/http/httptest, func NewTLSServer(http.Handler) *Server
+pkg net/http/httptest, func NewServer(http.Handler) *Server
+pkg net/http/fcgi, func Serve(net.Listener, http.Handler) error
+pkg time, func AfterFunc(Duration, func AfterFunc(Duration, func() ) *Timer
+pkg io, func CopyN(Writer, Reader, int64) int64, error(int64, error)
+pkg io, func WriteString(Writer, string) int, error(int, error)
+pkg io, func LimitReader(Reader, int64) Reader
+pkg io, func ReadAtLeast(Reader, []uint8, int) int, error(int, error)
+pkg io, func TeeReader(Reader, Writer) Reader
+pkg io, func Pipe() *PipeReader, *PipeWriter(*PipeReader, *PipeWriter)
+pkg io, func Copy(Writer, Reader) int64, error(int64, error)
+pkg io, func NewSectionReader(ReaderAt, int64, int64) *SectionReader
+pkg io, func MultiReader(...Reader) Reader
+pkg io, func MultiWriter(...Writer) Writer
+pkg io, func ReadFull(Reader, []uint8) int, error(int, error)
+pkg net/http/cookiejar, func New(*Options) *Jar, error(*Jar, error)
+pkg runtime/cgo, func NewHandle(interface{}) Handle
+pkg crypto/rand, func Read([]uint8) int, error(int, error)
+pkg crypto/rand, func Prime(io.Reader, int) *big.Int, error(*big.Int, error)
+pkg crypto/rand, func Int(io.Reader, *big.Int) *big.Int, error(*big.Int, error)
+pkg net/url, func Parse(string) *URL, error(*URL, error)
+pkg net/url, func QueryEscape(string) string
+pkg net/url, func QueryUnescape(string) string, error(string, error)
+pkg net/url, func ParseRequestURI(string) *URL, error(*URL, error)
+pkg net/url, func ParseQuery(string) Values, error(Values, error)
+pkg net/url, func UserPassword(string, string) *Userinfo
+pkg net/url, func User(string) *Userinfo
+pkg bufio, func NewReader(io.Reader) *Reader
+pkg bufio, func NewWriter(io.Writer) *Writer
+pkg bufio, func NewWriterSize(io.Writer, int) *Writer
+pkg bufio, func NewReaderSize(io.Reader, int) *Reader
+pkg bufio, func NewReadWriter(*Reader, *Writer) *ReadWriter
+pkg io/ioutil, func ReadFile(string) []uint8, error([]uint8, error)
+pkg io/ioutil, func TempFile(string, string) *os.File, error(*os.File, error)
+pkg io/ioutil, func NopCloser(io.Reader) io.ReadCloser
+pkg io/ioutil, func ReadAll(io.Reader) []uint8, error([]uint8, error)
+pkg io/ioutil, func WriteFile(string, []uint8, os.FileMode) error
+pkg io/ioutil, func TempDir(string, string) string, error(string, error)
+pkg io/ioutil, func ReadDir(string) []os.FileInfo, error([]os.FileInfo, error)
+pkg os, func Expand(string, func Expand(string, func(string) string) string
+pkg image, func RegisterFormat(string, string, func(io.Reader), func RegisterFormat(string, string, func(io.Reader) Image, error, funcio.Reader Config, error(Image, error, funcio.Reader Config, error)
+pkg runtime/pprof, func ForLabels(context.Context, func ForLabels(context.Context, func(string, string) bool)
+pkg go/types, func NewConst(token.Pos, *Package, string, Type, func NewConst(token.Pos, *Package, string, Type, constant.Value) *Const
+pkg archive/tar, func NewReader(io.Reader) *Reader
+pkg archive/tar, func NewWriter(io.Writer) *Writer
+pkg net/textproto, func CanonicalMIMEHeaderKey(string) string
+pkg net/textproto, func NewConn(io.ReadWriteCloser) *Conn
+pkg net/textproto, func NewWriter(*bufio.Writer) *Writer
+pkg net/textproto, func Dial(string, string) *Conn, error(*Conn, error)
+pkg net/textproto, func NewReader(*bufio.Reader) *Reader
+pkg compress/flate, func NewReaderDict(io.Reader, []uint8) io.ReadCloser
+pkg compress/flate, func NewWriter(io.Writer, int) *Writer, error(*Writer, error)
+pkg compress/flate, func NewWriterDict(io.Writer, int, []uint8) *Writer, error(*Writer, error)
+pkg compress/flate, func NewReader(io.Reader) io.ReadCloser
+pkg net/http/pprof, func Handler(string) http.Handler
+pkg runtime/debug, func Stack() []uint8
+pkg net, func IPv4(uint8, uint8, uint8, uint8) IP
+pkg net, func ListenMulticastUDP(string, *Interface, *UDPAddr) *UDPConn, error(*UDPConn, error)
+pkg net, func DialUnix(string, *UnixAddr, *UnixAddr) *UnixConn, error(*UnixConn, error)
+pkg net, func ResolveTCPAddr(string, string) *TCPAddr, error(*TCPAddr, error)
+pkg net, func DialIP(string, *IPAddr, *IPAddr) *IPConn, error(*IPConn, error)
+pkg net, func Listen(string, string) Listener, error(Listener, error)
+pkg net, func InterfaceByName(string) *Interface, error(*Interface, error)
+pkg net, func Pipe() Conn, Conn(Conn, Conn)
+pkg net, func LookupPort(string, string) int, error(int, error)
+pkg net, func InterfaceAddrs() []Addr, error([]Addr, error)
+pkg net, func Dial(string, string) Conn, error(Conn, error)
+pkg net, func CIDRMask(int, int) IPMask
+pkg net, func SplitHostPort(string) string, string, error(string, string, error)
+pkg net, func FileConn(*os.File) Conn, error(Conn, error)
+pkg net, func LookupIP(string) []IP, error([]IP, error)
+pkg net, func JoinHostPort(string, string) string
+pkg net, func DialTimeout(string, string, time.Duration) Conn, error(Conn, error)
+pkg net, func DialUDP(string, *UDPAddr, *UDPAddr) *UDPConn, error(*UDPConn, error)
+pkg net, func DialTCP(string, *TCPAddr, *TCPAddr) *TCPConn, error(*TCPConn, error)
+pkg net, func ParseCIDR(string) IP, *IPNet, error(IP, *IPNet, error)
+pkg net, func ListenUnixgram(string, *UnixAddr) *UDPConn, error(*UDPConn, error)
+pkg net, func FileListener(*os.File) Listener, error(Listener, error)
+pkg net, func LookupCNAME(string) string, error(string, error)
+pkg net, func ListenIP(string, *IPAddr) *IPConn, error(*IPConn, error)
+pkg net, func ResolveUDPAddr(string, string) *UDPAddr, error(*UDPAddr, error)
+pkg net, func ListenPacket(string, string) PacketConn, error(PacketConn, error)
+pkg net, func LookupTXT(string) []string, error([]string, error)
+pkg net, func ParseMAC(string) HardwareAddr, error(HardwareAddr, error)
+pkg net, func ListenUDP(string, *UDPAddr) *UDPConn, error(*UDPConn, error)
+pkg net, func ParseIP(string) IP
+pkg net, func Interfaces() []Interface, error([]Interface, error)
+pkg net, func IPv4Mask(uint8, uint8, uint8, uint8) IPMask
+pkg net, func ListenUnix(string, *UnixAddr) *UnixListener, error(*UnixListener, error)
+pkg net, func ResolveUnixAddr(string, string) *UnixAddr, error(*UnixAddr, error)
+pkg net, func LookupSRV(string, string, string) string, []*SRV, error(string, []*SRV, error)
+pkg net, func ListenTCP(string, *TCPAddr) *TCPListener, error(*TCPListener, error)
+pkg net, func ResolveIPAddr(string, string) *IPAddr, error(*IPAddr, error)
+pkg net, func LookupMX(string) []*MX, error([]*MX, error)
+pkg net, func LookupAddr(string) []string, error([]string, error)
+pkg net, func FilePacketConn(*os.File) PacketConn, error(PacketConn, error)
+pkg net, func InterfaceByIndex(int) *Interface, error(*Interface, error)
+pkg net, func LookupHost(string) []string, error([]string, error)
+pkg compress/zlib, func NewWriterLevel(io.Writer, int) *Writer, error(*Writer, error)
+pkg compress/zlib, func NewReaderDict(io.Reader, []uint8) io.ReadCloser, error(io.ReadCloser, error)
+pkg compress/zlib, func NewWriter(io.Writer) *Writer
+pkg compress/zlib, func NewWriterLevelDict(io.Writer, int, []uint8) *Writer, error(*Writer, error)
+pkg compress/zlib, func NewReader(io.Reader) io.ReadCloser, error(io.ReadCloser, error)
+pkg runtime, func Caller(int) uintptr, string, int, bool(uintptr, string, int, bool)
+pkg runtime, func Version() string
+pkg runtime, func GOMAXPROCS(int) int
+pkg runtime, func FuncForPC(uintptr) *Func
+pkg runtime, func NumGoroutine() int
+pkg runtime, func Callers(int, []uintptr) int
+pkg runtime, func MemProfile([]MemProfileRecord, bool) int, bool(int, bool)
+pkg runtime, func ThreadCreateProfile([]StackRecord) int, bool(int, bool)
+pkg runtime, func GoroutineProfile([]StackRecord) int, bool(int, bool)
+pkg runtime, func NumCgoCall() int64
+pkg runtime, func CPUProfile() []uint8
+pkg runtime, func GOROOT() string
+pkg runtime, func Stack([]uint8, bool) int
+pkg runtime, func NumCPU() int
+pkg compress/lzw, func NewReader(io.Reader, Order, int) io.ReadCloser
+pkg compress/lzw, func NewWriter(io.Writer, Order, int) io.WriteCloser
+pkg io/fs, func FileInfoToDirEntry(FileInfo) DirEntry
+pkg database/sql, func Open(string, string) *DB, error(*DB, error)
+pkg net/rpc, func ServeRequest(ServerCodec) error
+pkg net/rpc, func NewClient(io.ReadWriteCloser) *Client
+pkg net/rpc, func Dial(string, string) *Client, error(*Client, error)
+pkg net/rpc, func DialHTTP(string, string) *Client, error(*Client, error)
+pkg net/rpc, func RegisterName(string, interface{}) error
+pkg net/rpc, func NewClientWithCodec(ClientCodec) *Client
+pkg net/rpc, func DialHTTPPath(string, string, string) *Client, error(*Client, error)
+pkg net/rpc, func Register(interface{}) error
+pkg net/rpc, func NewServer() *Server
+pkg net/mail, func ReadMessage(io.Reader) *Message, error(*Message, error)
+pkg runtime/pprof, func Profiles() []*Profile
+pkg runtime/pprof, func NewProfile(string) *Profile
+pkg runtime/pprof, func StartCPUProfile(io.Writer) error
+pkg runtime/pprof, func Lookup(string) *Profile
+pkg runtime/pprof, func WriteHeapProfile(io.Writer) error
+pkg syscall, func GetsockoptIPMreqn(int, int, int) *IPMreqn, error(*IPMreqn, error)
+pkg syscall, func Mprotect([]uint8, int) error
+pkg syscall, func Sync() error
+pkg syscall, func Getpeername(Handle) Sockaddr, error(Sockaddr, error)
+pkg syscall, func GetEnvironmentVariable(*uint16, *uint16, uint32) uint32, error(uint32, error)
+pkg syscall, func LsfJump(int, int, int, int) *SockFilter
+pkg syscall, func Sendmsg(int, []uint8, []uint8, Sockaddr, int) error
+pkg syscall, func DnsQuery(string, uint16, uint32, *uint8, **DNSRecord, *uint8) error
+pkg syscall, func SetsockoptIPv6Mreq(Handle, int, int, *IPv6Mreq) error
+pkg syscall, func Fchdir(Handle) error
+pkg syscall, func OpenProcessToken(Handle, uint32, *Token) error
+pkg syscall, func SetsockoptIPMreq(Handle, int, int, *IPMreq) error
+pkg syscall, func Seek(Handle, int64, int) int64, error(int64, error)
+pkg syscall, func ReadDirectoryChanges(Handle, *uint8, uint32, bool, uint32, *uint32, *Overlapped, uintptr) error
+pkg syscall, func ReadDirent(int, []uint8) int, error(int, error)
+pkg syscall, func LookupAccountName(*uint16, *uint16, *SID, *uint32, *uint16, *uint32, *uint32) error
+pkg syscall, func Closesocket(Handle) error
+pkg syscall, func Setresuid(int, int, int) error
+pkg syscall, func Setlogin(string) error
+pkg syscall, func PtraceCont(int, int) error
+pkg syscall, func SetBpfInterface(int, string) error
+pkg syscall, func GetStartupInfo(*StartupInfo) error
+pkg syscall, func CertEnumCertificatesInStore(Handle, *CertContext) *CertContext, error(*CertContext, error)
+pkg syscall, func Setfsuid(int) error
+pkg syscall, func ConvertSidToStringSid(*SID, **uint16) error
+pkg syscall, func PostQueuedCompletionStatus(Handle, uint32, uint32, *Overlapped) error
+pkg syscall, func Fchownat(int, string, int, int, int) error
+pkg syscall, func CertFreeCertificateContext(*CertContext) error
+pkg syscall, func Ioperm(int, int, int) error
+pkg syscall, func Pipe([]int) error
+pkg syscall, func RegCloseKey(Handle) error
+pkg syscall, func CreateDirectory(*uint16, *SecurityAttributes) error
+pkg syscall, func Getpgrp() int
+pkg syscall, func Pipe([]Handle) error
+pkg syscall, func Sendto(int, []uint8, int, Sockaddr) error
+pkg syscall, func NsecToTimeval(int64) Timeval
+pkg syscall, func BpfJump(int, int, int, int) *BpfInsn
+pkg syscall, func GetsockoptInet4Addr(int, int, int) [4]uint8, error([4]uint8, error)
+pkg syscall, func ConvertStringSidToSid(*uint16, **SID) error
+pkg syscall, func StringToUTF16Ptr(string) *uint16
+pkg syscall, func GetTimeZoneInformation(*Timezoneinformation) uint32, error(uint32, error)
+pkg syscall, func StringByteSlice(string) []uint8
+pkg syscall, func GetsockoptInt(int, int, int) int, error(int, error)
+pkg syscall, func SysctlUint32(string) uint32, error(uint32, error)
+pkg syscall, func SetBpfBuflen(int, int) int, error(int, error)
+pkg syscall, func Getdirentries(int, []uint8, *uintptr) int, error(int, error)
+pkg syscall, func CertCloseStore(Handle, uint32) error
+pkg syscall, func StringToSid(string) *SID, error(*SID, error)
+pkg syscall, func Syscall12(uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func Open(string, int, uint32) Handle, error(Handle, error)
+pkg syscall, func Flock(int, int) error
+pkg syscall, func Write(Handle, []uint8) int, error(int, error)
+pkg syscall, func Open(string, int, uint32) int, error(int, error)
+pkg syscall, func Times(*Tms) uintptr, error(uintptr, error)
+pkg syscall, func FindNextFile(Handle, *Win32finddata) error
+pkg syscall, func OpenCurrentProcessToken() Token, error(Token, error)
+pkg syscall, func Environ() []string
+pkg syscall, func InotifyInit1(int) int, error(int, error)
+pkg syscall, func PtracePokeData(int, uintptr, []uint8) int, error(int, error)
+pkg syscall, func WSAIoctl(Handle, uint32, *uint8, uint32, *uint8, uint32, *uint32, *Overlapped, uintptr) error
+pkg syscall, func Access(string, uint32) error
+pkg syscall, func Listen(int, int) error
+pkg syscall, func SetsockoptInt(int, int, int, int) error
+pkg syscall, func RegQueryValueEx(Handle, *uint16, *uint32, *uint32, *uint8, *uint32) error
+pkg syscall, func Fchdir(int) error
+pkg syscall, func TranslateAccountName(string, uint32, uint32, int) string, error(string, error)
+pkg syscall, func Gettimeofday(*Timeval) error
+pkg syscall, func GetTokenInformation(Token, uint32, *uint8, uint32, *uint32) error
+pkg syscall, func FormatMessage(uint32, uint32, uint32, uint32, []uint16, *uint8) uint32, error(uint32, error)
+pkg syscall, func SetsockoptTimeval(Handle, int, int, *Timeval) error
+pkg syscall, func CopySid(uint32, *SID, *SID) error
+pkg syscall, func GetQueuedCompletionStatus(Handle, *uint32, *uint32, **Overlapped, uint32) error
+pkg syscall, func WSASendto(Handle, *WSABuf, uint32, *uint32, uint32, Sockaddr, *Overlapped, *uint8) error
+pkg syscall, func ParseRoutingMessage([]uint8) []RoutingMessage, error([]RoutingMessage, error)
+pkg syscall, func Getwd() string, error(string, error)
+pkg syscall, func GetLongPathName(*uint16, *uint16, uint32) uint32, error(uint32, error)
+pkg syscall, func Kill(int, Signal) error
+pkg syscall, func SetBpfImmediate(int, int) error
+pkg syscall, func NewCallback(interface{}) uintptr
+pkg syscall, func Setreuid(int, int) error
+pkg syscall, func NetUserGetInfo(*uint16, *uint16, uint32, **uint8) error
+pkg syscall, func Shutdown(Handle, int) error
+pkg syscall, func GetUserNameEx(uint32, *uint16, *uint32) error
+pkg syscall, func Getrlimit(int, *Rlimit) error
+pkg syscall, func Syscall(uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func GetsockoptIPv6Mreq(int, int, int) *IPv6Mreq, error(*IPv6Mreq, error)
+pkg syscall, func Undelete(string) error
+pkg syscall, func FlushFileBuffers(Handle) error
+pkg syscall, func SetsockoptString(int, int, int, string) error
+pkg syscall, func Chflags(string, int) error
+pkg syscall, func RouteRIB(int, int) []uint8, error([]uint8, error)
+pkg syscall, func CreatePipe(*Handle, *Handle, *SecurityAttributes, uint32) error
+pkg syscall, func Close(int) error
+pkg syscall, func SetBpf(int, []BpfInsn) error
+pkg syscall, func PtraceSetOptions(int, int) error
+pkg syscall, func MoveFile(*uint16, *uint16) error
+pkg syscall, func EpollWait(int, []EpollEvent, int) int, error(int, error)
+pkg syscall, func TimevalToNsec(Timeval) int64
+pkg syscall, func Getrusage(int, *Rusage) error
+pkg syscall, func Tgkill(int, int, Signal) error
+pkg syscall, func Setregid(int, int) error
+pkg syscall, func SetCurrentDirectory(*uint16) error
+pkg syscall, func Getenv(string) string, bool(string, bool)
+pkg syscall, func PivotRoot(string, string) error
+pkg syscall, func Kevent(int, []Kevent_t, []Kevent_t, *Timespec) int, error(int, error)
+pkg syscall, func SetsockoptInet4Addr(Handle, int, int, [4]uint8) error
+pkg syscall, func TranslateName(*uint16, uint32, uint32, *uint16, *uint32) error
+pkg syscall, func Chmod(string, uint32) error
+pkg syscall, func UTF16ToString([]uint16) string
+pkg syscall, func DuplicateHandle(Handle, Handle, Handle, *Handle, uint32, bool, uint32) error
+pkg syscall, func Setfsgid(int) error
+pkg syscall, func SetsockoptLinger(int, int, int, *Linger) error
+pkg syscall, func Ustat(int, *Ustat_t) error
+pkg syscall, func AttachLsf(int, []SockFilter) error
+pkg syscall, func Fsync(Handle) error
+pkg syscall, func InotifyAddWatch(int, string, uint32) int, error(int, error)
+pkg syscall, func Creat(string, uint32) int, error(int, error)
+pkg syscall, func SyncFileRange(int, int64, int64, int) error
+pkg syscall, func Readlink(string, []uint8) int, error(int, error)
+pkg syscall, func Getsockname(int) Sockaddr, error(Sockaddr, error)
+pkg syscall, func Ftruncate(int, int64) error
+pkg syscall, func CertAddCertificateContextToStore(Handle, *CertContext, uint32, **CertContext) error
+pkg syscall, func Mkfifo(string, uint32) error
+pkg syscall, func ParseDirent([]uint8, int, []string) int, int, []string(int, int, []string)
+pkg syscall, func SetsockoptByte(int, int, int, uint8) error
+pkg syscall, func Mlockall(int) error
+pkg syscall, func BpfStats(int) *BpfStat, error(*BpfStat, error)
+pkg syscall, func Issetugid() bool
+pkg syscall, func FreeEnvironmentStrings(*uint16) error
+pkg syscall, func Renameat(int, string, int, string) error
+pkg syscall, func GetStdHandle(int) Handle, error(Handle, error)
+pkg syscall, func GetsockoptInt(Handle, int, int) int, error(int, error)
+pkg syscall, func NsecToFiletime(int64) Filetime
+pkg syscall, func Tee(int, int, int, int) int64, error(int64, error)
+pkg syscall, func Chdir(string) error
+pkg syscall, func PtraceGetEventMsg(int) uint, error(uint, error)
+pkg syscall, func Time(*Time_t) Time_t, error(Time_t, error)
+pkg syscall, func Munlock([]uint8) error
+pkg syscall, func GetAdaptersInfo(*IpAdapterInfo, *uint32) error
+pkg syscall, func CreateProcess(*uint16, *uint16, *SecurityAttributes, *SecurityAttributes, bool, uint32, *uint16, *uint16, *StartupInfo, *ProcessInformation) error
+pkg syscall, func WSASendTo(Handle, *WSABuf, uint32, *uint32, uint32, *RawSockaddrAny, int32, *Overlapped, *uint8) error
+pkg syscall, func Seek(int, int64, int) int64, error(int64, error)
+pkg syscall, func Adjtimex(*Timex) int, error(int, error)
+pkg syscall, func GetEnvironmentStrings() *uint16, error(*uint16, error)
+pkg syscall, func Seteuid(int) error
+pkg syscall, func ParseRoutingSockaddr(RoutingMessage) []Sockaddr, error([]Sockaddr, error)
+pkg syscall, func BpfBuflen(int) int, error(int, error)
+pkg syscall, func WSARecvFrom(Handle, *WSABuf, uint32, *uint32, *uint32, *RawSockaddrAny, *int32, *Overlapped, *uint8) error
+pkg syscall, func Gettid() int
+pkg syscall, func RawSyscall6(uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func CertOpenSystemStore(Handle, *uint16) Handle, error(Handle, error)
+pkg syscall, func Unlink(string) error
+pkg syscall, func TimespecToNsec(Timespec) int64
+pkg syscall, func SetsockoptIPMreq(int, int, int, *IPMreq) error
+pkg syscall, func Bind(int, Sockaddr) error
+pkg syscall, func GetIfEntry(*MibIfRow) error
+pkg syscall, func CryptAcquireContext(*Handle, *uint16, *uint16, uint32, uint32) error
+pkg syscall, func Syscall15(uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func SetBpfDatalink(int, int) int, error(int, error)
+pkg syscall, func FlushViewOfFile(uintptr, uintptr) error
+pkg syscall, func ParseUnixRights(*SocketControlMessage) []int, error([]int, error)
+pkg syscall, func Truncate(string, int64) error
+pkg syscall, func Setpriority(int, int, int) error
+pkg syscall, func GetExitCodeProcess(Handle, *uint32) error
+pkg syscall, func Read(int, []uint8) int, error(int, error)
+pkg syscall, func Sethostname([]uint8) error
+pkg syscall, func BpfInterface(int, string) string, error(string, error)
+pkg syscall, func Socketpair(int, int, int) [2]int, error([2]int, error)
+pkg syscall, func SetNonblock(Handle, bool) error
+pkg syscall, func SetHandleInformation(Handle, uint32, uint32) error
+pkg syscall, func Pipe2([]int, int) error
+pkg syscall, func CryptGenRandom(Handle, uint32, *uint8) error
+pkg syscall, func GetVersion() uint32, error(uint32, error)
+pkg syscall, func Unlinkat(int, string) error
+pkg syscall, func Mkdirat(int, string, uint32) error
+pkg syscall, func Madvise([]uint8, int) error
+pkg syscall, func SetEnvironmentVariable(*uint16, *uint16) error
+pkg syscall, func Setresgid(int, int, int) error
+pkg syscall, func PtraceSingleStep(int) error
+pkg syscall, func Syscall6(uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func UnixCredentials(*Ucred) []uint8
+pkg syscall, func Adjtime(*Timeval, *Timeval) error
+pkg syscall, func Iopl(int) error
+pkg syscall, func Exec(string, []string, []string) error
+pkg syscall, func RegQueryInfoKey(Handle, *uint16, *uint32, *uint32, *uint32, *uint32, *uint32, *uint32, *uint32, *uint32, *uint32, *Filetime) error
+pkg syscall, func Fchown(int, int, int) error
+pkg syscall, func Lchown(string, int, int) error
+pkg syscall, func Syscall9(uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func GetShortPathName(*uint16, *uint16, uint32) uint32, error(uint32, error)
+pkg syscall, func StringToUTF16(string) []uint16
+pkg syscall, func DetachLsf(int) error
+pkg syscall, func CertCreateCertificateContext(uint32, *uint8, uint32) *CertContext, error(*CertContext, error)
+pkg syscall, func GetProtoByName(string) *Protoent, error(*Protoent, error)
+pkg syscall, func Setpgid(int, int) error
+pkg syscall, func Select(int, *FdSet, *FdSet, *FdSet, *Timeval) int, error(int, error)
+pkg syscall, func CmsgLen(int) int
+pkg syscall, func StringBytePtr(string) *uint8
+pkg syscall, func Getegid() int
+pkg syscall, func GetProcAddress(Handle, string) uintptr, error(uintptr, error)
+pkg syscall, func Select(int, *FdSet, *FdSet, *FdSet, *Timeval) error
+pkg syscall, func Accept(int) int, Sockaddr, error(int, Sockaddr, error)
+pkg syscall, func GetLastError() error
+pkg syscall, func Getpgid(int) int, error(int, error)
+pkg syscall, func Uname(*Utsname) error
+pkg syscall, func Pathconf(string, int) int, error(int, error)
+pkg syscall, func Getuid() int
+pkg syscall, func Mkdir(string, uint32) error
+pkg syscall, func MapViewOfFile(Handle, uint32, uint32, uint32, uintptr) uintptr, error(uintptr, error)
+pkg syscall, func Connect(int, Sockaddr) error
+pkg syscall, func Getdents(int, []uint8) int, error(int, error)
+pkg syscall, func Faccessat(int, string, uint32, int) error
+pkg syscall, func Acct(string) error
+pkg syscall, func WaitForSingleObject(Handle, uint32) uint32, error(uint32, error)
+pkg syscall, func GetsockoptIPMreq(int, int, int) *IPMreq, error(*IPMreq, error)
+pkg syscall, func Sysinfo(*Sysinfo_t) error
+pkg syscall, func ForkExec(string, []string, *ProcAttr) int, error(int, error)
+pkg syscall, func Fchmod(Handle, uint32) error
+pkg syscall, func Setdomainname([]uint8) error
+pkg syscall, func Close(Handle) error
+pkg syscall, func Getsid(int) int, error(int, error)
+pkg syscall, func ReadFile(Handle, []uint8, *uint32, *Overlapped) error
+pkg syscall, func FlushBpf(int) error
+pkg syscall, func NewLazyDLL(string) *LazyDLL
+pkg syscall, func Openat(int, string, int, uint32) int, error(int, error)
+pkg syscall, func Fpathconf(int, int) int, error(int, error)
+pkg syscall, func Mount(string, string, string, uintptr, string) error
+pkg syscall, func Stat(string, *Stat_t) error
+pkg syscall, func Write(int, []uint8) int, error(int, error)
+pkg syscall, func Setenv(string, string) error
+pkg syscall, func BpfTimeout(int) *Timeval, error(*Timeval, error)
+pkg syscall, func InotifyInit() int, error(int, error)
+pkg syscall, func Chown(string, int, int) error
+pkg syscall, func Pread(int, []uint8, int64) int, error(int, error)
+pkg syscall, func SetBpfPromisc(int, int) error
+pkg syscall, func GetUserProfileDirectory(Token, *uint16, *uint32) error
+pkg syscall, func UnmapViewOfFile(uintptr) error
+pkg syscall, func CertGetCertificateChain(Handle, *CertContext, *Filetime, Handle, *CertChainPara, uint32, uintptr, **CertChainContext) error
+pkg syscall, func NsecToTimespec(int64) Timespec
+pkg syscall, func StringSlicePtr([]string) []*uint8
+pkg syscall, func RemoveDirectory(*uint16) error
+pkg syscall, func SetFilePointer(Handle, int32, *int32, uint32) uint32, error(uint32, error)
+pkg syscall, func GetsockoptByte(int, int, int) uint8, error(uint8, error)
+pkg syscall, func FindFirstFile(*uint16, *Win32finddata) Handle, error(Handle, error)
+pkg syscall, func Futimes(int, []Timeval) error
+pkg syscall, func Lstat(string, *Stat_t) error
+pkg syscall, func LookupSID(string, string) *SID, string, uint32, error(*SID, string, uint32, error)
+pkg syscall, func Fchflags(string, int) error
+pkg syscall, func TerminateProcess(Handle, uint32) error
+pkg syscall, func BpfStmt(int, int) *BpfInsn
+pkg syscall, func ParseNetlinkRouteAttr(*NetlinkMessage) []NetlinkRouteAttr, error([]NetlinkRouteAttr, error)
+pkg syscall, func Recvfrom(Handle, []uint8, int) int, Sockaddr, error(int, Sockaddr, error)
+pkg syscall, func Link(string, string) error
+pkg syscall, func Getdtablesize() int
+pkg syscall, func CheckBpfVersion(int) error
+pkg syscall, func Splice(int, *int64, int, *int64, int, int) int, error(int, error)
+pkg syscall, func Splice(int, *int64, int, *int64, int, int) int64, error(int64, error)
+pkg syscall, func GetCommandLine() *uint16
+pkg syscall, func LoadDLL(string) *DLL, error(*DLL, error)
+pkg syscall, func GetComputerName(*uint16, *uint32) error
+pkg syscall, func BpfHeadercmpl(int) int, error(int, error)
+pkg syscall, func EpollCreate(int) int, error(int, error)
+pkg syscall, func Settimeofday(*Timeval) error
+pkg syscall, func InotifyRmWatch(int, uint32) int, error(int, error)
+pkg syscall, func RawSyscall(uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func Setegid(int) error
+pkg syscall, func SetsockoptLinger(Handle, int, int, *Linger) error
+pkg syscall, func Sysctl(string) string, error(string, error)
+pkg syscall, func Rename(string, string) error
+pkg syscall, func Getfsstat([]Statfs_t, int) int, error(int, error)
+pkg syscall, func SetEndOfFile(Handle) error
+pkg syscall, func SetsockoptInt(Handle, int, int, int) error
+pkg syscall, func Fdatasync(int) error
+pkg syscall, func Mknodat(int, string, uint32, int) error
+pkg syscall, func OpenProcess(uint32, bool, uint32) Handle, error(Handle, error)
+pkg syscall, func Munlockall() error
+pkg syscall, func EpollCreate1(int) int, error(int, error)
+pkg syscall, func SetsockoptIPMreqn(int, int, int, *IPMreqn) error
+pkg syscall, func LsfStmt(int, int) *SockFilter
+pkg syscall, func Umask(int) int
+pkg syscall, func Fchown(Handle, int, int) error
+pkg syscall, func PtraceSetRegs(int, *PtraceRegs) error
+pkg syscall, func Chroot(string) error
+pkg syscall, func PtraceAttach(int) error
+pkg syscall, func GetHostByName(string) *Hostent, error(*Hostent, error)
+pkg syscall, func Shutdown(int, int) error
+pkg syscall, func Sendto(Handle, []uint8, int, Sockaddr) error
+pkg syscall, func Unshare(int) error
+pkg syscall, func EpollCtl(int, int, int, *EpollEvent) error
+pkg syscall, func Utimes(string, []Timeval) error
+pkg syscall, func Nanosleep(*Timespec, *Timespec) error
+pkg syscall, func PtraceGetRegs(int, *PtraceRegs) error
+pkg syscall, func TransmitFile(Handle, Handle, uint32, uint32, *Overlapped, *TransmitFileBuffers, uint32) error
+pkg syscall, func Listen(Handle, int) error
+pkg syscall, func WSARecv(Handle, *WSABuf, uint32, *uint32, *uint32, *Overlapped, *uint8) error
+pkg syscall, func Getgroups() []int, error([]int, error)
+pkg syscall, func Fchmodat(int, string, uint32, int) error
+pkg syscall, func LoadLibrary(string) Handle, error(Handle, error)
+pkg syscall, func Reboot(int) error
+pkg syscall, func PtraceDetach(int) error
+pkg syscall, func CreateIoCompletionPort(Handle, Handle, uint32, uint32) Handle, error(Handle, error)
+pkg syscall, func PtracePeekData(int, uintptr, []uint8) int, error(int, error)
+pkg syscall, func Accept(Handle) Handle, Sockaddr, error(Handle, Sockaddr, error)
+pkg syscall, func GetProcessTimes(Handle, *Filetime, *Filetime, *Filetime, *Filetime) error
+pkg syscall, func GetCurrentDirectory(uint32, *uint16) uint32, error(uint32, error)
+pkg syscall, func Setrlimit(int, *Rlimit) error
+pkg syscall, func Setgid(int) error
+pkg syscall, func ComputerName() string, error(string, error)
+pkg syscall, func Setuid(int) error
+pkg syscall, func ParseSocketControlMessage([]uint8) []SocketControlMessage, error([]SocketControlMessage, error)
+pkg syscall, func Getcwd([]uint8) int, error(int, error)
+pkg syscall, func DeleteFile(*uint16) error
+pkg syscall, func CommandLineToArgv(*uint16, *int32) *[8192]*[8192]uint16, error(*[8192]*[8192]uint16, error)
+pkg syscall, func Dup2(int, int) error
+pkg syscall, func StartProcess(string, []string, *ProcAttr) int, uintptr, error(int, uintptr, error)
+pkg syscall, func UnixRights(...int) []uint8
+pkg syscall, func GetTempPath(uint32, *uint16) uint32, error(uint32, error)
+pkg syscall, func NetApiBufferFree(*uint8) error
+pkg syscall, func GetFileAttributesEx(*uint16, uint32, *uint8) error
+pkg syscall, func WSAStartup(uint32, *WSAData) error
+pkg syscall, func VirtualUnlock(uintptr, uintptr) error
+pkg syscall, func Getpriority(int, int) int, error(int, error)
+pkg syscall, func NetlinkRIB(int, int) []uint8, error([]uint8, error)
+pkg syscall, func SetLsfPromisc(string, bool) error
+pkg syscall, func Getpid() int
+pkg syscall, func GetCurrentProcess() Handle, error(Handle, error)
+pkg syscall, func Setgroups([]int) error
+pkg syscall, func Socket(int, int, int) Handle, error(Handle, error)
+pkg syscall, func MustLoadDLL(string) *DLL
+pkg syscall, func Rmdir(string) error
+pkg syscall, func LocalFree(Handle) Handle, error(Handle, error)
+pkg syscall, func WSASend(Handle, *WSABuf, uint32, *uint32, uint32, *Overlapped, *uint8) error
+pkg syscall, func Setsockopt(Handle, int32, int32, *uint8, int32) error
+pkg syscall, func Symlink(string, string) error
+pkg syscall, func Mknod(string, uint32, int) error
+pkg syscall, func Mlock([]uint8) error
+pkg syscall, func VirtualLock(uintptr, uintptr) error
+pkg syscall, func Exchangedata(string, string, int) error
+pkg syscall, func Ftruncate(Handle, int64) error
+pkg syscall, func Syscall6(uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func Getpagesize() int
+pkg syscall, func Revoke(string) error
+pkg syscall, func Recvmsg(int, []uint8, []uint8, int) int, int, int, Sockaddr, error(int, int, int, Sockaddr, error)
+pkg syscall, func AcceptEx(Handle, Handle, *uint8, uint32, uint32, uint32, *uint32, *Overlapped) error
+pkg syscall, func GetFileType(Handle) uint32, error(uint32, error)
+pkg syscall, func Recvfrom(int, []uint8, int) int, Sockaddr, error(int, Sockaddr, error)
+pkg syscall, func Socket(int, int, int) int, error(int, error)
+pkg syscall, func Read(Handle, []uint8) int, error(int, error)
+pkg syscall, func Dup(int) int, error(int, error)
+pkg syscall, func GetFileAttributes(*uint16) uint32, error(uint32, error)
+pkg syscall, func Bind(Handle, Sockaddr) error
+pkg syscall, func Kqueue() int, error(int, error)
+pkg syscall, func GetServByName(string, string) *Servent, error(*Servent, error)
+pkg syscall, func Pause() error
+pkg syscall, func BpfDatalink(int) int, error(int, error)
+pkg syscall, func PtracePeekText(int, uintptr, []uint8) int, error(int, error)
+pkg syscall, func Unmount(string, int) error
+pkg syscall, func SetBpfHeadercmpl(int, int) error
+pkg syscall, func Pwrite(int, []uint8, int64) int, error(int, error)
+pkg syscall, func Ntohs(uint16) uint16
+pkg syscall, func Syscall9(uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func LsfSocket(int, int) int, error(int, error)
+pkg syscall, func Utime(string, *Utimbuf) error
+pkg syscall, func Futimesat(int, string, []Timeval) error
+pkg syscall, func SetsockoptInet4Addr(int, int, int, [4]uint8) error
+pkg syscall, func CmsgSpace(int) int
+pkg syscall, func LookupAccountSid(*uint16, *SID, *uint16, *uint32, *uint16, *uint32, *uint32) error
+pkg syscall, func RegEnumKeyEx(Handle, uint32, *uint16, *uint32, *uint32, *uint16, *uint32, *Filetime) error
+pkg syscall, func GetLengthSid(*SID) uint32
+pkg syscall, func FreeLibrary(Handle) error
+pkg syscall, func Getppid() int
+pkg syscall, func BindToDevice(int, string) error
+pkg syscall, func SetNonblock(int, bool) error
+pkg syscall, func Fallocate(int, uint32, int64, int64) error
+pkg syscall, func GetFullPathName(*uint16, uint32, *uint16, **uint16) uint32, error(uint32, error)
+pkg syscall, func CreateFile(*uint16, uint32, uint32, *SecurityAttributes, uint32, uint32, int32) Handle, error(Handle, error)
+pkg syscall, func Munmap([]uint8) error
+pkg syscall, func Getsockname(Handle) Sockaddr, error(Sockaddr, error)
+pkg syscall, func PtracePokeText(int, uintptr, []uint8) int, error(int, error)
+pkg syscall, func Syscall(uintptr, uintptr, uintptr, uintptr, uintptr) uintptr, uintptr, Errno(uintptr, uintptr, Errno)
+pkg syscall, func CloseHandle(Handle) error
+pkg syscall, func Statfs(string, *Statfs_t) error
+pkg syscall, func Klogctl(int, []uint8) int, error(int, error)
+pkg syscall, func Getpeername(int) Sockaddr, error(Sockaddr, error)
+pkg syscall, func Fstat(int, *Stat_t) error
+pkg syscall, func GetFileInformationByHandle(Handle, *ByHandleFileInformation) error
+pkg syscall, func Fchmod(int, uint32) error
+pkg syscall, func CreateFileMapping(Handle, *SecurityAttributes, uint32, uint32, uint32, *uint16) Handle, error(Handle, error)
+pkg syscall, func CryptReleaseContext(Handle, uint32) error
+pkg syscall, func SetsockoptTimeval(int, int, int, *Timeval) error
+pkg syscall, func Geteuid() int
+pkg syscall, func SetFileTime(Handle, *Filetime, *Filetime, *Filetime) error
+pkg syscall, func Mmap(int, int64, int, int, int) []uint8, error([]uint8, error)
+pkg syscall, func Wait4(int, *WaitStatus, int, *Rusage) int, error(int, error)
+pkg syscall, func Setprivexec(int) error
+pkg syscall, func SetFileAttributes(*uint16, uint32) error
+pkg syscall, func Fstatfs(int, *Statfs_t) error
+pkg syscall, func CertVerifyCertificateChainPolicy(uintptr, *CertChainContext, *CertChainPolicyPara, *CertChainPolicyStatus) error
+pkg syscall, func Fsync(int) error
+pkg syscall, func ParseUnixCredentials(*SocketControlMessage) *Ucred, error(*Ucred, error)
+pkg syscall, func EscapeArg(string) string
+pkg syscall, func Getgid() int
+pkg syscall, func Setsid() int, error(int, error)
+pkg syscall, func RegOpenKeyEx(Handle, *uint16, uint32, uint32, *Handle) error
+pkg syscall, func Sendfile(int, int, *int64, int) int, error(int, error)
+pkg syscall, func SetBpfTimeout(int, *Timeval) error
+pkg syscall, func Connect(Handle, Sockaddr) error
+pkg syscall, func FindClose(Handle) error
+pkg syscall, func CertOpenStore(uintptr, uint32, uintptr, uint32, uintptr) Handle, error(Handle, error)
+pkg syscall, func SetsockoptIPv6Mreq(int, int, int, *IPv6Mreq) error
+pkg syscall, func WriteFile(Handle, []uint8, *uint32, *Overlapped) error
+pkg syscall, func CancelIo(Handle) error
+pkg syscall, func ParseNetlinkMessage([]uint8) []NetlinkMessage, error([]NetlinkMessage, error)
+pkg syscall, func WSACleanup() error
+pkg compress/bzip2, func NewReader(io.Reader) io.Reader
+pkg math/rand, func ExpFloat64() float64
+pkg math/rand, func Perm(int) []int
+pkg math/rand, func Int() int
+pkg math/rand, func NewSource(int64) Source
+pkg math/rand, func Int31n(int32) int32
+pkg math/rand, func Int31() int32
+pkg math/rand, func Int63() int64
+pkg math/rand, func Float32() float32
+pkg math/rand, func Float64() float64
+pkg math/rand, func Int63n(int64) int64
+pkg math/rand, func New(Source) *Rand
+pkg math/rand, func Uint32() uint32
+pkg math/rand, func Intn(int) int
+pkg math/rand, func NewZipf(*Rand, float64, float64, uint64) *Zipf
+pkg math/rand, func NormFloat64() float64
+pkg os/user, func LookupId(string) *User, error(*User, error)
+pkg os/user, func Lookup(string) *User, error(*User, error)
+pkg os/user, func Current() *User, error(*User, error)
+pkg runtime/metrics, func All() []Description
+pkg net/http/cgi, func RequestFromMap(map[string]string) *http.Request, error(*http.Request, error)
+pkg net/http/cgi, func Serve(http.Handler) error
+pkg net/http/cgi, func Request() *http.Request, error(*http.Request, error)
+pkg net/smtp, func CRAMMD5Auth(string, string) Auth
+pkg net/smtp, func PlainAuth(string, string, string, string) Auth
+pkg net/smtp, func Dial(string) *Client, error(*Client, error)
+pkg net/smtp, func NewClient(net.Conn, string) *Client, error(*Client, error)
+pkg net/smtp, func SendMail(string, Auth, string, []string, []uint8) error
+pkg os, func SameFile(FileInfo, FileInfo) bool
+pkg os, func Chtimes(string, time.Time, time.Time) error
+pkg os, func Pipe() *File, *File, error(*File, *File, error)
+pkg os, func Stat(string) FileInfo, error(FileInfo, error)
+pkg os, func Readlink(string) string, error(string, error)
+pkg os, func Geteuid() int
+pkg os, func NewSyscallError(string, error) error
+pkg os, func Mkdir(string, FileMode) error
+pkg os, func IsPathSeparator(uint8) bool
+pkg os, func Link(string, string) error
+pkg os, func Getuid() int
+pkg os, func Getpid() int
+pkg os, func Setenv(string, string) error
+pkg os, func Getwd() string, error(string, error)
+pkg os, func StartProcess(string, []string, *ProcAttr) *Process, error(*Process, error)
+pkg os, func Remove(string) error
+pkg os, func Getppid() int
+pkg os, func FindProcess(int) *Process, error(*Process, error)
+pkg os, func ExpandEnv(string) string
+pkg os, func IsNotExist(error) bool
+pkg os, func OpenFile(string, int, FileMode) *File, error(*File, error)
+pkg os, func Getgid() int
+pkg os, func Create(string) *File, error(*File, error)
+pkg os, func Hostname() string, error(string, error)
+pkg os, func RemoveAll(string) error
+pkg os, func Chmod(string, FileMode) error
+pkg os, func Lchown(string, int, int) error
+pkg os, func Open(string) *File, error(*File, error)
+pkg os, func Lstat(string) FileInfo, error(FileInfo, error)
+pkg os, func Symlink(string, string) error
+pkg os, func IsExist(error) bool
+pkg os, func Truncate(string, int64) error
+pkg os, func IsPermission(error) bool
+pkg os, func Chdir(string) error
+pkg os, func Chown(string, int, int) error
+pkg os, func NewFile(uintptr, string) *File
+pkg os, func Rename(string, string) error
+pkg os, func Getgroups() []int, error([]int, error)
+pkg os, func Environ() []string
+pkg os, func MkdirAll(string, FileMode) error
+pkg os, func Getenv(string) string
+pkg os, func Getegid() int
+pkg os, func Getpagesize() int
+pkg os, func TempDir() string
+pkg net/http/httputil, func NewSingleHostReverseProxy(*url.URL) *ReverseProxy
+pkg net/http/httputil, func NewServerConn(net.Conn, *bufio.Reader) *ServerConn
+pkg net/http/httputil, func DumpRequest(*http.Request, bool) []uint8, error([]uint8, error)
+pkg net/http/httputil, func NewChunkedReader(io.Reader) io.Reader
+pkg net/http/httputil, func DumpRequestOut(*http.Request, bool) []uint8, error([]uint8, error)
+pkg net/http/httputil, func NewProxyClientConn(net.Conn, *bufio.Reader) *ClientConn
+pkg net/http/httputil, func NewClientConn(net.Conn, *bufio.Reader) *ClientConn
+pkg net/http/httputil, func DumpResponse(*http.Response, bool) []uint8, error([]uint8, error)
+pkg net/http/httputil, func NewChunkedWriter(io.Writer) io.WriteCloser
+pkg runtime/trace, func Start(io.Writer) error
+pkg archive/zip, func NewReader(io.ReaderAt, int64) *Reader, error(*Reader, error)
+pkg archive/zip, func FileInfoHeader(os.FileInfo) *FileHeader, error(*FileHeader, error)
+pkg archive/zip, func NewWriter(io.Writer) *Writer
+pkg archive/zip, func OpenReader(string) *ReadCloser, error(*ReadCloser, error)
+pkg net/http, func Serve(net.Listener, Handler) error
+pkg net/http, func StripPrefix(string, Handler) Handler
+pkg net/http, func TimeoutHandler(Handler, time.Duration, string) Handler
+pkg net/http, func MaxBytesReader(ResponseWriter, io.ReadCloser, int64) io.ReadCloser
+pkg net/http, func ReadResponse(*bufio.Reader, *Request) *Response, error(*Response, error)
+pkg net/http, func RedirectHandler(string, int) Handler
+pkg net/http, func Post(string, string, io.Reader) *Response, error(*Response, error)
+pkg net/http, func NewFileTransport(FileSystem) RoundTripper
+pkg net/http, func Head(string) *Response, error(*Response, error)
+pkg net/http, func ListenAndServe(string, Handler) error
+pkg net/http, func Get(string) *Response, error(*Response, error)
+pkg net/http, func ProxyURL(*url.URL) func*Request *url.URL, error(func*Request *url.URL, error)
+pkg net/http, func ProxyFromEnvironment(*Request) *url.URL, error(*url.URL, error)
+pkg net/http, func DetectContentType([]uint8) string
+pkg net/http, func PostForm(string, url.Values) *Response, error(*Response, error)
+pkg net/http, func StatusText(int) string
+pkg net/http, func FileServer(FileSystem) Handler
+pkg net/http, func CanonicalHeaderKey(string) string
+pkg net/http, func ReadRequest(*bufio.Reader) *Request, error(*Request, error)
+pkg net/http, func NewServeMux() *ServeMux
+pkg net/http, func ParseHTTPVersion(string) int, int, bool(int, int, bool)
+pkg net/http, func NotFoundHandler() Handler
+pkg net/http, func ListenAndServeTLS(string, string, string, Handler) error
+pkg net/http, func NewRequest(string, string, io.Reader) *Request, error(*Request, error)
+pkg time, func Now() Time
+pkg time, func Since(Time) Duration
+pkg time, func Until(Time) Duration

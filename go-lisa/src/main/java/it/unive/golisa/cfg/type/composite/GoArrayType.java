@@ -1,24 +1,40 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
+import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.PointerType;
+import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GoArrayType implements GoType, PointerType {
+/**
+ * A Go array type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
+public class GoArrayType implements GoType, InMemoryType {
 
-	private GoType contentType;
+	private Type contentType;
 	private Integer length;
 
 	private static final Set<GoArrayType> arrayTypes = new HashSet<>();
 
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoArrayType} representing an array type.
+	 * 
+	 * @param type the array type to lookup
+	 * 
+	 * @return the unique instance of {@link GoArrayType} representing the array
+	 *             type given as argument
+	 */
 	public static GoArrayType lookup(GoArrayType type) {
 		if (!arrayTypes.contains(type))
 			arrayTypes.add(type);
@@ -26,15 +42,31 @@ public class GoArrayType implements GoType, PointerType {
 		return arrayTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoArrayType(GoType contentType, Integer length) {
+	/**
+	 * Builds an array type.
+	 * 
+	 * @param contentType the content type
+	 * @param length      the length
+	 */
+	public GoArrayType(Type contentType, Integer length) {
 		this.contentType = contentType;
 		this.length = length;
 	}
 
-	public GoType getContentType() {
+	/**
+	 * Yields the content type.
+	 * 
+	 * @return the content type
+	 */
+	public Type getContenType() {
 		return contentType;
 	}
 
+	/**
+	 * Yields the length.
+	 * 
+	 * @return the length
+	 */
 	public Integer getLength() {
 		return length;
 	}
@@ -96,21 +128,19 @@ public class GoArrayType implements GoType, PointerType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		Expression[] result = new Expression[length];
 		for (int i = 0; i < length; i++)
-			result[i] = contentType.defaultValue(cfg, location);
+			if (contentType instanceof GoType)
+				result[i] = ((GoType) contentType).defaultValue(cfg, location);
+			else
+				result[i] = new GoUnknown(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
 
-	@Override
-	public boolean isPointerType() {
-		return true;
-	}
-
-	@Override
-	public boolean isArrayType() {
-		return true;
-	}
-
+	/**
+	 * Yields all the array types.
+	 * 
+	 * @return all the array types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoArrayType in : arrayTypes)
@@ -120,12 +150,12 @@ public class GoArrayType implements GoType, PointerType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoArrayType in : arrayTypes)
-			instances.add(in);
-		return instances;
+		return Collections.singleton(this);
 	}
 
+	/**
+	 * Clears all the array types.
+	 */
 	public static void clearAll() {
 		arrayTypes.clear();
 	}

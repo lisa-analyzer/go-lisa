@@ -15,19 +15,44 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
+import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+/**
+ * The strict upper bound relational abstract domain.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class StrictUpperBounds
 		extends FunctionalLattice<StrictUpperBounds, Identifier, ExpressionInverseSet<Identifier>>
 		implements ValueDomain<StrictUpperBounds> {
 
+	/**
+	 * Builds the string upper bounds.
+	 */
 	public StrictUpperBounds() {
 		this(new ExpressionInverseSet<>(), null);
 	}
 
+	/**
+	 * Builds the string upper bounds.
+	 * 
+	 * @param lattice  the underlying lattice
+	 * @param function the function to clone
+	 */
 	private StrictUpperBounds(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		super(lattice, function);
@@ -43,8 +68,8 @@ public class StrictUpperBounds
 			SymbolicExpression left = binary.getLeft();
 			SymbolicExpression right = binary.getRight();
 
-			switch (binary.getOperator()) {
-			case NUMERIC_NON_OVERFLOWING_ADD:
+			BinaryOperator op = binary.getOperator();
+			if (op == NumericNonOverflowingAdd.INSTANCE) {
 				if (left instanceof Identifier && !left.equals(id) && right instanceof Constant) {
 					Identifier y = (Identifier) left;
 					Constant cons = (Constant) right;
@@ -80,8 +105,7 @@ public class StrictUpperBounds
 						}
 					}
 				}
-				break;
-			case NUMERIC_NON_OVERFLOWING_SUB:
+			} else if (op == NumericNonOverflowingSub.INSTANCE) {
 				if (left instanceof Identifier && !left.equals(id)
 						&& right instanceof Constant) {
 					Identifier y = (Identifier) left;
@@ -116,9 +140,6 @@ public class StrictUpperBounds
 						}
 					}
 				}
-				break;
-			default:
-				break;
 			}
 		}
 
@@ -159,12 +180,10 @@ public class StrictUpperBounds
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
-			switch (unary.getOperator()) {
-			case LOGICAL_NOT:
+			if (unary.getOperator() == LogicalNegation.INSTANCE)
 				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
-			default:
+			else
 				return Satisfiability.UNKNOWN;
-			}
 		}
 
 		if (expression instanceof BinaryExpression) {
@@ -182,51 +201,32 @@ public class StrictUpperBounds
 			Identifier left = (Identifier) binary.getLeft();
 			Identifier right = (Identifier) binary.getRight();
 
-			switch (binary.getOperator()) {
-			case COMPARISON_EQ:
+			BinaryOperator op = binary.getOperator();
+
+			if (op == ComparisonEq.INSTANCE) {
 				if (getState(right).contains(left) || getState(left).contains(right))
 					return Satisfiability.NOT_SATISFIED;
 				return Satisfiability.UNKNOWN;
-			case COMPARISON_GE:
-			case COMPARISON_GT: // x > y or x >= y
+			} else if (op == ComparisonGe.INSTANCE || op == ComparisonGt.INSTANCE) {
 				if (getState(right).contains(left))
 					return Satisfiability.SATISFIED;
 				return Satisfiability.UNKNOWN;
-			case COMPARISON_LE:
-			case COMPARISON_LT: // x < y or x <= y
+			} else if (op == ComparisonLe.INSTANCE || op == ComparisonLt.INSTANCE) {
 				if (getState(left).contains(right))
 					return Satisfiability.SATISFIED;
 				return Satisfiability.UNKNOWN;
-			case COMPARISON_NE:
+			} else if (op == ComparisonEq.INSTANCE) {
 				if (getState(right).contains(left) || getState(left).contains(right))
 					return Satisfiability.SATISFIED;
 				return Satisfiability.UNKNOWN;
-			case LOGICAL_AND:
+			} else if (op == LogicalAnd.INSTANCE)
 				return satisfies(left, pp).and(satisfies(right, pp));
-			case LOGICAL_OR:
+			else if (op == LogicalOr.INSTANCE)
 				return satisfies(left, pp).or(satisfies(right, pp));
-			default:
-				break;
-			}
 		}
 
 		return Satisfiability.UNKNOWN;
 	}
-
-//	@Override
-//	public String representation() {
-//		if (isTop())
-//			return "TOP";
-//
-//		if (isBottom())
-//			return "BOTTOM";
-//
-//		StringBuilder builder = new StringBuilder();
-//		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : function.entrySet())
-//			builder.append(entry.getKey()).append(" < ").append(entry.getValue().toString()).append("\n");
-//
-//		return builder.toString().trim();
-//	}
 
 	@Override
 	public StrictUpperBounds top() {

@@ -16,7 +16,7 @@ import java.util.Collections;
  * the instances of this type are unique. The unique instance of this type can
  * be retrieved by {@link GoFloat32Type#INSTANCE}.
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoFloat32Type implements NumericType, GoType {
 

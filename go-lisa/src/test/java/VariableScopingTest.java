@@ -1,9 +1,16 @@
 
+import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cli.GoFrontEnd;
+import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.lisa.AnalysisSetupException;
+import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;
@@ -14,9 +21,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class VariableScopingTest {
+public class VariableScopingTest extends GoAnalysisTestExecutor {
 
 	private static CompilationUnit findUnit(Program prog, String name) {
 		CompilationUnit unit = prog.getUnits().stream().filter(u -> u.getName().equals(name)).findFirst().get();
@@ -37,8 +45,8 @@ public class VariableScopingTest {
 		// we just check that no exception is thrown
 	}
 
-	@Test
-	public void testForLoopVariableScooping() throws IOException, ProgramValidationException {
+	@Ignore
+	public void testForLoopVariableScoping() throws IOException, ProgramValidationException {
 		assertTrue((new File("go-testcases/variablescoping/scoping.go")).exists());
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
 		prog.validateAndFinalize();
@@ -57,6 +65,18 @@ public class VariableScopingTest {
 		Map<String, Set<String>> expectedResult = expectedResultForLoopVariableScooping();
 
 		assertTrue(compareResults(currentResults, expectedResult));
+	}
+
+	@Test
+	public void shadowingTest() throws IOException, AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+
+				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
+						new InferredTypes()))
+				.setDumpAnalysis(true);
+
+		perform("variablescoping", "shadowing.go", conf);
 	}
 
 	private Map<String, Set<String>> expectedResultForLoopVariableScooping() {

@@ -18,3 +18,14 @@ func Invoke( stub shim.ChaincodeStubInterface ) {
 	
 	shim.Success([]byte("value: " + string(returnValue)))
 }
+
+func main() {
+
+    messages := make(chan string)
+
+    go func() { messages <- "ping" }()
+
+    msg := <-messages
+    
+    shim.Success([]byte("value: " + string(msg)))
+}

@@ -1859,7 +1859,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// Build the range condition
 		GoLess rangeCondition = new GoLess(cfg, location, idxRange,
 				new GoLength(cfg, location, rangedCollection));
-		GoRange rangeNode = new GoRange(cfg, location, rangeCondition);
+		GoRange rangeNode = new GoRange(cfg, location, rangeCondition, idxInit, idxPost);
 		block.addNode(rangeNode);
 		storeIds(rangeNode);
 

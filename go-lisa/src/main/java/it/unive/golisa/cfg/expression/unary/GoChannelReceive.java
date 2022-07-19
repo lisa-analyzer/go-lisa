@@ -13,6 +13,7 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * A Go channel receive expression (e.g., <-x).
@@ -40,6 +41,6 @@ public class GoChannelReceive extends UnaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// TODO: go channel receive semantics
-		return state.top();
+		return state.smallStepSemantics(new PushAny(expr.getStaticType(), getLocation()), this);
 	}
 }

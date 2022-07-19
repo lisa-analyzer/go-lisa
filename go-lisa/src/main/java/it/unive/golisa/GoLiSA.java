@@ -116,7 +116,7 @@ public class GoLiSA {
 		case "taint":
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 					.setAbstractState(
-							new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+							new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new TaintDomain()),
 									LiSAFactory.getDefaultFor(TypeDomain.class)))
 					.addSemanticCheck(new TaintChecker());
 			break;

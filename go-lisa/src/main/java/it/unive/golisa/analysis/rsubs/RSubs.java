@@ -1,5 +1,7 @@
 package it.unive.golisa.analysis.rsubs;
 
+import java.util.List;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -7,7 +9,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -236,10 +238,10 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
-		return new PairRepresentation(string, num, StringRepresentation::new, StringRepresentation::new);
+			return Lattice.bottomRepresentation();
+		return new ListRepresentation(List.of(string, num), StringRepresentation::new);
 	}
 
 	@Override

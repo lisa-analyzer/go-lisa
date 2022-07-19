@@ -15,12 +15,12 @@ public class BlankIdentifierTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void blankIdentifierTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("blankidentifier", "blankidentifier.go", conf);

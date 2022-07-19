@@ -91,7 +91,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	@Override
 	public DomainRepresentation representation() {
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
 		return new StringRepresentation(interval.toString());
 	}

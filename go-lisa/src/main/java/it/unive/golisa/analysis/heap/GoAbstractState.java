@@ -1,11 +1,16 @@
 package it.unive.golisa.analysis.heap;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.ObjectRepresentation;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -16,7 +21,6 @@ import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An abstract state of the analysis for Go, composed by a value state modeling
@@ -299,82 +303,17 @@ public class GoAbstractState<V extends ValueDomain<V>,
 
 	@Override
 	public DomainRepresentation representation() {
-		return new StateRepresentation(heapState.representation(), valueState.representation());
+		DomainRepresentation h = heapState.representation();
+		DomainRepresentation t = typeState.representation();
+		DomainRepresentation v = valueState.representation();
+		return new ObjectRepresentation(Map.of(
+				HEAP_REPRESENTATION_KEY, h,
+				TYPE_REPRESENTATION_KEY, t,
+				VALUE_REPRESENTATION_KEY, v));
 	}
-
-	@Override
-	public DomainRepresentation typeRepresentation() {
-		return new StateRepresentation(heapState.representation(), typeState.representation());
-	}
-
-	/**
-	 * @author <a href="mailto:luca.negrini@unive.it">Luca Negrini</a>
-	 */
-	private static final class StateRepresentation extends DomainRepresentation {
-		private final DomainRepresentation heap;
-		private final DomainRepresentation value;
-
-		private StateRepresentation(DomainRepresentation heap, DomainRepresentation value) {
-			this.heap = heap;
-			this.value = value;
-		}
-
-		@Override
-		public String toString() {
-			return "heap [[ " + heap + " ]]\nvalue [[ " + value + " ]]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((heap == null) ? 0 : heap.hashCode());
-			result = prime * result + ((value == null) ? 0 : value.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			StateRepresentation other = (StateRepresentation) obj;
-			if (heap == null) {
-				if (other.heap != null)
-					return false;
-			} else if (!heap.equals(other.heap))
-				return false;
-			if (value == null) {
-				if (other.value != null)
-					return false;
-			} else if (!value.equals(other.value))
-				return false;
-			return true;
-		}
-	}
-
+	
 	@Override
 	public String toString() {
 		return representation().toString();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <D> D getDomainInstance(Class<D> domain) {
-		if (domain.isAssignableFrom(getClass()))
-			return (D) this;
-
-		D di = heapState.getDomainInstance(domain);
-		if (di != null)
-			return di;
-
-		di = typeState.getDomainInstance(domain);
-		if (di != null)
-			return di;
-
-		return valueState.getDomainInstance(domain);
 	}
 }

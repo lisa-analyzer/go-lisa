@@ -19,13 +19,12 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testInterproc1() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc1", "interprocedural.go", conf);
@@ -34,12 +33,11 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testInterproc2() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc2", "interprocedural.go", conf);
@@ -48,12 +46,11 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testInterproc3() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc3", "interprocedural.go", conf);
@@ -62,12 +59,11 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testInterproc4() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc4", "interprocedural.go", conf);
@@ -76,12 +72,11 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testInterproc5() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc5", "interprocedural.go", conf);
@@ -90,12 +85,11 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testInterproc6() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc6", "interprocedural.go", conf);
@@ -104,12 +98,11 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testInterproc7() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("interprocedural/interproc7", "interprocedural.go", conf);
@@ -125,7 +118,7 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true);
+				.setSerializeResults(true);
 
 		perform("interprocedural/interproc8", "interprocedural.go", conf);
 	}

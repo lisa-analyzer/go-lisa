@@ -68,7 +68,8 @@ public class CloseBlock extends Statement {
 		// The close block does not compute any symbolic expression, so it
 		// returns the empty set
 		// just popping the scope on the analysis state
-		return new AnalysisState<A, H, V, T>(entryState.getState().popScope(new ScopeToken(open)),
-				new ExpressionSet<>());
+		return new AnalysisState<>(entryState.getState().popScope(new ScopeToken(open)),
+				new ExpressionSet<>(),
+				entryState.getAliasing());
 	}
 }

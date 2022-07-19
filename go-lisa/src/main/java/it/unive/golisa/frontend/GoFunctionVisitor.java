@@ -1,5 +1,14 @@
 package it.unive.golisa.frontend;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
@@ -30,14 +39,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function.
@@ -61,7 +63,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcDecl, packageUnit), entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(buildCFGDescriptor(funcDecl, packageUnit), entrypoints, new NodeList<>(SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -82,7 +84,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcLit), entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(buildCFGDescriptor(funcLit), entrypoints, new NodeList<>(GoCodeMemberVisitor.SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -105,7 +107,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 
 		Statement entryNode = null;
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
@@ -118,7 +120,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = cfg.getDescriptor().getReturnType();
 
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
+		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
 		if (!(returnType instanceof GoTupleType))
 			entryNode = body.getLeft();
 		else {
@@ -200,7 +202,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 */
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
 		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
@@ -209,7 +211,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = cfg.getDescriptor().getReturnType();
 
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
+		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
 		if (!(returnType instanceof GoTupleType))
 			entryNode = body.getLeft();
 		else {

@@ -30,7 +30,7 @@ public class POPLTest {
 
 				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
 						new InferredTypes()))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
 				.setWorkdir(tmpDir);
@@ -53,7 +53,7 @@ public class POPLTest {
 
 				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
 						new InferredTypes()))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setWorkdir(tmpDir);
 
 		LiSA lisa = new LiSA(conf);
@@ -73,7 +73,7 @@ public class POPLTest {
 		conf.setJsonOutput(true)
 				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
 						new InferredTypes()))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setWorkdir(tmpDir);
 
 		LiSA lisa = new LiSA(conf);

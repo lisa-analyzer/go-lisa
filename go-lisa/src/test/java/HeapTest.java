@@ -14,7 +14,7 @@ public class HeapTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void fieldInsensitivePointBasedTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setSerializeResults(true)
 				.setAbstractState(new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new Interval()),
 						LiSAFactory.getDefaultFor(TypeDomain.class)));
 
@@ -23,7 +23,7 @@ public class HeapTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void fieldSensitivepointBasedTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setSerializeResults(true)
 				.setAbstractState(new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 						new ValueEnvironment<>(new Interval()),
 						LiSAFactory.getDefaultFor(TypeDomain.class)));

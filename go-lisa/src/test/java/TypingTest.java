@@ -14,7 +14,7 @@ public class TypingTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void testTypingDeclaration() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setSerializeResults(true)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
 						new InferredTypes()));
 		perform("typing", "typing-decl.go", conf);
@@ -22,7 +22,7 @@ public class TypingTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void testStringsTypingDeclaration() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setSerializeResults(true)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
 						new InferredTypes()))
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())

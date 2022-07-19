@@ -110,9 +110,9 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
 		return stringValue.getAutomaton().equals(Automata.mkEmptyLanguage()) ? intValue.representation()
 				: new StringRepresentation(stringValue.toString());

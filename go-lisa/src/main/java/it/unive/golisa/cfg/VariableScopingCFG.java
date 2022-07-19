@@ -1,5 +1,10 @@
 package it.unive.golisa.cfg;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
@@ -7,11 +12,7 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
-import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
 
 /**
  * A control flow graph, that has {@link Statement}s as nodes and {@link Edge}s
@@ -38,7 +39,7 @@ public class VariableScopingCFG extends CFG {
 	 *                            edges that will be part of this cfg
 	 */
 	public VariableScopingCFG(CFGDescriptor descriptor, Collection<Statement> entrypoints,
-			AdjacencyMatrix<Statement, Edge, CFG> adjacencyMatrix) {
+			NodeList<CFG, Statement, Edge> adjacencyMatrix) {
 		super(descriptor, entrypoints, adjacencyMatrix);
 		scopingMap = new HashMap<>();
 	}

@@ -94,9 +94,9 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	@Override
 	public DomainRepresentation representation() {
-		return this == BOTTOM ? Lattice.BOTTOM_REPR
+		return this == BOTTOM ? Lattice.bottomRepresentation()
 				: this == CLEAN ? new StringRepresentation("_")
-						: this == TAINTED ? new StringRepresentation("#") : Lattice.TOP_REPR;
+						: this == TAINTED ? new StringRepresentation("#") : Lattice.topRepresentation();
 	}
 
 	@Override

@@ -291,10 +291,10 @@ public class RelationalSubstringDomain
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
 		StringBuilder builder = new StringBuilder();
 		for (Entry<Identifier, ExpressionInverseSet<ValueExpression>> entry : function.entrySet())

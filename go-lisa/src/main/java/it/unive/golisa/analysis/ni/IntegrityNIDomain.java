@@ -118,9 +118,9 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public DomainRepresentation representation() {
-		return this == BOTTOM ? Lattice.BOTTOM_REPR
+		return this == BOTTOM ? Lattice.bottomRepresentation()
 				: this == HIGH ? new StringRepresentation("H")
-						: this == LOW ? new StringRepresentation("L") : Lattice.TOP_REPR;
+						: this == LOW ? new StringRepresentation("L") : Lattice.topRepresentation();
 	}
 
 	@Override

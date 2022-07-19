@@ -74,7 +74,7 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 
 				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
 						new InferredTypes()))
-				.setDumpAnalysis(true);
+				.setSerializeResults(true);
 
 		perform("variablescoping", "shadowing.go", conf);
 	}

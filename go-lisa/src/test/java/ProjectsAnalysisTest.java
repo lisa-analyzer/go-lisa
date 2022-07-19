@@ -18,7 +18,7 @@ public class ProjectsAnalysisTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
 						new InferredTypes()))
-				.setDumpAnalysis(true)
+				.setSerializeResults(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE);

@@ -1,10 +1,11 @@
 package it.unive.golisa.analysis;
 
-import it.unive.lisa.analysis.lattices.InverseSetLattice;
-import it.unive.lisa.symbolic.SymbolicExpression;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import it.unive.lisa.analysis.lattices.InverseSetLattice;
+import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * A inverse set lattice containing a set of symbolic expressions.
@@ -14,8 +15,6 @@ import java.util.Set;
  * @param <T> the type of the tracked symbolic expressions
  */
 public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseSetLattice<ExpressionInverseSet<T>, T> {
-
-	private final boolean isTop;
 
 	/**
 	 * Builds the empty inverse inverse set lattice element.
@@ -38,8 +37,7 @@ public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseS
 	}
 
 	private ExpressionInverseSet(Set<T> set, boolean isTop) {
-		super(set);
-		this.isTop = isTop;
+		super(set, isTop);
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public class InstrumentationTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void returnStatementInstrumentationTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setSerializeResults(true)
 				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
 						new InferredTypes()));
 		perform("instrumentation/return-statement", "instrumented-returns.go", conf);

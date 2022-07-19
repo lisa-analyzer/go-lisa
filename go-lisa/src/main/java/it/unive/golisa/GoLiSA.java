@@ -17,6 +17,7 @@ import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
@@ -132,11 +133,12 @@ public class GoLiSA {
 					.setAbstractState(
 							new GoAbstractState<>(new GoPointBasedHeap(),
 									new ValueEnvironment<>(new Interval()),
-									LiSAFactory.getDefaultFor(TypeDomain.class)))
-					.setDumpAnalysis(true);
+									LiSAFactory.getDefaultFor(TypeDomain.class)));
 			break;
 
 		}
+		
+		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML : GraphType.NONE);
 
 		Program program = null;
 

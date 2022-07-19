@@ -19,7 +19,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 
 
 	@Test
-	public void taintTest001() throws AnalysisSetupException {
+	public void testMapIteration() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
@@ -32,6 +32,23 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("non-det", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+		
+	}
+	
+	@Test
+	public void testChannel() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new TaintDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new TaintChecker())
+				.setJsonOutput(true)
+				.setDumpAnalysis(GraphType.HTML)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("non-det", "Channel.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
 		
 	}
 }

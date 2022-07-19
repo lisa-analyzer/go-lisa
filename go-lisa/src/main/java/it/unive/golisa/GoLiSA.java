@@ -116,14 +116,14 @@ public class GoLiSA {
 		case "taint":
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 					.setAbstractState(
-							new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new TaintDomain()),
+							new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new TaintDomain()),
 									LiSAFactory.getDefaultFor(TypeDomain.class)))
 					.addSemanticCheck(new TaintChecker());
 			break;
 		case "non-interference":
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 					.setAbstractState(
-							new SimpleAbstractState<>(new PointBasedHeap(),
+							new GoAbstractState<>(new GoPointBasedHeap(),
 									new InferenceSystem<>(new IntegrityNIDomain()),
 									LiSAFactory.getDefaultFor(TypeDomain.class)))
 					.addSemanticCheck(new IntegrityNIChecker());

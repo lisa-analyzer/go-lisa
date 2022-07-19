@@ -18,6 +18,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
+import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -41,7 +42,7 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 	 * @param expression the expression to assign to {@code var}
 	 */
 	public GoShortVariableDeclaration(CFG cfg, CodeLocation location, VariableRef var, Expression expression) {
-		super(cfg, location, ":=", var, expression);
+		super(cfg, location, ":=", RightToLeftEvaluation.INSTANCE, var, expression);
 	}
 
 	@Override

@@ -316,4 +316,21 @@ public class GoAbstractState<V extends ValueDomain<V>,
 	public String toString() {
 		return representation().toString();
 	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <D> D getDomainInstance(Class<D> domain) {
+		if (domain.isAssignableFrom(getClass()))
+			return (D) this;
+
+		D di = heapState.getDomainInstance(domain);
+		if (di != null)
+			return di;
+
+		di = typeState.getDomainInstance(domain);
+		if (di != null)
+			return di;
+
+		return valueState.getDomainInstance(domain);
+	}
 }

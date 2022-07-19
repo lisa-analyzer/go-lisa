@@ -16,6 +16,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
+import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -48,7 +49,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	 */
 	public GoVariableDeclaration(CFG cfg, SourceCodeLocation location, Type type, VariableRef var,
 			Expression expression) {
-		super(cfg, location, ":=", var, expression);
+		super(cfg, location, ":=", RightToLeftEvaluation.INSTANCE, var, expression);
 		this.type = type;
 	}
 

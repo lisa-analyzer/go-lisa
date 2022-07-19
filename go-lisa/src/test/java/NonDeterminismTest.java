@@ -4,10 +4,10 @@ import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
-import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
@@ -27,10 +27,11 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
+				.setDumpAnalysis(GraphType.HTML)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
-		perform("non-det/t1", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+		perform("non-det", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
 		
 	}
 }

@@ -53,6 +53,19 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	}
 
 	/**
+	 * Array tests
+	 */
+	@Test
+	public void fieldInsensitivedPointBasedMapTest() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new Interval()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)));
+		perform("collections/map/field-insensitive", "map.go", conf);
+	}
+
+	/**
 	 * Slice tests
 	 */
 	@Test

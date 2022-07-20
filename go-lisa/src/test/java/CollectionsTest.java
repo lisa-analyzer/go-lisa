@@ -53,7 +53,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	}
 
 	/**
-	 * Array tests
+	 * Map tests
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedMapTest() throws AnalysisSetupException {

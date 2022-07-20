@@ -1,4 +1,8 @@
 
+import java.io.IOException;
+
+import org.junit.Test;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -11,14 +15,11 @@ import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
-import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import java.io.IOException;
-import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
@@ -33,7 +34,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/boleto", "taint", "boleto.go", conf, annSet);
@@ -64,7 +65,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
@@ -80,7 +81,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/high-throughput", "high-throughput.go", conf, annSet);
@@ -96,7 +97,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/marbles02", "marbles02.go", conf, annSet);
@@ -111,7 +112,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
@@ -186,7 +187,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/sacc", "sacc.go", conf, annSet);
@@ -201,7 +202,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/mycc", "mycc.go", conf, annSet);
@@ -216,7 +217,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/chaincode", "chaincode.go", conf, annSet);
@@ -231,7 +232,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker());
 		perform("cc/implicit-flow", "taint", "implicit.go", conf, annSet);

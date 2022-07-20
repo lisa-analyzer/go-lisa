@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -153,6 +154,11 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	@Override
 	public GoPointBasedHeap forgetIdentifier(Identifier id) throws SemanticException {
 		return from(new GoPointBasedHeap(heapEnv.forgetIdentifier(id)));
+	}
+
+	@Override
+	public GoPointBasedHeap forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		return from(new GoPointBasedHeap(heapEnv.forgetIdentifiersIf(test)));
 	}
 
 	@Override

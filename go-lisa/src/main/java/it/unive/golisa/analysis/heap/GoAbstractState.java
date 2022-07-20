@@ -1,6 +1,7 @@
 package it.unive.golisa.analysis.heap;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -262,6 +263,14 @@ public class GoAbstractState<V extends ValueDomain<V>,
 				heapState.forgetIdentifier(id),
 				valueState.forgetIdentifier(id),
 				typeState.forgetIdentifier(id));
+	}
+
+	@Override
+	public GoAbstractState<V, T> forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		return new GoAbstractState<>(
+				heapState.forgetIdentifiersIf(test),
+				valueState.forgetIdentifiersIf(test),
+				typeState.forgetIdentifiersIf(test));
 	}
 
 	@Override

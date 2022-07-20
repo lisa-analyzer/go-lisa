@@ -2,6 +2,7 @@ package it.unive.golisa.analysis;
 
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.Set;
 
 import it.unive.golisa.analysis.tarsis.TarsisIntv;
@@ -72,6 +73,13 @@ public class Pentagons implements ValueDomain<Pentagons> {
 	public Pentagons forgetIdentifier(Identifier id) throws SemanticException {
 		ValueEnvironment<TarsisIntv> newLeft = left.forgetIdentifier(id);
 		StrictUpperBounds newRight = right.forgetIdentifier(id);
+		return new Pentagons(newLeft, newRight);
+	}
+	
+	@Override
+	public Pentagons forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		ValueEnvironment<TarsisIntv> newLeft = left.forgetIdentifiersIf(test);
+		StrictUpperBounds newRight = right.forgetIdentifiersIf(test);
 		return new Pentagons(newLeft, newRight);
 	}
 

@@ -1,6 +1,7 @@
 package it.unive.golisa.analysis.rsubs;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
@@ -227,6 +228,14 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 			return new RSubs(isTop, isBottom);
 		else
 			return new RSubs(string.forgetIdentifier(id), num.forgetIdentifier(id));
+	}
+
+	@Override
+	public RSubs forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return new RSubs(isTop, isBottom);
+		else
+			return new RSubs(string.forgetIdentifiersIf(test), num.forgetIdentifiersIf(test));
 	}
 
 	@Override

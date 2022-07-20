@@ -28,8 +28,11 @@ import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The strict upper bound relational abstract domain.
@@ -171,6 +174,18 @@ public class StrictUpperBounds
 		StrictUpperBounds result = new StrictUpperBounds(lattice, new HashMap<>(function));
 		if (result.function.containsKey(id))
 			result.function.remove(id);
+
+		return result;
+	}
+
+	@Override
+	public StrictUpperBounds forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return this;
+
+		StrictUpperBounds result = new StrictUpperBounds(lattice, new HashMap<>(function));
+		Set<Identifier> keys = result.function.keySet().stream().filter(test::test).collect(Collectors.toSet());
+		keys.forEach(result.function::remove);
 
 		return result;
 	}

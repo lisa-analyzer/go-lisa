@@ -26,9 +26,12 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The equality domain, tracking definite information about which variables are
@@ -101,6 +104,18 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 		return result;
 	}
 
+	@Override
+	public EqualityDomain forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return this;
+
+		EqualityDomain result = new EqualityDomain(lattice, new HashMap<>(function));
+		Set<Identifier> keys = result.function.keySet().stream().filter(test::test).collect(Collectors.toSet());
+		keys.forEach(result.function::remove);
+
+		return result;
+	}
+	
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		if (expression instanceof UnaryExpression) {

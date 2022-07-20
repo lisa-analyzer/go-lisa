@@ -40,7 +40,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
+								new InferenceSystem<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)

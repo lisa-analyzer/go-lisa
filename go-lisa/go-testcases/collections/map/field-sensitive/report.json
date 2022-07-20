@@ -1,0 +1,4 @@
+{
+  "warnings" : [ ],
+  "files" : [ "analysis___untyped_maps.allocs().dot", "analysis___untyped_maps.emptyAllocs().dot", "analysis___untyped_maps.main().dot" ]
+}

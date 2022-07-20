@@ -4,8 +4,8 @@ digraph {
 	"node2" [shape="rect",color="gray",label=<m2 := m1<BR/>{{<BR/>heap [[ m1: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':24:39]<BR/>m2: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':25:1] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':24:39: [1, 3]<BR/>heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':25:1: [1, 3]<BR/>[stack: [1, 3]] ]]<BR/>}} -&gt; [m2]>];
 	"node3" [shape="rect",color="gray",label=<m1::1(m1, 1) = 50<BR/>{{<BR/>heap [[ m1: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':24:39]<BR/>m2: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':25:1] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':24:39: [1, 50]<BR/>heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':25:1: [1, 3]<BR/>[stack: [1, 50]] ]]<BR/>}} -&gt; [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':24:39]>];
 	"node4" [shape="rect",color="black",peripheries="2",label=<ret<BR/>{{<BR/>heap [[ m1: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':24:39]<BR/>m2: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':25:1] ]]<BR/>value [[ heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':24:39: [1, 50]<BR/>heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':25:1: [1, 100]<BR/>[stack: _|_] ]]<BR/>}} -&gt; [skip]>];
-	"node0" -> "node2" [color="black"];
 	"node1" -> "node4" [color="black"];
+	"node0" -> "node2" [color="black"];
 	"node2" -> "node3" [color="black"];
 	"node3" -> "node1" [color="black"];
 subgraph cluster_legend {

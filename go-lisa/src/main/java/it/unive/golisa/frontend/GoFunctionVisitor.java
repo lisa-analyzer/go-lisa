@@ -3,7 +3,6 @@ package it.unive.golisa.frontend;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -110,9 +109,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
-		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
-			// we must call cfg.addEdge, and not addEdge
-			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		processGotos();
 
 		// The function named "main" is the entry point of the program
 		if (cfg.getDescriptor().getName().equals("main"))
@@ -205,9 +202,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
-		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
-			// we must call cfg.addEdge, and not addEdge
-			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		processGotos();
 
 		Type returnType = cfg.getDescriptor().getReturnType();
 

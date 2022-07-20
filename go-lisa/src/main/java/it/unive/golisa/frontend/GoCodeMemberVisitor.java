@@ -232,12 +232,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	/**
 	 * Mapping between goto statements and label to which they have to jump to.
 	 */
-	protected final Map<Statement, String> gotos;
+	protected final Map<Statement, Pair<List<BlockInfo>, String>> gotos;
 
 	/**
 	 * Mapping between statements and their labels.
 	 */
-	protected final Map<String, Statement> labeledStmt;
+	protected final Map<String, Pair<List<BlockInfo>, Statement>> labeledStmt;
 
 	/**
 	 * The current cfg.
@@ -390,9 +390,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
-		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
-			// we must call cfg.addEdge, and not addEdge
-			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		processGotos();
 
 		cfg.getEntrypoints().add(body.getLeft());
 
@@ -434,6 +432,48 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		currentUnit.addInstanceCFG(cfg);
 		return cfg;
+	}
+
+	protected void processGotos() {
+		for (Entry<Statement, Pair<List<BlockInfo>, String>> gotoStmt : gotos.entrySet()) {
+			// we must call cfg.addEdge, and not addEdge
+			String label = gotoStmt.getValue().getRight();
+			List<BlockInfo> scope = gotoStmt.getValue().getLeft();
+			Statement labeled = labeledStmt.get(label).getRight();
+			List<BlockInfo> targetScope = labeledStmt.get(label).getLeft();
+			
+			// from https://go.dev/ref/spec#Goto_statements:
+			// "[...] Executing the 'goto' statement must not 
+			// cause any variables to come into scope that 
+			// were not already in scope at the point of the goto.
+			// [...] A 'goto' statement outside a block 
+			// cannot jump to a label inside that block."
+			// From this I understand that the goto can only
+			// jump inside the same scope, or to a containing one.
+			// this means that 'targetScope' must be a prefix of 'scope'
+			// and every other scope can be closed.
+			
+			if (scope.size() < targetScope.size())
+				throw new IllegalStateException("goto cannot jump to a scope that it is not already part of");
+			for (int i = 0; i < targetScope.size(); i++)
+				if (!scope.get(i).equals(targetScope.get(i)))
+					throw new IllegalStateException("goto cannot jump to a scope that it is not already part of");
+
+			Statement last = gotoStmt.getKey();
+			//remove any followers
+			for (Statement follow : cfg.followersOf(last))
+				cfg.getNodeList().removeEdge(cfg.getEdgeConnecting(last, follow));
+			// add closing blocks
+			for (int i = scope.size() - 1; i >= targetScope.size(); i--) {
+				BlockInfo info = scope.get(i);
+				CloseBlock close = new CloseBlock(cfg, gotoStmt.getKey().getLocation(), info.getOpen());
+				cfg.addNode(close);
+				cfg.addEdge(new SequentialEdge(last, close));
+				last = close;
+			}
+			// add the goto
+			cfg.addEdge(new SequentialEdge(last, labeled));
+		}
 	}
 
 	/**
@@ -616,20 +656,26 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> res = visitStatementList(ctx.statementList());
 		block.mergeWith(res.getMiddle());
-
-		updateVisileIds(backup, res.getRight());
-		if (isReturnStmt(res.getRight()) || isGoTo(res.getRight())) {
-			addEdge(new SequentialEdge(open, res.getLeft()), block);
-			return Triple.of(open, block, res.getRight());
-		}
-
-		block.addNode(close);
-		addEdge(new SequentialEdge(res.getRight(), close), block);
 		addEdge(new SequentialEdge(open, res.getLeft()), block);
 
-		blockDeep--;
+		Statement last = res.getRight();
+		updateVisileIds(backup, last);
+		if (isReturnStmt(last)) 
+			return Triple.of(open, block, last);
+		if (isGoTo(last)) {
+			// we still decrement as the actual closing
+			// blocks will be added in the post processing
+			blockDeep--;
+			blockList.removeLast();
+			return Triple.of(open, block, last);
+		}
+		
+		block.addNode(close);
+		addEdge(new SequentialEdge(last, close), block);
 
+		blockDeep--;
 		blockList.removeLast();
+		
 		return Triple.of(open, block, close);
 	}
 
@@ -1443,7 +1489,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitLabeledStmt(
 			LabeledStmtContext ctx) {
 		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> stmt = visitStatement(ctx.statement());
-		labeledStmt.put(ctx.IDENTIFIER().getText(), stmt.getLeft());
+		labeledStmt.put(ctx.IDENTIFIER().getText(), Pair.of(new LinkedList<>(blockList), stmt.getLeft()));
 		return stmt;
 	}
 
@@ -1452,7 +1498,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		GoTo nop = new GoTo(cfg, locationOf(ctx));
 		block.addNode(nop);
-		gotos.put(nop, ctx.IDENTIFIER().getText());
+		gotos.put(nop, Pair.of(new LinkedList<>(blockList), ctx.IDENTIFIER().getText()));
 		return Triple.of(nop, block, nop);
 	}
 
@@ -1751,8 +1797,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		restoreVisibleIdsAfterForLoop(backup);
 
-		addEdge(new SequentialEdge(guard, body.getLeft()), block);
-		addEdge(new SequentialEdge(guard, exitNode), block);
+		addEdge(new TrueEdge(guard, body.getLeft()), block);
+		addEdge(new FalseEdge(guard, exitNode), block);
 		addEdge(new SequentialEdge(body.getRight(), guard), block);
 
 		entryPoints.remove(entryPoints.size() - 1);

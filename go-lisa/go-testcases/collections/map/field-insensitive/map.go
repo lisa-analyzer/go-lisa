@@ -19,3 +19,11 @@ func allocs() {
 	m[1] = 86
 	return
 }
+
+func alias() {
+	m1 := map[int32]int32{1: 1, 2: 2, 3: 3}
+	m2 := m1
+	m1[1] = 50;
+	m2[2] = 100;
+	return
+}

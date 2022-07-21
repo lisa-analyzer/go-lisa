@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
+import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -153,6 +154,46 @@ public class GoKeyedLiteral extends NaryExpression {
 				}
 
 				result = result.lub(tmp.smallStepSemantics(reference, this));
+			}
+
+			return result;
+		}
+
+		/*
+		 * Map allocation
+		 */
+		if (getStaticType() instanceof GoMapType) {
+			GoMapType mapType = (GoMapType) getStaticType();
+			Type keyType = mapType.getKeyType();
+			Type contentType = mapType.getElementType();
+
+			AnalysisState<A, H, V, T> result = state.bottom();
+
+			for (SymbolicExpression containerExp : containerExps) {
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
+
+				AnalysisState<A, H, V, T> tmp = containerState;
+
+				for (int i = 0; i < keys.length; i++) {
+					Variable keyProperty = new Variable(Untyped.INSTANCE, keys[i].toString(),
+							getLocation());
+					AccessChild keyAcces = new AccessChild(contentType, dereference,
+							keyProperty, getLocation());
+
+					AnalysisState<A, H, V, T> keyState = tmp.smallStepSemantics(keyAcces, this);
+
+					AnalysisState<A, H, V, T> keyResult = state.bottom();
+					for (SymbolicExpression keyId : keyState.getComputedExpressions())
+						for (SymbolicExpression expr : params[i])
+							keyResult = keyResult.lub(
+									keyState.assign(keyId, expr, this));
+
+					tmp = keyResult;
+				}
+
+				result = result.lub(tmp.smallStepSemantics(reference, this));
+
 			}
 
 			return result;

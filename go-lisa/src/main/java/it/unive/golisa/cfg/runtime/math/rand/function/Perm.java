@@ -38,7 +38,7 @@ public class Perm extends NativeCFG {
 	 */
 	public Perm(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Perm",
-				GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)),
+				GoSliceType.lookup(GoSliceType.lookup(GoIntType.INSTANCE)),
 				new Parameter(location, "n", GoIntType.INSTANCE)),
 				PermImpl.class);
 	}
@@ -91,7 +91,7 @@ public class Perm extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(new GoSliceType(GoIntType.INSTANCE), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(GoSliceType.lookup(GoIntType.INSTANCE), getLocation()), original);
 		}
 	}
 }

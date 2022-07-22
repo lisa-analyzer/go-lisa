@@ -84,7 +84,7 @@ public class GetStringArgs extends NativeCFG {
 		 * @param params   the parameters
 		 */
 		public GetStringArgsImpl(CFG cfg, CodeLocation location, Expression... params) {
-			super(cfg, location, "GetStringArgsImpl", new GoSliceType(GoStringType.INSTANCE), params);
+			super(cfg, location, "GetStringArgsImpl", GoSliceType.lookup(GoStringType.INSTANCE), params);
 		}
 
 		@Override

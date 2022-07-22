@@ -45,7 +45,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "GetFunctionAndParameters",
 				GoTupleType.lookup(new GoTupleType(new Parameter(location, "function", GoStringType.INSTANCE),
-						new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))),
+						new Parameter(location, "params", GoSliceType.lookup(GoSliceType.lookup(GoStringType.INSTANCE))))),
 				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
 				GetFunctionAndParametersImpl.class);
 	}
@@ -90,7 +90,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 		public GetFunctionAndParametersImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "GetFunctionAndParametersImpl", GoTupleType.lookup(new GoTupleType(
 					new Parameter(location, "function", GoStringType.INSTANCE),
-					new Parameter(location, "params", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))))),
+					new Parameter(location, "params", GoSliceType.lookup(GoSliceType.lookup(GoStringType.INSTANCE))))),
 					expr);
 		}
 

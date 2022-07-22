@@ -46,7 +46,7 @@ public class Indent extends NativeCFG {
 	public Indent(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Indent", GoErrorType.INSTANCE,
 				new Parameter(location, "dst", new GoPointerType(Buffer.INSTANCE)),
-				new Parameter(location, "src", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE))),
+				new Parameter(location, "src", GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				new Parameter(location, "prefix", GoStringType.INSTANCE),
 				new Parameter(location, "indent", GoStringType.INSTANCE)),
 				IndentImpl.class);

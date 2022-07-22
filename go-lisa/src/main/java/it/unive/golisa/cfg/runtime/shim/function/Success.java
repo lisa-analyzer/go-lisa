@@ -41,7 +41,7 @@ public class Success extends NativeCFG {
 	 */
 	public Success(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, false, "Success", Response.INSTANCE,
-				new Parameter(location, "payload", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),
+				new Parameter(location, "payload", GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)))),
 				SuccessImpl.class);
 	}
 

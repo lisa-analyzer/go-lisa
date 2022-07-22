@@ -106,7 +106,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 				new Parameter(unknownLocation, "this", ChaincodeStubInterface.INSTANCE),
 				new Parameter(unknownLocation, "objectType", GoStringType.INSTANCE),
 				new Parameter(unknownLocation, "attributes",
-						GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE))));
+						GoSliceType.lookup(GoSliceType.lookup(GoStringType.INSTANCE))));
 		chainCodeStubInterfaceUnit.addInstanceConstruct(new NativeCFG(desc, CreateCompositeKeyImpl.class));
 
 		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, true, "DelState",

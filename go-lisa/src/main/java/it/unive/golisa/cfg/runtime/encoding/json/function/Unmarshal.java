@@ -42,7 +42,7 @@ public class Unmarshal extends NativeCFG {
 	 */
 	public Unmarshal(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Unmarshal", GoErrorType.INSTANCE,
-				new Parameter(location, "data", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE))),
+				new Parameter(location, "data", GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface())),
 				UnmarshalImpl.class);
 	}

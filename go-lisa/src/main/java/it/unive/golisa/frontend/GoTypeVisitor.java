@@ -299,7 +299,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public GoType visitSliceType(SliceTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
 		contentType = contentType == null ? Untyped.INSTANCE : contentType;
-		return GoSliceType.lookup(new GoSliceType(contentType));
+		return GoSliceType.lookup(contentType);
 	}
 
 	@Override

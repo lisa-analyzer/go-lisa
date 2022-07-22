@@ -29,15 +29,16 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoSliceType} representing a slice type.
 	 * 
-	 * @param type the slice type to lookup
+	 * @param type the content type of the slice type to lookup
 	 * 
 	 * @return the unique instance of {@link GoSliceType} representing the slice
 	 *             type given as argument
 	 */
-	public static GoSliceType lookup(GoSliceType type) {
-		if (!sliceTypes.contains(type))
-			sliceTypes.add(type);
-		return sliceTypes.stream().filter(x -> x.equals(type)).findFirst().get();
+	public static GoSliceType lookup(Type type) {
+		GoSliceType sliceType = new GoSliceType(type);
+		if (!sliceTypes.contains(sliceType))
+			sliceTypes.add(sliceType);
+		return sliceTypes.stream().filter(x -> x.equals(sliceType)).findFirst().get();
 	}
 
 	/**
@@ -45,7 +46,7 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * 
 	 * @param contentType the content type
 	 */
-	public GoSliceType(Type contentType) {
+	private GoSliceType(Type contentType) {
 		this.contentType = contentType;
 	}
 

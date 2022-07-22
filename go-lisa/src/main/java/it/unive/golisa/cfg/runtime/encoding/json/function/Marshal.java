@@ -40,7 +40,7 @@ public class Marshal extends NativeCFG {
 	 */
 	public Marshal(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Marshal",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface())),
 				MarshalImpl.class);
@@ -85,7 +85,7 @@ public class Marshal extends NativeCFG {
 		 */
 		public MarshalImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "MarshalImpl",
-					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)),
 							GoErrorType.INSTANCE),
 					expr);
 		}

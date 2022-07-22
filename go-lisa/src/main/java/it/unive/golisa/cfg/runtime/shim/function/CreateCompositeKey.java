@@ -46,7 +46,7 @@ public class CreateCompositeKey extends NativeCFG {
 						GoErrorType.INSTANCE),
 				new Parameter(location, "s", ChaincodeStub.INSTANCE),
 				new Parameter(location, "objectType", GoStringType.INSTANCE),
-				new Parameter(location, "attributes", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE)))),
+				new Parameter(location, "attributes", GoSliceType.lookup(GoSliceType.lookup(GoStringType.INSTANCE)))),
 				CreateCompositeKeyImpl.class);
 	}
 

@@ -45,7 +45,7 @@ public class WriteFile extends NativeCFG {
 	public WriteFile(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "WriteFile", GoErrorType.INSTANCE,
 				new Parameter(location, "filename", GoStringType.INSTANCE),
-				new Parameter(location, "data", new GoSliceType(UInt8.INSTANCE)),
+				new Parameter(location, "data", GoSliceType.lookup(UInt8.INSTANCE)),
 				new Parameter(location, "perm", Reader.INSTANCE)),
 				WriteFileImpl.class);
 	}

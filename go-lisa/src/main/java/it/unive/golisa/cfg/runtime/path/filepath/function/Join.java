@@ -41,7 +41,7 @@ public class Join extends NativeCFG {
 	public Join(CodeLocation location, CompilationUnit pathfileUnit) {
 		super(new CFGDescriptor(location, pathfileUnit, false, "Dir",
 				GoStringType.INSTANCE,
-				new Parameter(location, "elem", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE)))),
+				new Parameter(location, "elem", GoSliceType.lookup(GoSliceType.lookup(GoStringType.INSTANCE)))),
 				DirImpl.class);
 	}
 

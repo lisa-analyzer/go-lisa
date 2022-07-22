@@ -45,7 +45,7 @@ public class ReadAtLeast extends NativeCFG {
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "r", Reader.INSTANCE),
-				new Parameter(location, "buf", GoSliceType.lookup(new GoSliceType(UInt8.INSTANCE))),
+				new Parameter(location, "buf", GoSliceType.lookup(GoSliceType.lookup(UInt8.INSTANCE))),
 				new Parameter(location, "min", GoIntType.INSTANCE)),
 				ReadAtLeastImpl.class);
 	}

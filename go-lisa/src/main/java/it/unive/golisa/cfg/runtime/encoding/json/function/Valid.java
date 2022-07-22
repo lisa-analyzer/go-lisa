@@ -42,7 +42,7 @@ public class Valid extends NativeCFG {
 	 */
 	public Valid(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Valid", GoBoolType.INSTANCE,
-				new Parameter(location, "data", GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)))),
+				new Parameter(location, "data", GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)))),
 				ValidImpl.class);
 	}
 

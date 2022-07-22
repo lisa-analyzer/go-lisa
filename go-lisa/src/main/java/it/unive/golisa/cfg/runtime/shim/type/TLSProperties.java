@@ -33,7 +33,7 @@ public class TLSProperties extends GoStructType {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit TLSPropertiesType = new CompilationUnit(unknownLocation, "TLSProperties", false);
 		TLSPropertiesType.addGlobal(new Global(unknownLocation, "Disabled", GoBoolType.INSTANCE));
-		GoSliceType byteSliceType = GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
+		GoSliceType byteSliceType = GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE));
 		TLSPropertiesType.addGlobal(new Global(unknownLocation, "Key", byteSliceType));
 		TLSPropertiesType.addGlobal(new Global(unknownLocation, "Cert", byteSliceType));
 		TLSPropertiesType.addGlobal(new Global(unknownLocation, "ClientCACerts", byteSliceType));

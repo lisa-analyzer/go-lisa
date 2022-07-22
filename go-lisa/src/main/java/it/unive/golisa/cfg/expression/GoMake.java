@@ -97,7 +97,7 @@ public class GoMake extends NaryExpression {
 
 			// Allocates the slice, that is an array of three elements: pointer
 			// to the underlying array, length and capability
-			GoSliceType sliceType = GoSliceType.lookup(new GoSliceType(contentType));
+			GoSliceType sliceType = GoSliceType.lookup(GoSliceType.lookup(contentType));
 
 			HeapAllocation sliceCreated = new HeapAllocation(sliceType, getLocation());
 

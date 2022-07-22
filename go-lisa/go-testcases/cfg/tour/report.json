@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.add1(int_x,_int_y).dot", "int_main.add2(int_x,_int_y).dot", "int_main.sum(int_x,_int_y).dot", "untyped_main.main().dot" ]
+  "files" : [ "int_main.add1(int_x,_int_y).json", "int_main.add2(int_x,_int_y).json", "int_main.sum(int_x,_int_y).json", "untyped_main.main().json" ]
 }

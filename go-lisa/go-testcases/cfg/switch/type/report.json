@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.typeSwitch1().dot", "untyped_main.typeSwitch2().dot", "untyped_main.typeSwitch3().dot" ]
+  "files" : [ "untyped_main.typeSwitch1().json", "untyped_main.typeSwitch2().json", "untyped_main.typeSwitch3().json" ]
 }

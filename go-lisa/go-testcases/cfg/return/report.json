@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.returnInIfStmt1(int_i).dot", "int_main.returnInIfStmt2(int_i).dot", "int_main.returnInLoop().dot" ]
+  "files" : [ "int_main.returnInIfStmt1(int_i).json", "int_main.returnInIfStmt2(int_i).json", "int_main.returnInLoop().json" ]
 }

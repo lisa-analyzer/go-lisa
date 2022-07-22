@@ -1,10 +1,14 @@
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -14,14 +18,13 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class CollectionsTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void structTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setSerializeResults(true)
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setSerializeResults(true)
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
@@ -39,7 +42,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)));
-		perform("collections/array/field-insensitive", "array.go", conf);
+		perform("collections/array/field-insensitive", "array.go", conf, true);
 	}
 
 	@Test

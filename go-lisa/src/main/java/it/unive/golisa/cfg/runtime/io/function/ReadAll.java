@@ -40,7 +40,7 @@ public class ReadAll extends NativeCFG {
 	 */
 	public ReadAll(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadAll",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(UInt8.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, UInt8.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "r", Reader.INSTANCE)),
 				ReadAllImpl.class);
@@ -85,7 +85,7 @@ public class ReadAll extends NativeCFG {
 		 */
 		public ReadAllImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadAllImpl",
-					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(UInt8.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(UInt8.INSTANCE),
 							GoErrorType.INSTANCE),
 					expr);
 		}

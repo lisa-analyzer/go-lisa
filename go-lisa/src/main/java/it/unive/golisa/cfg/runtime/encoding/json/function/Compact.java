@@ -44,7 +44,7 @@ public class Compact extends NativeCFG {
 	public Compact(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "Compact", GoErrorType.INSTANCE,
 				new Parameter(location, "dst", new GoPointerType(Buffer.INSTANCE)),
-				new Parameter(location, "src", GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)))),
+				new Parameter(location, "src", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				CompactImpl.class);
 	}
 

@@ -43,7 +43,7 @@ public class GetState extends NativeCFG {
 	 */
 	public GetState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CFGDescriptor(location, shimUnit, true, "GetState",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "s", ChaincodeStub.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE)),

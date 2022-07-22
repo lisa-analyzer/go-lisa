@@ -48,7 +48,7 @@ public class CopyBuffer extends NativeCFG {
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dsr", Writer.INSTANCE),
 				new Parameter(location, "src", Reader.INSTANCE),
-				new Parameter(location, "buf", GoSliceType.lookup(GoSliceType.lookup(UInt8.INSTANCE)))),
+				new Parameter(location, "buf", GoSliceType.lookup(UInt8.INSTANCE))),
 				CopyBufferImpl.class);
 	}
 

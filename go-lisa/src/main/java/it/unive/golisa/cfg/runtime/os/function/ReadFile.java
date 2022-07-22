@@ -42,7 +42,7 @@ public class ReadFile extends NativeCFG {
 	 */
 	public ReadFile(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "ReadFile",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				ReadFileImpl.class);
@@ -87,7 +87,7 @@ public class ReadFile extends NativeCFG {
 		 */
 		public ReadFileImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadFileImpl",
-					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 							GoErrorType.INSTANCE),
 					expr);
 		}

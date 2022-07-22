@@ -310,7 +310,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		Type elementType = visitElementType(ctx.elementType());
 		elementType = elementType == null ? Untyped.INSTANCE : elementType;
 
-		return GoMapType.lookup(new GoMapType(keyType, elementType));
+		return GoMapType.lookup(keyType, elementType);
 	}
 
 	@Override

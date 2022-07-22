@@ -40,7 +40,7 @@ public class ReadDir extends NativeCFG {
 	 */
 	public ReadDir(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "ReadDir",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(FileInfo.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(FileInfo.INSTANCE),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dirname", GoStringType.INSTANCE)),
 				ReadDirImpl.class);
@@ -85,7 +85,7 @@ public class ReadDir extends NativeCFG {
 		 */
 		public ReadDirImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadDirImpl",
-					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(FileInfo.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(FileInfo.INSTANCE),
 							GoErrorType.INSTANCE),
 					expr);
 		}

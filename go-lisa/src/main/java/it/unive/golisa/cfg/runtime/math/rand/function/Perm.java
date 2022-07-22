@@ -38,7 +38,7 @@ public class Perm extends NativeCFG {
 	 */
 	public Perm(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Perm",
-				GoSliceType.lookup(GoSliceType.lookup(GoIntType.INSTANCE)),
+				GoSliceType.lookup(GoIntType.INSTANCE),
 				new Parameter(location, "n", GoIntType.INSTANCE)),
 				PermImpl.class);
 	}

@@ -40,7 +40,7 @@ public class Read extends NativeCFG {
 	public Read(CodeLocation location, CompilationUnit randUnit) {
 		super(new CFGDescriptor(location, randUnit, false, "Read",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
-				new Parameter(location, "b", GoSliceType.lookup(GoSliceType.lookup(GoIntType.INSTANCE)))),
+				new Parameter(location, "b", GoSliceType.lookup(GoIntType.INSTANCE))),
 				ReadImpl.class);
 	}
 

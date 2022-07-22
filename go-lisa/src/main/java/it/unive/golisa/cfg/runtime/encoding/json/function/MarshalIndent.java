@@ -42,7 +42,7 @@ public class MarshalIndent extends NativeCFG {
 	 */
 	public MarshalIndent(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "MarshalIndent",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)),
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "v", GoInterfaceType.getEmptyInterface()),
 				new Parameter(location, "prefix", GoStringType.INSTANCE),
@@ -89,7 +89,7 @@ public class MarshalIndent extends NativeCFG {
 		 */
 		public MarshalIndentImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "MarshalIndentImpl",
-					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 							GoErrorType.INSTANCE),
 					params);
 		}

@@ -26,8 +26,8 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -115,7 +115,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 
 		return result;
 	}
-	
+
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		if (expression instanceof UnaryExpression) {

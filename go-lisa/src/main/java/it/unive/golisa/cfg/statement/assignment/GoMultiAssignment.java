@@ -38,7 +38,8 @@ import org.apache.commons.lang3.StringUtils;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoMultiAssignment extends Expression {
-	// FIXME this should be an instance of NaryExpression to make it work correctly with lisa
+	// FIXME this should be an instance of NaryExpression to make it work
+	// correctly with lisa
 
 	/**
 	 * The identifiers to assign.

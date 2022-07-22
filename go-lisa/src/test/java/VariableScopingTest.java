@@ -71,7 +71,6 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	public void shadowingTest() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setJsonOutput(true)
-
 				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
 						new InferredTypes()))
 				.setSerializeResults(true);

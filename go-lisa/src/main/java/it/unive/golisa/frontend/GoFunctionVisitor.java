@@ -1,11 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
@@ -34,6 +28,10 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.Map;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function.
@@ -57,7 +55,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcDecl, packageUnit), entrypoints, new NodeList<>(SEQUENTIAL_SINGLETON));
+		cfg = new VariableScopingCFG(buildCFGDescriptor(funcDecl, packageUnit), entrypoints,
+				new NodeList<>(SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -78,7 +77,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcLit), entrypoints, new NodeList<>(GoCodeMemberVisitor.SEQUENTIAL_SINGLETON));
+		cfg = new VariableScopingCFG(buildCFGDescriptor(funcLit), entrypoints,
+				new NodeList<>(GoCodeMemberVisitor.SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
 		packageUnit.addCFG(cfg);
@@ -185,7 +185,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		addReturnStatement(matrix);
 		addFinalRet(matrix);
-		
+
 		cfg.simplify();
 		return cfg;
 	}

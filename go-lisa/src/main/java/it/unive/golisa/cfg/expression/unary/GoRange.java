@@ -28,17 +28,17 @@ public class GoRange extends UnaryExpression {
 
 	private final Statement idxInit;
 	private final Statement idxPost;
-	
+
 	private ExternalSet<Type> collectionTypes;
-	
+
 	/**
 	 * Builds a range expression.
 	 * 
 	 * @param cfg      the {@link CFG} where this expression lies
 	 * @param location the location where this expression is defined
 	 * @param exp      the expression
-	 * @param idxPost 
-	 * @param idxInit 
+	 * @param idxPost
+	 * @param idxInit
 	 */
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp, Statement idxInit, Statement idxPost) {
 		super(cfg, location, "range", GoBoolType.INSTANCE, exp);
@@ -53,9 +53,10 @@ public class GoRange extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		
-		collectionTypes = expressions.getState(((GoLess) getSubExpression()).getRight()).getDomainInstance(TypeDomain.class).getInferredRuntimeTypes();
-		
+
+		collectionTypes = expressions.getState(((GoLess) getSubExpression()).getRight())
+				.getDomainInstance(TypeDomain.class).getInferredRuntimeTypes();
+
 		return state.smallStepSemantics(expr, this);
 	}
 
@@ -70,6 +71,5 @@ public class GoRange extends UnaryExpression {
 	public ExternalSet<Type> getCollectionTypes() {
 		return collectionTypes;
 	}
-	
-	
+
 }

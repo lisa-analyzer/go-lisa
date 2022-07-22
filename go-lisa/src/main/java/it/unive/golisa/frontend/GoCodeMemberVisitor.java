@@ -1,31 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -209,6 +183,30 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method.
@@ -447,18 +445,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			List<BlockInfo> scope = gotoStmt.getValue().getLeft();
 			Statement labeled = labeledStmt.get(label).getRight();
 			List<BlockInfo> targetScope = labeledStmt.get(label).getLeft();
-			
+
 			// from https://go.dev/ref/spec#Goto_statements:
-			// "[...] Executing the 'goto' statement must not 
-			// cause any variables to come into scope that 
+			// "[...] Executing the 'goto' statement must not
+			// cause any variables to come into scope that
 			// were not already in scope at the point of the goto.
-			// [...] A 'goto' statement outside a block 
+			// [...] A 'goto' statement outside a block
 			// cannot jump to a label inside that block."
 			// From this I understand that the goto can only
 			// jump inside the same scope, or to a containing one.
 			// this means that 'targetScope' must be a prefix of 'scope'
 			// and every other scope can be closed.
-			
+
 			if (scope.size() < targetScope.size())
 				throw new IllegalStateException("goto cannot jump to a scope that it is not already part of");
 			for (int i = 0; i < targetScope.size(); i++)
@@ -466,7 +464,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					throw new IllegalStateException("goto cannot jump to a scope that it is not already part of");
 
 			Statement last = gotoStmt.getKey();
-			//remove any followers
+			// remove any followers
 			for (Statement follow : cfg.followersOf(last))
 				cfg.getNodeList().removeEdge(cfg.getEdgeConnecting(last, follow));
 			// add closing blocks
@@ -666,7 +664,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		Statement last = res.getRight();
 		updateVisileIds(backup, last);
-		if (isReturnStmt(last)) 
+		if (isReturnStmt(last))
 			return Triple.of(open, block, last);
 		if (isGoTo(last)) {
 			// we still decrement as the actual closing
@@ -675,13 +673,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			blockList.removeLast();
 			return Triple.of(open, block, last);
 		}
-		
+
 		block.addNode(close);
 		addEdge(new SequentialEdge(last, close), block);
 
 		blockDeep--;
 		blockList.removeLast();
-		
+
 		return Triple.of(open, block, close);
 	}
 
@@ -2635,7 +2633,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						if (!GoLangUtils.refersToBlankIdentifier(id))
 							blockList.getLast().addVarDeclaration(id, DeclarationType.MULTI_SHORT_VARIABLE);
 
-					caseBooleanGuard = new GoEqual(cfg, typeLoc,  
+					caseBooleanGuard = new GoEqual(cfg, typeLoc,
 							new VariableRef(cfg, typeLoc, "ok"),
 							new GoBoolean(cfg, typeLoc, true));
 

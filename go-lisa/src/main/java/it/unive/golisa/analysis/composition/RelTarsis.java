@@ -1,7 +1,5 @@
 package it.unive.golisa.analysis.composition;
 
-import java.util.function.Predicate;
-
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.analysis.rsubs.RelationalSubstringDomain;
 import it.unive.golisa.analysis.tarsis.Tarsis;
@@ -16,6 +14,7 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.function.Predicate;
 
 /**
  * The reduced product between Tarsis, string constant propagation and RSub.
@@ -65,16 +64,16 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	@Override
 	public RelTarsis forgetIdentifier(Identifier id) throws SemanticException {
 		return new RelTarsis(
-				tarsis.forgetIdentifier(id), 
-				rsubs.forgetIdentifier(id), 
+				tarsis.forgetIdentifier(id),
+				rsubs.forgetIdentifier(id),
 				constant.forgetIdentifier(id));
 	}
 
 	@Override
 	public RelTarsis forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
 		return new RelTarsis(
-				tarsis.forgetIdentifiersIf(test), 
-				rsubs.forgetIdentifiersIf(test), 
+				tarsis.forgetIdentifiersIf(test),
+				rsubs.forgetIdentifiersIf(test),
 				constant.forgetIdentifiersIf(test));
 	}
 

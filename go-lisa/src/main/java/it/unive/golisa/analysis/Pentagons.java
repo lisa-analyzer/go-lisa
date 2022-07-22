@@ -1,10 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.function.Predicate;
-import java.util.Set;
-
 import it.unive.golisa.analysis.tarsis.TarsisIntv;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,6 +10,10 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * The pentagons abstract domain, corresponding to the reduced product between
@@ -75,7 +74,7 @@ public class Pentagons implements ValueDomain<Pentagons> {
 		StrictUpperBounds newRight = right.forgetIdentifier(id);
 		return new Pentagons(newLeft, newRight);
 	}
-	
+
 	@Override
 	public Pentagons forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
 		ValueEnvironment<TarsisIntv> newLeft = left.forgetIdentifiersIf(test);

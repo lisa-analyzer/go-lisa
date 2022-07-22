@@ -1,4 +1,3 @@
-import org.junit.Test;
 
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
@@ -14,9 +13,9 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class NonDeterminismTest extends GoChaincodeTestExecutor {
-
 
 	@Test
 	public void testMapIteration() throws AnalysisSetupException {
@@ -32,9 +31,9 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("non-det", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
-		
+
 	}
-	
+
 	@Test
 	public void testChannel() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -49,6 +48,6 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("non-det", "Channel.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
-		
+
 	}
 }

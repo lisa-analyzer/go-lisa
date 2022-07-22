@@ -19,8 +19,6 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
@@ -137,7 +135,7 @@ public class GoLiSA {
 			break;
 
 		}
-		
+
 		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML : GraphType.NONE);
 
 		Program program = null;

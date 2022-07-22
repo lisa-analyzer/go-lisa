@@ -1,7 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -28,12 +26,9 @@ import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.NoOp;
-import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
@@ -118,6 +113,20 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Type returnType = cfg.getDescriptor().getReturnType();
 
 		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
+		entryNode = findEntryNode(entryNode, body, returnType, matrix);
+
+		cfg.getEntrypoints().add(entryNode);
+
+		addReturnStatement(matrix);
+		addFinalRet(matrix);
+
+		cfg.simplify();
+		return Pair.of(entryNode, body.getRight());
+	}
+
+	private Statement findEntryNode(Statement entryNode,
+			Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> body, Type returnType,
+			NodeList<CFG, Statement, Edge> matrix) {
 		if (!(returnType instanceof GoTupleType))
 			entryNode = body.getLeft();
 		else {
@@ -150,44 +159,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			} else
 				entryNode = body.getLeft();
 		}
-
-		cfg.getEntrypoints().add(entryNode);
-
-		// If the function body does not have exit points
-		// a return statement is added
-		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-			if (cfg.getNodesCount() == 0) {
-				// empty method, so the ret is also the entrypoint
-				matrix.addNode(ret);
-				entrypoints.add(ret);
-			} else {
-				// every non-throwing instruction that does not have a follower
-				// is ending the method
-				Collection<Statement> preExits = new LinkedList<>();
-				for (Statement st : matrix.getNodes())
-					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-						preExits.add(st);
-				matrix.addNode(ret);
-				for (Statement st : preExits)
-					matrix.addEdge(new SequentialEdge(st, ret));
-
-				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
-					if (preExits.contains(entry.getScopeEnd()))
-						entry.setScopeEnd(ret);
-			}
-		}
-
-		for (Statement st : matrix.getExits())
-			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
-				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-					matrix.addNode(ret);
-				matrix.addEdge(new SequentialEdge(st, ret));
-			}
-
-		cfg.simplify();
-		return Pair.of(entryNode, body.getRight());
+		return entryNode;
 	}
 
 	/**
@@ -207,70 +179,13 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Type returnType = cfg.getDescriptor().getReturnType();
 
 		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
-		if (!(returnType instanceof GoTupleType))
-			entryNode = body.getLeft();
-		else {
-			GoTupleType tuple = (GoTupleType) returnType;
-			if (tuple.isNamedValues()) {
-				Statement lastStmt = null;
-
-				for (Parameter par : tuple) {
-					VariableRef var = new VariableRef(cfg, par.getLocation(), par.getName());
-					GoType parType = (GoType) par.getStaticType();
-					GoShortVariableDeclaration decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var,
-							parType.defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
-
-					cfg.addNode(decl);
-
-					if (lastStmt != null)
-						addEdge(new SequentialEdge(lastStmt, decl), matrix);
-					else
-						entryNode = decl;
-					lastStmt = decl;
-				}
-
-				addEdge(new SequentialEdge(lastStmt, body.getLeft()), matrix);
-				cfg.getEntrypoints().add(entryNode);
-
-			} else
-				entryNode = body.getLeft();
-		}
+		entryNode = findEntryNode(entryNode, body, returnType, matrix);
 
 		cfg.getEntrypoints().add(entryNode);
 
-		// If the function body does not have exit points
-		// a return statement is added
-		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-			if (cfg.getNodesCount() == 0) {
-				// empty method, so the ret is also the entrypoint
-				matrix.addNode(ret);
-				entrypoints.add(ret);
-			} else {
-				// every non-throwing instruction that does not have a follower
-				// is ending the method
-				Collection<Statement> preExits = new LinkedList<>();
-				for (Statement st : matrix.getNodes())
-					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-						preExits.add(st);
-				matrix.addNode(ret);
-				for (Statement st : preExits)
-					matrix.addEdge(new SequentialEdge(st, ret));
-
-				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
-					if (preExits.contains(entry.getScopeEnd()))
-						entry.setScopeEnd(ret);
-			}
-		}
-
-		for (Statement st : matrix.getExits())
-			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
-				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-					matrix.addNode(ret);
-				matrix.addEdge(new SequentialEdge(st, ret));
-			}
-
+		addReturnStatement(matrix);
+		addFinalRet(matrix);
+		
 		cfg.simplify();
 		return cfg;
 	}

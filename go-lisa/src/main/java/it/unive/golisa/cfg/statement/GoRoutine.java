@@ -10,19 +10,15 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.UnaryStatement;
 import it.unive.lisa.program.cfg.statement.call.Call;
-import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
  * A Go routine.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoRoutine extends Statement {
-
-	private final Call call;
+public class GoRoutine extends UnaryStatement {
 
 	/**
 	 * Builds a Go routine.
@@ -32,26 +28,12 @@ public class GoRoutine extends Statement {
 	 * @param call     the call
 	 */
 	public GoRoutine(CFG cfg, CodeLocation location, Call call) {
-		super(cfg, location);
-		this.call = call;
-	}
-
-	@Override
-	public int setOffset(int offset) {
-		this.offset = offset;
-		return call.setOffset(offset + 1);
-	}
-
-	@Override
-	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		if (!call.accept(visitor, tool))
-			return false;
-		return visitor.visit(tool, getCFG(), this);
+		super(cfg, location, call);
 	}
 
 	@Override
 	public String toString() {
-		return "go " + call.toString();
+		return "go " + getExpression().toString();
 	}
 
 	@Override

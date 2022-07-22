@@ -394,9 +394,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		cfg.getEntrypoints().add(body.getLeft());
 
+		addReturnStatement(cfg.getNodeList());
+		addFinalRet(matrix);
+
+		cfg.simplify();
+
+		currentUnit.addInstanceCFG(cfg);
+		return cfg;
+	}
+
+	protected void addReturnStatement(NodeList<CFG, Statement, Edge> matrix) {
 		// If the method body does not have exit points
 		// a return statement is added
-		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
 		if (cfg.getAllExitpoints().isEmpty()) {
 			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 			if (cfg.getNodesCount() == 0) {
@@ -419,7 +428,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						entry.setScopeEnd(ret);
 			}
 		}
+	}
 
+	protected void addFinalRet(NodeList<CFG, Statement, Edge> matrix) {
 		for (Statement st : matrix.getExits())
 			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
@@ -427,11 +438,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
-
-		cfg.simplify();
-
-		currentUnit.addInstanceCFG(cfg);
-		return cfg;
 	}
 
 	protected void processGotos() {
@@ -1819,8 +1825,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement idxInit = null;
 		Statement idxPost = null;
 
-		Statement valInit = new NoOp(cfg, SyntheticLocation.INSTANCE);
-		Statement valPost = new NoOp(cfg, SyntheticLocation.INSTANCE);
+		Statement valInit = new NoOp(cfg, locationOf(ctx));
+		Statement valPost = new NoOp(cfg, locationOf(range));
 
 		GoInteger zero = new GoInteger(cfg, locationOf(ctx), 0);
 		GoInteger one = new GoInteger(cfg, locationOf(ctx), 1);
@@ -2629,7 +2635,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						if (!GoLangUtils.refersToBlankIdentifier(id))
 							blockList.getLast().addVarDeclaration(id, DeclarationType.MULTI_SHORT_VARIABLE);
 
-					caseBooleanGuard = new GoEqual(cfg, typeLoc, typeSwitchCheck,
+					caseBooleanGuard = new GoEqual(cfg, typeLoc,  
+							new VariableRef(cfg, typeLoc, "ok"),
 							new GoBoolean(cfg, typeLoc, true));
 
 					body.addNode(shortDecl);

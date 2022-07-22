@@ -45,7 +45,7 @@ public class OpenFile extends NativeCFG {
 	 */
 	public OpenFile(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "OpenFile",
-				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE),
 				new Parameter(location, "flag", GoIntType.INSTANCE),
 				new Parameter(location, "perm", FileMode.INSTANCE)),
@@ -91,7 +91,7 @@ public class OpenFile extends NativeCFG {
 		 */
 		public OpenFileImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "OpenFileImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE),
 					params);
 		}
 

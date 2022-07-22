@@ -41,7 +41,7 @@ public class HtmlEscape extends NativeCFG {
 	 */
 	public HtmlEscape(CodeLocation location, CompilationUnit jsonUnit) {
 		super(new CFGDescriptor(location, jsonUnit, false, "HtmlEscape", VoidType.INSTANCE,
-				new Parameter(location, "dst", new GoPointerType(Buffer.INSTANCE)),
+				new Parameter(location, "dst", GoPointerType.lookup(Buffer.INSTANCE)),
 				new Parameter(location, "src", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				HtmlEscapeImpl.class);
 	}

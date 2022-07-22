@@ -40,8 +40,8 @@ public class Pipe extends NativeCFG {
 	 */
 	public Pipe(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "Pipe",
-				GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
-						new GoPointerType(PipeWriter.INSTANCE))),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.INSTANCE),
+						GoPointerType.lookup(PipeWriter.INSTANCE))),
 				PipeImpl.class);
 	}
 
@@ -84,8 +84,8 @@ public class Pipe extends NativeCFG {
 		 */
 		public PipeImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PipeImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
-							new GoPointerType(PipeWriter.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.INSTANCE),
+							GoPointerType.lookup(PipeWriter.INSTANCE)),
 					params);
 		}
 

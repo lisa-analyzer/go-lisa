@@ -40,7 +40,7 @@ public class TempFile extends NativeCFG {
 	 */
 	public TempFile(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CFGDescriptor(location, ioUnit, false, "TempFile",
-				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
@@ -87,7 +87,7 @@ public class TempFile extends NativeCFG {
 		 */
 		public TempFileImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "TempFileImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE), left,
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE), left,
 					right);
 		}
 

@@ -35,7 +35,8 @@ public class GoPointerType implements PointerType, GoType {
 	 * @return the unique instance of {@link GoPointerType} representing the
 	 *             pointer type given as argument
 	 */
-	public static GoPointerType lookup(GoPointerType type) {
+	public static GoPointerType lookup(Type contentType) {
+		GoPointerType type = new GoPointerType(contentType);
 		if (!pointerTypes.contains(type))
 			pointerTypes.add(type);
 		return pointerTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -46,7 +47,7 @@ public class GoPointerType implements PointerType, GoType {
 	 * 
 	 * @param baseType the base type of this pointer type
 	 */
-	public GoPointerType(Type baseType) {
+	private GoPointerType(Type baseType) {
 		this.baseType = baseType;
 	}
 

@@ -42,7 +42,7 @@ public class Create extends NativeCFG {
 	 */
 	public Create(CodeLocation location, CompilationUnit osUnit) {
 		super(new CFGDescriptor(location, osUnit, false, "Create",
-				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				CreateImpl.class);
 	}
@@ -86,7 +86,7 @@ public class Create extends NativeCFG {
 		 */
 		public CreateImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "CreateImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE),
 					expr);
 		}
 

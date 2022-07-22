@@ -334,7 +334,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Type visitPointerType(PointerTypeContext ctx) {
 		Type baseType = visitType_(ctx.type_());
-		return GoPointerType.lookup(new GoPointerType(baseType == null ? Untyped.INSTANCE : baseType));
+		return GoPointerType.lookup(baseType == null ? Untyped.INSTANCE : baseType);
 	}
 
 	@Override
@@ -356,7 +356,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public Pair<String, Type> visitAnonymousField(AnonymousFieldContext ctx) {
 		Type type = visitTypeName(ctx.typeName());
 		if (ctx.STAR() != null)
-			type = new GoPointerType(type);
+			type = GoPointerType.lookup(type);
 		return Pair.of(ctx.typeName().getText(), type);
 	}
 

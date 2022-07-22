@@ -124,10 +124,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoTupleType in : tupleTypes)
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	@Override

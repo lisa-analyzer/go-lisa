@@ -2338,13 +2338,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) keys).length));
+						.lookup(((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
 			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type == null ? Untyped.INSTANCE : type);
 		} else {
 
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) raw).length));
+						.lookup(((GoArrayType) type).getContenType(), ((Expression[]) raw).length);
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw,
 					type == null ? Untyped.INSTANCE : type);
 		}
@@ -2466,7 +2466,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 					type = GoArrayType.lookup(
-							new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) keys).length));
+							((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
 				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 			} else
 				throw new IllegalStateException(

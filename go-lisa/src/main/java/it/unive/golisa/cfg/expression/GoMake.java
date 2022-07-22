@@ -90,7 +90,7 @@ public class GoMake extends NaryExpression {
 			int length = (int) ((GoInteger) getSubExpressions()[0]).getValue();
 			int cap = getSubExpressions().length == 1 ? length : (int) ((GoInteger) getSubExpressions()[1]).getValue();
 
-			GoArrayType arrayType = GoArrayType.lookup(new GoArrayType(contentType, length));
+			GoArrayType arrayType = GoArrayType.lookup(contentType, length);
 			Expression array = arrayType.defaultValue(getCFG(), underlyingArrayLocation);
 			AnalysisState<A, H, V, T> arraySemantics = array.semantics(state, interprocedural,
 					new StatementStore<>(state));

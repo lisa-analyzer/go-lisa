@@ -1,15 +1,16 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A Go aliased type.
@@ -95,8 +96,27 @@ public class GoAliasType implements GoType {
 		return baseType.defaultValue(cfg, location);
 	}
 
+	/**
+	 * Yields all the alias types.
+	 * 
+	 * @return all the interface types
+	 */
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoAliasType in : aliases.values())
+			instances.add(in);
+		return instances;
+	}
+
+	/**
+	 * Clears all the alias types.
+	 */
+	public static void clearAll() {
+		aliases.clear();
+	}
+	
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		return all();
 	}
 }

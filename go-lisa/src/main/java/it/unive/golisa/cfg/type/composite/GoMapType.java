@@ -145,10 +145,7 @@ public class GoMapType implements GoType, InMemoryType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoMapType in : mapTypes)
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	/**

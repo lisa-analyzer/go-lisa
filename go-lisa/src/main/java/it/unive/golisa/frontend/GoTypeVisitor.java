@@ -232,7 +232,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public Type visitArrayType(ArrayTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
 		Integer length = visitArrayLength(ctx.arrayLength());
-		return GoArrayType.lookup(new GoArrayType(contentType, length));
+		return GoArrayType.lookup(contentType, length);
 	}
 
 	@Override
@@ -377,25 +377,9 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			// -1 is just a placeholder. It will be replaced with the
 			// correct size in GoCodeMemberVisitor.visitCompositeLit.
 			Type elementType = visitElementType(ctx.elementType());
-			return GoArrayType.lookup(new GoArrayType(elementType, -1));
+			return GoArrayType.lookup(elementType, -1);
 		}
 	}
-
-//	static protected int getLine(ParserRuleContext ctx) {
-//		return ctx.getStart().getLine();
-//	}
-//
-//	static protected int getLine(TerminalNode ctx) {
-//		return ctx.getSymbol().getLine();
-//	}
-//
-//	static protected int getCol(ParserRuleContext ctx) {
-//		return ctx.getStop().getCharPositionInLine();
-//	}
-//
-//	static protected int getCol(TerminalNode ctx) {
-//		return ctx.getSymbol().getCharPositionInLine();
-//	}
 
 	@Override
 	public GoStructType visitStructType(StructTypeContext ctx) {

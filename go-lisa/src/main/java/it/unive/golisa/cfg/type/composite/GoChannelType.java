@@ -172,10 +172,7 @@ public class GoChannelType implements GoType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoChannelType in : channelTypes)
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	/**

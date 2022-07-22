@@ -62,7 +62,7 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	 * @param name name of the struct type
 	 * @param unit the compilation unit of the struct type.
 	 */
-	public GoStructType(String name, CompilationUnit unit) {
+	protected GoStructType(String name, CompilationUnit unit) {
 		this.name = name;
 		this.unit = unit;
 	}
@@ -214,10 +214,7 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoStructType in : structTypes.values())
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	/**

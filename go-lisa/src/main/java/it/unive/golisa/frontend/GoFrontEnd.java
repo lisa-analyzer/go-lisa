@@ -24,6 +24,7 @@ import it.unive.golisa.cfg.runtime.conversion.ToInt64;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -155,6 +156,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	 * @throws IOException if something wrong happens while reading the file
 	 */
 	public static Program processFile(String filePath) throws IOException {
+		clearTypes();
 		return new GoFrontEnd(filePath).toLiSAProgram();
 	}
 
@@ -170,8 +172,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	private Program toLiSAProgram() throws IOException {
 		log.info("Go front-end setup...");
 		log.info("Reading file... " + filePath);
-
-		clearTypes();
 
 		long start = System.currentTimeMillis();
 
@@ -192,7 +192,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 		stream.close();
 
-		program.addCompilationUnit(it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
+//		program.addCompilationUnit(it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
 
 		// Register all the types
 		registerGoTypes(program);
@@ -200,7 +200,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		return result;
 	}
 
-	private void clearTypes() {
+	private static void clearTypes() {
 		GoArrayType.clearAll();
 		GoStructType.clearAll();
 		GoSliceType.clearAll();
@@ -210,6 +210,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoChannelType.clearAll();
 		GoFunctionType.clearAll();
 		GoVariadicType.clearAll();
+		GoAliasType.clearAll();
 	}
 
 	private void registerGoTypes(Program program) {
@@ -218,7 +219,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		program.registerType(GoFloat64Type.INSTANCE);
 		program.registerType(GoIntType.INSTANCE);
 		program.registerType(GoUntypedInt.INSTANCE);
-		program.registerType(GoUntypedFloat.INSTANCE);
 		program.registerType(GoInt8Type.INSTANCE);
 		program.registerType(GoUInt8Type.INSTANCE);
 		program.registerType(GoInt16Type.INSTANCE);
@@ -240,6 +240,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoChannelType.all().forEach(program::registerType);
 		GoFunctionType.all().forEach(program::registerType);
 		GoVariadicType.all().forEach(program::registerType);
+		GoAliasType.all().forEach(program::registerType);
 	}
 
 	@Override

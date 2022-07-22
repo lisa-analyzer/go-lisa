@@ -107,10 +107,7 @@ public class GoSliceType implements GoType, InMemoryType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoSliceType in : sliceTypes)
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	/**

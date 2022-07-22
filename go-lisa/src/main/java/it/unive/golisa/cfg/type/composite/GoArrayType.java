@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
@@ -9,10 +13,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A Go array type.
@@ -30,16 +30,17 @@ public class GoArrayType implements GoType, InMemoryType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoArrayType} representing an array type.
 	 * 
-	 * @param type the array type to lookup
+	 * @param type the content type of the array type to lookup
 	 * 
 	 * @return the unique instance of {@link GoArrayType} representing the array
 	 *             type given as argument
 	 */
-	public static GoArrayType lookup(GoArrayType type) {
-		if (!arrayTypes.contains(type))
-			arrayTypes.add(type);
+	public static GoArrayType lookup(Type type, Integer length) {
+		GoArrayType arrayType = new GoArrayType(type, length);
+		if (!arrayTypes.contains(arrayType))
+			arrayTypes.add(arrayType);
 
-		return arrayTypes.stream().filter(x -> x.equals(type)).findFirst().get();
+		return arrayTypes.stream().filter(x -> x.equals(arrayType)).findFirst().get();
 	}
 
 	/**
@@ -48,7 +49,7 @@ public class GoArrayType implements GoType, InMemoryType {
 	 * @param contentType the content type
 	 * @param length      the length
 	 */
-	public GoArrayType(Type contentType, Integer length) {
+	private GoArrayType(Type contentType, Integer length) {
 		this.contentType = contentType;
 		this.length = length;
 	}
@@ -150,7 +151,7 @@ public class GoArrayType implements GoType, InMemoryType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		return all();
 	}
 
 	/**

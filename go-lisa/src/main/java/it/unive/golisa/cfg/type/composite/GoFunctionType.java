@@ -116,10 +116,7 @@ public class GoFunctionType implements GoType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoFunctionType in : functionTypes)
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	/**

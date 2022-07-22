@@ -111,10 +111,7 @@ public class GoVariadicType implements GoType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoVariadicType in : variadicTypes)
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	/**

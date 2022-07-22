@@ -33,7 +33,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 	public static final ChaincodeStubInterface INSTANCE = new ChaincodeStubInterface();
 
 	private ChaincodeStubInterface() {
-		this("ChaincodeStubInterface", buildChainCodeStubInterfaceUnit());
+		super("ChaincodeStubInterface", buildChainCodeStubInterfaceUnit());
 	}
 
 	/**
@@ -134,9 +134,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		// - ...
 	}
 
-	private ChaincodeStubInterface(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
+
 
 	private static CompilationUnit buildChainCodeStubInterfaceUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);

@@ -124,10 +124,7 @@ public class GoPointerType implements PointerType, GoType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoPointerType in : pointerTypes)
-			instances.add(in);
-		return instances;
+		return all();
 	}
 
 	@Override

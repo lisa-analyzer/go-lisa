@@ -42,7 +42,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)));
-		perform("collections/array/field-insensitive", "array.go", conf, true);
+		perform("collections/array/field-insensitive", "array.go", conf);
 	}
 
 	@Test

@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___untyped_array.alias().dot", "analysis___untyped_array.allocs().dot", "analysis___untyped_array.defaultArray().dot", "analysis___untyped_array.emptyAllocs().dot" ]
+  "files" : [ "untyped_array.alias().json", "untyped_array.allocs().json", "untyped_array.defaultArray().json", "untyped_array.emptyAllocs().json" ]
 }

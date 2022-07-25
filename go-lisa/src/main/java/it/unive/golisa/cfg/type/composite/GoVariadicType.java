@@ -31,7 +31,8 @@ public class GoVariadicType implements GoType {
 	 * @return the unique instance of {@link GoVariadicType} representing the
 	 *             function type given as argument
 	 */
-	public static GoVariadicType lookup(GoVariadicType type) {
+	public static GoVariadicType lookup(Type conentType) {
+		GoVariadicType type = new GoVariadicType(conentType);
 		if (!variadicTypes.contains(type))
 			variadicTypes.add(type);
 		return variadicTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -42,7 +43,7 @@ public class GoVariadicType implements GoType {
 	 * 
 	 * @param contentType the content type
 	 */
-	public GoVariadicType(Type contentType) {
+	private GoVariadicType(Type contentType) {
 		this.contentType = contentType;
 	}
 

@@ -1,10 +1,12 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import it.unive.golisa.analysis.taint.Clean;
-import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
-import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoTupleType;
+import it.unive.golisa.cfg.runtime.io.type.Reader;
+import it.unive.golisa.cfg.runtime.shim.function.Start.StartImpl;
+import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
+import it.unive.golisa.cfg.type.GoNilType;
+import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -24,17 +26,15 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.Untyped;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (s *ChaincodeStub) GetFunctionAndParameters() (function string, params
- * []string).
- * 
- * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetFunctionAndParameters
+ * func (cs *ChaincodeServer) Start() error.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GetFunctionAndParameters extends NativeCFG {
+public class Start extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
@@ -42,20 +42,18 @@ public class GetFunctionAndParameters extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
-	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, true, "GetFunctionAndParameters",
-				GoTupleType.lookup(new Parameter(location, "function", GoStringType.INSTANCE),
-						new Parameter(location, "params", GoSliceType.lookup(GoStringType.INSTANCE))),
-				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
-				GetFunctionAndParametersImpl.class);
+	public Start(CodeLocation location, CompilationUnit shimUnit) {
+		super(new CFGDescriptor(location, shimUnit, true, "Start", GoErrorType.INSTANCE,
+				new Parameter(location, "cs", GoPointerType.lookup(ChaincodeServer.INSTANCE))),
+				StartImpl.class);
 	}
 
 	/**
-	 * The {@link GetFunctionAndParameters} implementation.
+	 * The Start implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class GetFunctionAndParametersImpl extends UnaryExpression
+	public static class StartImpl extends UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -75,8 +73,8 @@ public class GetFunctionAndParameters extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static GetFunctionAndParametersImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new GetFunctionAndParametersImpl(cfg, location, params[0]);
+		public static StartImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new StartImpl(cfg, location, params[0]);
 		}
 
 		/**
@@ -87,11 +85,8 @@ public class GetFunctionAndParameters extends NativeCFG {
 		 *                     defined
 		 * @param expr     the expression
 		 */
-		public GetFunctionAndParametersImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "GetFunctionAndParametersImpl", GoTupleType.lookup(
-					new Parameter(location, "function", GoStringType.INSTANCE),
-					new Parameter(location, "params", GoSliceType.lookup(GoStringType.INSTANCE))),
-					expr);
+		public StartImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "StartImpl", GoErrorType.INSTANCE, expr);
 		}
 
 		@Override
@@ -101,7 +96,11 @@ public class GetFunctionAndParameters extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V,
+					T> errorValue = state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V, T> nilValue = state
+					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			return errorValue.lub(nilValue);
 		}
 	}
 }

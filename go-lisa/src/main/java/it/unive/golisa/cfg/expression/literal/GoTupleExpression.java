@@ -58,7 +58,7 @@ public class GoTupleExpression extends NaryExpression {
 			types[i] = new Parameter(p.getLocation(), "_", p.getStaticType());
 		}
 
-		GoTupleType tupleType = new GoTupleType(types);
+		GoTupleType tupleType = GoTupleType.lookup(types);
 
 		HeapAllocation created = new HeapAllocation(tupleType, getLocation());
 

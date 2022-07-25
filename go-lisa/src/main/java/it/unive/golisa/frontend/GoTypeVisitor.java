@@ -319,7 +319,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		contentType = contentType == null ? Untyped.INSTANCE : contentType;
 
 		if (ctx.RECEIVE() == null)
-			return GoChannelType.lookup(new GoChannelType(contentType));
+			return GoChannelType.lookup(contentType);
 		else if (GoCodeMemberVisitor.getCol(ctx.CHAN()) < GoCodeMemberVisitor.getCol(ctx.RECEIVE()))
 			return GoChannelType.lookup(new GoChannelType(contentType, true, false));
 

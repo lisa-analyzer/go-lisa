@@ -42,7 +42,7 @@ public class Parse extends NativeCFG {
 	 */
 	public Parse(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Parse",
-				new GoTupleType(new Parameter(location, "_", Time.INSTANCE),
+				 GoTupleType.lookup(new Parameter(location, "_", Time.INSTANCE),
 						new Parameter(location, "_", GoErrorType.INSTANCE)),
 				new Parameter(location, "layout", GoStringType.INSTANCE),
 				new Parameter(location, "value", GoStringType.INSTANCE)),
@@ -88,7 +88,7 @@ public class Parse extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public ParseImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "ParseImpl", new GoTupleType(new Parameter(location, "_", Time.INSTANCE),
+			super(cfg, location, "ParseImpl", GoTupleType.lookup(new Parameter(location, "_", Time.INSTANCE),
 					new Parameter(location, "_", GoErrorType.INSTANCE)), left, right);
 		}
 
@@ -101,7 +101,7 @@ public class Parse extends NativeCFG {
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(new GoTupleType(new Parameter(original.getLocation(), "_", Time.INSTANCE),
+					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_", Time.INSTANCE),
 							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
 							original.getLocation()),
 					original);

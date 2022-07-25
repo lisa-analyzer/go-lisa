@@ -608,7 +608,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// the parameter's type is variadic (e.g., ...string)
 		if (ctx.ELLIPSIS() != null)
-			type = GoVariadicType.lookup(new GoVariadicType(type));
+			type = GoVariadicType.lookup(type);
 
 		if (ctx.identifierList() == null)
 			result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
@@ -632,7 +632,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.type_() != null)
 			return visitType_(ctx.type_());
 		else {
-			return new GoTupleType(visitParameters(ctx.parameters()));
+			return GoTupleType.lookup(visitParameters(ctx.parameters()));
 		}
 	}
 
@@ -2504,8 +2504,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Expression visitFunctionLit(FunctionLitContext ctx) {
 		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
 		Type funcType = GoFunctionType
-				.lookup(new GoFunctionType(funcLit.getDescriptor().getReturnType(),
-						funcLit.getDescriptor().getFormals()));
+				.lookup(funcLit.getDescriptor().getReturnType(),
+						funcLit.getDescriptor().getFormals());
 		return new GoFunctionLiteral(cfg, locationOf(ctx), funcLit, funcType);
 	}
 

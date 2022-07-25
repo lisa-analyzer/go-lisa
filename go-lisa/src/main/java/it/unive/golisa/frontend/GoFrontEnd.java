@@ -47,6 +47,7 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntPrtType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
@@ -63,6 +64,8 @@ import it.unive.lisa.program.cfg.statement.call.resolution.ParameterMatchingStra
 import it.unive.lisa.program.cfg.statement.call.resolution.RuntimeTypesMatchingStrategy;
 import it.unive.lisa.program.cfg.statement.call.traversal.HierarcyTraversalStrategy;
 import it.unive.lisa.program.cfg.statement.call.traversal.SingleInheritanceTraversalStrategy;
+import it.unive.lisa.type.TypeTokenType;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -211,6 +214,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoFunctionType.clearAll();
 		GoVariadicType.clearAll();
 		GoAliasType.clearAll();
+		GoInterfaceType.clearAll();
 	}
 
 	private void registerGoTypes(Program program) {
@@ -227,6 +231,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		program.registerType(GoUInt32Type.INSTANCE);
 		program.registerType(GoInt64Type.INSTANCE);
 		program.registerType(GoUInt64Type.INSTANCE);
+		program.registerType(GoUIntPrtType.INSTANCE);
 		program.registerType(GoUntypedFloat.INSTANCE);
 		program.registerType(GoStringType.INSTANCE);
 		program.registerType(GoErrorType.INSTANCE);
@@ -241,6 +246,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoFunctionType.all().forEach(program::registerType);
 		GoVariadicType.all().forEach(program::registerType);
 		GoAliasType.all().forEach(program::registerType);
+		GoInterfaceType.all().forEach(program::registerType);
 	}
 
 	@Override

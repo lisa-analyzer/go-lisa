@@ -1,7 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -24,7 +23,7 @@ import it.unive.lisa.type.Untyped;
  */
 public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
-	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
+	protected static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
 	/**
 	 * Yields a unique instance (either an existing one or a fresh one) of
@@ -41,6 +40,11 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		if (name.equals(EmptyInterface.EMPTY_INTERFACE_NAME))
 			return interfaces.computeIfAbsent(name, x -> new EmptyInterface());
 		return interfaces.computeIfAbsent(name, x -> new GoInterfaceType(name, unit));
+	}
+	
+
+	public static void registerType(GoInterfaceType type) {
+		interfaces.put(type.name, type);
 	}
 
 	/**
@@ -171,7 +175,11 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	
 	@Override
 	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+		Collection<Type> instances = new HashSet<>();
+		for (GoInterfaceType in : interfaces.values())
+			instances.add(in);
+		instances.add(this);
+		return instances;
 	}
 
 	@Override

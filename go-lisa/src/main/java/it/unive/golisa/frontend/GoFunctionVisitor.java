@@ -257,6 +257,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Type returnType = getGoReturnType(sign);
 		Parameter[] params = visitParameters(sign.parameters());
 
-		return GoFunctionType.lookup(new GoFunctionType(returnType, params));
+		return GoFunctionType.lookup(returnType, params);
 	}
 }

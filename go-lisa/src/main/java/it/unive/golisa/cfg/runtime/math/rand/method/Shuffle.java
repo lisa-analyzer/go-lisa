@@ -43,10 +43,9 @@ public class Shuffle extends NativeCFG {
 		super(new CFGDescriptor(location, randUnit, true, "Shuffle", VoidType.INSTANCE,
 				new Parameter(location, "this", Rand.INSTANCE),
 				new Parameter(location, "n", GoIntType.INSTANCE),
-				new Parameter(location, "swap", GoFunctionType.lookup(
-						new GoFunctionType(VoidType.INSTANCE,
+				new Parameter(location, "swap", GoFunctionType.lookup(VoidType.INSTANCE,
 								new Parameter(location, "i", GoIntType.INSTANCE),
-								new Parameter(location, "j", GoIntType.INSTANCE))))),
+								new Parameter(location, "j", GoIntType.INSTANCE)))),
 				ShuffleImpl.class);
 	}
 

@@ -34,7 +34,8 @@ public class GoChannelType implements GoType {
 	 * @return the unique instance of {@link GoChannelType} representing the
 	 *             channel type given as argument
 	 */
-	public static GoChannelType lookup(GoChannelType type) {
+	public static GoChannelType lookup(Type contentType) {
+		GoChannelType type = new GoChannelType(contentType);
 		if (!channelTypes.contains(type))
 			channelTypes.add(type);
 		return channelTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -45,7 +46,7 @@ public class GoChannelType implements GoType {
 	 * 
 	 * @param contentType the content type
 	 */
-	public GoChannelType(Type contentType) {
+	private GoChannelType(Type contentType) {
 		this(contentType, true, true);
 	}
 

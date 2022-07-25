@@ -34,7 +34,8 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * @return the unique instance of {@link GoTupleType} representing the tuple
 	 *             type given as argument
 	 */
-	public static GoTupleType lookup(GoTupleType type) {
+	public static GoTupleType lookup(Parameter... pars) {
+		GoTupleType type = new GoTupleType(pars);
 		if (!tupleTypes.contains(type))
 			tupleTypes.add(type);
 		return tupleTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -56,7 +57,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * 
 	 * @param pars the parameters
 	 */
-	public GoTupleType(Parameter... pars) {
+	private GoTupleType(Parameter... pars) {
 		super();
 		for (int i = 0; i < pars.length; i++)
 			this.add(pars[i]);
@@ -145,7 +146,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 		for (int i = 0; i < types.length; i++)
 			pars[i] = new Parameter(location, "_", types[i]);
 
-		return GoTupleType.lookup(new GoTupleType(pars));
+		return GoTupleType.lookup(pars);
 	}
 
 	/**

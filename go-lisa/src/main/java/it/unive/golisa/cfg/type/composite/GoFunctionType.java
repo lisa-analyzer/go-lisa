@@ -34,7 +34,8 @@ public class GoFunctionType implements GoType {
 	 * @return the unique instance of {@link GoFunctionType} representing the
 	 *             function type given as argument
 	 */
-	public static GoFunctionType lookup(GoFunctionType type) {
+	public static GoFunctionType lookup(Type returnType, Parameter... params) {
+		GoFunctionType type = new GoFunctionType(returnType, params);
 		if (!functionTypes.contains(type))
 			functionTypes.add(type);
 		return functionTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -46,7 +47,7 @@ public class GoFunctionType implements GoType {
 	 * @param returnType the return type
 	 * @param params     the parameters
 	 */
-	public GoFunctionType(Type returnType, Parameter... params) {
+	private GoFunctionType(Type returnType, Parameter... params) {
 		this.params = params;
 		this.returnType = returnType;
 	}

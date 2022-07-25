@@ -41,6 +41,11 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	public static GoStructType lookup(String name, CompilationUnit unit) {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
 	}
+	
+
+	public static void registerType(GoStructType type) {
+		structTypes.put(type.name, type);
+	}
 
 	/**
 	 * Updates the reference to a struct type.

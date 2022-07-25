@@ -67,6 +67,7 @@ import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
 import it.unive.golisa.cfg.runtime.shim.function.Success;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
@@ -93,6 +94,7 @@ import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.runtime.url.PathEscape;
 import it.unive.golisa.cfg.runtime.url.QueryEscape;
+import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -167,9 +169,8 @@ public interface GoRuntimeLoader {
 		program.addCompilationUnit(sdkerrors);
 	}
 
-	private void loadCosmosTypes(Program program) {
-		program.registerType(Grant.INSTANCE);
-		GoStructType.lookup(Grant.INSTANCE.getUnit().getName(), Grant.INSTANCE.getUnit());
+	private void loadCosmosTypes(Program program) {		
+		GoStructType.registerType(Grant.INSTANCE);
 	}
 
 	private void loadFilePath(Program program) {
@@ -212,17 +213,17 @@ public interface GoRuntimeLoader {
 		ioutil.addConstruct(new WriteFile(runtimeLocation, ioutil));
 
 		// adding types
-		program.registerType(PipeReader.INSTANCE);
 		PipeReader.registerMethods();
+		GoStructType.registerType(PipeReader.INSTANCE);
 
-		program.registerType(PipeWriter.INSTANCE);
 		PipeWriter.registerMethods();
+		GoStructType.registerType(PipeWriter.INSTANCE);
 
-		program.registerType(Reader.INSTANCE);
 		Reader.registerMethods();
+		GoStructType.registerType(Reader.INSTANCE);
 
-		program.registerType(Writer.INSTANCE);
 		Writer.registerMethods();
+		GoStructType.registerType(Writer.INSTANCE);
 
 		// adding compilation units to program
 		program.addCompilationUnit(ioutil);
@@ -251,16 +252,14 @@ public interface GoRuntimeLoader {
 		os.addConstruct(new Setenv(runtimeLocation, os));
 		os.addConstruct(new Unsetenv(runtimeLocation, os));
 
-		// adding types
-		program.registerType(File.INSTANCE);
-		program.registerType(FileMode.INSTANCE);
 		File.registerMethods();
-
+		GoStructType.registerType(File.INSTANCE);
+		GoStructType.registerType(FileMode.INSTANCE);
+		
 		// adding compilation unit to program
 		program.addCompilationUnit(os);
 		program.addCompilationUnit(File.INSTANCE.getUnit());
 		program.addCompilationUnit(FileMode.INSTANCE.getUnit());
-
 	}
 
 	private void loadCryptoRand(Program program) {
@@ -328,9 +327,9 @@ public interface GoRuntimeLoader {
 				new Shuffle(runtimeLocation, mathRand));
 
 		// adding types
-		program.registerType(Rand.INSTANCE);
 		Rand.registerMethods();
-
+		GoStructType.registerType(Rand.INSTANCE);
+		
 		// adding compilation units to program
 		program.addCompilationUnit(mathRand);
 	}
@@ -353,8 +352,8 @@ public interface GoRuntimeLoader {
 		statebased.addConstruct(new NewStateEP(runtimeLocation, statebased));
 
 		// adding types
-		program.registerType(KeyEndorsementPolicy.INSTANCE);
-
+		GoInterfaceType.registerType(KeyEndorsementPolicy.INSTANCE);
+		
 		// adding compilation unit to program
 		program.addCompilationUnit(statebased);
 	}
@@ -368,25 +367,26 @@ public interface GoRuntimeLoader {
 		shim.addConstruct(new Success(runtimeLocation, shim));
 
 		// adding types
-		program.registerType(ChaincodeStub.INSTANCE);
 		ChaincodeStub.registerMethods();
-
-		program.addCompilationUnit(ChaincodeStubInterface.INSTANCE.getUnit());
 		ChaincodeStubInterface.registerMethods();
 
-		program.registerType(CommonIteratorInterface.INSTANCE);
-		program.registerType(Handler.INSTANCE);
-		program.registerType(TLSProperties.INSTANCE);
 		program.registerType(ChaincodeStubInterface.INSTANCE);
-		program.registerType(Chaincode.INSTANCE);
+		GoInterfaceType.registerType(Chaincode.INSTANCE);
+		GoInterfaceType.registerType(CommonIteratorInterface.INSTANCE);
+		GoStructType.registerType(Handler.INSTANCE);
+		GoStructType.registerType(TLSProperties.INSTANCE);
+		GoStructType.registerType(ChaincodeStub.INSTANCE);
+		GoStructType.registerType(ChaincodeServer.INSTANCE);
 
 		// adding compilation unit to program
 		program.addCompilationUnit(shim);
+		program.addCompilationUnit(ChaincodeStubInterface.INSTANCE.getUnit());
 		program.addCompilationUnit(Chaincode.INSTANCE.getUnit());
 		program.addCompilationUnit(ChaincodeStub.INSTANCE.getUnit());
-		program.addCompilationUnit(CommonIteratorInterface.INSTANCE.getUnit());
 		program.addCompilationUnit(TLSProperties.INSTANCE.getUnit());
-		program.addCompilationUnit(Handler.INSTANCE.getUnit());
+		program.addCompilationUnit(CommonIteratorInterface.INSTANCE.getUnit());
+		program.addCompilationUnit(ChaincodeServer.INSTANCE.getUnit());
+
 	}
 
 	private void loadUrl(Program program) {
@@ -439,9 +439,7 @@ public interface GoRuntimeLoader {
 		time.addInstanceConstruct(new Unix(runtimeLocation, time));
 
 		// adding types
-		program.registerType(Time.INSTANCE);
-		GoStructType.lookup(Time.INSTANCE.getUnit().getName(), time);
-
+		GoStructType.registerType(Time.INSTANCE);
 		program.registerType(it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE);
 		program.registerType(Duration.INSTANCE);
 

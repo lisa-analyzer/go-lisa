@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CharStreams;
@@ -73,6 +74,7 @@ import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
@@ -85,7 +87,13 @@ import it.unive.lisa.program.cfg.statement.call.resolution.ParameterMatchingStra
 import it.unive.lisa.program.cfg.statement.call.resolution.RuntimeTypesMatchingStrategy;
 import it.unive.lisa.program.cfg.statement.call.traversal.HierarcyTraversalStrategy;
 import it.unive.lisa.program.cfg.statement.call.traversal.SingleInheritanceTraversalStrategy;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeTokenType;
+import it.unive.lisa.type.Untyped;
 import it.unive.lisa.type.common.BoolType;
+import it.unive.lisa.type.common.Float32;
+import it.unive.lisa.type.common.Int32;
+import it.unive.lisa.type.common.StringType;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -204,6 +212,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	}
 
 	private static void clearTypes() {
+		Caches.types().clear();
 		GoArrayType.clearAll();
 		GoStructType.clearAll();
 		GoSliceType.clearAll();
@@ -219,7 +228,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private void registerGoTypes(Program program) {
 		program.registerType(GoBoolType.INSTANCE);
-		program.registerType(BoolType.INSTANCE);
 		program.registerType(GoFloat32Type.INSTANCE);
 		program.registerType(GoFloat64Type.INSTANCE);
 		program.registerType(GoIntType.INSTANCE);
@@ -238,6 +246,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		program.registerType(GoStringType.INSTANCE);
 		program.registerType(GoErrorType.INSTANCE);
 		program.registerType(GoNilType.INSTANCE);
+		
+
+		// FIXME: these types should be removed
+		program.registerType(BoolType.INSTANCE);
+		program.registerType(Untyped.INSTANCE);
+		program.registerType(Float32.INSTANCE);
+		program.registerType(StringType.INSTANCE);
+		program.registerType(Int32.INSTANCE);	
+		
 		GoArrayType.all().forEach(program::registerType);
 		GoStructType.all().forEach(program::registerType);
 		GoSliceType.all().forEach(program::registerType);
@@ -249,6 +266,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoVariadicType.all().forEach(program::registerType);
 		GoAliasType.all().forEach(program::registerType);
 		GoInterfaceType.all().forEach(program::registerType);
+		
+		// adding type tokens
+		Set<Type> ttTypes = new HashSet<>();
+		for (Type t : program.getRegisteredTypes())
+			ttTypes.add(new TypeTokenType(Caches.types().mkSingletonSet(t)));
+		
+		for (Type t : ttTypes)
+			program.registerType(t);
 	}
 
 	@Override

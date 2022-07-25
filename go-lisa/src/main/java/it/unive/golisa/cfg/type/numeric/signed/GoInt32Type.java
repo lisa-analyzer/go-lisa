@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.type.numeric.signed;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -70,12 +71,12 @@ public class GoInt32Type implements NumericType, GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return other instanceof GoInt32Type || other.isUntyped();
+		return other instanceof GoInt32Type ||other instanceof GoIntType || other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoInt32Type ? this : Untyped.INSTANCE;
+		return other instanceof GoInt32Type || other instanceof GoUntypedInt ||other instanceof GoIntType ? this : Untyped.INSTANCE;
 	}
 
 	@Override

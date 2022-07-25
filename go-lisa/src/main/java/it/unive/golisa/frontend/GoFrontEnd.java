@@ -85,6 +85,7 @@ import it.unive.lisa.program.cfg.statement.call.resolution.ParameterMatchingStra
 import it.unive.lisa.program.cfg.statement.call.resolution.RuntimeTypesMatchingStrategy;
 import it.unive.lisa.program.cfg.statement.call.traversal.HierarcyTraversalStrategy;
 import it.unive.lisa.program.cfg.statement.call.traversal.SingleInheritanceTraversalStrategy;
+import it.unive.lisa.type.common.BoolType;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -218,6 +219,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private void registerGoTypes(Program program) {
 		program.registerType(GoBoolType.INSTANCE);
+		program.registerType(BoolType.INSTANCE);
 		program.registerType(GoFloat32Type.INSTANCE);
 		program.registerType(GoFloat64Type.INSTANCE);
 		program.registerType(GoIntType.INSTANCE);

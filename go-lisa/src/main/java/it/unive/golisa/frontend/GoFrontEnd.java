@@ -68,6 +68,7 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntPrtType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
@@ -195,8 +196,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 		stream.close();
 
-//		program.addCompilationUnit(it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
-
 		// Register all the types
 		registerGoTypes(program);
 
@@ -222,6 +221,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		program.registerType(GoFloat32Type.INSTANCE);
 		program.registerType(GoFloat64Type.INSTANCE);
 		program.registerType(GoIntType.INSTANCE);
+		program.registerType(GoUIntType.INSTANCE);
 		program.registerType(GoUntypedInt.INSTANCE);
 		program.registerType(GoInt8Type.INSTANCE);
 		program.registerType(GoUInt8Type.INSTANCE);

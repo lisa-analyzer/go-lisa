@@ -1,0 +1,1247 @@
+{
+	"name": "untyped main::arrayTyping()",
+	"description": null,
+	"nodes": [
+		{
+			"id": 0,
+			"subNodes": [
+				1,
+				2
+			],
+			"text": "v1 := nonKeyedLit([3]int)(1, 2, 3)"
+		},
+		{
+			"id": 1,
+			"text": "v1"
+		},
+		{
+			"id": 2,
+			"subNodes": [
+				3,
+				4,
+				5
+			],
+			"text": "nonKeyedLit([3]int)(1, 2, 3)"
+		},
+		{
+			"id": 3,
+			"text": "1"
+		},
+		{
+			"id": 4,
+			"text": "2"
+		},
+		{
+			"id": 5,
+			"text": "3"
+		},
+		{
+			"id": 6,
+			"subNodes": [
+				7,
+				8
+			],
+			"text": "v2 := nonKeyedLit([5]int)(1, 2, 3, 4, 5)"
+		},
+		{
+			"id": 7,
+			"text": "v2"
+		},
+		{
+			"id": 8,
+			"subNodes": [
+				9,
+				10,
+				11,
+				12,
+				13
+			],
+			"text": "nonKeyedLit([5]int)(1, 2, 3, 4, 5)"
+		},
+		{
+			"id": 9,
+			"text": "1"
+		},
+		{
+			"id": 10,
+			"text": "2"
+		},
+		{
+			"id": 11,
+			"text": "3"
+		},
+		{
+			"id": 12,
+			"text": "4"
+		},
+		{
+			"id": 13,
+			"text": "5"
+		},
+		{
+			"id": 14,
+			"subNodes": [
+				15,
+				16
+			],
+			"text": "x := v1::0(v1, 0)"
+		},
+		{
+			"id": 15,
+			"text": "x"
+		},
+		{
+			"id": 16,
+			"subNodes": [
+				17,
+				18
+			],
+			"text": "v1::0(v1, 0)"
+		},
+		{
+			"id": 17,
+			"text": "v1"
+		},
+		{
+			"id": 18,
+			"text": "0"
+		},
+		{
+			"id": 19,
+			"subNodes": [
+				20,
+				21
+			],
+			"text": "y := +(v2::1(v2, 1), v2::0(v2, 0))"
+		},
+		{
+			"id": 20,
+			"text": "y"
+		},
+		{
+			"id": 21,
+			"subNodes": [
+				22,
+				25
+			],
+			"text": "+(v2::1(v2, 1), v2::0(v2, 0))"
+		},
+		{
+			"id": 22,
+			"subNodes": [
+				23,
+				24
+			],
+			"text": "v2::1(v2, 1)"
+		},
+		{
+			"id": 23,
+			"text": "v2"
+		},
+		{
+			"id": 24,
+			"text": "1"
+		},
+		{
+			"id": 25,
+			"subNodes": [
+				26,
+				27
+			],
+			"text": "v2::0(v2, 0)"
+		},
+		{
+			"id": 26,
+			"text": "v2"
+		},
+		{
+			"id": 27,
+			"text": "0"
+		},
+		{
+			"id": 28,
+			"subNodes": [
+				29,
+				30
+			],
+			"text": "v3 := v1"
+		},
+		{
+			"id": 29,
+			"text": "v3"
+		},
+		{
+			"id": 30,
+			"text": "v1"
+		},
+		{
+			"id": 31,
+			"text": "ret"
+		}
+	],
+	"edges": [
+		{
+			"sourceId": 0,
+			"destId": 6,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 6,
+			"destId": 14,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 14,
+			"destId": 19,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 19,
+			"destId": 28,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 28,
+			"destId": 31,
+			"kind": "SequentialEdge"
+		}
+	],
+	"descriptions": [
+		{
+			"nodeId": 0,
+			"description": {
+				"expressions": [
+					"v1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"[3]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 1,
+			"description": {
+				"expressions": [
+					"v1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							]
+						},
+						"stack": [
+							"[3]int",
+							"[5]int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 2,
+			"description": {
+				"expressions": [
+					"ref$new [3]int"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							]
+						},
+						"stack": [
+							"[3]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 3,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "#TOP#",
+					"value": "#TOP#"
+				}
+			}
+		},
+		{
+			"nodeId": 4,
+			"description": {
+				"expressions": [
+					"2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "#TOP#",
+					"value": "#TOP#"
+				}
+			}
+		},
+		{
+			"nodeId": 5,
+			"description": {
+				"expressions": [
+					"3"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "#TOP#",
+					"value": "#TOP#"
+				}
+			}
+		},
+		{
+			"nodeId": 6,
+			"description": {
+				"expressions": [
+					"v2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							]
+						},
+						"stack": [
+							"[5]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 7,
+			"description": {
+				"expressions": [
+					"v2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"[3]int",
+							"[5]int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 8,
+			"description": {
+				"expressions": [
+					"ref$new [5]int"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"[5]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 9,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 10,
+			"description": {
+				"expressions": [
+					"2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 11,
+			"description": {
+				"expressions": [
+					"3"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "[3, 3]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 12,
+			"description": {
+				"expressions": [
+					"4"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "[4, 4]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 13,
+			"description": {
+				"expressions": [
+					"5"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 3]"
+						},
+						"stack": "[5, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 14,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "[1, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 15,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 16,
+			"description": {
+				"expressions": [
+					"*(v1)->0"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]"
+						},
+						"stack": "[1, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 17,
+			"description": {
+				"expressions": [
+					"v1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							]
+						},
+						"stack": [
+							"[3]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 18,
+			"description": {
+				"expressions": [
+					"0"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]"
+						},
+						"stack": "[0, 0]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 19,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]",
+							"y": "[2, 10]"
+						},
+						"stack": "[2, 10]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 20,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 21,
+			"description": {
+				"expressions": [
+					"*(v2)->1 + *(v2)->0"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "[2, 10]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 22,
+			"description": {
+				"expressions": [
+					"*(v2)->1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "[1, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 23,
+			"description": {
+				"expressions": [
+					"v2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"[5]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 24,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 25,
+			"description": {
+				"expressions": [
+					"*(v2)->0"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "[1, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 26,
+			"description": {
+				"expressions": [
+					"v2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"[5]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 27,
+			"description": {
+				"expressions": [
+					"0"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]"
+						},
+						"stack": "[0, 0]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 28,
+			"description": {
+				"expressions": [
+					"v3"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"v3": [
+								"[3]int*"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"[3]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]",
+							"y": "[2, 10]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 29,
+			"description": {
+				"expressions": [
+					"v3"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]",
+							"y": "[2, 10]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 30,
+			"description": {
+				"expressions": [
+					"v1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"[3]int*"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]",
+							"y": "[2, 10]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 31,
+			"description": {
+				"expressions": [
+					"skip"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"heap[w]:heap": [
+								"int"
+							],
+							"v1": [
+								"[3]int*"
+							],
+							"v2": [
+								"[5]int*"
+							],
+							"v3": [
+								"[3]int*"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": "_|_"
+					},
+					"value": {
+						"map": {
+							"heap[w]:heap": "[1, 5]",
+							"x": "[1, 5]",
+							"y": "[2, 10]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		}
+	]
+}

@@ -1,1 +1,400 @@
-{"name":"untyped main::main()","description":null,"nodes":[{"id":0,"subNodes":[1,2],"text":"x := morestrings::sum(1, 2)"},{"id":1,"text":"x"},{"id":2,"subNodes":[3,4],"text":"morestrings::sum(1, 2)"},{"id":3,"text":"1"},{"id":4,"text":"2"},{"id":5,"subNodes":[6,7],"text":"y := main::sum(1, 2)"},{"id":6,"text":"y"},{"id":7,"subNodes":[8,9],"text":"main::sum(1, 2)"},{"id":8,"text":"1"},{"id":9,"text":"2"},{"id":10,"text":"ret"}],"edges":[{"sourceId":0,"destId":5,"kind":"SequentialEdge"},{"sourceId":5,"destId":10,"kind":"SequentialEdge"}],"descriptions":[{"nodeId":0,"description":{"expressions":["x"],"state":{"heap":"monolith","type":{"map":{"x":["int"]},"stack":["int"]},"value":{"map":{"x":"[3, 3]"},"stack":"[3, 3]"}}}},{"nodeId":1,"description":{"expressions":["x"],"state":{"heap":"monolith","type":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':13:25":["int(untyped)"]},"stack":["bool","bool*","error","error*","float(untyped)","float(untyped)*","float32","float32*","float64","float64*","int","int(untyped)","int(untyped)*","int*","int16","int16*","int32","int32*","int64","int64*","int8","int8*","nil","nil*","string","string*","uint16","uint16*","uint32","uint32*","uint64","uint64*","uint8","uint8*"]},"value":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':13:25":"[3, 3]"},"stack":"_|_"}}}},{"nodeId":2,"description":{"expressions":["call_ret_value@'go-testcases/go-projects/a.go':13:25"],"state":{"heap":"monolith","type":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':13:25":["int(untyped)"]},"stack":["int(untyped)"]},"value":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':13:25":"[3, 3]"},"stack":"[3, 3]"}}}},{"nodeId":3,"description":{"expressions":["1"],"state":{"heap":"monolith","type":"#TOP#","value":"#TOP#"}}},{"nodeId":4,"description":{"expressions":["2"],"state":{"heap":"monolith","type":"#TOP#","value":"#TOP#"}}},{"nodeId":5,"description":{"expressions":["y"],"state":{"heap":"monolith","type":{"map":{"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"x":"[3, 3]","y":"[4, 4]"},"stack":"[4, 4]"}}}},{"nodeId":6,"description":{"expressions":["y"],"state":{"heap":"monolith","type":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':14:13":["int(untyped)"],"x":["int"]},"stack":"#TOP#"},"value":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':14:13":"[4, 4]","x":"[3, 3]"},"stack":"_|_"}}}},{"nodeId":7,"description":{"expressions":["call_ret_value@'go-testcases/go-projects/a.go':14:13"],"state":{"heap":"monolith","type":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':14:13":["int(untyped)"],"x":["int"]},"stack":["int(untyped)"]},"value":{"map":{"call_ret_value@'go-testcases/go-projects/a.go':14:13":"[4, 4]","x":"[3, 3]"},"stack":"[4, 4]"}}}},{"nodeId":8,"description":{"expressions":["1"],"state":{"heap":"monolith","type":{"map":{"x":["int"]},"stack":["int(untyped)"]},"value":{"map":{"x":"[3, 3]"},"stack":"[1, 1]"}}}},{"nodeId":9,"description":{"expressions":["2"],"state":{"heap":"monolith","type":{"map":{"x":["int"]},"stack":["int(untyped)"]},"value":{"map":{"x":"[3, 3]"},"stack":"[2, 2]"}}}},{"nodeId":10,"description":{"expressions":["skip"],"state":{"heap":"monolith","type":{"map":{"x":["int"],"y":["int"]},"stack":"_|_"},"value":{"map":{"x":"[3, 3]","y":"[4, 4]"},"stack":"_|_"}}}}]}
+{
+	"name": "untyped main::main()",
+	"description": null,
+	"nodes": [
+		{
+			"id": 0,
+			"subNodes": [
+				1,
+				2
+			],
+			"text": "x := morestrings::sum(1, 2)"
+		},
+		{
+			"id": 1,
+			"text": "x"
+		},
+		{
+			"id": 2,
+			"subNodes": [
+				3,
+				4
+			],
+			"text": "morestrings::sum(1, 2)"
+		},
+		{
+			"id": 3,
+			"text": "1"
+		},
+		{
+			"id": 4,
+			"text": "2"
+		},
+		{
+			"id": 5,
+			"subNodes": [
+				6,
+				7
+			],
+			"text": "y := main::sum(1, 2)"
+		},
+		{
+			"id": 6,
+			"text": "y"
+		},
+		{
+			"id": 7,
+			"subNodes": [
+				8,
+				9
+			],
+			"text": "main::sum(1, 2)"
+		},
+		{
+			"id": 8,
+			"text": "1"
+		},
+		{
+			"id": 9,
+			"text": "2"
+		},
+		{
+			"id": 10,
+			"text": "ret"
+		}
+	],
+	"edges": [
+		{
+			"sourceId": 0,
+			"destId": 5,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 5,
+			"destId": 10,
+			"kind": "SequentialEdge"
+		}
+	],
+	"descriptions": [
+		{
+			"nodeId": 0,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"x": "[3, 3]"
+						},
+						"stack": "[3, 3]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 1,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':13:25": [
+								"int(untyped)"
+							]
+						},
+						"stack": [
+							"bool",
+							"bool*",
+							"error",
+							"error*",
+							"float(untyped)",
+							"float(untyped)*",
+							"float32",
+							"float32*",
+							"float64",
+							"float64*",
+							"int",
+							"int(untyped)",
+							"int(untyped)*",
+							"int*",
+							"int16",
+							"int16*",
+							"int32",
+							"int32*",
+							"int64",
+							"int64*",
+							"int8",
+							"int8*",
+							"interface{}",
+							"interface{}*",
+							"nil",
+							"nil*",
+							"string",
+							"string*",
+							"uint",
+							"uint*",
+							"uint16",
+							"uint16*",
+							"uint32",
+							"uint32*",
+							"uint64",
+							"uint64*",
+							"uint8",
+							"uint8*",
+							"uintprt",
+							"uintprt*"
+						]
+					},
+					"value": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':13:25": "[3, 3]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 2,
+			"description": {
+				"expressions": [
+					"call_ret_value@'go-testcases/go-projects/a.go':13:25"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':13:25": [
+								"int(untyped)"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':13:25": "[3, 3]"
+						},
+						"stack": "[3, 3]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 3,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "#TOP#",
+					"value": "#TOP#"
+				}
+			}
+		},
+		{
+			"nodeId": 4,
+			"description": {
+				"expressions": [
+					"2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "#TOP#",
+					"value": "#TOP#"
+				}
+			}
+		},
+		{
+			"nodeId": 5,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"x": "[3, 3]",
+							"y": "[4, 4]"
+						},
+						"stack": "[4, 4]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 6,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':14:13": [
+								"int(untyped)"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':14:13": "[4, 4]",
+							"x": "[3, 3]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 7,
+			"description": {
+				"expressions": [
+					"call_ret_value@'go-testcases/go-projects/a.go':14:13"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':14:13": [
+								"int(untyped)"
+							],
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"call_ret_value@'go-testcases/go-projects/a.go':14:13": "[4, 4]",
+							"x": "[3, 3]"
+						},
+						"stack": "[4, 4]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 8,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"x": "[3, 3]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 9,
+			"description": {
+				"expressions": [
+					"2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"x": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"x": "[3, 3]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 10,
+			"description": {
+				"expressions": [
+					"skip"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": "_|_"
+					},
+					"value": {
+						"map": {
+							"x": "[3, 3]",
+							"y": "[4, 4]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		}
+	]
+}

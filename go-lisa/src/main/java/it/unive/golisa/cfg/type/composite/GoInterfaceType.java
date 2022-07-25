@@ -178,6 +178,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		Collection<Type> instances = new HashSet<>();
 		for (GoInterfaceType in : interfaces.values())
 			instances.add(in);
+		// FIXME: we should be removed!
 		instances.add(this);
 		return instances;
 	}

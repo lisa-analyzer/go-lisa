@@ -370,6 +370,7 @@ public interface GoRuntimeLoader {
 		ChaincodeStub.registerMethods();
 		ChaincodeStubInterface.registerMethods();
 
+		// FIXME: we should register this type in GoInterfaceType
 		program.registerType(ChaincodeStubInterface.INSTANCE);
 		GoInterfaceType.registerType(Chaincode.INSTANCE);
 		GoInterfaceType.registerType(CommonIteratorInterface.INSTANCE);

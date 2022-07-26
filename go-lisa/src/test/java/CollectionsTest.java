@@ -4,6 +4,7 @@ import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
@@ -58,7 +59,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedMapTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(GraphType.HTML)
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
@@ -68,7 +69,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void fieldSensitivedPointBasedMapTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(GraphType.HTML)
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),

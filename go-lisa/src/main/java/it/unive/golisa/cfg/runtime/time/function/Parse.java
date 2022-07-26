@@ -42,7 +42,7 @@ public class Parse extends NativeCFG {
 	 */
 	public Parse(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CFGDescriptor(location, timeUnit, false, "Parse",
-				 GoTupleType.lookup(new Parameter(location, "_", Time.INSTANCE),
+				GoTupleType.lookup(new Parameter(location, "_", Time.INSTANCE),
 						new Parameter(location, "_", GoErrorType.INSTANCE)),
 				new Parameter(location, "layout", GoStringType.INSTANCE),
 				new Parameter(location, "value", GoStringType.INSTANCE)),

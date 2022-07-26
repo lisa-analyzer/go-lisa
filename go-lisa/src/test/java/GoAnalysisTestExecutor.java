@@ -111,7 +111,8 @@ public abstract class GoAnalysisTestExecutor {
 			JsonReport actual = JsonReport.read(r);
 			Accumulator acc = new Accumulator(expectedPath);
 			if (!update)
-				assertTrue("Results are different", compare(expected, actual, expectedPath.toFile(), actualPath.toFile()));
+				assertTrue("Results are different",
+						compare(expected, actual, expectedPath.toFile(), actualPath.toFile()));
 			else {
 				boolean compare = compare(expected, actual, expectedPath.toFile(), actualPath.toFile(), acc);
 				if (!compare)

@@ -71,12 +71,13 @@ public class GoInt32Type implements NumericType, GoType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return other instanceof GoInt32Type ||other instanceof GoIntType || other.isUntyped();
+		return other instanceof GoInt32Type || other instanceof GoIntType || other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoInt32Type || other instanceof GoUntypedInt ||other instanceof GoIntType ? this : Untyped.INSTANCE;
+		return other instanceof GoInt32Type || other instanceof GoUntypedInt || other instanceof GoIntType ? this
+				: Untyped.INSTANCE;
 	}
 
 	@Override

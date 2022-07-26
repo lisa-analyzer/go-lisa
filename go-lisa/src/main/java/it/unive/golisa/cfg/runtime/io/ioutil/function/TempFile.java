@@ -87,7 +87,8 @@ public class TempFile extends NativeCFG {
 		 */
 		public TempFileImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "TempFileImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE), left,
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE),
+					left,
 					right);
 		}
 

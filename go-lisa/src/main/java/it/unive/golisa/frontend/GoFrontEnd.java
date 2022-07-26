@@ -1,26 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ConstDeclContext;
@@ -94,6 +73,25 @@ import it.unive.lisa.type.common.BoolType;
 import it.unive.lisa.type.common.Float32;
 import it.unive.lisa.type.common.Int32;
 import it.unive.lisa.type.common.StringType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -246,15 +244,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		program.registerType(GoStringType.INSTANCE);
 		program.registerType(GoErrorType.INSTANCE);
 		program.registerType(GoNilType.INSTANCE);
-		
 
 		// FIXME: these types should be removed
 		program.registerType(BoolType.INSTANCE);
 		program.registerType(Untyped.INSTANCE);
 		program.registerType(Float32.INSTANCE);
 		program.registerType(StringType.INSTANCE);
-		program.registerType(Int32.INSTANCE);	
-		
+		program.registerType(Int32.INSTANCE);
+
 		GoArrayType.all().forEach(program::registerType);
 		GoStructType.all().forEach(program::registerType);
 		GoSliceType.all().forEach(program::registerType);
@@ -266,12 +263,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoVariadicType.all().forEach(program::registerType);
 		GoAliasType.all().forEach(program::registerType);
 		GoInterfaceType.all().forEach(program::registerType);
-		
+
 		// adding type tokens
 		Set<Type> ttTypes = new HashSet<>();
 		for (Type t : program.getRegisteredTypes())
 			ttTypes.add(new TypeTokenType(Caches.types().mkSingletonSet(t)));
-		
+
 		for (Type t : ttTypes)
 			program.registerType(t);
 	}

@@ -1,8 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.runtime.shim.function.Start.StartImpl;
-import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -97,7 +95,8 @@ public class Start extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			AnalysisState<A, H, V,
-					T> errorValue = state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+					T> errorValue = state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()),
+							original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return errorValue.lub(nilValue);

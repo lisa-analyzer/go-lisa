@@ -169,7 +169,7 @@ public interface GoRuntimeLoader {
 		program.addCompilationUnit(sdkerrors);
 	}
 
-	private void loadCosmosTypes(Program program) {		
+	private void loadCosmosTypes(Program program) {
 		GoStructType.registerType(Grant.INSTANCE);
 	}
 
@@ -255,7 +255,7 @@ public interface GoRuntimeLoader {
 		File.registerMethods();
 		GoStructType.registerType(File.INSTANCE);
 		GoStructType.registerType(FileMode.INSTANCE);
-		
+
 		// adding compilation unit to program
 		program.addCompilationUnit(os);
 		program.addCompilationUnit(File.INSTANCE.getUnit());
@@ -329,7 +329,7 @@ public interface GoRuntimeLoader {
 		// adding types
 		Rand.registerMethods();
 		GoStructType.registerType(Rand.INSTANCE);
-		
+
 		// adding compilation units to program
 		program.addCompilationUnit(mathRand);
 	}
@@ -353,7 +353,7 @@ public interface GoRuntimeLoader {
 
 		// adding types
 		GoInterfaceType.registerType(KeyEndorsementPolicy.INSTANCE);
-		
+
 		// adding compilation unit to program
 		program.addCompilationUnit(statebased);
 	}

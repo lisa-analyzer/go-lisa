@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.runtime.shim.function.CreateCompositeKey.CreateCompositeKeyImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetArgs.GetArgsImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
@@ -23,6 +20,8 @@ import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A ChaincodeStubInterface type.
@@ -138,8 +137,6 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		// - ...
 	}
 
-
-
 	private static CompilationUnit buildChainCodeStubInterfaceUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit chainCodeStubInterfaceUnit = new CompilationUnit(unknownLocation, "ChaincodeStubInterface",
@@ -162,7 +159,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

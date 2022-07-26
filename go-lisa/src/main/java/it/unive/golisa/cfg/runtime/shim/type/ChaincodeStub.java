@@ -29,9 +29,9 @@ public class ChaincodeStub extends GoStructType {
 	public static final ChaincodeStub INSTANCE = new ChaincodeStub();
 
 	private ChaincodeStub() {
-		super("ChaincodeStub", buildChaincodeStubUnit());		
+		super("ChaincodeStub", buildChaincodeStubUnit());
 	}
-	
+
 	private static CompilationUnit buildChaincodeStubUnit() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit chaincodeStubUnit = new CompilationUnit(unknownLocation, "ChaincodeStub", false);

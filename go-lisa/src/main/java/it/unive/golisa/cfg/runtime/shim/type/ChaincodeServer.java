@@ -16,9 +16,9 @@ public class ChaincodeServer extends GoStructType {
 	public static final ChaincodeServer INSTANCE = new ChaincodeServer();
 
 	private ChaincodeServer() {
-		super("ChaincodeServer", buildChaincodeServer());		
+		super("ChaincodeServer", buildChaincodeServer());
 	}
-	
+
 	private static CompilationUnit buildChaincodeServer() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 		CompilationUnit chaincodeStubUnit = new CompilationUnit(unknownLocation, "ChaincodeServer", false);
@@ -28,7 +28,7 @@ public class ChaincodeServer extends GoStructType {
 		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "Address", GoStringType.INSTANCE));
 		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "CC", Chaincode.INSTANCE));
 		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "TLSProps", TLSProperties.INSTANCE));
-		
+
 		// missing KaOpts *keepalive.ServerParameters
 		return chaincodeStubUnit;
 	}
@@ -41,7 +41,7 @@ public class ChaincodeServer extends GoStructType {
 
 		ChaincodeServer.INSTANCE.getUnit()
 				.addInstanceConstruct(new Start(runtimeLocation, ChaincodeServer.INSTANCE.getUnit()));
-		
+
 	}
 
 	@Override

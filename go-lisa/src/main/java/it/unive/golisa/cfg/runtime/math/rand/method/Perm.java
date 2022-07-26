@@ -93,7 +93,8 @@ public class Perm extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoSliceType.lookup(GoIntType.INSTANCE), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(GoSliceType.lookup(GoIntType.INSTANCE), getLocation()),
+					original);
 		}
 	}
 }

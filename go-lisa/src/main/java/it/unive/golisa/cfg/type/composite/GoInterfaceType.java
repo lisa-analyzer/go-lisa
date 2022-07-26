@@ -1,10 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
@@ -15,6 +10,10 @@ import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * A Go interface type.
@@ -41,7 +40,6 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 			return interfaces.computeIfAbsent(name, x -> new EmptyInterface());
 		return interfaces.computeIfAbsent(name, x -> new GoInterfaceType(name, unit));
 	}
-	
 
 	public static void registerType(GoInterfaceType type) {
 		interfaces.put(type.name, type);
@@ -69,7 +67,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		this.unit = unit;
 		this.name = name;
 	}
-	
+
 	/**
 	 * Checks whether an interface type named {@code name} has been already
 	 * built.
@@ -172,7 +170,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	public static void clearAll() {
 		interfaces.clear();
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return all();

@@ -28,7 +28,8 @@ public class GoMapType implements GoType, InMemoryType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoMapType} representing a map type.
 	 * 
-	 * @param type the map type to lookup
+	 * @param keyType     the key type of the map type to lookup
+	 * @param elementType the element type of the map type to lookup
 	 * 
 	 * @return the unique instance of {@link GoMapType} representing the map
 	 *             type given as argument

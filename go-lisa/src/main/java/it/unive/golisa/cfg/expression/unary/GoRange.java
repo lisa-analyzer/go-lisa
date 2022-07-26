@@ -37,8 +37,8 @@ public class GoRange extends UnaryExpression {
 	 * @param cfg      the {@link CFG} where this expression lies
 	 * @param location the location where this expression is defined
 	 * @param exp      the expression
-	 * @param idxPost
-	 * @param idxInit
+	 * @param idxPost  the init statement index
+	 * @param idxInit  the post statement index
 	 */
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp, Statement idxInit, Statement idxPost) {
 		super(cfg, location, "range", GoBoolType.INSTANCE, exp);
@@ -60,14 +60,29 @@ public class GoRange extends UnaryExpression {
 		return state.smallStepSemantics(expr, this);
 	}
 
+	/**
+	 * Yields the init statement index.
+	 * 
+	 * @return the init statement index
+	 */
 	public Statement getIdxInit() {
 		return idxInit;
 	}
 
+	/**
+	 * Yields the post statement index.
+	 * 
+	 * @return the post statement index
+	 */
 	public Statement getIdxPost() {
 		return idxPost;
 	}
 
+	/**
+	 * Yields the types collected by this range clause.
+	 * 
+	 * @return the types collected by this range clause
+	 */
 	public ExternalSet<Type> getCollectionTypes() {
 		return collectionTypes;
 	}

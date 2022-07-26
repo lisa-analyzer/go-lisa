@@ -30,7 +30,7 @@ public class GoPointerType implements PointerType, GoType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoPointerType} representing a pointer type.
 	 * 
-	 * @param type the pointer type to lookup
+	 * @param contentType the content type of the pointer type to lookup
 	 * 
 	 * @return the unique instance of {@link GoPointerType} representing the
 	 *             pointer type given as argument

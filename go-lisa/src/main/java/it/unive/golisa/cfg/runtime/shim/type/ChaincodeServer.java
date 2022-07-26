@@ -8,6 +8,13 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 
+/**
+ * A ChaincodeServer type.
+ * 
+ * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeServer
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class ChaincodeServer extends GoStructType {
 
 	/**

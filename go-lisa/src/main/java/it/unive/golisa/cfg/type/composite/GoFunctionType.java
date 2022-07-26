@@ -29,7 +29,8 @@ public class GoFunctionType implements GoType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoFunctionType} representing a function type.
 	 * 
-	 * @param type the function type to lookup
+	 * @param returnType the return type of the function type to lookup
+	 * @param params     the parameters of the function type to lookup
 	 * 
 	 * @return the unique instance of {@link GoFunctionType} representing the
 	 *             function type given as argument

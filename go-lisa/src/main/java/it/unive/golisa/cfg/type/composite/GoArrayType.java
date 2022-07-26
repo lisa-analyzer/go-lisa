@@ -29,7 +29,8 @@ public class GoArrayType implements GoType, InMemoryType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoArrayType} representing an array type.
 	 * 
-	 * @param type the content type of the array type to lookup
+	 * @param type   the content type of the array type to lookup
+	 * @param length the length of the the array type to lookup
 	 * 
 	 * @return the unique instance of {@link GoArrayType} representing the array
 	 *             type given as argument

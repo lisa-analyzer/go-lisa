@@ -29,7 +29,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoTupleType} representing a tuple type.
 	 * 
-	 * @param type the tuple type to lookup
+	 * @param pars the parameters of the tuple type to lookup
 	 * 
 	 * @return the unique instance of {@link GoTupleType} representing the tuple
 	 *             type given as argument

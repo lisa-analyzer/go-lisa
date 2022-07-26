@@ -29,7 +29,7 @@ public class GoChannelType implements GoType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoChannelType} representing a channel type.
 	 * 
-	 * @param type the channel type to lookup
+	 * @param contentType the content of the channel type to lookup
 	 * 
 	 * @return the unique instance of {@link GoChannelType} representing the
 	 *             channel type given as argument

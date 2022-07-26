@@ -215,6 +215,9 @@ import org.apache.commons.lang3.tuple.Triple;
  */
 public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
+	/**
+	 * Singleton of a {@link SequentialEdge}.
+	 */
 	static final SequentialEdge SEQUENTIAL_SINGLETON = new SequentialEdge();
 
 	/**
@@ -401,6 +404,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return cfg;
 	}
 
+	/**
+	 * Adds a return statement is not present in the cfg.
+	 * 
+	 * @param matrix the adjacency matrix
+	 */
 	protected void addReturnStatement(NodeList<CFG, Statement, Edge> matrix) {
 		// If the method body does not have exit points
 		// a return statement is added
@@ -428,6 +436,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
+	/**
+	 * Adds a return statement is not present in matrix given as argument.
+	 * 
+	 * @param matrix the adjacency matrix
+	 */
 	protected void addFinalRet(NodeList<CFG, Statement, Edge> matrix) {
 		for (Statement st : matrix.getExits())
 			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
@@ -438,6 +451,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 	}
 
+	/**
+	 * Resolves goto jumps.
+	 * 
+	 * @throws IllegalStateException if a goto jumps into other scopes
+	 */
 	protected void processGotos() {
 		for (Entry<Statement, Pair<List<BlockInfo>, String>> gotoStmt : gotos.entrySet()) {
 			// we must call cfg.addEdge, and not addEdge

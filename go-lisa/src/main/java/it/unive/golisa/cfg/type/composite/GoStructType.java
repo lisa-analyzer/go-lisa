@@ -42,6 +42,11 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		return structTypes.computeIfAbsent(name, x -> new GoStructType(name, unit));
 	}
 
+	/**
+	 * Registers a struct type.
+	 * 
+	 * @param type the struct type to be registered
+	 */
 	public static void registerType(GoStructType type) {
 		structTypes.put(type.name, type);
 	}

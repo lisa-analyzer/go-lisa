@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
-	protected static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
+	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
 	/**
 	 * Yields a unique instance (either an existing one or a fresh one) of
@@ -41,6 +41,11 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		return interfaces.computeIfAbsent(name, x -> new GoInterfaceType(name, unit));
 	}
 
+	/**
+	 * Registers an interface type.
+	 * 
+	 * @param type the interface type to be registered
+	 */
 	public static void registerType(GoInterfaceType type) {
 		interfaces.put(type.name, type);
 	}

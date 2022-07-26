@@ -26,7 +26,7 @@ public class GoVariadicType implements GoType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoVariadicType} representing a variadic type.
 	 * 
-	 * @param type the variadic type to lookup
+	 * @param conentType the content type of the variadic type to lookup
 	 * 
 	 * @return the unique instance of {@link GoVariadicType} representing the
 	 *             function type given as argument

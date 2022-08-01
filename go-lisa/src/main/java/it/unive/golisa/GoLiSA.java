@@ -114,7 +114,7 @@ public class GoLiSA {
 		case "taint":
 			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 					.setAbstractState(
-							new GoAbstractState<>(new GoPointBasedHeap(), new InferenceSystem<>(new TaintDomain()),
+							new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new TaintDomain()),
 									LiSAFactory.getDefaultFor(TypeDomain.class)))
 					.addSemanticCheck(new TaintChecker());
 			break;
@@ -136,7 +136,7 @@ public class GoLiSA {
 
 		}
 
-		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML : GraphType.NONE);
+		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE);
 
 		Program program = null;
 

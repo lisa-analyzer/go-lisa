@@ -176,7 +176,7 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A, H, V, T> tmp = containerState;
 
 				for (int i = 0; i < keys.length; i++) {
-					Variable keyProperty = new Variable(Untyped.INSTANCE, keys[i].toString(),
+					Variable keyProperty = new Variable(keyType, keys[i].toString(),
 							getLocation());
 					AccessChild keyAcces = new AccessChild(contentType, dereference,
 							keyProperty, getLocation());

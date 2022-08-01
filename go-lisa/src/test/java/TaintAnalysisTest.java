@@ -10,7 +10,7 @@ import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
-import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
@@ -28,7 +28,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
@@ -43,7 +43,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
@@ -58,7 +58,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 
@@ -74,7 +74,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 
@@ -90,7 +90,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
@@ -105,7 +105,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 
@@ -121,7 +121,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
@@ -136,7 +136,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
@@ -151,7 +151,7 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
+								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)

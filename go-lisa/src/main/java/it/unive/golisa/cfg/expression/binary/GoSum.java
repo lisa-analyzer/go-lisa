@@ -51,20 +51,30 @@ public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 
 		AnalysisState<A, H, V, T> result = state.bottom();
 
-		for (Type leftType : left.getRuntimeTypes())
-			for (Type rightType : right.getRuntimeTypes()) {
-				if (leftType.isStringType() && rightType.isStringType()) {
-					op = StringConcat.INSTANCE;
-					type = GoStringType.INSTANCE;
-				} else if (leftType.isNumericType() || rightType.isNumericType()) {
-					op = NumericNonOverflowingAdd.INSTANCE;
-					type = resultType(leftType, rightType);
-				} else
-					continue;
-				result = result.lub(state.smallStepSemantics(
-						new BinaryExpression(type, left, right, op, getLocation()), this));
-			}
-
+		
+		if (left.getStaticType().isStringType() && right.getStaticType().isStringType()) {
+				op = StringConcat.INSTANCE;
+				type = GoStringType.INSTANCE;
+				result = state.smallStepSemantics(new BinaryExpression(type, left, right, op, getLocation()), this);
+		} else if (left.getStaticType().isNumericType() || right.getStaticType().isNumericType()) {
+				op = NumericNonOverflowingAdd.INSTANCE;
+				type = resultType(left.getStaticType(), right.getStaticType());
+				result = state.smallStepSemantics(new BinaryExpression(type, left, right, op, getLocation()), this);
+		} else {
+			for (Type leftType : left.getRuntimeTypes())
+				for (Type rightType : right.getRuntimeTypes()) {
+					if (leftType.isStringType() && rightType.isStringType()) {
+						op = StringConcat.INSTANCE;
+						type = GoStringType.INSTANCE;
+					} else if (leftType.isNumericType() || rightType.isNumericType()) {
+						op = NumericNonOverflowingAdd.INSTANCE;
+						type = resultType(leftType, rightType);
+					} else
+						continue;
+					result = result.lub(state.smallStepSemantics(
+							new BinaryExpression(type, left, right, op, getLocation()), this));
+				}
+		}
 		return result;
 	}
 }

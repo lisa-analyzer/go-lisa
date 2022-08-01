@@ -20,6 +20,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
+import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -85,7 +86,7 @@ public class GoToString extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public ToString(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "string", GoStringType.INSTANCE, expr);
+			super(cfg, location, "string",  RightToLeftEvaluation.INSTANCE, GoStringType.INSTANCE, expr);
 		}
 
 		@Override
@@ -98,9 +99,11 @@ public class GoToString extends NativeCFG {
 			ExternalSet<Type> castType = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoStringType.INSTANCE, getLocation());
 			return state.smallStepSemantics(
-					new BinaryExpression(GoStringType.INSTANCE, expr, typeCast, TypeConv.INSTANCE,
+					new BinaryExpression(GoStringType.INSTANCE, expr, typeCast, GoConv.INSTANCE,
 							original.getLocation()),
 					original);
 		}
+		
+		
 	}
 }

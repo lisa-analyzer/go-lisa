@@ -2,12 +2,15 @@ package it.unive.golisa.cfg.type;
 
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.StringType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -65,4 +68,6 @@ public class GoStringType implements StringType, GoType {
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);
 	}
+	
+	
 }

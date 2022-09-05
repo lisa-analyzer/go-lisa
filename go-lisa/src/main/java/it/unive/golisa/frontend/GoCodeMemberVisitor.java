@@ -157,6 +157,7 @@ import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.SyntheticLocation;
@@ -262,6 +263,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * Mapping from constant names to their expression contexts.
 	 */
 	protected final Map<String, ExpressionContext> constants;
+	
+	/**
+	 * Globals of program
+	 */
+	protected final List<Global> globals;
 
 	/**
 	 * Current compilation unit to parse.
@@ -291,6 +297,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	private final Map<String, Set<IdInfo>> visibleIds;
 
+	
+
 	/**
 	 * Builds the code member visitor.
 	 * 
@@ -298,9 +306,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
+	 * @param globals 
 	 */
 	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
+			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
 		entrypoints = new HashSet<>();
@@ -308,10 +317,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		visibleIds = new HashMap<>();
 		this.blockDeep = 0;
 		this.constants = constants;
+		this.globals = globals;
 		this.currentUnit = unit;
 		this.gotos = new HashMap<>();
 		this.labeledStmt = new HashMap<>();
 		this.currentUnit = unit;
+	
 	}
 
 	/**
@@ -324,11 +335,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param constants constant mapping
 	 */
 	public GoCodeMemberVisitor(CompilationUnit unit, MethodDeclContext ctx, String file, Program program,
-			Map<String, ExpressionContext> constants) {
+			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
 		this.constants = constants;
-
+		this.globals = globals;
 		gotos = new HashMap<>();
 		labeledStmt = new HashMap<>();
 		entrypoints = new HashSet<>();
@@ -354,6 +365,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	}
 
+	protected void addGlobalsToVisibleIds() {
+		for(Global g : globals) {
+			visibleIds.putIfAbsent(g.getName(), new HashSet<>());
+			visibleIds.get(g.getName()).add(new IdInfo(new VariableRef(cfg, g.getLocation(), g.getName(), g.getStaticType()),-1));
+		}
+	}
+	
 	private CFGDescriptor mkDescriptor(CompilationUnit packageUnit, MethodDeclContext ctx) {
 		return new CFGDescriptor(locationOf(ctx), packageUnit, false, ctx.IDENTIFIER().getText(),
 				visitParameters(ctx.signature().parameters()));
@@ -368,6 +386,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @return the {@link CFG} built from the block
 	 */
 	public CFG visitCodeMember(MethodDeclContext ctx) {
+		
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
 				? ((GoPointerType) receiver.getStaticType()).getInnerTypes().first().toString()
@@ -391,6 +410,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
 
+		addGlobalsToVisibleIds();
+		
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
@@ -933,7 +954,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col),
 						type, target, exp);
 				block.addNode(asg);
-				storeIds(asg);
 
 				if (visibleIds.containsKey(target.getName()))
 					if (visibleIds.get(target.getName()).stream()
@@ -946,6 +966,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
 					blockList.getLast().addVarDeclaration(target, DeclarationType.VARIABLE);
 				}
+				
+				storeIds(asg);
 
 				if (lastStmt != null)
 					addEdge(new SequentialEdge(lastStmt, asg), block);
@@ -1085,7 +1107,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			CompilationUnit unit = new CompilationUnit(
 					new SourceCodeLocation(file, getLine(typeSpec), getCol(typeSpec)), unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(file, unit, program, constants).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(file, unit, program, constants, globals).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
@@ -2322,7 +2344,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Expression visitCompositeLit(CompositeLitContext ctx) {
-		Type type = new GoTypeVisitor(file, currentUnit, program, constants).visitLiteralType(ctx.literalType());
+		Type type = new GoTypeVisitor(file, currentUnit, program, constants, globals).visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>) {
 
@@ -2502,7 +2524,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitFunctionLit(FunctionLitContext ctx) {
-		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
+		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants, globals).buildAnonymousCFG(ctx);
 		Type funcType = GoFunctionType
 				.lookup(funcLit.getDescriptor().getReturnType(),
 						funcLit.getDescriptor().getFormals());
@@ -2570,7 +2592,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Type visitType_(Type_Context ctx) {
-		return new GoTypeVisitor(file, currentUnit, program, constants).visitType_(ctx);
+		return new GoTypeVisitor(file, currentUnit, program, constants, globals).visitType_(ctx);
 	}
 
 	@Override

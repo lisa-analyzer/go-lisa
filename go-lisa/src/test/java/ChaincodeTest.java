@@ -10,6 +10,7 @@ import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnn
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
@@ -35,7 +36,8 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker());
+				.addSemanticCheck(new TaintChecker())
+				.setDumpAnalysis(GraphType.HTML_WITH_SUBNODES);
 		perform("cc/boleto", "taint", "boleto.go", conf, annSet);
 	}
 

@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -14,6 +15,7 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
@@ -81,7 +83,15 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 			return state;
 
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
-		Variable id = new Variable(type, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
+		
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(((VariableRef) getLeft()).getName(), getLeft().getLocation());
+		
+		Variable id;
+		
+		if(varTableEntry == null)
+			id= new Variable(type, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
+		else 
+			id = new Variable(type, ((VariableRef) getLeft()).getName(), varTableEntry.getAnnotations(),  getLeft().getLocation());
 
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type rightType : right.getRuntimeTypes()) {

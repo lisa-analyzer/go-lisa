@@ -1,0 +1,14 @@
+digraph {
+	labelloc="t";
+	label="untyped maps::main()";
+	"node0" [shape="rect",color="black",label=<subjectMarks := keyedLiteral(map[int32]int32)(85, 80, 81)<BR/><BR/>{ expressions: [subjectMarks],<BR/>state: { heap: { subjectMarks: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':6:53] },<BR/>type: { map: { heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':6:53: [int(untyped)],<BR/>subjectMarks: [map[int32]int32] },<BR/>stack: [map[int32]int32] },<BR/>value: { map: { heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':6:53: [80, 85] },<BR/>stack: _|_ }<BR/> }<BR/> }<BR/>>];
+	"node6" [shape="rect",color="black",peripheries="2",label=<ret<BR/><BR/>{ expressions: [skip],<BR/>state: { heap: { subjectMarks: [heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':6:53] },<BR/>type: { map: { heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':6:53: [int(untyped)],<BR/>subjectMarks: [map[int32]int32] },<BR/>stack: _|_ },<BR/>value: { map: { heap[w]:pp@'go-testcases/collections/map/field-insensitive/map.go':6:53: [80, 85] },<BR/>stack: _|_ }<BR/> }<BR/> }<BR/>>];
+	"node0" -> "node6" [color="black"];
+subgraph cluster_legend {
+	label="Legend";
+	style=dotted;
+	node [shape=plaintext];
+	"legend" [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0"><tr><td align="right">node border&nbsp;</td><td align="left"><font color="gray">gray</font>, single</td></tr><tr><td align="right">entrypoint border&nbsp;</td><td align="left"><font color="black">black</font>, single</td></tr><tr><td align="right">exitpoint border&nbsp;</td><td align="left"><font color="black">black</font>, double</td></tr><tr><td align="right">sequential edge&nbsp;</td><td align="left"><font color="black">black</font>, solid</td></tr><tr><td align="right">true edge&nbsp;</td><td align="left"><font color="blue">blue</font>, dashed</td></tr><tr><td align="right">false edge&nbsp;</td><td align="left"><font color="red">red</font>, dashed</td></tr></table>>];
+}
+
+}

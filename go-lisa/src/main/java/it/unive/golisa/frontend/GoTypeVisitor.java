@@ -82,6 +82,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	private final Map<String, ExpressionContext> constants;
 
+	private final List<Global> globals;
+
 	/**
 	 * Builds a type visitor.
 	 * 
@@ -89,12 +91,14 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * @param unit      the current unit
 	 * @param program   the current program
 	 * @param constants the constant mapping
+	 * @param globals 
 	 */
-	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants) {
+	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.unit = unit;
 		this.program = program;
 		this.constants = constants;
+		this.globals = globals;
 	}
 
 	/**
@@ -216,7 +220,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitFunctionType(FunctionTypeContext ctx) {
-		return new GoFunctionVisitor(unit, file, program, constants).visitFunctionType(ctx);
+		return new GoFunctionVisitor(unit, file, program, constants, globals).visitFunctionType(ctx);
 	}
 
 	@Override
@@ -421,7 +425,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs,
-						new GoCodeMemberVisitor(unit, file, program, constants)
+						new GoCodeMemberVisitor(unit, file, program, constants, globals)
 								.visitParameterDecl(formalPars.parameterDecl(i)));
 
 			descs.add(new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName,
@@ -447,7 +451,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		// The return type is not specified
 		if (result == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(unit, file, program, constants).visitResult(result);
+		return new GoCodeMemberVisitor(unit, file, program, constants, globals).visitResult(result);
 	}
 
 	@Override

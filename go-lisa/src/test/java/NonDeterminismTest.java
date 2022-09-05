@@ -26,11 +26,10 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
-				.setDumpAnalysis(GraphType.HTML)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
-		perform("non-det", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+		perform("non-det/map-iter", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
 
 	}
 
@@ -43,11 +42,43 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("non-det/channel", "Channel.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+
+	}
+	/*
+	public void testGlobalVariable() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new TaintDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new TaintChecker())
+				.setJsonOutput(true)
 				.setDumpAnalysis(GraphType.HTML)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
-		perform("non-det", "Channel.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+		perform("non-det", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
 
 	}
+	
+	public void testGoRoutine() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new TaintDomain()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new TaintChecker())
+				.setJsonOutput(true)
+				.setDumpAnalysis(GraphType.HTML)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("non-det", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+
+	}
+	*/
 }

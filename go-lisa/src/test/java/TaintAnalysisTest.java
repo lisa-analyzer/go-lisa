@@ -10,6 +10,7 @@ import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
@@ -61,7 +62,6 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 								new ValueEnvironment<>(new TaintDomain()),
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
-
 				.setJsonOutput(true)
 				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
 				.setCallGraph(new RTACallGraph())

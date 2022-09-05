@@ -59,7 +59,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedMapTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(GraphType.HTML)
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(GraphType.DOT)
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),
@@ -69,7 +69,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void fieldSensitivedPointBasedMapTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(GraphType.HTML)
+		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(GraphType.DOT)
 				.setAbstractState(
 						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 								new ValueEnvironment<>(new Interval()),

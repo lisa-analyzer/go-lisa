@@ -106,7 +106,7 @@ public class TaintChecker implements
 			CFG graph, Statement node) {
 		
 		if (node instanceof GoChannelReceive) {
-			//The semantic of instructio return PushAny, then is automatically considered as source by taint domain construction (evalPushAny is set to return TAINTED)
+			//The semantic of instruction return PushAny, then is automatically considered as source by taint domain construction (evalPushAny is set to return TAINTED)
 		}
 		
 		if (!(node instanceof UnresolvedCall))
@@ -127,7 +127,7 @@ public class TaintChecker implements
 								GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
 								GoPointBasedHeap, ValueEnvironment<TaintDomain>,
 								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState().lattice.isTainted())
+							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState().getValueOnStack().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
@@ -143,7 +143,7 @@ public class TaintChecker implements
 								GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
 								GoPointBasedHeap, ValueEnvironment<TaintDomain>,
 								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState().lattice.isTainted())
+							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState().getValueOnStack().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
@@ -161,4 +161,7 @@ public class TaintChecker implements
 			CFG graph, Edge edge) {
 		return true;
 	}
+	
+	
+	
 }

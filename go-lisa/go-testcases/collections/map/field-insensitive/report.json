@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___untyped_maps.alias().dot", "analysis___untyped_maps.allocs().dot", "analysis___untyped_maps.emptyAllocs().dot", "analysis___untyped_maps.main().dot" ]
+  "files" : [ "untyped_maps.alias().json", "untyped_maps.allocs().json", "untyped_maps.emptyAllocs().json", "untyped_maps.main().json" ]
 }

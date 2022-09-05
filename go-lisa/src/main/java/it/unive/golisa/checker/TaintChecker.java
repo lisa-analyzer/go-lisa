@@ -1,11 +1,14 @@
 package it.unive.golisa.checker;
 
+import java.util.Collection;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -24,7 +27,6 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-import java.util.Collection;
 
 /**
  * A Go taint checker.
@@ -32,8 +34,8 @@ import java.util.Collection;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class TaintChecker implements
-		SemanticCheck<GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-				GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> {
+		SemanticCheck<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+				GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 
 	/**
 	 * Sink annotation.
@@ -47,21 +49,21 @@ public class TaintChecker implements
 
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
+			GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+			GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
+					GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+			GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+			GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CompilationUnit unit) {
 		return true;
 	}
@@ -69,8 +71,8 @@ public class TaintChecker implements
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
@@ -91,16 +93,16 @@ public class TaintChecker implements
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool, CFG graph) {
+			GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+			GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool, CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
@@ -117,11 +119,11 @@ public class TaintChecker implements
 				for (int i = 0; i < parameters.length; i++)
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 						for (CFGWithAnalysisResults<
-								GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-								GoPointBasedHeap, InferenceSystem<TaintDomain>,
+								GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+								GoPointBasedHeap, ValueEnvironment<TaintDomain>,
 								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
 							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-									.getInferredValue().isTainted())
+									.getValueOnStack().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
@@ -134,11 +136,11 @@ public class TaintChecker implements
 				for (int i = 0; i < parameters.length; i++)
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 						for (CFGWithAnalysisResults<
-								GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-								GoPointBasedHeap, InferenceSystem<TaintDomain>,
+								GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+								GoPointBasedHeap, ValueEnvironment<TaintDomain>,
 								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
 							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-									.getInferredValue().isTainted())
+									.getValueOnStack().isTainted())
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
@@ -153,8 +155,8 @@ public class TaintChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+					GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}

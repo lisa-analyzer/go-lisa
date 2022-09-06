@@ -3,6 +3,7 @@ package it.unive.golisa.cfg.expression.literal;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -121,6 +122,48 @@ public class GoKeyedLiteral extends NaryExpression {
 				if (getSubExpressions().length == 0)
 					return capResult.smallStepSemantics(reference, this);
 
+			}
+		}
+		
+		/*
+		 * GoSlice allocation
+		 */
+		
+		if (getStaticType() instanceof GoSliceType) {
+
+			GoSliceType sliceType = (GoSliceType) getStaticType();
+			int arrayLength = 0;
+
+			for (SymbolicExpression containerExp : containerExps) {
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
+
+				// Assign the len property to this hid
+				Variable lenProperty = new Variable(Untyped.INSTANCE, "len",
+						getLocation());
+				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, dereference,
+						lenProperty, getLocation());
+				AnalysisState<A, H, V, T> lenState = containerState.smallStepSemantics(lenAccess, this);
+
+				AnalysisState<A, H, V, T> lenResult = state.bottom();
+				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+					lenResult = lenResult.lub(
+							lenState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+
+				// Assign the cap property to this hid
+				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
+						getLocation());
+				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, dereference,
+						capProperty, getLocation());
+				AnalysisState<A, H, V, T> capState = lenResult.smallStepSemantics(capAccess, this);
+
+				AnalysisState<A, H, V, T> capResult = state.bottom();
+				for (SymbolicExpression lenId : capState.getComputedExpressions())
+					capResult = capResult.lub(
+							capState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+
+				if (getSubExpressions().length == 0)
+					return capResult.smallStepSemantics(reference, this);
 			}
 		}
 

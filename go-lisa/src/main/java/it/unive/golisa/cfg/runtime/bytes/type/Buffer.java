@@ -1,7 +1,10 @@
 package it.unive.golisa.cfg.runtime.bytes.type;
 
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
-import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.runtime.bytes.function.Bytes;
+import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -19,7 +22,7 @@ import java.util.Collections;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class Buffer implements GoType {
+public class Buffer extends GoStructType {
 
 	/**
 	 * Unique instance of the Buffer type.
@@ -27,6 +30,17 @@ public class Buffer implements GoType {
 	public static final Buffer INSTANCE = new Buffer();
 
 	private Buffer() {
+		this("Buffer", buildBufferUnit());
+	}
+
+	private Buffer(String name, CompilationUnit unit) {
+		super(name, unit);
+	}
+
+	private static CompilationUnit buildBufferUnit() {
+		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		CompilationUnit bufferUnit = new CompilationUnit(unknownLocation, "Buffer", false);
+		return bufferUnit;
 	}
 
 	@Override
@@ -65,5 +79,14 @@ public class Buffer implements GoType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
+	
+	/**
+	 * Registers the methods of Buffer type.
+	 */
+	public static void registerMethods() {
+		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		Buffer.INSTANCE.getUnit().addInstanceConstruct(new Bytes(runtimeLocation, Buffer.INSTANCE.getUnit()));
+	}
+
 
 }

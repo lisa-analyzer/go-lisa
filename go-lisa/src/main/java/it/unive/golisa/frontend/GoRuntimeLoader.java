@@ -337,11 +337,14 @@ public interface GoRuntimeLoader {
 	private void loadBytes(Program program) {
 		CompilationUnit bytes = new CompilationUnit(runtimeLocation, "bytes", false);
 
-		// adding functions and methods
-
 		// adding types
 		program.registerType(Buffer.INSTANCE);
-
+		
+		// adding functions and methods
+		Buffer.registerMethods();
+		GoStructType.registerType(Buffer.INSTANCE);
+		program.addCompilationUnit(Buffer.INSTANCE.getUnit());
+		
 		program.addCompilationUnit(bytes);
 	}
 

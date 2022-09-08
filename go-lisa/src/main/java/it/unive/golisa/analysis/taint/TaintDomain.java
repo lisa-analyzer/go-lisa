@@ -174,6 +174,10 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	public boolean isTainted() {
 		return this == TAINTED;
 	}
+	
+	public boolean isClean() {
+		return this == CLEAN;
+	}
 
 	@Override
 	protected TaintDomain evalNullConstant(ProgramPoint pp) throws SemanticException {

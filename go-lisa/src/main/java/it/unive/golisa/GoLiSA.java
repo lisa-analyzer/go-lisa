@@ -9,6 +9,7 @@ import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
@@ -112,14 +113,14 @@ public class GoLiSA {
 		switch (analysis) {
 
 		case "taint":
-			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+			conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
 					.setAbstractState(
 							new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new TaintDomain()),
 									LiSAFactory.getDefaultFor(TypeDomain.class)))
 					.addSemanticCheck(new TaintChecker());
 			break;
 		case "non-interference":
-			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+			conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
 					.setAbstractState(
 							new GoAbstractState<>(new GoPointBasedHeap(),
 									new InferenceSystem<>(new IntegrityNIDomain()),
@@ -127,7 +128,7 @@ public class GoLiSA {
 					.addSemanticCheck(new IntegrityNIChecker());
 			break;
 		default:
-			conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+			conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
 					.setAbstractState(
 							new GoAbstractState<>(new GoPointBasedHeap(),
 									new ValueEnvironment<>(new Interval()),

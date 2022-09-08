@@ -197,6 +197,15 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	public boolean isLowIntegrity() {
 		return this == LOW;
 	}
+	
+	/**
+	 * Yields true if the state is high.
+	 * 
+	 * @return {@code true} if the the state is high, otherwise {@code false}
+	 */
+	public boolean isHighIntegrity() {
+		return this == HIGH;
+	}
 
 	@Override
 	protected InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp)

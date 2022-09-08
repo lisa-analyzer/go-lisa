@@ -91,7 +91,7 @@ public class ToLower extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(expr, original);
 		}
 	}
 }

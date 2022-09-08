@@ -18,6 +18,8 @@ import it.unive.golisa.antlr.GoParser.SourceFileContext;
 import it.unive.golisa.antlr.GoParser.String_Context;
 import it.unive.golisa.antlr.GoParser.TypeDeclContext;
 import it.unive.golisa.antlr.GoParser.TypeSpecContext;
+import it.unive.golisa.antlr.GoParser.VarDeclContext;
+import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.runtime.conversion.GoToString;
 import it.unive.golisa.cfg.runtime.conversion.ToInt64;
@@ -56,6 +58,7 @@ import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -73,6 +76,7 @@ import it.unive.lisa.type.common.BoolType;
 import it.unive.lisa.type.common.Float32;
 import it.unive.lisa.type.common.Int32;
 import it.unive.lisa.type.common.StringType;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -80,9 +84,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -108,7 +114,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	private final Program program;
 
 	private Map<String, ExpressionContext> constants;
-
+	private List<Global> globals;
+	
 	private GoLangAPISignatureMapper mapper = GoLangAPISignatureMapper.getGoApiSignatures();
 
 	private CompilationUnit packageUnit;
@@ -144,6 +151,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		this.filePath = filePath;
 		this.program = new Program();
 		this.constants = new HashMap<>();
+		this.globals = new ArrayList<>();
 		GoCodeMemberVisitor.c = 0;
 	}
 
@@ -291,6 +299,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 				"Global declarations"))
 			visitDeclarationContext(decl);
 
+		updateGlobals();
 		updateUnitReferences();
 
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...",
@@ -307,6 +316,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		return program;
 	}
 
+	private void updateGlobals() {
+		// TODO Auto-generated method stub
+		globals.forEach(g -> program.addGlobal(g));
+	}
+
 	private void updateUnitReferences() {
 		for (CompilationUnit unit : program.getUnits())
 			GoStructType.updateReference(unit.getName(), unit);
@@ -316,10 +330,22 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		if (decl.typeDecl() != null)
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addCompilationUnit(unit);
-
+		
+		if (decl.varDecl() != null)
+			visitVarDeclContext(decl.varDecl());
+		
 		if (decl.constDecl() != null)
 			visitConstDeclContext(decl.constDecl());
 
+	}
+	
+	private void visitVarDeclContext(VarDeclContext ctx) {
+		for( VarSpecContext spec : ctx.varSpec()) {
+			IdentifierListContext ids = spec.identifierList();
+			for (int i = 0; i < ids.IDENTIFIER().size(); i++)
+					globals.add(new Global(new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)), GoCodeMemberVisitor.getCol(ids.IDENTIFIER(i))), ids.IDENTIFIER(i).getText(),
+							Untyped.INSTANCE));
+		}
 	}
 
 	private void visitConstDeclContext(ConstDeclContext ctx) {
@@ -346,7 +372,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 							GoCodeMemberVisitor.getCol(typeSpec)),
 					unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(filePath, unit, program, constants).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
@@ -405,12 +431,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
-		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, constants).visitFunctionDecl(ctx);
+		return new GoFunctionVisitor(ctx, packageUnit, filePath, program, constants, globals).visitFunctionDecl(ctx);
 	}
 
 	@Override
 	public CFG visitMethodDecl(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, constants).visitCodeMember(ctx);
+		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, constants, globals).visitCodeMember(ctx);
 	}
 
 }

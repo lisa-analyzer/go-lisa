@@ -44,6 +44,6 @@ public class GoRoutine extends UnaryStatement {
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// TODO semantics of go routine not supported yet
-		return entryState.top();
+		return entryState;
 	}
 }

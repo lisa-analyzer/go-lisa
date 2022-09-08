@@ -3,13 +3,16 @@ package it.unive.golisa.cfg;
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,7 +64,14 @@ public class VariableScopingCFG extends CFG {
 	 * @param visibleIds the IDs visible to collect
 	 */
 	public void registerScoping(Statement node, Map<String, Set<IdInfo>> visibleIds) {
-		scopingMap.put(node, new HashMap<>(visibleIds));
+		Map<String, Set<IdInfo>> scope = new HashMap<>();
+		visibleIds.entrySet().forEach(e -> 
+		{
+			scope.putIfAbsent(e.getKey(), new HashSet<>());
+			for(IdInfo info : e.getValue())
+				scope.get(e.getKey()).add(info);
+		});
+		scopingMap.put(node, scope);
 	}
 
 	/**
@@ -91,5 +101,14 @@ public class VariableScopingCFG extends CFG {
 		}
 
 		return guards;
+	}
+	
+	public VariableTableEntry getVariableTableEntryIfExist(String variableName, CodeLocation location) {
+		for(VariableTableEntry table : getDescriptor().getVariables())
+			if(table.getName().equals(variableName) 
+					|| table.getLocation().equals(location))
+				return table;
+		return null;
+
 	}
 }

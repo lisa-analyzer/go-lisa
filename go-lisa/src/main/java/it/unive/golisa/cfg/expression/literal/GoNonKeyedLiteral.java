@@ -5,6 +5,7 @@ import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -18,6 +19,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -51,8 +53,17 @@ public class GoNonKeyedLiteral extends NaryExpression {
 	}
 
 	private SymbolicExpression getVariable(Global global) {
-		return new Variable(global.getStaticType(), global.getName(),
-				global.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(global.getName(), global.getLocation());
+
+		Variable id;
+
+		if(varTableEntry == null)
+			id = new Variable(global.getStaticType(), global.getName(),
+					global.getLocation());
+		else 
+			id = new Variable(global.getStaticType(), global.getName(), varTableEntry.getAnnotations(),  global.getLocation());
+
+		return id;
 	}
 
 	@Override

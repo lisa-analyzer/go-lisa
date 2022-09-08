@@ -128,14 +128,14 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 			if(vRef.getVariable().equals(id)) {
 				Statement pred = st.getEvaluationPredecessor();
 				if(pred != null) {
-					if(st.getEvaluationPredecessor() instanceof GoRangeGetNextIndex || st.getEvaluationPredecessor() instanceof GoRangeGetNextValue) {
-						for(Type t : id.getRuntimeTypes())
-							if(t instanceof GoMapType)
-								return true;
+					if(pred instanceof GoRangeGetNextIndex 
+							|| pred instanceof GoRangeGetNextValue) {
+							return true;
 					}
 				}
 			}
 		}
+		
 		return false;
 	}
 

@@ -156,4 +156,6 @@ public class GoSliceType implements GoType, InMemoryType {
 	public static GoSliceType getSliceOfStrings() {
 		return GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
 	}
+	
+	
 }

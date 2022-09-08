@@ -6,6 +6,7 @@ import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -19,6 +20,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
@@ -59,13 +61,31 @@ public class GoKeyedLiteral extends NaryExpression {
 	}
 
 	private Variable getVariable(Global varRef) {
-		return new Variable(varRef.getStaticType(), varRef.getName(),
-				varRef.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
+
+		Variable id;
+
+		if(varTableEntry == null)
+			id = new Variable(varRef.getStaticType(), varRef.getName(),
+					varRef.getLocation());
+		else 
+			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),  varRef.getLocation());
+
+		return id;
 	}
 
 	private Variable getVariable(VariableRef varRef) {
-		return new Variable(varRef.getStaticType(), varRef.getName(),
-				varRef.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
+
+		Variable id;
+
+		if(varTableEntry == null)
+			id = new Variable(varRef.getStaticType(), varRef.getName(),
+					varRef.getLocation());
+		else 
+			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),  varRef.getLocation());
+
+		return id;
 	}
 
 	@Override

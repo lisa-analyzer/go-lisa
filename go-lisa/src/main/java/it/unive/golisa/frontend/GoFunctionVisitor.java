@@ -14,6 +14,7 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
@@ -28,6 +29,8 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -50,8 +53,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param constants   the constant mapping
 	 */
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
-		super(packageUnit, file, program, constants);
+			Map<String, ExpressionContext> constants, List<Global> globals) {
+		super(packageUnit, file, program, constants, globals);
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -72,8 +75,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param constants   the constant mapping
 	 */
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
-		super(packageUnit, file, program, constants);
+			Map<String, ExpressionContext> constants, List<Global> globals) {
+		super(packageUnit, file, program, constants, globals);
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -93,8 +96,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param constants the constant mapping
 	 */
 	public GoFunctionVisitor(CompilationUnit unit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
-		super(unit, file, program, constants);
+			Map<String, ExpressionContext> constants, List<Global> globals) {
+		super(unit, file, program, constants, globals);
 	}
 
 	@Override
@@ -242,7 +245,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(currentUnit, file, program, constants).visitResult(signature.result());
+		return new GoCodeMemberVisitor(currentUnit, file, program, constants, globals).visitResult(signature.result());
 	}
 
 	/**

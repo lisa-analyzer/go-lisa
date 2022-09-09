@@ -3,7 +3,7 @@ package it.unive.golisa.analysis.taint;
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
-import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
+import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
@@ -198,6 +198,9 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	@Override
 	protected TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
 			ProgramPoint pp) throws SemanticException {
+		
+		if (operator == GoConv.INSTANCE)
+			return left;
 		
 		if (left == TAINTED || right == TAINTED)
 			return TAINTED;

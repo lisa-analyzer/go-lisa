@@ -36,10 +36,8 @@ func Invoke( stub shim.ChaincodeStubInterface ) {
 	for e := l.Front(); e != nil; e = e.Next() {
 		s += fmt.Sprint(e.Value)
 	}
-	
-	data := []byte(s)
-	
-	stub.PutState("key", data)
+		
+	stub.PutState("key", []byte(s))
 }
 
 func main() {

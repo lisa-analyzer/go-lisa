@@ -15,9 +15,9 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.operator.binary.TypeCast;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
@@ -46,14 +46,27 @@ public class GoTypeConversion extends UnaryExpression {
 
 	@Override
 	protected <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		ExternalSet<Type> castType = Caches.types().mkSingletonSet(type);
-		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
-		return state.smallStepSemantics(
-				new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+
+		if (!type.isInMemoryType()) {
+			ExternalSet<Type> castType = Caches.types().mkSingletonSet(type);
+			Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
+			return state.smallStepSemantics(
+					new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
+		} else {
+			ExternalSet<Type> castType = Caches.types().mkSingletonSet(type);
+			Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
+			AnalysisState<A, H, V, T> sss = state.smallStepSemantics(
+					new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
+
+			AnalysisState<A, H, V, T> result = state.bottom();
+			for (SymbolicExpression exp : sss.getComputedExpressions())
+				result = result.lub(sss.smallStepSemantics(new HeapReference(type, exp, getLocation()), this));
+			return result;
+		}
 	}
 }

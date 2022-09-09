@@ -84,9 +84,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	private TaintDomain(byte v) {
 		this.v = v;
 	}
-	
-	
-
+		
 	@Override
 	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
 
@@ -200,6 +198,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	@Override
 	protected TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
 			ProgramPoint pp) throws SemanticException {
+		
 		if (left == TAINTED || right == TAINTED)
 			return TAINTED;
 

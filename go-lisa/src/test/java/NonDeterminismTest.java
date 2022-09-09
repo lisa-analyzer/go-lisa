@@ -21,7 +21,6 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	@Test
 	public void testMapIteration() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpAnalysis(GraphType.HTML_WITH_SUBNODES)
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new ValueEnvironment<>(new TaintDomain()),

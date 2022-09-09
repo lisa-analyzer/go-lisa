@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -53,6 +54,6 @@ public class GoTypeConversion extends UnaryExpression {
 		ExternalSet<Type> castType = Caches.types().mkSingletonSet(type);
 		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
 		return state.smallStepSemantics(
-				new BinaryExpression(type, expr, typeCast, TypeCast.INSTANCE, getLocation()), this);
+				new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
 	}
 }

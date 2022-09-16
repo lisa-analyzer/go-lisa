@@ -6,6 +6,7 @@ import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -263,6 +264,23 @@ public class GoKeyedLiteral extends NaryExpression {
 		}
 
 		// TODO: to handle the other cases (maps...)
+		
+		if(type == Untyped.INSTANCE) {
+			if(params.length > 0) {
+				AnalysisState<A, H, V, T> result = state.bottom();
+				for( ExpressionSet<SymbolicExpression> p:  params) {
+					for(SymbolicExpression e : p) {
+						state.lub(state.smallStepSemantics(e, this));
+					}
+				}
+			
+				return result;
+			} else {
+				return state.smallStepSemantics(new Constant(Untyped.INSTANCE, "KEYED_LITERAL", getLocation()), getEvaluationPredecessor());
+			}
+		}
+		
+		
 		return state.top().smallStepSemantics(new PushAny(type, getLocation()), this);
 
 	}

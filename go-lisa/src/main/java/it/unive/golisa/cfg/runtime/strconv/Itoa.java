@@ -21,6 +21,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
@@ -91,7 +92,7 @@ public class Itoa extends NativeCFG {
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 				return state.bottom();
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(expr, original);
 		}
 	}
 }

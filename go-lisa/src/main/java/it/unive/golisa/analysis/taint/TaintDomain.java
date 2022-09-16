@@ -225,7 +225,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	protected TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
-		return TAINTED;
+ 		return TAINTED;
 	}
 
 	@Override

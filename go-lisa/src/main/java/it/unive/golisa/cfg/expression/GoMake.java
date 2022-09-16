@@ -160,7 +160,7 @@ public class GoMake extends NaryExpression {
 
 		// map allocation
 		if (type instanceof GoMapType)
-			return state.top().smallStepSemantics(new PushAny(type, getLocation()),
+			return state.smallStepSemantics(new PushAny(type, getLocation()),
 					this);
 
 		return state.top().smallStepSemantics(new PushAny(type, getLocation()),

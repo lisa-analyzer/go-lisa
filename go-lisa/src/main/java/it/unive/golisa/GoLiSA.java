@@ -138,7 +138,7 @@ public class GoLiSA {
 
 		}
 
-		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML : GraphType.NONE);
+		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE);
 
 		Program program = null;
 

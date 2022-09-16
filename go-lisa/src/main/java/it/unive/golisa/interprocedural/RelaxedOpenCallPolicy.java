@@ -66,10 +66,11 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 				if(((TaintDomain) stackValue).isTainted() || ((TaintDomain) stackValue).isTop()) {
 					PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
 					return entryState.assign(var, pushany, call);
-				} else {
-					if(((TaintDomain) stackValue).isClean() && isRuntimeAPI(call)) {
+				} else if(((TaintDomain) stackValue).isClean() ){ // && isRuntimeAPI(call)) {
 						return entryState.assign(var, new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
-					}
+				
+				} else if(((TaintDomain) stackValue).isBottom()) {
+					return entryState;
 				}
 			}
 		} else if(entryState.getState().getValueState() instanceof InferenceSystem<?>) {
@@ -81,11 +82,11 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 				if(ni.isLowIntegrity() || ni.isTop()) {
 					PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
 					return entryState.assign(var, pushany, call);
-				} else {
-					if(ni.isHighIntegrity() && isRuntimeAPI(call)) {
+				} else if(ni.isHighIntegrity()) {// && isRuntimeAPI(call)) {
 						return entryState.assign(var, new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
-					}
-				}
+				
+				} else if(ni.isBottom())
+					return entryState;
 			}
 		}
 		
@@ -99,7 +100,7 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 		if(call.getCallType().equals(CallType.STATIC)){
 			if( call.getQualifier() != null)
 				return checkRuntimeApiFunc(call, call.getQualifier());
-		} else if(call.getCallType().equals(CallType.STATIC)) {
+		} else if(call.getCallType().equals(CallType.INSTANCE)) {
 			if( call.getQualifier() != null)
 				return checkRuntimeApiMethod(call, call.getQualifier());
 		} else {

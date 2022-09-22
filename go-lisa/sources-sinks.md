@@ -1187,8 +1187,8 @@
 # Sinks of Hyperledger Fabric
 
 | Package | Function Signature |
-|---|---|---|
-| hyperledger/fabric-chaincode-go/shim |  Success(payload []byte) pb.Response |
+|---|---|
+| hyperledger/fabric-chaincode-go/shim | Success(payload []byte) pb.Response |
 | hyperledger/fabric-chaincode-go/shim | Error(msg string) pb.Response |
 
 | Package | Receiver | Method Signature |

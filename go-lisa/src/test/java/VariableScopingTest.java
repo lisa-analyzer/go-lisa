@@ -1,24 +1,30 @@
 
+import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import it.unive.golisa.cfg.VariableScopingCFG;
+import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.lisa.AnalysisSetupException;
+import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.ProgramValidationException;
+import it.unive.lisa.program.cfg.CFG;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
+import org.junit.Ignore;
 import org.junit.Test;
 
-import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cli.GoFrontEnd;
-import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.ProgramValidationException;
-import it.unive.lisa.program.cfg.CFG;
-
-public class VariableScopingTest {
+public class VariableScopingTest extends GoAnalysisTestExecutor {
 
 	private static CompilationUnit findUnit(Program prog, String name) {
 		CompilationUnit unit = prog.getUnits().stream().filter(u -> u.getName().equals(name)).findFirst().get();
@@ -39,8 +45,8 @@ public class VariableScopingTest {
 		// we just check that no exception is thrown
 	}
 
-	@Test
-	public void testForLoopVariableScooping() throws IOException, ProgramValidationException  {
+	@Ignore
+	public void testForLoopVariableScoping() throws IOException, ProgramValidationException {
 		assertTrue((new File("go-testcases/variablescoping/scoping.go")).exists());
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
 		prog.validateAndFinalize();
@@ -48,22 +54,34 @@ public class VariableScopingTest {
 		CompilationUnit main = findUnit(prog, "main");
 
 		CFG test = findCFG(main, "test");
-		
+
 		assertTrue(test instanceof VariableScopingCFG);
 		VariableScopingCFG vscfg_test = (VariableScopingCFG) test;
-		
+
 		Map<String, Set<String>> currentResults = new HashMap<>();
-		vscfg_test.getNodes().forEach(node -> currentResults.put(node.toString(), new HashSet<>(vscfg_test.getVisibleIds(node).keySet())));
-	
+		vscfg_test.getNodes().forEach(
+				node -> currentResults.put(node.toString(), new HashSet<>(vscfg_test.getVisibleIds(node).keySet())));
+
 		Map<String, Set<String>> expectedResult = expectedResultForLoopVariableScooping();
-		
+
 		assertTrue(compareResults(currentResults, expectedResult));
 	}
 
+	@Test
+	public void shadowingTest() throws IOException, AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.setJsonOutput(true)
+				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
+						new InferredTypes()))
+				.setSerializeResults(true);
+
+		perform("variablescoping", "shadowing.go", conf);
+	}
+
 	private Map<String, Set<String>> expectedResultForLoopVariableScooping() {
-		
+
 		Map<String, Set<String>> expectedResult = new HashMap<>();
-		
+
 		expectedResult.put("a := 0", Set.of("a", "b"));
 		expectedResult.put("sum := 0", Set.of("a", "b", "sum"));
 		expectedResult.put("i := 0", Set.of("a", "b", "sum", "i"));
@@ -85,21 +103,21 @@ public class VariableScopingTest {
 		expectedResult.put("b = +(e, 3)", Set.of("a", "b", "sum", "i", "c", "e"));
 		expectedResult.put("a = +(b, 2)", Set.of("a", "b", "sum"));
 		expectedResult.put("ret", Set.of("a", "b", "sum"));
-		
+
 		return expectedResult;
 	}
-	
+
 	private boolean compareResults(Map<String, Set<String>> currentResults, Map<String, Set<String>> expectedResult) {
-		
-		if(!currentResults.keySet().containsAll(expectedResult.keySet()) 
+
+		if (!currentResults.keySet().containsAll(expectedResult.keySet())
 				|| !expectedResult.keySet().containsAll(currentResults.keySet()))
 			return false;
-		
-		for(String key : currentResults.keySet())
-			if(!currentResults.get(key).containsAll(expectedResult.get(key)) 
+
+		for (String key : currentResults.keySet())
+			if (!currentResults.get(key).containsAll(expectedResult.get(key))
 					|| !expectedResult.get(key).containsAll(currentResults.get(key)))
 				return false;
-			
+
 		return true;
 	}
 

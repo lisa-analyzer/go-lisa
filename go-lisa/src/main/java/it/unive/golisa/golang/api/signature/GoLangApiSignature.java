@@ -1,9 +1,9 @@
 package it.unive.golisa.golang.api.signature;
 
 public abstract class GoLangApiSignature {
-	
+
 	private final String pkg;
-	
+
 	public GoLangApiSignature(String pkg) {
 		this.pkg = pkg;
 	}

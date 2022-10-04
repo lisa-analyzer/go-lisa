@@ -4,63 +4,62 @@ import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
 import it.unive.lisa.type.Type;
 
-
 /**
- * A Go less or equal function call (e1 < e2).
- * The static type of this expression is definitely {@link GoBoolType}.
- * The semantics of Go less or equal expression follows the Golang specification:
- * {@link https://golang.org/ref/spec#Comparison_operators}
+ * A Go less or equal than expression (e.g., e1 < e2).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoLessOrEqual extends BinaryNativeCall {
-
+public class GoLessOrEqual extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
-	 * Builds a Go less or equal expression at a given location in the program.
-	 * 
-	 * @param cfg           the cfg that this expression belongs to
-	 * @param sourceFile    the source file where this expression happens. If
-	 *                      unknown, use {@code null}
-	 * @param line          the line number where this expression happens in the
-	 *                      source file. If unknown, use {@code -1}
-	 * @param col           the column where this expression happens in the source
-	 *                      file. If unknown, use {@code -1}
-	 * @param exp1		    left-hand side operand
-	 * @param exp2		    right-hand side operand
+	 * Builds the less or equal than expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
 	 */
-	public GoLessOrEqual(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "<=", GoBoolType.INSTANCE, exp1, exp2);
+	public GoLessOrEqual(CFG cfg, SourceCodeLocation location, Expression right, Expression left) {
+		super(cfg, location, "<=", GoBoolType.INSTANCE, right, left);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-
-		AnalysisState<A, H, V> result = entryState.bottom();
+		AnalysisState<A, H, V, T> result = state.bottom();
 		// following the Golang specification:
-		// in any comparison, the first operand must be assignable to the type of the second operand, or vice versa.
-		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes()) {
+		// in any comparison, the first operand must be assignable to the type
+		// of the second operand, or vice versa.
+		for (Type leftType : left.getRuntimeTypes())
+			for (Type rightType : right.getRuntimeTypes()) {
 				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
-					// TODO: only, integer, floating point values, strings are ordered
+					// TODO: only, integer, floating point values, strings are
+					// ordered
 					// but missing lexicographical string order in LiSA
-					AnalysisState<A, H, V> tmp = rightState.smallStepSemantics(new BinaryExpression(Caches.types().mkSingletonSet(GoBoolType.INSTANCE), leftExp, rightExp, BinaryOperator.COMPARISON_LE, getLocation()), this);
+					AnalysisState<A, H,
+							V, T> tmp = state
+									.smallStepSemantics(
+											new BinaryExpression(GoBoolType.INSTANCE,
+													left, right, ComparisonLe.INSTANCE, getLocation()),
+											this);
 					result = result.lub(tmp);
 				}
 			}

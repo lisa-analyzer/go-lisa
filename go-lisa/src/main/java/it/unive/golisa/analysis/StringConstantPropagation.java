@@ -8,13 +8,26 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.TernaryOperator;
-import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
+import it.unive.lisa.symbolic.value.operator.binary.StringContains;
+import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
+import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
+import it.unive.lisa.symbolic.value.operator.binary.StringStartsWith;
+import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
+import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
+/**
+ * The string constant propagation abstract domain.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class StringConstantPropagation extends BaseNonRelationalValueDomain<StringConstantPropagation> {
 
 	private static final StringConstantPropagation TOP = new StringConstantPropagation(true, false);
@@ -22,21 +35,36 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 
 	private final boolean isTop, isBottom;
 
+	/**
+	 * The string constant representing a value of this domain element.
+	 */
 	private final String value;
 
 	/**
-	 * Builds the top abstract value.
+	 * Builds the string constant propagation.
 	 */
 	public StringConstantPropagation() {
 		this(null, true, false);
 	}
 
+	/**
+	 * Builds the string constant propagation.
+	 * 
+	 * @param value    the string value of this domain
+	 * @param isTop    if it is top
+	 * @param isBottom if it is bottom
+	 */
 	private StringConstantPropagation(String value, boolean isTop, boolean isBottom) {
 		this.value = value;
 		this.isTop = isTop;
 		this.isBottom = isBottom;
 	}
 
+	/**
+	 * Builds the string constant propagation.
+	 * 
+	 * @param value the string value of this domain
+	 */
 	private StringConstantPropagation(String value) {
 		this(value, false, false);
 	}
@@ -63,9 +91,9 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	@Override
 	public DomainRepresentation representation() {
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 
 		return new StringRepresentation(value.toString());
 	}
@@ -91,32 +119,28 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	@Override
 	protected StringConstantPropagation evalBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
 			StringConstantPropagation right, ProgramPoint pp) {
-		
+
 		if (left.isTop() || right.isTop())
 			return top();
-		
-		switch (operator) {
-		case STRING_CONCAT:
+
+		if (operator == StringConcat.INSTANCE)
 			return new StringConstantPropagation(left.value + right.value);
-		default:
+		else
 			return top();
-		}
 	}
 
 	@Override
 	protected StringConstantPropagation evalTernaryExpression(TernaryOperator operator,
 			StringConstantPropagation left,
 			StringConstantPropagation middle, StringConstantPropagation right, ProgramPoint pp) {
-		
+
 		if (left.isTop() || middle.isTop || right.isTop())
 			return top();
-		
-		switch (operator) {
-		case STRING_REPLACE:
+		else if (operator == StringReplace.INSTANCE)
 			return new StringConstantPropagation(left.value.replaceAll(middle.value, right.value));
-		default:
+		else
 			return top();
-		}
+
 	}
 
 	@Override
@@ -172,30 +196,33 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
 
-		switch (operator) {
-		case STRING_CONTAINS:
+		if (operator == StringContains.INSTANCE)
 			return left.value.contains(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case STRING_STARTS_WITH:
+		else if (operator == StringStartsWith.INSTANCE)
 			return left.value.startsWith(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case STRING_ENDS_WITH:
+		else if (operator == StringEndsWith.INSTANCE)
 			return left.value.endsWith(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case STRING_EQUALS:
+		else if (operator == StringEquals.INSTANCE)
 			return left.value.equals(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case COMPARISON_EQ:
+		else if (operator == ComparisonEq.INSTANCE)
 			return left.value.equals(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		case COMPARISON_NE:
+		else if (operator == ComparisonNe.INSTANCE)
 			return !left.value.equals(right.value) ? Satisfiability.SATISFIED
 					: Satisfiability.NOT_SATISFIED;
-		default:
+		else
 			return Satisfiability.UNKNOWN;
-		}
 	}
-	
+
+	/**
+	 * Yields the string value.
+	 * 
+	 * @return the string value
+	 */
 	public String getString() {
 		return value;
 	}
@@ -204,16 +231,13 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	protected ValueEnvironment<StringConstantPropagation> assumeBinaryExpression(
 			ValueEnvironment<StringConstantPropagation> environment, BinaryOperator operator, ValueExpression left,
 			ValueExpression right, ProgramPoint pp) throws SemanticException {
-		switch (operator) {
-		case STRING_EQUALS:
-		case COMPARISON_EQ:
+		if (operator == StringEquals.INSTANCE || operator == ComparisonEq.INSTANCE) {
 			if (left instanceof Identifier)
 				environment = environment.assign((Identifier) left, right, pp);
 			else if (right instanceof Identifier)
 				environment = environment.assign((Identifier) right, left, pp);
 			return environment;
-		default:
+		} else
 			return environment;
-		}
 	}
 }

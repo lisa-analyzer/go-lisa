@@ -1,33 +1,59 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import it.unive.golisa.cfg.statement.block.BlockInfo;
+import it.unive.golisa.cfg.statement.block.OpenBlock;
+import it.unive.golisa.frontend.GoSyntaxException;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.Identifier;
+import java.util.List;
 
+/**
+ * A Go assignment.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoAssignment extends BinaryExpression {
+
+	/**
+	 * The chain of blocks (starting from the block containing this assignment)
+	 * to the block defining the assigned variable.
+	 */
+	private final List<BlockInfo> blocksToDeclaration;
+
+	/**
+	 * The open block related to the block that contains this assignment.
+	 */
+	private final OpenBlock containingBlock;
+
 	/**
 	 * Builds the assignment, assigning {@code expression} to {@code target},
 	 * happening at the given location in the program.
 	 * 
-	 * @param cfg        the cfg that this statement belongs to
-	 * @param location   the location where this statement is defined within the
-	 *                       source file. If unknown, use {@code null}
-	 * @param target     the target of the assignment
-	 * @param expression the expression to assign to {@code target}
+	 * @param cfg             the cfg that this statement belongs to
+	 * @param location        the location where this statement is defined
+	 *                            within the source file
+	 * @param target          the target of the assignment
+	 * @param expression      the expression to assign to {@code target}
+	 * @param listBlock       list of block information
+	 * @param containingBlock the block containing this assignment
 	 */
-	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression) {
-		super(cfg, location, target, expression);
+	public GoAssignment(CFG cfg, CodeLocation location, Expression target, Expression expression,
+			List<BlockInfo> listBlock, OpenBlock containingBlock) {
+		super(cfg, location, "=", target, expression);
+		this.blocksToDeclaration = BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, getLeft());
+		this.containingBlock = containingBlock;
 	}
 
 	@Override
@@ -35,43 +61,51 @@ public class GoAssignment extends BinaryExpression {
 		return getLeft() + " = " + getRight();
 	}
 
-	/**
-	 * Semantics of an assignment ({@code left = right}) is evaluated as
-	 * follows:
-	 * <ol>
-	 * <li>the semantic of the {@code right} is evaluated using the given
-	 * {@code entryState}, returning a new analysis state
-	 * {@code as_r = <state_r, expr_r>}</li>
-	 * <li>the semantic of the {@code left} is evaluated using {@code as_r},
-	 * returning a new analysis state {@code as_l = <state_l, expr_l>}</li>
-	 * <li>the final post-state is evaluated through
-	 * {@link AnalysisState#assign(Identifier, SymbolicExpression, ProgramPoint)},
-	 * using {@code expr_l} as {@code id} and {@code expr_r} as
-	 * {@code value}</li>
-	 * </ol>
-	 * This means that all side effects from {@code right} are evaluated before
-	 * the ones from {@code left}.<br>
-	 * <br>
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final <A extends AbstractState<A, H, V>,
+	private <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
-			V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-					AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural,
-					StatementStore<A, H, V> expressions)
-					throws SemanticException {
-		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
-		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
-		expressions.put(getRight(), right);
-		expressions.put(getLeft(), left);
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> entryState,
+					SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
 
-		AnalysisState<A, H, V> result = right.bottom();
-		for (SymbolicExpression expr1 : left.getComputedExpressions())
-			for (SymbolicExpression expr2 : right.getComputedExpressions()) {
-				AnalysisState<A, H, V> tmp = left.assign(expr1, expr2, this);
-				result = result.lub(tmp);
-			}
+		// if the assignment occurs in the same block in which
+		// the variable is declared, no assignment on scoped ids
+		// needs to be performed
+		if (blocksToDeclaration.isEmpty() || blocksToDeclaration.get(0).getOpen() != containingBlock)
+			return entryState;
+
+		AnalysisState<A, H, V, T> tmp = entryState;
+
+		// removes the block where the declaration occurs
+		List<BlockInfo> blocksBeforeDecl = blocksToDeclaration.subList(0, blocksToDeclaration.size() - 1);
+
+		for (int i = 0; i < blocksBeforeDecl.size(); i++) {
+			SymbolicExpression idToAssign = expr1;
+
+			for (int j = blocksBeforeDecl.size() - 1 - i; j >= 0; j--)
+				idToAssign = idToAssign.pushScope(new ScopeToken(blocksBeforeDecl.get(j).getOpen()));
+			tmp = tmp.assign(idToAssign, expr2, this);
+		}
+
+		return tmp;
+
+	}
+
+	@Override
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
+		// TODO: this check should be moved in the front-end
+		if (!blocksToDeclaration.isEmpty()
+				&& blocksToDeclaration.get(blocksToDeclaration.size() - 1).isConstantDeclaration(getLeft()))
+			throw new GoSyntaxException("Cannot assign a value to '" + getLeft() + "' at " + getLeft().getLocation()
+					+ ", because it is declared as 'const'");
+
+		AnalysisState<A, H, V, T> result = assignScopedId(state, left, right);
+		result = result.assign(left, right, this);
 
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getRight().getMetaVariables());

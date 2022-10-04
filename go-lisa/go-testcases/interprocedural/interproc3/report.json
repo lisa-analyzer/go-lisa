@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___-564904140_[int_x,_int_y]_~LiSAProgram.split(int_sum).dot", "analysis___-565827661_[int__,_int__]_~LiSAProgram.swap(int_x,_int_y).dot", "analysis___-566751182_int_~LiSAProgram.add2(int_x,_int_y).dot", "analysis___-567674703_int_~LiSAProgram.add1(int_x,_int_y).dot", "analysis___-568598379_[int_x,_int_y]_~LiSAProgram.f3().dot", "analysis___-569521900_[int__,_int__]_~LiSAProgram.f2().dot", "analysis___-570445421_[int__,_string__]_~LiSAProgram.f1().dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "[int__,_int__]_main.f2()_-569521900.json", "[int__,_int__]_main.swap(int_x,_int_y)_-565827661.json", "[int__,_string__]_main.f1()_-570445421.json", "[int_x,_int_y]_main.f3()_-568598379.json", "[int_x,_int_y]_main.split(int_sum)_-564904140.json", "int_main.add1(int_x,_int_y)_-567674703.json", "int_main.add2(int_x,_int_y)_-566751182.json", "untyped_main.main().json" ]
 }

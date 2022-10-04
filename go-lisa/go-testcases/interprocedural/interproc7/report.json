@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___338106521_int_~LiSAProgram.anonymousFunction0(int_f).dot", "analysis___338195894_int_~LiSAProgram.anonymousFunction1(int_f).dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "int_~LiSAProgram.anonymousFunction0(int_f)_338106521.json", "int_~LiSAProgram.anonymousFunction1(int_f)_338195894.json", "untyped_main.main().json" ]
 }

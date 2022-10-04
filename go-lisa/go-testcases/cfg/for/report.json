@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_~LiSAProgram.noIncFor().dot", "int_~LiSAProgram.noInitFor().dot", "untyped_~LiSAProgram.forRange().dot", "untyped_~LiSAProgram.forRangeJustWithIndex().dot", "untyped_~LiSAProgram.simpleFor().dot" ]
+  "files" : [ "int_main.noIncFor().json", "int_main.noInitFor().json", "untyped_main.forRange().json", "untyped_main.forRangeJustWithIndex().json", "untyped_main.simpleFor().json" ]
 }

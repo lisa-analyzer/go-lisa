@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___-120077644_[3]int_~LiSAProgram.f(int_a,_int_b,_int_c).dot", "analysis___-121001165_[3]int_~LiSAProgram.f(int_a,_int_b,_int_c).dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "[3]int_main.f(int_a,_int_b,_int_c)_-120077644.json", "[3]int_main.f(int_a,_int_b,_int_c)_-121001165.json", "untyped_main.main().json" ]
 }

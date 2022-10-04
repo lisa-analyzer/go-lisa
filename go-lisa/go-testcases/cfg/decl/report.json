@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_~LiSAProgram.multDecl().dot", "untyped_~LiSAProgram.multDecls().dot", "untyped_~LiSAProgram.simpleDecl(int_x,_int_y).dot" ]
+  "files" : [ "untyped_main.multDecl().json", "untyped_main.multDecls().json", "untyped_main.simpleDecl(int_x,_int_y).json" ]
 }

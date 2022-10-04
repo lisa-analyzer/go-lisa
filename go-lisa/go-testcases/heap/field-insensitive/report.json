@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___untyped_~LiSAProgram.alloc().dot", "analysis___untyped_~LiSAProgram.forAlloc().dot", "analysis___untyped_~LiSAProgram.ifAlloc(int_a,_int_b).dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "untyped_main.aliasing().json", "untyped_main.alloc().json", "untyped_main.forAlloc().json", "untyped_main.ifAlloc(int_a,_int_b).json", "untyped_main.main().json" ]
 }

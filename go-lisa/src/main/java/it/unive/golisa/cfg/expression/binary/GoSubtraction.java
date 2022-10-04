@@ -3,47 +3,57 @@ package it.unive.golisa.cfg.expression.binary;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
- * A Go numerical subtraction function call (e1 - e2).
+ * A Go numerical subtraction expression (e.g., x - y).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoSubtraction extends BinaryNativeCall implements GoBinaryNumericalOperation {
-	
-	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "-", exp1, exp2);
+public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExpression
+		implements GoBinaryNumericalOperation {
+
+	/**
+	 * Builds the subtraction expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
+	 */
+	public GoSubtraction(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, "-", left, right);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
-			throws SemanticException {
-
-		ExternalSet<Type> types;
-
-		AnalysisState<A, H, V> result = entryState.bottom();
-		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes()) 
-				if (leftType.isNumericType() && rightType.isNumericType()) {
-					types = resultType(leftExp, rightExp);
-					result = result.lub(rightState.smallStepSemantics(new BinaryExpression(types, leftExp, rightExp, BinaryOperator.NUMERIC_NON_OVERFLOWING_SUB, getLocation()), this));
-				} 
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
+		AnalysisState<A, H, V, T> result = state.bottom();
+		for (Type leftType : left.getRuntimeTypes())
+			for (Type rightType : right.getRuntimeTypes()) {
+				if (leftType.isNumericType() || rightType.isNumericType())
+					result = result.lub(state.smallStepSemantics(
+							new BinaryExpression(resultType(leftType, rightType), left, right,
+									NumericNonOverflowingSub.INSTANCE, getLocation()),
+							this));
+			}
 
 		return result;
 	}
-
 }

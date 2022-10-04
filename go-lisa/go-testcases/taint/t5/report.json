@@ -1,0 +1,6 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/taint/t5/t5.go':16:8] on 'untyped main::main()': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'v' of main::sink"
+  } ],
+  "files" : [ ]
+}

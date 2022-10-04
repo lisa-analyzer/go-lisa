@@ -15,7 +15,15 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
+import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 
+/**
+ * Visitor for value expression. If the expression is constant, its visit
+ * returns the constant string.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class ResolverVisitor implements ExpressionVisitor<String> {
 
 	private static final String CANNOT_PROCESS_ERROR = "Cannot process a heap expression with a value domain";
@@ -50,28 +58,25 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	public String visit(BinaryExpression expression, String left, String right, Object... params)
 			throws SemanticException {
 
-		switch(expression.getOperator()) {
-		case STRING_CONCAT:
+		if (expression.getOperator() == StringConcat.INSTANCE) {
+
 			if (left != null && right != null)
 				return left + right;
 			return null;
-		default:
+		} else
 			return null;
-		}
 	}
 
 	@Override
 	public String visit(TernaryExpression expression, String left, String middle, String right, Object... params)
 			throws SemanticException {
 
-		switch(expression.getOperator()) {
-		case STRING_REPLACE:
+		if (expression.getOperator() == StringReplace.INSTANCE) {
 			if (left != null && middle != null && right != null)
-				return	left.replaceAll(middle, right);
+				return left.replaceAll(middle, right);
 			return null;
-		default:
+		} else
 			return null;
-		}
 	}
 
 	@Override

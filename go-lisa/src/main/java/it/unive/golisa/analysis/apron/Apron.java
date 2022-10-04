@@ -3,11 +3,11 @@ package it.unive.golisa.analysis.apron;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import javax.swing.Box;
+
 import apron.Abstract1;
 import apron.ApronException;
-import apron.Box;
 import apron.Coeff;
-import apron.Environment;
 import apron.Manager;
 import apron.MpfrScalar;
 import apron.MpqScalar;
@@ -36,12 +36,11 @@ import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
-import it.unive.lisa.symbolic.value.UnaryOperator;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 
 public class Apron implements ValueDomain<Apron> {
 
@@ -91,7 +90,7 @@ public class Apron implements ValueDomain<Apron> {
 
 	public static void setManager(ApronDomain numericalDomain) {
 		switch(numericalDomain) {
-		case Box: manager=new Box(); break;
+		case Box: manager= new Box(); break;
 		case Octagon: manager=new Octagon(); break;
 		case Polka: manager=new Polka(false); break;
 		case PolkaEq: manager=new PolkaEq(); break;

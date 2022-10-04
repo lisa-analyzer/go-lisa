@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -11,36 +7,68 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * A Go channel type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoChannelType implements GoType {
-	
+
 	private Type contentType;
 
 	private boolean isSend;
 	private boolean isReceive;
-	
 
 	private static final Set<GoChannelType> channelTypes = new HashSet<>();
 
-	public static GoChannelType lookup(GoChannelType type)  {
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoChannelType} representing a channel type.
+	 * 
+	 * @param contentType the content of the channel type to lookup
+	 * 
+	 * @return the unique instance of {@link GoChannelType} representing the
+	 *             channel type given as argument
+	 */
+	public static GoChannelType lookup(Type contentType) {
+		GoChannelType type = new GoChannelType(contentType);
 		if (!channelTypes.contains(type))
 			channelTypes.add(type);
 		return channelTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoChannelType(GoType contentType) {
-		this.contentType = contentType;
-		this.isReceive = true;
-		this.isSend = true;
+	/**
+	 * Builds a channel type.
+	 * 
+	 * @param contentType the content type
+	 */
+	private GoChannelType(Type contentType) {
+		this(contentType, true, true);
 	}
-	
-	public GoChannelType(GoType contentType, boolean isSend, boolean isReceive) {
+
+	/**
+	 * Builds a channel type.
+	 * 
+	 * @param contentType the content type
+	 * @param isSend      if this channel is a sending channel
+	 * @param isReceive   if this channel is receiving channle
+	 */
+	public GoChannelType(Type contentType, boolean isSend, boolean isReceive) {
 		this.contentType = contentType;
 		this.isSend = isSend;
 		this.isReceive = isReceive;
 	}
 
-	public Type getBaseType() {
+	/**
+	 * Yields the content type.
+	 * 
+	 * @return the content type
+	 */
+	public Type getContentType() {
 		return contentType;
 	}
 
@@ -59,14 +87,29 @@ public class GoChannelType implements GoType {
 		return Untyped.INSTANCE;
 	}
 
+	/**
+	 * Checks if this channel is bi-directional.
+	 * 
+	 * @return if this channel is bi-directional
+	 */
 	public boolean isBidiretional() {
 		return isSendDirection() && isReceiveDirection();
 	}
-	
+
+	/**
+	 * Checks if this channel is receiving.
+	 * 
+	 * @return if this channel is receiving
+	 */
 	private boolean isReceiveDirection() {
 		return isReceive;
 	}
 
+	/**
+	 * Checks if this channel is sending.
+	 * 
+	 * @return if this channel is sending
+	 */
 	private boolean isSendDirection() {
 		return isSend;
 	}
@@ -79,7 +122,7 @@ public class GoChannelType implements GoType {
 			return "chan <-" + contentType.toString();
 		return "<- chan" + contentType.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -115,19 +158,28 @@ public class GoChannelType implements GoType {
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoNil(cfg, location);
 	}
-	
+
+	/**
+	 * Yields all the channel types.
+	 * 
+	 * @return all the channel types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoChannelType in : channelTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoChannelType in : channelTypes)
-			instances.add(in);
-		return instances;
+		return all();
+	}
+
+	/**
+	 * Clears all the channel types.
+	 */
+	public static void clearAll() {
+		channelTypes.clear();
 	}
 }

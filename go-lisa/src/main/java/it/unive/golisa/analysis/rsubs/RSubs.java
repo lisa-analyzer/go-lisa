@@ -7,7 +7,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -21,7 +21,42 @@ import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
+import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingDiv;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMod;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMul;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
+import it.unive.lisa.symbolic.value.operator.binary.StringContains;
+import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
+import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
+import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
+import it.unive.lisa.symbolic.value.operator.binary.StringStartsWith;
+import it.unive.lisa.symbolic.value.operator.binary.TypeCast;
+import it.unive.lisa.symbolic.value.operator.binary.TypeCheck;
+import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
+import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
+import it.unive.lisa.symbolic.value.operator.unary.StringLength;
+import it.unive.lisa.symbolic.value.operator.unary.TypeOf;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.util.List;
+import java.util.function.Predicate;
 
+/**
+ * The reduced product between relational substring abstract domain and
+ * intervals.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 	private static final RSubs TOP = new RSubs(true, false);
@@ -33,7 +68,9 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	private final boolean isTop;
 	private final boolean isBottom;
 
-
+	/**
+	 * Builds the top abstract value.
+	 */
 	public RSubs() {
 		this(new RelationalSubstringDomain(), new ValueEnvironment<Interval>(new Interval()), true, false);
 	}
@@ -64,7 +101,6 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		return new RSubs(string, num.top());
 	}
 
-
 	private boolean processableByNumericalDomain(ValueExpression expression) {
 
 		if (expression instanceof Identifier) {
@@ -88,61 +124,32 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
-
-			switch(unary.getOperator()) {
-			case LOGICAL_NOT:
+			UnaryOperator op = unary.getOperator();
+			if (op == LogicalNegation.INSTANCE)
 				return false;
-			case NUMERIC_NEG:
+			else if (op == NumericNegation.INSTANCE)
 				return processableByNumericalDomain((ValueExpression) unary.getExpression());
-			case STRING_LENGTH:
+			else if (op == StringLength.INSTANCE)
 				return false;
-			case TYPEOF:
+			else if (op == TypeOf.INSTANCE)
 				return false;
-			default:
-				break;
-			}
-		}
-
-		if (expression instanceof BinaryExpression) {
+		} else if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
 			SymbolicExpression left = binary.getLeft();
 			SymbolicExpression right = binary.getRight();
 
-			switch (binary.getOperator()) {
-			case NUMERIC_NON_OVERFLOWING_ADD:
-			case NUMERIC_NON_OVERFLOWING_DIV:
-			case NUMERIC_NON_OVERFLOWING_MOD:
-			case NUMERIC_NON_OVERFLOWING_MUL:
-			case NUMERIC_NON_OVERFLOWING_SUB:
-				return processableByNumericalDomain((ValueExpression) left) && processableByNumericalDomain((ValueExpression) right);
-			case COMPARISON_EQ:
-			case COMPARISON_GE:
-			case COMPARISON_GT:
-			case COMPARISON_LE:
-			case COMPARISON_LT:
-			case COMPARISON_NE:
-			case LOGICAL_AND:
-			case LOGICAL_OR:
-			case STRING_CONCAT:
-			case STRING_CONTAINS:
-			case STRING_ENDS_WITH:
-			case STRING_EQUALS:
-			case STRING_INDEX_OF:
-			case STRING_STARTS_WITH:
-			case TYPE_CAST:
-			case TYPE_CHECK:
-			default:
+			BinaryOperator op = binary.getOperator();
+			if (op == NumericNonOverflowingAdd.INSTANCE || op == NumericNonOverflowingDiv.INSTANCE
+					|| op == NumericNonOverflowingMod.INSTANCE || op == NumericNonOverflowingMul.INSTANCE
+					|| op == NumericNonOverflowingSub.INSTANCE)
+				return processableByNumericalDomain((ValueExpression) left)
+						&& processableByNumericalDomain((ValueExpression) right);
+			else
 				return false;
-			}
-		}
-
-		if (expression instanceof TernaryExpression) {
-			return false;
 		}
 
 		return false;
 	}
-
 
 	private boolean processableByStringDomain(ValueExpression expression) {
 
@@ -165,59 +172,41 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 		if (expression instanceof PushAny)
 			return true;
 
-		if (expression instanceof UnaryExpression) {
-			UnaryExpression unary = (UnaryExpression) expression;
-
-			switch(unary.getOperator()) {
-			case LOGICAL_NOT:
-				return false;
-			case NUMERIC_NEG:
-				return false;
-			case STRING_LENGTH:
-				return false;
-			case TYPEOF:
-				return false;
-			default:
-				break;
-			}
-		}
+		if (expression instanceof UnaryExpression)
+			return false;
 
 		if (expression instanceof BinaryExpression) {
-			BinaryExpression binary = (BinaryExpression) expression;
-
-			switch (binary.getOperator()) {
-			case COMPARISON_EQ:
-			case COMPARISON_GE:
-			case COMPARISON_GT:
-			case COMPARISON_LE:
-			case COMPARISON_LT:
-			case COMPARISON_NE:
-			case LOGICAL_AND:
-			case LOGICAL_OR:
-			case NUMERIC_NON_OVERFLOWING_ADD:
-			case NUMERIC_NON_OVERFLOWING_DIV:
-			case NUMERIC_NON_OVERFLOWING_MOD:
-			case NUMERIC_NON_OVERFLOWING_MUL:
-			case NUMERIC_NON_OVERFLOWING_SUB:
+			BinaryOperator op = ((BinaryExpression) expression).getOperator();
+			if (op == ComparisonEq.INSTANCE
+					|| op == ComparisonGe.INSTANCE
+					|| op == ComparisonGt.INSTANCE
+					|| op == ComparisonLe.INSTANCE
+					|| op == ComparisonLt.INSTANCE
+					|| op == ComparisonLe.INSTANCE
+					|| op == ComparisonNe.INSTANCE
+					|| op == LogicalAnd.INSTANCE
+					|| op == LogicalOr.INSTANCE
+					|| op == NumericNonOverflowingAdd.INSTANCE
+					|| op == NumericNonOverflowingMod.INSTANCE
+					|| op == NumericNonOverflowingSub.INSTANCE
+					|| op == NumericNonOverflowingMul.INSTANCE
+					|| op == NumericNonOverflowingDiv.INSTANCE
+					|| op == StringContains.INSTANCE
+					|| op == StringEndsWith.INSTANCE
+					|| op == StringEquals.INSTANCE
+					|| op == StringIndexOf.INSTANCE
+					|| op == StringStartsWith.INSTANCE
+					|| op == TypeCast.INSTANCE
+					|| op == TypeCheck.INSTANCE)
 				return false;
-			case STRING_CONCAT:
+			else if (op == StringConcat.INSTANCE)
 				return true;
-			case STRING_CONTAINS:
-			case STRING_ENDS_WITH:
-			case STRING_EQUALS:
-			case STRING_INDEX_OF:
-			case STRING_STARTS_WITH:
-			case TYPE_CAST:
-			case TYPE_CHECK:
-			default:
+			else
 				return false;
-
-			}
 		}
 
-		if (expression instanceof TernaryExpression) {
+		if (expression instanceof TernaryExpression)
 			return true;
-		}
 
 		return false;
 	}
@@ -241,6 +230,14 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
+	public RSubs forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return new RSubs(isTop, isBottom);
+		else
+			return new RSubs(string.forgetIdentifiersIf(test), num.forgetIdentifiersIf(test));
+	}
+
+	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// TODO satisfies
 		return Satisfiability.UNKNOWN;
@@ -249,10 +246,10 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
-		return new PairRepresentation(string,  num, StringRepresentation::new, StringRepresentation::new);
+			return Lattice.bottomRepresentation();
+		return new ListRepresentation(List.of(string, num), StringRepresentation::new);
 	}
 
 	@Override
@@ -282,7 +279,7 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	public int hashCode() {	
+	public int hashCode() {
 		if (isTop())
 			return 1;
 		if (isBottom())

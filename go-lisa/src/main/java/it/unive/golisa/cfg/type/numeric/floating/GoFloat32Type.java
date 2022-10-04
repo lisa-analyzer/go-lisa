@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.type.numeric.floating;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -11,24 +8,25 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Go 32 bits float type. 
+ * Go 32 bits float type. It implements the singleton design pattern, that is
+ * the instances of this type are unique. The unique instance of this type can
+ * be retrieved by {@link GoFloat32Type#INSTANCE}.
  * 
- * It implements the singleton design pattern, that is 
- * the instances of this type are unique. The unique instance of
- * this type can be retrieved by {@link GoFloat32Type#INSTANCE}.
- * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoFloat32Type implements NumericType , GoType {
+public class GoFloat32Type implements NumericType, GoType {
 
 	/**
-	 * Unique instance of Float32Type type. 
+	 * Unique instance of Float32Type type.
 	 */
 	public static final GoFloat32Type INSTANCE = new GoFloat32Type();
 
-	private GoFloat32Type() {}
+	private GoFloat32Type() {
+	}
 
 	@Override
 	public String toString() {
@@ -69,7 +67,7 @@ public class GoFloat32Type implements NumericType , GoType {
 	public boolean isUnsigned() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		return other instanceof GoFloat32Type || other.isUntyped();
@@ -79,12 +77,12 @@ public class GoFloat32Type implements NumericType , GoType {
 	public Type commonSupertype(Type other) {
 		return other instanceof GoFloat32Type ? this : Untyped.INSTANCE;
 	}
-	
+
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoFloat(cfg, location, 0.0);
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

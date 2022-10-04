@@ -1,26 +1,41 @@
 package it.unive.golisa.analysis;
 
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import it.unive.golisa.analysis.tarsis.TarsisIntv;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Predicate;
 
+/**
+ * The pentagons abstract domain, corresponding to the reduced product between
+ * intervals and strict upper bounds abstract domains.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class Pentagons implements ValueDomain<Pentagons> {
 
+	/**
+	 * The environment tracking intervals values.
+	 */
 	protected ValueEnvironment<TarsisIntv> left;
 
+	/**
+	 * The strict upper bound domain.
+	 */
 	protected StrictUpperBounds right;
-	
+
+	/**
+	 * Builds the top pentagon.
+	 */
 	public Pentagons() {
 		this(new ValueEnvironment<TarsisIntv>(new TarsisIntv()), new StrictUpperBounds());
 	}
@@ -45,7 +60,7 @@ public class Pentagons implements ValueDomain<Pentagons> {
 		StrictUpperBounds upperBounds = right.smallStepSemantics(expression, pp);
 		return new Pentagons(TarsisIntvs, upperBounds).refine();
 	}
-	
+
 	@Override
 	public Pentagons assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		ValueEnvironment<TarsisIntv> newLeft = left.assume(expression, pp);
@@ -61,6 +76,13 @@ public class Pentagons implements ValueDomain<Pentagons> {
 	}
 
 	@Override
+	public Pentagons forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		ValueEnvironment<TarsisIntv> newLeft = left.forgetIdentifiersIf(test);
+		StrictUpperBounds newRight = right.forgetIdentifiersIf(test);
+		return new Pentagons(newLeft, newRight);
+	}
+
+	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		return left.satisfies(expression, pp).and(right.satisfies(expression, pp));
 	}
@@ -72,7 +94,7 @@ public class Pentagons implements ValueDomain<Pentagons> {
 
 	@Override
 	public DomainRepresentation representation() {
-		return new PairRepresentation(left.representation(), right.representation());
+		return new ListRepresentation(left.representation(), right.representation());
 	}
 
 	@Override
@@ -104,7 +126,7 @@ public class Pentagons implements ValueDomain<Pentagons> {
 
 		if (left.isTop() || right.isTop())
 			return this;
-	
+
 		Set<Identifier> refined = new HashSet<>();
 		ValueEnvironment<TarsisIntv> env = new ValueEnvironment<TarsisIntv>(new TarsisIntv());
 		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : right.getMap().entrySet()) {

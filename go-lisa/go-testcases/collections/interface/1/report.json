@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___1936850494_int_~LiSAProgram.measure(geometry_g).dot", "analysis___2048006874_int_rect.perim(rect_r).dot", "analysis___untyped_~LiSAProgram.main().dot" ]
+  "files" : [ "int_main.measure(geometry_g)_1936850494.json", "int_rect.perim(rect_r)_2048006874.json", "untyped_main.main().json" ]
 }

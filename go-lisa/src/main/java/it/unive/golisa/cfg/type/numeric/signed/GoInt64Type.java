@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.type.numeric.signed;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -11,45 +8,46 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Go 64 bits int type. 
+ * Go 64 bits int type. It implements the singleton design pattern, that is the
+ * instances of this type are unique. The unique instance of this type can be
+ * retrieved by {@link GoInt64Type#INSTANCE}.
  * 
- * It implements the singleton design pattern, that is 
- * the instances of this type are unique. The unique instance of
- * this type can be retrieved by {@link GoInt64Type#INSTANCE}.
- * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoInt64Type implements NumericType, GoType {
 
 	/**
-	 * Unique instance of GoInt64 type. 
+	 * Unique instance of GoInt64 type.
 	 */
 	public static final GoInt64Type INSTANCE = new GoInt64Type();
-	
-	private GoInt64Type() {}
+
+	private GoInt64Type() {
+	}
 
 	@Override
 	public String toString() {
 		return "int64";
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		return this == other;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	@Override
 	public boolean is8Bits() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean is16Bits() {
 		return false;
@@ -69,8 +67,7 @@ public class GoInt64Type implements NumericType, GoType {
 	public boolean isUnsigned() {
 		return false;
 	}
-	
-	
+
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		return other instanceof GoInt64Type || other.isUntyped();
@@ -80,17 +77,17 @@ public class GoInt64Type implements NumericType, GoType {
 	public Type commonSupertype(Type other) {
 		return other instanceof GoInt64Type ? this : Untyped.INSTANCE;
 	}
-	
+
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		return new GoInteger(cfg, location, 0);
 	}
-	
+
 	@Override
 	public boolean isIntegral() {
 		return true;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

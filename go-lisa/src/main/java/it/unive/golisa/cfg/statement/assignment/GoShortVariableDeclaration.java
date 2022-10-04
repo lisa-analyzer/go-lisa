@@ -10,45 +10,39 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
+import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.type.Type;
+import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.TypeTokenType;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
+/**
+ * A Go short variable declaration statement.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statement.BinaryExpression {
 
 	/**
-	 * Builds a Go variable declaration with initialization,
-	 * assigning {@code expression} to {@code target},
-	 * happening at the given location in the program.
+	 * Builds a Go variable declaration with initialization, assigning
+	 * {@code expression} to {@code target}.
 	 * 
 	 * @param cfg        the cfg that this declaration belongs to
-	 * @param sourceFile the source file where this declaration happens. If unknown,
-	 *                   use {@code null}
-	 * @param line       the line number where this declaration happens in the source
-	 *                   file. If unknown, use {@code -1}
-	 * @param col        the column where this statement happens in the source file.
-	 *                   If unknown, use {@code -1}
-	 * @param var	     the declared variable
+	 * @param location   the location where this statement is defined
+	 * @param var        the declared variable
 	 * @param expression the expression to assign to {@code var}
 	 */
-	public GoShortVariableDeclaration(CFG cfg, String sourceFile, int line, int col, VariableRef var, Expression expression) {
-		super(cfg, new SourceCodeLocation(sourceFile, line, col), var, expression);
-	}
-	
 	public GoShortVariableDeclaration(CFG cfg, CodeLocation location, VariableRef var, Expression expression) {
-		super(cfg, location, var, expression);
+		super(cfg, location, ":=", RightToLeftEvaluation.INSTANCE, var, expression);
 	}
 
 	@Override
@@ -56,51 +50,57 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		return getLeft() + " := " + getRight();
 	}
 
-	@Override
-	public final <A extends AbstractState<A, H, V>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>> AnalysisState<A, H, V> semantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, StatementStore<A, H, V> expressions)
-					throws SemanticException {
+	/**
+	 * Numerical typer class.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class NumericalTyper {
 
-		AnalysisState<A, H, V> right = getRight().semantics(entryState, interprocedural, expressions);
-		
+		/**
+		 * Types an expression (if it is untyped (int or float), this method
+		 * returns it as typed).
+		 * 
+		 * @param exp the expression to type
+		 * 
+		 * @return the typed expression
+		 */
+		public static SymbolicExpression type(SymbolicExpression exp) {
+			if (exp.getDynamicType() instanceof GoUntypedInt) {
+				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoIntType.INSTANCE)),
+						GoIntType.INSTANCE, exp.getCodeLocation());
+				return new BinaryExpression(GoIntType.INSTANCE, exp, typeCast, TypeConv.INSTANCE,
+						exp.getCodeLocation());
+
+			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
+				Constant typeCast = new Constant(
+						new TypeTokenType(Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE)),
+						GoFloat32Type.INSTANCE,
+						exp.getCodeLocation());
+				return new BinaryExpression(GoFloat32Type.INSTANCE, exp, typeCast, TypeConv.INSTANCE,
+						exp.getCodeLocation());
+			} else
+				return exp;
+		}
+	}
+
+	@Override
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
 		// e.g., _ := f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
-			return right;
-			
-		AnalysisState<A, H, V> left = getLeft().semantics(right, interprocedural, expressions);
-		expressions.put(getRight(), right);
-		expressions.put(getLeft(), left);
+			return state;
 
-		AnalysisState<A, H, V> result = entryState.bottom();
-		for (SymbolicExpression leftExp : left.getComputedExpressions()) 
-			for (SymbolicExpression rightExp : right.getComputedExpressions()) {
-				AnalysisState<A, H, V> tmp = right.assign(leftExp, NumericalTyper.type(rightExp), this);
-				result = result.lub(tmp);
-			}
-
+		AnalysisState<A, H, V, T> result = state.assign(left, NumericalTyper.type(right), this);
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getRight().getMetaVariables());
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 		return result;
-	}
-	
-	public static class NumericalTyper {
-		
-		public static SymbolicExpression type(SymbolicExpression exp) {
-			if (exp.getDynamicType() instanceof GoUntypedInt) {
-				ExternalSet<Type> intType = Caches.types().mkSingletonSet(GoIntType.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(intType), GoIntType.INSTANCE, exp.getCodeLocation());
-				return new BinaryExpression(intType, exp, typeCast, BinaryOperator.TYPE_CONV, exp.getCodeLocation());
-
-			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
-				ExternalSet<Type> floatType = Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE);
-				Constant typeCast = new Constant(new TypeTokenType(floatType), GoFloat32Type.INSTANCE,  exp.getCodeLocation());
-				return new BinaryExpression(floatType, exp, typeCast, BinaryOperator.TYPE_CONV,  exp.getCodeLocation());
-			} else 
-				return exp;
-		}
 	}
 }

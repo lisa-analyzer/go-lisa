@@ -1,10 +1,30 @@
 package it.unive.golisa.analysis.tarsis;
 
+/**
+ * An interval with integer bounds.
+ * 
+ * @author <a href="mailto:luca.negrini@unive.it">Luca Negrini</a>
+ */
 public class TarsisIntInterval {
 
+	/**
+	 * The interval {@code [-Inf, +Inf]}.
+	 */
 	public static final TarsisIntInterval INFINITY = new TarsisIntInterval();
+
+	/**
+	 * The interval {@code [0, 0]}.
+	 */
 	public static final TarsisIntInterval ZERO = new TarsisIntInterval(0, 0);
+
+	/**
+	 * The interval {@code [1, 1]}.
+	 */
 	public static final TarsisIntInterval ONE = new TarsisIntInterval(1, 1);
+
+	/**
+	 * The interval {@code [-1, -1]}.
+	 */
 	public static final TarsisIntInterval MINUS_ONE = new TarsisIntInterval(-1, -1);
 
 	private final TarsisMathNumber low;
@@ -15,15 +35,39 @@ public class TarsisIntInterval {
 		this(TarsisMathNumber.MINUS_INFINITY, TarsisMathNumber.PLUS_INFINITY);
 	}
 
+	/**
+	 * Builds a new interval.
+	 * 
+	 * @param low  the lower bound
+	 * @param high the upper bound
+	 * 
+	 * @throws IllegalArgumentException if {@code low > high}
+	 */
 	public TarsisIntInterval(int low, int high) {
 		this(new TarsisMathNumber(low), new TarsisMathNumber(high));
 	}
 
+	/**
+	 * Builds a new interval.
+	 * 
+	 * @param low  the lower bound
+	 * @param high the upper bound
+	 * 
+	 * @throws IllegalArgumentException if {@code low > high}
+	 */
 	public TarsisIntInterval(Integer low, Integer high) {
 		this(low == null ? TarsisMathNumber.MINUS_INFINITY : new TarsisMathNumber(low),
 				high == null ? TarsisMathNumber.PLUS_INFINITY : new TarsisMathNumber(high));
 	}
 
+	/**
+	 * Builds a new interval.
+	 * 
+	 * @param low  the lower bound
+	 * @param high the upper bound
+	 * 
+	 * @throws IllegalArgumentException if {@code low > high}
+	 */
 	public TarsisIntInterval(TarsisMathNumber low, TarsisMathNumber high) {
 		if (low.compareTo(high) > 0)
 			throw new IllegalArgumentException("Lower bound is bigger than higher bound");
@@ -33,47 +77,91 @@ public class TarsisIntInterval {
 	}
 
 	/**
-	 * Yields the high bound of this interval.
+	 * Yields the upper bound of this interval.
 	 * 
-	 * @return the high bound of this interval.
+	 * @return the upper bound of this interval
 	 */
 	public TarsisMathNumber getHigh() {
 		return high;
 	}
 
 	/**
-	 * Yields the low bound of this interval.
+	 * Yields the lower bound of this interval.
 	 * 
-	 * @return the low bound of this interval.
+	 * @return the lower bound of this interval
 	 */
 	public TarsisMathNumber getLow() {
 		return low;
 	}
 
+	/**
+	 * Yields {@code true} if the lower bound of this interval is set to minus
+	 * infinity.
+	 * 
+	 * @return {@code true} if that condition holds
+	 */
 	public boolean lowIsMinusInfinity() {
 		return low.isMinusInfinity();
 	}
 
+	/**
+	 * Yields {@code true} if the upper bound of this interval is set to plus
+	 * infinity.
+	 * 
+	 * @return {@code true} if that condition holds
+	 */
 	public boolean highIsPlusInfinity() {
 		return high.isPlusInfinity();
 	}
 
+	/**
+	 * Yields {@code true} if this is interval is not finite, that is, if at
+	 * least one bound is set to infinity.
+	 * 
+	 * @return {@code true} if that condition holds
+	 */
 	public boolean isInfinite() {
 		return this == INFINITY || (highIsPlusInfinity() || lowIsMinusInfinity());
 	}
 
+	/**
+	 * Yields {@code true} if this is interval is finite, that is, if neither
+	 * bound is set to infinity.
+	 * 
+	 * @return {@code true} if that condition holds
+	 */
 	public boolean isFinite() {
 		return !isInfinite();
 	}
 
+	/**
+	 * Yields {@code true} if this is the interval representing infinity, that
+	 * is, {@code [-Inf, +Inf]}.
+	 * 
+	 * @return {@code true} if that condition holds
+	 */
 	public boolean isInfinity() {
 		return this == INFINITY;
 	}
 
+	/**
+	 * Yields {@code true} if this is a singleton interval, that is, if the
+	 * lower bound and the upper bound are the same.
+	 * 
+	 * @return {@code true} if that condition holds
+	 */
 	public boolean isSingleton() {
 		return isFinite() && low.equals(high);
 	}
 
+	/**
+	 * Yields {@code true} if this is a singleton interval containing only
+	 * {@code n}.
+	 *
+	 * @param n the integer to test
+	 * 
+	 * @return {@code true} if that condition holds
+	 */
 	public boolean is(int n) {
 		return isSingleton() && low.is(n);
 	}
@@ -88,6 +176,13 @@ public class TarsisIntInterval {
 		return new TarsisIntInterval(i.low.roundDown(), i.high.roundUp());
 	}
 
+	/**
+	 * Performs the interval addition between {@code this} and {@code other}.
+	 * 
+	 * @param other the other interval
+	 * 
+	 * @return {@code this + other}
+	 */
 	public TarsisIntInterval plus(TarsisIntInterval other) {
 		if (isInfinity() || other.isInfinity())
 			return INFINITY;
@@ -95,6 +190,13 @@ public class TarsisIntInterval {
 		return cacheAndRound(new TarsisIntInterval(low.add(other.low), high.add(other.high)));
 	}
 
+	/**
+	 * Performs the interval subtraction between {@code this} and {@code other}.
+	 * 
+	 * @param other the other interval
+	 * 
+	 * @return {@code this - other}
+	 */
 	public TarsisIntInterval diff(TarsisIntInterval other) {
 		if (isInfinity() || other.isInfinity())
 			return INFINITY;
@@ -124,6 +226,14 @@ public class TarsisIntInterval {
 		return max;
 	}
 
+	/**
+	 * Performs the interval multiplication between {@code this} and
+	 * {@code other}.
+	 * 
+	 * @param other the other interval
+	 * 
+	 * @return {@code this * other}
+	 */
 	public TarsisIntInterval mul(TarsisIntInterval other) {
 		if (is(0) || other.is(0))
 			return ZERO;
@@ -140,6 +250,23 @@ public class TarsisIntInterval {
 		return cacheAndRound(new TarsisIntInterval(min(ll, lh, hl, hh), max(ll, lh, hl, hh)));
 	}
 
+	/**
+	 * Performs the interval division between {@code this} and {@code other}.
+	 * 
+	 * @param other       the other interval
+	 * @param ignoreZero  if {@code true}, causes the division to ignore the
+	 *                        fact that {@code other} might contain 0, producing
+	 *                        a smaller result
+	 * @param errorOnZero whether or not an {@link ArithmeticException} should
+	 *                        be thrown immediately if {@code other} contains
+	 *                        zero
+	 * 
+	 * @return {@code this / other}
+	 * 
+	 * @throws ArithmeticException if {@code other} contains 0 and
+	 *                                 {@code errorOnZero} is set to
+	 *                                 {@code true}
+	 */
 	public TarsisIntInterval div(TarsisIntInterval other, boolean ignoreZero, boolean errorOnZero) {
 		if (errorOnZero && (other.is(0) || other.includes(ZERO)))
 			throw new ArithmeticException("IntInterval divide by zero");
@@ -148,16 +275,20 @@ public class TarsisIntInterval {
 			return ZERO;
 
 		if (!other.includes(ZERO))
-			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.ONE.divide(other.low)));
+			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high),
+					TarsisMathNumber.ONE.divide(other.low)));
 		else if (other.high.is(0))
 			return mul(new TarsisIntInterval(TarsisMathNumber.MINUS_INFINITY, TarsisMathNumber.ONE.divide(other.low)));
 		else if (other.low.is(0))
 			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.PLUS_INFINITY));
 		else if (ignoreZero)
-			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.low), TarsisMathNumber.ONE.divide(other.high)));
+			return mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.low),
+					TarsisMathNumber.ONE.divide(other.high)));
 		else {
-			TarsisIntInterval lower = mul(new TarsisIntInterval(TarsisMathNumber.MINUS_INFINITY, TarsisMathNumber.ONE.divide(other.low)));
-			TarsisIntInterval higher = mul(new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.PLUS_INFINITY));
+			TarsisIntInterval lower = mul(
+					new TarsisIntInterval(TarsisMathNumber.MINUS_INFINITY, TarsisMathNumber.ONE.divide(other.low)));
+			TarsisIntInterval higher = mul(
+					new TarsisIntInterval(TarsisMathNumber.ONE.divide(other.high), TarsisMathNumber.PLUS_INFINITY));
 
 			if (lower.includes(higher))
 				return lower;
@@ -169,12 +300,26 @@ public class TarsisIntInterval {
 		}
 	}
 
+	/**
+	 * Yields {@code true} if this interval includes the given one.
+	 * 
+	 * @param other the other interval
+	 * 
+	 * @return {@code true} if it is included, {@code false} otherwise
+	 */
 	public boolean includes(TarsisIntInterval other) {
 		return low.compareTo(other.low) <= 0 && high.compareTo(other.high) >= 0;
 	}
 
+	/**
+	 * Yields {@code true} if this interval intersects with the given one.
+	 * 
+	 * @param other the other interval
+	 * 
+	 * @return {@code true} if those intersects, {@code false} otherwise
+	 */
 	public boolean intersects(TarsisIntInterval other) {
-		return includes(other) || other.includes(this) 
+		return includes(other) || other.includes(this)
 				|| (high.compareTo(other.low) >= 0 && high.compareTo(other.high) <= 0)
 				|| (other.high.compareTo(low) >= 0 && other.high.compareTo(high) <= 0);
 	}

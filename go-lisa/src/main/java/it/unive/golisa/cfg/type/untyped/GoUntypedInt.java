@@ -1,44 +1,51 @@
 package it.unive.golisa.cfg.type.untyped;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
+/**
+ * A Go untyped int type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoUntypedInt implements GoType, NumericType {
 
 	/**
-	 * Unique instance of GoUntypedInt type. 
+	 * Unique instance of GoUntypedInt type.
 	 */
 	public static final GoUntypedInt INSTANCE = new GoUntypedInt();
-	
-	private GoUntypedInt() {}
+
+	private GoUntypedInt() {
+	}
 
 	@Override
 	public String toString() {
 		return "int(untyped)";
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		return this == other;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return other instanceof GoType && other.isNumericType() || other.isUntyped();
+		return other instanceof GoType && other.isNumericType() || other.isUntyped()
+				|| (other instanceof GoSliceType && canBeAssignedTo(((GoSliceType) other).getContentType()));
 	}
 
 	@Override
@@ -80,7 +87,7 @@ public class GoUntypedInt implements GoType, NumericType {
 	public boolean isUnsigned() {
 		return false;
 	}
-	
+
 	@Override
 	public Collection<Type> allInstances() {
 		return Collections.singleton(this);

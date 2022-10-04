@@ -4,56 +4,77 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.call.BinaryNativeCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
- * A Go numerical sum function call (e1 + e2).
+ * A Go numerical sum expression (e.g., x + y).
  * 
- * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoSum extends BinaryNativeCall implements GoBinaryNumericalOperation {
+public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression implements GoBinaryNumericalOperation {
 
-	public GoSum(CFG cfg, SourceCodeLocation location, Expression exp1, Expression exp2) {
-		super(cfg, location, "+", exp1, exp2);
+	/**
+	 * Builds the sum expression.
+	 *
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this expression
+	 * @param right    the right-hand side of this expression
+	 */
+	public GoSum(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
+		super(cfg, location, "+", left, right);
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V>, H extends HeapDomain<H>, V extends ValueDomain<V>> AnalysisState<A, H, V> binarySemantics(
-			AnalysisState<A, H, V> entryState, InterproceduralAnalysis<A, H, V> interprocedural, AnalysisState<A, H, V> leftState,
-			SymbolicExpression leftExp, AnalysisState<A, H, V> rightState, SymbolicExpression rightExp)
+	protected <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		BinaryOperator op;
-		ExternalSet<Type> types;
-				
-		AnalysisState<A, H, V> result = entryState.bottom();
-		
-		for (Type leftType : leftExp.getTypes())
-			for (Type rightType : rightExp.getTypes()) {
-				if (leftType.isStringType() && rightType.isStringType()) {
-					op = BinaryOperator.STRING_CONCAT;
-					types = Caches.types().mkSingletonSet(GoStringType.INSTANCE);
-				} else if (leftType.isNumericType() || rightType.isNumericType()) {
-					op = BinaryOperator.NUMERIC_NON_OVERFLOWING_ADD;
-					types = resultType(leftExp, rightExp);
-				} else
-					continue;
-				
-				result = result.lub(rightState.smallStepSemantics(
-						new BinaryExpression(types, leftExp, rightExp, op, getLocation()), this));
-			}	
+		Type type;
 
+		AnalysisState<A, H, V, T> result = state.bottom();
+
+		
+		if (left.getStaticType().isStringType() && right.getStaticType().isStringType()) {
+				op = StringConcat.INSTANCE;
+				type = GoStringType.INSTANCE;
+				result = state.smallStepSemantics(new BinaryExpression(type, left, right, op, getLocation()), this);
+		} else if (left.getStaticType().isNumericType() || right.getStaticType().isNumericType()) {
+				op = NumericNonOverflowingAdd.INSTANCE;
+				type = resultType(left.getStaticType(), right.getStaticType());
+				result = state.smallStepSemantics(new BinaryExpression(type, left, right, op, getLocation()), this);
+		} else {
+			for (Type leftType : left.getRuntimeTypes())
+				for (Type rightType : right.getRuntimeTypes()) {
+					if (leftType.isStringType() && rightType.isStringType()) {
+						op = StringConcat.INSTANCE;
+						type = GoStringType.INSTANCE;
+					} else if (leftType.isNumericType() || rightType.isNumericType()) {
+						op = NumericNonOverflowingAdd.INSTANCE;
+						type = resultType(leftType, rightType);
+					} else
+						continue;
+					result = result.lub(state.smallStepSemantics(
+							new BinaryExpression(type, left, right, op, getLocation()), this));
+				}
+		}
 		return result;
 	}
 }

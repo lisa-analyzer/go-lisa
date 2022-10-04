@@ -1,30 +1,36 @@
 package it.unive.golisa.cfg;
 
+import it.unive.golisa.cfg.statement.block.IdInfo;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.VariableTableEntry;
+import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import it.unive.golisa.scooping.IdInfo;
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
-import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-
 /**
  * A control flow graph, that has {@link Statement}s as nodes and {@link Edge}s
- * as edges. It also can contains a mapping between the statements and the IDs visible in those statements
+ * as edges. It also can contains a mapping between the statements and the IDs
+ * visible in those statements.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class VariableScopingCFG extends CFG {
 
 	/**
-	 * The mapping between the statements and the IDs visible in those statements
+	 * The mapping between the statements and the IDs visible in those
+	 * statements.
 	 */
 	private final Map<Statement, Map<String, Set<IdInfo>>> scopingMap;
-	
+
 	/**
 	 * Builds the control flow graph.
 	 * 
@@ -35,11 +41,11 @@ public class VariableScopingCFG extends CFG {
 	 *                            edges that will be part of this cfg
 	 */
 	public VariableScopingCFG(CFGDescriptor descriptor, Collection<Statement> entrypoints,
-			AdjacencyMatrix<Statement, Edge, CFG> adjacencyMatrix) {
+			NodeList<CFG, Statement, Edge> adjacencyMatrix) {
 		super(descriptor, entrypoints, adjacencyMatrix);
 		scopingMap = new HashMap<>();
 	}
-	
+
 	/**
 	 * Builds the control flow graph.
 	 * 
@@ -49,28 +55,60 @@ public class VariableScopingCFG extends CFG {
 		super(descriptor);
 		scopingMap = new HashMap<>();
 	}
-	
+
 	/**
-	 * Adds the given node to the set of nodes, and collect  IDs visible in that node
+	 * Adds the given node to the set of nodes, and collect IDs visible in that
+	 * node.
 	 * 
-	 * @param node the node to add
-	 * 
+	 * @param node       the node to add
 	 * @param visibleIds the IDs visible to collect
 	 */
-	public void addNode(Statement node, Map<String, Set<IdInfo>> visibleIds) {
-		scopingMap.put(node, new HashMap<>(visibleIds));
-		super.addNode(node);
+	public void registerScoping(Statement node, Map<String, Set<IdInfo>> visibleIds) {
+		Map<String, Set<IdInfo>> scope = new HashMap<>();
+		visibleIds.entrySet().forEach(e -> 
+		{
+			scope.putIfAbsent(e.getKey(), new HashSet<>());
+			for(IdInfo info : e.getValue())
+				scope.get(e.getKey()).add(info);
+		});
+		scopingMap.put(node, scope);
 	}
 
-	
 	/**
-	 * Yields the IDs visible from a statement
+	 * Yields the IDs visible from a statement.
 	 * 
 	 * @param node the node to add
 	 * 
-	 * @return the visible IDs  
+	 * @return the visible IDs
 	 */
-	public Map<String, Set<IdInfo>> getVisibleIds(Statement node){
+	public Map<String, Set<IdInfo>> getVisibleIds(Statement node) {
 		return scopingMap.get(node);
+	}
+
+	@Override
+	public Collection<Statement> getGuards(ProgramPoint pp) {
+		// TODO remove this when the fix will be available in lisa
+		Collection<Statement> guards = super.getGuards(pp);
+		if (!guards.isEmpty())
+			return guards;
+
+		if (pp instanceof Call) {
+			Call original = (Call) pp;
+			while (original.getSource() != null)
+				original = original.getSource();
+			if (original != pp)
+				return super.getGuards(original);
+		}
+
+		return guards;
+	}
+	
+	public VariableTableEntry getVariableTableEntryIfExist(String variableName, CodeLocation location) {
+		for(VariableTableEntry table : getDescriptor().getVariables())
+			if(table.getName().equals(variableName) 
+					|| table.getLocation().equals(location))
+				return table;
+		return null;
+
 	}
 }

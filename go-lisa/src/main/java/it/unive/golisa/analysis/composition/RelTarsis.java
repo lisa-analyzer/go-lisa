@@ -9,23 +9,34 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.function.Predicate;
 
+/**
+ * The reduced product between Tarsis, string constant propagation and RSub.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<RelTarsis> {
 
 	private final ValueEnvironment<Tarsis> tarsis;
 	private final ValueEnvironment<StringConstantPropagation> constant;
 	private final RelationalSubstringDomain rsubs;
 
+	/**
+	 * Builds the top abstract value.
+	 */
 	public RelTarsis() {
-		this(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(), new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
+		this(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(),
+				new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
 	}
 
-	private RelTarsis(ValueEnvironment<Tarsis> tarsis, RelationalSubstringDomain rsubs, ValueEnvironment<StringConstantPropagation> constant) {
+	private RelTarsis(ValueEnvironment<Tarsis> tarsis, RelationalSubstringDomain rsubs,
+			ValueEnvironment<StringConstantPropagation> constant) {
 		this.tarsis = tarsis;
 		this.rsubs = rsubs;
 		this.constant = constant;
@@ -40,25 +51,42 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public RelTarsis smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		return new RelTarsis(tarsis.smallStepSemantics(expression, pp), rsubs.smallStepSemantics(expression, pp), constant.smallStepSemantics(expression, pp));
+		return new RelTarsis(tarsis.smallStepSemantics(expression, pp), rsubs.smallStepSemantics(expression, pp),
+				constant.smallStepSemantics(expression, pp));
 	}
 
 	@Override
 	public RelTarsis assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		return new RelTarsis(tarsis.assume(expression, pp), rsubs.assume(expression, pp), constant.assume(expression, pp));
+		return new RelTarsis(tarsis.assume(expression, pp), rsubs.assume(expression, pp),
+				constant.assume(expression, pp));
 	}
 
 	@Override
 	public RelTarsis forgetIdentifier(Identifier id) throws SemanticException {
-		return new RelTarsis(tarsis.forgetIdentifier(id), rsubs.forgetIdentifier(id), constant.forgetIdentifier(id));
+		return new RelTarsis(
+				tarsis.forgetIdentifier(id),
+				rsubs.forgetIdentifier(id),
+				constant.forgetIdentifier(id));
+	}
+
+	@Override
+	public RelTarsis forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		return new RelTarsis(
+				tarsis.forgetIdentifiersIf(test),
+				rsubs.forgetIdentifiersIf(test),
+				constant.forgetIdentifiersIf(test));
 	}
 
 	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (tarsis.satisfies(expression, pp) == Satisfiability.SATISFIED || rsubs.satisfies(expression, pp) == Satisfiability.SATISFIED || constant.satisfies(expression, pp) == Satisfiability.SATISFIED)
+		if (tarsis.satisfies(expression, pp) == Satisfiability.SATISFIED
+				|| rsubs.satisfies(expression, pp) == Satisfiability.SATISFIED
+				|| constant.satisfies(expression, pp) == Satisfiability.SATISFIED)
 			return Satisfiability.SATISFIED;
 
-		if (tarsis.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED || rsubs.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED || constant.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED)
+		if (tarsis.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED
+				|| rsubs.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED
+				|| constant.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED)
 			return Satisfiability.NOT_SATISFIED;
 
 		return Satisfiability.UNKNOWN;
@@ -67,16 +95,17 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
-		
-		return new PairRepresentation(new PairRepresentation(tarsis.representation(), rsubs.representation()), constant.representation());
+			return Lattice.bottomRepresentation();
+
+		return new ListRepresentation(tarsis.representation(), rsubs.representation(),
+				constant.representation());
 	}
 
 	@Override
 	public boolean isTop() {
-		return tarsis.isTop() && rsubs.isTop() && constant.isTop();	
+		return tarsis.isTop() && rsubs.isTop() && constant.isTop();
 	}
 
 	@Override
@@ -86,7 +115,8 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public RelTarsis top() {
-		return new RelTarsis(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(), new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
+		return new RelTarsis(new ValueEnvironment<Tarsis>(new Tarsis()), new RelationalSubstringDomain(),
+				new ValueEnvironment<StringConstantPropagation>(new StringConstantPropagation()));
 	}
 
 	@Override
@@ -101,15 +131,15 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	protected RelTarsis wideningAux(RelTarsis other) throws SemanticException {
-		return new RelTarsis(tarsis.widening(other.tarsis), rsubs.widening(other.rsubs), constant.widening(other.constant));
+		return new RelTarsis(tarsis.widening(other.tarsis), rsubs.widening(other.rsubs),
+				constant.widening(other.constant));
 	}
 
 	@Override
 	protected boolean lessOrEqualAux(RelTarsis other) throws SemanticException {
-		return tarsis.lessOrEqual(other.tarsis) && rsubs.lessOrEqual(other.rsubs) && constant.lessOrEqual(other.constant);
+		return tarsis.lessOrEqual(other.tarsis) && rsubs.lessOrEqual(other.rsubs)
+				&& constant.lessOrEqual(other.constant);
 	}
-
-	
 
 	@Override
 	public int hashCode() {

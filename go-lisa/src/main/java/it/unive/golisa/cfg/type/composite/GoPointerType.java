@@ -1,36 +1,59 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
+import it.unive.lisa.caches.Caches;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * A Go pointer type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoPointerType implements PointerType, GoType {
 
 	private Type baseType;
 
 	private static final Set<GoPointerType> pointerTypes = new HashSet<>();
 
-	public static GoPointerType lookup(GoPointerType type)  {
+	/**
+	 * Yields a unique instance (either an existing one or a fresh one) of
+	 * {@link GoPointerType} representing a pointer type.
+	 * 
+	 * @param contentType the content type of the pointer type to lookup
+	 * 
+	 * @return the unique instance of {@link GoPointerType} representing the
+	 *             pointer type given as argument
+	 */
+	public static GoPointerType lookup(Type contentType) {
+		GoPointerType type = new GoPointerType(contentType);
 		if (!pointerTypes.contains(type))
 			pointerTypes.add(type);
 		return pointerTypes.stream().filter(x -> x.equals(type)).findFirst().get();
 	}
 
-	public GoPointerType(Type baseType) {
+	/**
+	 * Builds the pointer type.
+	 * 
+	 * @param baseType the base type of this pointer type
+	 */
+	private GoPointerType(Type baseType) {
 		this.baseType = baseType;
 	}
 
-	public Type getBaseType() {
-		return baseType;
+	@Override
+	public ExternalSet<Type> getInnerTypes() {
+		return Caches.types().mkSingletonSet(baseType);
 	}
 
 	@Override
@@ -48,7 +71,7 @@ public class GoPointerType implements PointerType, GoType {
 		if (other instanceof GoPointerType)
 			return baseType.canBeAssignedTo(((GoPointerType) other).baseType) ? other : Untyped.INSTANCE;
 		if (other instanceof GoInterfaceType)
-			return ((GoInterfaceType) other).isEmptyInterface() ?  other : Untyped.INSTANCE;
+			return ((GoInterfaceType) other).isEmptyInterface() ? other : Untyped.INSTANCE;
 
 		return Untyped.INSTANCE;
 	}
@@ -88,18 +111,37 @@ public class GoPointerType implements PointerType, GoType {
 		return new GoNil(cfg, location);
 	}
 
+	/**
+	 * Yields all the pointer types.
+	 * 
+	 * @return all the pointer types
+	 */
 	public static Collection<Type> all() {
 		Collection<Type> instances = new HashSet<>();
 		for (GoPointerType in : pointerTypes)
 			instances.add(in);
-		return instances;	
+		return instances;
 	}
 
 	@Override
 	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoPointerType in : pointerTypes)
-			instances.add(in);
-		return instances;
+		return all();
+	}
+
+	@Override
+	public boolean isUnitType() {
+		return baseType.isUnitType();
+	}
+
+	@Override
+	public UnitType asUnitType() {
+		return (UnitType) baseType;
+	}
+
+	/**
+	 * Clears all the pointer types.
+	 */
+	public static void clearAll() {
+		pointerTypes.clear();
 	}
 }

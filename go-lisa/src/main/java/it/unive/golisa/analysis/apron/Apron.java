@@ -150,7 +150,7 @@ public class Apron implements ValueDomain<Apron> {
 			// we are not able to translate expression
 			// hence, we treat it as "don't know"
 			if (apronExpression == null)
-				return forgetAbstractionOf(newState, id, pp);
+				return this;//forgetAbstractionOf(newState, id, pp);
 
 			Var[] vars = apronExpression.getVars();
 

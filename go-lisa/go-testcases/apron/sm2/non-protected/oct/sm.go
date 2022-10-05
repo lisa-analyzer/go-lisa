@@ -1,6 +1,8 @@
 package pflag
 
 import "strconv"
+import "github.com/hyperledger/shim"
+
 	func  main(stub shim.ChaincodeStubInterface, 
     		args []string) 	pb.Response {
     		Avalbytes := stub.GetState(A)

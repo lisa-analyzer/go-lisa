@@ -16,7 +16,6 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class ApronTest extends GoAnalysisTestExecutor {
 	
-
 	@Test
 	public void testSm2Interval() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.Box);
@@ -56,7 +55,8 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
-								new TypeEnvironment<>(new InferredTypes())))				.addSemanticCheck(new OverflowChecker())
+								new TypeEnvironment<>(new InferredTypes())))				
+				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -71,7 +71,8 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
-								new TypeEnvironment<>(new InferredTypes())))				.addSemanticCheck(new OverflowChecker())
+								new TypeEnvironment<>(new InferredTypes())))		
+				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -85,7 +86,8 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
-								new TypeEnvironment<>(new InferredTypes())))				.addSemanticCheck(new OverflowChecker())
+								new TypeEnvironment<>(new InferredTypes())))	
+				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -99,7 +101,8 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
-								new TypeEnvironment<>(new InferredTypes())))				.addSemanticCheck(new OverflowChecker())
+								new TypeEnvironment<>(new InferredTypes())))				
+				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -113,7 +116,8 @@ public class ApronTest extends GoAnalysisTestExecutor {
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
-								new TypeEnvironment<>(new InferredTypes())))				.addSemanticCheck(new OverflowChecker())
+								new TypeEnvironment<>(new InferredTypes())))			
+				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -121,14 +125,15 @@ public class ApronTest extends GoAnalysisTestExecutor {
 
 	}
 
-	@Ignore
+	@Test
 	public void testSmOct() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.Octagon);
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
-								new TypeEnvironment<>(new InferredTypes())))				.addSemanticCheck(new OverflowChecker())
+								new TypeEnvironment<>(new InferredTypes())))			
+				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
@@ -136,14 +141,15 @@ public class ApronTest extends GoAnalysisTestExecutor {
 
 	}
 	
-	@Ignore
+	@Test
 	public void testSmPpl() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.PplPoly);
 		LiSAConfiguration conf = new LiSAConfiguration()
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
-								new TypeEnvironment<>(new InferredTypes())))				.addSemanticCheck(new OverflowChecker())
+								new TypeEnvironment<>(new InferredTypes())))			
+				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());

@@ -1,6 +1,7 @@
 package pflag
 
 import "strconv"
+import "github.com/hyperledger/shim"
 
 	func main(stub shim.ChaincodeStubInterface, FixedRateBPS int, FloatingRateBPS int, PA int, referenceRate int) pb.Response {
   		referenceRateBytes := stub.GetState("rr" + irs.ReferenceRate)

@@ -8,6 +8,7 @@ import javax.swing.Box;
 import apron.Abstract1;
 import apron.ApronException;
 import apron.Coeff;
+import apron.Environment;
 import apron.Manager;
 import apron.MpfrScalar;
 import apron.MpqScalar;
@@ -41,6 +42,24 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
+import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingDiv;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMod;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMul;
+import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
+import it.unive.lisa.symbolic.value.operator.binary.TypeCast;
+import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
+import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
+import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
+import it.unive.lisa.symbolic.value.operator.unary.StringLength;
+import it.unive.lisa.symbolic.value.operator.unary.TypeOf;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 
 public class Apron implements ValueDomain<Apron> {
 
@@ -186,31 +205,27 @@ public class Apron implements ValueDomain<Apron> {
 
 		if (exp instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) exp;
+			UnaryOperator op = un.getOperator();
 
-			switch(un.getOperator()) {
-			case LOGICAL_NOT:
+			if (op == LogicalNegation.INSTANCE)
 				break;
-			case NUMERIC_NEG:
+			else if (op == NumericNegation.INSTANCE)
 				break;
-			case STRING_LENGTH:
+			else if (op == StringLength.INSTANCE)
 				break;
-			case TYPEOF:
+			else if (op == TypeOf.INSTANCE)
 				break;
-			default:
+			else
 				break;
-
-			}
 		}
 
 		if (exp instanceof BinaryExpression) {			
 			BinaryExpression bin = (BinaryExpression) exp;
-
-			switch(bin.getOperator()) {
-			case TYPE_CAST:
-			case TYPE_CONV:
-				if (!exp.getTypes().isEmpty())
+			BinaryOperator op = bin.getOperator();
+			if (op == TypeCast.INSTANCE || op == TypeConv.INSTANCE) {
+				if (!exp.getRuntimeTypes().isEmpty())
 					return toApronExpression(bin.getLeft());
-			default:
+			} else {
 				Texpr1Node rewrittenLeft =  toApronExpression(bin.getLeft());
 				if (rewrittenLeft == null)
 					return null;
@@ -219,10 +234,10 @@ public class Apron implements ValueDomain<Apron> {
 				if (rewrittenRight == null)
 					return null;
 
-				if (bin.getOperator() == BinaryOperator.COMPARISON_LT)
+				if (op == ComparisonLt.INSTANCE)
 					return new Texpr1BinNode(Tcons1.SUP, rewrittenRight, rewrittenLeft);			
 
-				if (bin.getOperator() == BinaryOperator.COMPARISON_LE)
+				if (op == ComparisonLe.INSTANCE)
 					return new Texpr1BinNode(Tcons1.SUPEQ, rewrittenRight, rewrittenLeft);			
 
 				if (!canBeConvertedToApronOperator(bin.getOperator()))
@@ -239,23 +254,21 @@ public class Apron implements ValueDomain<Apron> {
 
 
 	private boolean canBeConvertedToApronOperator(BinaryOperator op) {
-		switch(op) {
-		case STRING_CONCAT:
-		case NUMERIC_NON_OVERFLOWING_ADD:
-		case NUMERIC_NON_OVERFLOWING_MUL: 
-		case NUMERIC_NON_OVERFLOWING_SUB:
-		case NUMERIC_NON_OVERFLOWING_DIV: 
-		case NUMERIC_NON_OVERFLOWING_MOD: 
-		case COMPARISON_EQ: 
-		case COMPARISON_NE: 
-		case COMPARISON_GE: 
-		case COMPARISON_GT: 
+		if (op  == it.unive.lisa.symbolic.value.operator.binary.StringConcat.INSTANCE
+				|| op == NumericNonOverflowingAdd.INSTANCE
+				|| op == NumericNonOverflowingMul.INSTANCE
+				|| op == NumericNonOverflowingDiv.INSTANCE
+				|| op == NumericNonOverflowingSub.INSTANCE
+				|| op == NumericNonOverflowingMod.INSTANCE
+				|| op == ComparisonEq.INSTANCE
+				|| op == ComparisonNe.INSTANCE
+				|| op == ComparisonGe.INSTANCE
+				|| op == ComparisonGt.INSTANCE)
 			return true;
-		default:
-			return false;
-		}
+
+		return false;
 	}
-	
+
 	private int toApronOperator(BinaryOperator op) {
 		switch(op) {
 		case STRING_CONCAT:
@@ -322,7 +335,6 @@ public class Apron implements ValueDomain<Apron> {
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression un = (UnaryExpression) expression;
-
 			switch (un.getOperator()) {
 			case LOGICAL_NOT:
 				ValueExpression inner = (ValueExpression) un.getExpression();
@@ -396,7 +408,7 @@ public class Apron implements ValueDomain<Apron> {
 
 	private Tcons1 toApronComparison(BinaryExpression exp) throws ApronException {
 		// Apron supports only "exp <comparison> 0", so we need to move everything on the left node 
-		SymbolicExpression combinedExpr = new BinaryExpression(exp.getTypes(), exp.getLeft(), exp.getRight(), BinaryOperator.NUMERIC_NON_OVERFLOWING_SUB, exp.getCodeLocation()); 
+		SymbolicExpression combinedExpr = new BinaryExpression(exp.getRuntimeTypes(), exp.getLeft(), exp.getRight(), BinaryOperator.NUMERIC_NON_OVERFLOWING_SUB, exp.getCodeLocation()); 
 
 		switch(exp.getOperator()) {
 		case COMPARISON_GT:
@@ -409,9 +421,9 @@ public class Apron implements ValueDomain<Apron> {
 			else
 				throw new UnsupportedOperationException("Comparison operator "+exp.getOperator()+" not yet supported"); 		
 		case COMPARISON_LE:
-			return toApronComparison(new BinaryExpression(exp.getTypes(), exp.getRight(), exp.getLeft(), BinaryOperator.COMPARISON_GE, exp.getCodeLocation()));
+			return toApronComparison(new BinaryExpression(exp.getRuntimeTypes(), exp.getRight(), exp.getLeft(), BinaryOperator.COMPARISON_GE, exp.getCodeLocation()));
 		case COMPARISON_LT:
-			return toApronComparison(new BinaryExpression(exp.getTypes(), exp.getRight(), exp.getLeft(), BinaryOperator.COMPARISON_GT, exp.getCodeLocation()));
+			return toApronComparison(new BinaryExpression(exp.getRuntimeTypes(), exp.getRight(), exp.getLeft(), BinaryOperator.COMPARISON_GT, exp.getCodeLocation()));
 		default:
 			throw new UnsupportedOperationException("Comparison operator "+exp.getOperator()+" not yet supported"); 		
 		}		
@@ -463,7 +475,7 @@ public class Apron implements ValueDomain<Apron> {
 					if (state.satisfy(manager, toApronComparison(bin)))
 						return Satisfiability.SATISFIED;
 					else {
-						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_NE, bin.getCodeLocation());
+						neg = new BinaryExpression(bin.getRuntimeTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_NE, bin.getCodeLocation());
 
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
@@ -474,7 +486,7 @@ public class Apron implements ValueDomain<Apron> {
 					if (state.satisfy(manager, toApronComparison(bin)))
 						return Satisfiability.SATISFIED;
 					else {
-						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LT, bin.getCodeLocation());
+						neg = new BinaryExpression(bin.getRuntimeTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LT, bin.getCodeLocation());
 
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
@@ -485,7 +497,7 @@ public class Apron implements ValueDomain<Apron> {
 					if (state.satisfy(manager, toApronComparison(bin)))
 						return Satisfiability.SATISFIED;
 					else {
-						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LE, bin.getCodeLocation());
+						neg = new BinaryExpression(bin.getRuntimeTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_LE, bin.getCodeLocation());
 
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
@@ -496,7 +508,7 @@ public class Apron implements ValueDomain<Apron> {
 					if (state.satisfy(manager, toApronComparison(bin)))
 						return Satisfiability.SATISFIED;
 					else {
-						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GT, bin.getCodeLocation());
+						neg = new BinaryExpression(bin.getRuntimeTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GT, bin.getCodeLocation());
 
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
@@ -507,7 +519,7 @@ public class Apron implements ValueDomain<Apron> {
 					if (state.satisfy(manager, toApronComparison(bin)))
 						return Satisfiability.SATISFIED;
 					else {
-						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GE, bin.getCodeLocation());
+						neg = new BinaryExpression(bin.getRuntimeTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_GE, bin.getCodeLocation());
 
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;
@@ -518,7 +530,7 @@ public class Apron implements ValueDomain<Apron> {
 					if (state.satisfy(manager, toApronComparison(bin)))
 						return Satisfiability.SATISFIED;
 					else {
-						neg = new BinaryExpression(bin.getTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_EQ, bin.getCodeLocation());
+						neg = new BinaryExpression(bin.getRuntimeTypes(), bin.getLeft(), bin.getRight(), BinaryOperator.COMPARISON_EQ, bin.getCodeLocation());
 
 						if (state.satisfy(manager, toApronComparison(neg)))
 							return Satisfiability.NOT_SATISFIED;

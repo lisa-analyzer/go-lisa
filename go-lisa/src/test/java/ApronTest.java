@@ -1,5 +1,4 @@
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.apron.Apron;
@@ -9,6 +8,7 @@ import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.checker.OverflowChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
@@ -48,7 +48,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 
 	}
 	
-	@Ignore
+	@Test
 	public void testSm2Ppl() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.PplPoly);
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -94,7 +94,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 		perform("apron/sm2/protected/oct", "sm-protected.go", conf);
 	}
 
-	@Ignore
+	@Test
 	public void testSm2PplProtected() throws AnalysisSetupException {
 		Apron.setManager(ApronDomain.PplPoly);
 		LiSAConfiguration conf = new LiSAConfiguration()
@@ -104,6 +104,7 @@ public class ApronTest extends GoAnalysisTestExecutor {
 								new TypeEnvironment<>(new InferredTypes())))				
 				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
+				.setDumpAnalysis(GraphType.DOT)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("apron/sm2/protected/ppl", "sm-protected.go", conf);

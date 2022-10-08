@@ -91,7 +91,7 @@ public class Atoi extends NativeCFG {
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
 				return state.bottom();
-			return state.smallStepSemantics(expr, original);
+			return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
 		}
 	}
 }

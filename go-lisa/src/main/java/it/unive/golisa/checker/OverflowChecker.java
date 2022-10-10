@@ -206,6 +206,6 @@ public class OverflowChecker implements SemanticCheck<GoAbstractState<Apron, Typ
 		if (type == GoInt64Type.INSTANCE || type == GoIntType.INSTANCE || type == GoUntypedInt.INSTANCE)
 			return new Constant(type, (long) -9223372036854775808L, SyntheticLocation.INSTANCE);
 
-		return new Constant(type, 0, SyntheticLocation.INSTANCE);
+		return new Constant(type, -9223372036854775808L, SyntheticLocation.INSTANCE);
 	}
 }

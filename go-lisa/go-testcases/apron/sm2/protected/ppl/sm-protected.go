@@ -21,7 +21,7 @@ import "github.com/hyperledger/shim"
    			if Bval > 0 &&  X > 0 && Bval + X < 100 {
    				Bval = Bval + X
     		} else {
-    			Bval = 0;
+    			Bval = 0
     		}
 
     		err = stub.PutState(A, []byte(strconv.Itoa(Aval)))

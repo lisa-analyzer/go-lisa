@@ -16,6 +16,9 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.ReturnTopPolicy;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 
 public class GoLiSA {
@@ -41,7 +44,7 @@ public class GoLiSA {
 
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-box")) {
-				Apron.setManager(ApronDomain.PplPoly);
+				Apron.setManager(ApronDomain.Box);
 				conf.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),
 								new Apron(),
@@ -99,7 +102,11 @@ public class GoLiSA {
 			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());		
 			return;
 		}
-
+		
+		conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE);
+		conf.setCallGraph(new RTACallGraph());
+		conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>());		
+		
 		LiSA lisa = new LiSA(conf);
 
 		try {

@@ -8,7 +8,6 @@ import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.checker.OverflowChecker;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
@@ -104,7 +103,6 @@ public class ApronTest extends GoAnalysisTestExecutor {
 								new TypeEnvironment<>(new InferredTypes())))				
 				.addSemanticCheck(new OverflowChecker())
 				.setJsonOutput(true)
-				.setDumpAnalysis(GraphType.DOT)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("apron/sm2/protected/ppl", "sm-protected.go", conf);

@@ -140,7 +140,16 @@ public class UntrustedCrossContractChecker implements
 								tool.warnOn(call, "Detected untrusted cross contract invocation. The value passed as contract to the call '"+resolved.getFullTargetName()+"' is tainted");
 
 			}
-		}
+		} if (call.getTargetName().equals("InvokeChaincode")) {
+			for (CFGWithAnalysisResults<
+					GoAbstractState<ValueEnvironment<TaintDomainForUntrustedCrossContractInvoking>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, ValueEnvironment<TaintDomainForUntrustedCrossContractInvoking>,
+					TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+				if (call.getParameters().length > 1 && result.getAnalysisStateAfter(call.getParameters()[1]).getState().getValueState()
+						.getValueOnStack().isTainted())
+					tool.warnOn(call, "Detected untrusted cross contract invocation. The value passed as contract to the call '"+resolved.getFullTargetName()+"' is tainted");
+		
+		} 
 		
 		return true;
 

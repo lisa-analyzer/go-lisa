@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
+import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.function.CreateCompositeKey.CreateCompositeKeyImpl;
+import it.unive.golisa.cfg.runtime.shim.method.InvokeChaincode;
 import it.unive.golisa.cfg.runtime.shim.method.GetArgs.GetArgsImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters.GetFunctionAndParametersImpl;
 import it.unive.golisa.cfg.runtime.shim.method.GetState.GetStateImpl;
@@ -127,6 +129,16 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 				tuple2,
 				new Parameter(unknownLocation, "key", GoStringType.INSTANCE));
 		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
+		
+
+		desc = new CFGDescriptor(unknownLocation, chainCodeStubInterfaceUnit, false, "InvokeChaincode", Response.INSTANCE,
+				new Parameter(unknownLocation, "this", ChaincodeStub.INSTANCE),
+				new Parameter(unknownLocation, "chaincodeName", GoStringType.INSTANCE),
+				new Parameter(unknownLocation, "args", GoSliceType.lookup(GoSliceType.getSliceOfSliceOfBytes())),
+				new Parameter(unknownLocation, "channel", GoStringType.INSTANCE));
+		chainCodeStubInterfaceUnit.addInstanceCFG(new CFG(desc));
+
+		
 
 		// missing
 		// - InvokeChaincode

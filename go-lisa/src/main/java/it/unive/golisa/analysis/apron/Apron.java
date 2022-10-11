@@ -25,11 +25,14 @@ import apron.Texpr1Node;
 import apron.Texpr1VarNode;
 import apron.Var;
 import gmp.Mpfr;
+import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -148,7 +151,7 @@ public class Apron implements ValueDomain<Apron> {
 			// we are not able to translate expression
 			// hence, we treat it as "don't know"
 			if (apronExpression == null)
-				return new Apron(newState.forgetCopy(manager, toApronVar(id), false));// forgetAbstractionOf(newState, id, pp);//
+				return forgetAbstractionOf(newState, id, pp);//new Apron(newState.forgetCopy(manager, toApronVar(id), false));// 
 
 			Var[] vars = apronExpression.getVars();
 
@@ -167,14 +170,14 @@ public class Apron implements ValueDomain<Apron> {
 	}
 
 
-//	private Apron forgetAbstractionOf(Abstract1 newState, Identifier id, ProgramPoint pp) throws SemanticException {
-//		Apron result = new Apron(newState);
-//		result = result.forgetIdentifier(id);
-//		Constant zero = new Constant(GoIntType.INSTANCE, 0, SyntheticLocation.INSTANCE);
-//		Apron ge = result.assume(new BinaryExpression(GoBoolType.INSTANCE, id, zero, ComparisonGe.INSTANCE, SyntheticLocation.INSTANCE), pp);
-//		Apron le = result.assume(new BinaryExpression(GoBoolType.INSTANCE, id, zero, ComparisonLe.INSTANCE, SyntheticLocation.INSTANCE), pp);
-//		return ge.lub(le);
-//	}
+	private Apron forgetAbstractionOf(Abstract1 newState, Identifier id, ProgramPoint pp) throws SemanticException {
+		Apron result = new Apron(newState);
+		result = result.forgetIdentifier(id);
+		Constant zero = new Constant(GoIntType.INSTANCE, 0, SyntheticLocation.INSTANCE);
+		Apron ge = result.assume(new BinaryExpression(GoBoolType.INSTANCE, id, zero, ComparisonGe.INSTANCE, SyntheticLocation.INSTANCE), pp);
+		Apron le = result.assume(new BinaryExpression(GoBoolType.INSTANCE, id, zero, ComparisonLe.INSTANCE, SyntheticLocation.INSTANCE), pp);
+		return ge.lub(le);
+	}
 
 	private Texpr1Node toApronExpression(SymbolicExpression exp) throws ApronException {
 		if (exp instanceof Identifier)  

@@ -1,6 +1,11 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -15,14 +20,13 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi short variable declaration statement.
@@ -52,10 +56,14 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {
-		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof Clean;
+	private boolean isTaintedValue(ExpressionSet<SymbolicExpression> computedExpressions) {
+		return computedExpressions.size() == 1 && (computedExpressions.iterator().next() instanceof Clean || computedExpressions.iterator().next() instanceof Tainted);
 	}
 
+	private SymbolicExpression getTaintedValueWithType(SymbolicExpression exp, Type type, CodeLocation location) {
+		return exp instanceof Clean ? new Clean(type, location) : new Tainted(location);
+	}
+	
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
@@ -69,7 +77,7 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		// if the right state is top,
 		// we put all the variables to top
 		if (rightState.isTop()
-				|| isClean(rightState.getComputedExpressions()) || rightState.getComputedExpressions().size() > 1) {
+				|| isTaintedValue(rightState.getComputedExpressions()) || rightState.getComputedExpressions().size() > 1) {
 			AnalysisState<A, H, V, T> result = entryState;
 
 			for (int i = 0; i < ids.length; i++) {
@@ -82,11 +90,13 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 				AnalysisState<A, H, V, T> tmp = result;
 
 				for (SymbolicExpression id : idState.getComputedExpressions()) {
-					if (isClean(rightState.getComputedExpressions())) {
+					if (isTaintedValue(rightState.getComputedExpressions())) {
 						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
 						for (Type type : id.getRuntimeTypes()) {
+							SymbolicExpression taintValue = getTaintedValueWithType(rightState.getComputedExpressions().iterator().next(), type, getLocation());
+
 							AnalysisState<A, H, V,
-									T> assign = tmp.assign((Identifier) id, new Clean(type, getLocation()), this);
+									T> assign = tmp.assign((Identifier) id, taintValue, this);
 							if (!assign.getState().getHeapState().isTop() || !assign.getState().getValueState().isTop())
 								tmp2 = tmp2.lub(assign);
 						}

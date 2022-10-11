@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import it.unive.golisa.cfg.runtime.shim.function.Start.StartImpl;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;

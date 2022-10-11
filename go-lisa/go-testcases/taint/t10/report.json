@@ -1,0 +1,8 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/taint/t10/t10.go':131:71] on 'untyped SimpleChaincode::query(*SimpleChaincode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] Detected untrusted cross contract invocation. The value passed as contract to the call 'InvokeChaincode' is tainted"
+  }, {
+    "message" : "['go-testcases/taint/t10/t10.go':84:65] on 'untyped SimpleChaincode::invoke(*SimpleChaincode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] Detected untrusted cross contract invocation. The value passed as contract to the call 'InvokeChaincode' is tainted"
+  } ],
+  "files" : [ ]
+}

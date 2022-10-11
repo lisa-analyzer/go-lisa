@@ -7,7 +7,9 @@ import org.junit.Test;
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForUntrustedCrossContractInvoking;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.UntrustedCrossContractChecker;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
@@ -161,6 +163,36 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("taint/t9", "t9.go", conf, annSet);
+	}
+	
+	@Test
+	public void taintTest010() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new TaintDomainForUntrustedCrossContractInvoking()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new UntrustedCrossContractChecker())
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("taint/t10", "t10.go", conf, annSet);
+	}
+	
+	@Test
+	public void taintTest011() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new TaintDomainForUntrustedCrossContractInvoking()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new UntrustedCrossContractChecker())
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("taint/t11", "t11.go", conf, annSet);
 	}
 
 	private class SimpleTaintAnnotationSet extends AnnotationSet {

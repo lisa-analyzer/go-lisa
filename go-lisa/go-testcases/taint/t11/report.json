@@ -1,0 +1,6 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/taint/t11/t11.go':29:63] on 'untyped example::Invoke(*example e, shim.ChaincodeStubInterface stub)': [EXPRESSION] Detected untrusted cross contract invocation. The value passed as contract to the call 'InvokeChaincode' is tainted"
+  } ],
+  "files" : []
+}

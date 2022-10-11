@@ -99,8 +99,12 @@ public class GetFunctionAndParameters extends NativeCFG {
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new Tainted(getLocation()), original);
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {	
+			return state.smallStepSemantics(
+					new Tainted(GoTupleType.lookup(new Parameter(original.getLocation(), "_", GoStringType.INSTANCE),
+							new Parameter(original.getLocation(), "_", GoSliceType.getSliceOfStrings())),
+							original.getLocation()),
+					original);
 		}
 	}
 }

@@ -61,7 +61,7 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 	}
 
 	private SymbolicExpression getTaintedValueWithType(SymbolicExpression exp, Type type, CodeLocation location) {
-		return exp instanceof Clean ? new Clean(type, location) : new Tainted(location);
+		return exp instanceof Clean ? new Clean(type, location) : new Tainted(type, location);
 	}
 	
 	@Override

@@ -9,13 +9,19 @@ import it.unive.golisa.analysis.apron.Apron;
 import it.unive.golisa.analysis.apron.Apron.ApronDomain;
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
+import it.unive.golisa.analysis.taint.TaintDomainForUntrustedCrossContractInvoking;
 import it.unive.golisa.checker.OverflowChecker;
+import it.unive.golisa.checker.UntrustedCrossContractChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
@@ -40,6 +46,10 @@ public class GoLiSA {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
+		
+		conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE);
+		conf.setCallGraph(new RTACallGraph());
+		conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>());		
 
 
 		for (int i = 0; i < args.length; i++) {
@@ -73,6 +83,14 @@ public class GoLiSA {
 //				conf.setInferTypes(true);
 //				conf.addSemanticCheck(new ForRangeChecker());
 //			}
+			else if (args[i].equals("-ucci")) {
+				conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
+						.setAbstractState(
+								new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new TaintDomainForUntrustedCrossContractInvoking()),
+										LiSAFactory.getDefaultFor(TypeDomain.class)))
+						.addSemanticCheck(new UntrustedCrossContractChecker());
+				break;
+			}
 		}
 
 		Program program = null;
@@ -89,7 +107,7 @@ public class GoLiSA {
 			return;
 		} catch (IOException e) {
 			// the file does not exists
-			System.err.println("File " + filePath +  "does not exist.");
+			System.err.println("File " + filePath +  " does not exist.");
 			return;
 		} catch (UnsupportedOperationException e1) {
 			// an unsupported operations has been encountered
@@ -102,10 +120,6 @@ public class GoLiSA {
 			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());		
 			return;
 		}
-		
-		conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE);
-		conf.setCallGraph(new RTACallGraph());
-		conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>());		
 		
 		LiSA lisa = new LiSA(conf);
 

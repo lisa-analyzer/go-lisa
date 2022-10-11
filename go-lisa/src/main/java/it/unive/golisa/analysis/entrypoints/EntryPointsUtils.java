@@ -1,7 +1,9 @@
 package it.unive.golisa.analysis.entrypoints;
 
+import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UntrustedCrossContractInvokingAnnotationSet;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
@@ -66,16 +68,20 @@ public class EntryPointsUtils {
 	 */
 	private static Set<CFGDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			AnnotationSet... annotationSets) {
 
 		Set<CFGDescriptor> descriptors = new HashSet<>();
-		for (NonDeterminismAnnotationSet as : annotationSets) {
-			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
-			appliedAnnotations.stream()
-					.forEach(e -> {
-						if (sources.contains(e.getLeft()))
-							descriptors.add(e.getRight());
-					});
+		for (AnnotationSet as : annotationSets) {
+			Set<? extends CodeAnnotation> sources = Set.of();
+			if(as instanceof NonDeterminismAnnotationSet) {
+				sources = ((NonDeterminismAnnotationSet)as).getAnnotationForSources();
+			} else if(as instanceof UntrustedCrossContractInvokingAnnotationSet) {
+				sources = ((UntrustedCrossContractInvokingAnnotationSet)as).getAnnotationForSources();
+			}
+			
+			for(Pair<CodeAnnotation, CFGDescriptor> e : appliedAnnotations)
+				if (sources.contains(e.getLeft()))
+					descriptors.add(e.getRight());
 		}
 
 		return descriptors;
@@ -93,7 +99,7 @@ public class EntryPointsUtils {
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
 			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			AnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
 

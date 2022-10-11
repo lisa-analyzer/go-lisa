@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -23,6 +24,7 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -53,7 +55,7 @@ public class PutState extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class PutStateImpl extends NaryExpression
-			implements PluggableStatement {
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -90,17 +92,18 @@ public class PutState extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (ExpressionSet<SymbolicExpression> exprs : params)
-				for (SymbolicExpression expr : exprs)
-					result = result.lub(state.smallStepSemantics(expr, original));
-			return result;
+			AnalysisState<A, H, V,
+			T> errorValue = state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+			AnalysisState<A, H, V, T> nilValue = 
+					new GoNil(getCFG(), getLocation()).semantics(state, interprocedural, expressions);
+					
+			return errorValue.lub(nilValue);
 		}
 	}
 }

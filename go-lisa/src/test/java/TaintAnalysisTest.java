@@ -194,6 +194,21 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
 		perform("taint/t11", "t11.go", conf, annSet);
 	}
+	
+	@Test
+	public void taintTest012() throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration()
+				.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(),
+								new ValueEnvironment<>(new TaintDomainForUntrustedCrossContractInvoking()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new UntrustedCrossContractChecker())
+				.setJsonOutput(true)
+				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
+				.setCallGraph(new RTACallGraph())
+				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		perform("taint/t12", "t12.go", conf, annSet);
+	}
 
 	private class SimpleTaintAnnotationSet extends AnnotationSet {
 

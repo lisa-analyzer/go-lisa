@@ -45,9 +45,9 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		// FIXME: need to check which state needs to be returned (left/right)
-		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
+		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped() && !left.getStaticType().isBooleanType())
 			return state.bottom();
-		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())
+		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped() && !right.getStaticType().isBooleanType())
 			return state.bottom();
 
 		if (state.satisfies(left, this) == Satisfiability.SATISFIED)

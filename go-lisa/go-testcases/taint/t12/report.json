@@ -1,0 +1,6 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/taint/t12/t12.go':117:66] on 'untyped UnionLoanChainCode::offer(*UnionLoanChainCode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] Detected untrusted cross contract invocation. The value passed as contract to the call 'InvokeChaincode' is tainted"
+  } ],
+  "files" : [ ]
+}

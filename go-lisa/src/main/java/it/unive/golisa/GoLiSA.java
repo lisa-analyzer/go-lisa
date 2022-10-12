@@ -13,7 +13,6 @@ import it.unive.golisa.analysis.taint.TaintDomainForUntrustedCrossContractInvoki
 import it.unive.golisa.checker.OverflowChecker;
 import it.unive.golisa.checker.UntrustedCrossContractChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
-import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -46,7 +45,7 @@ public class GoLiSA {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.setWorkdir(outputDir);
 		conf.setJsonOutput(true);
-		
+
 		conf.setOpenCallPolicy(ReturnTopPolicy.INSTANCE);
 		conf.setCallGraph(new RTACallGraph());
 		conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>());		
@@ -73,22 +72,12 @@ public class GoLiSA {
 								new TypeEnvironment<>(new InferredTypes())));
 			} else if (args[i].equals("-over-under-flow-check"))
 				conf.addSemanticCheck(new OverflowChecker());
-//			else if (args[i].equals("-div-by-zero-check"))
-//				conf.addSemanticCheck(new DivisionByZeroChecker());
-//			else if (args[i].equals("-break-consens-check"))
-//				conf.addSyntacticCheck(new BreakConsensusGoSmartContractChecker());
-//			else if (args[i].equals("-syn-map-range-check"))
-//				conf.addSemanticCheck(new ForRangeChecker());
-//			else if (args[i].equals("-sem-map-range-check")) {
-//				conf.setInferTypes(true);
-//				conf.addSemanticCheck(new ForRangeChecker());
-//			}
 			else if (args[i].equals("-ucci")) {
-				conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
-						.setAbstractState(
-								new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new TaintDomainForUntrustedCrossContractInvoking()),
-										LiSAFactory.getDefaultFor(TypeDomain.class)))
-						.addSemanticCheck(new UntrustedCrossContractChecker());
+//				conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
+				conf.setAbstractState(
+						new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new TaintDomainForUntrustedCrossContractInvoking()),
+								LiSAFactory.getDefaultFor(TypeDomain.class)))
+				.addSemanticCheck(new UntrustedCrossContractChecker());
 				break;
 			}
 		}
@@ -120,7 +109,7 @@ public class GoLiSA {
 			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());		
 			return;
 		}
-		
+
 		LiSA lisa = new LiSA(conf);
 
 		try {

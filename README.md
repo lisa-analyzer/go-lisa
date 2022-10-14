@@ -1,8 +1,8 @@
 # GoLiSA
-[![GitHub license](https://img.shields.io/github/license/UniVE-SSV/go-lisa)](https://github.com/UniVE-SSV/go-lisa/blob/master/LICENSE)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/UniVE-SSV/go-lisa/Gradle%20Build%20(master%20branch))
-![GitHub last commit](https://img.shields.io/github/last-commit/UniVE-SSV/go-lisa)
-![GitHub issues](https://img.shields.io/github/issues-raw/UniVE-SSV/go-lisa)
+[![GitHub license](https://img.shields.io/github/license/lisa-analyzer/go-lisa)](https://github.com/lisa-analyzer/go-lisa/blob/master/LICENSE)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lisa-analyzer/go-lisa/Gradle%20Build%20(master%20branch))
+![GitHub last commit](https://img.shields.io/github/last-commit/lisa-analyzer/go-lisa)
+![GitHub issues](https://img.shields.io/github/issues-raw/lisa-analyzer/go-lisa)
 
 GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications (OOPSLA 2022)
 

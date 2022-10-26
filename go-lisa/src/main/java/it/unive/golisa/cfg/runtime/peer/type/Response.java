@@ -20,8 +20,6 @@ public class Response extends GoStructType {
 	 */
 //	public static final Response INSTANCE = new Response();
 
-
-
 	private Response(CompilationUnit unit) {
 		super("Response", unit);
 	}

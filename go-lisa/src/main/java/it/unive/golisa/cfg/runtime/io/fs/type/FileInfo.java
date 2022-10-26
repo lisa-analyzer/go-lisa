@@ -54,7 +54,7 @@ public class FileInfo extends GoStructType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	public static FileInfo getFileInfoType(Program program) {
 		ClassUnit fileInfoUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileInfo", false);
 		return new FileInfo("FileInfo", fileInfoUnit);

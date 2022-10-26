@@ -57,9 +57,10 @@ public class PipeWriter extends GoStructType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	public static PipeWriter getPiperWriter(Program program) {
-		ClassUnit pipeWriterUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeWriter", false);
+		ClassUnit pipeWriterUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeWriter",
+				false);
 		return new PipeWriter("PipeWriter", pipeWriterUnit);
 	}
 }

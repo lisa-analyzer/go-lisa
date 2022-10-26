@@ -42,7 +42,8 @@ public class Create extends NativeCFG {
 	 */
 	public Create(CodeLocation location, CodeUnit osUnit) {
 		super(new CodeMemberDescriptor(location, osUnit, false, "Create",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				CreateImpl.class);
 	}
@@ -86,7 +87,8 @@ public class Create extends NativeCFG {
 		 */
 		public CreateImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "CreateImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+							GoErrorType.INSTANCE),
 					expr);
 		}
 

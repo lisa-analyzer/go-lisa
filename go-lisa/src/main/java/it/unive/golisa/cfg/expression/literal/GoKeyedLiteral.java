@@ -61,29 +61,33 @@ public class GoKeyedLiteral extends NaryExpression {
 	}
 
 	private Variable getVariable(Global varRef) {
-		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
+				.getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
 
 		Variable id;
 
-		if(varTableEntry == null)
+		if (varTableEntry == null)
 			id = new Variable(varRef.getStaticType(), varRef.getName(),
 					varRef.getLocation());
-		else 
-			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),  varRef.getLocation());
+		else
+			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),
+					varRef.getLocation());
 
 		return id;
 	}
 
 	private Variable getVariable(VariableRef varRef) {
-		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
+				.getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
 
 		Variable id;
 
-		if(varTableEntry == null)
+		if (varTableEntry == null)
 			id = new Variable(varRef.getStaticType(), varRef.getName(),
 					varRef.getLocation());
-		else 
-			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),  varRef.getLocation());
+		else
+			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),
+					varRef.getLocation());
 
 		return id;
 	}
@@ -144,11 +148,11 @@ public class GoKeyedLiteral extends NaryExpression {
 
 			}
 		}
-		
+
 		/*
 		 * GoSlice allocation
 		 */
-		
+
 		if (getStaticType() instanceof GoSliceType) {
 
 			GoSliceType sliceType = (GoSliceType) getStaticType();
@@ -263,23 +267,23 @@ public class GoKeyedLiteral extends NaryExpression {
 		}
 
 		// TODO: to handle the other cases (maps...)
-		
-		if(type == Untyped.INSTANCE) {
-			if(params.length > 0) {
+
+		if (type == Untyped.INSTANCE) {
+			if (params.length > 0) {
 				AnalysisState<A, H, V, T> result = state.bottom();
-				for( ExpressionSet<SymbolicExpression> p:  params) {
-					for(SymbolicExpression e : p) {
+				for (ExpressionSet<SymbolicExpression> p : params) {
+					for (SymbolicExpression e : p) {
 						state.lub(state.smallStepSemantics(e, this));
 					}
 				}
-			
+
 				return result;
 			} else {
-				return state.smallStepSemantics(new Constant(Untyped.INSTANCE, "KEYED_LITERAL", getLocation()), getEvaluationPredecessor());
+				return state.smallStepSemantics(new Constant(Untyped.INSTANCE, "KEYED_LITERAL", getLocation()),
+						getEvaluationPredecessor());
 			}
 		}
-		
-		
+
 		return state.top().smallStepSemantics(new PushAny(type, getLocation()), this);
 
 	}

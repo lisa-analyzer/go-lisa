@@ -1,4 +1,5 @@
 package it.unive.golisa;
+
 import it.unive.lisa.program.language.LanguageFeatures;
 import it.unive.lisa.program.language.hierarchytraversal.HierarcyTraversalStrategy;
 import it.unive.lisa.program.language.hierarchytraversal.SingleInheritanceTraversalStrategy;

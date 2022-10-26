@@ -84,14 +84,16 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 
 		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
 
-		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(((VariableRef) getLeft()).getName(), getLeft().getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
+				.getVariableTableEntryIfExist(((VariableRef) getLeft()).getName(), getLeft().getLocation());
 
 		Variable id;
 
-		if(varTableEntry == null)
-			id= new Variable(type, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
-		else 
-			id = new Variable(type, ((VariableRef) getLeft()).getName(), varTableEntry.getAnnotations(),  getLeft().getLocation());
+		if (varTableEntry == null)
+			id = new Variable(type, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
+		else
+			id = new Variable(type, ((VariableRef) getLeft()).getName(), varTableEntry.getAnnotations(),
+					getLeft().getLocation());
 
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type rightType : right.getRuntimeTypes()) {

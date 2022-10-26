@@ -1,10 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
@@ -24,11 +19,15 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class GoRoutineSourcesChecker implements SyntacticCheck {
-	
+
 	Map<VariableRef, Set<Statement>> variables = new HashMap<>();
-	
+
 	@Override
 	public void beforeExecution(CheckTool tool) {
 	}
@@ -40,36 +39,37 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 	@Override
 	public boolean visit(CheckTool tool, CFG graph, Statement node) {
 
-		if(node instanceof GoRoutine) {
+		if (node instanceof GoRoutine) {
 			GoRoutine routine = (GoRoutine) node;
 			CFGCall cfg = (CFGCall) routine.getExpression();
 			Map<String, Set<IdInfo>> visibleIds = ((VariableScopingCFG) graph).getVisibleIds(routine);
 			checkGoRoutine((VariableScopingCFG) graph, visibleIds, cfg);
 		}
-		
+
 		return true;
 	}
 
 	private void checkGoRoutine(VariableScopingCFG graph, Map<String, Set<IdInfo>> visibleIds, CFGCall cfgCall) {
-		for( CFG cfg : cfgCall.getTargetedCFGs()) {
+		for (CFG cfg : cfgCall.getTargetedCFGs()) {
 			VariableScopingCFG vsCFG = (VariableScopingCFG) cfg;
-			for(Statement node : vsCFG.getNodes()){
-				if(node instanceof GoAssignment) {
+			for (Statement node : vsCFG.getNodes()) {
+				if (node instanceof GoAssignment) {
 					GoAssignment assign = (GoAssignment) node;
 					Expression expr = assign.getLeft();
-					if(expr instanceof VariableRef)
+					if (expr instanceof VariableRef)
 						checkMatchReference((VariableRef) expr, visibleIds, graph);
-				} else if(node instanceof GoMultiAssignment) {
+				} else if (node instanceof GoMultiAssignment) {
 					GoMultiAssignment multiAssign = (GoMultiAssignment) node;
 					for (Expression id : multiAssign.getIds())
 						if (id instanceof VariableRef)
 							checkMatchReference((VariableRef) id, visibleIds, graph);
-				} if(node instanceof GoVariableDeclaration) {
+				}
+				if (node instanceof GoVariableDeclaration) {
 					GoVariableDeclaration assign = (GoVariableDeclaration) node;
 					Expression expr = assign.getLeft();
-					if(expr instanceof VariableRef)
+					if (expr instanceof VariableRef)
 						checkMatchReference((VariableRef) expr, visibleIds, graph);
-				} else if(node instanceof GoMultiShortVariableDeclaration) {
+				} else if (node instanceof GoMultiShortVariableDeclaration) {
 					GoMultiShortVariableDeclaration multiAssign = (GoMultiShortVariableDeclaration) node;
 					for (Expression id : multiAssign.getIds())
 						if (id instanceof VariableRef)
@@ -77,22 +77,22 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 				}
 			}
 		}
-		
+
 	}
 
 	private void checkMatchReference(VariableRef ref, Map<String, Set<IdInfo>> visibleIds, VariableScopingCFG graph) {
 
-		for(Entry<String, Set<IdInfo>> e : visibleIds.entrySet()) {
-			if(e.getKey().equals(ref.getName())) {
-				for(IdInfo info : e.getValue())
-					for(VariableTableEntry table : graph.getDescriptor().getVariables())
-						if(table.getName().equals(info.getRef().getName()) 
+		for (Entry<String, Set<IdInfo>> e : visibleIds.entrySet()) {
+			if (e.getKey().equals(ref.getName())) {
+				for (IdInfo info : e.getValue())
+					for (VariableTableEntry table : graph.getDescriptor().getVariables())
+						if (table.getName().equals(info.getRef().getName())
 								|| table.getLocation().equals(info.getRef().getLocation()))
-								table.addAnnotation(new Annotation("lisa.taint.Tainted"));
+							table.addAnnotation(new Annotation("lisa.taint.Tainted"));
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean visit(CheckTool tool, CFG g) {
 		return true;

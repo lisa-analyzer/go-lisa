@@ -1,11 +1,5 @@
 package it.unive.golisa.cfg;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -16,6 +10,11 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A control flow graph, that has {@link Statement}s as nodes and {@link Edge}s
@@ -66,10 +65,9 @@ public class VariableScopingCFG extends CFG {
 	 */
 	public void registerScoping(Statement node, Map<String, Set<IdInfo>> visibleIds) {
 		Map<String, Set<IdInfo>> scope = new HashMap<>();
-		visibleIds.entrySet().forEach(e -> 
-		{
+		visibleIds.entrySet().forEach(e -> {
 			scope.putIfAbsent(e.getKey(), new HashSet<>());
-			for(IdInfo info : e.getValue())
+			for (IdInfo info : e.getValue())
 				scope.get(e.getKey()).add(info);
 		});
 		scopingMap.put(node, scope);
@@ -103,10 +101,10 @@ public class VariableScopingCFG extends CFG {
 
 		return guards;
 	}
-	
+
 	public VariableTableEntry getVariableTableEntryIfExist(String variableName, CodeLocation location) {
-		for(VariableTableEntry table : getDescriptor().getVariables())
-			if(table.getName().equals(variableName) 
+		for (VariableTableEntry table : getDescriptor().getVariables())
+			if (table.getName().equals(variableName)
 					|| table.getLocation().equals(location))
 				return table;
 		return null;

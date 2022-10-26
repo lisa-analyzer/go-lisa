@@ -41,7 +41,8 @@ public class NewFile extends NativeCFG {
 	 * @param osUnit   the unit to which this native cfg belongs to
 	 */
 	public NewFile(CodeLocation location, CodeUnit osUnit) {
-		super(new CodeMemberDescriptor(location, osUnit, false, "NewFile", GoPointerType.lookup(GoStructType.get("File")),
+		super(new CodeMemberDescriptor(location, osUnit, false, "NewFile",
+				GoPointerType.lookup(GoStructType.get("File")),
 				new Parameter(location, "fd", GoStringType.INSTANCE),
 				new Parameter(location, "name", GoUIntPrtType.INSTANCE)),
 				NewFileImpl.class);
@@ -97,7 +98,8 @@ public class NewFile extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoPointerType.lookup(GoStructType.get("File")), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(GoPointerType.lookup(GoStructType.get("File")), getLocation()),
+					original);
 		}
 	}
 }

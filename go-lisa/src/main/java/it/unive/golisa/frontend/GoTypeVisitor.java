@@ -1,15 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.antlr.GoParser.AnonymousFieldContext;
 import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
 import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
@@ -71,6 +61,14 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An {@link GoParserBaseVisitor} managing type parsing.
@@ -96,9 +94,10 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * @param unit      the current unit
 	 * @param program   the current program
 	 * @param constants the constant mapping
-	 * @param globals 
+	 * @param globals
 	 */
-	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants, List<Global> globals) {
+	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants,
+			List<Global> globals) {
 		this.file = file;
 		this.unit = unit;
 		this.program = program;
@@ -397,7 +396,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 				SourceCodeLocation sourceCodeLocation = new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
 						GoCodeMemberVisitor.getCol(field));
 				unit.addInstanceGlobal(new Global(
-						sourceCodeLocation, unit,fd.getLeft(), true,
+						sourceCodeLocation, unit, fd.getLeft(), true,
 						fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
 			}
 		return GoStructType.lookup(unit.getName(), unit);
@@ -432,7 +431,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs,
 						new GoCodeMemberVisitor(unit, file, program, constants, globals)
-						.visitParameterDecl(formalPars.parameterDecl(i)));
+								.visitParameterDecl(formalPars.parameterDecl(i)));
 
 			descs.add(new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), unit, true, funcName,
 					getGoReturnType(ctx.result()), cfgArgs));

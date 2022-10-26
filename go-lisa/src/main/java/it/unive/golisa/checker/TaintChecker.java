@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -25,6 +23,7 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import java.util.Collection;
 
 /**
  * A Go taint checker.
@@ -136,7 +135,7 @@ public class TaintChecker implements
 
 			}
 		}
-		
+
 		return true;
 
 	}
@@ -152,7 +151,8 @@ public class TaintChecker implements
 
 	@Override
 	public boolean visitUnit(
-			CheckToolWithAnalysisResults<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>, GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit) {
 		return true;
 	}

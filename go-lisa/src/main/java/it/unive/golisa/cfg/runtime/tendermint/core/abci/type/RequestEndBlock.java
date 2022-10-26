@@ -29,7 +29,8 @@ public class RequestEndBlock extends GoStructType {
 	}
 
 	public static RequestEndBlock getRequestEndBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestEndBlock", false);
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestEndBlock",
+				false);
 		return new RequestEndBlock(abciUnit);
 	}
 

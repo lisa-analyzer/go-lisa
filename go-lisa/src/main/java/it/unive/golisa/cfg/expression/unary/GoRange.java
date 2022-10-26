@@ -36,7 +36,7 @@ public class GoRange extends UnaryExpression {
 	 * @param cfg      the {@link CFG} where this expression lies
 	 * @param location the location where this expression is defined
 	 * @param exp      the expression
-	 * @param valRange  the init statement index
+	 * @param valRange the init statement index
 	 * @param idxInit  the post statement index
 	 */
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp) {
@@ -120,5 +120,4 @@ public class GoRange extends UnaryExpression {
 		return true;
 	}
 
-	
 }

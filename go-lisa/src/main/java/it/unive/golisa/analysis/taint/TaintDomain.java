@@ -75,7 +75,8 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	private final byte v;
 
 	/**
-	 * Builds a new instance of taint, referring to the top element of the lattice.
+	 * Builds a new instance of taint, referring to the top element of the
+	 * lattice.
 	 */
 	public TaintDomain() {
 		this((byte) 3);
@@ -84,23 +85,22 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	private TaintDomain(byte v) {
 		this.v = v;
 	}
-		
+
 	@Override
 	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
 
-		
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
-			
+
 			Statement condition = g.getCondition();
-			if(condition instanceof GoRange && isMapRange(( GoRange) condition)
+			if (condition instanceof GoRange && isMapRange((GoRange) condition)
 					&& matchMapRangeIds((GoRange) condition, id))
 				return true;
 			return false;
 		});
-		
- 		if(isAssignedFromMapIteration)
+
+		if (isAssignedFromMapIteration)
 			return TAINTED;
-	
+
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
 			return super.variable(id, pp);
@@ -116,35 +116,36 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {
 
-		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id) ;
+		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
 	}
 
 	private boolean matchMapRangeId(Statement st, Identifier id) {
-		
-		if(st instanceof VariableRef) {
+
+		if (st instanceof VariableRef) {
 			VariableRef vRef = (VariableRef) st;
-			if(vRef.getVariable().equals(id)) {
+			if (vRef.getVariable().equals(id)) {
 				Statement pred = st.getEvaluationPredecessor();
-				if(pred != null) {
-					if(pred instanceof GoRangeGetNextIndex 
+				if (pred != null) {
+					if (pred instanceof GoRangeGetNextIndex
 							|| pred instanceof GoRangeGetNextValue) {
-							return true;
+						return true;
 					}
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
 	private boolean isMapRange(GoRange range) {
-		
-		if(range.getCollectionTypes() == null) {
-			//range not evaluated yet
+
+		if (range.getCollectionTypes() == null) {
+			// range not evaluated yet
 			return false;
 		}
-		
-		return range.getCollectionTypes().stream().anyMatch(type -> type instanceof GoMapType || type == Untyped.INSTANCE);
+
+		return range.getCollectionTypes().stream()
+				.anyMatch(type -> type instanceof GoMapType || type == Untyped.INSTANCE);
 	}
 
 	@Override
@@ -172,7 +173,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	public boolean isTainted() {
 		return this == TAINTED;
 	}
-	
+
 	public boolean isClean() {
 		return this == CLEAN;
 	}
@@ -198,10 +199,10 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	@Override
 	protected TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
 			ProgramPoint pp) throws SemanticException {
-		
+
 		if (operator == GoConv.INSTANCE)
 			return left;
-		
+
 		if (left == TAINTED || right == TAINTED)
 			return TAINTED;
 
@@ -225,7 +226,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	protected TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
- 		return TAINTED;
+		return TAINTED;
 	}
 
 	@Override

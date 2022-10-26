@@ -53,15 +53,17 @@ public class GoNonKeyedLiteral extends NaryExpression {
 	}
 
 	private SymbolicExpression getVariable(Global global) {
-		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG()).getVariableTableEntryIfExist(global.getName(), global.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
+				.getVariableTableEntryIfExist(global.getName(), global.getLocation());
 
 		Variable id;
 
-		if(varTableEntry == null)
+		if (varTableEntry == null)
 			id = new Variable(global.getStaticType(), global.getName(),
 					global.getLocation());
-		else 
-			id = new Variable(global.getStaticType(), global.getName(), varTableEntry.getAnnotations(),  global.getLocation());
+		else
+			id = new Variable(global.getStaticType(), global.getName(), varTableEntry.getAnnotations(),
+					global.getLocation());
 
 		return id;
 	}

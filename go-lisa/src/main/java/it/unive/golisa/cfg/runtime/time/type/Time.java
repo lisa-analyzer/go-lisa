@@ -50,21 +50,23 @@ public class Time extends GoStructType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	public static Time getTimeType(Program program) {
 		ClassUnit timeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Time", false);
-		timeUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "wall", true, GoInt64Type.INSTANCE));
-		timeUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "ext", true, GoInt64Type.INSTANCE));
+		timeUnit.addGlobal(
+				new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "wall", true, GoInt64Type.INSTANCE));
+		timeUnit.addGlobal(
+				new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "ext", true, GoInt64Type.INSTANCE));
 		// TODO: missing field loc *Location
-		
+
 		return new Time("Time", timeUnit);
 	}
-	
+
 	public static void registerMethods() {
 		CompilationUnit timeUnit = GoStructType.get("Time").getUnit();
 		timeUnit.addInstanceCodeMember(new Day(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 		timeUnit.addInstanceCodeMember(new Month(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 		timeUnit.addInstanceCodeMember(new Unix(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 	}
-	
+
 }

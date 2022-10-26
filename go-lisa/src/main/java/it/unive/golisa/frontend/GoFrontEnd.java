@@ -1,28 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unive.golisa.GoFeatures;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
@@ -98,6 +75,27 @@ import it.unive.lisa.type.common.BoolType;
 import it.unive.lisa.type.common.Float32;
 import it.unive.lisa.type.common.Int32;
 import it.unive.lisa.type.common.StringType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -115,7 +113,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private Map<String, ExpressionContext> constants;
 	private List<Global> globals;
-	
+
 	private GoLangAPISignatureMapper mapper = GoLangAPISignatureMapper.getGoApiSignatures();
 
 	private CompilationUnit packageUnit;
@@ -330,21 +328,24 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		if (decl.typeDecl() != null)
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addUnit(unit);
-		
+
 		if (decl.varDecl() != null)
 			visitVarDeclContext(decl.varDecl());
-		
+
 		if (decl.constDecl() != null)
 			visitConstDeclContext(decl.constDecl());
 
 	}
-	
+
 	private void visitVarDeclContext(VarDeclContext ctx) {
-		for( VarSpecContext spec : ctx.varSpec()) {
+		for (VarSpecContext spec : ctx.varSpec()) {
 			IdentifierListContext ids = spec.identifierList();
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++)
-					globals.add(new Global(new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)), GoCodeMemberVisitor.getCol(ids.IDENTIFIER(i))), packageUnit, ids.IDENTIFIER(i).getText(),
-							true, Untyped.INSTANCE));
+				globals.add(new Global(
+						new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)),
+								GoCodeMemberVisitor.getCol(ids.IDENTIFIER(i))),
+						packageUnit, ids.IDENTIFIER(i).getText(),
+						true, Untyped.INSTANCE));
 		}
 	}
 
@@ -369,7 +370,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 			String unitName = typeSpec.IDENTIFIER().getText();
 			ClassUnit unit = new ClassUnit(
 					new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(typeSpec),
-							GoCodeMemberVisitor.getCol(typeSpec)), program,
+							GoCodeMemberVisitor.getCol(typeSpec)),
+					program,
 					unitName, false);
 			units.add(unit);
 			new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);

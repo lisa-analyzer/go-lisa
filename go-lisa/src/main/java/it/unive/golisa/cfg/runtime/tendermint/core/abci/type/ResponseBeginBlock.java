@@ -29,13 +29,14 @@ public class ResponseBeginBlock extends GoStructType {
 	}
 
 	public static ResponseBeginBlock getRequestBeginBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseBeginBlock", false);
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseBeginBlock",
+				false);
 		return new ResponseBeginBlock(abciUnit);
 	}
 
 	/**
-//	 * Registers methods of the {@link ResponseBeginBlock} type.
-//	 */
+	 * // * Registers methods of the {@link ResponseBeginBlock} type. //
+	 */
 //	public static void registerMethods() {
 //		// TODO
 //	}

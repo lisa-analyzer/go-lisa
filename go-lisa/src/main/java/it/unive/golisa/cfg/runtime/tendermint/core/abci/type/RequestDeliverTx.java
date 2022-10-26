@@ -16,8 +16,8 @@ import it.unive.lisa.program.Program;
 public class RequestDeliverTx extends GoStructType {
 
 	/**
-	 * Unique instance of the {@link RequestDeliverTx} type.
-//	 */
+	 * Unique instance of the {@link RequestDeliverTx} type. //
+	 */
 //	public static final RequestDeliverTx INSTANCE = new RequestDeliverTx();
 //
 //	private RequestDeliverTx() {
@@ -29,7 +29,8 @@ public class RequestDeliverTx extends GoStructType {
 	}
 
 	public static RequestDeliverTx getRequestDeliverTxType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestDeliverTx", false);
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestDeliverTx",
+				false);
 		return new RequestDeliverTx(abciUnit);
 	}
 

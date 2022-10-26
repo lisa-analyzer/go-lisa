@@ -1,31 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -214,6 +188,30 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method.
@@ -266,7 +264,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * Mapping from constant names to their expression contexts.
 	 */
 	protected final Map<String, ExpressionContext> constants;
-	
+
 	/**
 	 * Globals of program
 	 */
@@ -307,7 +305,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
-	 * @param globals global variables
+	 * @param globals   global variables
 	 */
 	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
@@ -353,14 +351,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		initializeVisibleIds();
 	}
-	
+
 	protected void addGlobalsToVisibleIds() {
-		for(Global g : globals) {
+		for (Global g : globals) {
 			visibleIds.putIfAbsent(g.getName(), new HashSet<>());
-			visibleIds.get(g.getName()).add(new IdInfo(new VariableRef(cfg, g.getLocation(), g.getName(), g.getStaticType()),-1));
+			visibleIds.get(g.getName())
+					.add(new IdInfo(new VariableRef(cfg, g.getLocation(), g.getName(), g.getStaticType()), -1));
 		}
 	}
-
 
 	/**
 	 * Initializes the visible identifiers.
@@ -409,10 +407,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (returnType == null)
 			returnType = Untyped.INSTANCE;
 
-		cfg = new VariableScopingCFG(new CodeMemberDescriptor(location, currentUnit, true, methodName, returnType, params));
+		cfg = new VariableScopingCFG(
+				new CodeMemberDescriptor(location, currentUnit, true, methodName, returnType, params));
 
 		addGlobalsToVisibleIds();
-		
+
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
@@ -967,7 +966,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
 					blockList.getLast().addVarDeclaration(target, DeclarationType.VARIABLE);
 				}
-				
+
 				storeIds(asg);
 
 				if (lastStmt != null)
@@ -1862,14 +1861,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			NoOp exitNode) {
 		RangeClauseContext range = ctx.rangeClause();
 		Expression rangedCollection = visitExpression(range.expression());
-		
+
 		GoRange rangeNode = new GoRange(cfg, location, rangedCollection);
-		
+
 		VariableRef idxRange = null;
 		VariableRef valRange = null;
 		Statement idxAssign = null;
 		Statement valueAssign = null;
-	
+
 		if (range.identifierList() != null) {
 			VariableRef[] rangeIds = visitIdentifierList(range.identifierList());
 
@@ -1877,18 +1876,20 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				throw new UnsupportedOperationException("empty range variables not supported yet.");
 			} else {
 				idxRange = rangeIds[0];
-				idxAssign = new GoShortVariableDeclaration(cfg, location, idxRange, new GoRangeGetNextIndex(cfg, new SourceCodeLocation(location.getSourceFile(), location.getLine(), 0), rangedCollection));
+				idxAssign = new GoShortVariableDeclaration(cfg, location, idxRange, new GoRangeGetNextIndex(cfg,
+						new SourceCodeLocation(location.getSourceFile(), location.getLine(), 0), rangedCollection));
 				if (!GoLangUtils.refersToBlankIdentifier(idxRange))
 					blockList.getLast().addVarDeclaration(idxRange, DeclarationType.SHORT_VARIABLE);
 				// Index and values are used in range
 				if (rangeIds.length == 2) {
 					valRange = rangeIds[1];
-					valueAssign = new GoShortVariableDeclaration(cfg, location, valRange, new GoRangeGetNextValue(cfg, new SourceCodeLocation(location.getSourceFile(), location.getLine(), 1), rangedCollection));
+					valueAssign = new GoShortVariableDeclaration(cfg, location, valRange, new GoRangeGetNextValue(cfg,
+							new SourceCodeLocation(location.getSourceFile(), location.getLine(), 1), rangedCollection));
 					if (!GoLangUtils.refersToBlankIdentifier(valRange))
 						blockList.getLast().addVarDeclaration(valRange, DeclarationType.SHORT_VARIABLE);
 				}
-			} 
-		} else  if (range.expressionList() != null) {
+			}
+		} else if (range.expressionList() != null) {
 			Expression[] rangeIds = visitExpressionList(range.expressionList());
 
 			if (rangeIds.length == 0) {
@@ -1898,56 +1899,57 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					throw new IllegalStateException("range variables must  be identifiers.");
 
 				idxRange = (VariableRef) rangeIds[0];
-				idxAssign = new GoShortVariableDeclaration(cfg, location, idxRange, new GoRangeGetNextIndex(cfg, location, rangedCollection));
+				idxAssign = new GoShortVariableDeclaration(cfg, location, idxRange,
+						new GoRangeGetNextIndex(cfg, location, rangedCollection));
 				if (rangeIds.length == 2) {
 					valRange = (VariableRef) rangeIds[1];
-					valueAssign = new GoShortVariableDeclaration(cfg, location, valRange, new GoRangeGetNextValue(cfg, location, rangedCollection));
+					valueAssign = new GoShortVariableDeclaration(cfg, location, valRange,
+							new GoRangeGetNextValue(cfg, location, rangedCollection));
 				}
 			}
 		} else
 			throw new UnsupportedOperationException("empty range variables not supported yet.");
-		
+
 		rangeNode.setIdxRange(idxRange);
 		rangeNode.setValRange(valRange);
-		
+
 		block.addNode(rangeNode);
 		addEdge(new FalseEdge(rangeNode, exitNode), block);
 
-		
-		if(idxAssign != null) {
+		if (idxAssign != null) {
 			block.addNode(idxAssign);
 			storeIds(idxAssign);
 		}
-		if(valueAssign != null) {
+		if (valueAssign != null) {
 			block.addNode(valueAssign);
 			storeIds(valueAssign);
 		}
-		
+
 		NodeList<CFG, Statement, Edge> body = new NodeList<>(SEQUENTIAL_SINGLETON);
 		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> inner = visitBlock(ctx.block());
 		body.mergeWith(inner.getMiddle());
 		block.mergeWith(body);
-		
+
 		addEdge(new SequentialEdge(inner.getRight(), rangeNode), block);
-		
-		if(idxAssign != null && valueAssign != null) {
+
+		if (idxAssign != null && valueAssign != null) {
 			addEdge(new TrueEdge(rangeNode, idxAssign), block);
 			addEdge(new SequentialEdge(idxAssign, valueAssign), block);
 			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
-		} else if(idxAssign != null && valueAssign == null) {
+		} else if (idxAssign != null && valueAssign == null) {
 			addEdge(new TrueEdge(rangeNode, idxAssign), block);
 			addEdge(new SequentialEdge(idxAssign, inner.getLeft()), block);
-		} else { //should never happen
+		} else { // should never happen
 			addEdge(new TrueEdge(rangeNode, valueAssign), block);
 			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
 		}
-		
-		//entryPoints.remove(entryPoints.size() - 1);
-		//exitPoints.remove(exitPoints.size() - 1);
+
+		// entryPoints.remove(entryPoints.size() - 1);
+		// exitPoints.remove(exitPoints.size() - 1);
 		restoreVisibleIdsAfterForLoop(backup);
-		
-		cfs.add(new GoForRange(matrix,idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
-	
+
+		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
+
 		return Triple.of(rangeNode, block, exitNode);
 	}
 
@@ -2139,7 +2141,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// this call is not an instance call
 						// the callee's name is concatenated to the function
 						// name
-						return new UnresolvedCall(cfg, locationOf(ctx), 
+						return new UnresolvedCall(cfg, locationOf(ctx),
 								CallType.STATIC,
 								receiver.toString(), methodName, args);
 					else {
@@ -2148,7 +2150,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// the callee needs to be resolved and it is put as
 						// first argument (e.g., f(x, 1))
 						args = ArrayUtils.insert(0, args, receiver);
-						return new UnresolvedCall(cfg, locationOf(ctx), 
+						return new UnresolvedCall(cfg, locationOf(ctx),
 								CallType.INSTANCE, "", methodName, args);
 					}
 				}
@@ -2341,7 +2343,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Expression visitCompositeLit(CompositeLitContext ctx) {
-		Type type = new GoTypeVisitor(file, currentUnit, program, constants, globals).visitLiteralType(ctx.literalType());
+		Type type = new GoTypeVisitor(file, currentUnit, program, constants, globals)
+				.visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>) {
 

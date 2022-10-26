@@ -1,10 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
@@ -16,6 +11,10 @@ import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * A Go interface type.
@@ -193,7 +192,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		private static final String EMPTY_INTERFACE_NAME = "EMPTY_INTERFACE";
 
 		protected EmptyInterface(Program program) {
-			super(EMPTY_INTERFACE_NAME,  new EmptyInterfaceUnit(program));
+			super(EMPTY_INTERFACE_NAME, new EmptyInterfaceUnit(program));
 		}
 
 		@Override

@@ -29,13 +29,18 @@ public class ChaincodeServer extends GoStructType {
 	}
 
 	public static ChaincodeServer getChaincodeServerType(Program program) {
-		ClassUnit chaincodeServerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ChaincodeServer", false);
+		ClassUnit chaincodeServerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
+				"ChaincodeServer", false);
 
 		// Add globals
-		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit, "CCID", true, GoStringType.INSTANCE));
-		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,"Address", true, GoStringType.INSTANCE));
-		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,"CC", true, GoInterfaceType.get("Chaincode")));
-		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,"TLSProps", true, GoStructType.get("TLSProperties")));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
+				"CCID", true, GoStringType.INSTANCE));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
+				"Address", true, GoStringType.INSTANCE));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit, "CC",
+				true, GoInterfaceType.get("Chaincode")));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
+				"TLSProps", true, GoStructType.get("TLSProperties")));
 
 		// TODO: missing KaOpts *keepalive.ServerParameters
 		return new ChaincodeServer(chaincodeServerUnit);
@@ -46,7 +51,8 @@ public class ChaincodeServer extends GoStructType {
 	 */
 	public static void registerMethods() {
 		CompilationUnit chaincodeServerUnit = GoStructType.get("ChaincodeServer").getUnit();
-		chaincodeServerUnit.addInstanceCodeMember(new Start(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit));
+		chaincodeServerUnit
+				.addInstanceCodeMember(new Start(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit));
 	}
 
 	@Override

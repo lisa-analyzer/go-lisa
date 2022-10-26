@@ -1,8 +1,4 @@
 
-import java.util.function.Predicate;
-
-import org.junit.Test;
-
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
@@ -21,6 +17,8 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.util.function.Predicate;
+import org.junit.Test;
 
 public class CFGTest extends GoAnalysisTestExecutor {
 

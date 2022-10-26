@@ -1,12 +1,5 @@
 package it.unive.golisa.analysis.entrypoints;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.program.Program;
@@ -18,6 +11,11 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class contains utility methods to handle sets of entry points.
@@ -75,10 +73,10 @@ public class EntryPointsUtils {
 		for (NonDeterminismAnnotationSet as : annotationSets) {
 			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
 			appliedAnnotations.stream()
-			.forEach(e -> {
-				if (sources.contains(e.getLeft()))
-					descriptors.add(e.getRight());
-			});
+					.forEach(e -> {
+						if (sources.contains(e.getLeft()))
+							descriptors.add(e.getRight());
+					});
 		}
 
 		return descriptors;
@@ -127,7 +125,7 @@ public class EntryPointsUtils {
 	 * The class represents the extractor of possible entry points.
 	 */
 	private static class PossibleEntryPointExtractor
-	implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
+			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
 
 		final Set<CodeMemberDescriptor> descriptors;
 

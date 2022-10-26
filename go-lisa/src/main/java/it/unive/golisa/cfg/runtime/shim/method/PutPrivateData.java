@@ -102,7 +102,8 @@ public class PutPrivateData extends NativeCFG {
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			AnalysisState<A, H, V,
-					T> readerValue = state.smallStepSemantics(new PushAny(GoStructType.get("Reader"), getLocation()), original);
+					T> readerValue = state.smallStepSemantics(new PushAny(GoStructType.get("Reader"), getLocation()),
+							original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);

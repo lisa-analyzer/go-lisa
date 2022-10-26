@@ -42,7 +42,8 @@ public class Open extends NativeCFG {
 	 */
 	public Open(CodeLocation location, CodeUnit osUnit) {
 		super(new CodeMemberDescriptor(location, osUnit, false, "Open",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				OpenImpl.class);
 	}
@@ -86,7 +87,8 @@ public class Open extends NativeCFG {
 		 */
 		public OpenImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "OpenImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+							GoErrorType.INSTANCE),
 					expr);
 		}
 

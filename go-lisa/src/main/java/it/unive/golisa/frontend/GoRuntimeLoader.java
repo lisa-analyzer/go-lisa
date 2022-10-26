@@ -158,9 +158,9 @@ public interface GoRuntimeLoader {
 	}
 
 	private void loadCosmosErrors(Program program) {
-		CodeUnit sdkerrors = new CodeUnit(runtimeLocation, program ,"sdkerrors");
-		
-		// adding functions		
+		CodeUnit sdkerrors = new CodeUnit(runtimeLocation, program, "sdkerrors");
+
+		// adding functions
 		sdkerrors.addCodeMember(new Wrap(runtimeLocation, sdkerrors));
 		// adding units to program
 		program.addUnit(sdkerrors);
@@ -212,7 +212,7 @@ public interface GoRuntimeLoader {
 
 //		Writer.registerMethods();
 		GoStructType.registerType(GoStructType.get("Writer"));
-		
+
 		// adding functions
 		ioutil.addCodeMember(new NopCloser(runtimeLocation, ioutil));
 		ioutil.addCodeMember(new ReadAll(runtimeLocation, ioutil));
@@ -231,7 +231,7 @@ public interface GoRuntimeLoader {
 
 		GoStructType.registerType(File.getFileType(program));
 		GoStructType.registerType(FileMode.getFileModeType(program));
-			
+
 		// os/file
 		os.addCodeMember(new Create(runtimeLocation, os));
 		os.addCodeMember(new CreateTemp(runtimeLocation, os));
@@ -250,7 +250,6 @@ public interface GoRuntimeLoader {
 		os.addCodeMember(new Setenv(runtimeLocation, os));
 		os.addCodeMember(new Unsetenv(runtimeLocation, os));
 
-
 		// adding compilation unit to program
 		program.addUnit(GoStructType.get("File").getUnit());
 		program.addUnit(GoStructType.get("FileMode").getUnit());
@@ -262,8 +261,10 @@ public interface GoRuntimeLoader {
 
 		// adding functions
 		cryptoRand.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Int(runtimeLocation, cryptoRand));
-		cryptoRand.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
-		cryptoRand.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
+		cryptoRand
+				.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
+		cryptoRand
+				.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
 
 		// adding compilation units to program
 		program.addUnit(cryptoRand);
@@ -271,7 +272,7 @@ public interface GoRuntimeLoader {
 
 	private void loadJson(Program program) {
 		CodeUnit jsonUnit = new CodeUnit(runtimeLocation, program, "json");
-		//FIXME:
+		// FIXME:
 		loadBytes(program);
 		// adding functions
 		jsonUnit.addCodeMember(new Compact(runtimeLocation, jsonUnit));
@@ -334,15 +335,15 @@ public interface GoRuntimeLoader {
 		CodeUnit bytes = new CodeUnit(runtimeLocation, program, "bytes");
 
 		Buffer bufferType = Buffer.getBufferType(program);
-		
+
 		// adding types
 		program.registerType(bufferType);
 		GoStructType.registerType(bufferType);
-		
+
 		// registers methods
 		Buffer.registerMethods();
 		program.addUnit(bytes);
-		
+
 		program.addUnit(bufferType.getUnit());
 	}
 
@@ -363,7 +364,6 @@ public interface GoRuntimeLoader {
 		// adding types
 //		ChaincodeStubInterface.registerMethods();
 
-
 		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
@@ -374,7 +374,7 @@ public interface GoRuntimeLoader {
 		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
 		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
 		GoStructType.registerType(Response.getResponseType(program));
-		
+
 		// adding functions
 		shim.addCodeMember(new Start(runtimeLocation, shim));
 		shim.addCodeMember(new it.unive.golisa.cfg.runtime.shim.function.Error(runtimeLocation, shim));
@@ -386,7 +386,7 @@ public interface GoRuntimeLoader {
 
 		// FIXME: we should register this type in GoInterfaceType
 		program.registerType(GoInterfaceType.get("ChaincodeStubInterface"));
-		
+
 		// adding compilation unit to program
 		program.addUnit(shim);
 		program.addUnit(GoInterfaceType.get("ChaincodeStubInterface").getUnit());
@@ -433,7 +433,7 @@ public interface GoRuntimeLoader {
 		CodeUnit fmt = new CodeUnit(runtimeLocation, program, "fmt");
 		fmt.addCodeMember(new Println(runtimeLocation, fmt));
 		fmt.addCodeMember(new Sprint(runtimeLocation, fmt));
-		
+
 		program.addUnit(fmt);
 	}
 
@@ -445,7 +445,7 @@ public interface GoRuntimeLoader {
 		program.registerType(timeType);
 		program.registerType(Month.INSTANCE);
 		program.registerType(Duration.INSTANCE);
-		
+
 		// adding static functions
 		time.addCodeMember(new Now(runtimeLocation, time));
 		time.addCodeMember(new Since(runtimeLocation, time));
@@ -454,7 +454,7 @@ public interface GoRuntimeLoader {
 //		time.addCodeMember(new Day(runtimeLocation, time));
 //		time.addCodeMember(new Month(runtimeLocation, time));
 //		time.addInstanceConstruct(new Unix(runtimeLocation, time));
-		
+
 		Time.registerMethods();
 
 		program.addUnit(time);

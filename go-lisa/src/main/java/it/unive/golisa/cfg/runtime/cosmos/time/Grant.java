@@ -48,10 +48,11 @@ public class Grant extends GoStructType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	public static Grant getGrantType(Program program) {
 		ClassUnit grantUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Grant", false);
-		grantUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, grantUnit, "Expiration", true, GoStructType.get("Time")));
+		grantUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, grantUnit, "Expiration", true,
+				GoStructType.get("Time")));
 		return new Grant("Grant", grantUnit);
 	}
 }

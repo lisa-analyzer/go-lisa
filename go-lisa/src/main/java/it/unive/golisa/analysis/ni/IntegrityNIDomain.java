@@ -1,8 +1,5 @@
 package it.unive.golisa.analysis.ni;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
@@ -32,6 +29,8 @@ import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * The type-system based implementation of the non interference analysis.
@@ -111,18 +110,18 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public IntegrityNIDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
-		
+
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
-				
-				Statement condition = g.getCondition();
-				if(condition instanceof GoRange && isMapRange(( GoRange) condition)
-						&& matchMapRangeIds((GoRange) condition, id))
-					return true;
-				return false;
-			});
-			
-	 		if(isAssignedFromMapIteration)
-				return LOW;
+
+			Statement condition = g.getCondition();
+			if (condition instanceof GoRange && isMapRange((GoRange) condition)
+					&& matchMapRangeIds((GoRange) condition, id))
+				return true;
+			return false;
+		});
+
+		if (isAssignedFromMapIteration)
+			return LOW;
 
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
@@ -136,23 +135,23 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 		return super.variable(id, pp);
 	}
-	
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {
 
-		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id) ;
+		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
 	}
 
 	private boolean matchMapRangeId(Statement st, Identifier id) {
-		
-		if(st instanceof VariableRef) {
+
+		if (st instanceof VariableRef) {
 			VariableRef vRef = (VariableRef) st;
-			if(vRef.getVariable().equals(id)) {
+			if (vRef.getVariable().equals(id)) {
 				Statement pred = st.getEvaluationPredecessor();
-				if(pred != null) {
-					if(st.getEvaluationPredecessor() instanceof GoRangeGetNextIndex || st.getEvaluationPredecessor() instanceof GoRangeGetNextValue) {
-						for(Type t : id.getRuntimeTypes())
-							if(t instanceof GoMapType)
+				if (pred != null) {
+					if (st.getEvaluationPredecessor() instanceof GoRangeGetNextIndex
+							|| st.getEvaluationPredecessor() instanceof GoRangeGetNextValue) {
+						for (Type t : id.getRuntimeTypes())
+							if (t instanceof GoMapType)
 								return true;
 					}
 				}
@@ -162,15 +161,15 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	private boolean isMapRange(GoRange range) {
-		
-		if(range.getCollectionTypes() == null) {
-			//range not evaluated yet
+
+		if (range.getCollectionTypes() == null) {
+			// range not evaluated yet
 			return false;
 		}
-		
-		return range.getCollectionTypes().stream().anyMatch(type -> type instanceof GoMapType || type == Untyped.INSTANCE);
-	}
 
+		return range.getCollectionTypes().stream()
+				.anyMatch(type -> type instanceof GoMapType || type == Untyped.INSTANCE);
+	}
 
 	@Override
 	public DomainRepresentation representation() {
@@ -197,7 +196,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	public boolean isLowIntegrity() {
 		return this == LOW;
 	}
-	
+
 	/**
 	 * Yields true if the state is high.
 	 * 

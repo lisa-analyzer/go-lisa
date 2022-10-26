@@ -29,13 +29,14 @@ public class ResponseDeliverTx extends GoStructType {
 	}
 
 	public static ResponseDeliverTx getResponseDeliverTxType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseDeliverTx", false);
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseDeliverTx",
+				false);
 		return new ResponseDeliverTx(abciUnit);
 	}
 
 	/**
-//	 * Registers the methods of the {@link ResponseDeliverTx} type.
-//	 */
+	 * // * Registers the methods of the {@link ResponseDeliverTx} type. //
+	 */
 //	public static void registerMethods() {
 //		// TODO
 //	}

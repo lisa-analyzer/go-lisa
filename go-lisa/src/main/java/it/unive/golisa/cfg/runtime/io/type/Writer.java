@@ -20,7 +20,6 @@ public class Writer extends GoStructType {
 //	 */
 //	public static final Writer INSTANCE = new Writer();
 
-	
 	private Writer(CompilationUnit unit) {
 		super("Writer", unit);
 	}
@@ -31,8 +30,8 @@ public class Writer extends GoStructType {
 	}
 
 	/**
-//	 * Registers methods of Writer.
-//	 */
+	 * // * Registers methods of Writer. //
+	 */
 //	public static void registerMethods() {
 //		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 //

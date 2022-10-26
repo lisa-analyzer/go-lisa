@@ -42,7 +42,8 @@ public class CreateTemp extends NativeCFG {
 	 */
 	public CreateTemp(CodeLocation location, CodeUnit osUnit) {
 		super(new CodeMemberDescriptor(location, osUnit, false, "Create",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
 				CreateTempImpl.class);
@@ -88,7 +89,8 @@ public class CreateTemp extends NativeCFG {
 		 */
 		public CreateTempImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "CreateTempImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+							GoErrorType.INSTANCE),
 					left,
 					right);
 		}

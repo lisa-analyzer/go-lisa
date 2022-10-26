@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -17,6 +14,8 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A ChaincodeStubInterface type.
@@ -28,7 +27,8 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 	/**
 	 * Unique instance of {@link ChaincodeStubInterface} type.
 	 */
-	//	public static final ChaincodeStubInterface INSTANCE = new ChaincodeStubInterface();
+	// public static final ChaincodeStubInterface INSTANCE = new
+	// ChaincodeStubInterface();
 
 	private ChaincodeStubInterface(CompilationUnit unit) {
 		super("ChaincodeStubInterface", unit);
@@ -44,7 +44,8 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 //	}
 
 	public static ChaincodeStubInterface getChainCodeStubInterfaceType(Program program) {
-		InterfaceUnit chainCodeStubInterfaceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ChaincodeStubInterface",
+		InterfaceUnit chainCodeStubInterfaceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+				program, "ChaincodeStubInterface",
 				false);
 
 		// add signature
@@ -56,52 +57,62 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		GoSliceType byteSliceSliceType = GoSliceType.getSliceOfSliceOfBytes();
 
 		// (string, []string)
-		GoTupleType tuple1 = GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoStringType.INSTANCE, stringSliceType);
+		GoTupleType tuple1 = GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+				GoStringType.INSTANCE, stringSliceType);
 
 		// ([]byte, error)
-		GoTupleType tuple2 = GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoSliceType.getSliceOfBytes(),
+		GoTupleType tuple2 = GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+				GoSliceType.getSliceOfBytes(),
 				GoErrorType.INSTANCE);
 
-		
 		ChaincodeStubInterface chaincodeStubInterfaceType = new ChaincodeStubInterface(chainCodeStubInterfaceUnit);
-		
+
 		// GetArgs
-		CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetArgs",
+		CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+				chainCodeStubInterfaceUnit, true, "GetArgs",
 				byteSliceSliceType,
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 		// GetStringArgs
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetStringArgs",
-				stringSliceType, new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"GetStringArgs",
+				stringSliceType,
+				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 		// GetFunctionAndParameters
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetFunctionAndParameters",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"GetFunctionAndParameters",
 				tuple1, new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetArgsSlice",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"GetArgsSlice",
 				tuple2);
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetTxID",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"GetTxID",
 				GoStringType.INSTANCE);
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetChannelID",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"GetChannelID",
 				GoStringType.INSTANCE);
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 		// GetState
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetState",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"GetState",
 				tuple2,
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 		// PutState
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "PutState",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"PutState",
 				GoErrorType.INSTANCE,
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE),
@@ -109,7 +120,8 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 		// CreateCompositeKey
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "CreateCompositeKey",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"CreateCompositeKey",
 				GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
@@ -118,18 +130,21 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 						GoSliceType.lookup(GoSliceType.lookup(GoStringType.INSTANCE))));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "DelState",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"DelState",
 				GoErrorType.INSTANCE,
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "SetStateValidationParameter",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"SetStateValidationParameter",
 				GoErrorType.INSTANCE,
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE),
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "ep", GoSliceType.getSliceOfBytes()));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true, "GetStateValidationParameter",
+		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
+				"GetStateValidationParameter",
 				tuple2,
 				new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
 		chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));

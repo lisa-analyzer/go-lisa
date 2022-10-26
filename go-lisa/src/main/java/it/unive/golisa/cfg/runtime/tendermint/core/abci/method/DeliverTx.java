@@ -94,7 +94,8 @@ public class DeliverTx extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStructType.get("ResponseDeliverTx"), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(GoStructType.get("ResponseDeliverTx"), getLocation()),
+					original);
 		}
 	}
 }

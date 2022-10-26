@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.bytes.type;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.runtime.bytes.function.Bytes;
 import it.unive.golisa.cfg.type.composite.GoStructType;
@@ -15,6 +12,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A Duration represents the elapsed time between two instants as an int64
@@ -82,13 +81,13 @@ public class Buffer extends GoStructType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	public static Buffer getBufferType(Program program) {
 		// builds the unit
 		ClassUnit bufferUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Buffer", false);
 		return new Buffer("Buffer", bufferUnit);
 	}
-	
+
 	/**
 	 * Registers the methods of Buffer type.
 	 */

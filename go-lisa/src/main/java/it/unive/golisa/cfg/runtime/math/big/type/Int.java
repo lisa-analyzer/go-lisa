@@ -20,7 +20,6 @@ public class Int extends GoStructType {
 	 */
 //	public static final Int INSTANCE = new Int();
 
-
 	private Int(CompilationUnit unit) {
 		super("big.Int", unit);
 	}

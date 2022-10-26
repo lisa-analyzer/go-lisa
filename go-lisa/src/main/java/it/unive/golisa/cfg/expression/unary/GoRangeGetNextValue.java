@@ -24,42 +24,46 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 /**
- * Instrumented class 
+ * Instrumented class
  * 
  * @author OlivieriL
- *
  */
 public class GoRangeGetNextValue extends NaryExpression {
 
 	Expression rangeItem;
+
 	public GoRangeGetNextValue(CFG cfg, CodeLocation location, Expression rangeItem) {
 		super(cfg, location, "GoRangeGetNextValue", computeType(rangeItem.getStaticType()));
 		this.rangeItem = rangeItem;
 	}
 
 	private static Type computeType(Type type) {
-		if(!type.equals(Untyped.INSTANCE)) {
-				if(type instanceof GoStringType)
-					return GoUInt8Type.INSTANCE;
-				else if(type instanceof GoArrayType)
-					return ((GoArrayType) type).getContenType();
-				else if( type instanceof GoSliceType )
-					return ((GoSliceType) type).getContentType();
-				else if(type instanceof GoMapType)
-					return ((GoMapType) type).getElementType();
+		if (!type.equals(Untyped.INSTANCE)) {
+			if (type instanceof GoStringType)
+				return GoUInt8Type.INSTANCE;
+			else if (type instanceof GoArrayType)
+				return ((GoArrayType) type).getContenType();
+			else if (type instanceof GoSliceType)
+				return ((GoSliceType) type).getContentType();
+			else if (type instanceof GoMapType)
+				return ((GoMapType) type).getElementType();
 		}
 		return Untyped.INSTANCE;
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-			throws SemanticException {
-		if(state.getComputedExpressions().size() == 1) {
-			for(SymbolicExpression e : state.getComputedExpressions()) {
-				if(!computeType(e.getDynamicType()).equals(Untyped.INSTANCE))
-					return state.smallStepSemantics(new PushAny(computeType(e.getDynamicType()), this.getLocation()), this);
+	public <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
+		if (state.getComputedExpressions().size() == 1) {
+			for (SymbolicExpression e : state.getComputedExpressions()) {
+				if (!computeType(e.getDynamicType()).equals(Untyped.INSTANCE))
+					return state.smallStepSemantics(new PushAny(computeType(e.getDynamicType()), this.getLocation()),
+							this);
 			}
 		}
 

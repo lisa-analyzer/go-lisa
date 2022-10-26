@@ -88,7 +88,9 @@ public class NewStateEP extends NativeCFG {
 		 */
 		public NewStateEPImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "NewStateEPImpl",
-					GoTupleType.getTupleTypeOf(location, GoInterfaceType.get("KeyEndorsementPolicy"), GoErrorType.INSTANCE), expr);
+					GoTupleType.getTupleTypeOf(location, GoInterfaceType.get("KeyEndorsementPolicy"),
+							GoErrorType.INSTANCE),
+					expr);
 		}
 
 		@Override

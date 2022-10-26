@@ -85,7 +85,7 @@ public class GoToString extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public ToString(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "string",  RightToLeftEvaluation.INSTANCE, GoStringType.INSTANCE, expr);
+			super(cfg, location, "string", RightToLeftEvaluation.INSTANCE, GoStringType.INSTANCE, expr);
 		}
 
 		@Override
@@ -102,7 +102,6 @@ public class GoToString extends NativeCFG {
 							original.getLocation()),
 					original);
 		}
-		
-		
+
 	}
 }

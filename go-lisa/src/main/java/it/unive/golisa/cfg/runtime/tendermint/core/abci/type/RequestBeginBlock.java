@@ -29,7 +29,8 @@ public class RequestBeginBlock extends GoStructType {
 	}
 
 	public static RequestBeginBlock getRequestBeginBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestBeginBlock", false);
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestBeginBlock",
+				false);
 		return new RequestBeginBlock(abciUnit);
 	}
 

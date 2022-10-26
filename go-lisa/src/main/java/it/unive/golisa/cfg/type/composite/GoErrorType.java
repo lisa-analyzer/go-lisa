@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoType;
@@ -11,6 +8,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The Go error type.

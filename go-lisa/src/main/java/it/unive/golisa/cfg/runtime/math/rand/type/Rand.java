@@ -31,34 +31,35 @@ import it.unive.lisa.program.Program;
  */
 public class Rand extends GoStructType {
 
-	//	/**
-	//	 * Unique instance of Rand type.
-	//	 */
-	//	public static final Rand INSTANCE = new Rand();
+	// /**
+	// * Unique instance of Rand type.
+	// */
+	// public static final Rand INSTANCE = new Rand();
 	//
-	//	private Rand() {
-	//		this("Rand", buildRandUnit());
-	//	}
+	// private Rand() {
+	// this("Rand", buildRandUnit());
+	// }
 
 	private Rand(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
 
-	//	private static CompilationUnit buildRandUnit() {
-	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//		return randUnit;
-	//	}
+	// private static CompilationUnit buildRandUnit() {
+	// SourceCodeLocation unknownLocation = new
+	// SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	// return randUnit;
+	// }
 
-	//	/**
-	//	 * Registers the methods of Rand type.
-	//	 */
-	//	public static void registerMethods() {
-	//		SourceCodeLocation GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	// /**
+	// * Registers the methods of Rand type.
+	// */
+	// public static void registerMethods() {
+	// SourceCodeLocation GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION = new
+	// SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
 	//
-	//		
 	//
-	//	}
-
+	//
+	// }
 
 	public static Rand getRandType(Program program) {
 		// builds the unit

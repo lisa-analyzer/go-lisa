@@ -12,9 +12,10 @@ import it.unive.golisa.cfg.runtime.shim.method.PutState;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A ChaincodeStub type.
@@ -26,46 +27,45 @@ public class ChaincodeStub extends GoStructType {
 	/**
 	 * Unique instance of the {@link ChaincodeStub} type.
 	 */
-	public static final ChaincodeStub INSTANCE = new ChaincodeStub();
+//	public static final ChaincodeStub INSTANCE = new ChaincodeStub();
 
-	private ChaincodeStub() {
-		super("ChaincodeStub", buildChaincodeStubUnit());
+	private ChaincodeStub(CompilationUnit unit) {
+		super("ChaincodeStub", unit);
 	}
 
-	private static CompilationUnit buildChaincodeStubUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit chaincodeStubUnit = new CompilationUnit(unknownLocation, "ChaincodeStub", false);
+	public static ChaincodeStub getChaincodeStubType(Program program) {
+		ClassUnit chaincodeStubUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ChaincodeStub", false);
 
-		// Add globals
-		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "TxID", GoStringType.INSTANCE));
-		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "ChannelID", GoStringType.INSTANCE));
-		return chaincodeStubUnit;
+		// add globals
+		chaincodeStubUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit, "TxID", true, GoStringType.INSTANCE));
+		chaincodeStubUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit, "ChannelID", true, GoStringType.INSTANCE));
+		
+		return new ChaincodeStub(chaincodeStubUnit);
 	}
 
 	/**
 	 * Registers the methods of the {@link ChaincodeStub} type.
 	 */
 	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+		CompilationUnit chaincodeStubUnit = GoStructType.get("ChaincodeStub").getUnit();
+		chaincodeStubUnit
+		.addInstanceCodeMember(new DelPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(new DelState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
+		.addInstanceCodeMember(new GetFunctionAndParameters(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
+		.addInstanceCodeMember(new GetArgs(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
+		.addInstanceCodeMember(new GetStringArgs(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
+		.addInstanceCodeMember(new PutPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
+		.addInstanceCodeMember(new PutState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
+		.addInstanceCodeMember(new GetState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
+		.addInstanceCodeMember(new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new DelPrivateData(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new DelState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new GetFunctionAndParameters(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new GetArgs(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new GetStringArgs(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new PutPrivateData(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new PutState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new GetState(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
-		ChaincodeStub.INSTANCE.getUnit()
-				.addInstanceConstruct(new CreateCompositeKey(runtimeLocation, ChaincodeStub.INSTANCE.getUnit()));
 	}
 
 	@Override

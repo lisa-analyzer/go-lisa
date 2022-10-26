@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.io.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A I/O Reader type.
@@ -15,33 +16,32 @@ import it.unive.lisa.program.SourceCodeLocation;
 public class Reader extends GoStructType {
 
 	/**
-	 * Unique instance of Reader type.
-	 */
-	public static final Reader INSTANCE = new Reader();
+//	 * Unique instance of Reader type.
+//	 */
+	//	public static final Reader INSTANCE = new Reader();
+	//
+	//	private Reader() {
+	//		this("Reader", buildReaderUnit());
+	//	}
 
-	private Reader() {
-		this("Reader", buildReaderUnit());
+	private Reader(CompilationUnit unit) {
+		super("Reader", unit);
 	}
+//
+//	private static CompilationUnit buildReaderUnit() {
+//		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Reader", false);
+//		return randUnit;
+//	}
 
-	private Reader(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildReaderUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Reader", false);
-		return randUnit;
-	}
-
-	/**
-	 * Registers methods of Reader.
-	 */
-	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
-		// TODO: add methods
-
-	}
+//	/**
+//	 * Registers methods of Reader.
+//	 */
+//	public static void registerMethods() {
+//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+//
+//		// TODO: add methods
+//
+//	}
 
 	@Override
 	public String toString() {
@@ -57,4 +57,9 @@ public class Reader extends GoStructType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
+
+	public static Reader getReaderType(Program program) {
+		ClassUnit readerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Reader", false);
+		return new Reader(readerUnit);
+	} 
 }

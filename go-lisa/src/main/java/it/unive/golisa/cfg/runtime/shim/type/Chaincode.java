@@ -3,7 +3,8 @@ package it.unive.golisa.cfg.runtime.shim.type;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.InterfaceUnit;
+import it.unive.lisa.program.Program;
 
 /**
  * A Chaincode type.
@@ -15,29 +16,19 @@ public class Chaincode extends GoInterfaceType {
 	/**
 	 * Unique instance of the {@link Chaincode} type.
 	 */
-	public static final Chaincode INSTANCE = new Chaincode();
+//	public static final Chaincode INSTANCE = new Chaincode();
+//
+//	private Chaincode() {
+//		this("", buildChaincodeUnit());
+//	}
 
-	private Chaincode() {
-		this("Chaincode", buildChaincodeUnit());
+	private Chaincode(CompilationUnit unit) {
+		super("Chaincode", unit);
 	}
 
-	private Chaincode(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildChaincodeUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit chaincodeType = new CompilationUnit(unknownLocation, "Chaincode", false);
-//
-//		CFGDescriptor desc = new CFGDescriptor(unknownLocation, chaincodeType, true, "Init", Untyped.INSTANCE,
-//				new Parameter(unknownLocation, "stub", ChaincodeStubInterface.INSTANCE));
-//		chaincodeType.addInstanceCFG(new CFG(desc));
-//
-//		desc = new CFGDescriptor(unknownLocation, chaincodeType, true, "Invoke", Untyped.INSTANCE,
-//				new Parameter(unknownLocation, "stub", ChaincodeStubInterface.INSTANCE));
-//		chaincodeType.addInstanceCFG(new CFG(desc));
-
-		return chaincodeType;
+	public static Chaincode getChaincodeType(Program program) {
+		InterfaceUnit chaincodeType = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Chaincode", false);
+		return new Chaincode(chaincodeType);
 	}
 
 	@Override

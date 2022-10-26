@@ -3,7 +3,8 @@ package it.unive.golisa.cfg.runtime.pkg.statebased.type;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.InterfaceUnit;
+import it.unive.lisa.program.Program;
 
 /**
  * A KeyEndorsementPolicy type.
@@ -15,21 +16,18 @@ public class KeyEndorsementPolicy extends GoInterfaceType {
 	/**
 	 * Unique instance of KeyEndorsementPolicy type.
 	 */
-	public static final KeyEndorsementPolicy INSTANCE = new KeyEndorsementPolicy();
+//	public static final KeyEndorsementPolicy INSTANCE = new KeyEndorsementPolicy();
 
-	private KeyEndorsementPolicy() {
-		this("KeyEndorsementPolicy", buildKeyEndorsementPolicyUnit());
+
+
+	private KeyEndorsementPolicy(CompilationUnit unit) {
+		super("KeyEndorsementPolicy", unit);
 	}
 
-	private KeyEndorsementPolicy(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
+	public static KeyEndorsementPolicy getKeyEndorsementPolicyType(Program program) {
+		InterfaceUnit keyEndorsementUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "KeyEndorsementPolicy", false);
 
-	private static CompilationUnit buildKeyEndorsementPolicyUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit chaincodeType = new CompilationUnit(unknownLocation, "KeyEndorsementPolicy", false);
-
-		return chaincodeType;
+		return new KeyEndorsementPolicy(keyEndorsementUnit);
 	}
 
 	@Override

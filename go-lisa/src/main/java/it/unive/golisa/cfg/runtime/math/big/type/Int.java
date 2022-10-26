@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.math.big.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A big integer type.
@@ -17,31 +18,27 @@ public class Int extends GoStructType {
 	/**
 	 * Unique instance of a big integer type.
 	 */
-	public static final Int INSTANCE = new Int();
+//	public static final Int INSTANCE = new Int();
 
-	private Int() {
-		this("Int", buildIntUnit());
+
+	private Int(CompilationUnit unit) {
+		super("big.Int", unit);
 	}
 
-	private Int(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildIntUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Int", false);
-		return randUnit;
+	public static Int getIntType(Program program) {
+		ClassUnit intUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Int", false);
+		return new Int(intUnit);
 	}
 
 	/**
 	 * Registers the methods of a {@link Int} type.
 	 */
-	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
-		// TODO: add methods
-
-	}
+//	public static void registerMethods() {
+//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+//
+//		// TODO: add methods
+//
+//	}
 
 	@Override
 	public String toString() {

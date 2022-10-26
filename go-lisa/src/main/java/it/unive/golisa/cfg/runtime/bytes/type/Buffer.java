@@ -1,17 +1,20 @@
 package it.unive.golisa.cfg.runtime.bytes.type;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import java.util.Collection;
+import java.util.Collections;
+
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.runtime.bytes.function.Bytes;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A Duration represents the elapsed time between two instants as an int64
@@ -24,24 +27,24 @@ import java.util.Collections;
  */
 public class Buffer extends GoStructType {
 
-	/**
-	 * Unique instance of the Buffer type.
-	 */
-	public static final Buffer INSTANCE = new Buffer();
-
-	private Buffer() {
-		this("Buffer", buildBufferUnit());
-	}
+//	/**
+//	 * Unique instance of the Buffer type.
+//	 */
+//	public static final Buffer INSTANCE = new Buffer();
+//
+//	private Buffer() {
+//		this("Buffer", buildBufferUnit());
+//	}
 
 	private Buffer(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
 
-	private static CompilationUnit buildBufferUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit bufferUnit = new CompilationUnit(unknownLocation, "Buffer", false);
-		return bufferUnit;
-	}
+//	private static C buildBufferUnit(Program program) {
+//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+//		ClassUnit bufferUnit = new ClassUnit(unknownLocation, program, "Buffer", false);
+//		return bufferUnit;
+//	}
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
@@ -80,13 +83,17 @@ public class Buffer extends GoStructType {
 		return System.identityHashCode(this);
 	}
 	
+	public static Buffer getBufferType(Program program) {
+		// builds the unit
+		ClassUnit bufferUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Buffer", false);
+		return new Buffer("Buffer", bufferUnit);
+	}
+	
 	/**
 	 * Registers the methods of Buffer type.
 	 */
 	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		Buffer.INSTANCE.getUnit().addInstanceConstruct(new Bytes(runtimeLocation, Buffer.INSTANCE.getUnit()));
+		CompilationUnit bufferUnit = GoStructType.get("Buffer").getUnit();
+		bufferUnit.addInstanceCodeMember(new Bytes(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, bufferUnit));
 	}
-
-
 }

@@ -24,10 +24,6 @@ import it.unive.golisa.cfg.runtime.io.ioutil.function.ReadDir;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.TempDir;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.TempFile;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.WriteFile;
-import it.unive.golisa.cfg.runtime.io.type.PipeReader;
-import it.unive.golisa.cfg.runtime.io.type.PipeWriter;
-import it.unive.golisa.cfg.runtime.io.type.Reader;
-import it.unive.golisa.cfg.runtime.io.type.Writer;
 import it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float32;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float64;
@@ -40,10 +36,10 @@ import it.unive.golisa.cfg.runtime.math.rand.function.Intn;
 import it.unive.golisa.cfg.runtime.math.rand.function.NormFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.function.Perm;
 import it.unive.golisa.cfg.runtime.math.rand.function.Read;
+import it.unive.golisa.cfg.runtime.math.rand.function.Seed;
+import it.unive.golisa.cfg.runtime.math.rand.function.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.function.UInt32;
 import it.unive.golisa.cfg.runtime.math.rand.function.UInt64;
-import it.unive.golisa.cfg.runtime.math.rand.method.Seed;
-import it.unive.golisa.cfg.runtime.math.rand.method.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.runtime.os.file.function.Create;
 import it.unive.golisa.cfg.runtime.os.file.function.CreateTemp;
@@ -63,6 +59,7 @@ import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.runtime.os.type.FileMode;
 import it.unive.golisa.cfg.runtime.path.filepath.function.Dir;
 import it.unive.golisa.cfg.runtime.path.filepath.function.Join;
+import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.pkg.statebased.function.NewStateEP;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.runtime.shim.function.Start;
@@ -88,10 +85,8 @@ import it.unive.golisa.cfg.runtime.strings.ToUpper;
 import it.unive.golisa.cfg.runtime.time.function.Now;
 import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
-import it.unive.golisa.cfg.runtime.time.method.Day;
-import it.unive.golisa.cfg.runtime.time.method.Month;
-import it.unive.golisa.cfg.runtime.time.method.Unix;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
+import it.unive.golisa.cfg.runtime.time.type.Month;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.runtime.url.PathEscape;
 import it.unive.golisa.cfg.runtime.url.QueryEscape;
@@ -99,7 +94,7 @@ import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 
@@ -163,294 +158,306 @@ public interface GoRuntimeLoader {
 	}
 
 	private void loadCosmosErrors(Program program) {
-		CompilationUnit sdkerrors = new CompilationUnit(runtimeLocation, "sdkerrors", false);
-		// adding functions
-		sdkerrors.addConstruct(new Wrap(runtimeLocation, sdkerrors));
-		// adding compilation units to program
-		program.addCompilationUnit(sdkerrors);
+		CodeUnit sdkerrors = new CodeUnit(runtimeLocation, program ,"sdkerrors");
+		
+		// adding functions		
+		sdkerrors.addCodeMember(new Wrap(runtimeLocation, sdkerrors));
+		// adding units to program
+		program.addUnit(sdkerrors);
 	}
 
 	private void loadCosmosTypes(Program program) {
-		GoStructType.registerType(Grant.INSTANCE);
+		GoStructType.registerType(Grant.getGrantType(program));
 	}
 
 	private void loadFilePath(Program program) {
-		CompilationUnit filepath = new CompilationUnit(runtimeLocation, "filepath", false);
+		CodeUnit filepath = new CodeUnit(runtimeLocation, program, "filepath");
 
 		// adding functions
-		filepath.addConstruct(new Dir(runtimeLocation, filepath));
-		filepath.addConstruct(new Join(runtimeLocation, filepath));
+		filepath.addCodeMember(new Dir(runtimeLocation, filepath));
+		filepath.addCodeMember(new Join(runtimeLocation, filepath));
 
 		// adding compilation units to program
-		program.addCompilationUnit(filepath);
+		program.addUnit(filepath);
 	}
 
 	private void loadIO(Program program) {
-		CompilationUnit io = new CompilationUnit(runtimeLocation, "io", false);
+		CodeUnit io = new CodeUnit(runtimeLocation, program, "io");
 
 		// adding functions
-		io.addConstruct(new Copy(runtimeLocation, io));
-		io.addConstruct(new CopyBuffer(runtimeLocation, io));
-		io.addConstruct(new CopyN(runtimeLocation, io));
-		io.addConstruct(new Pipe(runtimeLocation, io));
-		io.addConstruct(new ReadAll(runtimeLocation, io));
-		io.addConstruct(new ReadAtLeast(runtimeLocation, io));
-		io.addConstruct(new WriteString(runtimeLocation, io));
+		io.addCodeMember(new Copy(runtimeLocation, io));
+		io.addCodeMember(new CopyBuffer(runtimeLocation, io));
+		io.addCodeMember(new CopyN(runtimeLocation, io));
+		io.addCodeMember(new Pipe(runtimeLocation, io));
+		io.addCodeMember(new ReadAll(runtimeLocation, io));
+		io.addCodeMember(new ReadAtLeast(runtimeLocation, io));
+		io.addCodeMember(new WriteString(runtimeLocation, io));
 
 		// adding compilation units to program
-		program.addCompilationUnit(io);
+		program.addUnit(io);
 	}
 
 	private void loadIoutil(Program program) {
-		CompilationUnit ioutil = new CompilationUnit(runtimeLocation, "ioutil", false);
-
-		// adding functions
-		ioutil.addConstruct(new NopCloser(runtimeLocation, ioutil));
-		ioutil.addConstruct(new ReadAll(runtimeLocation, ioutil));
-		ioutil.addConstruct(new ReadDir(runtimeLocation, ioutil));
-		ioutil.addConstruct(new ReadFile(runtimeLocation, ioutil));
-		ioutil.addConstruct(new TempDir(runtimeLocation, ioutil));
-		ioutil.addConstruct(new TempFile(runtimeLocation, ioutil));
-		ioutil.addConstruct(new WriteFile(runtimeLocation, ioutil));
+		CodeUnit ioutil = new CodeUnit(runtimeLocation, program, "ioutil");
 
 		// adding types
-		PipeReader.registerMethods();
-		GoStructType.registerType(PipeReader.INSTANCE);
+//		PipeReader.registerMethods();
+		GoStructType.registerType(GoStructType.get("PipeReader"));
 
-		PipeWriter.registerMethods();
-		GoStructType.registerType(PipeWriter.INSTANCE);
+//		PipeWriter.registerMethods();
+		GoStructType.registerType(GoStructType.get("PipeWriter"));
 
-		Reader.registerMethods();
-		GoStructType.registerType(Reader.INSTANCE);
+//		Reader.registerMethods();
+		GoStructType.registerType(GoStructType.get("Reader"));
 
-		Writer.registerMethods();
-		GoStructType.registerType(Writer.INSTANCE);
+//		Writer.registerMethods();
+		GoStructType.registerType(GoStructType.get("Writer"));
+		
+		// adding functions
+		ioutil.addCodeMember(new NopCloser(runtimeLocation, ioutil));
+		ioutil.addCodeMember(new ReadAll(runtimeLocation, ioutil));
+		ioutil.addCodeMember(new ReadDir(runtimeLocation, ioutil));
+		ioutil.addCodeMember(new ReadFile(runtimeLocation, ioutil));
+		ioutil.addCodeMember(new TempDir(runtimeLocation, ioutil));
+		ioutil.addCodeMember(new TempFile(runtimeLocation, ioutil));
+		ioutil.addCodeMember(new WriteFile(runtimeLocation, ioutil));
 
 		// adding compilation units to program
-		program.addCompilationUnit(ioutil);
+		program.addUnit(ioutil);
 	}
 
 	private void loadOs(Program program) {
-		CompilationUnit os = new CompilationUnit(runtimeLocation, "os", false);
+		CodeUnit os = new CodeUnit(runtimeLocation, program, "os");
 
-		// adding functions
-
+		GoStructType.registerType(File.getFileType(program));
+		GoStructType.registerType(FileMode.getFileModeType(program));
+			
 		// os/file
-		os.addConstruct(new Create(runtimeLocation, os));
-		os.addConstruct(new CreateTemp(runtimeLocation, os));
-		os.addConstruct(new NewFile(runtimeLocation, os));
-		os.addConstruct(new Open(runtimeLocation, os));
-		os.addConstruct(new OpenFile(runtimeLocation, os));
+		os.addCodeMember(new Create(runtimeLocation, os));
+		os.addCodeMember(new CreateTemp(runtimeLocation, os));
+		os.addCodeMember(new NewFile(runtimeLocation, os));
+		os.addCodeMember(new Open(runtimeLocation, os));
+		os.addCodeMember(new OpenFile(runtimeLocation, os));
 
 		// os
-		os.addConstruct(new Executable(runtimeLocation, os));
-		os.addConstruct(new Exit(runtimeLocation, os));
-		os.addConstruct(new Getenv(runtimeLocation, os));
-		os.addConstruct(new IsNotExist(runtimeLocation, os));
-		os.addConstruct(new MkdirAll(runtimeLocation, os));
-		os.addConstruct(new ReadFile(runtimeLocation, os));
-		os.addConstruct(new RemoveAll(runtimeLocation, os));
-		os.addConstruct(new Setenv(runtimeLocation, os));
-		os.addConstruct(new Unsetenv(runtimeLocation, os));
+		os.addCodeMember(new Executable(runtimeLocation, os));
+		os.addCodeMember(new Exit(runtimeLocation, os));
+		os.addCodeMember(new Getenv(runtimeLocation, os));
+		os.addCodeMember(new IsNotExist(runtimeLocation, os));
+		os.addCodeMember(new MkdirAll(runtimeLocation, os));
+		os.addCodeMember(new ReadFile(runtimeLocation, os));
+		os.addCodeMember(new RemoveAll(runtimeLocation, os));
+		os.addCodeMember(new Setenv(runtimeLocation, os));
+		os.addCodeMember(new Unsetenv(runtimeLocation, os));
 
-		File.registerMethods();
-		GoStructType.registerType(File.INSTANCE);
-		GoStructType.registerType(FileMode.INSTANCE);
 
 		// adding compilation unit to program
-		program.addCompilationUnit(os);
-		program.addCompilationUnit(File.INSTANCE.getUnit());
-		program.addCompilationUnit(FileMode.INSTANCE.getUnit());
+		program.addUnit(GoStructType.get("File").getUnit());
+		program.addUnit(GoStructType.get("FileMode").getUnit());
+		program.addUnit(os);
 	}
 
 	private void loadCryptoRand(Program program) {
-		CompilationUnit cryptoRand = new CompilationUnit(runtimeLocation, "rand", false);
+		CodeUnit cryptoRand = new CodeUnit(runtimeLocation, program, "rand");
 
 		// adding functions
-		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Int(runtimeLocation, cryptoRand));
-		cryptoRand.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
-		cryptoRand
-				.addConstruct(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
+		cryptoRand.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Int(runtimeLocation, cryptoRand));
+		cryptoRand.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
+		cryptoRand.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
 
 		// adding compilation units to program
-		program.addCompilationUnit(cryptoRand);
+		program.addUnit(cryptoRand);
 	}
 
 	private void loadJson(Program program) {
-		CompilationUnit jsonUnit = new CompilationUnit(runtimeLocation, "json", false);
-
+		CodeUnit jsonUnit = new CodeUnit(runtimeLocation, program, "json");
+		//FIXME:
+		loadBytes(program);
 		// adding functions
-		jsonUnit.addConstruct(new Compact(runtimeLocation, jsonUnit));
-		jsonUnit.addConstruct(new HtmlEscape(runtimeLocation, jsonUnit));
-		jsonUnit.addConstruct(new Indent(runtimeLocation, jsonUnit));
-		jsonUnit.addConstruct(new Marshal(runtimeLocation, jsonUnit));
-		jsonUnit.addConstruct(new MarshalIndent(runtimeLocation, jsonUnit));
-		jsonUnit.addConstruct(new Unmarshal(runtimeLocation, jsonUnit));
-		jsonUnit.addConstruct(new Valid(runtimeLocation, jsonUnit));
+		jsonUnit.addCodeMember(new Compact(runtimeLocation, jsonUnit));
+		jsonUnit.addCodeMember(new HtmlEscape(runtimeLocation, jsonUnit));
+		jsonUnit.addCodeMember(new Indent(runtimeLocation, jsonUnit));
+		jsonUnit.addCodeMember(new Marshal(runtimeLocation, jsonUnit));
+		jsonUnit.addCodeMember(new MarshalIndent(runtimeLocation, jsonUnit));
+		jsonUnit.addCodeMember(new Unmarshal(runtimeLocation, jsonUnit));
+		jsonUnit.addCodeMember(new Valid(runtimeLocation, jsonUnit));
 
-		program.addCompilationUnit(jsonUnit);
+		program.addUnit(jsonUnit);
 	}
 
 	private void loadMathRand(Program program) {
-		CompilationUnit mathRand = new CompilationUnit(runtimeLocation, "rand", false);
+		CodeUnit mathRand = new CodeUnit(runtimeLocation, program, "rand");
 
-		// adding functions
-		mathRand.addConstruct(new ExpFloat64(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		// registers types of rand package
+		GoStructType.registerType(Rand.getRandType(program));
+
+		// adding functions and static methods
+		mathRand.addCodeMember(new ExpFloat64(runtimeLocation, mathRand));
+		mathRand.addCodeMember(
 				new Float32(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Float64(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Int(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Int31(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Int31n(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Int63(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Int63n(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Intn(runtimeLocation, mathRand));
-		mathRand.addConstruct(new NormFloat64(runtimeLocation,
+		mathRand.addCodeMember(new NormFloat64(runtimeLocation,
 				mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Perm(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new UInt32(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new UInt64(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Read(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Seed(runtimeLocation, mathRand));
-		mathRand.addConstruct(
+		mathRand.addCodeMember(
 				new Shuffle(runtimeLocation, mathRand));
 
-		// adding types
 		Rand.registerMethods();
-		GoStructType.registerType(Rand.INSTANCE);
 
 		// adding compilation units to program
-		program.addCompilationUnit(mathRand);
+		program.addUnit(mathRand);
 	}
 
 	private void loadBytes(Program program) {
-		CompilationUnit bytes = new CompilationUnit(runtimeLocation, "bytes", false);
+		CodeUnit bytes = new CodeUnit(runtimeLocation, program, "bytes");
 
+		Buffer bufferType = Buffer.getBufferType(program);
+		
 		// adding types
-		program.registerType(Buffer.INSTANCE);
+		program.registerType(bufferType);
+		GoStructType.registerType(bufferType);
 		
-		// adding functions and methods
+		// registers methods
 		Buffer.registerMethods();
-		GoStructType.registerType(Buffer.INSTANCE);
-		program.addCompilationUnit(Buffer.INSTANCE.getUnit());
+		program.addUnit(bytes);
 		
-		program.addCompilationUnit(bytes);
+		program.addUnit(bufferType.getUnit());
 	}
 
 	private void loadStateBased(Program program) {
-		CompilationUnit statebased = new CompilationUnit(runtimeLocation, "statebased", false);
+		CodeUnit statebased = new CodeUnit(runtimeLocation, program, "statebased");
+		GoInterfaceType.registerType(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program));
 
 		// adding functions
-		statebased.addConstruct(new NewStateEP(runtimeLocation, statebased));
-
-		// adding types
-		GoInterfaceType.registerType(KeyEndorsementPolicy.INSTANCE);
+		statebased.addCodeMember(new NewStateEP(runtimeLocation, statebased));
 
 		// adding compilation unit to program
-		program.addCompilationUnit(statebased);
+		program.addUnit(statebased);
 	}
 
 	private void loadShim(Program program) {
-		CompilationUnit shim = new CompilationUnit(runtimeLocation, "shim", false);
-
-		// adding functions
-		shim.addConstruct(new Start(runtimeLocation, shim));
-		shim.addConstruct(new it.unive.golisa.cfg.runtime.shim.function.Error(runtimeLocation, shim));
-		shim.addConstruct(new Success(runtimeLocation, shim));
+		CodeUnit shim = new CodeUnit(runtimeLocation, program, "shim");
 
 		// adding types
+//		ChaincodeStubInterface.registerMethods();
+
+
+		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
+		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
+		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
+		GoStructType.registerType(Handler.getHandlerType(program));
+		GoStructType.registerType(TLSProperties.getTLSPropertiesType(program));
+//		GoStructType.registerType(GoStructType.get("ChaincodeStub"));
+//		GoStructType.registerType(GoStructType.get("ChaincodeServer"));
+		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
+		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
+		GoStructType.registerType(Response.getResponseType(program));
+		
+		// adding functions
+		shim.addCodeMember(new Start(runtimeLocation, shim));
+		shim.addCodeMember(new it.unive.golisa.cfg.runtime.shim.function.Error(runtimeLocation, shim));
+		shim.addCodeMember(new Success(runtimeLocation, shim));
+
+		// register methods
 		ChaincodeStub.registerMethods();
-		ChaincodeStubInterface.registerMethods();
+		ChaincodeServer.registerMethods();
 
 		// FIXME: we should register this type in GoInterfaceType
-		program.registerType(ChaincodeStubInterface.INSTANCE);
-		GoInterfaceType.registerType(ChaincodeStubInterface.INSTANCE);
-		GoInterfaceType.registerType(Chaincode.INSTANCE);
-		GoInterfaceType.registerType(CommonIteratorInterface.INSTANCE);
-		GoStructType.registerType(Handler.INSTANCE);
-		GoStructType.registerType(TLSProperties.INSTANCE);
-		GoStructType.registerType(ChaincodeStub.INSTANCE);
-		GoStructType.registerType(ChaincodeServer.INSTANCE);
-
+		program.registerType(GoInterfaceType.get("ChaincodeStubInterface"));
+		
 		// adding compilation unit to program
-		program.addCompilationUnit(shim);
-		program.addCompilationUnit(ChaincodeStubInterface.INSTANCE.getUnit());
-		program.addCompilationUnit(Chaincode.INSTANCE.getUnit());
-		program.addCompilationUnit(ChaincodeStub.INSTANCE.getUnit());
-		program.addCompilationUnit(TLSProperties.INSTANCE.getUnit());
-		program.addCompilationUnit(CommonIteratorInterface.INSTANCE.getUnit());
-		program.addCompilationUnit(ChaincodeServer.INSTANCE.getUnit());
+		program.addUnit(shim);
+		program.addUnit(GoInterfaceType.get("ChaincodeStubInterface").getUnit());
+		program.addUnit(GoInterfaceType.get("Chaincode").getUnit());
+		program.addUnit(GoInterfaceType.get("CommonIteratorInterface").getUnit());
+
+		program.addUnit(GoStructType.get("ChaincodeStub").getUnit());
+		program.addUnit(GoStructType.get("TLSProperties").getUnit());
 
 	}
 
 	private void loadUrl(Program program) {
-		CompilationUnit url = new CompilationUnit(runtimeLocation, "url", false);
-		url.addConstruct(new QueryEscape(runtimeLocation, url));
-		url.addConstruct(new PathEscape(runtimeLocation, url));
+		CodeUnit url = new CodeUnit(runtimeLocation, program, "url");
+		url.addCodeMember(new QueryEscape(runtimeLocation, url));
+		url.addCodeMember(new PathEscape(runtimeLocation, url));
 
-		program.addCompilationUnit(url);
+		program.addUnit(url);
 	}
 
 	private void loadStrings(Program program) {
-		CompilationUnit str = new CompilationUnit(runtimeLocation, "strings", false);
-		str.addConstruct(new HasPrefix(runtimeLocation, str));
-		str.addConstruct(new HasSuffix(runtimeLocation, str));
-		str.addConstruct(new Contains(runtimeLocation, str));
-		str.addConstruct(new Replace(runtimeLocation, str));
-		str.addConstruct(new Index(runtimeLocation, str));
-		str.addConstruct(new IndexRune(runtimeLocation, str));
-		str.addConstruct(new Len(runtimeLocation, str));
-		str.addConstruct(new ToLower(runtimeLocation, str));
-		str.addConstruct(new ToUpper(runtimeLocation, str));
+		CodeUnit str = new CodeUnit(runtimeLocation, program, "strings");
+		str.addCodeMember(new HasPrefix(runtimeLocation, str));
+		str.addCodeMember(new HasSuffix(runtimeLocation, str));
+		str.addCodeMember(new Contains(runtimeLocation, str));
+		str.addCodeMember(new Replace(runtimeLocation, str));
+		str.addCodeMember(new Index(runtimeLocation, str));
+		str.addCodeMember(new IndexRune(runtimeLocation, str));
+		str.addCodeMember(new Len(runtimeLocation, str));
+		str.addCodeMember(new ToLower(runtimeLocation, str));
+		str.addCodeMember(new ToUpper(runtimeLocation, str));
 
-		program.addCompilationUnit(str);
+		program.addUnit(str);
 	}
 
 	private void loadStrconv(Program program) {
-		CompilationUnit strconv = new CompilationUnit(runtimeLocation, "strconv", false);
-		strconv.addConstruct(new Atoi(runtimeLocation, strconv));
-		strconv.addConstruct(new Itoa(runtimeLocation, strconv));
+		CodeUnit strconv = new CodeUnit(runtimeLocation, program, "strconv");
+		strconv.addCodeMember(new Atoi(runtimeLocation, strconv));
+		strconv.addCodeMember(new Itoa(runtimeLocation, strconv));
 
-		program.addCompilationUnit(strconv);
+		program.addUnit(strconv);
 	}
 
 	private void loadFmt(Program program) {
-		CompilationUnit fmt = new CompilationUnit(runtimeLocation, "fmt", false);
-		fmt.addConstruct(new Println(runtimeLocation, fmt));
-		fmt.addConstruct(new Sprint(runtimeLocation, fmt));
+		CodeUnit fmt = new CodeUnit(runtimeLocation, program, "fmt");
+		fmt.addCodeMember(new Println(runtimeLocation, fmt));
+		fmt.addCodeMember(new Sprint(runtimeLocation, fmt));
 		
-		program.addCompilationUnit(fmt);
+		program.addUnit(fmt);
 	}
 
 	private void loadTime(Program program) {
-		CompilationUnit time = new CompilationUnit(runtimeLocation, "time", false);
+		CodeUnit time = new CodeUnit(runtimeLocation, program, "time");
 
-		// adding functions and methods
-		time.addConstruct(new Now(runtimeLocation, time));
-		time.addConstruct(new Since(runtimeLocation, time));
-		time.addConstruct(new Day(runtimeLocation, time));
-		time.addConstruct(new Month(runtimeLocation, time));
-		time.addConstruct(new Parse(runtimeLocation, time));
-		time.addInstanceConstruct(new Unix(runtimeLocation, time));
-
-		// adding types
-		GoStructType.registerType(Time.INSTANCE);
-		program.registerType(it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE);
+		Time timeType = Time.getTimeType(program);
+		GoStructType.registerType(timeType);
+		program.registerType(timeType);
+		program.registerType(Month.INSTANCE);
 		program.registerType(Duration.INSTANCE);
+		
+		// adding static functions
+		time.addCodeMember(new Now(runtimeLocation, time));
+		time.addCodeMember(new Since(runtimeLocation, time));
+		time.addCodeMember(new Parse(runtimeLocation, time));
 
-		program.addCompilationUnit(time);
+//		time.addCodeMember(new Day(runtimeLocation, time));
+//		time.addCodeMember(new Month(runtimeLocation, time));
+//		time.addInstanceConstruct(new Unix(runtimeLocation, time));
+		
+		Time.registerMethods();
+
+		program.addUnit(time);
 	}
 
 	private void loadUnhandledLib(String lib, Program program, GoLangAPISignatureMapper mapper) {
@@ -462,8 +469,8 @@ public interface GoRuntimeLoader {
 		else
 			runTimeSourceLocation = new SourceCodeLocation("unknown", 0, 0);
 
-		CompilationUnit cu = new CompilationUnit(runTimeSourceLocation, lib, false);
-		program.addCompilationUnit(cu);
+		CodeUnit cu = new CodeUnit(runTimeSourceLocation, program, lib);
+		program.addUnit(cu);
 	}
 
 }

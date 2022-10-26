@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
-import it.unive.golisa.cfg.runtime.io.type.Reader;
-import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoInterfaceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -12,10 +12,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -41,9 +41,9 @@ public class Start extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
-	public Start(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "Start", GoErrorType.INSTANCE,
-				new Parameter(location, "cc", Chaincode.INSTANCE)),
+	public Start(CodeLocation location, CodeUnit shimUnit) {
+		super(new CodeMemberDescriptor(location, shimUnit, false, "Start", GoErrorType.INSTANCE,
+				new Parameter(location, "cc", GoInterfaceType.get("Chaincode"))),
 				StartImpl.class);
 	}
 
@@ -96,7 +96,7 @@ public class Start extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			AnalysisState<A, H, V,
-					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+					T> readerValue = state.smallStepSemantics(new PushAny(GoStructType.get("Reader"), getLocation()), original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);

@@ -1,10 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import it.unive.golisa.cfg.runtime.shim.function.Start.StartImpl;
-import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,8 +14,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -41,8 +40,8 @@ public class Start extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public Start(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, true, "Start", GoErrorType.INSTANCE,
-				new Parameter(location, "cs", GoPointerType.lookup(ChaincodeServer.INSTANCE))),
+		super(new CodeMemberDescriptor(location, shimUnit, true, "Start", GoErrorType.INSTANCE,
+				new Parameter(location, "cs", GoPointerType.lookup(GoStructType.get("ChaincodeServer")))),
 				StartImpl.class);
 	}
 

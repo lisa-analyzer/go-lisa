@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
-import it.unive.golisa.cfg.runtime.time.type.Time;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -12,8 +12,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -38,9 +38,9 @@ public class Day extends NativeCFG {
 	 * @param timeUnit the unit to which this native cfg belongs to
 	 */
 	public Day(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, "Day",
+		super(new CodeMemberDescriptor(location, timeUnit, false, "Day",
 				GoIntType.INSTANCE,
-				new Parameter(location, "this", Time.INSTANCE)),
+				new Parameter(location, "this", GoStructType.get("Time"))),
 				DayImpl.class);
 	}
 

@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.analysis.taint.Clean;
-import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -15,8 +15,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -43,10 +43,10 @@ public class GetFunctionAndParameters extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public GetFunctionAndParameters(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, true, "GetFunctionAndParameters",
+		super(new CodeMemberDescriptor(location, shimUnit, true, "GetFunctionAndParameters",
 				GoTupleType.lookup(new Parameter(location, "function", GoStringType.INSTANCE),
 						new Parameter(location, "params", GoSliceType.lookup(GoStringType.INSTANCE))),
-				new Parameter(location, "this", ChaincodeStub.INSTANCE)),
+				new Parameter(location, "this", GoStructType.get("ChaincodeStub"))),
 				GetFunctionAndParametersImpl.class);
 	}
 

@@ -1,22 +1,25 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * A Go struct type.
@@ -57,9 +60,9 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	 * @param name name of the struct type to be updated
 	 * @param unit the compilation unit to update
 	 */
-	public static void updateReference(String name, CompilationUnit unit) {
-		if (structTypes.containsKey(name))
-			structTypes.put(name, new GoStructType(name, unit));
+	public static void updateReference(String name, Unit unit) {
+		if (structTypes.containsKey(name) && unit instanceof CompilationUnit)
+			structTypes.put(name, new GoStructType(name, (CompilationUnit) unit));
 	}
 
 	private final String name;
@@ -110,12 +113,12 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 			if (intf.isEmptyInterface())
 				return true;
 
-			for (CFG methodSpec : intf.getUnit().getAllCFGs()) {
+			for (CodeMember methodSpec : intf.getUnit().getCodeMembers()) {
 				String methodName = methodSpec.getDescriptor().getName();
 				Type methodReturnType = methodSpec.getDescriptor().getReturnType();
 				Parameter[] methodPars = methodSpec.getDescriptor().getFormals();
 				boolean match = false;
-				for (CFG structMethod : getUnit().getAllCFGs()) {
+				for (CodeMember structMethod : getUnit().getCodeMembers()) {
 					String funcName = structMethod.getDescriptor().getName();
 					Type funcReturnType = structMethod.getDescriptor().getReturnType();
 					Parameter[] funcPars = structMethod.getDescriptor().getFormals();

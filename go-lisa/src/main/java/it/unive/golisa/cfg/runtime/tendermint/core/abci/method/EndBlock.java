@@ -1,8 +1,6 @@
 package it.unive.golisa.cfg.runtime.tendermint.core.abci.method;
 
-import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.BaseApplication;
-import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.RequestEndBlock;
-import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.ResponseEndBlock;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -13,8 +11,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -40,9 +38,9 @@ public class EndBlock extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public EndBlock(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CFGDescriptor(location, abciUnit, true, "EndBlock", ResponseEndBlock.INSTANCE,
-				new Parameter(location, "this", BaseApplication.INSTANCE),
-				new Parameter(location, "req", RequestEndBlock.INSTANCE)),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock", GoStructType.get("ResponseEndBlock"),
+				new Parameter(location, "this", GoStructType.get("BaseApplication")),
+				new Parameter(location, "req", GoStructType.get("RequestEndBlock"))),
 				EndBlockImpl.class);
 	}
 
@@ -85,7 +83,7 @@ public class EndBlock extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public EndBlockImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "EndBlockImpl", ResponseEndBlock.INSTANCE, left, right);
+			super(cfg, location, "EndBlockImpl", GoStructType.get("ResponseEndBlock"), left, right);
 		}
 
 		@Override
@@ -96,7 +94,7 @@ public class EndBlock extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(ResponseEndBlock.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(new PushAny(GoStructType.get("ResponseEndBlock"), getLocation()), original);
 		}
 	}
 }

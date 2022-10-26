@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -24,7 +24,6 @@ import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
@@ -43,8 +42,8 @@ public class GoToString extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param pkgUnit  the unit to which this native cfg belongs to
 	 */
-	public GoToString(CodeLocation location, CompilationUnit pkgUnit) {
-		super(new CFGDescriptor(location, pkgUnit, false, "string", GoStringType.INSTANCE,
+	public GoToString(CodeLocation location, Unit pkgUnit) {
+		super(new CodeMemberDescriptor(location, pkgUnit, false, "string", GoStringType.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),
 				ToString.class);
 	}

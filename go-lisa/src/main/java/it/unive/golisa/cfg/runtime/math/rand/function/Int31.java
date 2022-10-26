@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
@@ -34,8 +34,8 @@ public class Int31 extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
-	public Int31(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Int31", GoInt32Type.INSTANCE),
+	public Int31(CodeLocation location, CodeUnit randUnit) {
+		super(new CodeMemberDescriptor(location, randUnit, false, "Int31", GoInt32Type.INSTANCE),
 				Int31Impl.class);
 	}
 

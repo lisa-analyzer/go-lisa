@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.caches.Caches;
@@ -11,9 +15,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A Go pointer type.

@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.tendermint.core.abci.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Response of Begin Block type.
@@ -17,28 +18,27 @@ public class ResponseBeginBlock extends GoStructType {
 	/**
 	 * Unique instance of {@link ResponseBeginBlock} type.
 	 */
-	public static final ResponseBeginBlock INSTANCE = new ResponseBeginBlock();
+//	public static final ResponseBeginBlock INSTANCE = new ResponseBeginBlock();
+//
+//	private ResponseBeginBlock() {
+//		this("", buildRequestBeginBlockUnit());
+//	}
 
-	private ResponseBeginBlock() {
-		this("ResponseBeginBlock", buildRequestBeginBlockUnit());
+	private ResponseBeginBlock(CompilationUnit unit) {
+		super("ResponseBeginBlock", unit);
 	}
 
-	private ResponseBeginBlock(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildRequestBeginBlockUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "ResponseBeginBlock", false);
-		return abciUnit;
+	public static ResponseBeginBlock getRequestBeginBlockType(Program program) {
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseBeginBlock", false);
+		return new ResponseBeginBlock(abciUnit);
 	}
 
 	/**
-	 * Registers methods of the {@link ResponseBeginBlock} type.
-	 */
-	public static void registerMethods() {
-		// TODO
-	}
+//	 * Registers methods of the {@link ResponseBeginBlock} type.
+//	 */
+//	public static void registerMethods() {
+//		// TODO
+//	}
 
 	@Override
 	public String toString() {

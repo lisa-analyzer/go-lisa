@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
 import it.unive.golisa.cfg.runtime.time.type.Duration;
-import it.unive.golisa.cfg.runtime.time.type.Time;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -11,10 +11,10 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
@@ -35,8 +35,8 @@ public class Now extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param timeUnit the unit to which this native cfg belongs to
 	 */
-	public Now(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, "Now", Duration.INSTANCE),
+	public Now(CodeLocation location, CodeUnit timeUnit) {
+		super(new CodeMemberDescriptor(location, timeUnit, false, "Now", Duration.INSTANCE),
 				NowImpl.class);
 	}
 
@@ -77,7 +77,7 @@ public class Now extends NativeCFG {
 		 *                     defined
 		 */
 		public NowImpl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "NowImpl", Time.INSTANCE);
+			super(cfg, location, "NowImpl", GoStructType.get("Time"));
 		}
 
 		@Override
@@ -89,7 +89,7 @@ public class Now extends NativeCFG {
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(Time.INSTANCE, getLocation()), original);
+					new PushAny(GoStructType.get("Time"), getLocation()), original);
 		}
 	}
 }

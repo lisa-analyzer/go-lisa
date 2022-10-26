@@ -1,5 +1,15 @@
 package it.unive.golisa.frontend;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.antlr.GoParser.AnonymousFieldContext;
 import it.unive.golisa.antlr.GoParser.ArrayLengthContext;
 import it.unive.golisa.antlr.GoParser.ArrayTypeContext;
@@ -48,24 +58,19 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntPrtType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMember;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An {@link GoParserBaseVisitor} managing type parsing.
@@ -81,7 +86,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	private final Program program;
 
 	private final Map<String, ExpressionContext> constants;
-	
+
 	private final List<Global> globals;
 
 	/**
@@ -156,7 +161,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 				else if (GoInterfaceType.hasInterfaceType(type))
 					return GoInterfaceType.get(type);
 				else {
-					CompilationUnit unit = new CompilationUnit(new SourceCodeLocation(file, 0, 0), type, false);
+					ClassUnit unit = new ClassUnit(new SourceCodeLocation(file, 0, 0), program, type, false);
 					return GoStructType.lookup(type, unit);
 				}
 			}
@@ -388,31 +393,32 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public GoStructType visitStructType(StructTypeContext ctx) {
 		for (FieldDeclContext field : ctx.fieldDecl())
-			for (Pair<String, Type> fd : visitFieldDecl(field))
+			for (Pair<String, Type> fd : visitFieldDecl(field)) {
+				SourceCodeLocation sourceCodeLocation = new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
+						GoCodeMemberVisitor.getCol(field));
 				unit.addInstanceGlobal(new Global(
-						new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
-								GoCodeMemberVisitor.getCol(field)),
-						fd.getLeft(), fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
+						sourceCodeLocation, unit,fd.getLeft(), true,
+						fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
+			}
 		return GoStructType.lookup(unit.getName(), unit);
 	}
 
 	@Override
 	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
-
 		// The interface is empty
 		if (ctx.methodSpec().size() == 0)
 			return GoInterfaceType.getEmptyInterface();
 
 		for (MethodSpecContext methodSpec : ctx.methodSpec())
-			for (CFGDescriptor desc : visitMethodSpec(methodSpec))
-				unit.addInstanceCFG(new CFG(desc));
-		return GoInterfaceType.lookup(unit.getName(), unit);
+			for (CodeMemberDescriptor desc : visitMethodSpec(methodSpec))
+				unit.addInstanceCodeMember(new CFG(desc));
+		return GoInterfaceType.lookup(unit.getName(), unit, program);
 	}
 
 	@Override
-	public Set<CFGDescriptor> visitMethodSpec(MethodSpecContext ctx) {
+	public Set<CodeMemberDescriptor> visitMethodSpec(MethodSpecContext ctx) {
 
-		Set<CFGDescriptor> descs = new HashSet<>();
+		Set<CodeMemberDescriptor> descs = new HashSet<>();
 
 		if (ctx.IDENTIFIER() != null) {
 			String funcName = ctx.IDENTIFIER().getText();
@@ -426,9 +432,9 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs,
 						new GoCodeMemberVisitor(unit, file, program, constants, globals)
-								.visitParameterDecl(formalPars.parameterDecl(i)));
+						.visitParameterDecl(formalPars.parameterDecl(i)));
 
-			descs.add(new CFGDescriptor(new SourceCodeLocation(file, line, col), program, true, funcName,
+			descs.add(new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), unit, true, funcName,
 					getGoReturnType(ctx.result()), cfgArgs));
 		}
 
@@ -437,10 +443,10 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		else if (ctx.typeName() != null) {
 			Type type = visitTypeName(ctx.typeName());
 
-			CompilationUnit unitType = program.getUnit(type.toString());
+			Unit unitType = program.getUnit(type.toString());
 
 			if (unitType != null)
-				for (CFG cfg : unitType.getAllCFGs())
+				for (CodeMember cfg : unitType.getCodeMembers())
 					descs.add(cfg.getDescriptor());
 		}
 

@@ -1,5 +1,13 @@
 package it.unive.golisa.loader.annotation.sets;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -8,12 +16,6 @@ import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.FrameworkAnnotationSet;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
 import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class represents the set of annotations for the non-determinism analysis.

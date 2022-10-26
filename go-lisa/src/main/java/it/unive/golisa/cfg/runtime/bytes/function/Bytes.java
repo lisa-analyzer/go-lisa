@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.bytes.function;
 
-import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -13,14 +13,14 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
@@ -39,9 +39,9 @@ public class Bytes extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Bytes(CodeLocation location, CompilationUnit unit) {
-		super(new CFGDescriptor(location, unit, true, "Bytes",
+		super(new CodeMemberDescriptor(location, unit, true, "Bytes",
 				GoSliceType.lookup(GoUInt8Type.INSTANCE),
-				new Parameter(location, "b", Buffer.INSTANCE)),
+				new Parameter(location, "b", GoStructType.get("Buffer"))),
 				BytesImpl.class);
 	}
 

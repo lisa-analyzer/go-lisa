@@ -12,8 +12,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -37,7 +37,7 @@ public class Perm extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Perm(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Perm",
+		super(new CodeMemberDescriptor(location, randUnit, false, "Perm",
 				GoSliceType.lookup(GoIntType.INSTANCE),
 				new Parameter(location, "n", GoIntType.INSTANCE)),
 				PermImpl.class);

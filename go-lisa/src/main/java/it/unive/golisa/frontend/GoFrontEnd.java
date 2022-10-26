@@ -1,5 +1,29 @@
 package it.unive.golisa.frontend;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import it.unive.golisa.GoFeatures;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ConstDeclContext;
@@ -57,18 +81,16 @@ import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.logging.IterationLogger;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.call.assignment.OrderPreservingAssigningStrategy;
-import it.unive.lisa.program.cfg.statement.call.assignment.ParameterAssigningStrategy;
-import it.unive.lisa.program.cfg.statement.call.resolution.ParameterMatchingStrategy;
-import it.unive.lisa.program.cfg.statement.call.resolution.RuntimeTypesMatchingStrategy;
-import it.unive.lisa.program.cfg.statement.call.traversal.HierarcyTraversalStrategy;
-import it.unive.lisa.program.cfg.statement.call.traversal.SingleInheritanceTraversalStrategy;
+import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
+import it.unive.lisa.program.language.resolution.RuntimeTypesMatchingStrategy;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
@@ -76,28 +98,6 @@ import it.unive.lisa.type.common.BoolType;
 import it.unive.lisa.type.common.Float32;
 import it.unive.lisa.type.common.Int32;
 import it.unive.lisa.type.common.StringType;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -123,13 +123,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	/**
 	 * The parameter assigning strategy for calls.
 	 */
-	public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY = OrderPreservingAssigningStrategy.INSTANCE;
+//	public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY = OrderPreservingAssigningStrategy.INSTANCE;
 
 	/**
 	 * The strategy of traversing super-unit to search for target call
 	 * implementation.
 	 */
-	public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY = SingleInheritanceTraversalStrategy.INSTANCE;
+//	public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY = SingleInheritanceTraversalStrategy.INSTANCE;
 
 	/**
 	 * The parameter matching strategy for matching function calls.
@@ -149,7 +149,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	 */
 	private GoFrontEnd(String filePath) {
 		this.filePath = filePath;
-		this.program = new Program();
+		this.program = new Program(new GoFeatures());
 		this.constants = new HashMap<>();
 		this.globals = new ArrayList<>();
 		GoCodeMemberVisitor.c = 0;
@@ -285,10 +285,10 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	public Program visitSourceFile(SourceFileContext ctx) {
 		String packageName = visitPackageClause(ctx.packageClause());
 
-		packageUnit = new CompilationUnit(new SourceCodeLocation(filePath, 0, 0), packageName, false);
-		program.addCompilationUnit(packageUnit);
+		packageUnit = new ClassUnit(new SourceCodeLocation(filePath, 0, 0), program, packageName, false);
+		program.addUnit(packageUnit);
 
-		GoInterfaceType.lookup("EMPTY_INTERFACE", packageUnit);
+		GoInterfaceType.lookup("EMPTY_INTERFACE", packageUnit, program);
 
 		for (ImportDeclContext imp : ctx.importDecl())
 			visitImportDecl(imp);
@@ -322,14 +322,14 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	}
 
 	private void updateUnitReferences() {
-		for (CompilationUnit unit : program.getUnits())
+		for (Unit unit : program.getUnits())
 			GoStructType.updateReference(unit.getName(), unit);
 	}
 
 	private void visitDeclarationContext(DeclarationContext decl) {
 		if (decl.typeDecl() != null)
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
-				program.addCompilationUnit(unit);
+				program.addUnit(unit);
 		
 		if (decl.varDecl() != null)
 			visitVarDeclContext(decl.varDecl());
@@ -343,8 +343,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		for( VarSpecContext spec : ctx.varSpec()) {
 			IdentifierListContext ids = spec.identifierList();
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++)
-					globals.add(new Global(new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)), GoCodeMemberVisitor.getCol(ids.IDENTIFIER(i))), ids.IDENTIFIER(i).getText(),
-							Untyped.INSTANCE));
+					globals.add(new Global(new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)), GoCodeMemberVisitor.getCol(ids.IDENTIFIER(i))), packageUnit, ids.IDENTIFIER(i).getText(),
+							true, Untyped.INSTANCE));
 		}
 	}
 
@@ -367,9 +367,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		HashSet<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
-			CompilationUnit unit = new CompilationUnit(
+			ClassUnit unit = new ClassUnit(
 					new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(typeSpec),
-							GoCodeMemberVisitor.getCol(typeSpec)),
+							GoCodeMemberVisitor.getCol(typeSpec)), program,
 					unitName, false);
 			units.add(unit);
 			new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
@@ -412,8 +412,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 					try {
 						Program moduleProgram = GoFrontEnd.processFile(listOfFiles[i].toString());
 
-						for (CompilationUnit cu : moduleProgram.getUnits())
-							program.addCompilationUnit(cu);
+						for (Unit cu : moduleProgram.getUnits())
+							program.addUnit(cu);
 
 					} catch (IOException e) {
 						throw new RuntimeException("Cannot find package + " + listOfFiles[i]);
@@ -425,8 +425,9 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private void loadCore() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		packageUnit.addConstruct(new GoToString(unknownLocation, packageUnit));
-		packageUnit.addConstruct(new ToInt64(unknownLocation, packageUnit));
+		System.err.println(packageUnit);
+		packageUnit.addCodeMember(new GoToString(unknownLocation, packageUnit));
+		packageUnit.addCodeMember(new ToInt64(unknownLocation, packageUnit));
 	}
 
 	@Override

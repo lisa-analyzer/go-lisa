@@ -1,5 +1,12 @@
 package it.unive.golisa.frontend;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
@@ -19,7 +26,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
@@ -29,12 +36,6 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function.
@@ -58,11 +59,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcDecl, packageUnit), entrypoints,
+		cfg = new VariableScopingCFG(buildCodeMemberDescriptor(funcDecl, packageUnit), entrypoints,
 				new NodeList<>(SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
-		packageUnit.addCFG(cfg);
+		packageUnit.addCodeMember(cfg);
 	}
 
 	/**
@@ -80,11 +81,11 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcLit), entrypoints,
+		cfg = new VariableScopingCFG(buildCodeMemberDescriptor(funcLit), entrypoints,
 				new NodeList<>(GoCodeMemberVisitor.SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
-		packageUnit.addCFG(cfg);
+		packageUnit.addCodeMember(cfg);
 	}
 
 	/**
@@ -193,7 +194,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		return cfg;
 	}
 
-	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl, Unit unit) {
+	private CodeMemberDescriptor buildCodeMemberDescriptor(FunctionDeclContext funcDecl, Unit unit) {
 		String funcName = funcDecl.IDENTIFIER().getText();
 		SignatureContext signature = funcDecl.signature();
 		ParametersContext formalPars = signature.parameters();
@@ -208,14 +209,14 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = getGoReturnType(funcDecl.signature());
 
-		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), unit, false,
+		CodeMemberDescriptor descriptor = new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), unit, false,
 				funcName,
 				returnType, cfgArgs);
 
 		return descriptor;
 	}
 
-	private CFGDescriptor buildCFGDescriptor(FunctionLitContext funcLit) {
+	private CodeMemberDescriptor buildCodeMemberDescriptor(FunctionLitContext funcLit) {
 		String funcName = "anonymousFunction" + c++;
 		SignatureContext signature = funcLit.signature();
 		ParametersContext formalPars = signature.parameters();
@@ -228,7 +229,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
-		return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName,
+		return new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), currentUnit, false, funcName,
 				getGoReturnType(funcLit.signature()), cfgArgs);
 	}
 

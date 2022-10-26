@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.function;
 
 import it.unive.golisa.analysis.taint.Clean;
-import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
@@ -14,10 +14,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -42,9 +42,9 @@ public class NewStateEP extends NativeCFG {
 	 * @param location          the location where this native cfg is defined
 	 * @param statebasedPackage the unit to which this native cfg belongs to
 	 */
-	public NewStateEP(CodeLocation location, CompilationUnit statebasedPackage) {
-		super(new CFGDescriptor(location, statebasedPackage, false, "NewStateEP",
-				GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE),
+	public NewStateEP(CodeLocation location, CodeUnit statebasedPackage) {
+		super(new CodeMemberDescriptor(location, statebasedPackage, false, "NewStateEP",
+				GoTupleType.getTupleTypeOf(location, GoInterfaceType.get("KeyEndorsementPolicy"), GoErrorType.INSTANCE),
 				new Parameter(location, "policy", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				NewStateEPImpl.class);
 	}
@@ -88,7 +88,7 @@ public class NewStateEP extends NativeCFG {
 		 */
 		public NewStateEPImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "NewStateEPImpl",
-					GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.INSTANCE, GoErrorType.INSTANCE), expr);
+					GoTupleType.getTupleTypeOf(location, GoInterfaceType.get("KeyEndorsementPolicy"), GoErrorType.INSTANCE), expr);
 		}
 
 		@Override

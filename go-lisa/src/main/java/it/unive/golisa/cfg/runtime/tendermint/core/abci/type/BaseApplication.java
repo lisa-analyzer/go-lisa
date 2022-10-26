@@ -6,8 +6,9 @@ import it.unive.golisa.cfg.runtime.tendermint.core.abci.method.DeliverTx;
 import it.unive.golisa.cfg.runtime.tendermint.core.abci.method.EndBlock;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Base Application type.
@@ -21,37 +22,40 @@ public class BaseApplication extends GoStructType {
 	/**
 	 * Unique instance of the {@link BaseApplication} type.
 	 */
-	public static final BaseApplication INSTANCE = new BaseApplication();
+	//	public static final BaseApplication INSTANCE = new BaseApplication();
+	//
+	//	private BaseApplication() {
+	//		this(, buildBaseApplicationUnit());
+	//	}
 
-	private BaseApplication() {
-		this("BaseApplication", buildBaseApplicationUnit());
+	private BaseApplication(CompilationUnit unit) {
+		super("BaseApplication", unit);
 	}
 
-	private BaseApplication(String name, CompilationUnit unit) {
-		super(name, unit);
+	public static BaseApplication etBaseApplicationType(Program program) {
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "BaseApplication", false);
+		
+		// add methods
+		abciUnit
+		.addInstanceCodeMember(new BeginBlock(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+		abciUnit
+		.addInstanceCodeMember(new DeliverTx(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+		abciUnit
+		.addInstanceCodeMember(new EndBlock(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+		abciUnit
+		.addInstanceCodeMember(new Commit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+
+		return new BaseApplication(abciUnit);
 	}
 
-	private static CompilationUnit buildBaseApplicationUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "BaseApplication", false);
-		return abciUnit;
-	}
-
-	/**
-	 * Registers the methods of the {@link BaseApplication} type.
-	 */
-	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
-		BaseApplication.INSTANCE.getUnit()
-				.addInstanceConstruct(new BeginBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
-		BaseApplication.INSTANCE.getUnit()
-				.addInstanceConstruct(new DeliverTx(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
-		BaseApplication.INSTANCE.getUnit()
-				.addInstanceConstruct(new EndBlock(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
-		BaseApplication.INSTANCE.getUnit()
-				.addInstanceConstruct(new Commit(runtimeLocation, BaseApplication.INSTANCE.getUnit()));
-	}
+	//	/**
+	//	 * Registers the methods of the {@link BaseApplication} type.
+	//	 */
+	//	public static void registerMethods() {
+	//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//
+	//		
+	//	}
 
 	@Override
 	public String toString() {

@@ -1,5 +1,10 @@
 package it.unive.golisa.analysis.heap;
 
+import java.util.Map;
+import java.util.function.Predicate;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -17,9 +22,6 @@ import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import java.util.Map;
-import java.util.function.Predicate;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An abstract state of the analysis for Go, composed by a value state modeling

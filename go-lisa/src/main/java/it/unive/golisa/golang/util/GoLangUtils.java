@@ -1,12 +1,14 @@
 package it.unive.golisa.golang.util;
 
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.Variable;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * This class contains useful utility methods and constants for handle GoLang
@@ -32,6 +34,9 @@ public class GoLangUtils {
 	 */
 	public static final String GO_UNKNOWN_SOURCE = "unknown";
 
+	
+	public static final SourceCodeLocation GO_RUNTIME_SOURCECODE_LOCATION = new SourceCodeLocation(GO_RUNTIME_SOURCE, 0, 0);
+	
 	/**
 	 * Checks whether the variable {@code v} is blank.
 	 * 

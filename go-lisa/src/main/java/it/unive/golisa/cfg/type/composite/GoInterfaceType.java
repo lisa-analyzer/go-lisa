@@ -1,8 +1,14 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -10,10 +16,6 @@ import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * A Go interface type.
@@ -35,9 +37,9 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * @return the unique instance of {@link GoInterfaceType} representing the
 	 *             interface type with the given name
 	 */
-	public static GoInterfaceType lookup(String name, CompilationUnit unit) {
+	public static GoInterfaceType lookup(String name, CompilationUnit unit, Program program) {
 		if (name.equals(EmptyInterface.EMPTY_INTERFACE_NAME))
-			return interfaces.computeIfAbsent(name, x -> new EmptyInterface());
+			return interfaces.computeIfAbsent(name, x -> new EmptyInterface(program));
 		return interfaces.computeIfAbsent(name, x -> new GoInterfaceType(name, unit));
 	}
 
@@ -190,8 +192,8 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
 		private static final String EMPTY_INTERFACE_NAME = "EMPTY_INTERFACE";
 
-		protected EmptyInterface() {
-			super(EMPTY_INTERFACE_NAME, it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
+		protected EmptyInterface(Program program) {
+			super(EMPTY_INTERFACE_NAME,  new EmptyInterfaceUnit(program));
 		}
 
 		@Override

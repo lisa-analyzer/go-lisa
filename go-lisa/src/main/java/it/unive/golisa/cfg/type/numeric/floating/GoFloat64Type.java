@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.type.numeric.floating;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -8,8 +11,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Go 64 bits float type. It implements the singleton design pattern, that is

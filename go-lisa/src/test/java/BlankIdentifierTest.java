@@ -1,4 +1,6 @@
 
+import org.junit.Test;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.lisa.AnalysisSetupException;
@@ -9,7 +11,6 @@ import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Test;
 
 public class BlankIdentifierTest extends GoAnalysisTestExecutor {
 

@@ -1,4 +1,8 @@
 
+import java.io.IOException;
+
+import org.junit.Test;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -17,8 +21,6 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import java.io.IOException;
-import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 

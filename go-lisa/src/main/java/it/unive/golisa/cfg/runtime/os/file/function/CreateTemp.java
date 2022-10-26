@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.os.file.function;
 
-import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -13,10 +13,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -40,9 +40,9 @@ public class CreateTemp extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param osUnit   the unit to which this native cfg belongs to
 	 */
-	public CreateTemp(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Create",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE),
+	public CreateTemp(CodeLocation location, CodeUnit osUnit) {
+		super(new CodeMemberDescriptor(location, osUnit, false, "Create",
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
 				CreateTempImpl.class);
@@ -88,7 +88,7 @@ public class CreateTemp extends NativeCFG {
 		 */
 		public CreateTempImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "CreateTempImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.INSTANCE), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")), GoErrorType.INSTANCE),
 					left,
 					right);
 		}

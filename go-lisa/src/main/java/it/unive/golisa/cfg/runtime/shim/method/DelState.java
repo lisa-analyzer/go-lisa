@@ -1,10 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import it.unive.golisa.cfg.runtime.io.type.Reader;
-import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,8 +14,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -43,8 +42,8 @@ public class DelState extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public DelState(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "DelState", GoErrorType.INSTANCE,
-				new Parameter(location, "this", ChaincodeStub.INSTANCE),
+		super(new CodeMemberDescriptor(location, shimUnit, false, "DelState", GoErrorType.INSTANCE,
+				new Parameter(location, "this", GoStructType.get("ChaincodeStub")),
 				new Parameter(location, "key", GoStringType.INSTANCE)),
 				DelStateImpl.class);
 	}
@@ -100,7 +99,7 @@ public class DelState extends NativeCFG {
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			AnalysisState<A, H, V,
-					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+					T> readerValue = state.smallStepSemantics(new PushAny(GoStructType.get("Reader"), getLocation()), original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);

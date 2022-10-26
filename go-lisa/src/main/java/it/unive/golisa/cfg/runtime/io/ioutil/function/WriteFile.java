@@ -1,10 +1,10 @@
 package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
-import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,10 +14,10 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -42,11 +42,11 @@ public class WriteFile extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param ioUnit   the unit to which this native cfg belongs to
 	 */
-	public WriteFile(CodeLocation location, CompilationUnit ioUnit) {
-		super(new CFGDescriptor(location, ioUnit, false, "WriteFile", GoErrorType.INSTANCE,
+	public WriteFile(CodeLocation location, CodeUnit ioUnit) {
+		super(new CodeMemberDescriptor(location, ioUnit, false, "WriteFile", GoErrorType.INSTANCE,
 				new Parameter(location, "filename", GoStringType.INSTANCE),
 				new Parameter(location, "data", GoSliceType.lookup(UInt8.INSTANCE)),
-				new Parameter(location, "perm", Reader.INSTANCE)),
+				new Parameter(location, "perm", GoStructType.get("Reader"))),
 				WriteFileImpl.class);
 	}
 

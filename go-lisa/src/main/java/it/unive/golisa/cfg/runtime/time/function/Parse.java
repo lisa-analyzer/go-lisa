@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
-import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -12,10 +12,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -40,9 +40,9 @@ public class Parse extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param timeUnit the unit to which this native cfg belongs to
 	 */
-	public Parse(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, "Parse",
-				GoTupleType.lookup(new Parameter(location, "_", Time.INSTANCE),
+	public Parse(CodeLocation location, CodeUnit timeUnit) {
+		super(new CodeMemberDescriptor(location, timeUnit, false, "Parse",
+				GoTupleType.lookup(new Parameter(location, "_", GoStructType.get("Time")),
 						new Parameter(location, "_", GoErrorType.INSTANCE)),
 				new Parameter(location, "layout", GoStringType.INSTANCE),
 				new Parameter(location, "value", GoStringType.INSTANCE)),
@@ -88,7 +88,7 @@ public class Parse extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public ParseImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "ParseImpl", GoTupleType.lookup(new Parameter(location, "_", Time.INSTANCE),
+			super(cfg, location, "ParseImpl", GoTupleType.lookup(new Parameter(location, "_", GoStructType.get("Time")),
 					new Parameter(location, "_", GoErrorType.INSTANCE)), left, right);
 		}
 
@@ -101,7 +101,7 @@ public class Parse extends NativeCFG {
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_", Time.INSTANCE),
+					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_", GoStructType.get("Time")),
 							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
 							original.getLocation()),
 					original);

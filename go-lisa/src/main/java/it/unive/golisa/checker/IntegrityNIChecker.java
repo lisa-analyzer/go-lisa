@@ -1,5 +1,7 @@
 package it.unive.golisa.checker;
 
+import java.util.Collection;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -10,14 +12,13 @@ import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
-import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -26,7 +27,6 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-import java.util.Collection;
 
 /**
  * A non-interference integrity checker.
@@ -62,10 +62,10 @@ public class IntegrityNIChecker implements
 	}
 
 	@Override
-	public boolean visitCompilationUnit(CheckToolWithAnalysisResults<
+	public boolean visitUnit(CheckToolWithAnalysisResults<
 			GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
 			GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
-			CompilationUnit unit) {
+			Unit unit) {
 		return true;
 	}
 
@@ -115,7 +115,7 @@ public class IntegrityNIChecker implements
 
 		if (resolved instanceof NativeCall) {
 			NativeCall nativeCfg = (NativeCall) resolved;
-			Collection<NativeCFG> nativeCfgs = nativeCfg.getTargets();
+			Collection<NativeCFG> nativeCfgs = nativeCfg.getTargetedConstructs();
 			for (NativeCFG n : nativeCfgs)
 				try {
 					process(tool, call, resolved, n.getDescriptor());
@@ -125,7 +125,7 @@ public class IntegrityNIChecker implements
 				}
 		} else if (resolved instanceof CFGCall) {
 			CFGCall cfg = (CFGCall) resolved;
-			for (CFG n : cfg.getTargets())
+			for (CFG n : cfg.getTargetedCFGs())
 				try {
 					process(tool, call, resolved, n.getDescriptor());
 				} catch (SemanticException e) {
@@ -142,7 +142,7 @@ public class IntegrityNIChecker implements
 			CheckToolWithAnalysisResults<
 					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
 					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
-			UnresolvedCall call, Call resolved, CFGDescriptor desc) throws SemanticException {
+			UnresolvedCall call, Call resolved, CodeMemberDescriptor desc) throws SemanticException {
 		if (desc.getAnnotations().contains(SINK_MATCHER))
 			for (CFGWithAnalysisResults<
 					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,

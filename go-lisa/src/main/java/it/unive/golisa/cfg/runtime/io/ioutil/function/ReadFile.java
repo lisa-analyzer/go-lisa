@@ -15,8 +15,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -39,7 +39,7 @@ public class ReadFile extends NativeCFG {
 	 * @param ioUnit   the unit to which this native cfg belongs to
 	 */
 	public ReadFile(CodeLocation location, CompilationUnit ioUnit) {
-		super(new CFGDescriptor(location, ioUnit, false, "ReadFile",
+		super(new CodeMemberDescriptor(location, ioUnit, false, "ReadFile",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "filename", GoStringType.INSTANCE)),

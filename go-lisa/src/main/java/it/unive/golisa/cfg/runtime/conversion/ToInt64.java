@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -42,8 +42,8 @@ public class ToInt64 extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param pkgUnit  the unit to which this native cfg belongs to
 	 */
-	public ToInt64(CodeLocation location, CompilationUnit pkgUnit) {
-		super(new CFGDescriptor(location, pkgUnit, false, "int64", GoInt64Type.INSTANCE,
+	public ToInt64(CodeLocation location, Unit pkgUnit) {
+		super(new CodeMemberDescriptor(location, pkgUnit, false, "int64", GoInt64Type.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),
 				ToInt64Impl.class);
 	}

@@ -1,11 +1,11 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
-import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -16,10 +16,10 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -43,9 +43,9 @@ public class Indent extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param jsonUnit the unit to which this native cfg belongs to
 	 */
-	public Indent(CodeLocation location, CompilationUnit jsonUnit) {
-		super(new CFGDescriptor(location, jsonUnit, false, "Indent", GoErrorType.INSTANCE,
-				new Parameter(location, "dst", GoPointerType.lookup(Buffer.INSTANCE)),
+	public Indent(CodeLocation location, CodeUnit jsonUnit) {
+		super(new CodeMemberDescriptor(location, jsonUnit, false, "Indent", GoErrorType.INSTANCE,
+				new Parameter(location, "dst", GoPointerType.lookup(GoStructType.get("Buffer"))),
 				new Parameter(location, "src", GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				new Parameter(location, "prefix", GoStringType.INSTANCE),
 				new Parameter(location, "indent", GoStringType.INSTANCE)),

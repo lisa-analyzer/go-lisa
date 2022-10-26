@@ -2,11 +2,13 @@ package it.unive.golisa.cfg.runtime.shim.type;
 
 import it.unive.golisa.cfg.runtime.shim.method.Start;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A ChaincodeServer type.
@@ -20,35 +22,31 @@ public class ChaincodeServer extends GoStructType {
 	/**
 	 * Unique instance of the {@link ChaincodeServer} type.
 	 */
-	public static final ChaincodeServer INSTANCE = new ChaincodeServer();
+//	public static final ChaincodeServer INSTANCE = new ChaincodeServer();
 
-	private ChaincodeServer() {
-		super("ChaincodeServer", buildChaincodeServer());
+	private ChaincodeServer(CompilationUnit unit) {
+		super("ChaincodeServer", unit);
 	}
 
-	private static CompilationUnit buildChaincodeServer() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit chaincodeStubUnit = new CompilationUnit(unknownLocation, "ChaincodeServer", false);
+	public static ChaincodeServer getChaincodeServerType(Program program) {
+		ClassUnit chaincodeServerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ChaincodeServer", false);
 
 		// Add globals
-		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "CCID", GoStringType.INSTANCE));
-		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "Address", GoStringType.INSTANCE));
-		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "CC", Chaincode.INSTANCE));
-		chaincodeStubUnit.addGlobal(new Global(unknownLocation, "TLSProps", TLSProperties.INSTANCE));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit, "CCID", true, GoStringType.INSTANCE));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,"Address", true, GoStringType.INSTANCE));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,"CC", true, GoInterfaceType.get("Chaincode")));
+		chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,"TLSProps", true, GoStructType.get("TLSProperties")));
 
-		// missing KaOpts *keepalive.ServerParameters
-		return chaincodeStubUnit;
+		// TODO: missing KaOpts *keepalive.ServerParameters
+		return new ChaincodeServer(chaincodeServerUnit);
 	}
 
 	/**
 	 * Registers the methods of the {@link ChaincodeStub} type.
 	 */
 	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
-		ChaincodeServer.INSTANCE.getUnit()
-				.addInstanceConstruct(new Start(runtimeLocation, ChaincodeServer.INSTANCE.getUnit()));
-
+		CompilationUnit chaincodeServerUnit = GoStructType.get("ChaincodeServer").getUnit();
+		chaincodeServerUnit.addInstanceCodeMember(new Start(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit));
 	}
 
 	@Override

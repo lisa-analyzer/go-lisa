@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.tendermint.core.abci.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Request of Begin Block.
@@ -17,20 +18,19 @@ public class RequestBeginBlock extends GoStructType {
 	/**
 	 * Unique instance of the {@link RequestBeginBlock} type.
 	 */
-	public static final RequestBeginBlock INSTANCE = new RequestBeginBlock();
+//	public static final RequestBeginBlock INSTANCE = new RequestBeginBlock();
+//
+//	private RequestBeginBlock() {
+//		this(, buildRequestBeginBlockUnit());
+//	}
 
-	private RequestBeginBlock() {
-		this("RequestBeginBlock", buildRequestBeginBlockUnit());
+	private RequestBeginBlock(CompilationUnit unit) {
+		super("RequestBeginBlock", unit);
 	}
 
-	private RequestBeginBlock(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildRequestBeginBlockUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "RequestBeginBlock", false);
-		return abciUnit;
+	public static RequestBeginBlock getRequestBeginBlockType(Program program) {
+		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestBeginBlock", false);
+		return new RequestBeginBlock(abciUnit);
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.math.rand.type;
 
-import it.unive.golisa.cfg.runtime.math.rand.function.Read;
 import it.unive.golisa.cfg.runtime.math.rand.method.ExpFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.method.Float32;
 import it.unive.golisa.cfg.runtime.math.rand.method.Float64;
@@ -12,14 +11,16 @@ import it.unive.golisa.cfg.runtime.math.rand.method.Int63n;
 import it.unive.golisa.cfg.runtime.math.rand.method.Intn;
 import it.unive.golisa.cfg.runtime.math.rand.method.NormFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.method.Perm;
+import it.unive.golisa.cfg.runtime.math.rand.method.Read;
 import it.unive.golisa.cfg.runtime.math.rand.method.Seed;
 import it.unive.golisa.cfg.runtime.math.rand.method.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.method.UInt32;
 import it.unive.golisa.cfg.runtime.math.rand.method.UInt64;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Random generator.
@@ -30,48 +31,59 @@ import it.unive.lisa.program.SourceCodeLocation;
  */
 public class Rand extends GoStructType {
 
-	/**
-	 * Unique instance of Rand type.
-	 */
-	public static final Rand INSTANCE = new Rand();
-
-	private Rand() {
-		this("Rand", buildRandUnit());
-	}
+	//	/**
+	//	 * Unique instance of Rand type.
+	//	 */
+	//	public static final Rand INSTANCE = new Rand();
+	//
+	//	private Rand() {
+	//		this("Rand", buildRandUnit());
+	//	}
 
 	private Rand(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
 
-	private static CompilationUnit buildRandUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Rand", false);
-		return randUnit;
+	//	private static CompilationUnit buildRandUnit() {
+	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//		return randUnit;
+	//	}
+
+	//	/**
+	//	 * Registers the methods of Rand type.
+	//	 */
+	//	public static void registerMethods() {
+	//		SourceCodeLocation GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//
+	//		
+	//
+	//	}
+
+
+	public static Rand getRandType(Program program) {
+		// builds the unit
+		ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Rand", false);
+		return new Rand("Rand", randUnit);
 	}
 
-	/**
-	 * Registers the methods of Rand type.
-	 */
 	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new ExpFloat64(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Float32(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Float64(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int31(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int31n(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int63(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Int63n(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Intn(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new NormFloat64(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Perm(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt32(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new UInt64(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Read(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Seed(runtimeLocation, Rand.INSTANCE.getUnit()));
-		Rand.INSTANCE.getUnit().addInstanceConstruct(new Shuffle(runtimeLocation, Rand.INSTANCE.getUnit()));
-
+		CompilationUnit randUnit = GoStructType.get("Rand").getUnit();
+		randUnit.addInstanceCodeMember(new ExpFloat64(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Float32(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Float64(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Int(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Int31(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Int31n(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Int63(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Int63n(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Intn(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new NormFloat64(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Perm(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new UInt32(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new UInt64(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Read(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Seed(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
+		randUnit.addInstanceCodeMember(new Shuffle(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
 	}
 
 	@Override

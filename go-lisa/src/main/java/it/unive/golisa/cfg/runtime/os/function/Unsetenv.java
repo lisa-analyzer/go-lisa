@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.os.function;
 
-import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -12,10 +12,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -41,8 +41,8 @@ public class Unsetenv extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param osUnit   the unit to which this native cfg belongs to
 	 */
-	public Unsetenv(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Unsetenv",
+	public Unsetenv(CodeLocation location, CodeUnit osUnit) {
+		super(new CodeMemberDescriptor(location, osUnit, false, "Unsetenv",
 				GoErrorType.INSTANCE,
 				new Parameter(location, "key", GoStringType.INSTANCE)),
 				UnsetenvImpl.class);
@@ -97,7 +97,7 @@ public class Unsetenv extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			AnalysisState<A, H, V,
-					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+					T> readerValue = state.smallStepSemantics(new PushAny(GoStructType.get("Reader"), getLocation()), original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);

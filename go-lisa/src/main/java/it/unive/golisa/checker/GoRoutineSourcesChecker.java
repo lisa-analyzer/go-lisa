@@ -14,7 +14,6 @@ import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.checks.syntactic.CheckTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
-import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.annotations.Annotation;
@@ -52,7 +51,7 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 	}
 
 	private void checkGoRoutine(VariableScopingCFG graph, Map<String, Set<IdInfo>> visibleIds, CFGCall cfgCall) {
-		for( CFG cfg : cfgCall.getTargets()) {
+		for( CFG cfg : cfgCall.getTargetedCFGs()) {
 			VariableScopingCFG vsCFG = (VariableScopingCFG) cfg;
 			for(Statement node : vsCFG.getNodes()){
 				if(node instanceof GoAssignment) {
@@ -105,7 +104,7 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public boolean visitCompilationUnit(CheckTool tool, CompilationUnit unit) {
+	public boolean visitUnit(CheckTool tool, Unit unit) {
 		return true;
 	}
 

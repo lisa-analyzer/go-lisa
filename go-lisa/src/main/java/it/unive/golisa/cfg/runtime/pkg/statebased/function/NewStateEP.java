@@ -44,7 +44,9 @@ public class NewStateEP extends NativeCFG {
 	 */
 	public NewStateEP(CodeLocation location, CodeUnit statebasedPackage) {
 		super(new CodeMemberDescriptor(location, statebasedPackage, false, "NewStateEP",
-				GoTupleType.getTupleTypeOf(location, KeyEndorsementPolicy.getKeyEndorsementPolicyType(statebasedPackage.getProgram()), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location,
+						KeyEndorsementPolicy.getKeyEndorsementPolicyType(statebasedPackage.getProgram()),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "policy", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				NewStateEPImpl.class);
 	}

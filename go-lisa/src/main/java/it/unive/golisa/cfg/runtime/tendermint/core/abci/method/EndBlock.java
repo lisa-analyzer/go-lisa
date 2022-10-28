@@ -39,7 +39,8 @@ public class EndBlock extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public EndBlock(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock", RequestEndBlock.getRequestEndBlockType(abciUnit.getProgram()),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock",
+				RequestEndBlock.getRequestEndBlockType(abciUnit.getProgram()),
 				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram())),
 				new Parameter(location, "req", RequestEndBlock.getRequestEndBlockType(abciUnit.getProgram()))),
 				EndBlockImpl.class);
@@ -95,7 +96,8 @@ public class EndBlock extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(RequestEndBlock.getRequestEndBlockType(null), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(RequestEndBlock.getRequestEndBlockType(null), getLocation()),
+					original);
 		}
 	}
 }

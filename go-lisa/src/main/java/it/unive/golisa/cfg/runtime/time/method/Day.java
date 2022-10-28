@@ -40,7 +40,7 @@ public class Day extends NativeCFG {
 	public Day(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CodeMemberDescriptor(location, timeUnit, false, "Day",
 				GoIntType.INSTANCE,
-				new Parameter(location, "this",  Time.getTimeType(timeUnit.getProgram()))),
+				new Parameter(location, "this", Time.getTimeType(timeUnit.getProgram()))),
 				DayImpl.class);
 	}
 

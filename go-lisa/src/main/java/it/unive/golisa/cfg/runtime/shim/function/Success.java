@@ -40,7 +40,8 @@ public class Success extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public Success(CodeLocation location, CodeUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, false, "Success", Response.getResponseType(shimUnit.getProgram()),
+		super(new CodeMemberDescriptor(location, shimUnit, false, "Success",
+				Response.getResponseType(shimUnit.getProgram()),
 				new Parameter(location, "payload", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				SuccessImpl.class);
 	}

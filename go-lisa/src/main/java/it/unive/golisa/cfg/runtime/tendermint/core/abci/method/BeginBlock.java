@@ -40,7 +40,8 @@ public class BeginBlock extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public BeginBlock(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "BeginBlock", ResponseBeginBlock.getRequestBeginBlockType(abciUnit.getProgram()),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "BeginBlock",
+				ResponseBeginBlock.getRequestBeginBlockType(abciUnit.getProgram()),
 				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram())),
 				new Parameter(location, "req", RequestBeginBlock.getRequestBeginBlockType(abciUnit.getProgram()))),
 				BeginBlockImpl.class);
@@ -96,7 +97,8 @@ public class BeginBlock extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(ResponseBeginBlock.getRequestBeginBlockType(null), getLocation()),
+			return state.smallStepSemantics(
+					new PushAny(ResponseBeginBlock.getRequestBeginBlockType(null), getLocation()),
 					original);
 		}
 	}

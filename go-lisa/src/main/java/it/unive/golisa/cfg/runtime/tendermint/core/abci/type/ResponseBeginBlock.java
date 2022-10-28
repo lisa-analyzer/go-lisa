@@ -20,16 +20,16 @@ public class ResponseBeginBlock extends GoStructType {
 	 */
 	private static ResponseBeginBlock INSTANCE;
 
-
 	private ResponseBeginBlock(CompilationUnit unit) {
 		super("ResponseBeginBlock", unit);
 	}
 
 	public static ResponseBeginBlock getRequestBeginBlockType(Program program) {
 		if (INSTANCE == null) {
-			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseBeginBlock",
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
+					"ResponseBeginBlock",
 					false);
-			INSTANCE =  new ResponseBeginBlock(abciUnit);
+			INSTANCE = new ResponseBeginBlock(abciUnit);
 		}
 
 		return INSTANCE;

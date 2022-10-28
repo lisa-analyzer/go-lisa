@@ -41,14 +41,15 @@ public class ChaincodeStub extends GoStructType {
 			chaincodeStubUnit.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 
 			// add globals
-			chaincodeStubUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit, "TxID",
-					true, GoStringType.INSTANCE));
+			chaincodeStubUnit
+					.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit, "TxID",
+							true, GoStringType.INSTANCE));
 			chaincodeStubUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit,
 					"ChannelID", true, GoStringType.INSTANCE));
 
 			INSTANCE = new ChaincodeStub(chaincodeStubUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 
@@ -58,29 +59,28 @@ public class ChaincodeStub extends GoStructType {
 	public static void registerMethods() {
 		CompilationUnit chaincodeStubUnit = INSTANCE.getUnit();
 		chaincodeStubUnit
-		.addInstanceCodeMember(
-				new DelPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(
+						new DelPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(new DelState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(new DelState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(
-				new GetFunctionAndParameters(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(
+						new GetFunctionAndParameters(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(new GetArgs(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(new GetArgs(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(
-				new GetStringArgs(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(
+						new GetStringArgs(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(
-				new PutPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(
+						new PutPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(new PutState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(new PutState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(new GetState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(new GetState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(
-				new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
-
+				.addInstanceCodeMember(
+						new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 
 	}
 

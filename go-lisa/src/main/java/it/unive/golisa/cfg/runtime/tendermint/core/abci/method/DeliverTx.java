@@ -39,7 +39,8 @@ public class DeliverTx extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public DeliverTx(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "DeliverTx", ResponseDeliverTx.getResponseDeliverTxType(abciUnit.getProgram()),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "DeliverTx",
+				ResponseDeliverTx.getResponseDeliverTxType(abciUnit.getProgram()),
 				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram())),
 				new Parameter(location, "req", ResponseDeliverTx.getResponseDeliverTxType(abciUnit.getProgram()))),
 				DeliverTxImpl.class);
@@ -95,7 +96,8 @@ public class DeliverTx extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(ResponseDeliverTx.getResponseDeliverTxType(null), getLocation()),
+			return state.smallStepSemantics(
+					new PushAny(ResponseDeliverTx.getResponseDeliverTxType(null), getLocation()),
 					original);
 		}
 	}

@@ -40,7 +40,8 @@ public class Pipe extends NativeCFG {
 	 */
 	public Pipe(CodeLocation location, CodeUnit ioUnit) {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "Pipe",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.getPipeReader(ioUnit.getProgram())),
+				GoTupleType.getTupleTypeOf(location,
+						GoPointerType.lookup(PipeReader.getPipeReader(ioUnit.getProgram())),
 						GoPointerType.lookup(PipeWriter.getPiperWriter(ioUnit.getProgram())))),
 				PipeImpl.class);
 	}

@@ -39,7 +39,8 @@ public class Commit extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public Commit(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock", ResponseCommit.getRequestEndBlockType(abciUnit.getProgram()),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock",
+				ResponseCommit.getRequestEndBlockType(abciUnit.getProgram()),
 				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram()))),
 				CommitImpl.class);
 	}
@@ -92,7 +93,8 @@ public class Commit extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(ResponseCommit.getRequestEndBlockType(null), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(ResponseCommit.getRequestEndBlockType(null), getLocation()),
+					original);
 		}
 	}
 }

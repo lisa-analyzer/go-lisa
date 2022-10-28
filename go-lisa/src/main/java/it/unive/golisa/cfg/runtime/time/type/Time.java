@@ -23,7 +23,6 @@ public class Time extends GoStructType {
 	 */
 	private static Time INSTANCE;
 
-
 	private Time(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
@@ -47,14 +46,16 @@ public class Time extends GoStructType {
 		if (INSTANCE == null) {
 			ClassUnit timeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Time", false);
 			timeUnit.addGlobal(
-					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "wall", true, GoInt64Type.INSTANCE));
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "wall", true,
+							GoInt64Type.INSTANCE));
 			timeUnit.addGlobal(
-					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "ext", true, GoInt64Type.INSTANCE));
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "ext", true,
+							GoInt64Type.INSTANCE));
 			// TODO: missing field loc *Location
 
 			INSTANCE = new Time("Time", timeUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

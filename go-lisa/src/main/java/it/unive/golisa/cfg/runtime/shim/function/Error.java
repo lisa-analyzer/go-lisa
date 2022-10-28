@@ -39,7 +39,8 @@ public class Error extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public Error(CodeLocation location, CodeUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, false, "Error", Response.getResponseType(shimUnit.getProgram()),
+		super(new CodeMemberDescriptor(location, shimUnit, false, "Error",
+				Response.getResponseType(shimUnit.getProgram()),
 				new Parameter(location, "msg", GoStringType.INSTANCE)),
 				ErrorImpl.class);
 	}

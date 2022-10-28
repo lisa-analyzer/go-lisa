@@ -40,7 +40,7 @@ public class Month extends NativeCFG {
 	public Month(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CodeMemberDescriptor(location, timeUnit, false, "Month",
 				it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE,
-				new Parameter(location, "this",  Time.getTimeType(timeUnit.getProgram()))),
+				new Parameter(location, "this", Time.getTimeType(timeUnit.getProgram()))),
 				MonthImpl.class);
 	}
 

@@ -20,7 +20,6 @@ public class RequestEndBlock extends GoStructType {
 	 */
 	public static RequestEndBlock INSTANCE;
 
-
 	private RequestEndBlock(CompilationUnit unit) {
 		super("RequestEndBlock", unit);
 	}
@@ -31,7 +30,7 @@ public class RequestEndBlock extends GoStructType {
 					false);
 			return new RequestEndBlock(abciUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

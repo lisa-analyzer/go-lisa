@@ -16,10 +16,9 @@ import it.unive.lisa.program.Program;
 public class Reader extends GoStructType {
 
 	/**
-	 * Unique instance of Reader type. 
+	 * Unique instance of Reader type.
 	 */
 	private static Reader INSTANCE;
-
 
 	private Reader(CompilationUnit unit) {
 		super("Reader", unit);
@@ -45,7 +44,7 @@ public class Reader extends GoStructType {
 			ClassUnit readerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Reader", false);
 			INSTANCE = new Reader(readerUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 }

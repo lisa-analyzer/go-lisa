@@ -29,7 +29,7 @@ public class File extends GoStructType {
 			ClassUnit fileUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "File", false);
 			INSTANCE = new File(fileUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

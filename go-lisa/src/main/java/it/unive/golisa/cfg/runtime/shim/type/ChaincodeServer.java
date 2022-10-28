@@ -2,7 +2,6 @@ package it.unive.golisa.cfg.runtime.shim.type;
 
 import it.unive.golisa.cfg.runtime.shim.method.Start;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
@@ -38,15 +37,16 @@ public class ChaincodeServer extends GoStructType {
 					"CCID", true, GoStringType.INSTANCE));
 			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
 					"Address", true, GoStringType.INSTANCE));
-			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit, "CC",
-					true, Chaincode.getChaincodeType(program)));
+			chaincodeServerUnit
+					.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit, "CC",
+							true, Chaincode.getChaincodeType(program)));
 			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
 					"TLSProps", true, TLSProperties.getTLSPropertiesType(program)));
 
 			// TODO: missing KaOpts *keepalive.ServerParameters
 			INSTANCE = new ChaincodeServer(chaincodeServerUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 
@@ -56,7 +56,7 @@ public class ChaincodeServer extends GoStructType {
 	public static void registerMethods() {
 		CompilationUnit chaincodeServerUnit = INSTANCE.getUnit();
 		chaincodeServerUnit
-		.addInstanceCodeMember(new Start(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit));
+				.addInstanceCodeMember(new Start(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit));
 	}
 
 	@Override

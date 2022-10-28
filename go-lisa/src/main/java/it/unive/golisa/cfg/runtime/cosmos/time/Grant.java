@@ -46,7 +46,7 @@ public class Grant extends GoStructType {
 					Time.getTimeType(program)));
 			INSTANCE = new Grant("Grant", grantUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 }

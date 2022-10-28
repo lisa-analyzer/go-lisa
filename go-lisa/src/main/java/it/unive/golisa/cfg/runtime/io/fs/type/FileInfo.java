@@ -19,11 +19,10 @@ public class FileInfo extends GoStructType {
 	 * Unique instance of {@link FileInfo} type.
 	 */
 	private static FileInfo INSTANCE;
-	
+
 	private FileInfo(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
-
 
 	@Override
 	public String toString() {
@@ -42,11 +41,12 @@ public class FileInfo extends GoStructType {
 
 	public static FileInfo getFileInfoType(Program program) {
 		if (INSTANCE == null) {
-			ClassUnit fileInfoUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileInfo", false);
+			ClassUnit fileInfoUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileInfo",
+					false);
 			INSTANCE = new FileInfo("FileInfo", fileInfoUnit);
 			return INSTANCE;
 		}
-		
+
 		return INSTANCE;
 	}
 }

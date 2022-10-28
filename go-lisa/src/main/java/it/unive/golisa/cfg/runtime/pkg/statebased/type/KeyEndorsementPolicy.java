@@ -29,7 +29,7 @@ public class KeyEndorsementPolicy extends GoInterfaceType {
 
 			INSTANCE = new KeyEndorsementPolicy(keyEndorsementUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

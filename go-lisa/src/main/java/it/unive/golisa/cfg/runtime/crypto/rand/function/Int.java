@@ -38,10 +38,12 @@ public class Int extends NativeCFG {
 	 */
 	public Int(CodeLocation location, CodeUnit randUnit) {
 		super(new CodeMemberDescriptor(location, randUnit, false, "Int",
-				GoTupleType.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(randUnit.getProgram()),
+				GoTupleType.getTupleTypeOf(location,
+						it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(randUnit.getProgram()),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "rand", Reader.getReaderType(randUnit.getProgram())),
-				new Parameter(location, "max", it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(randUnit.getProgram()))),
+				new Parameter(location, "max",
+						it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(randUnit.getProgram()))),
 				IntImpl.class);
 	}
 

@@ -24,7 +24,8 @@ public class Handler extends GoStructType {
 
 	public static Handler getHandlerType(Program program) {
 		if (INSTANCE == null) {
-			ClassUnit handlerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Handler", false);
+			ClassUnit handlerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Handler",
+					false);
 			INSTANCE = new Handler(handlerUnit);
 		}
 

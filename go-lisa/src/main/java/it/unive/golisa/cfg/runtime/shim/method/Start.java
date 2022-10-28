@@ -41,7 +41,8 @@ public class Start extends NativeCFG {
 	 */
 	public Start(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "Start", GoErrorType.INSTANCE,
-				new Parameter(location, "cs", GoPointerType.lookup(ChaincodeServer.getChaincodeServerType(shimUnit.getProgram())))),
+				new Parameter(location, "cs",
+						GoPointerType.lookup(ChaincodeServer.getChaincodeServerType(shimUnit.getProgram())))),
 				StartImpl.class);
 	}
 

@@ -40,14 +40,12 @@ public class Rand extends GoStructType {
 		super(name, unit);
 	}
 
-
-
 	public static Rand getRandType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Rand", false);
-			INSTANCE =  new Rand("Rand", randUnit);
+			INSTANCE = new Rand("Rand", randUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

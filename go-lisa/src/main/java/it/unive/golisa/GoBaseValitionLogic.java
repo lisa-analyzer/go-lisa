@@ -284,7 +284,7 @@ public class GoBaseValitionLogic implements ProgramValidationLogic {
 			validate(cm, true);
 
 		unit.addInstance(unit);
-		
+
 		for (CompilationUnit ancestor : unit.getImmediateAncestors()) {
 			// check overriders/implementers
 			for (CodeMember inherited : ancestor.getInstanceCodeMembers(true)) {

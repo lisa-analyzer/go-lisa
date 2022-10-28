@@ -27,9 +27,9 @@ public class Int extends GoStructType {
 	public static Int getIntType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit intUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Int", false);
-			INSTANCE =  new Int(intUnit);
+			INSTANCE = new Int(intUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

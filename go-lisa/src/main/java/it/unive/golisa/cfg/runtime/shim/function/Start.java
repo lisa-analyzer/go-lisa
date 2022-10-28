@@ -2,10 +2,8 @@ package it.unive.golisa.cfg.runtime.shim.function;
 
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
-import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;

@@ -40,12 +40,12 @@ public class PipeWriter extends GoStructType {
 	}
 
 	public static PipeWriter getPiperWriter(Program program) {
-		if (INSTANCE == null) { 
+		if (INSTANCE == null) {
 			ClassUnit pipeWriterUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeWriter",
 					false);
 			INSTANCE = new PipeWriter("PipeWriter", pipeWriterUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 }

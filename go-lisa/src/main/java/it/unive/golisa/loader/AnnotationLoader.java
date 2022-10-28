@@ -84,10 +84,10 @@ public class AnnotationLoader implements Loader {
 						checkAndAddAnnotation(cm.getDescriptor(), ca);
 				}
 			}
-			
+
 			if (unit instanceof CompilationUnit) {
 				CompilationUnit cUnit = (CompilationUnit) unit;
-				
+
 				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {
 					for (AnnotationSet set : annotationSets) {
 						for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
@@ -98,7 +98,6 @@ public class AnnotationLoader implements Loader {
 				}
 			}
 		}
-	
 
 		Collection<Global> globals = program.getGlobals();
 		for (Global g : globals) {

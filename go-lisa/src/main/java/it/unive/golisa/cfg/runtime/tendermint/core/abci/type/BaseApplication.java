@@ -24,7 +24,6 @@ public class BaseApplication extends GoStructType {
 	 */
 	public static BaseApplication INSTANCE;
 
-
 	private BaseApplication(CompilationUnit unit) {
 		super("BaseApplication", unit);
 	}
@@ -36,13 +35,13 @@ public class BaseApplication extends GoStructType {
 
 			// add methods
 			abciUnit
-			.addInstanceCodeMember(new BeginBlock(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+					.addInstanceCodeMember(new BeginBlock(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
 			abciUnit
-			.addInstanceCodeMember(new DeliverTx(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+					.addInstanceCodeMember(new DeliverTx(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
 			abciUnit
-			.addInstanceCodeMember(new EndBlock(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+					.addInstanceCodeMember(new EndBlock(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
 			abciUnit
-			.addInstanceCodeMember(new Commit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
+					.addInstanceCodeMember(new Commit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, abciUnit));
 
 			INSTANCE = new BaseApplication(abciUnit);
 		}

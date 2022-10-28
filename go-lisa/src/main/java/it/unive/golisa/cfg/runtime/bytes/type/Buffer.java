@@ -29,7 +29,6 @@ public class Buffer extends GoStructType {
 	 */
 	private static Buffer INSTANCE;
 
-
 	private Buffer(String name, CompilationUnit unit) {
 		super(name, unit);
 	}

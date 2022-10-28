@@ -1,10 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
@@ -18,6 +13,10 @@ import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * A Go interface type.
@@ -89,17 +88,6 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	public static boolean hasInterfaceType(String intfType) {
 		return interfaces.containsKey(intfType);
 	}
-
-	/**
-	 * Yields a Go interface type from given name.
-	 * 
-	 * @param interfaceName the name
-	 * 
-	 * @return a Go interface type from given name
-	 */
-//	public static GoInterfaceType get(String interfaceName) {
-//		return interfaces.get(interfaceName);
-//	}
 
 	/**
 	 * Checks whether this interface is empty.

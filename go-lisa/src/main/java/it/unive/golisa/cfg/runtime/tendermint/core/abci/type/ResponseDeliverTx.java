@@ -30,7 +30,7 @@ public class ResponseDeliverTx extends GoStructType {
 					false);
 			INSTANCE = new ResponseDeliverTx(abciUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

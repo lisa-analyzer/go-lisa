@@ -20,7 +20,6 @@ public class RequestBeginBlock extends GoStructType {
 	 */
 	public static RequestBeginBlock INSTANCE;
 
-
 	private RequestBeginBlock(CompilationUnit unit) {
 		super("RequestBeginBlock", unit);
 	}

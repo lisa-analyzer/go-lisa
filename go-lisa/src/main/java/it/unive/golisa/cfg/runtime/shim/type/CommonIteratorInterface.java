@@ -22,7 +22,6 @@ public class CommonIteratorInterface extends GoInterfaceType {
 	 */
 	private static CommonIteratorInterface INSTANCE;
 
-
 	private CommonIteratorInterface(CompilationUnit unit) {
 		super("CommonIteratorInterface", unit);
 	}
@@ -38,12 +37,13 @@ public class CommonIteratorInterface extends GoInterfaceType {
 					GoBoolType.INSTANCE);
 			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorInterfeceUnit, true,
+			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorInterfeceUnit,
+					true,
 					"Close", GoErrorType.INSTANCE);
 			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 			INSTANCE = new CommonIteratorInterface(commonIteratorInterfeceUnit);
 		}
-		
+
 		return INSTANCE;
 	}
 

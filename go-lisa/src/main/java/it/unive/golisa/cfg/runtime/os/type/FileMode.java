@@ -26,7 +26,8 @@ public class FileMode extends GoStructType {
 
 	public static FileMode getFileModeType(Program program) {
 		if (INSTANCE == null) {
-			ClassUnit fileModeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileMode", false);
+			ClassUnit fileModeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileMode",
+					false);
 			INSTANCE = new FileMode(fileModeUnit);
 		}
 

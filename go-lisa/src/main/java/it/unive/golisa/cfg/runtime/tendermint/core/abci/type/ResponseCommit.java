@@ -20,7 +20,6 @@ public class ResponseCommit extends GoStructType {
 	 */
 	private static ResponseCommit INSTANCE;
 
-
 	private ResponseCommit(CompilationUnit unit) {
 		super("ResponseCommit", unit);
 	}

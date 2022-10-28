@@ -194,7 +194,7 @@ public interface GoRuntimeLoader {
 		GoStructType.registerType(Reader.getReaderType(program));
 		GoStructType.registerType(Writer.getWriterType(program));
 		GoStructType.registerType(FileInfo.getFileInfoType(program));
-		
+
 		// adding functions
 		io.addCodeMember(new Copy(runtimeLocation, io));
 		io.addCodeMember(new CopyBuffer(runtimeLocation, io));
@@ -211,7 +211,7 @@ public interface GoRuntimeLoader {
 	private void loadIoutil(Program program) {
 		CodeUnit ioutil = new CodeUnit(runtimeLocation, program, "ioutil");
 		loadIO(program);
-		
+
 		// adding types
 		GoStructType.registerType(PipeReader.getPipeReader(program));
 		GoStructType.registerType(PipeWriter.getPiperWriter(program));
@@ -366,12 +366,10 @@ public interface GoRuntimeLoader {
 	private void loadShim(Program program) {
 		CodeUnit shim = new CodeUnit(runtimeLocation, program, "shim");
 
-
 		// FIXME
 		GoStructType.registerType(Buffer.getBufferType(program));
 		GoStructType.registerType(Reader.getReaderType(program));
 
-		
 		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
@@ -390,9 +388,9 @@ public interface GoRuntimeLoader {
 		ChaincodeStub.registerMethods();
 		ChaincodeServer.registerMethods();
 
-		ChaincodeStub.getChaincodeStubType(program).getUnit().addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
+		ChaincodeStub.getChaincodeStubType(program).getUnit()
+				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 
-		
 		// FIXME: we should register this type just in GoInterfaceType
 		program.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 

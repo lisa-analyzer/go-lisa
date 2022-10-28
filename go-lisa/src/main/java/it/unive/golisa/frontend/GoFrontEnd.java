@@ -124,13 +124,15 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	/**
 	 * The parameter assigning strategy for calls.
 	 */
-	//	public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY = OrderPreservingAssigningStrategy.INSTANCE;
+	// public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY
+	// = OrderPreservingAssigningStrategy.INSTANCE;
 
 	/**
 	 * The strategy of traversing super-unit to search for target call
 	 * implementation.
 	 */
-	//	public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY = SingleInheritanceTraversalStrategy.INSTANCE;
+	// public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY
+	// = SingleInheritanceTraversalStrategy.INSTANCE;
 
 	/**
 	 * The parameter matching strategy for matching function calls.

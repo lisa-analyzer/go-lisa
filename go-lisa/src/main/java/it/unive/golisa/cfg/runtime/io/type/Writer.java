@@ -15,29 +15,33 @@ import it.unive.lisa.program.Program;
  */
 public class Writer extends GoStructType {
 
-//	/**
-//	 * Unique instance of Writer type.
-//	 */
-//	public static final Writer INSTANCE = new Writer();
+	/**
+	 * Unique instance of Writer type.
+	 */
+	private static Writer INSTANCE;
 
 	private Writer(CompilationUnit unit) {
 		super("Writer", unit);
 	}
 
 	public static Writer getWriterType(Program program) {
-		ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Writer", false);
-		return new Writer(randUnit);
+		if (INSTANCE == null) {
+			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Writer", false);
+			INSTANCE = new Writer(randUnit);
+			return INSTANCE;
+		}
+		return INSTANCE;
 	}
 
 	/**
 	 * // * Registers methods of Writer. //
 	 */
-//	public static void registerMethods() {
-//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//
-//		// TODO: add methods
-//
-//	}
+	//	public static void registerMethods() {
+	//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//
+	//		// TODO: add methods
+	//
+	//	}
 
 	@Override
 	public String toString() {

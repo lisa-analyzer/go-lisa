@@ -15,23 +15,23 @@ import it.unive.lisa.program.Program;
  */
 public class FileInfo extends GoStructType {
 
-//	/**
-//	 * Unique instance of {@link FileInfo} type.
-//	 */
-//	public static final FileInfo INSTANCE = new FileInfo();
-//
-//	private FileInfo() {
-//		this("FileInfo", buildFileUnit());
-//	}
+	/**
+	 * Unique instance of {@link FileInfo} type.
+	 */
+	private static FileInfo INSTANCE;
+	//
+	//	private FileInfo() {
+	//		this("FileInfo", buildFileUnit());
+	//	}
 
 	private FileInfo(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
 
-//	private static CompilationUnit buildFileUnit() {
-//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//		
-//	}
+	//	private static CompilationUnit buildFileUnit() {
+	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//		
+	//	}
 
 	/**
 	 * Registers the methods of the {@link FileInfo} type.
@@ -56,7 +56,12 @@ public class FileInfo extends GoStructType {
 	}
 
 	public static FileInfo getFileInfoType(Program program) {
-		ClassUnit fileInfoUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileInfo", false);
-		return new FileInfo("FileInfo", fileInfoUnit);
+		if (INSTANCE == null) {
+			ClassUnit fileInfoUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileInfo", false);
+			INSTANCE = new FileInfo("FileInfo", fileInfoUnit);
+			return INSTANCE;
+		}
+		
+		return INSTANCE;
 	}
 }

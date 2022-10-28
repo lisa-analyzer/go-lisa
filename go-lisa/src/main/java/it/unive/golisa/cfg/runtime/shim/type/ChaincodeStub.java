@@ -36,7 +36,9 @@ public class ChaincodeStub extends GoStructType {
 	public static ChaincodeStub getChaincodeStubType(Program program) {
 		ClassUnit chaincodeStubUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
 				"ChaincodeStub", false);
-
+		// add superclasses and implemented interfaces
+		chaincodeStubUnit.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
+		
 		// add globals
 		chaincodeStubUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit, "TxID",
 				true, GoStringType.INSTANCE));
@@ -74,7 +76,8 @@ public class ChaincodeStub extends GoStructType {
 		chaincodeStubUnit
 				.addInstanceCodeMember(
 						new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
-
+		
+		
 	}
 
 	@Override

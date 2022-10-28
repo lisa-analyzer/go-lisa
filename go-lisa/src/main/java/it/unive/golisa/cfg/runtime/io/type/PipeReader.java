@@ -15,33 +15,33 @@ import it.unive.lisa.program.Program;
  */
 public class PipeReader extends GoStructType {
 
-//	/**
-//	 * Unique instance of PipeReader.
-//	 */
-//	public static final PipeReader INSTANCE = new PipeReader();
-//
-//	private PipeReader() {
-//		this("PipeReader", buildPipeReaderUnit());
-//	}
+	/**
+	 * Unique instance of PipeReader.
+	 */
+	private static PipeReader INSTANCE;
+
+	//	private PipeReader() {
+	//		this("PipeReader", buildPipeReaderUnit());
+	//	}
 
 	private PipeReader(CompilationUnit unit) {
 		super("PipeReader", unit);
 	}
 
-//	private static CompilationUnit buildPipeReaderUnit() {
-//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//	
-//	}
-//
-//	/**
-//	 * Registers methods of PipeReader.
-//	 */
-//	public static void registerMethods() {
-//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//
-//		// TODO: add methods
-//
-//	}
+	//	private static CompilationUnit buildPipeReaderUnit() {
+	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//	
+	//	}
+	//
+	//	/**
+	//	 * Registers methods of PipeReader.
+	//	 */
+	//	public static void registerMethods() {
+	//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//
+	//		// TODO: add methods
+	//
+	//	}
 
 	@Override
 	public String toString() {
@@ -59,8 +59,12 @@ public class PipeReader extends GoStructType {
 	}
 
 	public static PipeReader getPipeReader(Program program) {
-		ClassUnit pipeReaderUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeReader",
-				false);
-		return new PipeReader(pipeReaderUnit);
+		if (INSTANCE == null) {
+			ClassUnit pipeReaderUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeReader",
+					false);
+			INSTANCE = new PipeReader(pipeReaderUnit);
+			return INSTANCE;
+		}
+		return INSTANCE;
 	}
 }

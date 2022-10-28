@@ -134,6 +134,8 @@ public class TaintChecker implements
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
 
 			}
+		} else {
+			System.out.println(resolved);
 		}
 
 		return true;

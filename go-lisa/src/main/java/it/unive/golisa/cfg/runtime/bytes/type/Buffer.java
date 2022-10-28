@@ -26,24 +26,24 @@ import java.util.Collections;
  */
 public class Buffer extends GoStructType {
 
-//	/**
-//	 * Unique instance of the Buffer type.
-//	 */
-//	public static final Buffer INSTANCE = new Buffer();
-//
-//	private Buffer() {
-//		this("Buffer", buildBufferUnit());
-//	}
+	/**
+	 * Unique instance of the Buffer type.
+	 */
+	private static Buffer INSTANCE;
+	//
+	//	private Buffer() {
+	//		this("Buffer", buildBufferUnit());
+	//	}
 
 	private Buffer(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
 
-//	private static C buildBufferUnit(Program program) {
-//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//		ClassUnit bufferUnit = new ClassUnit(unknownLocation, program, "Buffer", false);
-//		return bufferUnit;
-//	}
+	//	private static C buildBufferUnit(Program program) {
+	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	//		ClassUnit bufferUnit = new ClassUnit(unknownLocation, program, "Buffer", false);
+	//		return bufferUnit;
+	//	}
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
@@ -83,9 +83,13 @@ public class Buffer extends GoStructType {
 	}
 
 	public static Buffer getBufferType(Program program) {
-		// builds the unit
-		ClassUnit bufferUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Buffer", false);
-		return new Buffer("Buffer", bufferUnit);
+		if (INSTANCE == null) {
+			ClassUnit bufferUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Buffer", false);
+			INSTANCE = new Buffer("Buffer", bufferUnit);
+			return INSTANCE;
+		}
+
+		return INSTANCE;
 	}
 
 	/**

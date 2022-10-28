@@ -12,6 +12,7 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
 import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.fmt.Sprint;
+import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.runtime.io.function.Copy;
 import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
 import it.unive.golisa.cfg.runtime.io.function.CopyN;
@@ -24,6 +25,10 @@ import it.unive.golisa.cfg.runtime.io.ioutil.function.ReadDir;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.TempDir;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.TempFile;
 import it.unive.golisa.cfg.runtime.io.ioutil.function.WriteFile;
+import it.unive.golisa.cfg.runtime.io.type.PipeReader;
+import it.unive.golisa.cfg.runtime.io.type.PipeWriter;
+import it.unive.golisa.cfg.runtime.io.type.Reader;
+import it.unive.golisa.cfg.runtime.io.type.Writer;
 import it.unive.golisa.cfg.runtime.math.rand.function.ExpFloat64;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float32;
 import it.unive.golisa.cfg.runtime.math.rand.function.Float64;
@@ -184,6 +189,12 @@ public interface GoRuntimeLoader {
 	private void loadIO(Program program) {
 		CodeUnit io = new CodeUnit(runtimeLocation, program, "io");
 
+		GoStructType.registerType(PipeReader.getPipeReader(program));
+		GoStructType.registerType(PipeWriter.getPiperWriter(program));
+		GoStructType.registerType(Reader.getReaderType(program));
+		GoStructType.registerType(Writer.getWriterType(program));
+		GoStructType.registerType(FileInfo.getFileInfoType(program));
+		
 		// adding functions
 		io.addCodeMember(new Copy(runtimeLocation, io));
 		io.addCodeMember(new CopyBuffer(runtimeLocation, io));
@@ -199,19 +210,13 @@ public interface GoRuntimeLoader {
 
 	private void loadIoutil(Program program) {
 		CodeUnit ioutil = new CodeUnit(runtimeLocation, program, "ioutil");
-
+		loadIO(program);
+		
 		// adding types
-//		PipeReader.registerMethods();
-		GoStructType.registerType(GoStructType.get("PipeReader"));
-
-//		PipeWriter.registerMethods();
-		GoStructType.registerType(GoStructType.get("PipeWriter"));
-
-//		Reader.registerMethods();
-		GoStructType.registerType(GoStructType.get("Reader"));
-
-//		Writer.registerMethods();
-		GoStructType.registerType(GoStructType.get("Writer"));
+		GoStructType.registerType(PipeReader.getPipeReader(program));
+		GoStructType.registerType(PipeWriter.getPiperWriter(program));
+		GoStructType.registerType(Reader.getReaderType(program));
+		GoStructType.registerType(Writer.getWriterType(program));
 
 		// adding functions
 		ioutil.addCodeMember(new NopCloser(runtimeLocation, ioutil));
@@ -364,6 +369,11 @@ public interface GoRuntimeLoader {
 		// adding types
 //		ChaincodeStubInterface.registerMethods();
 
+		GoStructType.registerType(Buffer.getBufferType(program));
+		GoStructType.registerType(Reader.getReaderType(program));
+
+		// FIXME
+		
 		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
@@ -384,6 +394,9 @@ public interface GoRuntimeLoader {
 		ChaincodeStub.registerMethods();
 		ChaincodeServer.registerMethods();
 
+		ChaincodeStub.getChaincodeStubType(program).getUnit().addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
+
+		
 		// FIXME: we should register this type in GoInterfaceType
 		program.registerType(GoInterfaceType.get("ChaincodeStubInterface"));
 

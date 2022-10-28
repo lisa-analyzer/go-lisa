@@ -1,20 +1,23 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.InterfaceUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * A Go interface type.
@@ -179,7 +182,13 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
 	@Override
 	public Collection<Type> allInstances() {
-		return all();
+		Collection<Type> instances = new HashSet<>();
+		for (Unit un : unit.getInstances())
+			if (un instanceof InterfaceUnit)
+				instances.add(get(un.getName()));
+			else
+				instances.add(GoStructType.lookup(un.getName(), null));
+		return instances;
 	}
 
 	@Override

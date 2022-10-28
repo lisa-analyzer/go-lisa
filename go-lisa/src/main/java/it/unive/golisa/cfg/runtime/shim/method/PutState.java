@@ -40,7 +40,7 @@ public class PutState extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public PutState(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
+		super(new CodeMemberDescriptor(location, shimUnit, true, "PutState", GoErrorType.INSTANCE,
 				new Parameter(location, "this", GoStructType.get("ChaincodeStub")),
 				new Parameter(location, "key", GoStringType.INSTANCE),
 				new Parameter(location, "value", Untyped.INSTANCE)),

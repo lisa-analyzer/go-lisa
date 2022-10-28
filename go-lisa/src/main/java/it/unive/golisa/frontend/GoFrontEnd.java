@@ -1,5 +1,28 @@
 package it.unive.golisa.frontend;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unive.golisa.GoFeatures;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
@@ -61,6 +84,7 @@ import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
+import it.unive.lisa.program.InterfaceUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
@@ -75,27 +99,6 @@ import it.unive.lisa.type.common.BoolType;
 import it.unive.lisa.type.common.Float32;
 import it.unive.lisa.type.common.Int32;
 import it.unive.lisa.type.common.StringType;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -121,13 +124,13 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	/**
 	 * The parameter assigning strategy for calls.
 	 */
-//	public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY = OrderPreservingAssigningStrategy.INSTANCE;
+	//	public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY = OrderPreservingAssigningStrategy.INSTANCE;
 
 	/**
 	 * The strategy of traversing super-unit to search for target call
 	 * implementation.
 	 */
-//	public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY = SingleInheritanceTraversalStrategy.INSTANCE;
+	//	public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY = SingleInheritanceTraversalStrategy.INSTANCE;
 
 	/**
 	 * The parameter matching strategy for matching function calls.
@@ -368,13 +371,25 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		HashSet<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
-			ClassUnit unit = new ClassUnit(
-					new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(typeSpec),
-							GoCodeMemberVisitor.getCol(typeSpec)),
-					program,
-					unitName, false);
-			units.add(unit);
-			new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
+			if (typeSpec.type_().typeLit().interfaceType() == null) {
+				ClassUnit unit = new ClassUnit(
+
+						new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(typeSpec),
+								GoCodeMemberVisitor.getCol(typeSpec)),
+						program,
+						unitName, false);
+				units.add(unit);
+				new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
+			} else {
+				InterfaceUnit unit = new InterfaceUnit(
+
+						new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(typeSpec),
+								GoCodeMemberVisitor.getCol(typeSpec)),
+						program,
+						unitName, false);
+				units.add(unit);
+				new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
+			}
 		}
 		return units;
 	}

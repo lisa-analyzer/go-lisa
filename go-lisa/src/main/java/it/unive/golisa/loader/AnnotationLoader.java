@@ -1,21 +1,24 @@
 package it.unive.golisa.loader;
 
-import it.unive.golisa.loader.annotation.AnnotationSet;
-import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.MethodAnnotation;
-import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
-import it.unive.lisa.program.Global;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.Unit;
-import it.unive.lisa.program.cfg.CodeMember;
-import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Pair;
+
+import it.unive.golisa.loader.annotation.AnnotationSet;
+import it.unive.golisa.loader.annotation.CodeAnnotation;
+import it.unive.golisa.loader.annotation.MethodAnnotation;
+import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
+import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.Unit;
+import it.unive.lisa.program.cfg.CodeMember;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 
 /**
  * The class represents an annotation loader for programs.
@@ -81,8 +84,21 @@ public class AnnotationLoader implements Loader {
 						checkAndAddAnnotation(cm.getDescriptor(), ca);
 				}
 			}
-
+			
+			if (unit instanceof CompilationUnit) {
+				CompilationUnit cUnit = (CompilationUnit) unit;
+				
+				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {
+					for (AnnotationSet set : annotationSets) {
+						for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
+							checkAndAddAnnotation(cm.getDescriptor(), ca);
+						for (CodeAnnotation ca : set.getAnnotationsForConstructors())
+							checkAndAddAnnotation(cm.getDescriptor(), ca);
+					}
+				}
+			}
 		}
+	
 
 		Collection<Global> globals = program.getGlobals();
 		for (Global g : globals) {

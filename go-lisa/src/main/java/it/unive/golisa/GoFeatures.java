@@ -29,7 +29,7 @@ public class GoFeatures extends LanguageFeatures {
 
 	@Override
 	public ProgramValidationLogic getProgramValidationLogic() {
-		return new BaseValidationLogic();
+		return new GoBaseValitionLogic();
 	}
 
 }

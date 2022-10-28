@@ -97,6 +97,9 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	 * @return a Go struct type from given name
 	 */
 	public static GoStructType get(String structType) {
+		if (structTypes.get(structType) == null)
+			throw new NullPointerException("Null struct type");
+
 		return structTypes.get(structType);
 	}
 
@@ -106,43 +109,48 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 			return true;
 		if (other instanceof GoStructType)
 			return ((GoStructType) other).name.equals(name);
+
 		if (other instanceof GoInterfaceType) {
 			GoInterfaceType intf = (GoInterfaceType) other;
 
 			if (intf.isEmptyInterface())
 				return true;
 
-			for (CodeMember methodSpec : intf.getUnit().getCodeMembers()) {
-				String methodName = methodSpec.getDescriptor().getName();
-				Type methodReturnType = methodSpec.getDescriptor().getReturnType();
-				Parameter[] methodPars = methodSpec.getDescriptor().getFormals();
-				boolean match = false;
-				for (CodeMember structMethod : getUnit().getCodeMembers()) {
-					String funcName = structMethod.getDescriptor().getName();
-					Type funcReturnType = structMethod.getDescriptor().getReturnType();
-					Parameter[] funcPars = structMethod.getDescriptor().getFormals();
+			if (intf.getUnit().getInstances().contains(this.getUnit()))
+				return true;
+			else {
+				for (CodeMember methodSpec : intf.getUnit().getCodeMembers()) {
+					String methodName = methodSpec.getDescriptor().getName();
+					Type methodReturnType = methodSpec.getDescriptor().getReturnType();
+					Parameter[] methodPars = methodSpec.getDescriptor().getFormals();
+					boolean match = false;
+					for (CodeMember structMethod : getUnit().getCodeMembers()) {
+						String funcName = structMethod.getDescriptor().getName();
+						Type funcReturnType = structMethod.getDescriptor().getReturnType();
+						Parameter[] funcPars = structMethod.getDescriptor().getFormals();
 
-					if (funcName.equals(methodName) && funcReturnType.canBeAssignedTo(methodReturnType)) {
-						if (methodPars.length == 0 && funcPars.length == 1)
-							match = true;
-						else {
-							if (methodPars.length + 1 == funcPars.length) {
-								for (int i = 0; i < methodPars.length; i++)
-									if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
-											.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
-										match = true;
+						if (funcName.equals(methodName) && funcReturnType.canBeAssignedTo(methodReturnType)) {
+							if (methodPars.length == 0 && funcPars.length == 1)
+								match = true;
+							else {
+								if (methodPars.length + 1 == funcPars.length) {
+									for (int i = 0; i < methodPars.length; i++)
+										if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
+												.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
+											match = true;
+								}
 							}
 						}
 					}
+
+					if (!match)
+						return false;
 				}
 
-				if (!match)
-					return false;
+				return true;
 			}
-
-			return true;
 		}
-
+		
 		return other.isUntyped();
 	}
 

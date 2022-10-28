@@ -60,7 +60,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * @return the empty interface
 	 */
 	public static GoInterfaceType getEmptyInterface() {
-		return GoInterfaceType.get(EmptyInterface.EMPTY_INTERFACE_NAME);
+		return GoInterfaceType.lookup(EmptyInterface.EMPTY_INTERFACE_NAME, null, null);
 	}
 
 	private final String name;
@@ -97,9 +97,9 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * 
 	 * @return a Go interface type from given name
 	 */
-	public static GoInterfaceType get(String interfaceName) {
-		return interfaces.get(interfaceName);
-	}
+//	public static GoInterfaceType get(String interfaceName) {
+//		return interfaces.get(interfaceName);
+//	}
 
 	/**
 	 * Checks whether this interface is empty.
@@ -185,7 +185,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		Collection<Type> instances = new HashSet<>();
 		for (Unit un : unit.getInstances())
 			if (un instanceof InterfaceUnit)
-				instances.add(get(un.getName()));
+				instances.add(GoInterfaceType.lookup(un.getName(), null, null));
 			else
 				instances.add(GoStructType.lookup(un.getName(), null));
 		return instances;

@@ -39,7 +39,7 @@ public class ChaincodeServer extends GoStructType {
 			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
 					"Address", true, GoStringType.INSTANCE));
 			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit, "CC",
-					true, GoInterfaceType.get("Chaincode")));
+					true, Chaincode.getChaincodeType(program)));
 			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
 					"TLSProps", true, TLSProperties.getTLSPropertiesType(program)));
 

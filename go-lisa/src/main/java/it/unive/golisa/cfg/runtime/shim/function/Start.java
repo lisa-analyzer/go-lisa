@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
 import it.unive.golisa.cfg.runtime.io.type.Reader;
+import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -43,7 +45,7 @@ public class Start extends NativeCFG {
 	 */
 	public Start(CodeLocation location, CodeUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, false, "Start", GoErrorType.INSTANCE,
-				new Parameter(location, "cc", GoInterfaceType.get("Chaincode"))),
+				new Parameter(location, "cc", Chaincode.getChaincodeType(shimUnit.getProgram()))),
 				StartImpl.class);
 	}
 

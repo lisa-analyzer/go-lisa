@@ -160,7 +160,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 				else if (GoAliasType.hasAliasType(type))
 					return GoAliasType.get(type);
 				else if (GoInterfaceType.hasInterfaceType(type))
-					return GoInterfaceType.get(type);
+					return GoInterfaceType.lookup(type, null, null);
 				else {
 					ClassUnit unit = new ClassUnit(new SourceCodeLocation(file, 0, 0), program, type, false);
 					return GoStructType.lookup(type, unit);

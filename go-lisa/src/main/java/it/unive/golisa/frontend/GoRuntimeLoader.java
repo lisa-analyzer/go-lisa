@@ -366,21 +366,17 @@ public interface GoRuntimeLoader {
 	private void loadShim(Program program) {
 		CodeUnit shim = new CodeUnit(runtimeLocation, program, "shim");
 
-		// adding types
-//		ChaincodeStubInterface.registerMethods();
 
+		// FIXME
 		GoStructType.registerType(Buffer.getBufferType(program));
 		GoStructType.registerType(Reader.getReaderType(program));
 
-		// FIXME
 		
 		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
 		GoStructType.registerType(Handler.getHandlerType(program));
 		GoStructType.registerType(TLSProperties.getTLSPropertiesType(program));
-//		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()));
-//		GoStructType.registerType(GoStructType.get("ChaincodeServer"));
 		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
 		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
 		GoStructType.registerType(Response.getResponseType(program));
@@ -397,14 +393,14 @@ public interface GoRuntimeLoader {
 		ChaincodeStub.getChaincodeStubType(program).getUnit().addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 
 		
-		// FIXME: we should register this type in GoInterfaceType
-		program.registerType(GoInterfaceType.get("ChaincodeStubInterface"));
+		// FIXME: we should register this type just in GoInterfaceType
+		program.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 
 		// adding compilation unit to program
 		program.addUnit(shim);
-		program.addUnit(GoInterfaceType.get("ChaincodeStubInterface").getUnit());
-		program.addUnit(GoInterfaceType.get("Chaincode").getUnit());
-		program.addUnit(GoInterfaceType.get("CommonIteratorInterface").getUnit());
+		program.addUnit(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
+		program.addUnit(Chaincode.getChaincodeType(program).getUnit());
+		program.addUnit(CommonIteratorInterface.getCommonIteratorInterfaceType(program).getUnit());
 
 		program.addUnit(ChaincodeStub.getChaincodeStubType(program).getUnit());
 		program.addUnit(TLSProperties.getTLSPropertiesType(program).getUnit());
@@ -463,10 +459,6 @@ public interface GoRuntimeLoader {
 		time.addCodeMember(new Now(runtimeLocation, time));
 		time.addCodeMember(new Since(runtimeLocation, time));
 		time.addCodeMember(new Parse(runtimeLocation, time));
-
-//		time.addCodeMember(new Day(runtimeLocation, time));
-//		time.addCodeMember(new Month(runtimeLocation, time));
-//		time.addInstanceConstruct(new Unix(runtimeLocation, time));
 
 		Time.registerMethods();
 

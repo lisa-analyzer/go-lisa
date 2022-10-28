@@ -31,44 +31,28 @@ import it.unive.lisa.program.Program;
  */
 public class Rand extends GoStructType {
 
-	// /**
-	// * Unique instance of Rand type.
-	// */
-	// public static final Rand INSTANCE = new Rand();
-	//
-	// private Rand() {
-	// this("Rand", buildRandUnit());
-	// }
+	/**
+	 * Unique instance of Rand type.
+	 */
+	private static Rand INSTANCE;
 
 	private Rand(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
 
-	// private static CompilationUnit buildRandUnit() {
-	// SourceCodeLocation unknownLocation = new
-	// SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	// return randUnit;
-	// }
 
-	// /**
-	// * Registers the methods of Rand type.
-	// */
-	// public static void registerMethods() {
-	// SourceCodeLocation GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION = new
-	// SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//
-	//
-	//
-	// }
 
 	public static Rand getRandType(Program program) {
-		// builds the unit
-		ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Rand", false);
-		return new Rand("Rand", randUnit);
+		if (INSTANCE == null) {
+			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Rand", false);
+			INSTANCE =  new Rand("Rand", randUnit);
+		}
+		
+		return INSTANCE;
 	}
 
 	public static void registerMethods() {
-		CompilationUnit randUnit = GoStructType.get("Rand").getUnit();
+		CompilationUnit randUnit = INSTANCE.getUnit();
 		randUnit.addInstanceCodeMember(new ExpFloat64(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
 		randUnit.addInstanceCodeMember(new Float32(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));
 		randUnit.addInstanceCodeMember(new Float64(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));

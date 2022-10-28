@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
+import org.apache.logging.log4j.CloseableThreadContext.Instance;
+
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
@@ -16,19 +18,19 @@ public class Handler extends GoStructType {
 	/**
 	 * Unique instance of the {@link Handler} type.
 	 */
-//	public static final Handler INSTANCE = new Handler();
-//
-//	private Handler() {
-//		this("", buildHandlerUnit());
-//	}
+	private static Handler INSTANCE;
 
 	private Handler(CompilationUnit unit) {
 		super("Handler", unit);
 	}
 
 	public static Handler getHandlerType(Program program) {
-		ClassUnit handlerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Handler", false);
-		return new Handler(handlerUnit);
+		if (INSTANCE == null) {
+			ClassUnit handlerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Handler", false);
+			INSTANCE = new Handler(handlerUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

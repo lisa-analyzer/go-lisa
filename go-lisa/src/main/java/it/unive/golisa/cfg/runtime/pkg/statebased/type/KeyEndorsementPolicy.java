@@ -16,17 +16,21 @@ public class KeyEndorsementPolicy extends GoInterfaceType {
 	/**
 	 * Unique instance of KeyEndorsementPolicy type.
 	 */
-//	public static final KeyEndorsementPolicy INSTANCE = new KeyEndorsementPolicy();
+	private static KeyEndorsementPolicy INSTANCE;
 
 	private KeyEndorsementPolicy(CompilationUnit unit) {
 		super("KeyEndorsementPolicy", unit);
 	}
 
 	public static KeyEndorsementPolicy getKeyEndorsementPolicyType(Program program) {
-		InterfaceUnit keyEndorsementUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
-				"KeyEndorsementPolicy", false);
+		if (INSTANCE == null) {
+			InterfaceUnit keyEndorsementUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
+					"KeyEndorsementPolicy", false);
 
-		return new KeyEndorsementPolicy(keyEndorsementUnit);
+			INSTANCE = new KeyEndorsementPolicy(keyEndorsementUnit);
+		}
+		
+		return INSTANCE;
 	}
 
 	@Override

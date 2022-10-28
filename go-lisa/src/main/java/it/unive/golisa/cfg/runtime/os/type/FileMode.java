@@ -18,19 +18,19 @@ public class FileMode extends GoStructType {
 	/**
 	 * Unique instance of FileMode type.
 	 */
-//	public static final FileMode INSTANCE = new FileMode();
-//
-//	private FileMode() {
-//		this("FileMode", buildFileModeUnit());
-//	}
+	private static FileMode INSTANCE;
 
 	private FileMode(CompilationUnit unit) {
 		super("FileMode", unit);
 	}
 
 	public static FileMode getFileModeType(Program program) {
-		ClassUnit fileModeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileMode", false);
-		return new FileMode(fileModeUnit);
+		if (INSTANCE == null) {
+			ClassUnit fileModeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileMode", false);
+			INSTANCE = new FileMode(fileModeUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

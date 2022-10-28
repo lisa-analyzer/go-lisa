@@ -18,23 +18,15 @@ import it.unive.lisa.program.Program;
  */
 public class Time extends GoStructType {
 
-//	/**
-//	 * Unique instance of a {@link Time} type.
-//	 */
-//	public static final Time INSTANCE = new Time();
-//
-//	private Time() {
-//		this("Time", buildTimeUnit());
-//	}
+	/**
+	 * Unique instance of a {@link Time} type.
+	 */
+	private static Time INSTANCE;
+
 
 	private Time(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
-
-//	private static CompilationUnit buildTimeUnit() {
-//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//		
-//	}
 
 	@Override
 	public String toString() {
@@ -52,14 +44,18 @@ public class Time extends GoStructType {
 	}
 
 	public static Time getTimeType(Program program) {
-		ClassUnit timeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Time", false);
-		timeUnit.addGlobal(
-				new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "wall", true, GoInt64Type.INSTANCE));
-		timeUnit.addGlobal(
-				new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "ext", true, GoInt64Type.INSTANCE));
-		// TODO: missing field loc *Location
+		if (INSTANCE == null) {
+			ClassUnit timeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Time", false);
+			timeUnit.addGlobal(
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "wall", true, GoInt64Type.INSTANCE));
+			timeUnit.addGlobal(
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit, "ext", true, GoInt64Type.INSTANCE));
+			// TODO: missing field loc *Location
 
-		return new Time("Time", timeUnit);
+			INSTANCE = new Time("Time", timeUnit);
+		}
+		
+		return INSTANCE;
 	}
 
 	public static void registerMethods() {

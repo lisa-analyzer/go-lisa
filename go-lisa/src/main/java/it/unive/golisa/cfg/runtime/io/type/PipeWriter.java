@@ -19,29 +19,10 @@ public class PipeWriter extends GoStructType {
 	 * Unique instance of {@link PipeWriter} type.
 	 */
 	private static PipeWriter INSTANCE;
-	//
-	//	private PipeWriter() {
-	//		this("PipeWriter", buildPipeWriterUnit());
-	//	}
 
 	private PipeWriter(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
-
-	//	private static CompilationUnit buildPipeWriterUnit() {
-	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//		
-	//	}
-
-	//	/**
-	//	 * Registers the method of the {@link PipeWriter} type.
-	//	 */
-	//	public static void registerMethods() {
-	//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//
-	//		// TODO: add methods
-	//
-	//	}
 
 	@Override
 	public String toString() {
@@ -63,7 +44,6 @@ public class PipeWriter extends GoStructType {
 			ClassUnit pipeWriterUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeWriter",
 					false);
 			INSTANCE = new PipeWriter("PipeWriter", pipeWriterUnit);
-			return INSTANCE;
 		}
 		
 		return INSTANCE;

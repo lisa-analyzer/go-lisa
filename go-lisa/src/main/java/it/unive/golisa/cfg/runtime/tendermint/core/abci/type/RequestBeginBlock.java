@@ -18,20 +18,21 @@ public class RequestBeginBlock extends GoStructType {
 	/**
 	 * Unique instance of the {@link RequestBeginBlock} type.
 	 */
-//	public static final RequestBeginBlock INSTANCE = new RequestBeginBlock();
-//
-//	private RequestBeginBlock() {
-//		this(, buildRequestBeginBlockUnit());
-//	}
+	public static RequestBeginBlock INSTANCE;
+
 
 	private RequestBeginBlock(CompilationUnit unit) {
 		super("RequestBeginBlock", unit);
 	}
 
 	public static RequestBeginBlock getRequestBeginBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestBeginBlock",
-				false);
-		return new RequestBeginBlock(abciUnit);
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestBeginBlock",
+					false);
+			INSTANCE = new RequestBeginBlock(abciUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	/**

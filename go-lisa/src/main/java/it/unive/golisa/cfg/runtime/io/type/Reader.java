@@ -19,29 +19,11 @@ public class Reader extends GoStructType {
 	 * // * Unique instance of Reader type. //
 	 */
 	private static Reader INSTANCE;
-	//
-	// private Reader() {
-	// this("Reader", buildReaderUnit());
-	// }
+
 
 	private Reader(CompilationUnit unit) {
 		super("Reader", unit);
 	}
-	//
-	//	private static CompilationUnit buildReaderUnit() {
-	//		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Reader", false);
-	//		return randUnit;
-	//	}
-
-	//	/**
-	//	 * Registers methods of Reader.
-	//	 */
-	//	public static void registerMethods() {
-	//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//
-	//		// TODO: add methods
-	//
-	//	}
 
 	@Override
 	public String toString() {
@@ -62,7 +44,6 @@ public class Reader extends GoStructType {
 		if (INSTANCE == null) {
 			ClassUnit readerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Reader", false);
 			INSTANCE = new Reader(readerUnit);
-			return INSTANCE;
 		}
 		
 		return INSTANCE;

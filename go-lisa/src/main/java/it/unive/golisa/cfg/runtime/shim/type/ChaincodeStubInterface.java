@@ -33,15 +33,6 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		super("ChaincodeStubInterface", unit);
 	}
 
-	//	/**
-	//	 * Registers methods of the {@link ChaincodeStubInterface} type.
-	//	 */
-	//	public static void registerMethods() {
-	//		SourceCodeLocation GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//
-	//
-	//	}
-
 	public static ChaincodeStubInterface getChainCodeStubInterfaceType(Program program) {
 		if (INSTANCE == null) {
 			InterfaceUnit chainCodeStubInterfaceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,

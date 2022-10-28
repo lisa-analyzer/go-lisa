@@ -18,28 +18,22 @@ public class ResponseBeginBlock extends GoStructType {
 	/**
 	 * Unique instance of {@link ResponseBeginBlock} type.
 	 */
-//	public static final ResponseBeginBlock INSTANCE = new ResponseBeginBlock();
-//
-//	private ResponseBeginBlock() {
-//		this("", buildRequestBeginBlockUnit());
-//	}
+	private static ResponseBeginBlock INSTANCE;
+
 
 	private ResponseBeginBlock(CompilationUnit unit) {
 		super("ResponseBeginBlock", unit);
 	}
 
 	public static ResponseBeginBlock getRequestBeginBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseBeginBlock",
-				false);
-		return new ResponseBeginBlock(abciUnit);
-	}
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseBeginBlock",
+					false);
+			INSTANCE =  new ResponseBeginBlock(abciUnit);
+		}
 
-	/**
-	 * // * Registers methods of the {@link ResponseBeginBlock} type. //
-	 */
-//	public static void registerMethods() {
-//		// TODO
-//	}
+		return INSTANCE;
+	}
 
 	@Override
 	public String toString() {

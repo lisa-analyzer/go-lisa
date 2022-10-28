@@ -18,28 +18,22 @@ public class RequestEndBlock extends GoStructType {
 	/**
 	 * Unique instance of the {@link RequestEndBlock} type.
 	 */
-//	public static final RequestEndBlock INSTANCE = new RequestEndBlock();
-//
-//	private RequestEndBlock() {
-//		this(, buildRequestEndBlockUnit());
-//	}
+	public static RequestEndBlock INSTANCE;
+
 
 	private RequestEndBlock(CompilationUnit unit) {
 		super("RequestEndBlock", unit);
 	}
 
 	public static RequestEndBlock getRequestEndBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestEndBlock",
-				false);
-		return new RequestEndBlock(abciUnit);
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestEndBlock",
+					false);
+			return new RequestEndBlock(abciUnit);
+		}
+		
+		return INSTANCE;
 	}
-
-//	/**
-//	 * Registers the methods of the {@link RequestEndBlock} type.
-//	 */
-//	public static void registerMethods() {
-//		// TODO
-//	}
 
 	@Override
 	public String toString() {

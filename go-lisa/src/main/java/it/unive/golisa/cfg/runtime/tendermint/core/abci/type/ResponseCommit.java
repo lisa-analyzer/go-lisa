@@ -18,28 +18,22 @@ public class ResponseCommit extends GoStructType {
 	/**
 	 * Unique instance of {@link ResponseCommit} type.
 	 */
-//	public static final ResponseCommit INSTANCE = new ResponseCommit();
-//
-//	private ResponseCommit() {
-//		this("", buildRequestEndBlockUnit());
-//	}
+	private static ResponseCommit INSTANCE;
+
 
 	private ResponseCommit(CompilationUnit unit) {
 		super("ResponseCommit", unit);
 	}
 
 	public static ResponseCommit getRequestEndBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseEndBlock",
-				false);
-		return new ResponseCommit(abciUnit);
-	}
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseEndBlock",
+					false);
+			INSTANCE = new ResponseCommit(abciUnit);
+		}
 
-	/**
-	 * Registers methods of the {@link ResponseCommit} type.
-	 */
-//	public static void registerMethods() {
-//		// TODO
-//	}
+		return INSTANCE;
+	}
 
 	@Override
 	public String toString() {

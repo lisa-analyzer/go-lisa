@@ -14,25 +14,14 @@ import it.unive.lisa.program.Program;
  */
 public class Grant extends GoStructType {
 
-//	/**
-//	 * Unique instance of the {@link Grant} type.
-//	 */
-//	public static final Grant INSTANCE = new Grant();
-//
-//	private Grant() {
-//		this("Grant", buildGrantUnit());
-//	}
+	/**
+	 * Unique instance of the {@link Grant} type.
+	 */
+	private static Grant INSTANCE;
 
 	private Grant(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
-
-//	private static CompilationUnit buildGrantUnit() {
-//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//		CompilationUnit grantUnit = new CompilationUnit(unknownLocation, "Grant", false);
-//		grantUnit.addGlobal(new Global(unknownLocation, "Expiration", Time.INSTANCE));
-//		return grantUnit;
-//	}
 
 	@Override
 	public String toString() {
@@ -50,9 +39,13 @@ public class Grant extends GoStructType {
 	}
 
 	public static Grant getGrantType(Program program) {
-		ClassUnit grantUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Grant", false);
-		grantUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, grantUnit, "Expiration", true,
-				GoStructType.get("Time")));
-		return new Grant("Grant", grantUnit);
+		if (INSTANCE == null) {
+			ClassUnit grantUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Grant", false);
+			grantUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, grantUnit, "Expiration", true,
+					GoStructType.get("Time")));
+			INSTANCE = new Grant("Grant", grantUnit);
+		}
+		
+		return INSTANCE;
 	}
 }

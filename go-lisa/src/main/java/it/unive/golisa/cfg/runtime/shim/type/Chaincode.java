@@ -16,20 +16,20 @@ public class Chaincode extends GoInterfaceType {
 	/**
 	 * Unique instance of the {@link Chaincode} type.
 	 */
-//	public static final Chaincode INSTANCE = new Chaincode();
-//
-//	private Chaincode() {
-//		this("", buildChaincodeUnit());
-//	}
+	private static Chaincode INSTANCE;
 
 	private Chaincode(CompilationUnit unit) {
 		super("Chaincode", unit);
 	}
 
 	public static Chaincode getChaincodeType(Program program) {
-		InterfaceUnit chaincodeType = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
-				"Chaincode", false);
-		return new Chaincode(chaincodeType);
+		if (INSTANCE == null) {
+			InterfaceUnit chaincodeType = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
+					"Chaincode", false);
+			INSTANCE = new Chaincode(chaincodeType);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

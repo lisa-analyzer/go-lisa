@@ -20,31 +20,31 @@ public class CommonIteratorInterface extends GoInterfaceType {
 	/**
 	 * Unique instance of {@link CommonIteratorInterface} type.
 	 */
-//	public static final CommonIteratorInterface INSTANCE = new CommonIteratorInterface();
-//
-//	private CommonIteratorInterface() {
-//		this("", buildCommonIteratorInterfaceUnit());
-//	}
+	private static CommonIteratorInterface INSTANCE;
+
 
 	private CommonIteratorInterface(CompilationUnit unit) {
 		super("CommonIteratorInterface", unit);
 	}
 
 	public static CommonIteratorInterface getCommonIteratorInterfaceType(Program program) {
-		InterfaceUnit commonIteratorInterfeceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-				program, "CommonIteratorInterface",
-				false);
+		if (INSTANCE == null) {
+			InterfaceUnit commonIteratorInterfeceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+					program, "CommonIteratorInterface",
+					false);
 
-		CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-				commonIteratorInterfeceUnit, true, "HasNext",
-				GoBoolType.INSTANCE);
-		commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
+			CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+					commonIteratorInterfeceUnit, true, "HasNext",
+					GoBoolType.INSTANCE);
+			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorInterfeceUnit, true,
-				"Close", GoErrorType.INSTANCE);
-		commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
-
-		return new CommonIteratorInterface(commonIteratorInterfeceUnit);
+			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorInterfeceUnit, true,
+					"Close", GoErrorType.INSTANCE);
+			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
+			INSTANCE = new CommonIteratorInterface(commonIteratorInterfeceUnit);
+		}
+		
+		return INSTANCE;
 	}
 
 	@Override

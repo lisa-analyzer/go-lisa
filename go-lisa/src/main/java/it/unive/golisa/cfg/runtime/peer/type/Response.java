@@ -18,22 +18,19 @@ public class Response extends GoStructType {
 	/**
 	 * Unique instance of Response type.
 	 */
-//	public static final Response INSTANCE = new Response();
+	private static Response INSTANCE;
 
 	private Response(CompilationUnit unit) {
 		super("Response", unit);
 	}
 
 	public static Response getResponseType(Program program) {
-		ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Response", false);
-		return new Response(randUnit);
-	}
+		if (INSTANCE == null) {
+			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Response", false);
+			INSTANCE = new Response(randUnit);
+		}
 
-	/**
-	 * Registers the methods of the Response type.
-	 */
-	public static void registerMethods() {
-		// TODO
+		return INSTANCE;
 	}
 
 	@Override

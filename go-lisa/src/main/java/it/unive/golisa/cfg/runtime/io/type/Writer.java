@@ -28,20 +28,10 @@ public class Writer extends GoStructType {
 		if (INSTANCE == null) {
 			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Writer", false);
 			INSTANCE = new Writer(randUnit);
-			return INSTANCE;
 		}
+
 		return INSTANCE;
 	}
-
-	/**
-	 * // * Registers methods of Writer. //
-	 */
-	//	public static void registerMethods() {
-	//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//
-	//		// TODO: add methods
-	//
-	//	}
 
 	@Override
 	public String toString() {

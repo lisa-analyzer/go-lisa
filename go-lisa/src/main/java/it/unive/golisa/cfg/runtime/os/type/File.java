@@ -18,27 +18,20 @@ public class File extends GoStructType {
 	/**
 	 * Unique instance of File type.
 	 */
-//	public static final File INSTANCE = new File();
-//
-//	private File() {
-//		this("File", buildFileUnit());
-//	}
+	private static File INSTANCE;
 
 	private File(CompilationUnit unit) {
 		super("File", unit);
 	}
 
 	public static File getFileType(Program program) {
-		ClassUnit fileUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "File", false);
-		return new File(fileUnit);
+		if (INSTANCE == null) {
+			ClassUnit fileUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "File", false);
+			INSTANCE = new File(fileUnit);
+		}
+		
+		return INSTANCE;
 	}
-
-//	/**
-//	 * Registers the method of the File type.
-//	 */
-//	public static void registerMethods() {
-//		// TODO
-//	}
 
 	@Override
 	public String toString() {

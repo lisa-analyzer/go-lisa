@@ -18,28 +18,21 @@ public class ResponseDeliverTx extends GoStructType {
 	/**
 	 * Unique instance of the {@link ResponseDeliverTx} type.
 	 */
-//	public static final ResponseDeliverTx INSTANCE = new ResponseDeliverTx();
-//
-//	private ResponseDeliverTx() {
-//		this("ResponseDeliverTx", buildResponseDeliverTxUnit());
-//	}
+	private static ResponseDeliverTx INSTANCE;
 
 	private ResponseDeliverTx(CompilationUnit unit) {
 		super("ResponseDeliverTx", unit);
 	}
 
 	public static ResponseDeliverTx getResponseDeliverTxType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseDeliverTx",
-				false);
-		return new ResponseDeliverTx(abciUnit);
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseDeliverTx",
+					false);
+			INSTANCE = new ResponseDeliverTx(abciUnit);
+		}
+		
+		return INSTANCE;
 	}
-
-	/**
-	 * // * Registers the methods of the {@link ResponseDeliverTx} type. //
-	 */
-//	public static void registerMethods() {
-//		// TODO
-//	}
 
 	@Override
 	public String toString() {

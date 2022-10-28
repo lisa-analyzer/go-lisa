@@ -30,20 +30,11 @@ public class Buffer extends GoStructType {
 	 * Unique instance of the Buffer type.
 	 */
 	private static Buffer INSTANCE;
-	//
-	//	private Buffer() {
-	//		this("Buffer", buildBufferUnit());
-	//	}
+
 
 	private Buffer(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
-
-	//	private static C buildBufferUnit(Program program) {
-	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//		ClassUnit bufferUnit = new ClassUnit(unknownLocation, program, "Buffer", false);
-	//		return bufferUnit;
-	//	}
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
@@ -55,11 +46,6 @@ public class Buffer extends GoStructType {
 		if (other instanceof Buffer || other.isUntyped())
 			return other;
 		return Untyped.INSTANCE;
-	}
-
-	@Override
-	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
 	}
 
 	@Override

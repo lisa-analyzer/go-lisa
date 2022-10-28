@@ -18,26 +18,20 @@ public class Int extends GoStructType {
 	/**
 	 * Unique instance of a big integer type.
 	 */
-//	public static final Int INSTANCE = new Int();
+	private static Int INSTANCE;
 
 	private Int(CompilationUnit unit) {
 		super("big.Int", unit);
 	}
 
 	public static Int getIntType(Program program) {
-		ClassUnit intUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Int", false);
-		return new Int(intUnit);
+		if (INSTANCE == null) {
+			ClassUnit intUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Int", false);
+			INSTANCE =  new Int(intUnit);
+		}
+		
+		return INSTANCE;
 	}
-
-	/**
-	 * Registers the methods of a {@link Int} type.
-	 */
-//	public static void registerMethods() {
-//		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-//
-//		// TODO: add methods
-//
-//	}
 
 	@Override
 	public String toString() {

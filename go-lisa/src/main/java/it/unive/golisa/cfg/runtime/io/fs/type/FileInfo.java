@@ -19,26 +19,11 @@ public class FileInfo extends GoStructType {
 	 * Unique instance of {@link FileInfo} type.
 	 */
 	private static FileInfo INSTANCE;
-	//
-	//	private FileInfo() {
-	//		this("FileInfo", buildFileUnit());
-	//	}
-
+	
 	private FileInfo(String name, CompilationUnit unit) {
 		super(name, unit);
 	}
 
-	//	private static CompilationUnit buildFileUnit() {
-	//		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-	//		
-	//	}
-
-	/**
-	 * Registers the methods of the {@link FileInfo} type.
-	 */
-	public static void registerMethods() {
-		// TODO
-	}
 
 	@Override
 	public String toString() {

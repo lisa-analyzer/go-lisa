@@ -59,7 +59,7 @@ public class Time extends GoStructType {
 	}
 
 	public static void registerMethods() {
-		CompilationUnit timeUnit = GoStructType.get("Time").getUnit();
+		CompilationUnit timeUnit = INSTANCE.getUnit();
 		timeUnit.addInstanceCodeMember(new Day(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 		timeUnit.addInstanceCodeMember(new Month(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 		timeUnit.addInstanceCodeMember(new Unix(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));

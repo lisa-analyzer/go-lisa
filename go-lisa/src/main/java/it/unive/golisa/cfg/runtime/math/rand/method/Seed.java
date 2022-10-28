@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.runtime.math.rand.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -39,7 +39,7 @@ public class Seed extends NativeCFG {
 	 */
 	public Seed(CodeLocation location, CompilationUnit randUnit) {
 		super(new CodeMemberDescriptor(location, randUnit, true, "Seed", VoidType.INSTANCE,
-				new Parameter(location, "this", GoStructType.get("Rand")),
+				new Parameter(location, "this", Rand.getRandType(randUnit.getProgram())),
 				new Parameter(location, "seed", GoInt64Type.INSTANCE)),
 				SeedImpl.class);
 	}

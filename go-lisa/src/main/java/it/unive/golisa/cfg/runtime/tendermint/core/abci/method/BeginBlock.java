@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.runtime.tendermint.core.abci.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.BaseApplication;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.RequestBeginBlock;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.ResponseBeginBlock;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,9 +40,9 @@ public class BeginBlock extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public BeginBlock(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "BeginBlock", GoStructType.get("ResponseBeginBlock"),
-				new Parameter(location, "this", GoStructType.get("BaseApplication")),
-				new Parameter(location, "req", GoStructType.get("RequestBeginBlock"))),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "BeginBlock", ResponseBeginBlock.getRequestBeginBlockType(abciUnit.getProgram()),
+				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram())),
+				new Parameter(location, "req", RequestBeginBlock.getRequestBeginBlockType(abciUnit.getProgram()))),
 				BeginBlockImpl.class);
 	}
 
@@ -83,7 +85,7 @@ public class BeginBlock extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public BeginBlockImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "BeginBlockImpl", GoStructType.get("ResponseBeginBlock"), left, right);
+			super(cfg, location, "BeginBlockImpl", ResponseBeginBlock.getRequestBeginBlockType(null), left, right);
 		}
 
 		@Override
@@ -94,7 +96,7 @@ public class BeginBlock extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStructType.get("ResponseBeginBlock"), getLocation()),
+			return state.smallStepSemantics(new PushAny(ResponseBeginBlock.getRequestBeginBlockType(null), getLocation()),
 					original);
 		}
 	}

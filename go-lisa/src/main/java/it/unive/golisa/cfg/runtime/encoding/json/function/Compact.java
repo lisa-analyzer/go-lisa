@@ -1,10 +1,10 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
+import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -43,7 +43,7 @@ public class Compact extends NativeCFG {
 	 */
 	public Compact(CodeLocation location, CodeUnit jsonUnit) {
 		super(new CodeMemberDescriptor(location, jsonUnit, false, "Compact", GoErrorType.INSTANCE,
-				new Parameter(location, "dst", GoPointerType.lookup(GoStructType.get("Buffer"))),
+				new Parameter(location, "dst", GoPointerType.lookup(Buffer.getBufferType(jsonUnit.getProgram()))),
 				new Parameter(location, "src", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				CompactImpl.class);
 	}

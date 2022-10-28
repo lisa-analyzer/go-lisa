@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.type;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -8,8 +11,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.StringType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * String type of Go. This is the only string type available for Go. It

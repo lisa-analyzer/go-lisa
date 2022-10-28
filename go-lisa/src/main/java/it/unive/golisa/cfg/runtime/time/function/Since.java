@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
 import it.unive.golisa.cfg.runtime.time.type.Duration;
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,7 +38,7 @@ public class Since extends NativeCFG {
 	 */
 	public Since(CodeLocation location, CodeUnit timeUnit) {
 		super(new CodeMemberDescriptor(location, timeUnit, false, "Since", Duration.INSTANCE,
-				new Parameter(location, "this", GoStructType.get("Time"))),
+				new Parameter(location, "this", Time.getTimeType(timeUnit.getProgram()))),
 				SinceImpl.class);
 	}
 

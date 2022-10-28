@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.runtime.math.rand.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -38,7 +38,7 @@ public class Int extends NativeCFG {
 	 */
 	public Int(CodeLocation location, CompilationUnit randUnit) {
 		super(new CodeMemberDescriptor(location, randUnit, true, "Int", GoIntType.INSTANCE,
-				new Parameter(location, "this", GoStructType.get("Rand"))),
+				new Parameter(location, "this", Rand.getRandType(randUnit.getProgram()))),
 				IntImpl.class);
 	}
 

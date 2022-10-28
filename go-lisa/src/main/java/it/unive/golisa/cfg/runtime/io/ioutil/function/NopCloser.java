@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
+import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.GoNilType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,8 +38,8 @@ public class NopCloser extends NativeCFG {
 	 * @param ioUnit   the unit to which this native cfg belongs to
 	 */
 	public NopCloser(CodeLocation location, CodeUnit ioUnit) {
-		super(new CodeMemberDescriptor(location, ioUnit, false, "NopCloser", GoStructType.get("Reader"),
-				new Parameter(location, "r", GoStructType.get("Reader"))),
+		super(new CodeMemberDescriptor(location, ioUnit, false, "NopCloser", Reader.getReaderType(ioUnit.getProgram()),
+				new Parameter(location, "r", Reader.getReaderType(ioUnit.getProgram()))),
 				NopCloserImpl.class);
 	}
 
@@ -81,7 +81,7 @@ public class NopCloser extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public NopCloserImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "NopCloserImpl", GoStructType.get("Reader"), expr);
+			super(cfg, location, "NopCloserImpl", Reader.getReaderType(null), expr);
 		}
 
 		@Override
@@ -92,7 +92,7 @@ public class NopCloser extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			AnalysisState<A, H, V,
-					T> readerValue = state.smallStepSemantics(new PushAny(GoStructType.get("Reader"), getLocation()),
+					T> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
 							original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);

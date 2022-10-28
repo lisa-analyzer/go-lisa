@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -46,7 +46,7 @@ public class CreateCompositeKey extends NativeCFG {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "CreateCompositeKey",
 				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
-				new Parameter(location, "this", GoStructType.get("ChaincodeStub")),
+				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "objectType", GoStringType.INSTANCE),
 				new Parameter(location, "attributes", GoSliceType.lookup(GoStringType.INSTANCE))),
 				CreateCompositeKeyImpl.class);

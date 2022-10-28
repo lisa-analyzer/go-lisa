@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.os.file.function;
 
+import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -42,7 +42,7 @@ public class CreateTemp extends NativeCFG {
 	 */
 	public CreateTemp(CodeLocation location, CodeUnit osUnit) {
 		super(new CodeMemberDescriptor(location, osUnit, false, "Create",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(osUnit.getProgram())),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
@@ -89,7 +89,7 @@ public class CreateTemp extends NativeCFG {
 		 */
 		public CreateTempImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "CreateTempImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(null)),
 							GoErrorType.INSTANCE),
 					left,
 					right);

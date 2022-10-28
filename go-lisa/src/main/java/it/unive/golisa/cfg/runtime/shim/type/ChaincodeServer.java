@@ -41,7 +41,7 @@ public class ChaincodeServer extends GoStructType {
 			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit, "CC",
 					true, GoInterfaceType.get("Chaincode")));
 			chaincodeServerUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit,
-					"TLSProps", true, GoStructType.get("TLSProperties")));
+					"TLSProps", true, TLSProperties.getTLSPropertiesType(program)));
 
 			// TODO: missing KaOpts *keepalive.ServerParameters
 			INSTANCE = new ChaincodeServer(chaincodeServerUnit);
@@ -54,7 +54,7 @@ public class ChaincodeServer extends GoStructType {
 	 * Registers the methods of the {@link ChaincodeStub} type.
 	 */
 	public static void registerMethods() {
-		CompilationUnit chaincodeServerUnit = GoStructType.get("ChaincodeServer").getUnit();
+		CompilationUnit chaincodeServerUnit = INSTANCE.getUnit();
 		chaincodeServerUnit
 		.addInstanceCodeMember(new Start(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeServerUnit));
 	}

@@ -256,8 +256,8 @@ public interface GoRuntimeLoader {
 		os.addCodeMember(new Unsetenv(runtimeLocation, os));
 
 		// adding compilation unit to program
-		program.addUnit(GoStructType.get("File").getUnit());
-		program.addUnit(GoStructType.get("FileMode").getUnit());
+		program.addUnit(File.getFileType(program).getUnit());
+		program.addUnit(FileMode.getFileModeType(program).getUnit());
 		program.addUnit(os);
 	}
 
@@ -379,7 +379,7 @@ public interface GoRuntimeLoader {
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
 		GoStructType.registerType(Handler.getHandlerType(program));
 		GoStructType.registerType(TLSProperties.getTLSPropertiesType(program));
-//		GoStructType.registerType(GoStructType.get("ChaincodeStub"));
+//		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()));
 //		GoStructType.registerType(GoStructType.get("ChaincodeServer"));
 		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
 		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
@@ -406,8 +406,8 @@ public interface GoRuntimeLoader {
 		program.addUnit(GoInterfaceType.get("Chaincode").getUnit());
 		program.addUnit(GoInterfaceType.get("CommonIteratorInterface").getUnit());
 
-		program.addUnit(GoStructType.get("ChaincodeStub").getUnit());
-		program.addUnit(GoStructType.get("TLSProperties").getUnit());
+		program.addUnit(ChaincodeStub.getChaincodeStubType(program).getUnit());
+		program.addUnit(TLSProperties.getTLSPropertiesType(program).getUnit());
 
 	}
 

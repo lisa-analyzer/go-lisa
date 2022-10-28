@@ -1,7 +1,8 @@
 package it.unive.golisa.cfg.runtime.io.function;
 
+import it.unive.golisa.cfg.runtime.io.type.PipeReader;
+import it.unive.golisa.cfg.runtime.io.type.PipeWriter;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -39,8 +40,8 @@ public class Pipe extends NativeCFG {
 	 */
 	public Pipe(CodeLocation location, CodeUnit ioUnit) {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "Pipe",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("PipeReader")),
-						GoPointerType.lookup(GoStructType.get("PipeWriter")))),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.getPipeReader(ioUnit.getProgram())),
+						GoPointerType.lookup(PipeWriter.getPiperWriter(ioUnit.getProgram())))),
 				PipeImpl.class);
 	}
 
@@ -83,8 +84,8 @@ public class Pipe extends NativeCFG {
 		 */
 		public PipeImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PipeImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("PipeReader")),
-							GoPointerType.lookup(GoStructType.get("PipeWriter"))),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.getPipeReader(null)),
+							GoPointerType.lookup(PipeWriter.getPiperWriter(null))),
 					params);
 		}
 

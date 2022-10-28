@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
+import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -41,7 +41,7 @@ public class HtmlEscape extends NativeCFG {
 	 */
 	public HtmlEscape(CodeLocation location, CodeUnit jsonUnit) {
 		super(new CodeMemberDescriptor(location, jsonUnit, false, "HtmlEscape", VoidType.INSTANCE,
-				new Parameter(location, "dst", GoPointerType.lookup(GoStructType.get("Buffer"))),
+				new Parameter(location, "dst", GoPointerType.lookup(Buffer.getBufferType(jsonUnit.getProgram()))),
 				new Parameter(location, "src", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				HtmlEscapeImpl.class);
 	}

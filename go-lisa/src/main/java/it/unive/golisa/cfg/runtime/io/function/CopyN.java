@@ -1,7 +1,8 @@
 package it.unive.golisa.cfg.runtime.io.function;
 
+import it.unive.golisa.cfg.runtime.io.type.Reader;
+import it.unive.golisa.cfg.runtime.io.type.Writer;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.lisa.analysis.AbstractState;
@@ -42,8 +43,8 @@ public class CopyN extends NativeCFG {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "CopyN",
 				GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE,
 						GoErrorType.INSTANCE),
-				new Parameter(location, "dsr", GoStructType.get("Writer")),
-				new Parameter(location, "src", GoStructType.get("Reader")),
+				new Parameter(location, "dsr", Writer.getWriterType(ioUnit.getProgram())),
+				new Parameter(location, "src", Reader.getReaderType(ioUnit.getProgram())),
 				new Parameter(location, "n", GoInt64Type.INSTANCE)),
 				CopyNImpl.class);
 	}

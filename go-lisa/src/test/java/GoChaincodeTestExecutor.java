@@ -2,6 +2,16 @@ import static it.unive.lisa.outputs.compare.JsonReportComparer.compare;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
@@ -13,14 +23,6 @@ import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.imp.ParsingException;
 import it.unive.lisa.outputs.json.JsonReport;
 import it.unive.lisa.program.Program;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 public abstract class GoChaincodeTestExecutor {
 

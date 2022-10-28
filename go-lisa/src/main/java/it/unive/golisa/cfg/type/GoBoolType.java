@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.type;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -7,8 +10,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.BooleanType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Boolean type of Go. This is the only Boolean type available for Go. It

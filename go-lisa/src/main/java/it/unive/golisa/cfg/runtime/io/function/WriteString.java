@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.io.function;
 
+import it.unive.golisa.cfg.runtime.io.type.Writer;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -42,7 +42,7 @@ public class WriteString extends NativeCFG {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "WriteString",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,
 						GoErrorType.INSTANCE),
-				new Parameter(location, "w", GoStructType.get("Writer")),
+				new Parameter(location, "w", Writer.getWriterType(ioUnit.getProgram())),
 				new Parameter(location, "s", GoStringType.INSTANCE)),
 				WriteStringImpl.class);
 	}

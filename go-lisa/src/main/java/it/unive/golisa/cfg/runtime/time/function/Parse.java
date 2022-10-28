@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
+import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -42,7 +42,7 @@ public class Parse extends NativeCFG {
 	 */
 	public Parse(CodeLocation location, CodeUnit timeUnit) {
 		super(new CodeMemberDescriptor(location, timeUnit, false, "Parse",
-				GoTupleType.lookup(new Parameter(location, "_", GoStructType.get("Time")),
+				GoTupleType.lookup(new Parameter(location, "_",  Time.getTimeType(timeUnit.getProgram())),
 						new Parameter(location, "_", GoErrorType.INSTANCE)),
 				new Parameter(location, "layout", GoStringType.INSTANCE),
 				new Parameter(location, "value", GoStringType.INSTANCE)),
@@ -88,7 +88,7 @@ public class Parse extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public ParseImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "ParseImpl", GoTupleType.lookup(new Parameter(location, "_", GoStructType.get("Time")),
+			super(cfg, location, "ParseImpl", GoTupleType.lookup(new Parameter(location, "_", Time.getTimeType(null)),
 					new Parameter(location, "_", GoErrorType.INSTANCE)), left, right);
 		}
 
@@ -101,7 +101,7 @@ public class Parse extends NativeCFG {
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_", GoStructType.get("Time")),
+					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_",  Time.getTimeType(null)),
 							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
 							original.getLocation()),
 					original);

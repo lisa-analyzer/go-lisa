@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.tendermint.core.abci.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.BaseApplication;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.ResponseDeliverTx;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,9 +39,9 @@ public class DeliverTx extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public DeliverTx(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "DeliverTx", GoStructType.get("ResponseDeliverTx"),
-				new Parameter(location, "this", GoStructType.get("BaseApplication")),
-				new Parameter(location, "req", GoStructType.get("RequestDeliverTx"))),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "DeliverTx", ResponseDeliverTx.getResponseDeliverTxType(abciUnit.getProgram()),
+				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram())),
+				new Parameter(location, "req", ResponseDeliverTx.getResponseDeliverTxType(abciUnit.getProgram()))),
 				DeliverTxImpl.class);
 	}
 
@@ -83,7 +84,7 @@ public class DeliverTx extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public DeliverTxImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "DeliverTxImpl", GoStructType.get("ResponseDeliverTx"), left, right);
+			super(cfg, location, "DeliverTxImpl", ResponseDeliverTx.getResponseDeliverTxType(null), left, right);
 		}
 
 		@Override
@@ -94,7 +95,7 @@ public class DeliverTx extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStructType.get("ResponseDeliverTx"), getLocation()),
+			return state.smallStepSemantics(new PushAny(ResponseDeliverTx.getResponseDeliverTxType(null), getLocation()),
 					original);
 		}
 	}

@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
 import it.unive.golisa.cfg.runtime.time.type.Duration;
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -77,7 +77,7 @@ public class Now extends NativeCFG {
 		 *                     defined
 		 */
 		public NowImpl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "NowImpl", GoStructType.get("Time"));
+			super(cfg, location, "NowImpl", Time.getTimeType(null));
 		}
 
 		@Override
@@ -89,7 +89,7 @@ public class Now extends NativeCFG {
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(GoStructType.get("Time"), getLocation()), original);
+					new PushAny(Time.getTimeType(null), getLocation()), original);
 		}
 	}
 }

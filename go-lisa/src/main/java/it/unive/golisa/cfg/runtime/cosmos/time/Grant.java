@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.cosmos.time;
 
+import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
@@ -42,7 +43,7 @@ public class Grant extends GoStructType {
 		if (INSTANCE == null) {
 			ClassUnit grantUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Grant", false);
 			grantUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, grantUnit, "Expiration", true,
-					GoStructType.get("Time")));
+					Time.getTimeType(program)));
 			INSTANCE = new Grant("Grant", grantUnit);
 		}
 		

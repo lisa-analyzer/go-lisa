@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
+import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -40,7 +40,7 @@ public class TempFile extends NativeCFG {
 	 */
 	public TempFile(CodeLocation location, CodeUnit ioUnit) {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "TempFile",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(ioUnit.getProgram())),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dir", GoStringType.INSTANCE),
 				new Parameter(location, "pattern", GoStringType.INSTANCE)),
@@ -87,7 +87,7 @@ public class TempFile extends NativeCFG {
 		 */
 		public TempFileImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "TempFileImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(null)),
 							GoErrorType.INSTANCE),
 					left,
 					right);

@@ -12,8 +12,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A Duration represents the elapsed time between two instants as an int64
@@ -82,7 +80,7 @@ public class Buffer extends GoStructType {
 	 * Registers the methods of Buffer type.
 	 */
 	public static void registerMethods() {
-		CompilationUnit bufferUnit = GoStructType.get("Buffer").getUnit();
+		CompilationUnit bufferUnit = INSTANCE.getUnit();
 		bufferUnit.addInstanceCodeMember(new Bytes(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, bufferUnit));
 	}
 }

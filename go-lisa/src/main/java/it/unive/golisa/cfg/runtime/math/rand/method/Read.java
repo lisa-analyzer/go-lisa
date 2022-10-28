@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.math.rand.method;
 
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -41,7 +41,7 @@ public class Read extends NativeCFG {
 	public Read(CodeLocation location, CompilationUnit randUnit) {
 		super(new CodeMemberDescriptor(location, randUnit, true, "Read",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
-				new Parameter(location, "this", GoStructType.get("Rand")),
+				new Parameter(location, "this", Rand.getRandType(randUnit.getProgram())),
 				new Parameter(location, "p", GoSliceType.lookup(GoIntType.INSTANCE))),
 				ReadImpl.class);
 	}

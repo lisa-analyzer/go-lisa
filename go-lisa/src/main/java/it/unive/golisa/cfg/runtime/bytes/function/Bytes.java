@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.bytes.function;
 
+import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -39,7 +39,7 @@ public class Bytes extends NativeCFG {
 	public Bytes(CodeLocation location, CompilationUnit unit) {
 		super(new CodeMemberDescriptor(location, unit, true, "Bytes",
 				GoSliceType.lookup(GoUInt8Type.INSTANCE),
-				new Parameter(location, "b", GoStructType.get("Buffer"))),
+				new Parameter(location, "b", Buffer.getBufferType(unit.getProgram()))),
 				BytesImpl.class);
 	}
 

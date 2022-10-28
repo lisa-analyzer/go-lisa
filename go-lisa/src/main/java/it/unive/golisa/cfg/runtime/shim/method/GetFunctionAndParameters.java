@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -46,7 +46,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "GetFunctionAndParameters",
 				GoTupleType.lookup(new Parameter(location, "function", GoStringType.INSTANCE),
 						new Parameter(location, "params", GoSliceType.lookup(GoStringType.INSTANCE))),
-				new Parameter(location, "this", GoStructType.get("ChaincodeStub"))),
+				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),
 				GetFunctionAndParametersImpl.class);
 	}
 

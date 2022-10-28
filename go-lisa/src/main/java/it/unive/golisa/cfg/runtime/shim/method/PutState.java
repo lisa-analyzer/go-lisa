@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -41,7 +41,7 @@ public class PutState extends NativeCFG {
 	 */
 	public PutState(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "PutState", GoErrorType.INSTANCE,
-				new Parameter(location, "this", GoStructType.get("ChaincodeStub")),
+				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "key", GoStringType.INSTANCE),
 				new Parameter(location, "value", Untyped.INSTANCE)),
 				PutStateImpl.class);

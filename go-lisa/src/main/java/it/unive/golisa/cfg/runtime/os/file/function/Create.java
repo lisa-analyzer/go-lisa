@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.os.file.function;
 
+import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -42,7 +42,7 @@ public class Create extends NativeCFG {
 	 */
 	public Create(CodeLocation location, CodeUnit osUnit) {
 		super(new CodeMemberDescriptor(location, osUnit, false, "Create",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(osUnit.getProgram())),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				CreateImpl.class);
@@ -87,7 +87,7 @@ public class Create extends NativeCFG {
 		 */
 		public CreateImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "CreateImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(null)),
 							GoErrorType.INSTANCE),
 					expr);
 		}

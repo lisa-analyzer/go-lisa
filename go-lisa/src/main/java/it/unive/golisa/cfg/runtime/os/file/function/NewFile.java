@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.runtime.os.file.function;
 
+import it.unive.golisa.cfg.runtime.os.type.File;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntPrtType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -42,7 +42,7 @@ public class NewFile extends NativeCFG {
 	 */
 	public NewFile(CodeLocation location, CodeUnit osUnit) {
 		super(new CodeMemberDescriptor(location, osUnit, false, "NewFile",
-				GoPointerType.lookup(GoStructType.get("File")),
+				GoPointerType.lookup(File.getFileType(osUnit.getProgram())),
 				new Parameter(location, "fd", GoStringType.INSTANCE),
 				new Parameter(location, "name", GoUIntPrtType.INSTANCE)),
 				NewFileImpl.class);
@@ -87,7 +87,7 @@ public class NewFile extends NativeCFG {
 		 * @param right    the right-hand side of this pluggable statement
 		 */
 		public NewFileImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "NewFile", GoPointerType.lookup(GoStructType.get("File")), left, right);
+			super(cfg, location, "NewFile", GoPointerType.lookup(File.getFileType(null)), left, right);
 		}
 
 		@Override
@@ -98,7 +98,7 @@ public class NewFile extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoPointerType.lookup(GoStructType.get("File")), getLocation()),
+			return state.smallStepSemantics(new PushAny(GoPointerType.lookup(File.getFileType(null)), getLocation()),
 					original);
 		}
 	}

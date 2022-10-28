@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
@@ -45,7 +45,7 @@ public class GetState extends NativeCFG {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "GetState",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 						GoErrorType.INSTANCE),
-				new Parameter(location, "s", GoStructType.get("ChaincodeStub")),
+				new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "key", GoStringType.INSTANCE)),
 				GetStateImpl.class);
 	}

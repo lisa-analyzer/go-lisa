@@ -56,7 +56,7 @@ public class ChaincodeStub extends GoStructType {
 	 * Registers the methods of the {@link ChaincodeStub} type.
 	 */
 	public static void registerMethods() {
-		CompilationUnit chaincodeStubUnit = GoStructType.get("ChaincodeStub").getUnit();
+		CompilationUnit chaincodeStubUnit = INSTANCE.getUnit();
 		chaincodeStubUnit
 		.addInstanceCodeMember(
 				new DelPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));

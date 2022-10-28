@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -41,7 +41,7 @@ public class Unix extends NativeCFG {
 	public Unix(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CodeMemberDescriptor(location, timeUnit, true, "Unix",
 				GoInt64Type.INSTANCE,
-				new Parameter(location, "this", GoStructType.get("Time"))),
+				new Parameter(location, "this", Time.getTimeType(timeUnit.getProgram()))),
 				UnixImpl.class);
 	}
 

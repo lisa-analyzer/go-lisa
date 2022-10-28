@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.tendermint.core.abci.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.BaseApplication;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.ResponseCommit;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,8 +39,8 @@ public class Commit extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public Commit(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock", GoStructType.get("ResponseCommit"),
-				new Parameter(location, "this", GoStructType.get("BaseApplication"))),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock", ResponseCommit.getRequestEndBlockType(abciUnit.getProgram()),
+				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram()))),
 				CommitImpl.class);
 	}
 
@@ -81,7 +82,7 @@ public class Commit extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public CommitImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "CommitImpl", GoStructType.get("ResponseCommit"), expr);
+			super(cfg, location, "CommitImpl", ResponseCommit.getRequestEndBlockType(null), expr);
 		}
 
 		@Override
@@ -91,7 +92,7 @@ public class Commit extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStructType.get("ResponseCommit"), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(ResponseCommit.getRequestEndBlockType(null), getLocation()), original);
 		}
 	}
 }

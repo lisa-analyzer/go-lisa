@@ -1,9 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -42,7 +42,7 @@ public class GetStringArgs extends NativeCFG {
 	public GetStringArgs(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "GetStringArgs",
 				GoSliceType.getSliceOfStrings(),
-				new Parameter(location, "s", GoStructType.get("ChaincodeStub"))),
+				new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),
 				GetStringArgsImpl.class);
 	}
 

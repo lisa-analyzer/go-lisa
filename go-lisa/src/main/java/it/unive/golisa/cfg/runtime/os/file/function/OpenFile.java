@@ -1,9 +1,10 @@
 package it.unive.golisa.cfg.runtime.os.file.function;
 
+import it.unive.golisa.cfg.runtime.os.type.File;
+import it.unive.golisa.cfg.runtime.os.type.FileMode;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -44,11 +45,11 @@ public class OpenFile extends NativeCFG {
 	 */
 	public OpenFile(CodeLocation location, CodeUnit osUnit) {
 		super(new CodeMemberDescriptor(location, osUnit, false, "OpenFile",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(osUnit.getProgram())),
 						GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE),
 				new Parameter(location, "flag", GoIntType.INSTANCE),
-				new Parameter(location, "perm", GoStructType.get("FileMode"))),
+				new Parameter(location, "perm", FileMode.getFileModeType(osUnit.getProgram()))),
 				OpenFileImpl.class);
 	}
 
@@ -91,7 +92,7 @@ public class OpenFile extends NativeCFG {
 		 */
 		public OpenFileImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "OpenFileImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(GoStructType.get("File")),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(null)),
 							GoErrorType.INSTANCE),
 					params);
 		}

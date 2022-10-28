@@ -7,7 +7,6 @@ import it.unive.lisa.program.language.parameterassignment.OrderPreservingAssigni
 import it.unive.lisa.program.language.parameterassignment.ParameterAssigningStrategy;
 import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
 import it.unive.lisa.program.language.resolution.RuntimeTypesMatchingStrategy;
-import it.unive.lisa.program.language.validation.BaseValidationLogic;
 import it.unive.lisa.program.language.validation.ProgramValidationLogic;
 
 public class GoFeatures extends LanguageFeatures {

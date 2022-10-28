@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
-import org.apache.logging.log4j.CloseableThreadContext.Instance;
-
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;

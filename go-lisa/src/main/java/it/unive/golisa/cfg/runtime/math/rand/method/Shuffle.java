@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.math.rand.method;
 
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -41,7 +41,7 @@ public class Shuffle extends NativeCFG {
 	 */
 	public Shuffle(CodeLocation location, CompilationUnit randUnit) {
 		super(new CodeMemberDescriptor(location, randUnit, true, "Shuffle", VoidType.INSTANCE,
-				new Parameter(location, "this", GoStructType.get("Rand")),
+				new Parameter(location, "this", Rand.getRandType(randUnit.getProgram())),
 				new Parameter(location, "n", GoIntType.INSTANCE),
 				new Parameter(location, "swap", GoFunctionType.lookup(VoidType.INSTANCE,
 						new Parameter(location, "i", GoIntType.INSTANCE),

@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.runtime.crypto.rand.function;
 
+import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -39,9 +39,9 @@ public class Prime extends NativeCFG {
 	 */
 	public Prime(CodeLocation location, CodeUnit randUnit) {
 		super(new CodeMemberDescriptor(location, randUnit, false, "Read",
-				GoTupleType.getTupleTypeOf(location, GoStructType.get("big.Int"),
+				GoTupleType.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(randUnit.getProgram()),
 						GoErrorType.INSTANCE),
-				new Parameter(location, "rand", GoStructType.get("Reader")),
+				new Parameter(location, "rand", Reader.getReaderType(randUnit.getProgram())),
 				new Parameter(location, "bits", GoIntType.INSTANCE)),
 				PrimeImpl.class);
 	}
@@ -86,7 +86,7 @@ public class Prime extends NativeCFG {
 		 */
 		public PrimeImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "PrimeImpl", GoTupleType.getTupleTypeOf(location,
-					GoStructType.get("big.Int"), GoErrorType.INSTANCE), left, right);
+					it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(null), GoErrorType.INSTANCE), left, right);
 		}
 
 		@Override

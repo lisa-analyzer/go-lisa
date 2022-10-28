@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.tendermint.core.abci.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.BaseApplication;
+import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.RequestEndBlock;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,9 +39,9 @@ public class EndBlock extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public EndBlock(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock", GoStructType.get("ResponseEndBlock"),
-				new Parameter(location, "this", GoStructType.get("BaseApplication")),
-				new Parameter(location, "req", GoStructType.get("RequestEndBlock"))),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock", RequestEndBlock.getRequestEndBlockType(abciUnit.getProgram()),
+				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram())),
+				new Parameter(location, "req", RequestEndBlock.getRequestEndBlockType(abciUnit.getProgram()))),
 				EndBlockImpl.class);
 	}
 
@@ -83,7 +84,7 @@ public class EndBlock extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public EndBlockImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "EndBlockImpl", GoStructType.get("ResponseEndBlock"), left, right);
+			super(cfg, location, "EndBlockImpl", RequestEndBlock.getRequestEndBlockType(null), left, right);
 		}
 
 		@Override
@@ -94,7 +95,7 @@ public class EndBlock extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStructType.get("ResponseEndBlock"), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(RequestEndBlock.getRequestEndBlockType(null), getLocation()), original);
 		}
 	}
 }

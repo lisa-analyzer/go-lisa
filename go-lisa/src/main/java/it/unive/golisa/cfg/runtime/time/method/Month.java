@@ -1,6 +1,6 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -40,7 +40,7 @@ public class Month extends NativeCFG {
 	public Month(CodeLocation location, CompilationUnit timeUnit) {
 		super(new CodeMemberDescriptor(location, timeUnit, false, "Month",
 				it.unive.golisa.cfg.runtime.time.type.Month.INSTANCE,
-				new Parameter(location, "this", GoStructType.get("Time"))),
+				new Parameter(location, "this",  Time.getTimeType(timeUnit.getProgram()))),
 				MonthImpl.class);
 	}
 

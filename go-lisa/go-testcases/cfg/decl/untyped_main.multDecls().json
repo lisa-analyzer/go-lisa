@@ -1,1 +1,267 @@
-{"name":"untyped main::multDecls()","description":null,"nodes":[{"id":0,"subNodes":[1,2],"text":"var i int = 1"},{"id":1,"text":"i"},{"id":2,"text":"1"},{"id":3,"subNodes":[4,5],"text":"var j int = 2"},{"id":4,"text":"j"},{"id":5,"text":"2"},{"id":6,"subNodes":[7,8],"text":"var k string = \"abc\""},{"id":7,"text":"k"},{"id":8,"text":"\"abc\""},{"id":9,"subNodes":[10,11],"text":"var l string = \"def\""},{"id":10,"text":"l"},{"id":11,"text":"\"def\""},{"id":12,"text":"ret"}],"edges":[{"sourceId":0,"destId":3,"kind":"SequentialEdge"},{"sourceId":3,"destId":6,"kind":"SequentialEdge"},{"sourceId":6,"destId":9,"kind":"SequentialEdge"},{"sourceId":9,"destId":12,"kind":"SequentialEdge"}],"descriptions":[{"nodeId":0,"description":{"expressions":["i"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":1,"description":{"expressions":["i"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":2,"description":{"expressions":["1"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":3,"description":{"expressions":["j"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":4,"description":{"expressions":["j"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":5,"description":{"expressions":["2"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":6,"description":{"expressions":["k"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":7,"description":{"expressions":["k"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":8,"description":{"expressions":["abc"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":9,"description":{"expressions":["l"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":10,"description":{"expressions":["l"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":11,"description":{"expressions":["def"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":12,"description":{"expressions":["skip"],"state":{"heap":"monolith","type":"noop","value":"noop"}}}]}
+{
+	"name": "untyped main::multDecls()",
+	"description": null,
+	"nodes": [
+		{
+			"id": 0,
+			"subNodes": [
+				1,
+				2
+			],
+			"text": "var i int = 1"
+		},
+		{
+			"id": 1,
+			"text": "i"
+		},
+		{
+			"id": 2,
+			"text": "1"
+		},
+		{
+			"id": 3,
+			"subNodes": [
+				4,
+				5
+			],
+			"text": "var j int = 2"
+		},
+		{
+			"id": 4,
+			"text": "j"
+		},
+		{
+			"id": 5,
+			"text": "2"
+		},
+		{
+			"id": 6,
+			"subNodes": [
+				7,
+				8
+			],
+			"text": "var k string = \"abc\""
+		},
+		{
+			"id": 7,
+			"text": "k"
+		},
+		{
+			"id": 8,
+			"text": "\"abc\""
+		},
+		{
+			"id": 9,
+			"subNodes": [
+				10,
+				11
+			],
+			"text": "var l string = \"def\""
+		},
+		{
+			"id": 10,
+			"text": "l"
+		},
+		{
+			"id": 11,
+			"text": "\"def\""
+		},
+		{
+			"id": 12,
+			"text": "ret"
+		}
+	],
+	"edges": [
+		{
+			"sourceId": 0,
+			"destId": 3,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 3,
+			"destId": 6,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 6,
+			"destId": 9,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 9,
+			"destId": 12,
+			"kind": "SequentialEdge"
+		}
+	],
+	"descriptions": [
+		{
+			"nodeId": 0,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 1,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 2,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 3,
+			"description": {
+				"expressions": [
+					"j"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 4,
+			"description": {
+				"expressions": [
+					"j"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 5,
+			"description": {
+				"expressions": [
+					"2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 6,
+			"description": {
+				"expressions": [
+					"k"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 7,
+			"description": {
+				"expressions": [
+					"k"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 8,
+			"description": {
+				"expressions": [
+					"\"abc\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 9,
+			"description": {
+				"expressions": [
+					"l"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 10,
+			"description": {
+				"expressions": [
+					"l"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 11,
+			"description": {
+				"expressions": [
+					"\"def\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 12,
+			"description": {
+				"expressions": [
+					"skip"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		}
+	]
+}

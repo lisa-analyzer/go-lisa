@@ -115,31 +115,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	private CompilationUnit packageUnit;
 
 	/**
-	 * The parameter assigning strategy for calls.
-	 */
-	// public static final ParameterAssigningStrategy PARAMETER_ASSIGN_STRATEGY
-	// = OrderPreservingAssigningStrategy.INSTANCE;
-
-	/**
-	 * The strategy of traversing super-unit to search for target call
-	 * implementation.
-	 */
-	// public static final HierarcyTraversalStrategy HIERARCY_TRAVERSAL_STRATEGY
-	// = SingleInheritanceTraversalStrategy.INSTANCE;
-
-	/**
-	 * The parameter matching strategy for matching function calls.
-	 */
-	// public static final ParameterMatchingStrategy FUNCTION_MATCHING_STRATEGY
-	// = RuntimeTypesMatchingStrategy.INSTANCE;
-
-	/**
-	 * The parameter matching strategy for matching method calls.
-	 */
-	// public static final ParameterMatchingStrategy METHOD_MATCHING_STRATEGY =
-	// RuntimeTypesMatchingStrategy.INSTANCE;
-
-	/**
 	 * Builds a Go frontend for a given Go program given at the location
 	 * {@code filePath}.
 	 * 

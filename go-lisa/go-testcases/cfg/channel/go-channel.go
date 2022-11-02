@@ -12,7 +12,7 @@ func main() {
 	c <- 2
 	x, y := <-c, <-c // receive from c
 
-	fmt.Println(x, y, x+y)
+	fmt.Println(x, y)
 }
 
 // from https://gobyexample.com/channels

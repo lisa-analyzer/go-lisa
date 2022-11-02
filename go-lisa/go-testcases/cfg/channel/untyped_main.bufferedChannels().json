@@ -1,1 +1,347 @@
-{"name":"untyped main::bufferedChannels()","description":null,"nodes":[{"id":0,"subNodes":[1,2],"text":"messages := make chan string(2)"},{"id":1,"text":"messages"},{"id":2,"subNodes":[3],"text":"make chan string(2)"},{"id":3,"text":"2"},{"id":4,"subNodes":[5,6],"text":"<-(messages, \"buffered\")"},{"id":5,"text":"messages"},{"id":6,"text":"\"buffered\""},{"id":7,"subNodes":[8,9],"text":"<-(messages, \"channel\")"},{"id":8,"text":"messages"},{"id":9,"text":"\"channel\""},{"id":10,"subNodes":[11],"text":"fmt::Println(<-(messages))"},{"id":11,"subNodes":[12],"text":"<-(messages)"},{"id":12,"text":"messages"},{"id":13,"subNodes":[14],"text":"fmt::Println(<-(messages))"},{"id":14,"subNodes":[15],"text":"<-(messages)"},{"id":15,"text":"messages"},{"id":16,"text":"ret"}],"edges":[{"sourceId":0,"destId":4,"kind":"SequentialEdge"},{"sourceId":4,"destId":7,"kind":"SequentialEdge"},{"sourceId":7,"destId":10,"kind":"SequentialEdge"},{"sourceId":10,"destId":13,"kind":"SequentialEdge"},{"sourceId":13,"destId":16,"kind":"SequentialEdge"}],"descriptions":[{"nodeId":0,"description":{"expressions":["messages"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":1,"description":{"expressions":["messages"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":2,"description":{"expressions":["PUSHANY"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":3,"description":{"expressions":["2"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":4,"description":{"expressions":[],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":5,"description":{"expressions":["messages"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":6,"description":{"expressions":["buffered"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":7,"description":{"expressions":[],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":8,"description":{"expressions":["messages"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":9,"description":{"expressions":["channel"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":10,"description":{"expressions":["open_call_ret_value@'go-testcases/cfg/channel/go-channel.go':36:26"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":11,"description":{"expressions":["PUSHANY"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":12,"description":{"expressions":["messages"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":13,"description":{"expressions":["open_call_ret_value@'go-testcases/cfg/channel/go-channel.go':37:26"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":14,"description":{"expressions":["PUSHANY"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":15,"description":{"expressions":["messages"],"state":{"heap":"monolith","type":"noop","value":"noop"}}},{"nodeId":16,"description":{"expressions":["skip"],"state":{"heap":"monolith","type":"noop","value":"noop"}}}]}
+{
+	"name": "untyped main::bufferedChannels()",
+	"description": null,
+	"nodes": [
+		{
+			"id": 0,
+			"subNodes": [
+				1,
+				2
+			],
+			"text": "messages := make chan string(2)"
+		},
+		{
+			"id": 1,
+			"text": "messages"
+		},
+		{
+			"id": 2,
+			"subNodes": [
+				3
+			],
+			"text": "make chan string(2)"
+		},
+		{
+			"id": 3,
+			"text": "2"
+		},
+		{
+			"id": 4,
+			"subNodes": [
+				5,
+				6
+			],
+			"text": "<-(messages, \"buffered\")"
+		},
+		{
+			"id": 5,
+			"text": "messages"
+		},
+		{
+			"id": 6,
+			"text": "\"buffered\""
+		},
+		{
+			"id": 7,
+			"subNodes": [
+				8,
+				9
+			],
+			"text": "<-(messages, \"channel\")"
+		},
+		{
+			"id": 8,
+			"text": "messages"
+		},
+		{
+			"id": 9,
+			"text": "\"channel\""
+		},
+		{
+			"id": 10,
+			"subNodes": [
+				11
+			],
+			"text": "fmt::Println(<-(messages))"
+		},
+		{
+			"id": 11,
+			"subNodes": [
+				12
+			],
+			"text": "<-(messages)"
+		},
+		{
+			"id": 12,
+			"text": "messages"
+		},
+		{
+			"id": 13,
+			"subNodes": [
+				14
+			],
+			"text": "fmt::Println(<-(messages))"
+		},
+		{
+			"id": 14,
+			"subNodes": [
+				15
+			],
+			"text": "<-(messages)"
+		},
+		{
+			"id": 15,
+			"text": "messages"
+		},
+		{
+			"id": 16,
+			"text": "ret"
+		}
+	],
+	"edges": [
+		{
+			"sourceId": 0,
+			"destId": 4,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 4,
+			"destId": 7,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 7,
+			"destId": 10,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 10,
+			"destId": 13,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 13,
+			"destId": 16,
+			"kind": "SequentialEdge"
+		}
+	],
+	"descriptions": [
+		{
+			"nodeId": 0,
+			"description": {
+				"expressions": [
+					"messages"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 1,
+			"description": {
+				"expressions": [
+					"messages"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 2,
+			"description": {
+				"expressions": [
+					"PUSHANY"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 3,
+			"description": {
+				"expressions": [
+					"2"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 4,
+			"description": {
+				"expressions": [],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 5,
+			"description": {
+				"expressions": [
+					"messages"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 6,
+			"description": {
+				"expressions": [
+					"\"buffered\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 7,
+			"description": {
+				"expressions": [],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 8,
+			"description": {
+				"expressions": [
+					"messages"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 9,
+			"description": {
+				"expressions": [
+					"\"channel\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 10,
+			"description": {
+				"expressions": [
+					"open_call_ret_value@'go-testcases/cfg/channel/go-channel.go':36:26"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 11,
+			"description": {
+				"expressions": [
+					"PUSHANY"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 12,
+			"description": {
+				"expressions": [
+					"messages"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 13,
+			"description": {
+				"expressions": [
+					"open_call_ret_value@'go-testcases/cfg/channel/go-channel.go':37:26"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 14,
+			"description": {
+				"expressions": [
+					"PUSHANY"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 15,
+			"description": {
+				"expressions": [
+					"messages"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		},
+		{
+			"nodeId": 16,
+			"description": {
+				"expressions": [
+					"skip"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": "noop",
+					"value": "noop"
+				}
+			}
+		}
+	]
+}

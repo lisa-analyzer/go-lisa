@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.type.numeric.floating;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 

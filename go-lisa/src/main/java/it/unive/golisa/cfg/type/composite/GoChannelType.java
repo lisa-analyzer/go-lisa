@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 

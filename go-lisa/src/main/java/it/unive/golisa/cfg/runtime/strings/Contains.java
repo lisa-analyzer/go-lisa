@@ -53,7 +53,7 @@ public class Contains extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class ContainsImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -91,11 +91,11 @@ public class Contains extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A, H, V, T>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>,
-		T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			TypeSystem types = getProgram().getTypes();
 			AnalysisState<A, H, V, T> result = state.bottom();

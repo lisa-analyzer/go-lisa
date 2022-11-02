@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -25,6 +23,7 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import java.util.Collection;
 
 /**
  * A Go taint checker.

@@ -1,11 +1,6 @@
 import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import it.unive.golisa.analysis.composition.RelTarsis;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
@@ -19,6 +14,9 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import java.io.IOException;
+import org.junit.Ignore;
+import org.junit.Test;
 
 @Ignore
 public class VMCAI2022Tests {

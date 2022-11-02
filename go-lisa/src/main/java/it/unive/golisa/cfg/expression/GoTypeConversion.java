@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.expression;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -21,6 +18,8 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * A Go type casting (e.g., (string) x).

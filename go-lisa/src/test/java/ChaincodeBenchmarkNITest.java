@@ -1,9 +1,4 @@
 
-import java.io.IOException;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.loader.annotation.AnnotationSet;
@@ -19,6 +14,9 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.io.IOException;
+import org.junit.Ignore;
+import org.junit.Test;
 
 @Ignore
 public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {

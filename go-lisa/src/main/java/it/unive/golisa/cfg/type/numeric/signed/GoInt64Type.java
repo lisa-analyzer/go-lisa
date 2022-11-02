@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.type.numeric.signed;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -12,6 +9,8 @@ import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Go 64 bits int type. It implements the singleton design pattern, that is the

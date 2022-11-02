@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +11,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -143,15 +143,15 @@ public class GoArrayType implements GoType, InMemoryType {
 	 * 
 	 * @return all the array types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoArrayType in : arrayTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return all();
 	}
 

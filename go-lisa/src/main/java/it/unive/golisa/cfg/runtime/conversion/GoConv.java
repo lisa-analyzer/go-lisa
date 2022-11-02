@@ -1,11 +1,14 @@
 package it.unive.golisa.cfg.runtime.conversion;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import it.unive.lisa.type.TypeSystem;
 
 public class GoConv implements BinaryOperator {
 
@@ -18,20 +21,19 @@ public class GoConv implements BinaryOperator {
 	}
 
 	@Override
-	public ExternalSet<Type> typeInference(ExternalSet<Type> left, ExternalSet<Type> right) {
-
-		if (right.noneMatch(Type::isTypeTokenType))
-			return Caches.types().mkEmptySet();
-		ExternalSet<Type> set = convert(left, right);
+	public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+		if (right.stream().noneMatch(Type::isTypeTokenType))
+			return new HashSet<Type>();
+		Set<Type> set = convert(left, right);
 		if (set.isEmpty())
-			return Caches.types().mkEmptySet();
+			return new HashSet<Type>();
 		return set;
 	}
+	
+	private Set<Type> convert(Set<Type> left, Set<Type> right) {
 
-	private ExternalSet<Type> convert(ExternalSet<Type> left, ExternalSet<Type> right) {
-
-		ExternalSet<Type> result = Caches.types().mkEmptySet();
-		for (Type token : right.filter(Type::isTypeTokenType).multiTransform(t -> t.asTypeTokenType().getTypes()))
+		Set<Type> result = new HashSet<>();
+		for (Type token : right.stream().filter(Type::isTypeTokenType).flatMap(t -> t.asTypeTokenType().getTypes().stream()).collect(Collectors.toSet()))				
 			for (Type t : left)
 				if ((t.isNumericType() && token.isStringType()) || (token.isNumericType() && t.isStringType())
 						|| (t.isStringType() && isSliceOfBytes(token)))

@@ -6,6 +6,7 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -26,7 +27,6 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.common.UInt8;
 
 /**
  * func CopyBuffer(dst Writer, src Reader, buf []byte) (written int64, err.
@@ -48,7 +48,7 @@ public class CopyBuffer extends NativeCFG {
 						GoErrorType.INSTANCE),
 				new Parameter(location, "dsr", Writer.getWriterType(ioUnit.getProgram())),
 				new Parameter(location, "src", Reader.getReaderType(ioUnit.getProgram())),
-				new Parameter(location, "buf", GoSliceType.lookup(UInt8.INSTANCE))),
+				new Parameter(location, "buf", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				CopyBufferImpl.class);
 	}
 

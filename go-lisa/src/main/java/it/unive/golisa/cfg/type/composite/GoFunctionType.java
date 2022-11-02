@@ -12,6 +12,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -110,15 +111,15 @@ public class GoFunctionType implements GoType {
 	 * 
 	 * @return all the function types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoFunctionType in : functionTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return all();
 	}
 

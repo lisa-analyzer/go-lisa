@@ -209,7 +209,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	}
 
 	@Override
-	protected GoPointBasedHeap lubAux(GoPointBasedHeap other) throws SemanticException {
+	public GoPointBasedHeap lubAux(GoPointBasedHeap other) throws SemanticException {
 		Set<Pair<HeapLocation, HeapLocation>> lubCopies = new HashSet<>();
 
 		for (Pair<HeapLocation, HeapLocation> p : this.decouples)
@@ -221,12 +221,12 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	}
 
 	@Override
-	protected GoPointBasedHeap wideningAux(GoPointBasedHeap other) throws SemanticException {
+	public GoPointBasedHeap wideningAux(GoPointBasedHeap other) throws SemanticException {
 		return lubAux(other);
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(GoPointBasedHeap other) throws SemanticException {
+	public boolean lessOrEqualAux(GoPointBasedHeap other) throws SemanticException {
 		return heapEnv.lessOrEqual(other.heapEnv);
 	}
 
@@ -256,7 +256,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	}
 
 	@Override
-	protected GoPointBasedHeap semanticsOf(HeapExpression expression, ProgramPoint pp) throws SemanticException {
+	public GoPointBasedHeap semanticsOf(HeapExpression expression, ProgramPoint pp) throws SemanticException {
 		return this;
 	}
 
@@ -314,7 +314,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 								expression.getCodeLocation());
 
 					if (expression.hasRuntimeTypes())
-						e.setRuntimeTypes(expression.getRuntimeTypes());
+						e.setRuntimeTypes(expression.getRuntimeTypes(null));
 					result.add(e);
 				} else if (rec instanceof GoAllocationSite)
 					result.add(rec);
@@ -342,7 +342,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 			}
 
 			if (expression.hasRuntimeTypes())
-				id.setRuntimeTypes(expression.getRuntimeTypes());
+				id.setRuntimeTypes(expression.getRuntimeTypes(null));
 			return new ExpressionSet<>(id);
 		}
 
@@ -358,7 +358,8 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 							(GoAllocationSite) loc,
 							loc.getCodeLocation());
 					if (expression.hasRuntimeTypes())
-						e.setRuntimeTypes(loc.getRuntimeTypes());
+//						e.setRuntimeTypes(loc.getRuntimeTypes(null));
+						e.setRuntimeTypes(expression.getRuntimeTypes(null));
 					result.add(e);
 				} else
 					result.add(loc);
@@ -401,7 +402,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 						site,
 						site.getCodeLocation());
 				if (v.hasRuntimeTypes())
-					e.setRuntimeTypes(v.getRuntimeTypes());
+					e.setRuntimeTypes(v.getRuntimeTypes(null));
 				result.add(e);
 			}
 

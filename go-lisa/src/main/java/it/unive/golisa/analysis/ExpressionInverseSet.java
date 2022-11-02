@@ -61,7 +61,7 @@ public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseS
 	}
 
 	@Override
-	protected ExpressionInverseSet<T> mk(Set<T> set) {
+	public ExpressionInverseSet<T> mk(Set<T> set) {
 		return new ExpressionInverseSet<T>(set);
 	}
 

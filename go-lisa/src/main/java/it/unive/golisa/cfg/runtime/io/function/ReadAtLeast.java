@@ -5,6 +5,7 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -25,7 +26,6 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.common.UInt8;
 
 /**
  * func ReadAtLeast(r Reader, buf []byte, min int) (n int, err error).
@@ -45,7 +45,7 @@ public class ReadAtLeast extends NativeCFG {
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "r", Reader.getReaderType(ioUnit.getProgram())),
-				new Parameter(location, "buf", GoSliceType.lookup(UInt8.INSTANCE)),
+				new Parameter(location, "buf", GoSliceType.lookup(GoUInt8Type.INSTANCE)),
 				new Parameter(location, "min", GoIntType.INSTANCE)),
 				ReadAtLeastImpl.class);
 	}

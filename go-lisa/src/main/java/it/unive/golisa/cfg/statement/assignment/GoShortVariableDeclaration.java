@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.Collections;
+
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
@@ -12,7 +14,6 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -67,14 +68,14 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		 */
 		public static SymbolicExpression type(SymbolicExpression exp) {
 			if (exp.getDynamicType() instanceof GoUntypedInt) {
-				Constant typeCast = new Constant(new TypeTokenType(Caches.types().mkSingletonSet(GoIntType.INSTANCE)),
+				Constant typeCast = new Constant(new TypeTokenType(Collections.singleton(GoIntType.INSTANCE)),
 						GoIntType.INSTANCE, exp.getCodeLocation());
 				return new BinaryExpression(GoIntType.INSTANCE, exp, typeCast, TypeConv.INSTANCE,
 						exp.getCodeLocation());
 
 			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
 				Constant typeCast = new Constant(
-						new TypeTokenType(Caches.types().mkSingletonSet(GoFloat32Type.INSTANCE)),
+						new TypeTokenType(Collections.singleton(GoFloat32Type.INSTANCE)),
 						GoFloat32Type.INSTANCE,
 						exp.getCodeLocation());
 				return new BinaryExpression(GoFloat32Type.INSTANCE, exp, typeCast, TypeConv.INSTANCE,
@@ -85,7 +86,7 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>,
+	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(

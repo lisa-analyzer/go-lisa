@@ -179,25 +179,25 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	protected TaintDomain evalNullConstant(ProgramPoint pp) throws SemanticException {
+	public TaintDomain evalNullConstant(ProgramPoint pp) throws SemanticException {
 		return CLEAN;
 	}
 
 	@Override
-	protected TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
+	public TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
 		if (constant instanceof Tainted)
 			return TAINTED;
 		return CLEAN;
 	}
 
 	@Override
-	protected TaintDomain evalUnaryExpression(UnaryOperator operator, TaintDomain arg, ProgramPoint pp)
+	public TaintDomain evalUnaryExpression(UnaryOperator operator, TaintDomain arg, ProgramPoint pp)
 			throws SemanticException {
 		return arg;
 	}
 
 	@Override
-	protected TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
+	public TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
 			ProgramPoint pp) throws SemanticException {
 
 		if (operator == GoConv.INSTANCE)
@@ -213,7 +213,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	protected TaintDomain evalTernaryExpression(TernaryOperator operator, TaintDomain left, TaintDomain middle,
+	public TaintDomain evalTernaryExpression(TernaryOperator operator, TaintDomain left, TaintDomain middle,
 			TaintDomain right, ProgramPoint pp) throws SemanticException {
 		if (left == TAINTED || right == TAINTED || middle == TAINTED)
 			return TAINTED;
@@ -225,13 +225,13 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	protected TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
+	public TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
 		return TAINTED;
 	}
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		for (Type t : id.getRuntimeTypes())
+		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
 		return false;
@@ -243,17 +243,17 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	protected TaintDomain lubAux(TaintDomain other) throws SemanticException {
+	public TaintDomain lubAux(TaintDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected TaintDomain wideningAux(TaintDomain other) throws SemanticException {
+	public TaintDomain wideningAux(TaintDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(TaintDomain other) throws SemanticException {
+	public boolean lessOrEqualAux(TaintDomain other) throws SemanticException {
 		return false; // should never happen
 	}
 

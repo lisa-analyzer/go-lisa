@@ -1,5 +1,11 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.type.GoType;
@@ -13,12 +19,9 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * A Go struct type.
@@ -210,15 +213,15 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	 * 
 	 * @return all the struct types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoStructType in : structTypes.values())
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return all();
 	}
 

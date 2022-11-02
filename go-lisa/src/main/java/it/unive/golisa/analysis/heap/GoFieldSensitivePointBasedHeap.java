@@ -222,7 +222,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 				}
 
 				if (expression.hasRuntimeTypes())
-					e.setRuntimeTypes(expression.getRuntimeTypes());
+					e.setRuntimeTypes(expression.getRuntimeTypes(null));
 				result.add(e);
 			}
 		}
@@ -256,7 +256,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 			}
 
 			if (expression.hasRuntimeTypes())
-				id.setRuntimeTypes(expression.getRuntimeTypes());
+				id.setRuntimeTypes(expression.getRuntimeTypes(null));
 			return new ExpressionSet<>(id);
 		}
 

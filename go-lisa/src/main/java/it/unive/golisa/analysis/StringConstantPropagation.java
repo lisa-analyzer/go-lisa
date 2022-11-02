@@ -99,25 +99,25 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	}
 
 	@Override
-	protected StringConstantPropagation evalNullConstant(ProgramPoint pp) {
+	public StringConstantPropagation evalNullConstant(ProgramPoint pp) {
 		return top();
 	}
 
 	@Override
-	protected StringConstantPropagation evalNonNullConstant(Constant constant, ProgramPoint pp) {
+	public StringConstantPropagation evalNonNullConstant(Constant constant, ProgramPoint pp) {
 		if (constant.getValue() instanceof String)
 			return new StringConstantPropagation((String) constant.getValue());
 		return top();
 	}
 
 	@Override
-	protected StringConstantPropagation evalUnaryExpression(UnaryOperator operator, StringConstantPropagation arg,
+	public StringConstantPropagation evalUnaryExpression(UnaryOperator operator, StringConstantPropagation arg,
 			ProgramPoint pp) {
 		return top();
 	}
 
 	@Override
-	protected StringConstantPropagation evalBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
+	public StringConstantPropagation evalBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
 			StringConstantPropagation right, ProgramPoint pp) {
 
 		if (left.isTop() || right.isTop())
@@ -130,7 +130,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	}
 
 	@Override
-	protected StringConstantPropagation evalTernaryExpression(TernaryOperator operator,
+	public StringConstantPropagation evalTernaryExpression(TernaryOperator operator,
 			StringConstantPropagation left,
 			StringConstantPropagation middle, StringConstantPropagation right, ProgramPoint pp) {
 
@@ -144,17 +144,17 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	}
 
 	@Override
-	protected StringConstantPropagation lubAux(StringConstantPropagation other) throws SemanticException {
+	public StringConstantPropagation lubAux(StringConstantPropagation other) throws SemanticException {
 		return TOP;
 	}
 
 	@Override
-	protected StringConstantPropagation wideningAux(StringConstantPropagation other) throws SemanticException {
+	public StringConstantPropagation wideningAux(StringConstantPropagation other) throws SemanticException {
 		return lubAux(other);
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(StringConstantPropagation other) throws SemanticException {
+	public boolean lessOrEqualAux(StringConstantPropagation other) throws SemanticException {
 		return false;
 	}
 
@@ -190,7 +190,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	}
 
 	@Override
-	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
+	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
 			StringConstantPropagation right, ProgramPoint pp) {
 
 		if (left.isTop() || right.isTop())
@@ -228,7 +228,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	}
 
 	@Override
-	protected ValueEnvironment<StringConstantPropagation> assumeBinaryExpression(
+	public ValueEnvironment<StringConstantPropagation> assumeBinaryExpression(
 			ValueEnvironment<StringConstantPropagation> environment, BinaryOperator operator, ValueExpression left,
 			ValueExpression right, ProgramPoint pp) throws SemanticException {
 		if (operator == StringEquals.INSTANCE || operator == ComparisonEq.INSTANCE) {

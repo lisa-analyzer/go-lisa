@@ -232,7 +232,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
-	protected EqualityDomain mk(ExpressionInverseSet<Identifier> lattice,
+	public EqualityDomain mk(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		return new EqualityDomain(lattice, function);
 	}

@@ -14,6 +14,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -117,15 +118,15 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * 
 	 * @return all the tuple types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoTupleType in : tupleTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return all();
 	}
 

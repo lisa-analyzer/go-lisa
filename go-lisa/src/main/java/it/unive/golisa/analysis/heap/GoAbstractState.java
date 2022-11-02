@@ -1,6 +1,7 @@
 package it.unive.golisa.analysis.heap;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,7 +22,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
  * An abstract state of the analysis for Go, composed by a value state modeling
@@ -99,7 +99,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		for (Pair<HeapLocation, HeapLocation> p : heap.getDecouples()) {
 			type = type.assign(p.getLeft(), p.getRight(), pp);
 
-			ExternalSet<Type> rt = type.getInferredRuntimeTypes();
+			Set<Type> rt = type.getInferredRuntimeTypes();
 			p.getLeft().setRuntimeTypes(rt);
 			p.getRight().setRuntimeTypes(rt);
 			value = value.assign(p.getLeft(), p.getRight(), pp);
@@ -115,7 +115,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		for (ValueExpression expr : exprs) {
 			type = type.assign(id, expr, pp);
 
-			ExternalSet<Type> rt = type.getInferredRuntimeTypes();
+			Set<Type> rt = type.getInferredRuntimeTypes();
 			id.setRuntimeTypes(rt);
 			expr.setRuntimeTypes(rt);
 
@@ -144,7 +144,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		for (ValueExpression expr : exprs) {
 			type = type.smallStepSemantics(expr, pp);
 
-			ExternalSet<Type> rt = type.getInferredRuntimeTypes();
+			Set<Type> rt = type.getInferredRuntimeTypes();
 			expr.setRuntimeTypes(rt);
 
 			if (expr instanceof MemoryPointer)
@@ -172,7 +172,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 
 		for (ValueExpression expr : exprs) {
 			T tmp = type.smallStepSemantics(expr, pp);
-			ExternalSet<Type> rt = tmp.getInferredRuntimeTypes();
+			Set<Type> rt = tmp.getInferredRuntimeTypes();
 			expr.setRuntimeTypes(rt);
 
 			type = type.assume(expr, pp);
@@ -189,7 +189,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		Satisfiability valueResult = Satisfiability.BOTTOM;
 		for (ValueExpression expr : rewritten) {
 			T tmp = typeState.smallStepSemantics(expr, pp);
-			ExternalSet<Type> rt = tmp.getInferredRuntimeTypes();
+			Set<Type> rt = tmp.getInferredRuntimeTypes();
 			expr.setRuntimeTypes(rt);
 
 			typeResult = typeResult.lub(typeState.satisfies(expr, pp));

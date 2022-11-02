@@ -10,6 +10,7 @@ import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnn
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
@@ -58,6 +59,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 								LiSAFactory.getDefaultFor(TypeDomain.class)))
 				.addSemanticCheck(new TaintChecker())
 				.setJsonOutput(true)
+				.setDumpAnalysis(GraphType.HTML)
 				.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
 				.setCallGraph(new RTACallGraph())
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());

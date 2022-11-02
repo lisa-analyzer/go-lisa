@@ -73,7 +73,7 @@ public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocatio
 	}
 
 	@Override
-	protected GoAllocationSites mk(Set<GoAllocationSite> set) {
+	public GoAllocationSites mk(Set<GoAllocationSite> set) {
 		return new GoAllocationSites(set, false);
 	}
 
@@ -127,7 +127,7 @@ public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocatio
 	}
 
 	@Override
-	protected GoAllocationSites lubAux(GoAllocationSites other) throws SemanticException {
+	public GoAllocationSites lubAux(GoAllocationSites other) throws SemanticException {
 		Map<String, GoAllocationSite> lub = new HashMap<>();
 
 		// all weak identifiers are part of the lub

@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import it.unive.golisa.GoFeatures;
+import it.unive.golisa.GoTypeSystem;
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ConstDeclContext;
@@ -79,7 +81,6 @@ import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.logging.IterationLogger;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
@@ -90,15 +91,9 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
-import it.unive.lisa.program.language.resolution.RuntimeTypesMatchingStrategy;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.type.common.BoolType;
-import it.unive.lisa.type.common.Float32;
-import it.unive.lisa.type.common.Int32;
-import it.unive.lisa.type.common.StringType;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -137,12 +132,12 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	/**
 	 * The parameter matching strategy for matching function calls.
 	 */
-	public static final ParameterMatchingStrategy FUNCTION_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
+	//	public static final ParameterMatchingStrategy FUNCTION_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
 
 	/**
 	 * The parameter matching strategy for matching method calls.
 	 */
-	public static final ParameterMatchingStrategy METHOD_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
+	//	public static final ParameterMatchingStrategy METHOD_MATCHING_STRATEGY = RuntimeTypesMatchingStrategy.INSTANCE;
 
 	/**
 	 * Builds a Go frontend for a given Go program given at the location
@@ -152,7 +147,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	 */
 	private GoFrontEnd(String filePath) {
 		this.filePath = filePath;
-		this.program = new Program(new GoFeatures());
+		this.program = new Program(new GoFeatures(), new GoTypeSystem());
 		this.constants = new HashMap<>();
 		this.globals = new ArrayList<>();
 		GoCodeMemberVisitor.c = 0;
@@ -221,7 +216,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	}
 
 	private static void clearTypes() {
-		Caches.types().clear();
 		GoArrayType.clearAll();
 		GoStructType.clearAll();
 		GoSliceType.clearAll();
@@ -236,52 +230,52 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	}
 
 	private void registerGoTypes(Program program) {
-		program.registerType(GoBoolType.INSTANCE);
-		program.registerType(GoFloat32Type.INSTANCE);
-		program.registerType(GoFloat64Type.INSTANCE);
-		program.registerType(GoIntType.INSTANCE);
-		program.registerType(GoUIntType.INSTANCE);
-		program.registerType(GoUntypedInt.INSTANCE);
-		program.registerType(GoInt8Type.INSTANCE);
-		program.registerType(GoUInt8Type.INSTANCE);
-		program.registerType(GoInt16Type.INSTANCE);
-		program.registerType(GoUInt16Type.INSTANCE);
-		program.registerType(GoInt32Type.INSTANCE);
-		program.registerType(GoUInt32Type.INSTANCE);
-		program.registerType(GoInt64Type.INSTANCE);
-		program.registerType(GoUInt64Type.INSTANCE);
-		program.registerType(GoUIntPrtType.INSTANCE);
-		program.registerType(GoUntypedFloat.INSTANCE);
-		program.registerType(GoStringType.INSTANCE);
-		program.registerType(GoErrorType.INSTANCE);
-		program.registerType(GoNilType.INSTANCE);
+		program.getTypes().registerType(GoBoolType.INSTANCE);
+		program.getTypes().registerType(GoFloat32Type.INSTANCE);
+		program.getTypes().registerType(GoFloat64Type.INSTANCE);
+		program.getTypes().registerType(GoIntType.INSTANCE);
+		program.getTypes().registerType(GoUIntType.INSTANCE);
+		program.getTypes().registerType(GoUntypedInt.INSTANCE);
+		program.getTypes().registerType(GoInt8Type.INSTANCE);
+		program.getTypes().registerType(GoUInt8Type.INSTANCE);
+		program.getTypes().registerType(GoInt16Type.INSTANCE);
+		program.getTypes().registerType(GoUInt16Type.INSTANCE);
+		program.getTypes().registerType(GoInt32Type.INSTANCE);
+		program.getTypes().registerType(GoUInt32Type.INSTANCE);
+		program.getTypes().registerType(GoInt64Type.INSTANCE);
+		program.getTypes().registerType(GoUInt64Type.INSTANCE);
+		program.getTypes().registerType(GoUIntPrtType.INSTANCE);
+		program.getTypes().registerType(GoUntypedFloat.INSTANCE);
+		program.getTypes().registerType(GoStringType.INSTANCE);
+		program.getTypes().registerType(GoErrorType.INSTANCE);
+		program.getTypes().registerType(GoNilType.INSTANCE);
 
 		// FIXME: these types should be removed
-		program.registerType(BoolType.INSTANCE);
-		program.registerType(Untyped.INSTANCE);
-		program.registerType(Float32.INSTANCE);
-		program.registerType(StringType.INSTANCE);
-		program.registerType(Int32.INSTANCE);
+		//		program.registerType(BoolType.INSTANCE);
+		program.getTypes().registerType(Untyped.INSTANCE);
+		//		program.getTypes().registerType(Float32Type.INSTANCE);
+		//		program.registerType(StringType.INSTANCE);
+		//		program.registerType(Int32.INSTANCE);
 
-		GoArrayType.all().forEach(program::registerType);
-		GoStructType.all().forEach(program::registerType);
-		GoSliceType.all().forEach(program::registerType);
-		GoPointerType.all().forEach(program::registerType);
-		GoMapType.all().forEach(program::registerType);
-		GoTupleType.all().forEach(program::registerType);
-		GoChannelType.all().forEach(program::registerType);
-		GoFunctionType.all().forEach(program::registerType);
-		GoVariadicType.all().forEach(program::registerType);
-		GoAliasType.all().forEach(program::registerType);
-		GoInterfaceType.all().forEach(program::registerType);
+		GoArrayType.all().forEach(program.getTypes()::registerType);
+		GoStructType.all().forEach(program.getTypes()::registerType);
+		GoSliceType.all().forEach(program.getTypes()::registerType);
+		GoPointerType.all().forEach(program.getTypes()::registerType);
+		GoMapType.all().forEach(program.getTypes()::registerType);
+		GoTupleType.all().forEach(program.getTypes()::registerType);
+		GoChannelType.all().forEach(program.getTypes()::registerType);
+		GoFunctionType.all().forEach(program.getTypes()::registerType);
+		GoVariadicType.all().forEach(program.getTypes()::registerType);
+		GoAliasType.all().forEach(program.getTypes()::registerType);
+		GoInterfaceType.all().forEach(program.getTypes()::registerType);
 
 		// adding type tokens
 		Set<Type> ttTypes = new HashSet<>();
-		for (Type t : program.getRegisteredTypes())
-			ttTypes.add(new TypeTokenType(Caches.types().mkSingletonSet(t)));
+		for (Type t : program.getTypes().getTypes())
+			ttTypes.add(new TypeTokenType(Collections.singleton(t)));
 
 		for (Type t : ttTypes)
-			program.registerType(t);
+			program.getTypes().registerType(t);
 	}
 
 	@Override
@@ -320,7 +314,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	}
 
 	private void updateGlobals() {
-		// TODO Auto-generated method stub
 		globals.forEach(g -> program.addGlobal(g));
 	}
 
@@ -335,22 +328,24 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 				program.addUnit(unit);
 
 		if (decl.varDecl() != null)
-			visitVarDeclContext(decl.varDecl());
+			visitGlobals(decl.varDecl());
 
 		if (decl.constDecl() != null)
 			visitConstDeclContext(decl.constDecl());
 
 	}
 
-	private void visitVarDeclContext(VarDeclContext ctx) {
+	private void visitGlobals(VarDeclContext ctx) {
 		for (VarSpecContext spec : ctx.varSpec()) {
 			IdentifierListContext ids = spec.identifierList();
-			for (int i = 0; i < ids.IDENTIFIER().size(); i++)
+			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
+				Type type = spec.type_() == null ? Untyped.INSTANCE : new GoTypeVisitor(filePath, packageUnit, program, constants, globals).visitType_(spec.type_());
 				globals.add(new Global(
 						new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)),
 								GoCodeMemberVisitor.getCol(ids.IDENTIFIER(i))),
 						packageUnit, ids.IDENTIFIER(i).getText(),
-						true, Untyped.INSTANCE));
+						false, type));
+			}
 		}
 	}
 
@@ -370,7 +365,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	@Override
 	public Collection<CompilationUnit> visitTypeDecl(TypeDeclContext ctx) {
-		HashSet<CompilationUnit> units = new HashSet<>();
+		Set<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
 			if (typeSpec.type_().typeLit().interfaceType() == null) {
@@ -444,7 +439,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private void loadCore() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		System.err.println(packageUnit);
 		packageUnit.addCodeMember(new GoToString(unknownLocation, packageUnit));
 		packageUnit.addCodeMember(new ToInt64(unknownLocation, packageUnit));
 	}
@@ -458,5 +452,4 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	public CFG visitMethodDecl(MethodDeclContext ctx) {
 		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, constants, globals).visitCodeMember(ctx);
 	}
-
 }

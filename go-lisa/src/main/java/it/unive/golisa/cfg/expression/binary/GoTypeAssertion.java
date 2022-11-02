@@ -15,6 +15,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -40,7 +41,7 @@ public class GoTypeAssertion extends UnaryExpression {
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>,
+	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
@@ -50,9 +51,10 @@ public class GoTypeAssertion extends UnaryExpression {
 		// concrete value,
 		// hence we need to check if the static type of the arguments is an
 		// interface
+		TypeSystem types = getProgram().getTypes();
 		Type argStaticType = getSubExpressions()[0].getStaticType();
 		if (argStaticType instanceof GoInterfaceType || argStaticType instanceof Untyped)
-			for (Type exprType : expr.getRuntimeTypes())
+			for (Type exprType : expr.getRuntimeTypes(types))
 				if (exprType.canBeAssignedTo(type))
 					return state;
 

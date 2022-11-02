@@ -97,7 +97,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected TarsisIntv evalNonNullConstant(Constant constant, ProgramPoint pp) {
+	public TarsisIntv evalNonNullConstant(Constant constant, ProgramPoint pp) {
 		if (constant.getValue() instanceof Integer) {
 			Integer i = (Integer) constant.getValue();
 			return new TarsisIntv(new TarsisMathNumber(i), new TarsisMathNumber(i));
@@ -107,7 +107,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected TarsisIntv evalUnaryExpression(UnaryOperator operator, TarsisIntv arg, ProgramPoint pp) {
+	public TarsisIntv evalUnaryExpression(UnaryOperator operator, TarsisIntv arg, ProgramPoint pp) {
 
 		if (operator == NumericNegation.INSTANCE) {
 			if (arg.isTop())
@@ -124,7 +124,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right,
+	public TarsisIntv evalBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right,
 			ProgramPoint pp) {
 		if (operator != NumericNonOverflowingDiv.INSTANCE && (left.isTop() || right.isTop()))
 			// with div, we can return zero or bottom even if one of the
@@ -153,14 +153,14 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected TarsisIntv lubAux(TarsisIntv other) throws SemanticException {
+	public TarsisIntv lubAux(TarsisIntv other) throws SemanticException {
 		TarsisMathNumber newLow = interval.getLow().min(other.interval.getLow());
 		TarsisMathNumber newHigh = interval.getHigh().max(other.interval.getHigh());
 		return newLow.isMinusInfinity() && newHigh.isPlusInfinity() ? top() : new TarsisIntv(newLow, newHigh);
 	}
 
 	@Override
-	protected TarsisIntv glbAux(TarsisIntv other) {
+	public TarsisIntv glbAux(TarsisIntv other) {
 		TarsisMathNumber newLow = interval.getLow().max(other.interval.getLow());
 		TarsisMathNumber newHigh = interval.getHigh().min(other.interval.getHigh());
 
@@ -170,7 +170,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected TarsisIntv wideningAux(TarsisIntv other) throws SemanticException {
+	public TarsisIntv wideningAux(TarsisIntv other) throws SemanticException {
 		TarsisMathNumber newLow, newHigh;
 		if (other.interval.getHigh().compareTo(interval.getHigh()) > 0)
 			newHigh = TarsisMathNumber.PLUS_INFINITY;
@@ -186,12 +186,12 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(TarsisIntv other) throws SemanticException {
+	public boolean lessOrEqualAux(TarsisIntv other) throws SemanticException {
 		return other.interval.includes(interval);
 	}
 
 	@Override
-	protected Satisfiability satisfiesBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right,
+	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, TarsisIntv left, TarsisIntv right,
 			ProgramPoint pp) {
 
 		if (left.isTop() || right.isTop())
@@ -280,7 +280,7 @@ public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
 	}
 
 	@Override
-	protected ValueEnvironment<TarsisIntv> assumeBinaryExpression(
+	public ValueEnvironment<TarsisIntv> assumeBinaryExpression(
 			ValueEnvironment<TarsisIntv> environment, BinaryOperator operator, ValueExpression left,
 			ValueExpression right, ProgramPoint pp) throws SemanticException {
 

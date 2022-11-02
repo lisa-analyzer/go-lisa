@@ -25,6 +25,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go multi short variable declaration statement.
@@ -65,6 +66,8 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
+		TypeSystem types = getProgram().getTypes();
+
 		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
@@ -86,7 +89,7 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 				for (SymbolicExpression id : idState.getComputedExpressions()) {
 					if (isClean(rightState.getComputedExpressions())) {
 						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-						for (Type type : id.getRuntimeTypes()) {
+						for (Type type : id.getRuntimeTypes(types)) {
 							AnalysisState<A, H, V,
 									T> assign = tmp.assign((Identifier) id, new Clean(type, getLocation()), this);
 							if (!assign.getState().getHeapState().isTop() || !assign.getState().getValueState().isTop())
@@ -96,7 +99,7 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 						tmp = tmp2;
 					} else if (rightState.isTop()) {
 						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-						for (Type type : id.getRuntimeTypes())
+						for (Type type : id.getRuntimeTypes(types))
 							tmp2 = tmp2.lub(tmp.assign((Identifier) id, new PushAny(type, getLocation()), this));
 						tmp = tmp2;
 					} else {

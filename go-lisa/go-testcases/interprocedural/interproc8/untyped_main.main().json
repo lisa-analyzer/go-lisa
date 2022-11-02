@@ -1,1 +1,2120 @@
-{"name":"untyped main::main()","description":null,"nodes":[{"id":0,"text":"x, y := main::f1()"},{"id":1,"text":"x"},{"id":2,"text":"y"},{"id":3,"text":"main::f1()"},{"id":4,"text":"Open block: 'go-testcases/interprocedural/interproc8/interprocedural.go':15:1"},{"id":5,"text":"x, y := main::f2()"},{"id":6,"text":"x"},{"id":7,"text":"y"},{"id":8,"text":"main::f2()"},{"id":9,"subNodes":[12,11],"text":"x = +(x, 1)"},{"id":11,"subNodes":[12,13],"text":"+(x, 1)"},{"id":12,"text":"x"},{"id":13,"text":"1"},{"id":14,"subNodes":[17,16],"text":"y = +(y, 1)"},{"id":16,"subNodes":[17,18],"text":"+(y, 1)"},{"id":17,"text":"y"},{"id":18,"text":"1"},{"id":19,"text":"Close block: 'go-testcases/interprocedural/interproc8/interprocedural.go':15:1"},{"id":20,"subNodes":[23,22],"text":"x = +(x, 1)"},{"id":22,"subNodes":[23,24],"text":"+(x, 1)"},{"id":23,"text":"x"},{"id":24,"text":"1"},{"id":25,"subNodes":[28,27],"text":"y = +(y, 1)"},{"id":27,"subNodes":[28,29],"text":"+(y, 1)"},{"id":28,"text":"y"},{"id":29,"text":"1"},{"id":30,"text":"ret"}],"edges":[{"sourceId":0,"destId":4,"kind":"SequentialEdge"},{"sourceId":4,"destId":5,"kind":"SequentialEdge"},{"sourceId":5,"destId":9,"kind":"SequentialEdge"},{"sourceId":9,"destId":14,"kind":"SequentialEdge"},{"sourceId":14,"destId":19,"kind":"SequentialEdge"},{"sourceId":19,"destId":20,"kind":"SequentialEdge"},{"sourceId":20,"destId":25,"kind":"SequentialEdge"},{"sourceId":25,"destId":30,"kind":"SequentialEdge"}],"descriptions":[{"nodeId":0,"description":{"expressions":["y"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","x":"[1, 1]","y":"[2, 2]"},"stack":"[2, 2]"}}}},{"nodeId":1,"description":{"expressions":["x"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"]},"stack":["[int(untyped) _, int(untyped) _]","bool","bool*","error","error*","float(untyped)","float(untyped)*","float32","float32*","float64","float64*","int","int(untyped)","int(untyped)*","int*","int16","int16*","int32","int32*","int64","int64*","int8","int8*","interface{}","interface{}*","nil","nil*","string","string*","token::[bool*]","token::[bool*]*","token::[bool]","token::[bool]*","token::[float32*]","token::[float32*]*","token::[float32]","token::[float32]*","token::[float64*]","token::[float64*]*","token::[float64]","token::[float64]*","token::[int(untyped)*]","token::[int(untyped)*]*","token::[int(untyped)]","token::[int(untyped)]*","token::[int*]","token::[int*]*","token::[int16*]","token::[int16*]*","token::[int16]","token::[int16]*","token::[int32*]","token::[int32*]*","token::[int32]","token::[int32]*","token::[int64]","token::[int64]*","token::[int8*]","token::[int8*]*","token::[int8]","token::[int8]*","token::[int]","token::[int]*","token::[uint*]","token::[uint*]*","token::[uint16*]","token::[uint16*]*","token::[uint16]","token::[uint16]*","token::[uint32*]","token::[uint32*]*","token::[uint32]","token::[uint32]*","token::[uint8*]","token::[uint8*]*","token::[uint8]","token::[uint8]*","token::[uint]","token::[uint]*","uint","uint*","uint16","uint16*","uint32","uint32*","uint64","uint64*","uint8","uint8*","uintprt","uintprt*","untyped","untyped*"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]"},"stack":"_|_"}}}},{"nodeId":2,"description":{"expressions":["y"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"]},"stack":["[int(untyped) _, int(untyped) _]","bool","bool*","error","error*","float(untyped)","float(untyped)*","float32","float32*","float64","float64*","int","int(untyped)","int(untyped)*","int*","int16","int16*","int32","int32*","int64","int64*","int8","int8*","interface{}","interface{}*","nil","nil*","string","string*","token::[bool*]","token::[bool*]*","token::[bool]","token::[bool]*","token::[float32*]","token::[float32*]*","token::[float32]","token::[float32]*","token::[float64*]","token::[float64*]*","token::[float64]","token::[float64]*","token::[int(untyped)*]","token::[int(untyped)*]*","token::[int(untyped)]","token::[int(untyped)]*","token::[int*]","token::[int*]*","token::[int16*]","token::[int16*]*","token::[int16]","token::[int16]*","token::[int32*]","token::[int32*]*","token::[int32]","token::[int32]*","token::[int64]","token::[int64]*","token::[int8*]","token::[int8*]*","token::[int8]","token::[int8]*","token::[int]","token::[int]*","token::[uint*]","token::[uint*]*","token::[uint16*]","token::[uint16*]*","token::[uint16]","token::[uint16]*","token::[uint32*]","token::[uint32*]*","token::[uint32]","token::[uint32]*","token::[uint8*]","token::[uint8*]*","token::[uint8]","token::[uint8]*","token::[uint]","token::[uint]*","uint","uint*","uint16","uint16*","uint32","uint32*","uint64","uint64*","uint8","uint8*","uintprt","uintprt*","untyped","untyped*"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]"},"stack":"_|_"}}}},{"nodeId":3,"description":{"expressions":["call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"]},"stack":["[int(untyped) _, int(untyped) _]"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]"},"stack":"_|_"}}}},{"nodeId":4,"description":{"expressions":["y"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","x":"[1, 1]","y":"[2, 2]"},"stack":"[2, 2]"}}}},{"nodeId":5,"description":{"expressions":["y"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[3, 3]","y":"[4, 4]"},"stack":"[4, 4]"}}}},{"nodeId":6,"description":{"expressions":["x"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[1, 1]","y":"[2, 2]"},"stack":"[1, 1]"}}}},{"nodeId":7,"description":{"expressions":["y"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[1, 1]","y":"[2, 2]"},"stack":"[2, 2]"}}}},{"nodeId":8,"description":{"expressions":["call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["[int(untyped) _, int(untyped) _]"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[1, 1]","y":"[2, 2]"},"stack":"_|_"}}}},{"nodeId":9,"description":{"expressions":["x"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[4, 4]","y":"[4, 4]"},"stack":"[4, 4]"}}}},{"nodeId":11,"description":{"expressions":["x + 1"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[3, 3]","y":"[4, 4]"},"stack":"[4, 4]"}}}},{"nodeId":12,"description":{"expressions":["x"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[3, 3]","y":"[4, 4]"},"stack":"[3, 3]"}}}},{"nodeId":13,"description":{"expressions":["1"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int(untyped)"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[3, 3]","y":"[4, 4]"},"stack":"[1, 1]"}}}},{"nodeId":14,"description":{"expressions":["y"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[4, 4]","y":"[5, 5]"},"stack":"[5, 5]"}}}},{"nodeId":16,"description":{"expressions":["y + 1"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[4, 4]","y":"[4, 4]"},"stack":"[5, 5]"}}}},{"nodeId":17,"description":{"expressions":["y"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[4, 4]","y":"[4, 4]"},"stack":"[4, 4]"}}}},{"nodeId":18,"description":{"expressions":["1"],"state":{"heap":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]","call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"},"type":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":["int"],"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":["int"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int(untyped)"]},"value":{"map":{"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x":"[1, 1]","['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[4, 4]","y":"[4, 4]"},"stack":"[1, 1]"}}}},{"nodeId":19,"description":{"expressions":["y"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[1, 1]","y":"[2, 2]"},"stack":"[5, 5]"}}}},{"nodeId":20,"description":{"expressions":["x"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[2, 2]","y":"[2, 2]"},"stack":"[2, 2]"}}}},{"nodeId":22,"description":{"expressions":["x + 1"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[1, 1]","y":"[2, 2]"},"stack":"[2, 2]"}}}},{"nodeId":23,"description":{"expressions":["x"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[1, 1]","y":"[2, 2]"},"stack":"[1, 1]"}}}},{"nodeId":24,"description":{"expressions":["1"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int(untyped)"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[1, 1]","y":"[2, 2]"},"stack":"[1, 1]"}}}},{"nodeId":25,"description":{"expressions":["y"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[2, 2]","y":"[3, 3]"},"stack":"[3, 3]"}}}},{"nodeId":27,"description":{"expressions":["y + 1"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[2, 2]","y":"[2, 2]"},"stack":"[3, 3]"}}}},{"nodeId":28,"description":{"expressions":["y"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[2, 2]","y":"[2, 2]"},"stack":"[2, 2]"}}}},{"nodeId":29,"description":{"expressions":["1"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":["int(untyped)"]},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[2, 2]","y":"[2, 2]"},"stack":"[1, 1]"}}}},{"nodeId":30,"description":{"expressions":["skip"],"state":{"heap":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":"[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"},"type":{"map":{"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12":["[int(untyped) _, int(untyped) _]"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":["int"],"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":["int"],"x":["int"],"y":["int"]},"stack":"_|_"},"value":{"map":{"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]":"[4, 4]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]":"[1, 1]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]":"[2, 2]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]":"[3, 3]","heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]":"[4, 4]","x":"[2, 2]","y":"[3, 3]"},"stack":"_|_"}}}}]}
+{
+	"name": "untyped main::main()",
+	"description": null,
+	"nodes": [
+		{
+			"id": 0,
+			"text": "x, y := main::f1()"
+		},
+		{
+			"id": 1,
+			"text": "x"
+		},
+		{
+			"id": 2,
+			"text": "y"
+		},
+		{
+			"id": 3,
+			"text": "main::f1()"
+		},
+		{
+			"id": 4,
+			"text": "Open block: 'go-testcases/interprocedural/interproc8/interprocedural.go':15:1"
+		},
+		{
+			"id": 5,
+			"text": "x, y := main::f2()"
+		},
+		{
+			"id": 6,
+			"text": "x"
+		},
+		{
+			"id": 7,
+			"text": "y"
+		},
+		{
+			"id": 8,
+			"text": "main::f2()"
+		},
+		{
+			"id": 9,
+			"subNodes": [
+				12,
+				11
+			],
+			"text": "x = +(x, 1)"
+		},
+		{
+			"id": 11,
+			"subNodes": [
+				12,
+				13
+			],
+			"text": "+(x, 1)"
+		},
+		{
+			"id": 12,
+			"text": "x"
+		},
+		{
+			"id": 13,
+			"text": "1"
+		},
+		{
+			"id": 14,
+			"subNodes": [
+				17,
+				16
+			],
+			"text": "y = +(y, 1)"
+		},
+		{
+			"id": 16,
+			"subNodes": [
+				17,
+				18
+			],
+			"text": "+(y, 1)"
+		},
+		{
+			"id": 17,
+			"text": "y"
+		},
+		{
+			"id": 18,
+			"text": "1"
+		},
+		{
+			"id": 19,
+			"text": "Close block: 'go-testcases/interprocedural/interproc8/interprocedural.go':15:1"
+		},
+		{
+			"id": 20,
+			"subNodes": [
+				23,
+				22
+			],
+			"text": "x = +(x, 1)"
+		},
+		{
+			"id": 22,
+			"subNodes": [
+				23,
+				24
+			],
+			"text": "+(x, 1)"
+		},
+		{
+			"id": 23,
+			"text": "x"
+		},
+		{
+			"id": 24,
+			"text": "1"
+		},
+		{
+			"id": 25,
+			"subNodes": [
+				28,
+				27
+			],
+			"text": "y = +(y, 1)"
+		},
+		{
+			"id": 27,
+			"subNodes": [
+				28,
+				29
+			],
+			"text": "+(y, 1)"
+		},
+		{
+			"id": 28,
+			"text": "y"
+		},
+		{
+			"id": 29,
+			"text": "1"
+		},
+		{
+			"id": 30,
+			"text": "ret"
+		}
+	],
+	"edges": [
+		{
+			"sourceId": 0,
+			"destId": 4,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 4,
+			"destId": 5,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 5,
+			"destId": 9,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 9,
+			"destId": 14,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 14,
+			"destId": 19,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 19,
+			"destId": 20,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 20,
+			"destId": 25,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 25,
+			"destId": 30,
+			"kind": "SequentialEdge"
+		}
+	],
+	"descriptions": [
+		{
+			"nodeId": 0,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 1,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 2,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 3,
+			"description": {
+				"expressions": [
+					"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							]
+						},
+						"stack": [
+							"[int(untyped) _, int(untyped) _]"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 4,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 5,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[3, 3]",
+							"y": "[4, 4]"
+						},
+						"stack": "[4, 4]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 6,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 7,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 8,
+			"description": {
+				"expressions": [
+					"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"[int(untyped) _, int(untyped) _]"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 9,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[4, 4]",
+							"y": "[4, 4]"
+						},
+						"stack": "[4, 4]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 11,
+			"description": {
+				"expressions": [
+					"x + 1"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[3, 3]",
+							"y": "[4, 4]"
+						},
+						"stack": "[4, 4]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 12,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[3, 3]",
+							"y": "[4, 4]"
+						},
+						"stack": "[3, 3]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 13,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[3, 3]",
+							"y": "[4, 4]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 14,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[4, 4]",
+							"y": "[5, 5]"
+						},
+						"stack": "[5, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 16,
+			"description": {
+				"expressions": [
+					"y + 1"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[4, 4]",
+							"y": "[4, 4]"
+						},
+						"stack": "[5, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 17,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[4, 4]",
+							"y": "[4, 4]"
+						},
+						"stack": "[4, 4]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 18,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": {
+						"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]",
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14]"
+					},
+					"type": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": [
+								"int"
+							],
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": [
+								"int"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:x": "[1, 1]",
+							"['go-testcases/interprocedural/interproc8/interprocedural.go':15:1]:y": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[4, 4]",
+							"y": "[4, 4]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 19,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[5, 5]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 20,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[2, 2]",
+							"y": "[2, 2]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 22,
+			"description": {
+				"expressions": [
+					"x + 1"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 23,
+			"description": {
+				"expressions": [
+					"x"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 24,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[1, 1]",
+							"y": "[2, 2]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 25,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[2, 2]",
+							"y": "[3, 3]"
+						},
+						"stack": "[3, 3]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 27,
+			"description": {
+				"expressions": [
+					"y + 1"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[2, 2]",
+							"y": "[2, 2]"
+						},
+						"stack": "[3, 3]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 28,
+			"description": {
+				"expressions": [
+					"y"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[2, 2]",
+							"y": "[2, 2]"
+						},
+						"stack": "[2, 2]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 29,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[2, 2]",
+							"y": "[2, 2]"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 30,
+			"description": {
+				"expressions": [
+					"skip"
+				],
+				"state": {
+					"heap": {
+						"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": "[heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12]"
+					},
+					"type": {
+						"map": {
+							"call_ret_value@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12": [
+								"[int(untyped) _, int(untyped) _]"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": [
+								"int"
+							],
+							"x": [
+								"int"
+							],
+							"y": [
+								"int"
+							]
+						},
+						"stack": "_|_"
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':13:12[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':16:14[1]": "[4, 4]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':4:11[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[0]": "[3, 3]",
+							"heap[s]:pp@'go-testcases/interprocedural/interproc8/interprocedural.go':8:11[1]": "[4, 4]",
+							"x": "[2, 2]",
+							"y": "[3, 3]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		}
+	]
+}

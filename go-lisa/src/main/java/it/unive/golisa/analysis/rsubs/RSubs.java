@@ -264,18 +264,18 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	protected RSubs lubAux(RSubs other) throws SemanticException {
+	public RSubs lubAux(RSubs other) throws SemanticException {
 		return new RSubs(string.lub(other.string), num.lub(other.num));
 	}
 
 	@Override
-	protected RSubs wideningAux(RSubs other) throws SemanticException {
+	public RSubs wideningAux(RSubs other) throws SemanticException {
 		return new RSubs(string.widening(other.string), num.widening(other.num));
 
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(RSubs other) throws SemanticException {
+	public boolean lessOrEqualAux(RSubs other) throws SemanticException {
 		return string.lessOrEqual(other.string) && num.lessOrEqual(other.num);
 	}
 

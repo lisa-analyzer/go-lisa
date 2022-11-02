@@ -14,6 +14,7 @@ import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -47,7 +48,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				.setJsonOutput(true)
 				.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
 				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
-				.setCallGraph(new RTACallGraph())
 				.setCallGraph(new RTACallGraph())
 				.setAbstractState(
 						new GoAbstractState<>(new GoPointBasedHeap(),

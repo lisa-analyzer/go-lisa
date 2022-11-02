@@ -478,7 +478,7 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	protected RelationalSubstringDomain mk(ExpressionInverseSet<ValueExpression> lattice,
+	public RelationalSubstringDomain mk(ExpressionInverseSet<ValueExpression> lattice,
 			Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
 		return new RelationalSubstringDomain(lattice, function);
 	}

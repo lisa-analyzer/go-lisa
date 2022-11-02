@@ -342,7 +342,7 @@ public interface GoRuntimeLoader {
 		Buffer bufferType = Buffer.getBufferType(program);
 
 		// adding types
-		program.registerType(bufferType);
+		program.getTypes().registerType(bufferType);
 		GoStructType.registerType(bufferType);
 
 		// registers methods
@@ -392,7 +392,7 @@ public interface GoRuntimeLoader {
 				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 
 		// FIXME: we should register this type just in GoInterfaceType
-		program.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
+		program.getTypes().registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 
 		// adding compilation unit to program
 		program.addUnit(shim);
@@ -449,9 +449,9 @@ public interface GoRuntimeLoader {
 
 		Time timeType = Time.getTimeType(program);
 		GoStructType.registerType(timeType);
-		program.registerType(timeType);
-		program.registerType(Month.INSTANCE);
-		program.registerType(Duration.INSTANCE);
+		program.getTypes().registerType(timeType);
+		program.getTypes().registerType(Month.INSTANCE);
+		program.getTypes().registerType(Duration.INSTANCE);
 
 		// adding static functions
 		time.addCodeMember(new Now(runtimeLocation, time));

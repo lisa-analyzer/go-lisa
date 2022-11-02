@@ -5,6 +5,7 @@ import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -27,7 +28,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
-import it.unive.lisa.type.common.UInt8;
 
 /**
  * func WriteFile(filename string, data []byte, perm fs.FileMode) error.
@@ -45,7 +45,7 @@ public class WriteFile extends NativeCFG {
 	public WriteFile(CodeLocation location, CodeUnit ioUnit) {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "WriteFile", GoErrorType.INSTANCE,
 				new Parameter(location, "filename", GoStringType.INSTANCE),
-				new Parameter(location, "data", GoSliceType.lookup(UInt8.INSTANCE)),
+				new Parameter(location, "data", GoSliceType.lookup(GoUInt8Type.INSTANCE)),
 				new Parameter(location, "perm", Reader.getReaderType(ioUnit.getProgram()))),
 				WriteFileImpl.class);
 	}

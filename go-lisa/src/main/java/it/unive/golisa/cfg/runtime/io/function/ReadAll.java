@@ -4,6 +4,7 @@ import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -23,7 +24,6 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.common.UInt8;
 
 /**
  * func ReadAll(r Reader) ([]byte, error).
@@ -40,7 +40,7 @@ public class ReadAll extends NativeCFG {
 	 */
 	public ReadAll(CodeLocation location, CompilationUnit ioUnit) {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "ReadAll",
-				GoTupleType.getTupleTypeOf(location, UInt8.INSTANCE,
+				GoTupleType.getTupleTypeOf(location, GoUInt8Type.INSTANCE,
 						GoErrorType.INSTANCE),
 				new Parameter(location, "r", Reader.getReaderType(ioUnit.getProgram()))),
 				ReadAllImpl.class);
@@ -85,13 +85,13 @@ public class ReadAll extends NativeCFG {
 		 */
 		public ReadAllImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "ReadAllImpl",
-					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(UInt8.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 							GoErrorType.INSTANCE),
 					expr);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(

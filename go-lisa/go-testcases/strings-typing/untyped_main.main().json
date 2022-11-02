@@ -266,7 +266,7 @@
 			"nodeId": 2,
 			"description": {
 				"expressions": [
-					"abc"
+					"\"abc\""
 				],
 				"state": {
 					"heap": "monolith",
@@ -337,7 +337,7 @@
 			"nodeId": 5,
 			"description": {
 				"expressions": [
-					"bcd"
+					"\"bcd\""
 				],
 				"state": {
 					"heap": "monolith",
@@ -908,7 +908,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"
@@ -921,7 +921,7 @@
 							]
 						},
 						"stack": [
-							"int32"
+							"int"
 						]
 					},
 					"value": {
@@ -1006,7 +1006,7 @@
 							]
 						},
 						"stack": [
-							"int32"
+							"int"
 						]
 					},
 					"value": {
@@ -1128,7 +1128,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"
@@ -1176,7 +1176,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"
@@ -1221,7 +1221,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"
@@ -1268,7 +1268,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"
@@ -1315,7 +1315,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"
@@ -1362,7 +1362,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"
@@ -1412,7 +1412,7 @@
 								"string"
 							],
 							"w": [
-								"int32"
+								"int"
 							],
 							"x": [
 								"bool"

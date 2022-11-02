@@ -338,7 +338,7 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	protected StrictUpperBounds mk(ExpressionInverseSet<Identifier> lattice,
+	public StrictUpperBounds mk(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		return new StrictUpperBounds(lattice, function);
 	}

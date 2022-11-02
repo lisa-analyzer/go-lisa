@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -104,12 +105,7 @@ public class CreateCompositeKey extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (ExpressionSet<SymbolicExpression> s : params)
-				for (SymbolicExpression s1 : s)
-					result = result.lub(state.smallStepSemantics(s1, original));
-
-			return result;
+			return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 		}
 	}
 }

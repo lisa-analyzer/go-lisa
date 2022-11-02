@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.type;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
@@ -15,6 +15,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -62,7 +63,7 @@ public class GoNilType implements GoType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
 	}
 

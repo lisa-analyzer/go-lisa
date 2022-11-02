@@ -23,6 +23,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 
 /**
  * func Contains(s, substr string) bool.
@@ -52,7 +53,7 @@ public class Contains extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class ContainsImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
-			implements PluggableStatement {
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -89,17 +90,17 @@ public class Contains extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+		public <A extends AbstractState<A, H, V, T>,
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-
+			TypeSystem types = getProgram().getTypes();
 			AnalysisState<A, H, V, T> result = state.bottom();
-			for (Type leftType : left.getRuntimeTypes())
-				for (Type rightType : right.getRuntimeTypes())
+			for (Type leftType : left.getRuntimeTypes(types))
+				for (Type rightType : right.getRuntimeTypes(types))
 					if (!leftType.isStringType() && !leftType.isUntyped())
 						continue;
 					else if (!rightType.isStringType() && !rightType.isUntyped())

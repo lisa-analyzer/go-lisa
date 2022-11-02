@@ -1,15 +1,16 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -101,8 +102,8 @@ public class GoAliasType implements GoType {
 	 * 
 	 * @return all the interface types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoAliasType in : aliases.values())
 			instances.add(in);
 		return instances;
@@ -116,7 +117,7 @@ public class GoAliasType implements GoType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return all();
 	}
 }

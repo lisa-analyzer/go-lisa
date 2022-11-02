@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.type.numeric.floating;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.golisa.cfg.type.GoType;
@@ -10,6 +11,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -85,7 +87,7 @@ public class GoFloat64Type implements NumericType, GoType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
 	}
 

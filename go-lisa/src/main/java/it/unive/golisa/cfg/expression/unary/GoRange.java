@@ -45,15 +45,15 @@ public class GoRange extends UnaryExpression {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <A extends AbstractState<A, H, V, T>,
+	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 
-		collectionTypes = expressions.getState(getSubExpression())
-				.getDomainInstance(TypeDomain.class).getInferredRuntimeTypes();
+//		collectionTypes = expressions.getState(getSubExpression())
+//				.getDomainInstance(TypeDomain.class).getInferredRuntimeTypes();
 
 		return state.smallStepSemantics(expr, this);
 	}

@@ -126,18 +126,18 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	}
 
 	@Override
-	protected RelTarsis lubAux(RelTarsis other) throws SemanticException {
+	public RelTarsis lubAux(RelTarsis other) throws SemanticException {
 		return new RelTarsis(tarsis.lub(other.tarsis), rsubs.lub(other.rsubs), constant.lub(other.constant));
 	}
 
 	@Override
-	protected RelTarsis wideningAux(RelTarsis other) throws SemanticException {
+	public RelTarsis wideningAux(RelTarsis other) throws SemanticException {
 		return new RelTarsis(tarsis.widening(other.tarsis), rsubs.widening(other.rsubs),
 				constant.widening(other.constant));
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(RelTarsis other) throws SemanticException {
+	public boolean lessOrEqualAux(RelTarsis other) throws SemanticException {
 		return tarsis.lessOrEqual(other.tarsis) && rsubs.lessOrEqual(other.rsubs)
 				&& constant.lessOrEqual(other.constant);
 	}

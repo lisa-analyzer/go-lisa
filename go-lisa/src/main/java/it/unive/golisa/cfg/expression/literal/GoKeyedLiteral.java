@@ -280,7 +280,7 @@ public class GoKeyedLiteral extends NaryExpression {
 				return result;
 			} else {
 				return state.smallStepSemantics(new Constant(Untyped.INSTANCE, "KEYED_LITERAL", getLocation()),
-						getEvaluationPredecessor());
+						getEvaluationPredecessor() != null ? getEvaluationPredecessor() : this);
 			}
 		}
 

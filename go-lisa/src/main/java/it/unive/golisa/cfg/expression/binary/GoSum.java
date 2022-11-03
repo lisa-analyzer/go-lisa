@@ -53,13 +53,13 @@ public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 
 		AnalysisState<A, H, V, T> result = state.bottom();
 
-		if (left.getStaticType().isStringType() && right.getStaticType().isStringType()) {
-			op = StringConcat.INSTANCE;
-			type = GoStringType.INSTANCE;
-			result = state.smallStepSemantics(new BinaryExpression(type, left, right, op, getLocation()), this);
-		} else if (left.getStaticType().isNumericType() && right.getStaticType().isNumericType()) {
+		if (left.getStaticType().isNumericType() && right.getStaticType().isNumericType()) {
 			op = NumericNonOverflowingAdd.INSTANCE;
 			type = resultType(left.getStaticType(), right.getStaticType());
+			result = state.smallStepSemantics(new BinaryExpression(type, left, right, op, getLocation()), this);
+		} else if (left.getStaticType().isStringType() && right.getStaticType().isStringType()) {
+			op = StringConcat.INSTANCE;
+			type = GoStringType.INSTANCE;
 			result = state.smallStepSemantics(new BinaryExpression(type, left, right, op, getLocation()), this);
 		} else {
 			for (Type leftType : left.getRuntimeTypes(types))

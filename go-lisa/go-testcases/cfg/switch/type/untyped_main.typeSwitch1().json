@@ -452,7 +452,7 @@
 			"nodeId": 18,
 			"description": {
 				"expressions": [
-					"%q is %v bytes long\\n"
+					"\"%q is %v bytes long\\n\""
 				],
 				"state": {
 					"heap": "monolith",
@@ -621,7 +621,7 @@
 			"nodeId": 31,
 			"description": {
 				"expressions": [
-					"I don't know about type %T!\\n"
+					"\"I don't know about type %T!\\n\""
 				],
 				"state": {
 					"heap": "monolith",

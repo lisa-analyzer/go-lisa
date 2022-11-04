@@ -174,6 +174,11 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 		return this == TAINTED;
 	}
 
+	/**
+	 * Yields if the state is cleaned.
+	 * 
+	 * @return {@code true} if is clean, otherwise {@code false}
+	 */
 	public boolean isClean() {
 		return this == CLEAN;
 	}

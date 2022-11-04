@@ -8,6 +8,11 @@ import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.StringType;
 import it.unive.lisa.type.TypeSystem;
 
+/**
+ * The {@link TypeSystem} for the Go language.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoTypeSystem extends TypeSystem {
 
 	@Override

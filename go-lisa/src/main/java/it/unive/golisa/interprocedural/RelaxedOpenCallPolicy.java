@@ -29,7 +29,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * OpenCall policy to be less conservative during taint and ni analysis
+ * OpenCall policy to be less conservative during taint and non-interference
+ * analysis.
  */
 public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 

@@ -40,6 +40,13 @@ public class Rand extends GoStructType {
 		super(name, unit);
 	}
 
+	/**
+	 * Yields the {@link Rand} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Rand} type
+	 */
 	public static Rand getRandType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Rand", false);
@@ -49,6 +56,9 @@ public class Rand extends GoStructType {
 		return INSTANCE;
 	}
 
+	/**
+	 * Registers the instance methods of this type.
+	 */
 	public static void registerMethods() {
 		CompilationUnit randUnit = INSTANCE.getUnit();
 		randUnit.addInstanceCodeMember(new ExpFloat64(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, randUnit));

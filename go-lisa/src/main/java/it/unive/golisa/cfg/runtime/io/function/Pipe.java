@@ -41,8 +41,8 @@ public class Pipe extends NativeCFG {
 	public Pipe(CodeLocation location, CodeUnit ioUnit) {
 		super(new CodeMemberDescriptor(location, ioUnit, false, "Pipe",
 				GoTupleType.getTupleTypeOf(location,
-						GoPointerType.lookup(PipeReader.getPipeReader(ioUnit.getProgram())),
-						GoPointerType.lookup(PipeWriter.getPiperWriter(ioUnit.getProgram())))),
+						GoPointerType.lookup(PipeReader.getPipeReaderType(ioUnit.getProgram())),
+						GoPointerType.lookup(PipeWriter.getPipeWriterType(ioUnit.getProgram())))),
 				PipeImpl.class);
 	}
 
@@ -85,8 +85,8 @@ public class Pipe extends NativeCFG {
 		 */
 		public PipeImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PipeImpl",
-					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.getPipeReader(null)),
-							GoPointerType.lookup(PipeWriter.getPiperWriter(null))),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.getPipeReaderType(null)),
+							GoPointerType.lookup(PipeWriter.getPipeWriterType(null))),
 					params);
 		}
 

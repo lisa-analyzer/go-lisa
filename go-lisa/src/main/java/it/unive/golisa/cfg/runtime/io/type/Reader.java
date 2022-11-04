@@ -39,6 +39,13 @@ public class Reader extends GoStructType {
 		return System.identityHashCode(this);
 	}
 
+	/**
+	 * Yields the {@link Reader} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Reader} type
+	 */
 	public static Reader getReaderType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit readerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Reader", false);

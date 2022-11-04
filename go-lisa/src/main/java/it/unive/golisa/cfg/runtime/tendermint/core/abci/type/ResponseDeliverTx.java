@@ -24,6 +24,13 @@ public class ResponseDeliverTx extends GoStructType {
 		super("ResponseDeliverTx", unit);
 	}
 
+	/**
+	 * Yields the {@link ResponseDeliverTx} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ResponseDeliverTx} type
+	 */
 	public static ResponseDeliverTx getResponseDeliverTxType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseDeliverTx",

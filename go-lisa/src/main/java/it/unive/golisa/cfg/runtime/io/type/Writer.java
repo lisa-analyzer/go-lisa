@@ -24,6 +24,13 @@ public class Writer extends GoStructType {
 		super("Writer", unit);
 	}
 
+	/**
+	 * Yields the {@link Writer} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Writer} type
+	 */
 	public static Writer getWriterType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Writer", false);

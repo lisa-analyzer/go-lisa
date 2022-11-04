@@ -42,6 +42,13 @@ public class Time extends GoStructType {
 		return System.identityHashCode(this);
 	}
 
+	/**
+	 * Yields the {@link Time} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Time} type
+	 */
 	public static Time getTimeType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit timeUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Time", false);
@@ -59,6 +66,9 @@ public class Time extends GoStructType {
 		return INSTANCE;
 	}
 
+	/**
+	 * Registers the instance methods of this type.
+	 */
 	public static void registerMethods() {
 		CompilationUnit timeUnit = INSTANCE.getUnit();
 		timeUnit.addInstanceCodeMember(new Day(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));

@@ -24,6 +24,13 @@ public class Response extends GoStructType {
 		super("Response", unit);
 	}
 
+	/**
+	 * Yields the {@link Response} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Response} type
+	 */
 	public static Response getResponseType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Response", false);

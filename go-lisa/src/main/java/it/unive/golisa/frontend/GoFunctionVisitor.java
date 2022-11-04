@@ -50,6 +50,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param file        the file path
 	 * @param program     the current program
 	 * @param constants   the constant mapping
+	 * @param globals     the global variables
 	 */
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
@@ -72,6 +73,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param file        the file path
 	 * @param program     the current program
 	 * @param constants   the constant mapping
+	 * @param globals     the global variables
 	 */
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {

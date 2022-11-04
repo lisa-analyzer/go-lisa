@@ -65,6 +65,13 @@ public class Buffer extends GoStructType {
 		return System.identityHashCode(this);
 	}
 
+	/**
+	 * Yields the {@link Buffer} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Buffer} type
+	 */
 	public static Buffer getBufferType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit bufferUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Buffer", false);

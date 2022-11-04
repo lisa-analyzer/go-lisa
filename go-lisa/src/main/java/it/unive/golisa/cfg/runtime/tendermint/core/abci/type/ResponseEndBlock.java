@@ -18,27 +18,27 @@ public class ResponseEndBlock extends GoStructType {
 	/**
 	 * Unique instance of {@link ResponseEndBlock} type.
 	 */
-//	public static final ResponseEndBlock INSTANCE = new ResponseEndBlock();
-
-//	private ResponseEndBlock() {
-//		this("ResponseEndBlock", buildRequestEndBlockUnit());
-//	}
+	private static ResponseEndBlock INSTANCE;
 
 	private ResponseEndBlock(CompilationUnit unit) {
 		super("ResponseEndBlock", unit);
 	}
 
-	public static ResponseEndBlock getRequestEndBlockType(Program program) {
-		ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseEndBlock",
-				false);
-		return new ResponseEndBlock(abciUnit);
-	}
-
 	/**
-	 * Registers methods of the {@link ResponseEndBlock} type.
+	 * Yields the {@link ResponseEndBlock} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ResponseEndBlock} type
 	 */
-	public static void registerMethods() {
-		// TODO
+	public static ResponseEndBlock getRequestEndBlockType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseEndBlock",
+					false);
+			return INSTANCE = new ResponseEndBlock(abciUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

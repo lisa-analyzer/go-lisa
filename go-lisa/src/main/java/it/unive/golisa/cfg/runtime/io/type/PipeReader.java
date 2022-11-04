@@ -39,7 +39,14 @@ public class PipeReader extends GoStructType {
 		return System.identityHashCode(this);
 	}
 
-	public static PipeReader getPipeReader(Program program) {
+	/**
+	 * Yields the {@link PipeReader} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link PipeReader} type
+	 */
+	public static PipeReader getPipeReaderType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit pipeReaderUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeReader",
 					false);

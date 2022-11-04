@@ -22,6 +22,13 @@ public class Chaincode extends GoInterfaceType {
 		super("Chaincode", unit);
 	}
 
+	/**
+	 * Yields the {@link Chaincode} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Chaincode} type
+	 */
 	public static Chaincode getChaincodeType(Program program) {
 		if (INSTANCE == null) {
 			InterfaceUnit chaincodeType = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,

@@ -22,6 +22,13 @@ public class Handler extends GoStructType {
 		super("Handler", unit);
 	}
 
+	/**
+	 * Yields the {@link Handler} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Handler} type
+	 */
 	public static Handler getHandlerType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit handlerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Handler",

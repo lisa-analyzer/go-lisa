@@ -24,6 +24,13 @@ public class ResponseBeginBlock extends GoStructType {
 		super("ResponseBeginBlock", unit);
 	}
 
+	/**
+	 * Yields the {@link ResponseBeginBlock} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ResponseBeginBlock} type
+	 */
 	public static ResponseBeginBlock getRequestBeginBlockType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,

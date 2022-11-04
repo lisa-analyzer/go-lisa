@@ -39,7 +39,14 @@ public class PipeWriter extends GoStructType {
 		return System.identityHashCode(this);
 	}
 
-	public static PipeWriter getPiperWriter(Program program) {
+	/**
+	 * Yields the {@link PipeWriter} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link PipeWriter} type
+	 */
+	public static PipeWriter getPipeWriterType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit pipeWriterUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeWriter",
 					false);

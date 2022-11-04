@@ -26,6 +26,13 @@ public class TLSProperties extends GoStructType {
 		super("TLSProperties", unit);
 	}
 
+	/**
+	 * Yields the {@link TLSProperties} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link TLSProperties} type
+	 */
 	public static TLSProperties getTLSPropertiesType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit TLSPropertiesType = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,

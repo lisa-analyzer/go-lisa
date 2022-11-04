@@ -30,6 +30,13 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 		super("ChaincodeStubInterface", unit);
 	}
 
+	/**
+	 * Yields the {@link ChaincodeStubInterface} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ChaincodeStubInterface} type
+	 */
 	public static ChaincodeStubInterface getChainCodeStubInterfaceType(Program program) {
 		if (INSTANCE == null) {
 			InterfaceUnit chainCodeStubInterfaceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,

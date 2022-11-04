@@ -24,6 +24,13 @@ public class ResponseCommit extends GoStructType {
 		super("ResponseCommit", unit);
 	}
 
+	/**
+	 * Yields the {@link ResponseCommit} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ResponseCommit} type
+	 */
 	public static ResponseCommit getRequestEndBlockType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseEndBlock",

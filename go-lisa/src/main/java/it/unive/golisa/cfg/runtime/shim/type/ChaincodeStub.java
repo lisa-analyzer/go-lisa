@@ -33,6 +33,13 @@ public class ChaincodeStub extends GoStructType {
 		super("ChaincodeStub", unit);
 	}
 
+	/**
+	 * Yields the {@link ChaincodeStub} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ChaincodeStub} type
+	 */
 	public static ChaincodeStub getChaincodeStubType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit chaincodeStubUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,

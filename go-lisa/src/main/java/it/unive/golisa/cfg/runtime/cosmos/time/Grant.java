@@ -39,6 +39,13 @@ public class Grant extends GoStructType {
 		return System.identityHashCode(this);
 	}
 
+	/**
+	 * Yields the {@link Grant} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Grant} type
+	 */
 	public static Grant getGrantType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit grantUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Grant", false);

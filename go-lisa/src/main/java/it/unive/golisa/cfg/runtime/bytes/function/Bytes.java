@@ -34,7 +34,7 @@ public class Bytes extends NativeCFG {
 	 * Builds the native cfg.
 	 * 
 	 * @param location the location where this native cfg is defined
-	 * @param randUnit the unit to which this native cfg belongs to
+	 * @param unit     the unit to which this native cfg belongs to
 	 */
 	public Bytes(CodeLocation location, CompilationUnit unit) {
 		super(new CodeMemberDescriptor(location, unit, true, "Bytes",

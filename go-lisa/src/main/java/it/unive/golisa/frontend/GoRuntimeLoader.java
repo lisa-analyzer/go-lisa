@@ -189,8 +189,8 @@ public interface GoRuntimeLoader {
 	private void loadIO(Program program) {
 		CodeUnit io = new CodeUnit(runtimeLocation, program, "io");
 
-		GoStructType.registerType(PipeReader.getPipeReader(program));
-		GoStructType.registerType(PipeWriter.getPiperWriter(program));
+		GoStructType.registerType(PipeReader.getPipeReaderType(program));
+		GoStructType.registerType(PipeWriter.getPipeWriterType(program));
 		GoStructType.registerType(Reader.getReaderType(program));
 		GoStructType.registerType(Writer.getWriterType(program));
 		GoStructType.registerType(FileInfo.getFileInfoType(program));
@@ -213,8 +213,8 @@ public interface GoRuntimeLoader {
 		loadIO(program);
 
 		// adding types
-		GoStructType.registerType(PipeReader.getPipeReader(program));
-		GoStructType.registerType(PipeWriter.getPiperWriter(program));
+		GoStructType.registerType(PipeReader.getPipeReaderType(program));
+		GoStructType.registerType(PipeWriter.getPipeWriterType(program));
 		GoStructType.registerType(Reader.getReaderType(program));
 		GoStructType.registerType(Writer.getWriterType(program));
 

@@ -266,7 +266,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected final Map<String, ExpressionContext> constants;
 
 	/**
-	 * Globals of program
+	 * Globals of program.
 	 */
 	protected final List<Global> globals;
 
@@ -331,6 +331,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
+	 * @param globals   the global variables
 	 */
 	public GoCodeMemberVisitor(CompilationUnit unit, MethodDeclContext ctx, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {

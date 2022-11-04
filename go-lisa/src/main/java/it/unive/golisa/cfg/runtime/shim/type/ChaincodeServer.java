@@ -27,6 +27,13 @@ public class ChaincodeServer extends GoStructType {
 		super("ChaincodeServer", unit);
 	}
 
+	/**
+	 * Yields the {@link ChaincodeServer} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ChaincodeServer} type
+	 */
 	public static ChaincodeServer getChaincodeServerType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit chaincodeServerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,

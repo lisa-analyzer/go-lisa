@@ -26,6 +26,13 @@ public class CommonIteratorInterface extends GoInterfaceType {
 		super("CommonIteratorInterface", unit);
 	}
 
+	/**
+	 * Yields the {@link CommonIteratorInterface} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link CommonIteratorInterface} type
+	 */
 	public static CommonIteratorInterface getCommonIteratorInterfaceType(Program program) {
 		if (INSTANCE == null) {
 			InterfaceUnit commonIteratorInterfeceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,

@@ -22,6 +22,13 @@ public class KeyEndorsementPolicy extends GoInterfaceType {
 		super("KeyEndorsementPolicy", unit);
 	}
 
+	/**
+	 * Yields the {@link KeyEndorsementPolicy} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link KeyEndorsementPolicy} type
+	 */
 	public static KeyEndorsementPolicy getKeyEndorsementPolicyType(Program program) {
 		if (INSTANCE == null) {
 			InterfaceUnit keyEndorsementUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,

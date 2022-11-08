@@ -34,8 +34,9 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * {@link GoInterfaceType} representing an interface type with the given
 	 * {@code name}, representing the given {@code unit}.
 	 * 
-	 * @param name the name of the interface type
-	 * @param unit the unit underlying this type
+	 * @param name    the name of the interface type
+	 * @param unit    the unit underlying this type
+	 * @param program the program to which this type belongs to
 	 * 
 	 * @return the unique instance of {@link GoInterfaceType} representing the
 	 *             interface type with the given name

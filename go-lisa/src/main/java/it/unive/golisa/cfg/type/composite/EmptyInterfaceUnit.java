@@ -11,11 +11,11 @@ import it.unive.lisa.program.SyntheticLocation;
  */
 public class EmptyInterfaceUnit extends InterfaceUnit {
 
-//	/**
-//	 * Unique instance of the empty interface.
-//	 */
-//	public static final EmptyInterface INSTANCE = new EmptyInterface();
-
+	/**
+	 * Builds the empty interface unit.
+	 * 
+	 * @param program the program to which this unit belongs to
+	 */
 	public EmptyInterfaceUnit(Program program) {
 		super(SyntheticLocation.INSTANCE, program, "EmptyInterface", false);
 	}

@@ -55,7 +55,7 @@ public class GoMultiAssignment extends Expression {
 	 * The chain of blocks (starting from the block containing this assignment)
 	 * to the block defining the assigned variables.
 	 */
-	protected Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
+	private Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
 
 	private final OpenBlock containingBlock;
 
@@ -226,6 +226,11 @@ public class GoMultiAssignment extends Expression {
 		return finalResult;
 	}
 
+	/**
+	 * Yields the assigned identifiers.
+	 * 
+	 * @return the assigned identifiers
+	 */
 	public Expression[] getIds() {
 		return ids;
 	}

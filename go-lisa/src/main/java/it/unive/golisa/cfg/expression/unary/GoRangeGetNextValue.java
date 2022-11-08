@@ -24,17 +24,21 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 /**
- * Instrumented class
+ * Instrumented class.
  * 
  * @author OlivieriL
  */
 public class GoRangeGetNextValue extends NaryExpression {
 
-	Expression rangeItem;
-
+	/**
+	 * Builds the next value expression.
+	 * 
+	 * @param cfg       the {@link CFG} where this expression lies
+	 * @param location  the location where this expression is defined
+	 * @param rangeItem the subexpression
+	 */
 	public GoRangeGetNextValue(CFG cfg, CodeLocation location, Expression rangeItem) {
 		super(cfg, location, "GoRangeGetNextValue", computeType(rangeItem.getStaticType()));
-		this.rangeItem = rangeItem;
 	}
 
 	private static Type computeType(Type type) {

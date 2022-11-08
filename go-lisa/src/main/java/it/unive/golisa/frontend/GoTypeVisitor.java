@@ -71,7 +71,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * An {@link GoParserBaseVisitor} managing type parsing.
+ * A {@link GoParserBaseVisitor} managing type parsing.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -94,7 +94,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * @param unit      the current unit
 	 * @param program   the current program
 	 * @param constants the constant mapping
-	 * @param globals
+	 * @param globals   the global variables
 	 */
 	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants,
 			List<Global> globals) {

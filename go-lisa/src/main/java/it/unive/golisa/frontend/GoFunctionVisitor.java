@@ -95,6 +95,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param file      the current file path
 	 * @param program   the current program
 	 * @param constants the constant mapping
+	 * @param globals   the global variables
 	 */
 	public GoFunctionVisitor(CompilationUnit unit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {

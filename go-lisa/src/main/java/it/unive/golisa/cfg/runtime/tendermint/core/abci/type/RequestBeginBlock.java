@@ -24,6 +24,13 @@ public class RequestBeginBlock extends GoStructType {
 		super("RequestBeginBlock", unit);
 	}
 
+	/**
+	 * Yields the {@link RequestBeginBlock} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link RequestBeginBlock} type
+	 */
 	public static RequestBeginBlock getRequestBeginBlockType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestBeginBlock",
@@ -32,13 +39,6 @@ public class RequestBeginBlock extends GoStructType {
 		}
 
 		return INSTANCE;
-	}
-
-	/**
-	 * Registers the type of the {@link RequestBeginBlock} type.
-	 */
-	public static void registerMethods() {
-		// TODO
 	}
 
 	@Override

@@ -102,6 +102,14 @@ public class VariableScopingCFG extends CFG {
 		return guards;
 	}
 
+	/**
+	 * Yields the variable table entry concerning {@code variableName}.
+	 * 
+	 * @param variableName the variable to be search
+	 * @param location     the location
+	 * 
+	 * @return the variable table entry about {@code variableName}
+	 */
 	public VariableTableEntry getVariableTableEntryIfExist(String variableName, CodeLocation location) {
 		for (VariableTableEntry table : getDescriptor().getVariables())
 			if (table.getName().equals(variableName)

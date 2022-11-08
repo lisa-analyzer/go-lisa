@@ -24,6 +24,13 @@ public class File extends GoStructType {
 		super("File", unit);
 	}
 
+	/**
+	 * Yields the {@link File} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link File} type
+	 */
 	public static File getFileType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit fileUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "File", false);

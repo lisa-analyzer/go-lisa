@@ -353,7 +353,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		initializeVisibleIds();
 	}
 
-	protected void addGlobalsToVisibleIds() {
+	private void addGlobalsToVisibleIds() {
 		for (Global g : globals) {
 			visibleIds.putIfAbsent(g.getName(), new HashSet<>());
 			visibleIds.get(g.getName())

@@ -3,7 +3,6 @@ import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
-import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
@@ -11,6 +10,7 @@ import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("non-det/map-iter", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
@@ -39,7 +39,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("non-det/channel", "Channel.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
@@ -54,7 +54,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("non-det/goroutines", "GoRoutines.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());

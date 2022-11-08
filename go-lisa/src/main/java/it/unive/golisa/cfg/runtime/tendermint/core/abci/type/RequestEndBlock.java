@@ -24,6 +24,13 @@ public class RequestEndBlock extends GoStructType {
 		super("RequestEndBlock", unit);
 	}
 
+	/**
+	 * Yields the {@link RequestEndBlock} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link RequestEndBlock} type
+	 */
 	public static RequestEndBlock getRequestEndBlockType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "RequestEndBlock",

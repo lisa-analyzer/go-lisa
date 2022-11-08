@@ -17,6 +17,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.util.Set;
 
 /**
  * A Go range expression, tracking the beginning of a range statement.
@@ -36,14 +37,11 @@ public class GoRange extends UnaryExpression {
 	 * @param cfg      the {@link CFG} where this expression lies
 	 * @param location the location where this expression is defined
 	 * @param exp      the expression
-	 * @param valRange the init statement index
-	 * @param idxInit  the post statement index
 	 */
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "range", GoBoolType.INSTANCE, exp);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
@@ -51,25 +49,41 @@ public class GoRange extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-
-//		collectionTypes = expressions.getState(getSubExpression())
-//				.getDomainInstance(TypeDomain.class).getInferredRuntimeTypes();
-
 		return state.smallStepSemantics(expr, this);
 	}
 
+	/**
+	 * Yields the ranged index.
+	 * 
+	 * @return the ranged index
+	 */
 	public Statement getIdxRange() {
 		return idxRange;
 	}
 
+	/**
+	 * Yields the ranged value.
+	 * 
+	 * @return the ranged value
+	 */
 	public Statement getValRange() {
 		return valRange;
 	}
 
+	/**
+	 * Sets the ranged index.
+	 * 
+	 * @param idxRange the ranged index to set
+	 */
 	public void setIdxRange(Statement idxRange) {
 		this.idxRange = idxRange;
 	}
 
+	/**
+	 * Sets the ranged value.
+	 * 
+	 * @param valRange the ranged value to set
+	 */
 	public void setValRange(Statement valRange) {
 		this.valRange = valRange;
 	}
@@ -79,7 +93,7 @@ public class GoRange extends UnaryExpression {
 	 * 
 	 * @return the types collected by this range clause
 	 */
-	public ExternalSet<Type> getCollectionTypes() {
+	public Set<Type> getCollectionTypes() {
 		return collectionTypes;
 	}
 

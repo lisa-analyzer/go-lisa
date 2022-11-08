@@ -24,6 +24,13 @@ public class Int extends GoStructType {
 		super("big.Int", unit);
 	}
 
+	/**
+	 * Yields the {@link Int} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Int} type
+	 */
 	public static Int getIntType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit intUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Int", false);

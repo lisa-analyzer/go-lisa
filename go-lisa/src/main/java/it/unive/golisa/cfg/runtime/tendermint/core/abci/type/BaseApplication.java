@@ -28,6 +28,13 @@ public class BaseApplication extends GoStructType {
 		super("BaseApplication", unit);
 	}
 
+	/**
+	 * Yields the {@link BaseApplication} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link BaseApplication} type
+	 */
 	public static BaseApplication etBaseApplicationType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "BaseApplication",

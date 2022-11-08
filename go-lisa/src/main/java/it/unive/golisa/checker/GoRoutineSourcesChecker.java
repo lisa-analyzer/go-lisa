@@ -19,14 +19,16 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+/**
+ * Routune source checker.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoRoutineSourcesChecker implements SyntacticCheck {
-
-	Map<VariableRef, Set<Statement>> variables = new HashMap<>();
 
 	@Override
 	public void beforeExecution(CheckTool tool) {

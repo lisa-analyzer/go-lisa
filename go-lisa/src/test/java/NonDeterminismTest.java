@@ -7,7 +7,6 @@ import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
@@ -19,49 +18,45 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 
 	@Test
 	public void testMapIteration() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("non-det/map-iter", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
 
 	}
 
 	@Test
 	public void testChannel() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("non-det/channel", "Channel.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
 
 	}
 
 	@Test
 	public void testGoRoutine() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setDumpAnalysis(GraphType.HTML)
-				.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("non-det/goroutines", "GoRoutines.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
 	}
 }

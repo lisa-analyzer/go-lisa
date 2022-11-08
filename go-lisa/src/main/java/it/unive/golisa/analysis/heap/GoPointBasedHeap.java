@@ -327,7 +327,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 			if (expression.getStaticType() instanceof GoPointerType) {
 				GoPointerType pointer = (GoPointerType) expression.getStaticType();
 				id = new HeapAllocationSite(
-						pointer.getInnerTypes().stream().findAny().get(),
+						pointer.getInnerType(),
 						expression.getCodeLocation().getCodeLocation(),
 						true,
 						expression.getCodeLocation());

@@ -132,9 +132,8 @@ public abstract class GoChaincodeTestExecutor {
 				fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
 			}
 		}
-		configuration.setWorkdir(workdir.toString());
-
-		configuration.setJsonOutput(true);
+		configuration.workdir = workdir.toString();
+		configuration.jsonOutput = true;
 
 		LiSA lisa = new LiSA(configuration);
 		try {

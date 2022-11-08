@@ -6,6 +6,7 @@ import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.type.BooleanType;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.StringType;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 
 /**
@@ -28,6 +29,11 @@ public class GoTypeSystem extends TypeSystem {
 	@Override
 	public NumericType getIntegerType() {
 		return GoIntType.INSTANCE;
+	}
+
+	@Override
+	public boolean canBeReferenced(Type type) {
+		return true;
 	}
 
 }

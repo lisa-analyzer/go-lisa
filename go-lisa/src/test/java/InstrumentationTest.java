@@ -13,11 +13,11 @@ public class InstrumentationTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void returnStatementInstrumentationTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setSerializeResults(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
-						new InferredTypes()));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.abstractState = LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
+				new InferredTypes());
 		perform("instrumentation/return-statement", "instrumented-returns.go", conf);
 	}
 }

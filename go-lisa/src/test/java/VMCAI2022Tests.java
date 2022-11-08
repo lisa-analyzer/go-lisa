@@ -28,14 +28,13 @@ public class VMCAI2022Tests {
 		Program program = GoFrontEnd.processFile(sourcePath + "codota.go");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setJsonOutput(true)
-
-				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-						new InferredTypes()))
-				.setSerializeResults(true)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()))
-				.setWorkdir(tmpDir);
+		conf.jsonOutput = true;
+		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);
 		try {
@@ -51,12 +50,13 @@ public class VMCAI2022Tests {
 		Program program = GoFrontEnd.processFile(sourcePath + "common-lang.go");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setJsonOutput(true)
-
-				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-						new InferredTypes()))
-				.setSerializeResults(true)
-				.setWorkdir(tmpDir);
+		conf.jsonOutput = true;
+		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);
 		try {
@@ -72,11 +72,13 @@ public class VMCAI2022Tests {
 		Program program = GoFrontEnd.processFile(sourcePath + "vmcai2022-testcases.go");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setJsonOutput(true)
-				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-						new InferredTypes()))
-				.setSerializeResults(true)
-				.setWorkdir(tmpDir);
+		conf.jsonOutput = true;
+		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);
 		try {

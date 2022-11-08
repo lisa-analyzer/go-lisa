@@ -107,38 +107,36 @@ public class GoLiSA {
 		String analysis = cmd.getOptionValue("analysis");
 
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setWorkdir(outputDir);
-		conf.setJsonOutput(true);
-		conf.addSyntacticCheck(new GoRoutineSourcesChecker());
+		conf.workdir = outputDir;
+		conf.jsonOutput = true;
+		conf.syntacticChecks.add(new GoRoutineSourcesChecker());
 
 		switch (analysis) {
 
 		case "taint":
-			conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
-					.setAbstractState(
-							new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new TaintDomain()),
-									LiSAFactory.getDefaultFor(TypeDomain.class)))
-					.addSemanticCheck(new TaintChecker());
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+					new ValueEnvironment<>(new TaintDomain()),
+					LiSAFactory.getDefaultFor(TypeDomain.class));
+			conf.semanticChecks.add(new TaintChecker());
 			break;
 		case "non-interference":
-			conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
-					.setAbstractState(
-							new GoAbstractState<>(new GoPointBasedHeap(),
-									new InferenceSystem<>(new IntegrityNIDomain()),
-									LiSAFactory.getDefaultFor(TypeDomain.class)))
-					.addSemanticCheck(new IntegrityNIChecker());
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+					new InferenceSystem<>(new IntegrityNIDomain()),
+					LiSAFactory.getDefaultFor(TypeDomain.class));
+			conf.semanticChecks.add(new IntegrityNIChecker());
 			break;
 		default:
-			conf.setOpenCallPolicy(RelaxedOpenCallPolicy.INSTANCE)
-					.setAbstractState(
-							new GoAbstractState<>(new GoPointBasedHeap(),
-									new ValueEnvironment<>(new Interval()),
-									LiSAFactory.getDefaultFor(TypeDomain.class)));
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+					new ValueEnvironment<>(new Interval()),
+					LiSAFactory.getDefaultFor(TypeDomain.class));
 			break;
 
 		}
 
-		conf.setDumpAnalysis(cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE);
+		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 
 		Program program = null;
 
@@ -173,8 +171,8 @@ public class GoLiSA {
 			}
 
 			if (!program.getEntryPoints().isEmpty()) {
-				conf.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
-				conf.setCallGraph(new RTACallGraph());
+				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+				conf.callGraph = new RTACallGraph();
 			} else
 				LOG.info("Entry points not found!");
 

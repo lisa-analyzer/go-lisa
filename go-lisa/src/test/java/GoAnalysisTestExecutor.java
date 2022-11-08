@@ -92,9 +92,9 @@ public abstract class GoAnalysisTestExecutor {
 				fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
 			}
 		}
-		configuration.setWorkdir(workdir.toString());
+		configuration.workdir = workdir.toString();
 
-		configuration.setJsonOutput(true);
+		configuration.jsonOutput = true;
 
 		LiSA lisa = new LiSA(configuration);
 		try {

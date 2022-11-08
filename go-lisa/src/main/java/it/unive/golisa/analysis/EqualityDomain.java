@@ -220,7 +220,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 		if (isBottom() || isTop())
 			return this;
 
-		Map<Identifier, ExpressionInverseSet<Identifier>> function = mkNewFunction(null);
+		Map<Identifier, ExpressionInverseSet<Identifier>> function = mkNewFunction(null, false);
 		for (Identifier id : getKeys()) {
 			Identifier lifted = lifter.apply(id);
 			if (lifted != null)

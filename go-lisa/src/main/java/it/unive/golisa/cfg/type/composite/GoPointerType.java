@@ -10,7 +10,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,11 +47,6 @@ public class GoPointerType implements PointerType, GoType {
 	 */
 	private GoPointerType(Type baseType) {
 		this.baseType = baseType;
-	}
-
-	@Override
-	public Set<Type> getInnerTypes() {
-		return Collections.singleton(baseType);
 	}
 
 	@Override
@@ -142,5 +136,10 @@ public class GoPointerType implements PointerType, GoType {
 	 */
 	public static void clearAll() {
 		pointerTypes.clear();
+	}
+
+	@Override
+	public Type getInnerType() {
+		return baseType;
 	}
 }

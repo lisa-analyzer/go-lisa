@@ -417,7 +417,7 @@ public class RelationalSubstringDomain
 		if (isBottom() || isTop())
 			return this;
 
-		Map<Identifier, ExpressionInverseSet<ValueExpression>> function = mkNewFunction(null);
+		Map<Identifier, ExpressionInverseSet<ValueExpression>> function = mkNewFunction(null, false);
 		for (Identifier id : getKeys()) {
 			Identifier lifted = lifter.apply(id);
 			if (lifted != null)

@@ -1,6 +1,7 @@
 package it.unive.golisa.frontend;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
+import it.unive.golisa.cfg.runtime.container.list.type.List;
 import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
 import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;
@@ -149,6 +150,8 @@ public interface GoRuntimeLoader {
 			loadBytes(program);
 		else if (module.equals("encoding/json"))
 			loadJson(program);
+		else if (module.equals("container/list"))
+			loadList(program);
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
@@ -289,6 +292,27 @@ public interface GoRuntimeLoader {
 		jsonUnit.addCodeMember(new Valid(runtimeLocation, jsonUnit));
 
 		program.addUnit(jsonUnit);
+	}
+	
+	private void loadList(Program program) {
+		
+		
+		CodeUnit listUnit = new CodeUnit(runtimeLocation, program, "container/list");
+
+		 List list = it.unive.golisa.cfg.runtime.container.list.type.List.getListType(program);
+
+		// adding types
+		program.getTypes().registerType(list);
+		GoStructType.registerType(list);
+
+		// registers methods
+		List.registerMethods();
+
+		program.addUnit(list.getUnit());
+		
+		// adding functions
+
+		program.addUnit(listUnit);
 	}
 
 	private void loadMathRand(Program program) {

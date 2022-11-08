@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -10,9 +13,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A Go pointer type.
@@ -49,12 +49,7 @@ public class GoPointerType implements PointerType, GoType {
 	private GoPointerType(Type baseType) {
 		this.baseType = baseType;
 	}
-
-	@Override
-	public Set<Type> getInnerTypes() {
-		return Collections.singleton(baseType);
-	}
-
+	
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		if (other instanceof GoPointerType)
@@ -142,5 +137,10 @@ public class GoPointerType implements PointerType, GoType {
 	 */
 	public static void clearAll() {
 		pointerTypes.clear();
+	}
+
+	@Override
+	public Type getInnerType() {
+		return baseType;
 	}
 }

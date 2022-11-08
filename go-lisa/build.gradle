@@ -15,7 +15,7 @@ repositories {
     maven {
         name = 'GitHubPackages'
         url = 'https://maven.pkg.github.com/lisa-analyzer/lisa'
-        credentials {
+ 		credentials {
             username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
             password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
         }
@@ -29,9 +29,9 @@ mainClassName = 'it.unive.golisa.GoLiSA'
 dependencies {
     antlr 'org.antlr:antlr4:4.8-1'    
     testImplementation 'junit:junit:4.12'
-    implementation 'io.github.lisa-analyzer:lisa-core:0.1b6'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b6'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b6'
+    implementation 'io.github.lisa-analyzer:lisa-core:0.1b7-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b7-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b7-SNAPSHOT'
     implementation 'com.github.unive-ssv:tarsis:1.0'      
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
     

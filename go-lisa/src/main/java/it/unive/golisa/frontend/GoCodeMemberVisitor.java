@@ -389,7 +389,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public CFG visitCodeMember(MethodDeclContext ctx) {
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
-				? ((GoPointerType) receiver.getStaticType()).getInnerTypes().stream().findFirst().get().toString()
+				? ((GoPointerType) receiver.getStaticType()).getInnerType().toString()
 				: receiver.getStaticType().toString();
 
 		SourceCodeLocation location = locationOf(ctx);

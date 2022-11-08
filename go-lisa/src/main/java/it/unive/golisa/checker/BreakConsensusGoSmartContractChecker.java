@@ -59,7 +59,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 			tool.warnOn(node, "Concurrecy behavior detected!");
 
 		if (node instanceof AccessInstanceGlobal) {
-			System.out.print("");// TODO:
+			// TODO:
 		}
 
 		checkIssuesRelatedToExternalEnviroments(tool, graph, node);
@@ -81,7 +81,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		}
 
 		if (node instanceof AccessInstanceGlobal) {
-			System.out.print("");// TODO:
+			// TODO:
 		}
 
 	}

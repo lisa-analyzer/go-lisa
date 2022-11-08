@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.noIncFor().json", "int_main.noInitFor().json", "untyped_main.forRange().json", "untyped_main.forRangeJustWithIndex().json", "untyped_main.simpleFor().json" ]
+  "files" : [ "int_main.noIncFor()_cfg.json", "int_main.noInitFor()_cfg.json", "untyped_main.forRange()_cfg.json", "untyped_main.forRangeJustWithIndex()_cfg.json", "untyped_main.simpleFor()_cfg.json" ]
 }

@@ -30,9 +30,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 
 		perform("cc/benchmark/2cluster/", "contract.go", conf, annSet);
@@ -47,9 +47,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 
 		perform("cc/benchmark/abbeydabiri/", "bank.go", conf, annSet);
@@ -64,9 +64,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 
 		perform("cc/benchmark/abbeydabiri/", "bankbranch.go", conf, annSet);
@@ -81,9 +81,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "bankbranch_test.go", conf, annSet);
 
@@ -97,9 +97,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "bank_test.go", conf, annSet);
 
@@ -113,9 +113,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "branchconfig.go", conf, annSet);
 
@@ -129,9 +129,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "branchconfig_test.go", conf, annSet);
 
@@ -145,9 +145,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "buyer.go", conf, annSet);
 
@@ -161,9 +161,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "buyer_test.go", conf, annSet);
 
@@ -177,9 +177,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "init.go", conf, annSet);
 
@@ -193,9 +193,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "invoke.go", conf, annSet);
 
@@ -209,9 +209,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loan.go", conf, annSet);
 
@@ -225,9 +225,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loanbuyer.go", conf, annSet);
 
@@ -241,9 +241,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loanbuyer_test.go", conf, annSet);
 
@@ -257,9 +257,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loandoc.go", conf, annSet);
 
@@ -273,9 +273,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loandoc_test.go", conf, annSet);
 
@@ -289,9 +289,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loanmarketshare.go", conf, annSet);
 
@@ -305,9 +305,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loanmarketshare_test.go", conf, annSet);
 
@@ -321,9 +321,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loanrating.go", conf, annSet);
 
@@ -337,9 +337,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loanrating_test.go", conf, annSet);
 
@@ -353,9 +353,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "loan_test.go", conf, annSet);
 
@@ -369,9 +369,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "main.go", conf, annSet);
 
@@ -385,9 +385,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "main_test.go", conf, annSet);
 
@@ -401,9 +401,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "message.go", conf, annSet);
 
@@ -417,9 +417,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "message_test.go", conf, annSet);
 
@@ -433,9 +433,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "permissions.go", conf, annSet);
 
@@ -449,9 +449,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "permissions_test.go", conf, annSet);
 
@@ -465,9 +465,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "property.go", conf, annSet);
 
@@ -481,9 +481,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "property_test.go", conf, annSet);
 
@@ -497,9 +497,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "role.go", conf, annSet);
 
@@ -513,9 +513,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "role_test.go", conf, annSet);
 
@@ -529,9 +529,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "seller.go", conf, annSet);
 
@@ -545,9 +545,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "seller_test.go", conf, annSet);
 
@@ -561,9 +561,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "transactions.go", conf, annSet);
 
@@ -577,9 +577,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "transactions_test.go", conf, annSet);
 
@@ -593,9 +593,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "user.go", conf, annSet);
 
@@ -609,9 +609,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "usercategory.go", conf, annSet);
 
@@ -625,9 +625,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "usercategory_test.go", conf, annSet);
 
@@ -641,9 +641,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "user_test.go", conf, annSet);
 
@@ -657,9 +657,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abbeydabiri/", "utils.go", conf, annSet);
 
@@ -673,9 +673,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "chaincode.go", conf, annSet);
 
@@ -689,9 +689,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "chaincode_sample.go", conf, annSet);
 
@@ -705,9 +705,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "chaincode_test.go", conf, annSet);
 
@@ -721,9 +721,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "main.go", conf, annSet);
 
@@ -737,9 +737,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "map.go", conf, annSet);
 
@@ -753,9 +753,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "mapkeys.go", conf, annSet);
 
@@ -769,9 +769,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "map_private.go", conf, annSet);
 
@@ -785,9 +785,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/abegpatel/", "marbles_chaincode.go", conf, annSet);
 
@@ -801,9 +801,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/acloudfan/", "chaincode_example02.go", conf, annSet);
 
@@ -817,9 +817,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/arthurmsouza/", "boleto.go", conf, annSet);
 
@@ -833,9 +833,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/arthurmsouza/", "erc20Token.go", conf, annSet);
 
@@ -849,9 +849,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/arthurmsouza/", "fmt.go", conf, annSet);
 
@@ -865,9 +865,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/arthurmsouza/", "io.go", conf, annSet);
 
@@ -881,9 +881,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "chaincode.go", conf, annSet);
 
@@ -897,9 +897,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "chaincodeserver.go", conf, annSet);
 
@@ -913,9 +913,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "config_test.go", conf, annSet);
 
@@ -929,9 +929,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "context.go", conf, annSet);
 
@@ -945,9 +945,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "contract_chaincode.go", conf, annSet);
 
@@ -961,9 +961,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "contract_chaincode_test.go", conf, annSet);
 
@@ -977,9 +977,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "errors.go", conf, annSet);
 
@@ -993,9 +993,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "flag.go", conf, annSet);
 
@@ -1009,9 +1009,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "handler_test.go", conf, annSet);
 
@@ -1025,9 +1025,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "marbles_chaincode.go", conf, annSet);
 
@@ -1041,9 +1041,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "mockstub.go", conf, annSet);
 
@@ -1057,9 +1057,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "mockstub_test.go", conf, annSet);
 
@@ -1073,9 +1073,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "sacc.go", conf, annSet);
 
@@ -1089,9 +1089,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "sacc_test.go", conf, annSet);
 
@@ -1105,9 +1105,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "shim.go", conf, annSet);
 
@@ -1121,9 +1121,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "shim_test.go", conf, annSet);
 
@@ -1137,9 +1137,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "sort.go", conf, annSet);
 
@@ -1153,9 +1153,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "step_definitions_test.go", conf, annSet);
 
@@ -1169,9 +1169,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "stub_test.go", conf, annSet);
 
@@ -1185,9 +1185,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "transaction_context.go", conf, annSet);
 
@@ -1201,9 +1201,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "transaction_context_test.go", conf, annSet);
 
@@ -1217,9 +1217,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/atirikt/", "unicode.go", conf, annSet);
 
@@ -1233,9 +1233,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/braduf/", "mockccstub.go", conf, annSet);
 
@@ -1249,9 +1249,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/braduf/", "mockcid.go", conf, annSet);
 
@@ -1265,9 +1265,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/braduf/", "mocktxcontext.go", conf, annSet);
 
@@ -1281,9 +1281,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "chaincodeserver.go", conf, annSet);
 
@@ -1297,9 +1297,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "chaincodestub.go", conf, annSet);
 
@@ -1313,9 +1313,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "contract_chaincode.go", conf, annSet);
 
@@ -1329,9 +1329,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "errors.go", conf, annSet);
 
@@ -1345,9 +1345,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "shim.go", conf, annSet);
 
@@ -1361,9 +1361,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "smartcontract_test.go", conf, annSet);
 
@@ -1377,9 +1377,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "token_contract_test.go", conf, annSet);
 
@@ -1393,9 +1393,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "transaction.go", conf, annSet);
 
@@ -1409,9 +1409,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "transaction_context.go", conf, annSet);
 
@@ -1425,9 +1425,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/CONUN-Global/", "user_data_test.go", conf, annSet);
 
@@ -1441,9 +1441,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "cid.go", conf, annSet);
 
@@ -1457,9 +1457,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "commonCC.go", conf, annSet);
 
@@ -1473,9 +1473,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "compositeKey.go", conf, annSet);
 
@@ -1489,9 +1489,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "fabric.go", conf, annSet);
 
@@ -1505,9 +1505,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "fabriclib.go", conf, annSet);
 
@@ -1521,9 +1521,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "fabric_test.go", conf, annSet);
 
@@ -1537,9 +1537,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "main.go", conf, annSet);
 
@@ -1553,9 +1553,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "richQuery.go", conf, annSet);
 
@@ -1569,9 +1569,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "sideDB.go", conf, annSet);
 
@@ -1585,9 +1585,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "stateIterator.go", conf, annSet);
 
@@ -1601,9 +1601,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "stress_test.go", conf, annSet);
 
@@ -1617,9 +1617,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/davidkhala/", "struct.go", conf, annSet);
 
@@ -1633,9 +1633,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/dovetail-lab/", "trigger.go", conf, annSet);
 
@@ -1649,9 +1649,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/dovetail-lab/", "util.go", conf, annSet);
 
@@ -1665,9 +1665,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "chaincode.go", conf, annSet);
 
@@ -1681,9 +1681,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "chaincodeserver.go", conf, annSet);
 
@@ -1697,9 +1697,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "config_test.go", conf, annSet);
 
@@ -1713,9 +1713,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "handler_test.go", conf, annSet);
 
@@ -1729,9 +1729,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "mockstub.go", conf, annSet);
 
@@ -1745,9 +1745,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "mockstub_test.go", conf, annSet);
 
@@ -1761,9 +1761,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "server_test.go", conf, annSet);
 
@@ -1777,9 +1777,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "shim.go", conf, annSet);
 
@@ -1793,9 +1793,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "shim_test.go", conf, annSet);
 
@@ -1809,9 +1809,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/elonazoulayB/", "stub_test.go", conf, annSet);
 
@@ -1825,9 +1825,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "chaincode.go", conf, annSet);
 
@@ -1841,9 +1841,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "chaincodeserver.go", conf, annSet);
 
@@ -1857,9 +1857,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "config_test.go", conf, annSet);
 
@@ -1873,9 +1873,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "handler_test.go", conf, annSet);
 
@@ -1889,9 +1889,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "mockstub.go", conf, annSet);
 
@@ -1905,9 +1905,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "mockstub_test.go", conf, annSet);
 
@@ -1921,9 +1921,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "server_test.go", conf, annSet);
 
@@ -1937,9 +1937,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "shim.go", conf, annSet);
 
@@ -1953,9 +1953,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "shim_test.go", conf, annSet);
 
@@ -1969,9 +1969,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/gabrielodi/", "stub_test.go", conf, annSet);
 
@@ -1985,9 +1985,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "chaincode.go", conf, annSet);
 
@@ -2001,9 +2001,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "chaincodeserver.go", conf, annSet);
 
@@ -2017,9 +2017,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "chaincodestub.go", conf, annSet);
 
@@ -2033,9 +2033,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "chaincode_test.go", conf, annSet);
 
@@ -2049,9 +2049,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "config_test.go", conf, annSet);
 
@@ -2065,9 +2065,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "contract_chaincode.go", conf, annSet);
 
@@ -2081,9 +2081,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "contract_chaincode_test.go", conf, annSet);
 
@@ -2097,9 +2097,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "ecc.go", conf, annSet);
 
@@ -2113,9 +2113,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "enclave.go", conf, annSet);
 
@@ -2129,9 +2129,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "handler_test.go", conf, annSet);
 
@@ -2145,9 +2145,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "mockstub.go", conf, annSet);
 
@@ -2161,9 +2161,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "mockstub_test.go", conf, annSet);
 
@@ -2177,9 +2177,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "mock_enclave.go", conf, annSet);
 
@@ -2193,9 +2193,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "registry_test.go", conf, annSet);
 
@@ -2209,9 +2209,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "server_test.go", conf, annSet);
 
@@ -2225,9 +2225,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "shim.go", conf, annSet);
 
@@ -2241,9 +2241,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "shim_test.go", conf, annSet);
 
@@ -2257,9 +2257,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "step_definitions_test.go", conf, annSet);
 
@@ -2273,9 +2273,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "stub.go", conf, annSet);
 
@@ -2289,9 +2289,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "stub_test.go", conf, annSet);
 
@@ -2305,9 +2305,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "transaction.go", conf, annSet);
 
@@ -2321,9 +2321,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "transaction_context.go", conf, annSet);
 
@@ -2337,9 +2337,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "transaction_context_test.go", conf, annSet);
 
@@ -2353,9 +2353,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hyperledger/", "validation.go", conf, annSet);
 
@@ -2369,9 +2369,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hysn19/", "chaincodeserver.go", conf, annSet);
 
@@ -2385,9 +2385,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hysn19/", "errors.go", conf, annSet);
 
@@ -2401,9 +2401,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hysn19/", "mockstub.go", conf, annSet);
 
@@ -2417,9 +2417,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hysn19/", "sacc.go", conf, annSet);
 
@@ -2433,9 +2433,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hysn19/", "sacc_test.go", conf, annSet);
 
@@ -2449,9 +2449,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/hysn19/", "shim.go", conf, annSet);
 
@@ -2465,9 +2465,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "abac.go", conf, annSet);
 
@@ -2481,9 +2481,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "abac_test.go", conf, annSet);
 
@@ -2497,9 +2497,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "auctionQueries.go", conf, annSet);
 
@@ -2513,9 +2513,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "chaincode.go", conf, annSet);
 
@@ -2529,9 +2529,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "high-throughput.go", conf, annSet);
 
@@ -2545,9 +2545,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "marbles_chaincode.go", conf, annSet);
 
@@ -2561,9 +2561,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "sacc.go", conf, annSet);
 
@@ -2577,9 +2577,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "sacc_test.go", conf, annSet);
 
@@ -2593,9 +2593,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/imran-iitp/", "utils.go", conf, annSet);
 
@@ -2609,9 +2609,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KarthikSamaganam550/", "abac.go", conf, annSet);
 
@@ -2625,9 +2625,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KarthikSamaganam550/", "abac_test.go", conf, annSet);
 
@@ -2641,9 +2641,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KarthikSamaganam550/", "marbles_chaincode.go", conf, annSet);
 
@@ -2657,9 +2657,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KarthikSamaganam550/", "sacc.go", conf, annSet);
 
@@ -2673,9 +2673,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KarthikSamaganam550/", "sacc_test.go", conf, annSet);
 
@@ -2689,9 +2689,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "bytes.go", conf, annSet);
 
@@ -2705,9 +2705,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "chaincodeserver.go", conf, annSet);
 
@@ -2721,9 +2721,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "chaincode_stub.go", conf, annSet);
 
@@ -2737,9 +2737,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "chaincode_support_test.go", conf, annSet);
 
@@ -2753,9 +2753,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "configure.go", conf, annSet);
 
@@ -2769,9 +2769,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "configure_test.go", conf, annSet);
 
@@ -2785,9 +2785,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "context.go", conf, annSet);
 
@@ -2801,9 +2801,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "endorser.go", conf, annSet);
 
@@ -2817,9 +2817,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "errors.go", conf, annSet);
 
@@ -2833,9 +2833,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "flag.go", conf, annSet);
 
@@ -2849,9 +2849,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "fmt.go", conf, annSet);
 
@@ -2865,9 +2865,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "init_private_data.go", conf, annSet);
 
@@ -2881,9 +2881,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "init_public_data.go", conf, annSet);
 
@@ -2897,9 +2897,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "ledger_shim.go", conf, annSet);
 
@@ -2913,9 +2913,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "lscc.go", conf, annSet);
 
@@ -2929,9 +2929,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "lscc_suite_test.go", conf, annSet);
 
@@ -2945,9 +2945,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "lscc_test.go", conf, annSet);
 
@@ -2961,9 +2961,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "marbles_chaincode.go", conf, annSet);
 
@@ -2977,9 +2977,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "mockstub.go", conf, annSet);
 
@@ -2993,9 +2993,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "net.go", conf, annSet);
 
@@ -3009,9 +3009,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "os.go", conf, annSet);
 
@@ -3025,9 +3025,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "regexp.go", conf, annSet);
 
@@ -3041,9 +3041,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "scc.go", conf, annSet);
 
@@ -3057,9 +3057,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "selfdescribingsyscc.go", conf, annSet);
 
@@ -3073,9 +3073,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "shim.go", conf, annSet);
 
@@ -3089,9 +3089,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "sync.go", conf, annSet);
 
@@ -3105,9 +3105,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "time.go", conf, annSet);
 
@@ -3121,9 +3121,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/koakh/", "unicode.go", conf, annSet);
 
@@ -3137,9 +3137,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "context_interface.go", conf, annSet);
 
@@ -3153,9 +3153,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "entry.go", conf, annSet);
 
@@ -3169,9 +3169,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "from_bytes.go", conf, annSet);
 
@@ -3185,9 +3185,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "identity.go", conf, annSet);
 
@@ -3201,9 +3201,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "iterator.go", conf, annSet);
 
@@ -3217,9 +3217,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "matcher.go", conf, annSet);
 
@@ -3233,9 +3233,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "mockstub.go", conf, annSet);
 
@@ -3249,9 +3249,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "registry.go", conf, annSet);
 
@@ -3265,9 +3265,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/KompiTech/", "response.go", conf, annSet);
 
@@ -3281,9 +3281,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/liuhuanyuxcx/", "e2e.go", conf, annSet);
 
@@ -3297,9 +3297,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/liuhuanyuxcx/", "fabcar.go", conf, annSet);
 
@@ -3313,9 +3313,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/liuhuanyuxcx/", "marbles02.go", conf, annSet);
 
@@ -3329,9 +3329,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/MeganDoman/", "TweetChaincode.go", conf, annSet);
 
@@ -3345,9 +3345,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/miguomi/", "mycc.go", conf, annSet);
 
@@ -3361,9 +3361,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/miguomi/", "mycc_test.go", conf, annSet);
 
@@ -3377,9 +3377,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/nmix/", "blank.go", conf, annSet);
 
@@ -3393,9 +3393,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/nmix/", "calc.go", conf, annSet);
 
@@ -3409,9 +3409,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/nmix/", "caller.go", conf, annSet);
 
@@ -3425,9 +3425,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/nmix/", "cid.go", conf, annSet);
 
@@ -3441,9 +3441,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/nmix/", "range.go", conf, annSet);
 
@@ -3457,9 +3457,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/nmix/", "token.go", conf, annSet);
 
@@ -3473,9 +3473,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/nmix/", "tokenv5.go", conf, annSet);
 
@@ -3489,9 +3489,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/open-dovetail/", "activity_test.go", conf, annSet);
 
@@ -3505,9 +3505,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/open-dovetail/", "shim.go", conf, annSet);
 
@@ -3521,9 +3521,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/open-dovetail/", "trigger.go", conf, annSet);
 
@@ -3537,9 +3537,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/open-dovetail/", "trigger_test.go", conf, annSet);
 
@@ -3553,9 +3553,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/open-dovetail/", "util.go", conf, annSet);
 
@@ -3569,9 +3569,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/open-dovetail/", "util_test.go", conf, annSet);
 
@@ -3585,9 +3585,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/PaulSchevelenbos/", "chaincode.go", conf, annSet);
 
@@ -3601,9 +3601,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/peikiuar/", "couchdb.go", conf, annSet);
 
@@ -3617,9 +3617,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/peikiuar/", "mockccstub.go", conf, annSet);
 
@@ -3633,9 +3633,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/peikiuar/", "mockcid.go", conf, annSet);
 
@@ -3649,9 +3649,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/peikiuar/", "mocktxcontext.go", conf, annSet);
 
@@ -3665,9 +3665,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/richardfelkl/", "main.go", conf, annSet);
 
@@ -3681,9 +3681,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "cars_proxy.go", conf, annSet);
 
@@ -3697,9 +3697,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "cert_identity.go", conf, annSet);
 
@@ -3713,9 +3713,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "chaincode.go", conf, annSet);
 
@@ -3729,9 +3729,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "client.go", conf, annSet);
 
@@ -3745,9 +3745,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "context.go", conf, annSet);
 
@@ -3761,9 +3761,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "data.go", conf, annSet);
 
@@ -3777,9 +3777,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "entry.go", conf, annSet);
 
@@ -3793,9 +3793,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "from_bytes.go", conf, annSet);
 
@@ -3809,9 +3809,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "invoke.go", conf, annSet);
 
@@ -3825,9 +3825,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "invoker.go", conf, annSet);
 
@@ -3841,9 +3841,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "invoke_insurance.go", conf, annSet);
 
@@ -3857,9 +3857,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "invoke_police.go", conf, annSet);
 
@@ -3873,9 +3873,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "invoke_repairshop.go", conf, annSet);
 
@@ -3889,9 +3889,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "invoke_shop.go", conf, annSet);
 
@@ -3905,9 +3905,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "key.go", conf, annSet);
 
@@ -3921,9 +3921,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "mocked_peer.go", conf, annSet);
 
@@ -3937,9 +3937,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "mockstub.go", conf, annSet);
 
@@ -3953,9 +3953,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "mockstub_test.go", conf, annSet);
 
@@ -3969,9 +3969,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "pagination.go", conf, annSet);
 
@@ -3985,9 +3985,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "pagination_test.go", conf, annSet);
 
@@ -4001,9 +4001,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "response.go", conf, annSet);
 
@@ -4017,9 +4017,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "router.go", conf, annSet);
 
@@ -4033,9 +4033,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "router_test.go", conf, annSet);
 
@@ -4049,9 +4049,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "state_cached.go", conf, annSet);
 
@@ -4065,9 +4065,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "state_list.go", conf, annSet);
 
@@ -4081,9 +4081,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "testing.go", conf, annSet);
 
@@ -4097,9 +4097,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/s7techlab/", "util.go", conf, annSet);
 
@@ -4113,9 +4113,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/sachin-ngpws/", "cpu-use.go", conf, annSet);
 
@@ -4129,9 +4129,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/sachin-ngpws/", "cpu-use_test.go", conf, annSet);
 
@@ -4145,9 +4145,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/sarkershantonuZ/", "contract_chaincode.go", conf, annSet);
 
@@ -4161,9 +4161,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/sarkershantonuZ/", "contract_chaincode_test.go", conf, annSet);
 
@@ -4177,9 +4177,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/sarkershantonuZ/", "step_definitions_test.go", conf, annSet);
 
@@ -4193,9 +4193,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/sarkershantonuZ/", "transaction_context.go", conf, annSet);
 
@@ -4209,9 +4209,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/sarkershantonuZ/", "transaction_context_test.go", conf, annSet);
 
@@ -4225,9 +4225,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/Substra/", "ledger_db.go", conf, annSet);
 
@@ -4241,9 +4241,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/Substra/", "main.go", conf, annSet);
 
@@ -4257,9 +4257,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/Substra/", "mockstub_test.go", conf, annSet);
 
@@ -4273,9 +4273,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/Substra/", "utils.go", conf, annSet);
 
@@ -4289,9 +4289,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/Sudhanmanoharan/", "chaincodestub.go", conf, annSet);
 
@@ -4305,9 +4305,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/Sudhanmanoharan/", "movieTicket_test.go", conf, annSet);
 
@@ -4321,9 +4321,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/Sudhanmanoharan/", "transaction.go", conf, annSet);
 
@@ -4337,9 +4337,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/tinywell/", "handler.go", conf, annSet);
 
@@ -4353,9 +4353,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "chaincode.go", conf, annSet);
 
@@ -4369,9 +4369,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "chaincodeserver.go", conf, annSet);
 
@@ -4385,9 +4385,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "chaincode_test.go", conf, annSet);
 
@@ -4401,9 +4401,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "contract_chaincode.go", conf, annSet);
 
@@ -4417,9 +4417,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "errors.go", conf, annSet);
 
@@ -4433,9 +4433,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "ledger.go", conf, annSet);
 
@@ -4449,9 +4449,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "ledger_test.go", conf, annSet);
 
@@ -4465,9 +4465,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "log.go", conf, annSet);
 
@@ -4481,9 +4481,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "main.go", conf, annSet);
 
@@ -4497,9 +4497,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "mockstub.go", conf, annSet);
 
@@ -4513,9 +4513,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "shim.go", conf, annSet);
 
@@ -4529,9 +4529,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "smart_contract_test.go", conf, annSet);
 
@@ -4545,9 +4545,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/TommyStarK/", "transaction_context.go", conf, annSet);
 
@@ -4561,9 +4561,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/vanitas92/", "fabcar.go", conf, annSet);
 
@@ -4577,9 +4577,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/vanitas92/", "marbles02.go", conf, annSet);
 
@@ -4593,9 +4593,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/vitorduarte/", "basicChaincode.go", conf, annSet);
 
@@ -4609,9 +4609,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/VoneChain-CS/", "chaincodeserver.go", conf, annSet);
 
@@ -4625,9 +4625,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/VoneChain-CS/", "contract_chaincode.go", conf, annSet);
 
@@ -4641,9 +4641,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/VoneChain-CS/", "errors.go", conf, annSet);
 
@@ -4657,9 +4657,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/VoneChain-CS/", "mockstub.go", conf, annSet);
 
@@ -4673,9 +4673,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/VoneChain-CS/", "shim.go", conf, annSet);
 
@@ -4689,9 +4689,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/VoneChain-CS/", "strings.go", conf, annSet);
 
@@ -4705,9 +4705,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/VoneChain-CS/", "transaction_context.go", conf, annSet);
 
@@ -4721,9 +4721,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/yunmosehc/", "chaincodeserver.go", conf, annSet);
 
@@ -4737,9 +4737,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/yunmosehc/", "contract_chaincode.go", conf, annSet);
 
@@ -4753,9 +4753,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/yunmosehc/", "errors.go", conf, annSet);
 
@@ -4769,9 +4769,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/yunmosehc/", "shim.go", conf, annSet);
 
@@ -4785,9 +4785,9 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = 
-						new SimpleAbstractState<>(new PointBasedHeap(), new InferenceSystem<>(new IntegrityNIDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/benchmark/yunmosehc/", "transaction_context.go", conf, annSet);
 

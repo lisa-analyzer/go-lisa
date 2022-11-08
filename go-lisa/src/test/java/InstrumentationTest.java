@@ -17,7 +17,7 @@ public class InstrumentationTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.abstractState = LiSAFactory.getDefaultFor(AbstractState.class, new PointBasedHeap(), new Interval(),
-						new InferredTypes());
+				new InferredTypes());
 		perform("instrumentation/return-statement", "instrumented-returns.go", conf);
 	}
 }

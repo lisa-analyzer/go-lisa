@@ -27,8 +27,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest001() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -41,8 +41,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest002() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -55,8 +55,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest003() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -69,8 +69,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest004() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -83,8 +83,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest005() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -97,8 +97,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest006() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -111,8 +111,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest007() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -125,8 +125,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest008() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -139,8 +139,8 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 	public void taintTest009() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;

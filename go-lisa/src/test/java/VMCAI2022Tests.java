@@ -30,11 +30,11 @@ public class VMCAI2022Tests {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-						new InferredTypes());
-				conf.serializeResults = true;
-				conf.callGraph = new RTACallGraph();
-				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-				conf.workdir = tmpDir;
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);
 		try {
@@ -52,12 +52,11 @@ public class VMCAI2022Tests {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-						new InferredTypes());
-				conf.serializeResults = true;
-				conf.callGraph = new RTACallGraph();
-				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-				conf.workdir = tmpDir;
-
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);
 		try {
@@ -75,12 +74,11 @@ public class VMCAI2022Tests {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-						new InferredTypes());
-				conf.serializeResults = true;
-				conf.callGraph = new RTACallGraph();
-				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-				conf.workdir = tmpDir;
-
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);
 		try {

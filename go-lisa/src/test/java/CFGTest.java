@@ -1,8 +1,7 @@
 
-import org.junit.Test;
-
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import org.junit.Test;
 
 public class CFGTest extends GoAnalysisTestExecutor {
 
@@ -12,7 +11,6 @@ public class CFGTest extends GoAnalysisTestExecutor {
 		return conf;
 	}
 
-	
 	@Test
 	public void testDeclaration() throws AnalysisSetupException {
 		LiSAConfiguration conf = mkConf();

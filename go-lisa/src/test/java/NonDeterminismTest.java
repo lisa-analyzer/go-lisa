@@ -1,6 +1,4 @@
 
-import org.junit.Test;
-
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -14,6 +12,7 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class NonDeterminismTest extends GoChaincodeTestExecutor {
 
@@ -21,8 +20,8 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	public void testMapIteration() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
@@ -36,8 +35,8 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	public void testChannel() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
@@ -51,8 +50,8 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	public void testGoRoutine() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;

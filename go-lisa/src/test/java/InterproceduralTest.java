@@ -1,8 +1,4 @@
 
-import java.io.IOException;
-
-import org.junit.Test;
-
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
@@ -15,6 +11,8 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import java.io.IOException;
+import org.junit.Test;
 
 public class InterproceduralTest extends GoAnalysisTestExecutor {
 
@@ -24,9 +22,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 		perform("interprocedural/interproc1", "interprocedural.go", conf);
 	}
@@ -37,9 +35,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 		perform("interprocedural/interproc2", "interprocedural.go", conf);
 	}
@@ -50,9 +48,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 		perform("interprocedural/interproc3", "interprocedural.go", conf);
 	}
@@ -63,9 +61,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 		perform("interprocedural/interproc4", "interprocedural.go", conf);
 	}
@@ -76,9 +74,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 		perform("interprocedural/interproc5", "interprocedural.go", conf);
 	}
@@ -89,9 +87,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 		perform("interprocedural/interproc6", "interprocedural.go", conf);
 	}
@@ -102,9 +100,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 		perform("interprocedural/interproc7", "interprocedural.go", conf);
 	}
@@ -115,9 +113,9 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState =new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.serializeResults = true;
 
 		perform("interprocedural/interproc8", "interprocedural.go", conf);

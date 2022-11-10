@@ -2,6 +2,7 @@ package it.unive.golisa.golang.util;
 
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.Variable;
@@ -31,6 +32,9 @@ public class GoLangUtils {
 	 * The file name of the source code location of unknown code members.
 	 */
 	public static final String GO_UNKNOWN_SOURCE = "unknown";
+
+	public static final SourceCodeLocation GO_RUNTIME_SOURCECODE_LOCATION = new SourceCodeLocation(GO_RUNTIME_SOURCE, 0,
+			0);
 
 	/**
 	 * Checks whether the variable {@code v} is blank.

@@ -12,10 +12,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -40,9 +40,9 @@ public class Parse extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param timeUnit the unit to which this native cfg belongs to
 	 */
-	public Parse(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CFGDescriptor(location, timeUnit, false, "Parse",
-				new GoTupleType(new Parameter(location, "_", Time.INSTANCE),
+	public Parse(CodeLocation location, CodeUnit timeUnit) {
+		super(new CodeMemberDescriptor(location, timeUnit, false, "Parse",
+				GoTupleType.lookup(new Parameter(location, "_", Time.getTimeType(timeUnit.getProgram())),
 						new Parameter(location, "_", GoErrorType.INSTANCE)),
 				new Parameter(location, "layout", GoStringType.INSTANCE),
 				new Parameter(location, "value", GoStringType.INSTANCE)),
@@ -88,12 +88,12 @@ public class Parse extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public ParseImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "ParseImpl", new GoTupleType(new Parameter(location, "_", Time.INSTANCE),
+			super(cfg, location, "ParseImpl", GoTupleType.lookup(new Parameter(location, "_", Time.getTimeType(null)),
 					new Parameter(location, "_", GoErrorType.INSTANCE)), left, right);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
@@ -101,7 +101,7 @@ public class Parse extends NativeCFG {
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(new GoTupleType(new Parameter(original.getLocation(), "_", Time.INSTANCE),
+					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_", Time.getTimeType(null)),
 							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
 							original.getLocation()),
 					original);

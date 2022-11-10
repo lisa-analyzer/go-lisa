@@ -48,7 +48,7 @@ public class GoNew extends NaryExpression {
 		// type, not a value,
 		// and the value returned is a pointer to a newly allocated zero value
 		// of that type. pointer =
-		HeapAllocation created = new HeapAllocation(new GoPointerType(getStaticType()), getLocation());
+		HeapAllocation created = new HeapAllocation(GoPointerType.lookup(getStaticType()), getLocation());
 		return state.smallStepSemantics(created, this);
 	}
 }

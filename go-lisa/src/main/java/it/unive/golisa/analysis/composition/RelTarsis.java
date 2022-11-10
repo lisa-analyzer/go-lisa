@@ -9,11 +9,12 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.function.Predicate;
 
 /**
  * The reduced product between Tarsis, string constant propagation and RSub.
@@ -62,7 +63,18 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 
 	@Override
 	public RelTarsis forgetIdentifier(Identifier id) throws SemanticException {
-		return new RelTarsis(tarsis.forgetIdentifier(id), rsubs.forgetIdentifier(id), constant.forgetIdentifier(id));
+		return new RelTarsis(
+				tarsis.forgetIdentifier(id),
+				rsubs.forgetIdentifier(id),
+				constant.forgetIdentifier(id));
+	}
+
+	@Override
+	public RelTarsis forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		return new RelTarsis(
+				tarsis.forgetIdentifiersIf(test),
+				rsubs.forgetIdentifiersIf(test),
+				constant.forgetIdentifiersIf(test));
 	}
 
 	@Override
@@ -83,11 +95,11 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
-		return new PairRepresentation(new PairRepresentation(tarsis.representation(), rsubs.representation()),
+		return new ListRepresentation(tarsis.representation(), rsubs.representation(),
 				constant.representation());
 	}
 
@@ -113,18 +125,18 @@ public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<Rel
 	}
 
 	@Override
-	protected RelTarsis lubAux(RelTarsis other) throws SemanticException {
+	public RelTarsis lubAux(RelTarsis other) throws SemanticException {
 		return new RelTarsis(tarsis.lub(other.tarsis), rsubs.lub(other.rsubs), constant.lub(other.constant));
 	}
 
 	@Override
-	protected RelTarsis wideningAux(RelTarsis other) throws SemanticException {
+	public RelTarsis wideningAux(RelTarsis other) throws SemanticException {
 		return new RelTarsis(tarsis.widening(other.tarsis), rsubs.widening(other.rsubs),
 				constant.widening(other.constant));
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(RelTarsis other) throws SemanticException {
+	public boolean lessOrEqualAux(RelTarsis other) throws SemanticException {
 		return tarsis.lessOrEqual(other.tarsis) && rsubs.lessOrEqual(other.rsubs)
 				&& constant.lessOrEqual(other.constant);
 	}

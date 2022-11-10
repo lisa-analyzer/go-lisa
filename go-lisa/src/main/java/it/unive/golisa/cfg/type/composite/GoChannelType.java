@@ -6,8 +6,8 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,12 +29,13 @@ public class GoChannelType implements GoType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoChannelType} representing a channel type.
 	 * 
-	 * @param type the channel type to lookup
+	 * @param contentType the content of the channel type to lookup
 	 * 
 	 * @return the unique instance of {@link GoChannelType} representing the
 	 *             channel type given as argument
 	 */
-	public static GoChannelType lookup(GoChannelType type) {
+	public static GoChannelType lookup(Type contentType) {
+		GoChannelType type = new GoChannelType(contentType);
 		if (!channelTypes.contains(type))
 			channelTypes.add(type);
 		return channelTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -45,7 +46,7 @@ public class GoChannelType implements GoType {
 	 * 
 	 * @param contentType the content type
 	 */
-	public GoChannelType(Type contentType) {
+	private GoChannelType(Type contentType) {
 		this(contentType, true, true);
 	}
 
@@ -163,19 +164,16 @@ public class GoChannelType implements GoType {
 	 * 
 	 * @return all the channel types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoChannelType in : channelTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoChannelType in : channelTypes)
-			instances.add(in);
-		return instances;
+	public Set<Type> allInstances(TypeSystem type) {
+		return all();
 	}
 
 	/**

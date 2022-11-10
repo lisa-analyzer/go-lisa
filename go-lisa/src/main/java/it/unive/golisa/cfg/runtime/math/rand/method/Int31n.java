@@ -12,8 +12,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -37,8 +37,8 @@ public class Int31n extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Int31n(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, true, "Int31n", GoInt32Type.INSTANCE,
-				new Parameter(location, "this", Rand.INSTANCE),
+		super(new CodeMemberDescriptor(location, randUnit, true, "Int31n", GoInt32Type.INSTANCE,
+				new Parameter(location, "this", Rand.getRandType(randUnit.getProgram())),
 				new Parameter(location, "n", GoInt32Type.INSTANCE)),
 				Int31nImpl.class);
 	}
@@ -86,7 +86,7 @@ public class Int31n extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(

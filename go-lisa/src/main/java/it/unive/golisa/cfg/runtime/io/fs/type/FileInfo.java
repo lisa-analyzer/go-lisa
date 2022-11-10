@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.io.fs.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A FileInfo type.
@@ -17,27 +18,10 @@ public class FileInfo extends GoStructType {
 	/**
 	 * Unique instance of {@link FileInfo} type.
 	 */
-	public static final FileInfo INSTANCE = new FileInfo();
-
-	private FileInfo() {
-		this("FileInfo", buildFileUnit());
-	}
+	private static FileInfo INSTANCE;
 
 	private FileInfo(String name, CompilationUnit unit) {
 		super(name, unit);
-	}
-
-	private static CompilationUnit buildFileUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "FileInfo", false);
-		return randUnit;
-	}
-
-	/**
-	 * Registers the methods of the {@link FileInfo} type.
-	 */
-	public static void registerMethods() {
-		// TODO
 	}
 
 	@Override
@@ -53,5 +37,23 @@ public class FileInfo extends GoStructType {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+
+	/**
+	 * Yields the {@link FileInfo} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link FileInfo} type
+	 */
+	public static FileInfo getFileInfoType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit fileInfoUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "FileInfo",
+					false);
+			INSTANCE = new FileInfo("FileInfo", fileInfoUnit);
+			return INSTANCE;
+		}
+
+		return INSTANCE;
 	}
 }

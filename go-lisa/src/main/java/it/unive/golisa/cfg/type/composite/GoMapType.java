@@ -7,8 +7,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,12 +28,14 @@ public class GoMapType implements GoType, InMemoryType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoMapType} representing a map type.
 	 * 
-	 * @param type the map type to lookup
+	 * @param keyType     the key type of the map type to lookup
+	 * @param elementType the element type of the map type to lookup
 	 * 
 	 * @return the unique instance of {@link GoMapType} representing the map
 	 *             type given as argument
 	 */
-	public static GoMapType lookup(GoMapType type) {
+	public static GoMapType lookup(Type keyType, Type elementType) {
+		GoMapType type = new GoMapType(keyType, elementType);
 		if (!mapTypes.contains(type))
 			mapTypes.add(type);
 		return mapTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -45,7 +47,7 @@ public class GoMapType implements GoType, InMemoryType {
 	 * @param keyType     key type
 	 * @param elementType element type
 	 */
-	public GoMapType(Type keyType, Type elementType) {
+	private GoMapType(Type keyType, Type elementType) {
 		this.keyType = keyType;
 		this.elementType = elementType;
 	}
@@ -136,19 +138,16 @@ public class GoMapType implements GoType, InMemoryType {
 	 * 
 	 * @return all the map types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoMapType in : mapTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoMapType in : mapTypes)
-			instances.add(in);
-		return instances;
+	public Set<Type> allInstances(TypeSystem type) {
+		return all();
 	}
 
 	/**

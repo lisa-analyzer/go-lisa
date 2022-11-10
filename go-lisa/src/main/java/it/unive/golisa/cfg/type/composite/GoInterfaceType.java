@@ -3,17 +3,22 @@ package it.unive.golisa.cfg.type.composite;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.InterfaceUnit;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A Go interface type.
@@ -29,16 +34,26 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * {@link GoInterfaceType} representing an interface type with the given
 	 * {@code name}, representing the given {@code unit}.
 	 * 
-	 * @param name the name of the interface type
-	 * @param unit the unit underlying this type
+	 * @param name    the name of the interface type
+	 * @param unit    the unit underlying this type
+	 * @param program the program to which this type belongs to
 	 * 
 	 * @return the unique instance of {@link GoInterfaceType} representing the
 	 *             interface type with the given name
 	 */
-	public static GoInterfaceType lookup(String name, CompilationUnit unit) {
+	public static GoInterfaceType lookup(String name, CompilationUnit unit, Program program) {
 		if (name.equals(EmptyInterface.EMPTY_INTERFACE_NAME))
-			return interfaces.computeIfAbsent(name, x -> new EmptyInterface());
+			return interfaces.computeIfAbsent(name, x -> new EmptyInterface(program));
 		return interfaces.computeIfAbsent(name, x -> new GoInterfaceType(name, unit));
+	}
+
+	/**
+	 * Registers an interface type.
+	 * 
+	 * @param type the interface type to be registered
+	 */
+	public static void registerType(GoInterfaceType type) {
+		interfaces.put(type.name, type);
 	}
 
 	/**
@@ -47,7 +62,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * @return the empty interface
 	 */
 	public static GoInterfaceType getEmptyInterface() {
-		return GoInterfaceType.get(EmptyInterface.EMPTY_INTERFACE_NAME);
+		return GoInterfaceType.lookup(EmptyInterface.EMPTY_INTERFACE_NAME, null, null);
 	}
 
 	private final String name;
@@ -59,7 +74,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 * @param name the name of the interface type
 	 * @param unit the corresponding unit
 	 */
-	public GoInterfaceType(String name, CompilationUnit unit) {
+	protected GoInterfaceType(String name, CompilationUnit unit) {
 		this.unit = unit;
 		this.name = name;
 	}
@@ -75,17 +90,6 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	 */
 	public static boolean hasInterfaceType(String intfType) {
 		return interfaces.containsKey(intfType);
-	}
-
-	/**
-	 * Yields a Go interface type from given name.
-	 * 
-	 * @param interfaceName the name
-	 * 
-	 * @return a Go interface type from given name
-	 */
-	public static GoInterfaceType get(String interfaceName) {
-		return interfaces.get(interfaceName);
 	}
 
 	/**
@@ -148,9 +152,34 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		return new GoNil(cfg, location);
 	}
 
+	/**
+	 * Yields all the interface types.
+	 * 
+	 * @return all the interface types
+	 */
+	public static Collection<Type> all() {
+		Collection<Type> instances = new HashSet<>();
+		for (GoInterfaceType in : interfaces.values())
+			instances.add(in);
+		return instances;
+	}
+
+	/**
+	 * Clears all the interface types.
+	 */
+	public static void clearAll() {
+		interfaces.clear();
+	}
+
 	@Override
-	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
+	public Set<Type> allInstances(TypeSystem type) {
+		Set<Type> instances = new HashSet<>();
+		for (Unit un : unit.getInstances())
+			if (un instanceof InterfaceUnit)
+				instances.add(GoInterfaceType.lookup(un.getName(), null, null));
+			else
+				instances.add(GoStructType.lookup(un.getName(), null));
+		return instances;
 	}
 
 	@Override
@@ -162,8 +191,8 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 
 		private static final String EMPTY_INTERFACE_NAME = "EMPTY_INTERFACE";
 
-		public EmptyInterface() {
-			super(EMPTY_INTERFACE_NAME, it.unive.golisa.golang.runtime.EmptyInterface.INSTANCE);
+		protected EmptyInterface(Program program) {
+			super(EMPTY_INTERFACE_NAME, new EmptyInterfaceUnit(program));
 		}
 
 		@Override

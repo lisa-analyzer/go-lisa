@@ -17,8 +17,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -42,10 +42,10 @@ public class GetState extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public GetState(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, true, "GetState",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)),
+		super(new CodeMemberDescriptor(location, shimUnit, true, "GetState",
+				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 						GoErrorType.INSTANCE),
-				new Parameter(location, "s", ChaincodeStub.INSTANCE),
+				new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "key", GoStringType.INSTANCE)),
 				GetStateImpl.class);
 	}
@@ -89,7 +89,7 @@ public class GetState extends NativeCFG {
 		 */
 		public GetStateImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "GetStateImpl", GoTupleType.getTupleTypeOf(location,
-					GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE)), GoErrorType.INSTANCE), params);
+					GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE)), GoErrorType.INSTANCE), params);
 		}
 
 		@Override

@@ -13,6 +13,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
@@ -46,8 +47,23 @@ public class OpenBlock extends Statement {
 
 	@Override
 	public String toString() {
-
 		return "Open block: " + getLocation();
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		return true;
 	}
 
 	/**
@@ -62,7 +78,8 @@ public class OpenBlock extends Statement {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		AnalysisState<A, H, V, T> scope = entryState.pushScope(new ScopeToken(this));
-		return scope.lub(entryState);
+		A scoped = entryState.getState().pushScope(new ScopeToken(this));
+		A state = scoped.lub(entryState.getState().forgetIdentifiersIf(OutOfScopeIdentifier.class::isInstance));
+		return new AnalysisState<A, H, V, T>(state, entryState.getComputedExpressions(), entryState.getAliasing());
 	}
 }

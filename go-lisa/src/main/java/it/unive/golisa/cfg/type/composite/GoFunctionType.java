@@ -7,9 +7,9 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,12 +29,14 @@ public class GoFunctionType implements GoType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoFunctionType} representing a function type.
 	 * 
-	 * @param type the function type to lookup
+	 * @param returnType the return type of the function type to lookup
+	 * @param params     the parameters of the function type to lookup
 	 * 
 	 * @return the unique instance of {@link GoFunctionType} representing the
 	 *             function type given as argument
 	 */
-	public static GoFunctionType lookup(GoFunctionType type) {
+	public static GoFunctionType lookup(Type returnType, Parameter... params) {
+		GoFunctionType type = new GoFunctionType(returnType, params);
 		if (!functionTypes.contains(type))
 			functionTypes.add(type);
 		return functionTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -46,7 +48,7 @@ public class GoFunctionType implements GoType {
 	 * @param returnType the return type
 	 * @param params     the parameters
 	 */
-	public GoFunctionType(Type returnType, Parameter... params) {
+	private GoFunctionType(Type returnType, Parameter... params) {
 		this.params = params;
 		this.returnType = returnType;
 	}
@@ -107,19 +109,16 @@ public class GoFunctionType implements GoType {
 	 * 
 	 * @return all the function types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoFunctionType in : functionTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoFunctionType in : functionTypes)
-			instances.add(in);
-		return instances;
+	public Set<Type> allInstances(TypeSystem type) {
+		return all();
 	}
 
 	/**

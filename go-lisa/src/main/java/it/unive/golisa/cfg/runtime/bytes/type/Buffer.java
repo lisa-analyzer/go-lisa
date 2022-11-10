@@ -1,14 +1,17 @@
 package it.unive.golisa.cfg.runtime.bytes.type;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
-import it.unive.golisa.cfg.type.GoType;
+import it.unive.golisa.cfg.runtime.bytes.function.Bytes;
+import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
+import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A Duration represents the elapsed time between two instants as an int64
@@ -19,14 +22,15 @@ import java.util.Collections;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class Buffer implements GoType {
+public class Buffer extends GoStructType {
 
 	/**
 	 * Unique instance of the Buffer type.
 	 */
-	public static final Buffer INSTANCE = new Buffer();
+	private static Buffer INSTANCE;
 
-	private Buffer() {
+	private Buffer(String name, CompilationUnit unit) {
+		super(name, unit);
 	}
 
 	@Override
@@ -39,11 +43,6 @@ public class Buffer implements GoType {
 		if (other instanceof Buffer || other.isUntyped())
 			return other;
 		return Untyped.INSTANCE;
-	}
-
-	@Override
-	public Collection<Type> allInstances() {
-		return Collections.singleton(this);
 	}
 
 	@Override
@@ -66,4 +65,28 @@ public class Buffer implements GoType {
 		return System.identityHashCode(this);
 	}
 
+	/**
+	 * Yields the {@link Buffer} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Buffer} type
+	 */
+	public static Buffer getBufferType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit bufferUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Buffer", false);
+			INSTANCE = new Buffer("Buffer", bufferUnit);
+			return INSTANCE;
+		}
+
+		return INSTANCE;
+	}
+
+	/**
+	 * Registers the methods of Buffer type.
+	 */
+	public static void registerMethods() {
+		CompilationUnit bufferUnit = INSTANCE.getUnit();
+		bufferUnit.addInstanceCodeMember(new Bytes(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, bufferUnit));
+	}
 }

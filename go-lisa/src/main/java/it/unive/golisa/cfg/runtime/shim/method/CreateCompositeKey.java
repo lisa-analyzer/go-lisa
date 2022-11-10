@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -16,8 +17,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -43,12 +44,12 @@ public class CreateCompositeKey extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public CreateCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, true, "CreateCompositeKey",
+		super(new CodeMemberDescriptor(location, shimUnit, true, "CreateCompositeKey",
 				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 						GoErrorType.INSTANCE),
-				new Parameter(location, "this", ChaincodeStub.INSTANCE),
+				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "objectType", GoStringType.INSTANCE),
-				new Parameter(location, "attributes", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE)))),
+				new Parameter(location, "attributes", GoSliceType.lookup(GoStringType.INSTANCE))),
 				CreateCompositeKeyImpl.class);
 	}
 
@@ -104,12 +105,7 @@ public class CreateCompositeKey extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (ExpressionSet<SymbolicExpression> s : params)
-				for (SymbolicExpression s1 : s)
-					result = result.lub(state.smallStepSemantics(s1, original));
-
-			return result;
+			return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 		}
 	}
 }

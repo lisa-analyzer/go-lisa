@@ -9,9 +9,9 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,12 +29,13 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoTupleType} representing a tuple type.
 	 * 
-	 * @param type the tuple type to lookup
+	 * @param pars the parameters of the tuple type to lookup
 	 * 
 	 * @return the unique instance of {@link GoTupleType} representing the tuple
 	 *             type given as argument
 	 */
-	public static GoTupleType lookup(GoTupleType type) {
+	public static GoTupleType lookup(Parameter... pars) {
+		GoTupleType type = new GoTupleType(pars);
 		if (!tupleTypes.contains(type))
 			tupleTypes.add(type);
 		return tupleTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -56,7 +57,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * 
 	 * @param pars the parameters
 	 */
-	public GoTupleType(Parameter... pars) {
+	private GoTupleType(Parameter... pars) {
 		super();
 		for (int i = 0; i < pars.length; i++)
 			this.add(pars[i]);
@@ -115,19 +116,16 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	 * 
 	 * @return all the tuple types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoTupleType in : tupleTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoTupleType in : tupleTypes)
-			instances.add(in);
-		return instances;
+	public Set<Type> allInstances(TypeSystem type) {
+		return all();
 	}
 
 	@Override
@@ -148,7 +146,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 		for (int i = 0; i < types.length; i++)
 			pars[i] = new Parameter(location, "_", types[i]);
 
-		return GoTupleType.lookup(new GoTupleType(pars));
+		return GoTupleType.lookup(pars);
 	}
 
 	/**

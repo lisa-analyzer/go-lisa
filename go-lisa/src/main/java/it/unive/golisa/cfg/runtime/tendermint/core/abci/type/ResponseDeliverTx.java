@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.tendermint.core.abci.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Response of DeliverTx type.
@@ -17,27 +18,27 @@ public class ResponseDeliverTx extends GoStructType {
 	/**
 	 * Unique instance of the {@link ResponseDeliverTx} type.
 	 */
-	public static final ResponseDeliverTx INSTANCE = new ResponseDeliverTx();
+	private static ResponseDeliverTx INSTANCE;
 
-	private ResponseDeliverTx() {
-		this("ResponseDeliverTx", buildResponseDeliverTxUnit());
-	}
-
-	private ResponseDeliverTx(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildResponseDeliverTxUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "ResponseDeliverTx", false);
-		return abciUnit;
+	private ResponseDeliverTx(CompilationUnit unit) {
+		super("ResponseDeliverTx", unit);
 	}
 
 	/**
-	 * Registers the methods of the {@link ResponseDeliverTx} type.
+	 * Yields the {@link ResponseDeliverTx} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ResponseDeliverTx} type
 	 */
-	public static void registerMethods() {
-		// TODO
+	public static ResponseDeliverTx getResponseDeliverTxType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseDeliverTx",
+					false);
+			INSTANCE = new ResponseDeliverTx(abciUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

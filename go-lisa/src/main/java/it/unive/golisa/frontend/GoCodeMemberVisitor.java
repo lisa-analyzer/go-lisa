@@ -84,6 +84,7 @@ import it.unive.golisa.cfg.Switch;
 import it.unive.golisa.cfg.SwitchCase;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
+import it.unive.golisa.cfg.expression.GoForRange;
 import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
@@ -127,6 +128,8 @@ import it.unive.golisa.cfg.expression.unary.GoMinus;
 import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
 import it.unive.golisa.cfg.expression.unary.GoRange;
+import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
+import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.GoDefer;
@@ -153,12 +156,14 @@ import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
@@ -182,6 +187,7 @@ import it.unive.lisa.program.cfg.statement.literal.TrueLiteral;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -215,6 +221,11 @@ import org.apache.commons.lang3.tuple.Triple;
 public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
+	 * Singleton of a {@link SequentialEdge}.
+	 */
+	static final SequentialEdge SEQUENTIAL_SINGLETON = new SequentialEdge();
+
+	/**
 	 * The path file.
 	 */
 	protected final String file;
@@ -227,12 +238,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	/**
 	 * Mapping between goto statements and label to which they have to jump to.
 	 */
-	protected final Map<Statement, String> gotos;
+	protected final Map<Statement, Pair<List<BlockInfo>, String>> gotos;
 
 	/**
 	 * Mapping between statements and their labels.
 	 */
-	protected final Map<String, Statement> labeledStmt;
+	protected final Map<String, Pair<List<BlockInfo>, Statement>> labeledStmt;
 
 	/**
 	 * The current cfg.
@@ -255,6 +266,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	protected final Map<String, ExpressionContext> constants;
 
 	/**
+	 * Globals of program.
+	 */
+	protected final List<Global> globals;
+
+	/**
 	 * Current compilation unit to parse.
 	 */
 	protected CompilationUnit currentUnit;
@@ -274,7 +290,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 */
 	private final List<Statement> entryPoints = new ArrayList<>();
 
-	private AdjacencyMatrix<Statement, Edge, CFG> matrix;
+	private NodeList<CFG, Statement, Edge> matrix;
 
 	private final LinkedList<BlockInfo> blockList = new LinkedList<>();
 
@@ -289,9 +305,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
+	 * @param globals   global variables
 	 */
 	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
+			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
 		entrypoints = new HashSet<>();
@@ -303,6 +320,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		this.gotos = new HashMap<>();
 		this.labeledStmt = new HashMap<>();
 		this.currentUnit = unit;
+		this.globals = globals;
 	}
 
 	/**
@@ -313,9 +331,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
+	 * @param globals   the global variables
 	 */
 	public GoCodeMemberVisitor(CompilationUnit unit, MethodDeclContext ctx, String file, Program program,
-			Map<String, ExpressionContext> constants) {
+			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
 		this.constants = constants;
@@ -325,12 +344,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entrypoints = new HashSet<>();
 		cfs = new LinkedList<>();
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(mkDescriptor(unit, ctx), entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(mkDescriptor(unit, ctx), entrypoints, new NodeList<>(SEQUENTIAL_SINGLETON));
 
 		visibleIds = new HashMap<>();
 		this.blockDeep = 0;
+		this.globals = globals;
 
 		initializeVisibleIds();
+	}
+
+	private void addGlobalsToVisibleIds() {
+		for (Global g : globals) {
+			visibleIds.putIfAbsent(g.getName(), new HashSet<>());
+			visibleIds.get(g.getName())
+					.add(new IdInfo(new VariableRef(cfg, g.getLocation(), g.getName(), g.getStaticType()), -1));
+		}
 	}
 
 	/**
@@ -345,8 +373,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	}
 
-	private CFGDescriptor mkDescriptor(CompilationUnit packageUnit, MethodDeclContext ctx) {
-		return new CFGDescriptor(locationOf(ctx), packageUnit, false, ctx.IDENTIFIER().getText(),
+	private CodeMemberDescriptor mkDescriptor(CompilationUnit packageUnit, MethodDeclContext ctx) {
+		return new CodeMemberDescriptor(locationOf(ctx), packageUnit, false, ctx.IDENTIFIER().getText(),
 				visitParameters(ctx.signature().parameters()));
 	}
 
@@ -361,16 +389,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public CFG visitCodeMember(MethodDeclContext ctx) {
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
-				? ((GoPointerType) receiver.getStaticType()).getInnerTypes().first().toString()
+				? ((GoPointerType) receiver.getStaticType()).getInnerType().toString()
 				: receiver.getStaticType().toString();
 
 		SourceCodeLocation location = locationOf(ctx);
 		if (program.getUnit(unitName) == null) {
 			// TODO: unknown unit
-			currentUnit = new CompilationUnit(location, unitName, false);
-			program.addCompilationUnit(currentUnit);
+			currentUnit = new ClassUnit(location, program, unitName, false);
+			program.addUnit(currentUnit);
 		} else
-			currentUnit = program.getUnit(unitName);
+			currentUnit = (CompilationUnit) program.getUnit(unitName);
 
 		String methodName = ctx.IDENTIFIER().getText();
 		Parameter[] params = visitParameters(ctx.signature().parameters());
@@ -380,20 +408,35 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (returnType == null)
 			returnType = Untyped.INSTANCE;
 
-		cfg = new VariableScopingCFG(new CFGDescriptor(location, currentUnit, true, methodName, returnType, params));
+		cfg = new VariableScopingCFG(
+				new CodeMemberDescriptor(location, currentUnit, true, methodName, returnType, params));
 
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+		addGlobalsToVisibleIds();
+
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
-		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
-			// we must call cfg.addEdge, and not addEdge
-			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		processGotos();
 
 		cfg.getEntrypoints().add(body.getLeft());
 
+		addReturnStatement(cfg.getNodeList());
+		addFinalRet(matrix);
+
+		cfg.simplify();
+
+		currentUnit.addInstanceCodeMember(cfg);
+		return cfg;
+	}
+
+	/**
+	 * Adds a return statement is not present in the cfg.
+	 * 
+	 * @param matrix the adjacency matrix
+	 */
+	protected void addReturnStatement(NodeList<CFG, Statement, Edge> matrix) {
 		// If the method body does not have exit points
 		// a return statement is added
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
 		if (cfg.getAllExitpoints().isEmpty()) {
 			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
 			if (cfg.getNodesCount() == 0) {
@@ -416,7 +459,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						entry.setScopeEnd(ret);
 			}
 		}
+	}
 
+	/**
+	 * Adds a return statement is not present in matrix given as argument.
+	 * 
+	 * @param matrix the adjacency matrix
+	 */
+	protected void addFinalRet(NodeList<CFG, Statement, Edge> matrix) {
 		for (Statement st : matrix.getExits())
 			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
 				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
@@ -424,11 +474,53 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					matrix.addNode(ret);
 				matrix.addEdge(new SequentialEdge(st, ret));
 			}
+	}
 
-		cfg.simplify();
+	/**
+	 * Resolves goto jumps.
+	 * 
+	 * @throws IllegalStateException if a goto jumps into other scopes
+	 */
+	protected void processGotos() {
+		for (Entry<Statement, Pair<List<BlockInfo>, String>> gotoStmt : gotos.entrySet()) {
+			// we must call cfg.addEdge, and not addEdge
+			String label = gotoStmt.getValue().getRight();
+			List<BlockInfo> scope = gotoStmt.getValue().getLeft();
+			Statement labeled = labeledStmt.get(label).getRight();
+			List<BlockInfo> targetScope = labeledStmt.get(label).getLeft();
 
-		currentUnit.addInstanceCFG(cfg);
-		return cfg;
+			// from https://go.dev/ref/spec#Goto_statements:
+			// "[...] Executing the 'goto' statement must not
+			// cause any variables to come into scope that
+			// were not already in scope at the point of the goto.
+			// [...] A 'goto' statement outside a block
+			// cannot jump to a label inside that block."
+			// From this I understand that the goto can only
+			// jump inside the same scope, or to a containing one.
+			// this means that 'targetScope' must be a prefix of 'scope'
+			// and every other scope can be closed.
+
+			if (scope.size() < targetScope.size())
+				throw new IllegalStateException("goto cannot jump to a scope that it is not already part of");
+			for (int i = 0; i < targetScope.size(); i++)
+				if (!scope.get(i).equals(targetScope.get(i)))
+					throw new IllegalStateException("goto cannot jump to a scope that it is not already part of");
+
+			Statement last = gotoStmt.getKey();
+			// remove any followers
+			for (Statement follow : cfg.followersOf(last))
+				cfg.getNodeList().removeEdge(cfg.getEdgeConnecting(last, follow));
+			// add closing blocks
+			for (int i = scope.size() - 1; i >= targetScope.size(); i--) {
+				BlockInfo info = scope.get(i);
+				CloseBlock close = new CloseBlock(cfg, gotoStmt.getKey().getLocation(), info.getOpen());
+				cfg.addNode(close);
+				cfg.addEdge(new SequentialEdge(last, close));
+				last = close;
+			}
+			// add the goto
+			cfg.addEdge(new SequentialEdge(last, labeled));
+		}
 	}
 
 	/**
@@ -439,11 +531,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @return the adjacency matrix behind the visited block, together with the
 	 *             entry and the exit nodes
 	 */
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitMethodBlock(BlockContext ctx) {
-		this.matrix = this.cfg.getAdjacencyMatrix();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitMethodBlock(BlockContext ctx) {
+		this.matrix = this.cfg.getNodeList();
 
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		if (ctx.statementList() == null) {
 			NoOp noop = new NoOp(cfg, locationOf(ctx.R_CURLY()));
 			block.addNode(noop);
@@ -457,7 +549,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		OpenBlock open = new OpenBlock(cfg, locationOf(ctx.L_CURLY()));
 		blockList.addLast(new BlockInfo(open));
 
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
 
@@ -559,7 +651,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// the parameter's type is variadic (e.g., ...string)
 		if (ctx.ELLIPSIS() != null)
-			type = GoVariadicType.lookup(new GoVariadicType(type));
+			type = GoVariadicType.lookup(type);
 
 		if (ctx.identifierList() == null)
 			result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
@@ -583,13 +675,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		if (ctx.type_() != null)
 			return visitType_(ctx.type_());
 		else {
-			return new GoTupleType(visitParameters(ctx.parameters()));
+			return GoTupleType.lookup(visitParameters(ctx.parameters()));
 		}
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitBlock(BlockContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitBlock(BlockContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
 		if (ctx.statementList() == null) {
@@ -608,23 +700,29 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		blockList.addLast(new BlockInfo(open));
 
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> res = visitStatementList(ctx.statementList());
 		block.mergeWith(res.getMiddle());
+		addEdge(new SequentialEdge(open, res.getLeft()), block);
 
-		updateVisileIds(backup, res.getRight());
-		if (isReturnStmt(res.getRight()) || isGoTo(res.getRight())) {
-			addEdge(new SequentialEdge(open, res.getLeft()), block);
-			return Triple.of(open, block, res.getRight());
+		Statement last = res.getRight();
+		updateVisileIds(backup, last);
+		if (isReturnStmt(last))
+			return Triple.of(open, block, last);
+		if (isGoTo(last)) {
+			// we still decrement as the actual closing
+			// blocks will be added in the post processing
+			blockDeep--;
+			blockList.removeLast();
+			return Triple.of(open, block, last);
 		}
 
 		block.addNode(close);
-		addEdge(new SequentialEdge(res.getRight(), close), block);
-		addEdge(new SequentialEdge(open, res.getLeft()), block);
+		addEdge(new SequentialEdge(last, close), block);
 
 		blockDeep--;
-
 		blockList.removeLast();
+
 		return Triple.of(open, block, close);
 	}
 
@@ -666,9 +764,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitStatementList(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitStatementList(
 			StatementListContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		// It is an empty statement
 		if (ctx == null || ctx.statement().size() == 0) {
@@ -681,7 +779,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement entryNode = null;
 
 		for (int i = 0; i < ctx.statement().size(); i++) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> currentStmt = visitStatement(ctx.statement(i));
 			block.mergeWith(currentStmt.getMiddle());
 
@@ -696,9 +794,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(entryNode, block, lastStmt);
 	}
 
-	private Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitStatementListOfSwitchCase(
+	private Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitStatementListOfSwitchCase(
 			StatementListContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		// It is an empty statement
 		if (ctx == null || ctx.statement().size() == 0) {
@@ -713,7 +811,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
 
 		for (int i = 0; i < ctx.statement().size(); i++) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> currentStmt = visitStatement(ctx.statement(i));
 			block.mergeWith(currentStmt.getMiddle());
 
@@ -732,7 +830,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitStatement(StatementContext ctx) {
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitStatement(StatementContext ctx) {
 		if (ctx.declaration() != null)
 			return visitDeclaration(ctx.declaration());
 		if (ctx.labeledStmt() != null)
@@ -768,13 +866,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitVarDecl(VarDeclContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitVarDecl(VarDeclContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		Statement lastStmt = null;
 		Statement entryNode = null;
 
 		for (VarSpecContext varSpec : ctx.varSpec()) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> currStmt = visitVarSpec(varSpec);
+			Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> currStmt = visitVarSpec(varSpec);
 			block.mergeWith(currStmt.getMiddle());
 
 			if (lastStmt != null)
@@ -788,8 +886,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitVarSpec(VarSpecContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitVarSpec(VarSpecContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
@@ -857,7 +955,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col),
 						type, target, exp);
 				block.addNode(asg);
-				storeIds(asg);
 
 				if (visibleIds.containsKey(target.getName()))
 					if (visibleIds.get(target.getName()).stream()
@@ -870,6 +967,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
 					blockList.getLast().addVarDeclaration(target, DeclarationType.VARIABLE);
 				}
+
+				storeIds(asg);
 
 				if (lastStmt != null)
 					addEdge(new SequentialEdge(lastStmt, asg), block);
@@ -982,14 +1081,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitDeclaration(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitDeclaration(
 			DeclarationContext ctx) {
 		if (ctx.constDecl() != null)
 			return visitConstDecl(ctx.constDecl());
 		if (ctx.typeDecl() != null) {
 			for (CompilationUnit unit : visitTypeDecl(ctx.typeDecl()))
-				program.addCompilationUnit(unit);
-			AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+				program.addUnit(unit);
+			NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 			NoOp noop = new NoOp(cfg, locationOf(ctx.typeDecl().TYPE()));
 			block.addNode(noop);
 			return Triple.of(noop, block, noop);
@@ -1006,22 +1105,22 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		HashSet<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
-			CompilationUnit unit = new CompilationUnit(
-					new SourceCodeLocation(file, getLine(typeSpec), getCol(typeSpec)), unitName, false);
+			ClassUnit unit = new ClassUnit(
+					new SourceCodeLocation(file, getLine(typeSpec), getCol(typeSpec)), program, unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(file, unit, program, constants).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(file, unit, program, constants, globals).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitConstDecl(ConstDeclContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitConstDecl(ConstDeclContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		Statement lastStmt = null;
 		Statement entryNode = null;
 
 		for (ConstSpecContext constSpec : ctx.constSpec()) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> currStmt = visitConstSpec(constSpec);
+			Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> currStmt = visitConstSpec(constSpec);
 			block.mergeWith(currStmt.getMiddle());
 
 			if (lastStmt != null)
@@ -1036,8 +1135,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitConstSpec(ConstSpecContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitConstSpec(ConstSpecContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
@@ -1085,19 +1184,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitSimpleStmt(SimpleStmtContext ctx) {
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitSimpleStmt(SimpleStmtContext ctx) {
 		Object result = visitChildren(ctx);
 		if (!(result instanceof Triple<?, ?, ?>))
 			throw new IllegalStateException("Pair of Statements expected");
 		else
-			return (Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement>) result;
+			return (Triple<Statement, NodeList<CFG, Statement, Edge>, Statement>) result;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitExpressionStmt(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitExpressionStmt(
 			ExpressionStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		Object result = visitChildren(ctx);
 		if (result instanceof Expression) {
 			Expression e = (Expression) result;
@@ -1107,12 +1206,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		} else if (!(result instanceof Triple<?, ?, ?>)) {
 			throw new IllegalStateException("Triple of Statements expected");
 		} else
-			return (Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement>) result;
+			return (Triple<Statement, NodeList<CFG, Statement, Edge>, Statement>) result;
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitIncDecStmt(IncDecStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitIncDecStmt(IncDecStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		Expression exp = visitExpression(ctx.expression());
 		SourceCodeLocation location = locationOf(ctx.expression());
@@ -1138,8 +1237,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitAssignment(AssignmentContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitAssignment(AssignmentContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		ExpressionListContext ids = ctx.expressionList(0);
 		ExpressionListContext exps = ctx.expressionList(1);
@@ -1261,9 +1360,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * assigns a new value to the original.
 	 */
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitShortVarDecl(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitShortVarDecl(
 			ShortVarDeclContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		IdentifierListContext ids = ctx.identifierList();
 		ExpressionListContext exps = ctx.expressionList();
@@ -1365,8 +1464,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitReturnStmt(ReturnStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitReturnStmt(ReturnStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		SourceCodeLocation location = locationOf(ctx);
 
@@ -1408,8 +1507,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitBreakStmt(BreakStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitBreakStmt(BreakStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		NoOp breakSt = new NoOp(cfg, locationOf(ctx));
 		block.addNode(breakSt);
 		storeIds(breakSt);
@@ -1421,9 +1520,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitContinueStmt(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitContinueStmt(
 			ContinueStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		NoOp continueSt = new NoOp(cfg, locationOf(ctx));
 		block.addNode(continueSt);
 		storeIds(continueSt);
@@ -1435,26 +1534,26 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitLabeledStmt(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitLabeledStmt(
 			LabeledStmtContext ctx) {
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> stmt = visitStatement(ctx.statement());
-		labeledStmt.put(ctx.IDENTIFIER().getText(), stmt.getLeft());
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> stmt = visitStatement(ctx.statement());
+		labeledStmt.put(ctx.IDENTIFIER().getText(), Pair.of(new LinkedList<>(blockList), stmt.getLeft()));
 		return stmt;
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitGotoStmt(GotoStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitGotoStmt(GotoStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		GoTo nop = new GoTo(cfg, locationOf(ctx));
 		block.addNode(nop);
-		gotos.put(nop, ctx.IDENTIFIER().getText());
+		gotos.put(nop, Pair.of(new LinkedList<>(blockList), ctx.IDENTIFIER().getText()));
 		return Triple.of(nop, block, nop);
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitFallthroughStmt(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitFallthroughStmt(
 			FallthroughStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		GoFallThrough ft = new GoFallThrough(cfg, locationOf(ctx));
 		block.addNode(ft);
 		storeIds(ft);
@@ -1462,8 +1561,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitDeferStmt(DeferStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitDeferStmt(DeferStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		GoDefer defer = new GoDefer(cfg, new SourceCodeLocation(file, getLine(ctx), getCol(ctx)),
 				visitExpression(ctx.expression()));
 		block.addNode(defer);
@@ -1472,8 +1571,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitIfStmt(IfStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitIfStmt(IfStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		// Visit if statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
@@ -1483,7 +1582,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		block.addNode(ifExitNode);
 		storeIds(ifExitNode);
 
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> trueBlock = visitBlock(ctx.block(0));
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> trueBlock = visitBlock(ctx.block(0));
 		block.mergeWith(trueBlock.getMiddle());
 		Collection<Statement> trueBlockNodes = trueBlock.getMiddle().getNodes();
 		Collection<Statement> falseBlockNodes = Collections.emptySet();
@@ -1499,7 +1598,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		} else {
 			if (ctx.block(1) != null) {
 				// If statement with else branch with no other if statements
-				Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+				Triple<Statement, NodeList<CFG, Statement, Edge>,
 						Statement> falseBlock = visitBlock(ctx.block(1));
 				block.mergeWith(falseBlock.getMiddle());
 				Statement exitStatementFalseBranch = falseBlock.getRight();
@@ -1514,7 +1613,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				falseBlockNodes = falseBlock.getMiddle().getNodes();
 			} else {
 				// If statement with else branch with other if statements
-				Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+				Triple<Statement, NodeList<CFG, Statement, Edge>,
 						Statement> falseBlock = visitIfStmt(ctx.ifStmt());
 				block.mergeWith(falseBlock.getMiddle());
 
@@ -1535,7 +1634,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		// e.g., if x := y; z < x block
 		Statement entryNode = booleanGuard;
 		if (ctx.simpleStmt() != null) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> initialStmt = visitSimpleStmt(ctx.simpleStmt());
 			block.mergeWith(initialStmt.getMiddle());
 			entryNode = initialStmt.getLeft();
@@ -1562,13 +1661,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param edge  the edge to be added
 	 * @param block the current {@link AdjacencyMatrix}
 	 */
-	protected static void addEdge(Edge edge, AdjacencyMatrix<Statement, Edge, CFG> block) {
+	protected static void addEdge(Edge edge, NodeList<CFG, Statement, Edge> block) {
 		if (!isReturnStmt(edge.getSource()) && !isGoTo(edge.getSource()))
 			block.addEdge(edge);
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitSwitchStmt(SwitchStmtContext ctx) {
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitSwitchStmt(SwitchStmtContext ctx) {
 		if (ctx.exprSwitchStmt() != null)
 			return visitExprSwitchStmt(ctx.exprSwitchStmt());
 		else if (ctx.typeSwitchStmt() != null)
@@ -1578,10 +1677,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitExprSwitchStmt(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitExprSwitchStmt(
 			ExprSwitchStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
-		AdjacencyMatrix<Statement, Edge, CFG> body = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
+		NodeList<CFG, Statement, Edge> body = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		SourceCodeLocation location = locationOf(ctx);
 		Expression switchGuard = ctx.expression() == null ? new GoBoolean(cfg, location, true)
@@ -1589,21 +1688,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		NoOp exitNode = new NoOp(cfg, location);
 		Statement entryNode = null;
 		Statement previousGuard = null;
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> defaultBlock = null;
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> lastCaseBlock = null;
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> defaultBlock = null;
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> lastCaseBlock = null;
 		block.addNode(exitNode);
 		storeIds(exitNode);
 
 		int ncases = ctx.exprCaseClause().size();
 		@SuppressWarnings("unchecked")
-		AdjacencyMatrix<Statement, Edge, CFG>[] cases = new AdjacencyMatrix[ncases];
+		NodeList<CFG, Statement, Edge>[] cases = new NodeList[ncases];
 		Statement[] conditions = new Statement[ncases];
 
 		for (int i = 0; i < ncases; i++) {
-			AdjacencyMatrix<Statement, Edge, CFG> case_ = new AdjacencyMatrix<>();
+			NodeList<CFG, Statement, Edge> case_ = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> caseBlock = visitStatementListOfSwitchCase(switchCase.statementList());
 			case_.mergeWith(caseBlock.getMiddle());
 			body.mergeWith(caseBlock.getMiddle());
@@ -1665,7 +1764,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 
 		if (ctx.simpleStmt() != null) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
 			block.mergeWith(simpleStmt.getMiddle());
 			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode), block);
@@ -1686,8 +1785,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitForStmt(ForStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitForStmt(ForStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		SourceCodeLocation location = locationOf(ctx);
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
@@ -1707,8 +1806,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return forTrue(ctx, block, location, backup, exitNode);
 	}
 
-	private Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> forTrue(ForStmtContext ctx,
-			AdjacencyMatrix<Statement, Edge, CFG> block, SourceCodeLocation location, Map<String, Set<IdInfo>> backup,
+	private Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> forTrue(ForStmtContext ctx,
+			NodeList<CFG, Statement, Edge> block, SourceCodeLocation location, Map<String, Set<IdInfo>> backup,
 			NoOp exitNode) {
 		Statement cond = new TrueLiteral(cfg, location);
 		block.addNode(cond);
@@ -1716,7 +1815,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		entryPoints.add(cond);
 
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> body = visitBlock(ctx.block());
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> body = visitBlock(ctx.block());
 		block.mergeWith(body.getMiddle());
 
 		restoreVisibleIdsAfterForLoop(backup);
@@ -1733,21 +1832,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(cond, block, exitNode);
 	}
 
-	private Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> whileLoop(ForStmtContext ctx,
-			AdjacencyMatrix<Statement, Edge, CFG> block, Map<String, Set<IdInfo>> backup, NoOp exitNode) {
+	private Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> whileLoop(ForStmtContext ctx,
+			NodeList<CFG, Statement, Edge> block, Map<String, Set<IdInfo>> backup, NoOp exitNode) {
 		Expression guard = visitExpression(ctx.expression());
 		block.addNode(guard);
 		storeIds(guard);
 
 		entryPoints.add(guard);
 
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> body = visitBlock(ctx.block());
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> body = visitBlock(ctx.block());
 		block.mergeWith(body.getMiddle());
 
 		restoreVisibleIdsAfterForLoop(backup);
 
-		addEdge(new SequentialEdge(guard, body.getLeft()), block);
-		addEdge(new SequentialEdge(guard, exitNode), block);
+		addEdge(new TrueEdge(guard, body.getLeft()), block);
+		addEdge(new FalseEdge(guard, exitNode), block);
 		addEdge(new SequentialEdge(body.getRight(), guard), block);
 
 		entryPoints.remove(entryPoints.size() - 1);
@@ -1758,21 +1857,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(guard, block, exitNode);
 	}
 
-	private Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> forRange(ForStmtContext ctx,
-			AdjacencyMatrix<Statement, Edge, CFG> block, SourceCodeLocation location, Map<String, Set<IdInfo>> backup,
+	private Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> forRange(ForStmtContext ctx,
+			NodeList<CFG, Statement, Edge> block, SourceCodeLocation location, Map<String, Set<IdInfo>> backup,
 			NoOp exitNode) {
 		RangeClauseContext range = ctx.rangeClause();
 		Expression rangedCollection = visitExpression(range.expression());
+
+		GoRange rangeNode = new GoRange(cfg, location, rangedCollection);
+
 		VariableRef idxRange = null;
 		VariableRef valRange = null;
-		Statement idxInit = null;
-		Statement idxPost = null;
-
-		Statement valInit = new NoOp(cfg, SyntheticLocation.INSTANCE);
-		Statement valPost = new NoOp(cfg, SyntheticLocation.INSTANCE);
-
-		GoInteger zero = new GoInteger(cfg, locationOf(ctx), 0);
-		GoInteger one = new GoInteger(cfg, locationOf(ctx), 1);
+		Statement idxAssign = null;
+		Statement valueAssign = null;
 
 		if (range.identifierList() != null) {
 			VariableRef[] rangeIds = visitIdentifierList(range.identifierList());
@@ -1781,27 +1877,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				throw new UnsupportedOperationException("empty range variables not supported yet.");
 			} else {
 				idxRange = rangeIds[0];
-				idxInit = new GoShortVariableDeclaration(cfg, location, idxRange, zero);
+				idxAssign = new GoShortVariableDeclaration(cfg, location, idxRange, new GoRangeGetNextIndex(cfg,
+						new SourceCodeLocation(location.getSourceFile(), location.getLine(), 0), rangedCollection));
 				if (!GoLangUtils.refersToBlankIdentifier(idxRange))
 					blockList.getLast().addVarDeclaration(idxRange, DeclarationType.SHORT_VARIABLE);
-				idxPost = new GoAssignment(cfg, location, idxRange,
-						new GoSum(cfg, location, idxRange, one), blockList, getContainingBlock());
-
 				// Index and values are used in range
 				if (rangeIds.length == 2) {
 					valRange = rangeIds[1];
-
-					// Creates the initialization statement for val range
-					// variable
-					valInit = new GoShortVariableDeclaration(cfg, location, valRange,
-							new GoCollectionAccess(cfg, location, rangedCollection, zero));
-
+					valueAssign = new GoShortVariableDeclaration(cfg, location, valRange, new GoRangeGetNextValue(cfg,
+							new SourceCodeLocation(location.getSourceFile(), location.getLine(), 1), rangedCollection));
 					if (!GoLangUtils.refersToBlankIdentifier(valRange))
 						blockList.getLast().addVarDeclaration(valRange, DeclarationType.SHORT_VARIABLE);
-
-					valPost = new GoAssignment(cfg, location, valRange,
-							new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList,
-							getContainingBlock());
 				}
 			}
 		} else if (range.expressionList() != null) {
@@ -1814,74 +1900,69 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					throw new IllegalStateException("range variables must  be identifiers.");
 
 				idxRange = (VariableRef) rangeIds[0];
-				idxInit = new GoAssignment(cfg, locationOf(ctx), idxRange, zero, blockList, getContainingBlock());
-
+				idxAssign = new GoShortVariableDeclaration(cfg, location, idxRange,
+						new GoRangeGetNextIndex(cfg, location, rangedCollection));
 				if (rangeIds.length == 2) {
 					valRange = (VariableRef) rangeIds[1];
-
-					// Creates the initialization statements for idx and val
-					// range variable
-					valInit = new GoAssignment(cfg, location, valRange,
-							new GoCollectionAccess(cfg, location, rangedCollection, zero), blockList,
-							getContainingBlock());
-
-					valPost = new GoAssignment(cfg, location, valRange,
-							new GoCollectionAccess(cfg, location, rangedCollection, idxRange), blockList,
-							getContainingBlock());
+					valueAssign = new GoShortVariableDeclaration(cfg, location, valRange,
+							new GoRangeGetNextValue(cfg, location, rangedCollection));
 				}
 			}
 		} else
 			throw new UnsupportedOperationException("empty range variables not supported yet.");
 
-		entryPoints.add(idxInit);
+		rangeNode.setIdxRange(idxRange);
+		rangeNode.setValRange(valRange);
 
-		block.addNode(idxInit);
-		storeIds(idxInit);
-		block.addNode(valInit);
-		storeIds(valInit);
-		block.addNode(idxPost);
-		storeIds(idxPost);
-		block.addNode(valPost);
-		storeIds(valPost);
+		block.addNode(rangeNode);
+		addEdge(new FalseEdge(rangeNode, exitNode), block);
 
-		AdjacencyMatrix<Statement, Edge, CFG> body = new AdjacencyMatrix<>();
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> inner = visitBlock(ctx.block());
+		if (idxAssign != null) {
+			block.addNode(idxAssign);
+			storeIds(idxAssign);
+		}
+		if (valueAssign != null) {
+			block.addNode(valueAssign);
+			storeIds(valueAssign);
+		}
+
+		NodeList<CFG, Statement, Edge> body = new NodeList<>(SEQUENTIAL_SINGLETON);
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> inner = visitBlock(ctx.block());
 		body.mergeWith(inner.getMiddle());
 		block.mergeWith(body);
-		addEdge(new SequentialEdge(inner.getRight(), idxPost), block);
-		addEdge(new SequentialEdge(idxPost, valPost), block);
 
-		// Build the range condition
-		GoLess rangeCondition = new GoLess(cfg, location, idxRange,
-				new GoLength(cfg, location, rangedCollection));
-		GoRange rangeNode = new GoRange(cfg, location, rangeCondition);
-		block.addNode(rangeNode);
-		storeIds(rangeNode);
+		addEdge(new SequentialEdge(inner.getRight(), rangeNode), block);
 
-		addEdge(new SequentialEdge(idxInit, valInit), block);
-		addEdge(new SequentialEdge(valInit, rangeNode), block);
-		addEdge(new TrueEdge(rangeNode, inner.getLeft()), block);
-		addEdge(new FalseEdge(rangeNode, exitNode), block);
-		addEdge(new SequentialEdge(valPost, rangeNode), block);
+		if (idxAssign != null && valueAssign != null) {
+			addEdge(new TrueEdge(rangeNode, idxAssign), block);
+			addEdge(new SequentialEdge(idxAssign, valueAssign), block);
+			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
+		} else if (idxAssign != null && valueAssign == null) {
+			addEdge(new TrueEdge(rangeNode, idxAssign), block);
+			addEdge(new SequentialEdge(idxAssign, inner.getLeft()), block);
+		} else { // should never happen
+			addEdge(new TrueEdge(rangeNode, valueAssign), block);
+			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
+		}
+
+		// entryPoints.remove(entryPoints.size() - 1);
+		// exitPoints.remove(exitPoints.size() - 1);
 		restoreVisibleIdsAfterForLoop(backup);
 
-		entryPoints.remove(entryPoints.size() - 1);
-		exitPoints.remove(exitPoints.size() - 1);
+		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
 
-		cfs.add(new Loop(matrix, rangeNode, exitNode, body.getNodes()));
-
-		return Triple.of(idxInit, block, exitNode);
+		return Triple.of(rangeNode, block, exitNode);
 	}
 
-	private Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> regularFor(ForStmtContext ctx,
-			AdjacencyMatrix<Statement, Edge, CFG> block, SourceCodeLocation location, Map<String, Set<IdInfo>> backup,
+	private Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> regularFor(ForStmtContext ctx,
+			NodeList<CFG, Statement, Edge> block, SourceCodeLocation location, Map<String, Set<IdInfo>> backup,
 			NoOp exitNode) {
 		boolean hasInitStmt = ctx.forClause().init != null;
 		boolean hasCondition = ctx.forClause().guard != null;
 		boolean hasPostStmt = ctx.forClause().inc != null;
 
 		// Checking if initialization is missing
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> init = null;
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> init = null;
 		Statement entryNode = null;
 		if (hasInitStmt) {
 			// TODO: variables declared here should be only visible in the
@@ -1906,16 +1987,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entryPoints.add(cond);
 
 		// Checking if post statement is missing
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> post = null;
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> post = null;
 		if (hasPostStmt) {
 			post = visitSimpleStmt(hasInitStmt ? ctx.forClause().simpleStmt(1) : ctx.forClause().simpleStmt(0));
 			block.mergeWith(post.getMiddle());
 			storeIds(post.getLeft());
 		}
 
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> inner;
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> inner;
 		if (ctx.block().statementList() == null) {
-			AdjacencyMatrix<Statement, Edge, CFG> innerBlock = new AdjacencyMatrix<>();
+			NodeList<CFG, Statement, Edge> innerBlock = new NodeList<>(SEQUENTIAL_SINGLETON);
 			NoOp emptyBlock = new NoOp(cfg, location);
 			innerBlock.addNode(emptyBlock);
 			storeIds(exitNode);
@@ -1937,11 +2018,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		else
 			entryNode = cond;
 
-		AdjacencyMatrix<Statement, Edge, CFG> body;
+		NodeList<CFG, Statement, Edge> body;
 		if (hasPostStmt) {
 			addEdge(new SequentialEdge(exitNodeBlock, post.getRight()), block);
 			addEdge(new SequentialEdge(post.getLeft(), cond), block);
-			body = new AdjacencyMatrix<>(inner.getMiddle());
+			body = new NodeList<>(inner.getMiddle());
 			body.mergeWith(post.getMiddle());
 		} else {
 			addEdge(new SequentialEdge(exitNodeBlock, cond), block);
@@ -1985,7 +2066,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public CFGDescriptor visitMethodSpec(MethodSpecContext ctx) {
+	public CodeMemberDescriptor visitMethodSpec(MethodSpecContext ctx) {
 		if (ctx.typeName() == null) {
 			Type returnType = ctx.result() == null ? Untyped.INSTANCE : visitResult(ctx.result());
 			String name = ctx.IDENTIFIER().getText();
@@ -1993,7 +2074,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Parameter[] params = visitParameters(ctx.parameters());
 			// return new GoMethodSpecification(name, returnType, params);
 
-			return new CFGDescriptor(locationOf(ctx), currentUnit, false, name, returnType, params);
+			return new CodeMemberDescriptor(locationOf(ctx), currentUnit, false, name, returnType, params);
 		}
 
 		throw new UnsupportedOperationException("Method specification not supported yet:  " + ctx.getText());
@@ -2047,8 +2128,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name
-					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
-							GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
+					return new UnresolvedCall(cfg, locationOf(ctx),
 							CallType.STATIC,
 							currentUnit.getName(), primary.toString(),
 							visitArguments(ctx.arguments()));
@@ -2062,8 +2142,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// this call is not an instance call
 						// the callee's name is concatenated to the function
 						// name
-						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
-								GoFrontEnd.FUNCTION_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
+						return new UnresolvedCall(cfg, locationOf(ctx),
 								CallType.STATIC,
 								receiver.toString(), methodName, args);
 					else {
@@ -2072,8 +2151,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						// the callee needs to be resolved and it is put as
 						// first argument (e.g., f(x, 1))
 						args = ArrayUtils.insert(0, args, receiver);
-						return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
-								GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
+						return new UnresolvedCall(cfg, locationOf(ctx),
 								CallType.INSTANCE, "", methodName, args);
 					}
 				}
@@ -2081,15 +2159,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				// Anonymous function
 				else if (primary instanceof GoFunctionLiteral) {
 					CFG cfgLiteral = (CFG) ((GoFunctionLiteral) primary).getValue();
-					return new CFGCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY, CallType.STATIC, "",
+					return new CFGCall(cfg, locationOf(ctx), CallType.STATIC, "",
 							funcName,
 							Collections.singleton(cfgLiteral),
 							args);
 				} else {
 					// need to resolve also the caller
 					args = ArrayUtils.insert(0, args, primary);
-					return new UnresolvedCall(cfg, locationOf(ctx), GoFrontEnd.PARAMETER_ASSIGN_STRATEGY,
-							GoFrontEnd.METHOD_MATCHING_STRATEGY, GoFrontEnd.HIERARCY_TRAVERSAL_STRATEGY,
+					return new UnresolvedCall(cfg, locationOf(ctx),
 							CallType.INSTANCE,
 							"", primary.toString(), args);
 				}
@@ -2267,7 +2344,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Expression visitCompositeLit(CompositeLitContext ctx) {
-		Type type = new GoTypeVisitor(file, currentUnit, program, constants).visitLiteralType(ctx.literalType());
+		Type type = new GoTypeVisitor(file, currentUnit, program, constants, globals)
+				.visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>) {
 
@@ -2283,13 +2361,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) keys).length));
+						.lookup(((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
 			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type == null ? Untyped.INSTANCE : type);
 		} else {
 
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) raw).length));
+						.lookup(((GoArrayType) type).getContenType(), ((Expression[]) raw).length);
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw,
 					type == null ? Untyped.INSTANCE : type);
 		}
@@ -2356,8 +2434,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitSendStmt(SendStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitSendStmt(SendStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		GoChannelSend send = new GoChannelSend(cfg, locationOf(ctx), visitExpression(ctx.expression(0)),
 				visitExpression(ctx.expression(1)));
 		block.addNode(send);
@@ -2411,7 +2489,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 					type = GoArrayType.lookup(
-							new GoArrayType(((GoArrayType) type).getContenType(), ((Expression[]) keys).length));
+							((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
 				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 			} else
 				throw new IllegalStateException(
@@ -2447,10 +2525,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Expression visitFunctionLit(FunctionLitContext ctx) {
-		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants).buildAnonymousCFG(ctx);
+		CFG funcLit = new GoFunctionVisitor(ctx, currentUnit, file, program, constants, globals).buildAnonymousCFG(ctx);
 		Type funcType = GoFunctionType
-				.lookup(new GoFunctionType(funcLit.getDescriptor().getReturnType(),
-						funcLit.getDescriptor().getFormals()));
+				.lookup(funcLit.getDescriptor().getReturnType(),
+						funcLit.getDescriptor().getFormals());
 		return new GoFunctionLiteral(cfg, locationOf(ctx), funcLit, funcType);
 	}
 
@@ -2470,13 +2548,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitGoStmt(GoStmtContext ctx) {
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitGoStmt(GoStmtContext ctx) {
 		Expression call = visitExpression(ctx.expression());
 
 		if (!(call instanceof Call))
 			throw new IllegalStateException("Only method and function calls can be spawn as go routines.");
 
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		GoRoutine routine = new GoRoutine(cfg, locationOf(ctx), (Call) call);
 		block.addNode(routine);
 		storeIds(routine);
@@ -2515,14 +2593,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Type visitType_(Type_Context ctx) {
-		return new GoTypeVisitor(file, currentUnit, program, constants).visitType_(ctx);
+		return new GoTypeVisitor(file, currentUnit, program, constants, globals).visitType_(ctx);
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitTypeSwitchStmt(
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitTypeSwitchStmt(
 			TypeSwitchStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
-		AdjacencyMatrix<Statement, Edge, CFG> body = new AdjacencyMatrix<>();
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
+		NodeList<CFG, Statement, Edge> body = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		SourceCodeLocation location = locationOf(ctx);
 		Expression typeSwitchExp = visitPrimaryExpr(ctx.typeSwitchGuard().primaryExpr());
@@ -2533,18 +2611,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		Statement entryNode = null;
 		Statement previousGuard = null;
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> defaultBlock = null;
+		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> defaultBlock = null;
 
 		int ncases = ctx.typeCaseClause().size();
 		@SuppressWarnings("unchecked")
-		AdjacencyMatrix<Statement, Edge, CFG>[] cases = new AdjacencyMatrix[ncases];
+		NodeList<CFG, Statement, Edge>[] cases = new NodeList[ncases];
 		Statement[] conditions = new Statement[ncases];
 
 		for (int i = 0; i < ncases; i++) {
-			AdjacencyMatrix<Statement, Edge, CFG> case_ = new AdjacencyMatrix<>();
+			NodeList<CFG, Statement, Edge> case_ = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 			TypeCaseClauseContext typeSwitchCase = ctx.typeCaseClause(i);
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> caseBlock = visitStatementList(typeSwitchCase.statementList());
 			case_.mergeWith(caseBlock.getMiddle());
 			body.mergeWith(caseBlock.getMiddle());
@@ -2578,7 +2656,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						if (!GoLangUtils.refersToBlankIdentifier(id))
 							blockList.getLast().addVarDeclaration(id, DeclarationType.MULTI_SHORT_VARIABLE);
 
-					caseBooleanGuard = new GoEqual(cfg, typeLoc, typeSwitchCheck,
+					caseBooleanGuard = new GoEqual(cfg, typeLoc,
+							new VariableRef(cfg, typeLoc, "ok"),
 							new GoBoolean(cfg, typeLoc, true));
 
 					body.addNode(shortDecl);
@@ -2616,7 +2695,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new FalseEdge(previousGuard, exitNode), block);
 
 		if (ctx.simpleStmt() != null) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
 			block.mergeWith(simpleStmt.getMiddle());
 			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode), block);
@@ -2681,8 +2760,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitSelectStmt(SelectStmtContext ctx) {
-		AdjacencyMatrix<Statement, Edge, CFG> block = new AdjacencyMatrix<>();
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitSelectStmt(SelectStmtContext ctx) {
+		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		NoOp entry = new NoOp(cfg, locationOf(ctx.L_CURLY()));
 		NoOp exit = new NoOp(cfg, locationOf(ctx.R_CURLY()));
@@ -2690,7 +2769,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		block.addNode(entry);
 
 		for (CommClauseContext clause : ctx.commClause()) {
-			Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> inner = visitCommClause(clause);
+			Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> inner = visitCommClause(clause);
 			block.mergeWith(inner.getMiddle());
 			addEdge(new SequentialEdge(entry, inner.getLeft()), block);
 			addEdge(new SequentialEdge(inner.getRight(), exit), block);
@@ -2700,7 +2779,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>, Statement> visitCommClause(CommClauseContext ctx) {
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitCommClause(CommClauseContext ctx) {
 		// FIXME: we are currently skipping comm case
 		return visitStatementList(ctx.statementList());
 	}

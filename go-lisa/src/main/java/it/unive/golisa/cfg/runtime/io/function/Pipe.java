@@ -13,10 +13,10 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
@@ -38,10 +38,11 @@ public class Pipe extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param ioUnit   the unit to which this native cfg belongs to
 	 */
-	public Pipe(CodeLocation location, CompilationUnit ioUnit) {
-		super(new CFGDescriptor(location, ioUnit, false, "Pipe",
-				GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
-						new GoPointerType(PipeWriter.INSTANCE))),
+	public Pipe(CodeLocation location, CodeUnit ioUnit) {
+		super(new CodeMemberDescriptor(location, ioUnit, false, "Pipe",
+				GoTupleType.getTupleTypeOf(location,
+						GoPointerType.lookup(PipeReader.getPipeReaderType(ioUnit.getProgram())),
+						GoPointerType.lookup(PipeWriter.getPipeWriterType(ioUnit.getProgram())))),
 				PipeImpl.class);
 	}
 
@@ -84,8 +85,8 @@ public class Pipe extends NativeCFG {
 		 */
 		public PipeImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "PipeImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(PipeReader.INSTANCE),
-							new GoPointerType(PipeWriter.INSTANCE)),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(PipeReader.getPipeReaderType(null)),
+							GoPointerType.lookup(PipeWriter.getPipeWriterType(null))),
 					params);
 		}
 

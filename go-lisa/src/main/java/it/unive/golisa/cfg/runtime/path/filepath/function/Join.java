@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -38,10 +38,10 @@ public class Join extends NativeCFG {
 	 * @param location     the location where this native cfg is defined
 	 * @param pathfileUnit the unit to which this native cfg belongs to
 	 */
-	public Join(CodeLocation location, CompilationUnit pathfileUnit) {
-		super(new CFGDescriptor(location, pathfileUnit, false, "Dir",
+	public Join(CodeLocation location, CodeUnit pathfileUnit) {
+		super(new CodeMemberDescriptor(location, pathfileUnit, false, "Dir",
 				GoStringType.INSTANCE,
-				new Parameter(location, "elem", GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE)))),
+				new Parameter(location, "elem", GoSliceType.lookup(GoStringType.INSTANCE))),
 				DirImpl.class);
 	}
 
@@ -87,7 +87,7 @@ public class Join extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(

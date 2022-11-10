@@ -6,6 +6,7 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.analysis.representation.ObjectRepresentation;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -15,7 +16,9 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -94,7 +97,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		for (Pair<HeapLocation, HeapLocation> p : heap.getDecouples()) {
 			type = type.assign(p.getLeft(), p.getRight(), pp);
 
-			ExternalSet<Type> rt = type.getInferredRuntimeTypes();
+			Set<Type> rt = type.getInferredRuntimeTypes();
 			p.getLeft().setRuntimeTypes(rt);
 			p.getRight().setRuntimeTypes(rt);
 			value = value.assign(p.getLeft(), p.getRight(), pp);
@@ -110,7 +113,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		for (ValueExpression expr : exprs) {
 			type = type.assign(id, expr, pp);
 
-			ExternalSet<Type> rt = type.getInferredRuntimeTypes();
+			Set<Type> rt = type.getInferredRuntimeTypes();
 			id.setRuntimeTypes(rt);
 			expr.setRuntimeTypes(rt);
 
@@ -139,7 +142,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		for (ValueExpression expr : exprs) {
 			type = type.smallStepSemantics(expr, pp);
 
-			ExternalSet<Type> rt = type.getInferredRuntimeTypes();
+			Set<Type> rt = type.getInferredRuntimeTypes();
 			expr.setRuntimeTypes(rt);
 
 			if (expr instanceof MemoryPointer)
@@ -167,7 +170,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 
 		for (ValueExpression expr : exprs) {
 			T tmp = type.smallStepSemantics(expr, pp);
-			ExternalSet<Type> rt = tmp.getInferredRuntimeTypes();
+			Set<Type> rt = tmp.getInferredRuntimeTypes();
 			expr.setRuntimeTypes(rt);
 
 			type = type.assume(expr, pp);
@@ -184,7 +187,7 @@ public class GoAbstractState<V extends ValueDomain<V>,
 		Satisfiability valueResult = Satisfiability.BOTTOM;
 		for (ValueExpression expr : rewritten) {
 			T tmp = typeState.smallStepSemantics(expr, pp);
-			ExternalSet<Type> rt = tmp.getInferredRuntimeTypes();
+			Set<Type> rt = tmp.getInferredRuntimeTypes();
 			expr.setRuntimeTypes(rt);
 
 			typeResult = typeResult.lub(typeState.satisfies(expr, pp));
@@ -261,6 +264,14 @@ public class GoAbstractState<V extends ValueDomain<V>,
 	}
 
 	@Override
+	public GoAbstractState<V, T> forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		return new GoAbstractState<>(
+				heapState.forgetIdentifiersIf(test),
+				valueState.forgetIdentifiersIf(test),
+				typeState.forgetIdentifiersIf(test));
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -299,61 +310,13 @@ public class GoAbstractState<V extends ValueDomain<V>,
 
 	@Override
 	public DomainRepresentation representation() {
-		return new StateRepresentation(heapState.representation(), valueState.representation());
-	}
-
-	@Override
-	public DomainRepresentation typeRepresentation() {
-		return new StateRepresentation(heapState.representation(), typeState.representation());
-	}
-
-	/**
-	 * @author <a href="mailto:luca.negrini@unive.it">Luca Negrini</a>
-	 */
-	private static final class StateRepresentation extends DomainRepresentation {
-		private final DomainRepresentation heap;
-		private final DomainRepresentation value;
-
-		private StateRepresentation(DomainRepresentation heap, DomainRepresentation value) {
-			this.heap = heap;
-			this.value = value;
-		}
-
-		@Override
-		public String toString() {
-			return "heap [[ " + heap + " ]]\nvalue [[ " + value + " ]]";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((heap == null) ? 0 : heap.hashCode());
-			result = prime * result + ((value == null) ? 0 : value.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			StateRepresentation other = (StateRepresentation) obj;
-			if (heap == null) {
-				if (other.heap != null)
-					return false;
-			} else if (!heap.equals(other.heap))
-				return false;
-			if (value == null) {
-				if (other.value != null)
-					return false;
-			} else if (!value.equals(other.value))
-				return false;
-			return true;
-		}
+		DomainRepresentation h = heapState.representation();
+		DomainRepresentation t = typeState.representation();
+		DomainRepresentation v = valueState.representation();
+		return new ObjectRepresentation(Map.of(
+				HEAP_REPRESENTATION_KEY, h,
+				TYPE_REPRESENTATION_KEY, t,
+				VALUE_REPRESENTATION_KEY, v));
 	}
 
 	@Override

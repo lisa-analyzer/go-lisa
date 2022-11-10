@@ -1,8 +1,10 @@
 package it.unive.golisa.cfg.expression.literal;
 
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -18,6 +20,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
@@ -58,13 +61,35 @@ public class GoKeyedLiteral extends NaryExpression {
 	}
 
 	private Variable getVariable(Global varRef) {
-		return new Variable(varRef.getStaticType(), varRef.getName(),
-				varRef.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
+				.getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
+
+		Variable id;
+
+		if (varTableEntry == null)
+			id = new Variable(varRef.getStaticType(), varRef.getName(),
+					varRef.getLocation());
+		else
+			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),
+					varRef.getLocation());
+
+		return id;
 	}
 
 	private Variable getVariable(VariableRef varRef) {
-		return new Variable(varRef.getStaticType(), varRef.getName(),
-				varRef.getLocation());
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
+				.getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
+
+		Variable id;
+
+		if (varTableEntry == null)
+			id = new Variable(varRef.getStaticType(), varRef.getName(),
+					varRef.getLocation());
+		else
+			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),
+					varRef.getLocation());
+
+		return id;
 	}
 
 	@Override
@@ -125,6 +150,48 @@ public class GoKeyedLiteral extends NaryExpression {
 		}
 
 		/*
+		 * GoSlice allocation
+		 */
+
+		if (getStaticType() instanceof GoSliceType) {
+
+			GoSliceType sliceType = (GoSliceType) getStaticType();
+			int arrayLength = 0;
+
+			for (SymbolicExpression containerExp : containerExps) {
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
+
+				// Assign the len property to this hid
+				Variable lenProperty = new Variable(Untyped.INSTANCE, "len",
+						getLocation());
+				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, dereference,
+						lenProperty, getLocation());
+				AnalysisState<A, H, V, T> lenState = containerState.smallStepSemantics(lenAccess, this);
+
+				AnalysisState<A, H, V, T> lenResult = state.bottom();
+				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+					lenResult = lenResult.lub(
+							lenState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+
+				// Assign the cap property to this hid
+				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
+						getLocation());
+				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, dereference,
+						capProperty, getLocation());
+				AnalysisState<A, H, V, T> capState = lenResult.smallStepSemantics(capAccess, this);
+
+				AnalysisState<A, H, V, T> capResult = state.bottom();
+				for (SymbolicExpression lenId : capState.getComputedExpressions())
+					capResult = capResult.lub(
+							capState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+
+				if (getSubExpressions().length == 0)
+					return capResult.smallStepSemantics(reference, this);
+			}
+		}
+
+		/*
 		 * Struct allocation
 		 */
 		if (getStaticType() instanceof GoStructType) {
@@ -176,7 +243,7 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A, H, V, T> tmp = containerState;
 
 				for (int i = 0; i < keys.length; i++) {
-					Variable keyProperty = new Variable(Untyped.INSTANCE, keys[i].toString(),
+					Variable keyProperty = new Variable(keyType, keys[i].toString(),
 							getLocation());
 					AccessChild keyAcces = new AccessChild(contentType, dereference,
 							keyProperty, getLocation());
@@ -200,6 +267,23 @@ public class GoKeyedLiteral extends NaryExpression {
 		}
 
 		// TODO: to handle the other cases (maps...)
+
+		if (type == Untyped.INSTANCE) {
+			if (params.length > 0) {
+				AnalysisState<A, H, V, T> result = state.bottom();
+				for (ExpressionSet<SymbolicExpression> p : params) {
+					for (SymbolicExpression e : p) {
+						state.lub(state.smallStepSemantics(e, this));
+					}
+				}
+
+				return result;
+			} else {
+				return state.smallStepSemantics(new Constant(Untyped.INSTANCE, "KEYED_LITERAL", getLocation()),
+						getEvaluationPredecessor() != null ? getEvaluationPredecessor() : this);
+			}
+		}
+
 		return state.top().smallStepSemantics(new PushAny(type, getLocation()), this);
 
 	}

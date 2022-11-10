@@ -7,7 +7,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -48,6 +48,8 @@ import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.symbolic.value.operator.unary.TypeOf;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * The reduced product between relational substring abstract domain and
@@ -228,6 +230,14 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
+	public RSubs forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return new RSubs(isTop, isBottom);
+		else
+			return new RSubs(string.forgetIdentifiersIf(test), num.forgetIdentifiersIf(test));
+	}
+
+	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// TODO satisfies
 		return Satisfiability.UNKNOWN;
@@ -236,10 +246,10 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
-		return new PairRepresentation(string, num, StringRepresentation::new, StringRepresentation::new);
+			return Lattice.bottomRepresentation();
+		return new ListRepresentation(List.of(string, num), StringRepresentation::new);
 	}
 
 	@Override
@@ -253,18 +263,18 @@ public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
 	}
 
 	@Override
-	protected RSubs lubAux(RSubs other) throws SemanticException {
+	public RSubs lubAux(RSubs other) throws SemanticException {
 		return new RSubs(string.lub(other.string), num.lub(other.num));
 	}
 
 	@Override
-	protected RSubs wideningAux(RSubs other) throws SemanticException {
+	public RSubs wideningAux(RSubs other) throws SemanticException {
 		return new RSubs(string.widening(other.string), num.widening(other.num));
 
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(RSubs other) throws SemanticException {
+	public boolean lessOrEqualAux(RSubs other) throws SemanticException {
 		return string.lessOrEqual(other.string) && num.lessOrEqual(other.num);
 	}
 

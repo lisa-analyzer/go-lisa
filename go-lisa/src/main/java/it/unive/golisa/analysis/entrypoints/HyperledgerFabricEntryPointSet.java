@@ -14,6 +14,7 @@ public class HyperledgerFabricEntryPointSet extends EntryPointSet {
 	protected void build(Set<String> entryPoints) {
 		entryPoints.add("Init");
 		entryPoints.add("Invoke");
+		entryPoints.add("reflectMetadata");
 	}
 
 }

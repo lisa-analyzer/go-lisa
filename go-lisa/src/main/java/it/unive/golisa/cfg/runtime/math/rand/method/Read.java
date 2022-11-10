@@ -15,8 +15,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -39,10 +39,10 @@ public class Read extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Read(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, true, "Read",
+		super(new CodeMemberDescriptor(location, randUnit, true, "Read",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
-				new Parameter(location, "this", Rand.INSTANCE),
-				new Parameter(location, "p", GoSliceType.lookup(new GoSliceType(GoIntType.INSTANCE)))),
+				new Parameter(location, "this", Rand.getRandType(randUnit.getProgram())),
+				new Parameter(location, "p", GoSliceType.lookup(GoIntType.INSTANCE))),
 				ReadImpl.class);
 	}
 
@@ -90,7 +90,7 @@ public class Read extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(

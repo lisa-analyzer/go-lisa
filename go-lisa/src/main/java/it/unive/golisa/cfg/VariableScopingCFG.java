@@ -2,14 +2,17 @@ package it.unive.golisa.cfg;
 
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
-import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,8 +40,8 @@ public class VariableScopingCFG extends CFG {
 	 * @param adjacencyMatrix the matrix containing all the statements and the
 	 *                            edges that will be part of this cfg
 	 */
-	public VariableScopingCFG(CFGDescriptor descriptor, Collection<Statement> entrypoints,
-			AdjacencyMatrix<Statement, Edge, CFG> adjacencyMatrix) {
+	public VariableScopingCFG(CodeMemberDescriptor descriptor, Collection<Statement> entrypoints,
+			NodeList<CFG, Statement, Edge> adjacencyMatrix) {
 		super(descriptor, entrypoints, adjacencyMatrix);
 		scopingMap = new HashMap<>();
 	}
@@ -48,7 +51,7 @@ public class VariableScopingCFG extends CFG {
 	 * 
 	 * @param descriptor the descriptor of this cfg
 	 */
-	public VariableScopingCFG(CFGDescriptor descriptor) {
+	public VariableScopingCFG(CodeMemberDescriptor descriptor) {
 		super(descriptor);
 		scopingMap = new HashMap<>();
 	}
@@ -61,7 +64,13 @@ public class VariableScopingCFG extends CFG {
 	 * @param visibleIds the IDs visible to collect
 	 */
 	public void registerScoping(Statement node, Map<String, Set<IdInfo>> visibleIds) {
-		scopingMap.put(node, new HashMap<>(visibleIds));
+		Map<String, Set<IdInfo>> scope = new HashMap<>();
+		visibleIds.entrySet().forEach(e -> {
+			scope.putIfAbsent(e.getKey(), new HashSet<>());
+			for (IdInfo info : e.getValue())
+				scope.get(e.getKey()).add(info);
+		});
+		scopingMap.put(node, scope);
 	}
 
 	/**
@@ -91,5 +100,22 @@ public class VariableScopingCFG extends CFG {
 		}
 
 		return guards;
+	}
+
+	/**
+	 * Yields the variable table entry concerning {@code variableName}.
+	 * 
+	 * @param variableName the variable to be search
+	 * @param location     the location
+	 * 
+	 * @return the variable table entry about {@code variableName}
+	 */
+	public VariableTableEntry getVariableTableEntryIfExist(String variableName, CodeLocation location) {
+		for (VariableTableEntry table : getDescriptor().getVariables())
+			if (table.getName().equals(variableName)
+					|| table.getLocation().equals(location))
+				return table;
+		return null;
+
 	}
 }

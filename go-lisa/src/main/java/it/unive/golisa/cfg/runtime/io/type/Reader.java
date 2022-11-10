@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.io.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A I/O Reader type.
@@ -17,30 +18,10 @@ public class Reader extends GoStructType {
 	/**
 	 * Unique instance of Reader type.
 	 */
-	public static final Reader INSTANCE = new Reader();
+	private static Reader INSTANCE;
 
-	private Reader() {
-		this("Reader", buildReaderUnit());
-	}
-
-	private Reader(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildReaderUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Reader", false);
-		return randUnit;
-	}
-
-	/**
-	 * Registers methods of Reader.
-	 */
-	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
-		// TODO: add methods
-
+	private Reader(CompilationUnit unit) {
+		super("Reader", unit);
 	}
 
 	@Override
@@ -56,5 +37,21 @@ public class Reader extends GoStructType {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+
+	/**
+	 * Yields the {@link Reader} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Reader} type
+	 */
+	public static Reader getReaderType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit readerUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Reader", false);
+			INSTANCE = new Reader(readerUnit);
+		}
+
+		return INSTANCE;
 	}
 }

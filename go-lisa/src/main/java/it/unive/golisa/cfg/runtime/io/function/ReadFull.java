@@ -5,6 +5,7 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,8 +16,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -24,7 +25,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.common.UInt8;
 
 /**
  * func ReadFull(r Reader, buf []byte) (n int, err error).
@@ -40,11 +40,11 @@ public class ReadFull extends NativeCFG {
 	 * @param ioUnit   the unit to which this native cfg belongs to
 	 */
 	public ReadFull(CodeLocation location, CompilationUnit ioUnit) {
-		super(new CFGDescriptor(location, ioUnit, false, "ReadFull",
+		super(new CodeMemberDescriptor(location, ioUnit, false, "ReadFull",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE,
 						GoErrorType.INSTANCE),
-				new Parameter(location, "r", Reader.INSTANCE),
-				new Parameter(location, "buf", GoSliceType.lookup(new GoSliceType(UInt8.INSTANCE)))),
+				new Parameter(location, "r", Reader.getReaderType(ioUnit.getProgram())),
+				new Parameter(location, "buf", GoSliceType.lookup(GoUInt8Type.INSTANCE))),
 				ReadFullImpl.class);
 	}
 
@@ -92,7 +92,7 @@ public class ReadFull extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(

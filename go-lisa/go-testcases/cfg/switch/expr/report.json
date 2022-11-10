@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.mixed(int_tag).dot", "untyped_main.multiExps(int_tag).dot", "untyped_main.noGuard(int_x,_int_y).dot", "untyped_main.noGuardWithAsg().dot", "untyped_main.simpleSwitch(int_x).dot", "untyped_main.simpleSwitchWithDefault(int_x).dot", "untyped_main.simpleSwitchWithDefault2(int_x).dot", "untyped_main.simpleSwitchWithFt(int_x).dot" ]
+  "files" : [ "untyped_main.mixed(int_tag)_cfg.json", "untyped_main.multiExps(int_tag)_cfg.json", "untyped_main.noGuard(int_x,_int_y)_cfg.json", "untyped_main.noGuardWithAsg()_cfg.json", "untyped_main.simpleSwitch(int_x)_cfg.json", "untyped_main.simpleSwitchWithDefault(int_x)_cfg.json", "untyped_main.simpleSwitchWithDefault2(int_x)_cfg.json", "untyped_main.simpleSwitchWithFt(int_x)_cfg.json" ]
 }

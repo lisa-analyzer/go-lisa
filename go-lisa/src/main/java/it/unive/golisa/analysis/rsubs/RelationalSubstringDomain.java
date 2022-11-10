@@ -34,6 +34,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -249,6 +251,18 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
+	public RelationalSubstringDomain forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return this;
+
+		RelationalSubstringDomain result = new RelationalSubstringDomain(lattice, new HashMap<>(function));
+		Set<Identifier> keys = result.function.keySet().stream().filter(test::test).collect(Collectors.toSet());
+		keys.forEach(result.function::remove);
+
+		return result;
+	}
+
+	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		// rsubs can satisfy contains, equals, and & or expressions (all binary
 		// expressions)
@@ -291,10 +305,10 @@ public class RelationalSubstringDomain
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
 		StringBuilder builder = new StringBuilder();
 		for (Entry<Identifier, ExpressionInverseSet<ValueExpression>> entry : function.entrySet())
@@ -403,7 +417,7 @@ public class RelationalSubstringDomain
 		if (isBottom() || isTop())
 			return this;
 
-		Map<Identifier, ExpressionInverseSet<ValueExpression>> function = mkNewFunction(null);
+		Map<Identifier, ExpressionInverseSet<ValueExpression>> function = mkNewFunction(null, false);
 		for (Identifier id : getKeys()) {
 			Identifier lifted = lifter.apply(id);
 			if (lifted != null)
@@ -462,7 +476,7 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	protected RelationalSubstringDomain mk(ExpressionInverseSet<ValueExpression> lattice,
+	public RelationalSubstringDomain mk(ExpressionInverseSet<ValueExpression> lattice,
 			Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
 		return new RelationalSubstringDomain(lattice, function);
 	}

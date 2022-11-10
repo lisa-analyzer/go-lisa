@@ -13,10 +13,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -40,9 +40,10 @@ public class Create extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param osUnit   the unit to which this native cfg belongs to
 	 */
-	public Create(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "Create",
-				GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+	public Create(CodeLocation location, CodeUnit osUnit) {
+		super(new CodeMemberDescriptor(location, osUnit, false, "Create",
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(osUnit.getProgram())),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "name", GoStringType.INSTANCE)),
 				CreateImpl.class);
 	}
@@ -86,12 +87,13 @@ public class Create extends NativeCFG {
 		 */
 		public CreateImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "CreateImpl",
-					GoTupleType.getTupleTypeOf(location, new GoPointerType(File.INSTANCE), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(File.getFileType(null)),
+							GoErrorType.INSTANCE),
 					expr);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(

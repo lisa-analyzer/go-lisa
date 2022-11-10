@@ -9,8 +9,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,15 +29,16 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoSliceType} representing a slice type.
 	 * 
-	 * @param type the slice type to lookup
+	 * @param type the content type of the slice type to lookup
 	 * 
 	 * @return the unique instance of {@link GoSliceType} representing the slice
 	 *             type given as argument
 	 */
-	public static GoSliceType lookup(GoSliceType type) {
-		if (!sliceTypes.contains(type))
-			sliceTypes.add(type);
-		return sliceTypes.stream().filter(x -> x.equals(type)).findFirst().get();
+	public static GoSliceType lookup(Type type) {
+		GoSliceType sliceType = new GoSliceType(type);
+		if (!sliceTypes.contains(sliceType))
+			sliceTypes.add(sliceType);
+		return sliceTypes.stream().filter(x -> x.equals(sliceType)).findFirst().get();
 	}
 
 	/**
@@ -45,7 +46,7 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * 
 	 * @param contentType the content type
 	 */
-	public GoSliceType(Type contentType) {
+	private GoSliceType(Type contentType) {
 		this.contentType = contentType;
 	}
 
@@ -106,11 +107,8 @@ public class GoSliceType implements GoType, InMemoryType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoSliceType in : sliceTypes)
-			instances.add(in);
-		return instances;
+	public Set<Type> allInstances(TypeSystem type) {
+		return all();
 	}
 
 	/**
@@ -118,8 +116,8 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * 
 	 * @return all the slice types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoSliceType in : sliceTypes)
 			instances.add(in);
 		return instances;
@@ -158,4 +156,5 @@ public class GoSliceType implements GoType, InMemoryType {
 	public static GoSliceType getSliceOfStrings() {
 		return GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
 	}
+
 }

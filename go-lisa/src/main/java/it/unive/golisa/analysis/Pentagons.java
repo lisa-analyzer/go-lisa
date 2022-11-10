@@ -5,7 +5,7 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.PairRepresentation;
+import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -13,6 +13,7 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * The pentagons abstract domain, corresponding to the reduced product between
@@ -75,6 +76,13 @@ public class Pentagons implements ValueDomain<Pentagons> {
 	}
 
 	@Override
+	public Pentagons forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		ValueEnvironment<TarsisIntv> newLeft = left.forgetIdentifiersIf(test);
+		StrictUpperBounds newRight = right.forgetIdentifiersIf(test);
+		return new Pentagons(newLeft, newRight);
+	}
+
+	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		return left.satisfies(expression, pp).and(right.satisfies(expression, pp));
 	}
@@ -86,7 +94,7 @@ public class Pentagons implements ValueDomain<Pentagons> {
 
 	@Override
 	public DomainRepresentation representation() {
-		return new PairRepresentation(left.representation(), right.representation());
+		return new ListRepresentation(left.representation(), right.representation());
 	}
 
 	@Override

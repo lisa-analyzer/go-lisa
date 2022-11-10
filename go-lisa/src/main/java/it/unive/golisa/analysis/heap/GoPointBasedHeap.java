@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -154,6 +155,11 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	}
 
 	@Override
+	public GoPointBasedHeap forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		return from(new GoPointBasedHeap(heapEnv.forgetIdentifiersIf(test)));
+	}
+
+	@Override
 	public Satisfiability satisfies(SymbolicExpression expression, ProgramPoint pp) throws SemanticException {
 		// we leave the decision to the value domain
 		return Satisfiability.UNKNOWN;
@@ -162,10 +168,10 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
 		return heapEnv.representation();
 	}
@@ -201,7 +207,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	}
 
 	@Override
-	protected GoPointBasedHeap lubAux(GoPointBasedHeap other) throws SemanticException {
+	public GoPointBasedHeap lubAux(GoPointBasedHeap other) throws SemanticException {
 		Set<Pair<HeapLocation, HeapLocation>> lubCopies = new HashSet<>();
 
 		for (Pair<HeapLocation, HeapLocation> p : this.decouples)
@@ -213,12 +219,12 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	}
 
 	@Override
-	protected GoPointBasedHeap wideningAux(GoPointBasedHeap other) throws SemanticException {
+	public GoPointBasedHeap wideningAux(GoPointBasedHeap other) throws SemanticException {
 		return lubAux(other);
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(GoPointBasedHeap other) throws SemanticException {
+	public boolean lessOrEqualAux(GoPointBasedHeap other) throws SemanticException {
 		return heapEnv.lessOrEqual(other.heapEnv);
 	}
 
@@ -248,7 +254,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 	}
 
 	@Override
-	protected GoPointBasedHeap semanticsOf(HeapExpression expression, ProgramPoint pp) throws SemanticException {
+	public GoPointBasedHeap semanticsOf(HeapExpression expression, ProgramPoint pp) throws SemanticException {
 		return this;
 	}
 
@@ -306,7 +312,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 								expression.getCodeLocation());
 
 					if (expression.hasRuntimeTypes())
-						e.setRuntimeTypes(expression.getRuntimeTypes());
+						e.setRuntimeTypes(expression.getRuntimeTypes(null));
 					result.add(e);
 				} else if (rec instanceof GoAllocationSite)
 					result.add(rec);
@@ -321,7 +327,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 			if (expression.getStaticType() instanceof GoPointerType) {
 				GoPointerType pointer = (GoPointerType) expression.getStaticType();
 				id = new HeapAllocationSite(
-						pointer.getInnerTypes().stream().findAny().get(),
+						pointer.getInnerType(),
 						expression.getCodeLocation().getCodeLocation(),
 						true,
 						expression.getCodeLocation());
@@ -334,7 +340,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 			}
 
 			if (expression.hasRuntimeTypes())
-				id.setRuntimeTypes(expression.getRuntimeTypes());
+				id.setRuntimeTypes(expression.getRuntimeTypes(null));
 			return new ExpressionSet<>(id);
 		}
 
@@ -350,7 +356,8 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 							(GoAllocationSite) loc,
 							loc.getCodeLocation());
 					if (expression.hasRuntimeTypes())
-						e.setRuntimeTypes(loc.getRuntimeTypes());
+//						e.setRuntimeTypes(loc.getRuntimeTypes(null));
+						e.setRuntimeTypes(expression.getRuntimeTypes(null));
 					result.add(e);
 				} else
 					result.add(loc);
@@ -393,7 +400,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 						site,
 						site.getCodeLocation());
 				if (v.hasRuntimeTypes())
-					e.setRuntimeTypes(v.getRuntimeTypes());
+					e.setRuntimeTypes(v.getRuntimeTypes(null));
 				result.add(e);
 			}
 

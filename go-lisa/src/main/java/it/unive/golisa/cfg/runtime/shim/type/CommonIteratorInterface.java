@@ -5,9 +5,10 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.InterfaceUnit;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.AbstractCodeMember;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 
 /**
  * A CommonIteratorInterface type.
@@ -19,29 +20,38 @@ public class CommonIteratorInterface extends GoInterfaceType {
 	/**
 	 * Unique instance of {@link CommonIteratorInterface} type.
 	 */
-	public static final CommonIteratorInterface INSTANCE = new CommonIteratorInterface();
+	private static CommonIteratorInterface INSTANCE;
 
-	private CommonIteratorInterface() {
-		this("CommonIteratorInterface", buildCommonIteratorInterfaceUnit());
+	private CommonIteratorInterface(CompilationUnit unit) {
+		super("CommonIteratorInterface", unit);
 	}
 
-	private CommonIteratorInterface(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
+	/**
+	 * Yields the {@link CommonIteratorInterface} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link CommonIteratorInterface} type
+	 */
+	public static CommonIteratorInterface getCommonIteratorInterfaceType(Program program) {
+		if (INSTANCE == null) {
+			InterfaceUnit commonIteratorInterfeceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+					program, "CommonIteratorInterface",
+					false);
 
-	private static CompilationUnit buildCommonIteratorInterfaceUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit commonIteratorInterfeceUnit = new CompilationUnit(unknownLocation, "CommonIteratorInterface",
-				false);
+			CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+					commonIteratorInterfeceUnit, true, "HasNext",
+					GoBoolType.INSTANCE);
+			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-		CFGDescriptor desc = new CFGDescriptor(unknownLocation, commonIteratorInterfeceUnit, true, "HasNext",
-				GoBoolType.INSTANCE);
-		commonIteratorInterfeceUnit.addInstanceCFG(new CFG(desc));
+			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorInterfeceUnit,
+					true,
+					"Close", GoErrorType.INSTANCE);
+			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
+			INSTANCE = new CommonIteratorInterface(commonIteratorInterfeceUnit);
+		}
 
-		desc = new CFGDescriptor(unknownLocation, commonIteratorInterfeceUnit, true, "Close", GoErrorType.INSTANCE);
-		commonIteratorInterfeceUnit.addInstanceCFG(new CFG(desc));
-
-		return commonIteratorInterfeceUnit;
+		return INSTANCE;
 	}
 
 	@Override

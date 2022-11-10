@@ -10,7 +10,7 @@ import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
-import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
@@ -25,139 +25,127 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 
 	@Test
 	public void taintTest001() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t1", "t1.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest002() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t2", "t2.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest003() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t3", "t3.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest004() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t4", "t4.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest005() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t5", "t5.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest006() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t6", "t6.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest007() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t7", "t7.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest008() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t8", "t8.go", conf, annSet);
 	}
 
 	@Test
 	public void taintTest009() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new InferenceSystem<>(new TaintDomain()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.addSemanticCheck(new TaintChecker())
-				.setJsonOutput(true)
-				.setOpenCallPolicy(ReturnTopPolicy.INSTANCE)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.jsonOutput = true;
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		perform("taint/t9", "t9.go", conf, annSet);
 	}
 

@@ -6,7 +6,6 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -50,8 +49,32 @@ public class CloseBlock extends Statement {
 
 	@Override
 	public String toString() {
-
 		return "Close block: " + open.getLocation();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((open == null) ? 0 : open.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CloseBlock other = (CloseBlock) obj;
+		if (open == null) {
+			if (other.open != null)
+				return false;
+		} else if (!open.equals(other.open))
+			return false;
+		return true;
 	}
 
 	/**
@@ -66,9 +89,9 @@ public class CloseBlock extends Statement {
 					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// The close block does not compute any symbolic expression, so it
-		// returns the empty set
-		// just popping the scope on the analysis state
-		return new AnalysisState<A, H, V, T>(entryState.getState().popScope(new ScopeToken(open)),
-				new ExpressionSet<>());
+		// returns the empty set just popping the scope on the analysis state
+		return new AnalysisState<>(entryState.getState().popScope(new ScopeToken(open)),
+				entryState.getComputedExpressions(),
+				entryState.getAliasing());
 	}
 }

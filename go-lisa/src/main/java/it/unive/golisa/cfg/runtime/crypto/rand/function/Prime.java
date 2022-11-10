@@ -12,10 +12,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -37,11 +37,12 @@ public class Prime extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
-	public Prime(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, false, "Read",
-				GoTupleType.getTupleTypeOf(location, it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE,
+	public Prime(CodeLocation location, CodeUnit randUnit) {
+		super(new CodeMemberDescriptor(location, randUnit, false, "Read",
+				GoTupleType.getTupleTypeOf(location,
+						it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(randUnit.getProgram()),
 						GoErrorType.INSTANCE),
-				new Parameter(location, "rand", Reader.INSTANCE),
+				new Parameter(location, "rand", Reader.getReaderType(randUnit.getProgram())),
 				new Parameter(location, "bits", GoIntType.INSTANCE)),
 				PrimeImpl.class);
 	}
@@ -86,11 +87,11 @@ public class Prime extends NativeCFG {
 		 */
 		public PrimeImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "PrimeImpl", GoTupleType.getTupleTypeOf(location,
-					it.unive.golisa.cfg.runtime.math.big.type.Int.INSTANCE, GoErrorType.INSTANCE), left, right);
+					it.unive.golisa.cfg.runtime.math.big.type.Int.getIntType(null), GoErrorType.INSTANCE), left, right);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(

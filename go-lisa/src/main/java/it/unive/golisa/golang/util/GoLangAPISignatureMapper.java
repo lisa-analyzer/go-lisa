@@ -44,7 +44,7 @@ public class GoLangAPISignatureMapper {
 		build();
 
 		t = System.currentTimeMillis() - t;
-		System.out.println();
+		System.out.println(t);
 	}
 
 	public Set<String> getPackages() {

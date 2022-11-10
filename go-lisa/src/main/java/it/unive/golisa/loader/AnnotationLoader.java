@@ -4,11 +4,12 @@ import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
 import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
+import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CodeMember;
-import it.unive.lisa.program.cfg.NativeCFG;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +34,7 @@ public class AnnotationLoader implements Loader {
 	 * The set of annotations applied after the calling of load method by the
 	 * loader.
 	 */
-	protected final Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations;
+	protected final Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations;
 
 	/**
 	 * Builds an instance of annotation loader.
@@ -65,21 +66,38 @@ public class AnnotationLoader implements Loader {
 
 	@Override
 	public void load(Program program) {
-		Collection<CodeMember> codeMembers = program.getAllCodeMembers();
-		Collection<NativeCFG> constructs = program.getAllConstructs();
-		Collection<Global> globals = program.getAllGlobals();
+		Collection<CodeMember> codeMembers = program.getCodeMembers();
 
 		for (CodeMember cm : codeMembers)
 			for (AnnotationSet set : annotationSets)
 				for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 					checkAndAddAnnotation(cm.getDescriptor(), ca);
 
-		for (NativeCFG c : constructs) {
-			for (AnnotationSet set : annotationSets)
-				for (CodeAnnotation ca : set.getAnnotationsForConstructors())
-					checkAndAddAnnotation(c.getDescriptor(), ca);
+		for (Unit unit : program.getUnits()) {
+			for (CodeMember cm : unit.getCodeMembers()) {
+				for (AnnotationSet set : annotationSets) {
+					for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
+						checkAndAddAnnotation(cm.getDescriptor(), ca);
+					for (CodeAnnotation ca : set.getAnnotationsForConstructors())
+						checkAndAddAnnotation(cm.getDescriptor(), ca);
+				}
+			}
+
+			if (unit instanceof CompilationUnit) {
+				CompilationUnit cUnit = (CompilationUnit) unit;
+
+				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {
+					for (AnnotationSet set : annotationSets) {
+						for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
+							checkAndAddAnnotation(cm.getDescriptor(), ca);
+						for (CodeAnnotation ca : set.getAnnotationsForConstructors())
+							checkAndAddAnnotation(cm.getDescriptor(), ca);
+					}
+				}
+			}
 		}
 
+		Collection<Global> globals = program.getGlobals();
 		for (Global g : globals) {
 			// TODO
 		}
@@ -90,7 +108,7 @@ public class AnnotationLoader implements Loader {
 	 * 
 	 * @return the annotations applied after a load
 	 */
-	public Set<Pair<CodeAnnotation, CFGDescriptor>> getAppliedAnnotations() {
+	public Set<Pair<CodeAnnotation, CodeMemberDescriptor>> getAppliedAnnotations() {
 		return appliedAnnotations;
 	}
 
@@ -100,7 +118,7 @@ public class AnnotationLoader implements Loader {
 	 * @param descriptor the descriptor
 	 * @param ca         the code annotation
 	 */
-	private void checkAndAddAnnotation(CFGDescriptor descriptor, CodeAnnotation ca) {
+	private void checkAndAddAnnotation(CodeMemberDescriptor descriptor, CodeAnnotation ca) {
 		if (ca instanceof MethodAnnotation) {
 			MethodAnnotation ma = (MethodAnnotation) ca;
 			if (descriptor.getUnit().getName().equals(ma.getUnit())

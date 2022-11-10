@@ -14,10 +14,10 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -39,12 +39,12 @@ public class CopyN extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param ioUnit   the unit to which this native cfg belongs to
 	 */
-	public CopyN(CodeLocation location, CompilationUnit ioUnit) {
-		super(new CFGDescriptor(location, ioUnit, false, "CopyN",
+	public CopyN(CodeLocation location, CodeUnit ioUnit) {
+		super(new CodeMemberDescriptor(location, ioUnit, false, "CopyN",
 				GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE,
 						GoErrorType.INSTANCE),
-				new Parameter(location, "dsr", Writer.INSTANCE),
-				new Parameter(location, "src", Reader.INSTANCE),
+				new Parameter(location, "dsr", Writer.getWriterType(ioUnit.getProgram())),
+				new Parameter(location, "src", Reader.getReaderType(ioUnit.getProgram())),
 				new Parameter(location, "n", GoInt64Type.INSTANCE)),
 				CopyNImpl.class);
 	}

@@ -90,14 +90,14 @@ public class GoMake extends NaryExpression {
 			int length = (int) ((GoInteger) getSubExpressions()[0]).getValue();
 			int cap = getSubExpressions().length == 1 ? length : (int) ((GoInteger) getSubExpressions()[1]).getValue();
 
-			GoArrayType arrayType = GoArrayType.lookup(new GoArrayType(contentType, length));
+			GoArrayType arrayType = GoArrayType.lookup(contentType, length);
 			Expression array = arrayType.defaultValue(getCFG(), underlyingArrayLocation);
 			AnalysisState<A, H, V, T> arraySemantics = array.semantics(state, interprocedural,
 					new StatementStore<>(state));
 
 			// Allocates the slice, that is an array of three elements: pointer
 			// to the underlying array, length and capability
-			GoSliceType sliceType = GoSliceType.lookup(new GoSliceType(contentType));
+			GoSliceType sliceType = GoSliceType.lookup(contentType);
 
 			HeapAllocation sliceCreated = new HeapAllocation(sliceType, getLocation());
 
@@ -160,7 +160,7 @@ public class GoMake extends NaryExpression {
 
 		// map allocation
 		if (type instanceof GoMapType)
-			return state.top().smallStepSemantics(new PushAny(type, getLocation()),
+			return state.smallStepSemantics(new PushAny(type, getLocation()),
 					this);
 
 		return state.top().smallStepSemantics(new PushAny(type, getLocation()),

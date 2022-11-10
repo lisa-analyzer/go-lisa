@@ -1,6 +1,10 @@
 package it.unive.golisa.analysis.ni;
 
 import it.unive.golisa.analysis.taint.Tainted;
+import it.unive.golisa.cfg.expression.unary.GoRange;
+import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
+import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
+import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
@@ -12,6 +16,8 @@ import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -22,6 +28,7 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -103,6 +110,19 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public IntegrityNIDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
+
+		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
+
+			Statement condition = g.getCondition();
+			if (condition instanceof GoRange && isMapRange((GoRange) condition)
+					&& matchMapRangeIds((GoRange) condition, id))
+				return true;
+			return false;
+		});
+
+		if (isAssignedFromMapIteration)
+			return LOW;
+
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
 			return super.variable(id, pp);
@@ -116,11 +136,46 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 		return super.variable(id, pp);
 	}
 
+	private boolean matchMapRangeIds(GoRange range, Identifier id) {
+
+		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
+	}
+
+	private boolean matchMapRangeId(Statement st, Identifier id) {
+
+		if (st instanceof VariableRef) {
+			VariableRef vRef = (VariableRef) st;
+			if (vRef.getVariable().equals(id)) {
+				Statement pred = st.getEvaluationPredecessor();
+				if (pred != null) {
+					if (st.getEvaluationPredecessor() instanceof GoRangeGetNextIndex
+							|| st.getEvaluationPredecessor() instanceof GoRangeGetNextValue) {
+						for (Type t : id.getRuntimeTypes(null))
+							if (t instanceof GoMapType)
+								return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isMapRange(GoRange range) {
+
+		if (range.getCollectionTypes() == null) {
+			// range not evaluated yet
+			return false;
+		}
+
+		return range.getCollectionTypes().stream()
+				.anyMatch(type -> type instanceof GoMapType || type == Untyped.INSTANCE);
+	}
+
 	@Override
 	public DomainRepresentation representation() {
-		return this == BOTTOM ? Lattice.BOTTOM_REPR
+		return this == BOTTOM ? Lattice.bottomRepresentation()
 				: this == HIGH ? new StringRepresentation("H")
-						: this == LOW ? new StringRepresentation("L") : Lattice.TOP_REPR;
+						: this == LOW ? new StringRepresentation("L") : Lattice.topRepresentation();
 	}
 
 	@Override
@@ -142,14 +197,23 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 		return this == LOW;
 	}
 
+	/**
+	 * Yields true if the state is high.
+	 * 
+	 * @return {@code true} if the the state is high, otherwise {@code false}
+	 */
+	public boolean isHighIntegrity() {
+		return this == HIGH;
+	}
+
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp)
+	public InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp)
 			throws SemanticException {
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalNonNullConstant(Constant constant, IntegrityNIDomain state,
+	public InferredPair<IntegrityNIDomain> evalNonNullConstant(Constant constant, IntegrityNIDomain state,
 			ProgramPoint pp) throws SemanticException {
 		if (constant instanceof Tainted)
 			return new InferredPair<>(this, LOW, state(state, pp));
@@ -157,13 +221,13 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalUnaryExpression(UnaryOperator operator, IntegrityNIDomain arg,
+	public InferredPair<IntegrityNIDomain> evalUnaryExpression(UnaryOperator operator, IntegrityNIDomain arg,
 			IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		return new InferredPair<>(this, arg, state(state, pp));
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalBinaryExpression(BinaryOperator operator,
+	public InferredPair<IntegrityNIDomain> evalBinaryExpression(BinaryOperator operator,
 			IntegrityNIDomain left,
 			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		if (left == LOW || right == LOW)
@@ -176,7 +240,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalTernaryExpression(TernaryOperator operator,
+	public InferredPair<IntegrityNIDomain> evalTernaryExpression(TernaryOperator operator,
 			IntegrityNIDomain left,
 			IntegrityNIDomain middle, IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp)
 			throws SemanticException {
@@ -190,9 +254,9 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalIdentifier(Identifier id,
+	public InferredPair<IntegrityNIDomain> evalIdentifier(Identifier id,
 			InferenceSystem<IntegrityNIDomain> environment, ProgramPoint pp) throws SemanticException {
-		IntegrityNIDomain variable = variable(id, null);
+		IntegrityNIDomain variable = variable(id, pp);
 		if (!variable.isBottom())
 			return new InferredPair<>(this, variable, state(environment.getExecutionState(), pp));
 		else
@@ -200,13 +264,13 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalPushAny(PushAny pushAny, IntegrityNIDomain state, ProgramPoint pp)
+	public InferredPair<IntegrityNIDomain> evalPushAny(PushAny pushAny, IntegrityNIDomain state, ProgramPoint pp)
 			throws SemanticException {
 		return new InferredPair<>(this, LOW, state(state, pp));
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalTypeConv(BinaryExpression conv, IntegrityNIDomain left,
+	public InferredPair<IntegrityNIDomain> evalTypeConv(BinaryExpression conv, IntegrityNIDomain left,
 			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		if (left == LOW || right == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
@@ -218,7 +282,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected InferredPair<IntegrityNIDomain> evalTypeCast(BinaryExpression cast, IntegrityNIDomain left,
+	public InferredPair<IntegrityNIDomain> evalTypeCast(BinaryExpression cast, IntegrityNIDomain left,
 			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		if (left == LOW || right == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
@@ -231,7 +295,7 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		for (Type t : id.getRuntimeTypes())
+		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
 		return false;
@@ -243,17 +307,17 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	protected IntegrityNIDomain lubAux(IntegrityNIDomain other) throws SemanticException {
+	public IntegrityNIDomain lubAux(IntegrityNIDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected IntegrityNIDomain wideningAux(IntegrityNIDomain other) throws SemanticException {
+	public IntegrityNIDomain wideningAux(IntegrityNIDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(IntegrityNIDomain other) throws SemanticException {
+	public boolean lessOrEqualAux(IntegrityNIDomain other) throws SemanticException {
 		return false; // should never happen
 	}
 

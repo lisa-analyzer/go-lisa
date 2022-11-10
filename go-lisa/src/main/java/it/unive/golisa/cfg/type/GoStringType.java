@@ -7,9 +7,10 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.StringType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * String type of Go. This is the only string type available for Go. It
@@ -62,7 +63,7 @@ public class GoStringType implements StringType, GoType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
 	}
 }

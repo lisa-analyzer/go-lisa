@@ -28,8 +28,11 @@ import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The strict upper bound relational abstract domain.
@@ -176,6 +179,18 @@ public class StrictUpperBounds
 	}
 
 	@Override
+	public StrictUpperBounds forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return this;
+
+		StrictUpperBounds result = new StrictUpperBounds(lattice, new HashMap<>(function));
+		Set<Identifier> keys = result.function.keySet().stream().filter(test::test).collect(Collectors.toSet());
+		keys.forEach(result.function::remove);
+
+		return result;
+	}
+
+	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 
 		if (expression instanceof UnaryExpression) {
@@ -311,7 +326,7 @@ public class StrictUpperBounds
 		if (isBottom() || isTop())
 			return this;
 
-		Map<Identifier, ExpressionInverseSet<Identifier>> function = mkNewFunction(null);
+		Map<Identifier, ExpressionInverseSet<Identifier>> function = mkNewFunction(null, false);
 		for (Identifier id : getKeys()) {
 			Identifier lifted = lifter.apply(id);
 			if (lifted != null)
@@ -322,7 +337,7 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	protected StrictUpperBounds mk(ExpressionInverseSet<Identifier> lattice,
+	public StrictUpperBounds mk(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		return new StrictUpperBounds(lattice, function);
 	}

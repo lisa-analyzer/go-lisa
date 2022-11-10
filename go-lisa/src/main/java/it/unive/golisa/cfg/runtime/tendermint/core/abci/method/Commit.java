@@ -12,8 +12,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -39,8 +39,9 @@ public class Commit extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public Commit(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CFGDescriptor(location, abciUnit, true, "EndBlock", ResponseCommit.INSTANCE,
-				new Parameter(location, "this", BaseApplication.INSTANCE)),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "EndBlock",
+				ResponseCommit.getRequestEndBlockType(abciUnit.getProgram()),
+				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram()))),
 				CommitImpl.class);
 	}
 
@@ -82,17 +83,18 @@ public class Commit extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public CommitImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "CommitImpl", ResponseCommit.INSTANCE, expr);
+			super(cfg, location, "CommitImpl", ResponseCommit.getRequestEndBlockType(null), expr);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(ResponseCommit.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(new PushAny(ResponseCommit.getRequestEndBlockType(null), getLocation()),
+					original);
 		}
 	}
 }

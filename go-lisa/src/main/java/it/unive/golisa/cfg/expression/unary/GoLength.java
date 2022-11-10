@@ -20,6 +20,7 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -41,14 +42,15 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>,
+	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		TypeSystem types = getProgram().getTypes();
 		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type type : expr.getRuntimeTypes()) {
+		for (Type type : expr.getRuntimeTypes(types)) {
 			if (type.isArrayType() || type instanceof GoSliceType) {
 				// When expr is an array or a slice, we access the len property
 				AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);

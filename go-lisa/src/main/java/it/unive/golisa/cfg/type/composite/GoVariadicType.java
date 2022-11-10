@@ -5,8 +5,8 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,12 +26,13 @@ public class GoVariadicType implements GoType {
 	 * Yields a unique instance (either an existing one or a fresh one) of
 	 * {@link GoVariadicType} representing a variadic type.
 	 * 
-	 * @param type the variadic type to lookup
+	 * @param conentType the content type of the variadic type to lookup
 	 * 
 	 * @return the unique instance of {@link GoVariadicType} representing the
 	 *             function type given as argument
 	 */
-	public static GoVariadicType lookup(GoVariadicType type) {
+	public static GoVariadicType lookup(Type conentType) {
+		GoVariadicType type = new GoVariadicType(conentType);
 		if (!variadicTypes.contains(type))
 			variadicTypes.add(type);
 		return variadicTypes.stream().filter(x -> x.equals(type)).findFirst().get();
@@ -42,7 +43,7 @@ public class GoVariadicType implements GoType {
 	 * 
 	 * @param contentType the content type
 	 */
-	public GoVariadicType(Type contentType) {
+	private GoVariadicType(Type contentType) {
 		this.contentType = contentType;
 	}
 
@@ -102,19 +103,16 @@ public class GoVariadicType implements GoType {
 	 * 
 	 * @return all the variadic types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoVariadicType in : variadicTypes)
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoVariadicType in : variadicTypes)
-			instances.add(in);
-		return instances;
+	public Set<Type> allInstances(TypeSystem type) {
+		return all();
 	}
 
 	/**

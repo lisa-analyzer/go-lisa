@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -37,9 +37,9 @@ public class NopCloser extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param ioUnit   the unit to which this native cfg belongs to
 	 */
-	public NopCloser(CodeLocation location, CompilationUnit ioUnit) {
-		super(new CFGDescriptor(location, ioUnit, false, "NopCloser", Reader.INSTANCE,
-				new Parameter(location, "r", Reader.INSTANCE)),
+	public NopCloser(CodeLocation location, CodeUnit ioUnit) {
+		super(new CodeMemberDescriptor(location, ioUnit, false, "NopCloser", Reader.getReaderType(ioUnit.getProgram()),
+				new Parameter(location, "r", Reader.getReaderType(ioUnit.getProgram()))),
 				NopCloserImpl.class);
 	}
 
@@ -81,18 +81,19 @@ public class NopCloser extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public NopCloserImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "NopCloserImpl", Reader.INSTANCE, expr);
+			super(cfg, location, "NopCloserImpl", Reader.getReaderType(null), expr);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			AnalysisState<A, H, V,
-					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+					T> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
+							original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);

@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "analysis___untyped_main.m1().dot", "analysis___untyped_main.m2().dot", "analysis___untyped_main.m3().dot", "analysis___untyped_main.m4().dot", "analysis___untyped_main.m5().dot" ]
+  "files" : [ "untyped_main.m1().json", "untyped_main.m2().json", "untyped_main.m3().json", "untyped_main.m4().json", "untyped_main.m5().json" ]
 }

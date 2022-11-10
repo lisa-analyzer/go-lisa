@@ -16,8 +16,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -43,8 +43,8 @@ public class DelPrivateData extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public DelPrivateData(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CFGDescriptor(location, shimUnit, false, "DelPrivateData", GoErrorType.INSTANCE,
-				new Parameter(location, "this", ChaincodeStub.INSTANCE),
+		super(new CodeMemberDescriptor(location, shimUnit, false, "DelPrivateData", GoErrorType.INSTANCE,
+				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "collection", GoStringType.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE)),
 				DelPrivateDataImpl.class);
@@ -100,7 +100,8 @@ public class DelPrivateData extends NativeCFG {
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			AnalysisState<A, H, V,
-					T> readerValue = state.smallStepSemantics(new PushAny(Reader.INSTANCE, getLocation()), original);
+					T> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
+							original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);

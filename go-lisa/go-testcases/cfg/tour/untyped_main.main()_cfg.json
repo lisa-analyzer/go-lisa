@@ -1,0 +1,1 @@
+{"name":"untyped main::main()","description":null,"nodes":[{"id":0,"subNodes":[1,2],"text":"a := main::sum(1, 2)"},{"id":1,"text":"a"},{"id":2,"subNodes":[3,4],"text":"main::sum(1, 2)"},{"id":3,"text":"1"},{"id":4,"text":"2"},{"id":5,"text":"ret"}],"edges":[{"sourceId":0,"destId":5,"kind":"SequentialEdge"}],"descriptions":[]}

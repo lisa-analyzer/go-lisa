@@ -14,19 +14,21 @@ public class TypingTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void testTypingDeclaration() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
-						new InferredTypes()));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
+				new InferredTypes());
 		perform("typing", "typing-decl.go", conf);
 	}
 
 	@Test
 	public void testStringsTypingDeclaration() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpTypeInference(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
-						new InferredTypes()))
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>())
-				.setCallGraph(new RTACallGraph());
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = LiSAFactory.getDefaultFor(AbstractState.class, new MonolithicHeap(), new Interval(),
+				new InferredTypes());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
+		conf.callGraph = new RTACallGraph();
 		perform("strings-typing", "strings.go", conf);
 	}
 }

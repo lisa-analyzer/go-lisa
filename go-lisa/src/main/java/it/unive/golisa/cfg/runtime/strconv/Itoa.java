@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -21,7 +21,6 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Itoa(i int) string.
@@ -36,8 +35,8 @@ public class Itoa extends NativeCFG {
 	 * @param location    the location where this native cfg is defined
 	 * @param strconvUnit the unit to which this native cfg belongs to
 	 */
-	public Itoa(CodeLocation location, CompilationUnit strconvUnit) {
-		super(new CFGDescriptor(location, strconvUnit, false, "Itoa", GoStringType.INSTANCE,
+	public Itoa(CodeLocation location, CodeUnit strconvUnit) {
+		super(new CodeMemberDescriptor(location, strconvUnit, false, "Itoa", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoIntType.INSTANCE)),
 				ItoaImpl.class);
 	}
@@ -83,7 +82,7 @@ public class Itoa extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
@@ -91,7 +90,7 @@ public class Itoa extends NativeCFG {
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
 				return state.bottom();
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(expr, original);
 		}
 	}
 }

@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.os.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A File type.
@@ -17,27 +18,26 @@ public class File extends GoStructType {
 	/**
 	 * Unique instance of File type.
 	 */
-	public static final File INSTANCE = new File();
+	private static File INSTANCE;
 
-	private File() {
-		this("File", buildFileUnit());
-	}
-
-	private File(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildFileUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "File", false);
-		return randUnit;
+	private File(CompilationUnit unit) {
+		super("File", unit);
 	}
 
 	/**
-	 * Registers the method of the File type.
+	 * Yields the {@link File} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link File} type
 	 */
-	public static void registerMethods() {
-		// TODO
+	public static File getFileType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit fileUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "File", false);
+			INSTANCE = new File(fileUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

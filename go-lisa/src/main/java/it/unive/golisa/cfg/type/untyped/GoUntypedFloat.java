@@ -7,9 +7,10 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * A Go untyped float type.
@@ -88,7 +89,7 @@ public class GoUntypedFloat implements GoType, NumericType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
 	}
 }

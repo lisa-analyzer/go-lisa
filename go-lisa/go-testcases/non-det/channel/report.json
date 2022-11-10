@@ -1,0 +1,6 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/non-det/channel/Channel.go':16:28] on 'untyped main::Invoke(shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ ]
+}

@@ -6,17 +6,21 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A Go struct type.
@@ -43,14 +47,23 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	}
 
 	/**
+	 * Registers a struct type.
+	 * 
+	 * @param type the struct type to be registered
+	 */
+	public static void registerType(GoStructType type) {
+		structTypes.put(type.name, type);
+	}
+
+	/**
 	 * Updates the reference to a struct type.
 	 * 
 	 * @param name name of the struct type to be updated
 	 * @param unit the compilation unit to update
 	 */
-	public static void updateReference(String name, CompilationUnit unit) {
-		if (structTypes.containsKey(name))
-			structTypes.put(name, new GoStructType(name, unit));
+	public static void updateReference(String name, Unit unit) {
+		if (structTypes.containsKey(name) && unit instanceof CompilationUnit)
+			structTypes.put(name, new GoStructType(name, (CompilationUnit) unit));
 	}
 
 	private final String name;
@@ -62,7 +75,7 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	 * @param name name of the struct type
 	 * @param unit the compilation unit of the struct type.
 	 */
-	public GoStructType(String name, CompilationUnit unit) {
+	protected GoStructType(String name, CompilationUnit unit) {
 		this.name = name;
 		this.unit = unit;
 	}
@@ -78,58 +91,52 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 		return structTypes.containsKey(name);
 	}
 
-	/**
-	 * Yields a Go struct type from given name.
-	 * 
-	 * @param structType the name
-	 * 
-	 * @return a Go struct type from given name
-	 */
-	public static GoStructType get(String structType) {
-		return structTypes.get(structType);
-	}
-
 	@Override
 	public boolean canBeAssignedTo(Type other) {
 		if (other.isUntyped())
 			return true;
 		if (other instanceof GoStructType)
 			return ((GoStructType) other).name.equals(name);
+
 		if (other instanceof GoInterfaceType) {
 			GoInterfaceType intf = (GoInterfaceType) other;
 
 			if (intf.isEmptyInterface())
 				return true;
 
-			for (CFG methodSpec : intf.getUnit().getAllCFGs()) {
-				String methodName = methodSpec.getDescriptor().getName();
-				Type methodReturnType = methodSpec.getDescriptor().getReturnType();
-				Parameter[] methodPars = methodSpec.getDescriptor().getFormals();
-				boolean match = false;
-				for (CFG structMethod : getUnit().getAllCFGs()) {
-					String funcName = structMethod.getDescriptor().getName();
-					Type funcReturnType = structMethod.getDescriptor().getReturnType();
-					Parameter[] funcPars = structMethod.getDescriptor().getFormals();
+			if (intf.getUnit().getInstances().contains(this.getUnit()))
+				return true;
+			else {
+				for (CodeMember methodSpec : intf.getUnit().getCodeMembers()) {
+					String methodName = methodSpec.getDescriptor().getName();
+					Type methodReturnType = methodSpec.getDescriptor().getReturnType();
+					Parameter[] methodPars = methodSpec.getDescriptor().getFormals();
+					boolean match = false;
+					for (CodeMember structMethod : getUnit().getCodeMembers()) {
+						String funcName = structMethod.getDescriptor().getName();
+						Type funcReturnType = structMethod.getDescriptor().getReturnType();
+						Parameter[] funcPars = structMethod.getDescriptor().getFormals();
 
-					if (funcName.equals(methodName) && funcReturnType.canBeAssignedTo(methodReturnType)) {
-						if (methodPars.length == 0 && funcPars.length == 1)
-							match = true;
-						else {
-							if (methodPars.length + 1 == funcPars.length) {
-								for (int i = 0; i < methodPars.length; i++)
-									if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
-											.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
-										match = true;
+						if (funcName.equals(methodName) && funcReturnType.canBeAssignedTo(methodReturnType)) {
+							if (methodPars.length == 0 && funcPars.length == 1)
+								match = true;
+							else {
+								if (methodPars.length + 1 == funcPars.length) {
+									for (int i = 0; i < methodPars.length; i++)
+										if (methodPars[i].getName().equals(funcPars[i + 1].getName()) && methodPars[i]
+												.getStaticType().canBeAssignedTo(funcPars[i + 1].getStaticType()))
+											match = true;
+								}
 							}
 						}
 					}
+
+					if (!match)
+						return false;
 				}
 
-				if (!match)
-					return false;
+				return true;
 			}
-
-			return true;
 		}
 
 		return other.isUntyped();
@@ -205,19 +212,16 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	 * 
 	 * @return all the struct types
 	 */
-	public static Collection<Type> all() {
-		Collection<Type> instances = new HashSet<>();
+	public static Set<Type> all() {
+		Set<Type> instances = new HashSet<>();
 		for (GoStructType in : structTypes.values())
 			instances.add(in);
 		return instances;
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
-		Collection<Type> instances = new HashSet<>();
-		for (GoStructType in : structTypes.values())
-			instances.add(in);
-		return instances;
+	public Set<Type> allInstances(TypeSystem type) {
+		return all();
 	}
 
 	/**

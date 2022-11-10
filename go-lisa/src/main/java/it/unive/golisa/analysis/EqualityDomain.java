@@ -27,8 +27,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The equality domain, tracking definite information about which variables are
@@ -102,6 +105,18 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
+	public EqualityDomain forgetIdentifiersIf(Predicate<Identifier> test) throws SemanticException {
+		if (isTop() || isBottom())
+			return this;
+
+		EqualityDomain result = new EqualityDomain(lattice, new HashMap<>(function));
+		Set<Identifier> keys = result.function.keySet().stream().filter(test::test).collect(Collectors.toSet());
+		keys.forEach(result.function::remove);
+
+		return result;
+	}
+
+	@Override
 	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
@@ -144,10 +159,10 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
 		StringBuilder builder = new StringBuilder();
 		for (Entry<Identifier, ExpressionInverseSet<Identifier>> entry : function.entrySet())
@@ -205,7 +220,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 		if (isBottom() || isTop())
 			return this;
 
-		Map<Identifier, ExpressionInverseSet<Identifier>> function = mkNewFunction(null);
+		Map<Identifier, ExpressionInverseSet<Identifier>> function = mkNewFunction(null, false);
 		for (Identifier id : getKeys()) {
 			Identifier lifted = lifter.apply(id);
 			if (lifted != null)
@@ -216,7 +231,7 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
-	protected EqualityDomain mk(ExpressionInverseSet<Identifier> lattice,
+	public EqualityDomain mk(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		return new EqualityDomain(lattice, function);
 	}

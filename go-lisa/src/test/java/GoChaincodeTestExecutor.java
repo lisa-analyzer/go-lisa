@@ -11,7 +11,7 @@ import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.imp.ParsingException;
-import it.unive.lisa.outputs.JsonReport;
+import it.unive.lisa.outputs.json.JsonReport;
 import it.unive.lisa.program.Program;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -132,9 +132,8 @@ public abstract class GoChaincodeTestExecutor {
 				fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
 			}
 		}
-		configuration.setWorkdir(workdir.toString());
-
-		configuration.setJsonOutput(true);
+		configuration.workdir = workdir.toString();
+		configuration.jsonOutput = true;
 
 		LiSA lisa = new LiSA(configuration);
 		try {

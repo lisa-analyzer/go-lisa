@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.peer.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Response type.
@@ -17,27 +18,26 @@ public class Response extends GoStructType {
 	/**
 	 * Unique instance of Response type.
 	 */
-	public static final Response INSTANCE = new Response();
+	private static Response INSTANCE;
 
-	private Response() {
-		this("Response", buildResponseUnit());
-	}
-
-	private Response(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildResponseUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Response", false);
-		return randUnit;
+	private Response(CompilationUnit unit) {
+		super("Response", unit);
 	}
 
 	/**
-	 * Registers the methods of the Response type.
+	 * Yields the {@link Response} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Response} type
 	 */
-	public static void registerMethods() {
-		// TODO
+	public static Response getResponseType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Response", false);
+			INSTANCE = new Response(randUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

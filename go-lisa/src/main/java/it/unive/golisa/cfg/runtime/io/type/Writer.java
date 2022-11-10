@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.io.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A I/O Writer type.
@@ -17,30 +18,26 @@ public class Writer extends GoStructType {
 	/**
 	 * Unique instance of Writer type.
 	 */
-	public static final Writer INSTANCE = new Writer();
+	private static Writer INSTANCE;
 
-	private Writer() {
-		this("Writer", buildWriterUnit());
-	}
-
-	private Writer(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildWriterUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "Writer", false);
-		return randUnit;
+	private Writer(CompilationUnit unit) {
+		super("Writer", unit);
 	}
 
 	/**
-	 * Registers methods of Writer.
+	 * Yields the {@link Writer} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Writer} type
 	 */
-	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
+	public static Writer getWriterType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Writer", false);
+			INSTANCE = new Writer(randUnit);
+		}
 
-		// TODO: add methods
-
+		return INSTANCE;
 	}
 
 	@Override

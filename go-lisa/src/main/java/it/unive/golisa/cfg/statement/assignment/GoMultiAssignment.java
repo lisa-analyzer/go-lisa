@@ -38,6 +38,8 @@ import org.apache.commons.lang3.StringUtils;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoMultiAssignment extends Expression {
+	// FIXME this should be an instance of NaryExpression to make it work
+	// correctly with lisa
 
 	/**
 	 * The identifiers to assign.
@@ -53,7 +55,7 @@ public class GoMultiAssignment extends Expression {
 	 * The chain of blocks (starting from the block containing this assignment)
 	 * to the block defining the assigned variables.
 	 */
-	protected Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
+	private Map<VariableRef, List<BlockInfo>> blocksToDeclaration;
 
 	private final OpenBlock containingBlock;
 
@@ -222,5 +224,14 @@ public class GoMultiAssignment extends Expression {
 		}
 
 		return finalResult;
+	}
+
+	/**
+	 * Yields the assigned identifiers.
+	 * 
+	 * @return the assigned identifiers
+	 */
+	public Expression[] getIds() {
+		return ids;
 	}
 }

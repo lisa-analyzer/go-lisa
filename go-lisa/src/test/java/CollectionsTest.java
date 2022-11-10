@@ -21,11 +21,11 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void structTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		perform("collections/struct", "struct.go", conf);
 	}
 
@@ -34,21 +34,21 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedArrayTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		perform("collections/array/field-insensitive", "array.go", conf);
 	}
 
 	@Test
 	public void fieldSensitivePointBasedArrayTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(
-						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		perform("collections/array/field-sensitive", "array.go", conf);
 	}
 
@@ -57,21 +57,21 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedMapTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		perform("collections/map/field-insensitive", "map.go", conf);
 	}
 
 	@Test
 	public void fieldSensitivedPointBasedMapTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(
-						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		perform("collections/map/field-sensitive", "map.go", conf);
 	}
 
@@ -80,75 +80,68 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	 */
 	@Test
 	public void fieldInsensitivedPointBasedSliceTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(
-						new GoAbstractState<>(new GoPointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
 		perform("collections/slice/field-insensitive", "slice.go", conf);
 	}
 
 	@Ignore // TODO currently not supported
 	public void fieldSensitivePointBasedSliceTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration().setDumpAnalysis(true)
-				.setAbstractState(LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-						new Interval(), new InferredTypes()));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
+				new Interval(), new InferredTypes());
 		perform("collections/slice/field-sensitive", "slice.go", conf);
 	}
 
 	@Test
 	public void interfaceTest1() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
-				.setAbstractState(
-						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/1", "interface.go", conf);
 	}
 
 	@Test
 	public void interfaceTest2() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
-				.setAbstractState(
-						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/2", "interface.go", conf);
 	}
 
 	@Test
 	public void interfaceTest3() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
-				.setAbstractState(
-						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/3", "interface.go", conf);
 	}
 
 	@Test
 	public void interfaceTest4() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration()
-				.setDumpTypeInference(false)
-				.setAbstractState(
-						new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
-								new ValueEnvironment<>(new Interval()),
-								LiSAFactory.getDefaultFor(TypeDomain.class)))
-				.setDumpAnalysis(true)
-				.setCallGraph(new RTACallGraph())
-				.setInterproceduralAnalysis(new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton()));
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.serializeResults = true;
+		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/4", "interface.go", conf);
 	}
 }

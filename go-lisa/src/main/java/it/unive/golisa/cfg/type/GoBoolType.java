@@ -6,9 +6,10 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.BooleanType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Boolean type of Go. This is the only Boolean type available for Go. It
@@ -59,7 +60,7 @@ public class GoBoolType implements BooleanType, GoType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
 	}
 }

@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.multDecl().dot", "untyped_main.multDecls().dot", "untyped_main.simpleDecl(int_x,_int_y).dot" ]
+  "files" : [ "untyped_main.multDecl()_cfg.json", "untyped_main.multDecls()_cfg.json", "untyped_main.simpleDecl(int_x,_int_y)_cfg.json" ]
 }

@@ -5,9 +5,10 @@ import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A TLSProperties type.
@@ -19,26 +20,41 @@ public class TLSProperties extends GoStructType {
 	/**
 	 * Unique instance of the {@link TLSProperties} type.
 	 */
-	public static final TLSProperties INSTANCE = new TLSProperties();
+	private static TLSProperties INSTANCE;
 
-	private TLSProperties() {
-		this("TLSProperties", buildTLSPropertiesUnit());
+	private TLSProperties(CompilationUnit unit) {
+		super("TLSProperties", unit);
 	}
 
-	private TLSProperties(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
+	/**
+	 * Yields the {@link TLSProperties} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link TLSProperties} type
+	 */
+	public static TLSProperties getTLSPropertiesType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit TLSPropertiesType = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
+					"TLSProperties", false);
 
-	private static CompilationUnit buildTLSPropertiesUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit TLSPropertiesType = new CompilationUnit(unknownLocation, "TLSProperties", false);
-		TLSPropertiesType.addGlobal(new Global(unknownLocation, "Disabled", GoBoolType.INSTANCE));
-		GoSliceType byteSliceType = GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
-		TLSPropertiesType.addGlobal(new Global(unknownLocation, "Key", byteSliceType));
-		TLSPropertiesType.addGlobal(new Global(unknownLocation, "Cert", byteSliceType));
-		TLSPropertiesType.addGlobal(new Global(unknownLocation, "ClientCACerts", byteSliceType));
+			// add globals
+			TLSPropertiesType.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType,
+					"Disabled", true, GoBoolType.INSTANCE));
+			GoSliceType byteSliceType = GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE));
+			TLSPropertiesType.addGlobal(
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType, "Key", true,
+							byteSliceType));
+			TLSPropertiesType.addGlobal(
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType, "Cert", true,
+							byteSliceType));
+			TLSPropertiesType.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType,
+					"ClientCACerts", true, byteSliceType));
 
-		return TLSPropertiesType;
+			INSTANCE = new TLSProperties(TLSPropertiesType);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

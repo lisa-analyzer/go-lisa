@@ -59,7 +59,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 			tool.warnOn(node, "Concurrecy behavior detected!");
 
 		if (node instanceof AccessInstanceGlobal) {
-			System.out.print("");// TODO:
+			// TODO:
 		}
 
 		checkIssuesRelatedToExternalEnviroments(tool, graph, node);
@@ -81,7 +81,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		}
 
 		if (node instanceof AccessInstanceGlobal) {
-			System.out.print("");// TODO:
+			// TODO:
 		}
 
 	}
@@ -202,10 +202,11 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public boolean visitCompilationUnit(CheckTool tool, CompilationUnit unit) {
+	public boolean visitUnit(CheckTool tool, Unit unit) {
 
-		if (checkExternalLibraries(tool, unit))
-			tool.warnOn(unit, "Possible external library detected!");
+		if (unit instanceof CompilationUnit)
+			if (checkExternalLibraries(tool, (CompilationUnit) unit))
+				tool.warnOn(unit, "Possible external library detected!");
 		return true;
 	}
 

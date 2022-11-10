@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.tendermint.core.abci.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Response of End Block type.
@@ -17,27 +18,27 @@ public class ResponseCommit extends GoStructType {
 	/**
 	 * Unique instance of {@link ResponseCommit} type.
 	 */
-	public static final ResponseCommit INSTANCE = new ResponseCommit();
+	private static ResponseCommit INSTANCE;
 
-	private ResponseCommit() {
-		this("ResponseEndBlock", buildRequestEndBlockUnit());
-	}
-
-	private ResponseCommit(String name, CompilationUnit unit) {
-		super(name, unit);
-	}
-
-	private static CompilationUnit buildRequestEndBlockUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit abciUnit = new CompilationUnit(unknownLocation, "ResponseEndBlock", false);
-		return abciUnit;
+	private ResponseCommit(CompilationUnit unit) {
+		super("ResponseCommit", unit);
 	}
 
 	/**
-	 * Registers methods of the {@link ResponseCommit} type.
+	 * Yields the {@link ResponseCommit} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link ResponseCommit} type
 	 */
-	public static void registerMethods() {
-		// TODO
+	public static ResponseCommit getRequestEndBlockType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit abciUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "ResponseEndBlock",
+					false);
+			INSTANCE = new ResponseCommit(abciUnit);
+		}
+
+		return INSTANCE;
 	}
 
 	@Override

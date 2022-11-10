@@ -2,6 +2,7 @@ package it.unive.golisa.analysis.heap;
 
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.lattices.SetLattice;
 import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
@@ -32,8 +33,6 @@ public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocatio
 	private static final GoAllocationSites TOP = new GoAllocationSites(new HashSet<>(), true);
 	private static final GoAllocationSites BOTTOM = new GoAllocationSites(new HashSet<>(), false);
 
-	private final boolean isTop;
-
 	/**
 	 * Builds an instance of HeapIdentiferSetLattice, corresponding to the top
 	 * element.
@@ -49,8 +48,7 @@ public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocatio
 	 * @param isTop whether this instance is the top of the lattice
 	 */
 	GoAllocationSites(Set<GoAllocationSite> set, boolean isTop) {
-		super(set);
-		this.isTop = isTop;
+		super(set, isTop);
 	}
 
 	@Override
@@ -74,7 +72,7 @@ public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocatio
 	}
 
 	@Override
-	protected GoAllocationSites mk(Set<GoAllocationSite> set) {
+	public GoAllocationSites mk(Set<GoAllocationSite> set) {
 		return new GoAllocationSites(set, false);
 	}
 
@@ -128,7 +126,7 @@ public class GoAllocationSites extends SetLattice<GoAllocationSites, GoAllocatio
 	}
 
 	@Override
-	protected GoAllocationSites lubAux(GoAllocationSites other) throws SemanticException {
+	public GoAllocationSites lubAux(GoAllocationSites other) throws SemanticException {
 		Map<String, GoAllocationSite> lub = new HashMap<>();
 
 		// all weak identifiers are part of the lub

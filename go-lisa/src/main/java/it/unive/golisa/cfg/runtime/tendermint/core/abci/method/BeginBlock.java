@@ -13,8 +13,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -40,9 +40,10 @@ public class BeginBlock extends NativeCFG {
 	 * @param abciUnit the unit to which this native cfg belongs to
 	 */
 	public BeginBlock(CodeLocation location, CompilationUnit abciUnit) {
-		super(new CFGDescriptor(location, abciUnit, true, "BeginBlock", ResponseBeginBlock.INSTANCE,
-				new Parameter(location, "this", BaseApplication.INSTANCE),
-				new Parameter(location, "req", RequestBeginBlock.INSTANCE)),
+		super(new CodeMemberDescriptor(location, abciUnit, true, "BeginBlock",
+				ResponseBeginBlock.getRequestBeginBlockType(abciUnit.getProgram()),
+				new Parameter(location, "this", BaseApplication.etBaseApplicationType(abciUnit.getProgram())),
+				new Parameter(location, "req", RequestBeginBlock.getRequestBeginBlockType(abciUnit.getProgram()))),
 				BeginBlockImpl.class);
 	}
 
@@ -85,18 +86,20 @@ public class BeginBlock extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public BeginBlockImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "BeginBlockImpl", ResponseBeginBlock.INSTANCE, left, right);
+			super(cfg, location, "BeginBlockImpl", ResponseBeginBlock.getRequestBeginBlockType(null), left, right);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(ResponseBeginBlock.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(
+					new PushAny(ResponseBeginBlock.getRequestBeginBlockType(null), getLocation()),
+					original);
 		}
 	}
 }

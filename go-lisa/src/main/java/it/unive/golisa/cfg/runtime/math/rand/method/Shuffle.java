@@ -14,8 +14,8 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -40,13 +40,12 @@ public class Shuffle extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Shuffle(CodeLocation location, CompilationUnit randUnit) {
-		super(new CFGDescriptor(location, randUnit, true, "Shuffle", VoidType.INSTANCE,
-				new Parameter(location, "this", Rand.INSTANCE),
+		super(new CodeMemberDescriptor(location, randUnit, true, "Shuffle", VoidType.INSTANCE,
+				new Parameter(location, "this", Rand.getRandType(randUnit.getProgram())),
 				new Parameter(location, "n", GoIntType.INSTANCE),
-				new Parameter(location, "swap", GoFunctionType.lookup(
-						new GoFunctionType(VoidType.INSTANCE,
-								new Parameter(location, "i", GoIntType.INSTANCE),
-								new Parameter(location, "j", GoIntType.INSTANCE))))),
+				new Parameter(location, "swap", GoFunctionType.lookup(VoidType.INSTANCE,
+						new Parameter(location, "i", GoIntType.INSTANCE),
+						new Parameter(location, "j", GoIntType.INSTANCE)))),
 				ShuffleImpl.class);
 	}
 

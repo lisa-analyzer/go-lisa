@@ -5,7 +5,7 @@ import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.util.Collection;
 
 /**
@@ -25,7 +25,7 @@ public class SwitchCase extends ControlFlowStructure {
 	 * @param firstFollower the first follower of this switch-case
 	 * @param body          the body associated with this switch-case
 	 */
-	public SwitchCase(AdjacencyMatrix<Statement, Edge, CFG> cfgMatrix, Statement condition, Statement firstFollower,
+	public SwitchCase(NodeList<CFG, Statement, Edge> cfgMatrix, Statement condition, Statement firstFollower,
 			Collection<Statement> body) {
 		super(cfgMatrix, condition, firstFollower);
 		this.body = body;

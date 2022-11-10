@@ -8,10 +8,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -34,8 +34,8 @@ public class Println extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param fmtUnit  the unit to which this native cfg belongs to
 	 */
-	public Println(CodeLocation location, CompilationUnit fmtUnit) {
-		super(new CFGDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
+	public Println(CodeLocation location, CodeUnit fmtUnit) {
+		super(new CodeMemberDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
 				new Parameter(location, "this", Untyped.INSTANCE)),
 				PrintlnImpl.class);
 	}
@@ -81,7 +81,7 @@ public class Println extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(

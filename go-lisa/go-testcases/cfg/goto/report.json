@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.m1().dot", "untyped_main.m2().dot" ]
+  "files" : [ "untyped_main.m1()_cfg.json", "untyped_main.m2()_cfg.json" ]
 }

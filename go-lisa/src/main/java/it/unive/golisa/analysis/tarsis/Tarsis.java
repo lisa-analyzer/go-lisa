@@ -110,9 +110,9 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	@Override
 	public DomainRepresentation representation() {
 		if (isTop())
-			return Lattice.TOP_REPR;
+			return Lattice.topRepresentation();
 		if (isBottom())
-			return Lattice.BOTTOM_REPR;
+			return Lattice.bottomRepresentation();
 
 		return stringValue.getAutomaton().equals(Automata.mkEmptyLanguage()) ? intValue.representation()
 				: new StringRepresentation(stringValue.toString());
@@ -328,21 +328,21 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	}
 
 	@Override
-	protected Tarsis lubAux(Tarsis other) throws SemanticException {
+	public Tarsis lubAux(Tarsis other) throws SemanticException {
 		AutomatonString stringLub = stringValue.lub(other.stringValue);
 		TarsisIntv intLub = intValue.lub(other.intValue);
 		return new Tarsis(stringLub, intLub);
 	}
 
 	@Override
-	protected Tarsis wideningAux(Tarsis other) throws SemanticException {
+	public Tarsis wideningAux(Tarsis other) throws SemanticException {
 		AutomatonString stringWid = stringValue.widen(other.stringValue);
 		TarsisIntv intWid = intValue.widening(other.intValue);
 		return new Tarsis(stringWid, intWid);
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(Tarsis other) throws SemanticException {
+	public boolean lessOrEqualAux(Tarsis other) throws SemanticException {
 		return Automata.isContained(stringValue.getAutomaton(), other.stringValue.getAutomaton())
 				&& intValue.lessOrEqual(other.intValue);
 	}
@@ -492,7 +492,7 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	 * @return the evaluation of the type conversion expression
 	 */
 	protected Tarsis evalTypeConv(BinaryExpression conv, Tarsis left, Tarsis right, ProgramPoint pp) {
-		return conv.getRuntimeTypes().isEmpty() ? bottom() : left;
+		return conv.getRuntimeTypes(null).isEmpty() ? bottom() : left;
 	}
 
 	/**
@@ -508,6 +508,6 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	 * @return the evaluation of the type cast expression
 	 */
 	protected Tarsis evalTypeCast(BinaryExpression cast, Tarsis left, Tarsis right, ProgramPoint pp) {
-		return cast.getRuntimeTypes().isEmpty() ? bottom() : left;
+		return cast.getRuntimeTypes(null).isEmpty() ? bottom() : left;
 	}
 }

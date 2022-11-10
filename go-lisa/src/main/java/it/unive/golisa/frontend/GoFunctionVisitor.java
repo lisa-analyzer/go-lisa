@@ -14,27 +14,23 @@ import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.NoOp;
-import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
-import java.util.Collection;
-import java.util.LinkedList;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -54,17 +50,19 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param file        the file path
 	 * @param program     the current program
 	 * @param constants   the constant mapping
+	 * @param globals     the global variables
 	 */
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
-		super(packageUnit, file, program, constants);
+			Map<String, ExpressionContext> constants, List<Global> globals) {
+		super(packageUnit, file, program, constants, globals);
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcDecl, packageUnit), entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(buildCodeMemberDescriptor(funcDecl, packageUnit), entrypoints,
+				new NodeList<>(SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
-		packageUnit.addCFG(cfg);
+		packageUnit.addCodeMember(cfg);
 	}
 
 	/**
@@ -75,17 +73,19 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param file        the file path
 	 * @param program     the current program
 	 * @param constants   the constant mapping
+	 * @param globals     the global variables
 	 */
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
-		super(packageUnit, file, program, constants);
+			Map<String, ExpressionContext> constants, List<Global> globals) {
+		super(packageUnit, file, program, constants, globals);
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
-		cfg = new VariableScopingCFG(buildCFGDescriptor(funcLit), entrypoints, new AdjacencyMatrix<>());
+		cfg = new VariableScopingCFG(buildCodeMemberDescriptor(funcLit), entrypoints,
+				new NodeList<>(GoCodeMemberVisitor.SEQUENTIAL_SINGLETON));
 		initializeVisibleIds();
 
-		packageUnit.addCFG(cfg);
+		packageUnit.addCodeMember(cfg);
 	}
 
 	/**
@@ -95,22 +95,21 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param file      the current file path
 	 * @param program   the current program
 	 * @param constants the constant mapping
+	 * @param globals   the global variables
 	 */
 	public GoFunctionVisitor(CompilationUnit unit, String file, Program program,
-			Map<String, ExpressionContext> constants) {
-		super(unit, file, program, constants);
+			Map<String, ExpressionContext> constants, List<Global> globals) {
+		super(unit, file, program, constants, globals);
 	}
 
 	@Override
 	public Pair<Statement, Statement> visitFunctionDecl(FunctionDeclContext ctx) {
 
 		Statement entryNode = null;
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
-		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
-			// we must call cfg.addEdge, and not addEdge
-			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		processGotos();
 
 		// The function named "main" is the entry point of the program
 		if (cfg.getDescriptor().getName().equals("main"))
@@ -118,7 +117,21 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = cfg.getDescriptor().getReturnType();
 
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
+		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
+		entryNode = findEntryNode(entryNode, body, returnType, matrix);
+
+		cfg.getEntrypoints().add(entryNode);
+
+		addReturnStatement(matrix);
+		addFinalRet(matrix);
+
+		cfg.simplify();
+		return Pair.of(entryNode, body.getRight());
+	}
+
+	private Statement findEntryNode(Statement entryNode,
+			Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> body, Type returnType,
+			NodeList<CFG, Statement, Edge> matrix) {
 		if (!(returnType instanceof GoTupleType))
 			entryNode = body.getLeft();
 		else {
@@ -151,44 +164,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			} else
 				entryNode = body.getLeft();
 		}
-
-		cfg.getEntrypoints().add(entryNode);
-
-		// If the function body does not have exit points
-		// a return statement is added
-		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-			if (cfg.getNodesCount() == 0) {
-				// empty method, so the ret is also the entrypoint
-				matrix.addNode(ret);
-				entrypoints.add(ret);
-			} else {
-				// every non-throwing instruction that does not have a follower
-				// is ending the method
-				Collection<Statement> preExits = new LinkedList<>();
-				for (Statement st : matrix.getNodes())
-					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-						preExits.add(st);
-				matrix.addNode(ret);
-				for (Statement st : preExits)
-					matrix.addEdge(new SequentialEdge(st, ret));
-
-				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
-					if (preExits.contains(entry.getScopeEnd()))
-						entry.setScopeEnd(ret);
-			}
-		}
-
-		for (Statement st : matrix.getExits())
-			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
-				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-					matrix.addNode(ret);
-				matrix.addEdge(new SequentialEdge(st, ret));
-			}
-
-		cfg.simplify();
-		return Pair.of(entryNode, body.getRight());
+		return entryNode;
 	}
 
 	/**
@@ -200,85 +176,26 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 */
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
-		Triple<Statement, AdjacencyMatrix<Statement, Edge, CFG>,
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> body = visitMethodBlock(ctx.block());
 
-		for (Entry<Statement, String> gotoStmt : gotos.entrySet())
-			// we must call cfg.addEdge, and not addEdge
-			cfg.addEdge(new SequentialEdge(gotoStmt.getKey(), labeledStmt.get(gotoStmt.getValue())));
+		processGotos();
 
 		Type returnType = cfg.getDescriptor().getReturnType();
 
-		AdjacencyMatrix<Statement, Edge, CFG> matrix = cfg.getAdjacencyMatrix();
-		if (!(returnType instanceof GoTupleType))
-			entryNode = body.getLeft();
-		else {
-			GoTupleType tuple = (GoTupleType) returnType;
-			if (tuple.isNamedValues()) {
-				Statement lastStmt = null;
-
-				for (Parameter par : tuple) {
-					VariableRef var = new VariableRef(cfg, par.getLocation(), par.getName());
-					GoType parType = (GoType) par.getStaticType();
-					GoShortVariableDeclaration decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var,
-							parType.defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
-
-					cfg.addNode(decl);
-
-					if (lastStmt != null)
-						addEdge(new SequentialEdge(lastStmt, decl), matrix);
-					else
-						entryNode = decl;
-					lastStmt = decl;
-				}
-
-				addEdge(new SequentialEdge(lastStmt, body.getLeft()), matrix);
-				cfg.getEntrypoints().add(entryNode);
-
-			} else
-				entryNode = body.getLeft();
-		}
+		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
+		entryNode = findEntryNode(entryNode, body, returnType, matrix);
 
 		cfg.getEntrypoints().add(entryNode);
 
-		// If the function body does not have exit points
-		// a return statement is added
-		if (cfg.getAllExitpoints().isEmpty()) {
-			Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-			if (cfg.getNodesCount() == 0) {
-				// empty method, so the ret is also the entrypoint
-				matrix.addNode(ret);
-				entrypoints.add(ret);
-			} else {
-				// every non-throwing instruction that does not have a follower
-				// is ending the method
-				Collection<Statement> preExits = new LinkedList<>();
-				for (Statement st : matrix.getNodes())
-					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-						preExits.add(st);
-				matrix.addNode(ret);
-				for (Statement st : preExits)
-					matrix.addEdge(new SequentialEdge(st, ret));
-
-				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
-					if (preExits.contains(entry.getScopeEnd()))
-						entry.setScopeEnd(ret);
-			}
-		}
-
-		for (Statement st : matrix.getExits())
-			if (st instanceof NoOp && !matrix.getIngoingEdges(st).isEmpty()) {
-				Ret ret = new Ret(cfg, cfg.getDescriptor().getLocation());
-				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
-					matrix.addNode(ret);
-				matrix.addEdge(new SequentialEdge(st, ret));
-			}
+		addReturnStatement(matrix);
+		addFinalRet(matrix);
 
 		cfg.simplify();
 		return cfg;
 	}
 
-	private CFGDescriptor buildCFGDescriptor(FunctionDeclContext funcDecl, Unit unit) {
+	private CodeMemberDescriptor buildCodeMemberDescriptor(FunctionDeclContext funcDecl, Unit unit) {
 		String funcName = funcDecl.IDENTIFIER().getText();
 		SignatureContext signature = funcDecl.signature();
 		ParametersContext formalPars = signature.parameters();
@@ -293,14 +210,14 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Type returnType = getGoReturnType(funcDecl.signature());
 
-		CFGDescriptor descriptor = new CFGDescriptor(new SourceCodeLocation(file, line, col), unit, false,
+		CodeMemberDescriptor descriptor = new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), unit, false,
 				funcName,
 				returnType, cfgArgs);
 
 		return descriptor;
 	}
 
-	private CFGDescriptor buildCFGDescriptor(FunctionLitContext funcLit) {
+	private CodeMemberDescriptor buildCodeMemberDescriptor(FunctionLitContext funcLit) {
 		String funcName = "anonymousFunction" + c++;
 		SignatureContext signature = funcLit.signature();
 		ParametersContext formalPars = signature.parameters();
@@ -313,7 +230,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
-		return new CFGDescriptor(new SourceCodeLocation(file, line, col), program, false, funcName,
+		return new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), currentUnit, false, funcName,
 				getGoReturnType(funcLit.signature()), cfgArgs);
 	}
 
@@ -330,7 +247,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(currentUnit, file, program, constants).visitResult(signature.result());
+		return new GoCodeMemberVisitor(currentUnit, file, program, constants, globals).visitResult(signature.result());
 	}
 
 	/**
@@ -345,6 +262,6 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Type returnType = getGoReturnType(sign);
 		Parameter[] params = visitParameters(sign.parameters());
 
-		return GoFunctionType.lookup(new GoFunctionType(returnType, params));
+		return GoFunctionType.lookup(returnType, params);
 	}
 }

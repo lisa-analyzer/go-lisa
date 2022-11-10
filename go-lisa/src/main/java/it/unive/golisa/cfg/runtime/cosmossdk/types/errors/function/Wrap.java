@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.ProgramUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -38,8 +38,8 @@ public class Wrap extends NativeCFG {
 	 * @param location   the location where this native cfg is defined
 	 * @param errorsUnit the unit to which this native cfg belongs to
 	 */
-	public Wrap(CodeLocation location, CompilationUnit errorsUnit) {
-		super(new CFGDescriptor(location, errorsUnit, false, "Wrap", GoErrorType.INSTANCE,
+	public Wrap(CodeLocation location, ProgramUnit errorsUnit) {
+		super(new CodeMemberDescriptor(location, errorsUnit, false, "Wrap", GoErrorType.INSTANCE,
 				new Parameter(location, "err", GoErrorType.INSTANCE),
 				new Parameter(location, "description", GoStringType.INSTANCE)),
 				WrapImpl.class);
@@ -88,7 +88,7 @@ public class Wrap extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(

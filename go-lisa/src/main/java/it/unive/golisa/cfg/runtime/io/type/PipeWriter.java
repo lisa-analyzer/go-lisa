@@ -2,8 +2,9 @@ package it.unive.golisa.cfg.runtime.io.type;
 
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A PipeWriter type.
@@ -17,30 +18,10 @@ public class PipeWriter extends GoStructType {
 	/**
 	 * Unique instance of {@link PipeWriter} type.
 	 */
-	public static final PipeWriter INSTANCE = new PipeWriter();
-
-	private PipeWriter() {
-		this("PipeWriter", buildPipeWriterUnit());
-	}
+	private static PipeWriter INSTANCE;
 
 	private PipeWriter(String name, CompilationUnit unit) {
 		super(name, unit);
-	}
-
-	private static CompilationUnit buildPipeWriterUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit randUnit = new CompilationUnit(unknownLocation, "PipeWriter", false);
-		return randUnit;
-	}
-
-	/**
-	 * Registers the method of the {@link PipeWriter} type.
-	 */
-	public static void registerMethods() {
-		SourceCodeLocation runtimeLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-
-		// TODO: add methods
-
 	}
 
 	@Override
@@ -56,5 +37,22 @@ public class PipeWriter extends GoStructType {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+
+	/**
+	 * Yields the {@link PipeWriter} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link PipeWriter} type
+	 */
+	public static PipeWriter getPipeWriterType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit pipeWriterUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "PipeWriter",
+					false);
+			INSTANCE = new PipeWriter("PipeWriter", pipeWriterUnit);
+		}
+
+		return INSTANCE;
 	}
 }

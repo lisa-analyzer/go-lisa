@@ -10,10 +10,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -23,6 +23,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 
 /**
  * func Contains(s, substr string) bool.
@@ -39,8 +40,8 @@ public class Contains extends NativeCFG {
 	 * @param location   the location where this native cfg is defined
 	 * @param stringUnit the unit to which this native cfg belongs to
 	 */
-	public Contains(CodeLocation location, CompilationUnit stringUnit) {
-		super(new CFGDescriptor(location, stringUnit, false, "Contains", GoBoolType.INSTANCE,
+	public Contains(CodeLocation location, CodeUnit stringUnit) {
+		super(new CodeMemberDescriptor(location, stringUnit, false, "Contains", GoBoolType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE),
 				new Parameter(location, "other", GoStringType.INSTANCE)),
 				ContainsImpl.class);
@@ -89,17 +90,17 @@ public class Contains extends NativeCFG {
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-
+			TypeSystem types = getProgram().getTypes();
 			AnalysisState<A, H, V, T> result = state.bottom();
-			for (Type leftType : left.getRuntimeTypes())
-				for (Type rightType : right.getRuntimeTypes())
+			for (Type leftType : left.getRuntimeTypes(types))
+				for (Type rightType : right.getRuntimeTypes(types))
 					if (!leftType.isStringType() && !leftType.isUntyped())
 						continue;
 					else if (!rightType.isStringType() && !rightType.isUntyped())

@@ -11,10 +11,10 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;
-import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.Unit;
+import it.unive.lisa.program.cfg.CodeMember;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,14 +26,15 @@ import org.junit.Test;
 
 public class VariableScopingTest extends GoAnalysisTestExecutor {
 
-	private static CompilationUnit findUnit(Program prog, String name) {
-		CompilationUnit unit = prog.getUnits().stream().filter(u -> u.getName().equals(name)).findFirst().get();
+	private static Unit findUnit(Program prog, String name) {
+		Unit unit = prog.getUnits().stream().filter(u -> u.getName().equals(name)).findFirst().get();
 		assertNotNull("'" + name + "' unit not found", unit);
 		return unit;
 	}
 
-	private static CFG findCFG(CompilationUnit unit, String name) {
-		CFG cfg = unit.getCFGs().stream().filter(c -> c.getDescriptor().getName().equals(name)).findFirst().get();
+	private static CodeMember findCFG(Unit unit, String name) {
+		CodeMember cfg = unit.getCodeMembers().stream().filter(c -> c.getDescriptor().getName().equals(name))
+				.findFirst().get();
 		assertNotNull("'" + unit.getName() + "' unit does not contain cfg '" + name + "'", cfg);
 		return cfg;
 	}
@@ -41,7 +42,7 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testSingle() throws IOException, ProgramValidationException {
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
-		prog.validateAndFinalize();
+//		prog.validateAndFinalize();
 		// we just check that no exception is thrown
 	}
 
@@ -49,11 +50,11 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	public void testForLoopVariableScoping() throws IOException, ProgramValidationException {
 		assertTrue((new File("go-testcases/variablescoping/scoping.go")).exists());
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
-		prog.validateAndFinalize();
+//		prog.validateAndFinalize();
 
-		CompilationUnit main = findUnit(prog, "main");
+		Unit main = findUnit(prog, "main");
 
-		CFG test = findCFG(main, "test");
+		CodeMember test = findCFG(main, "test");
 
 		assertTrue(test instanceof VariableScopingCFG);
 		VariableScopingCFG vscfg_test = (VariableScopingCFG) test;
@@ -70,11 +71,10 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	@Test
 	public void shadowingTest() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.setJsonOutput(true)
-
-				.setAbstractState(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
-						new InferredTypes()))
-				.setDumpAnalysis(true);
+		conf.jsonOutput = true;
+		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
+				new InferredTypes());
+		conf.serializeResults = true;
 
 		perform("variablescoping", "shadowing.go", conf);
 	}

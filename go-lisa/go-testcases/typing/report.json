@@ -1,4 +1,4 @@
 {
   "warnings" : [ ],
-  "files" : [ "typing___untyped_main.arrayTyping().dot", "typing___untyped_main.comparisonTyping(int_x,_int_y).dot", "typing___untyped_main.relTyping().dot", "typing___untyped_main.simpleTyping().dot", "typing___untyped_main.typeError1(int_x,_int_y).dot" ]
+  "files" : [ "untyped_main.arrayTyping().json", "untyped_main.comparisonTyping(int_x,_int_y).json", "untyped_main.relTyping().json", "untyped_main.simpleTyping().json", "untyped_main.typeError1(int_x,_int_y).json" ]
 }

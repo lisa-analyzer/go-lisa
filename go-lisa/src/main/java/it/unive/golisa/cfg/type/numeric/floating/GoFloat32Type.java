@@ -7,9 +7,10 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Go 32 bits float type. It implements the singleton design pattern, that is
@@ -84,7 +85,7 @@ public class GoFloat32Type implements NumericType, GoType {
 	}
 
 	@Override
-	public Collection<Type> allInstances() {
+	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
 	}
 

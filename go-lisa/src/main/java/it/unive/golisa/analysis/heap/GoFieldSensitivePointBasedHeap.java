@@ -220,7 +220,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 				}
 
 				if (expression.hasRuntimeTypes())
-					e.setRuntimeTypes(expression.getRuntimeTypes());
+					e.setRuntimeTypes(expression.getRuntimeTypes(null));
 				result.add(e);
 			}
 		}
@@ -240,7 +240,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 			if (expression.getStaticType() instanceof GoPointerType) {
 				GoPointerType pointer = (GoPointerType) expression.getStaticType();
 				id = new HeapAllocationSite(
-						pointer.getInnerTypes().stream().findAny().get(),
+						pointer.getInnerType(),
 						pp,
 						weak,
 						expression.getCodeLocation());
@@ -254,7 +254,7 @@ public class GoFieldSensitivePointBasedHeap extends GoPointBasedHeap {
 			}
 
 			if (expression.hasRuntimeTypes())
-				id.setRuntimeTypes(expression.getRuntimeTypes());
+				id.setRuntimeTypes(expression.getRuntimeTypes(null));
 			return new ExpressionSet<>(id);
 		}
 

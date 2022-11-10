@@ -15,8 +15,6 @@ import java.util.Set;
  */
 public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseSetLattice<ExpressionInverseSet<T>, T> {
 
-	private final boolean isTop;
-
 	/**
 	 * Builds the empty inverse inverse set lattice element.
 	 */
@@ -38,8 +36,7 @@ public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseS
 	}
 
 	private ExpressionInverseSet(Set<T> set, boolean isTop) {
-		super(set);
-		this.isTop = isTop;
+		super(set, isTop);
 	}
 
 	@Override
@@ -63,7 +60,7 @@ public class ExpressionInverseSet<T extends SymbolicExpression> extends InverseS
 	}
 
 	@Override
-	protected ExpressionInverseSet<T> mk(Set<T> set) {
+	public ExpressionInverseSet<T> mk(Set<T> set) {
 		return new ExpressionInverseSet<T>(set);
 	}
 

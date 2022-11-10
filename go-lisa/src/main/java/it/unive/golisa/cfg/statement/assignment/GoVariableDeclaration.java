@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -10,20 +11,23 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.caches.Caches;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
+import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.TypeTokenType;
-import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Go variable declaration class (e.g., var x int = 5).
@@ -48,7 +52,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	 */
 	public GoVariableDeclaration(CFG cfg, SourceCodeLocation location, Type type, VariableRef var,
 			Expression expression) {
-		super(cfg, location, ":=", var, expression);
+		super(cfg, location, ":=", RightToLeftEvaluation.INSTANCE, var, expression);
 		this.type = type;
 	}
 
@@ -67,7 +71,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	}
 
 	@Override
-	protected <A extends AbstractState<A, H, V, T>,
+	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
@@ -79,11 +83,23 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
 
-		ExternalSet<Type> idType = Caches.types().mkSingletonSet(type);
-		Variable id = new Variable(type, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
+		TypeSystem types = getProgram().getTypes();
+
+		Set<Type> idType = Collections.singleton(type);
+
+		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
+				.getVariableTableEntryIfExist(((VariableRef) getLeft()).getName(), getLeft().getLocation());
+
+		Variable id;
+
+		if (varTableEntry == null)
+			id = new Variable(type, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
+		else
+			id = new Variable(type, ((VariableRef) getLeft()).getName(), varTableEntry.getAnnotations(),
+					getLeft().getLocation());
 
 		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type rightType : right.getRuntimeTypes()) {
+		for (Type rightType : right.getRuntimeTypes(types)) {
 			AnalysisState<A, H, V, T> tmp = state.bottom();
 			if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat) {
 				Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());

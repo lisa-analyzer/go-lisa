@@ -12,10 +12,10 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -40,8 +40,9 @@ public class NewFile extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param osUnit   the unit to which this native cfg belongs to
 	 */
-	public NewFile(CodeLocation location, CompilationUnit osUnit) {
-		super(new CFGDescriptor(location, osUnit, false, "NewFile", new GoPointerType(File.INSTANCE),
+	public NewFile(CodeLocation location, CodeUnit osUnit) {
+		super(new CodeMemberDescriptor(location, osUnit, false, "NewFile",
+				GoPointerType.lookup(File.getFileType(osUnit.getProgram())),
 				new Parameter(location, "fd", GoStringType.INSTANCE),
 				new Parameter(location, "name", GoUIntPrtType.INSTANCE)),
 				NewFileImpl.class);
@@ -86,18 +87,19 @@ public class NewFile extends NativeCFG {
 		 * @param right    the right-hand side of this pluggable statement
 		 */
 		public NewFileImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "NewFile", new GoPointerType(File.INSTANCE), left, right);
+			super(cfg, location, "NewFile", GoPointerType.lookup(File.getFileType(null)), left, right);
 		}
 
 		@Override
-		protected <A extends AbstractState<A, H, V, T>,
+		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new PushAny(new GoPointerType(File.INSTANCE), getLocation()), original);
+			return state.smallStepSemantics(new PushAny(GoPointerType.lookup(File.getFileType(null)), getLocation()),
+					original);
 		}
 	}
 }

@@ -3,9 +3,10 @@ package it.unive.golisa.cfg.runtime.cosmos.time;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Program;
 
 /**
  * A Grant type.
@@ -17,21 +18,10 @@ public class Grant extends GoStructType {
 	/**
 	 * Unique instance of the {@link Grant} type.
 	 */
-	public static final Grant INSTANCE = new Grant();
-
-	private Grant() {
-		this("Grant", buildGrantUnit());
-	}
+	private static Grant INSTANCE;
 
 	private Grant(String name, CompilationUnit unit) {
 		super(name, unit);
-	}
-
-	private static CompilationUnit buildGrantUnit() {
-		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		CompilationUnit grantUnit = new CompilationUnit(unknownLocation, "Grant", false);
-		grantUnit.addGlobal(new Global(unknownLocation, "Expiration", Time.INSTANCE));
-		return grantUnit;
 	}
 
 	@Override
@@ -47,5 +37,23 @@ public class Grant extends GoStructType {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+
+	/**
+	 * Yields the {@link Grant} type.
+	 * 
+	 * @param program the program to which this type belongs
+	 * 
+	 * @return the {@link Grant} type
+	 */
+	public static Grant getGrantType(Program program) {
+		if (INSTANCE == null) {
+			ClassUnit grantUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Grant", false);
+			grantUnit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, grantUnit, "Expiration", true,
+					Time.getTimeType(program)));
+			INSTANCE = new Grant("Grant", grantUnit);
+		}
+
+		return INSTANCE;
 	}
 }

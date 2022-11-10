@@ -2,10 +2,11 @@ package it.unive.golisa.analysis.entrypoints;
 
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
-import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CFGDescriptor;
+import it.unive.lisa.program.cfg.CodeMember;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
@@ -34,7 +35,7 @@ public class EntryPointsUtils {
 	 *             otherwise {@code false}.
 	 */
 	public static boolean containsPossibleEntryPointsForAnalysis(
-			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
+			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			NonDeterminismAnnotationSet... annotationSets) {
 
 		boolean atLeastOneSource = false;
@@ -64,11 +65,11 @@ public class EntryPointsUtils {
 	 * 
 	 * @return the set of descriptors
 	 */
-	private static Set<CFGDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
-			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
+	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
+			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			NonDeterminismAnnotationSet... annotationSets) {
 
-		Set<CFGDescriptor> descriptors = new HashSet<>();
+		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
 		for (NonDeterminismAnnotationSet as : annotationSets) {
 			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
 			appliedAnnotations.stream()
@@ -92,12 +93,12 @@ public class EntryPointsUtils {
 	 * @return the set of entry points
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
-			Set<Pair<CodeAnnotation, CFGDescriptor>> appliedAnnotations,
+			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			NonDeterminismAnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
 
-		Set<CFGDescriptor> descriptors = getDescriptorOfPossibleEntryPointsForAnalysis(appliedAnnotations,
+		Set<CodeMemberDescriptor> descriptors = getDescriptorOfPossibleEntryPointsForAnalysis(appliedAnnotations,
 				annotationSets);
 
 		for (CFG cfg : program.getAllCFGs()) {
@@ -107,12 +108,14 @@ public class EntryPointsUtils {
 				set.add(cfg);
 		}
 
-		for (CompilationUnit unit : program.getUnits())
-			for (CFG cfg : unit.getAllCFGs()) {
-				LinkedList<Statement> possibleEntries = new LinkedList<>();
-				cfg.accept(new PossibleEntryPointExtractor(descriptors), possibleEntries);
-				if (!possibleEntries.isEmpty())
-					set.add(cfg);
+		for (Unit unit : program.getUnits())
+			for (CodeMember cfg : unit.getCodeMembers()) {
+				if (cfg instanceof CFG) {
+					LinkedList<Statement> possibleEntries = new LinkedList<>();
+					((CFG) cfg).accept(new PossibleEntryPointExtractor(descriptors), possibleEntries);
+					if (!possibleEntries.isEmpty())
+						set.add((CFG) cfg);
+				}
 			}
 		return set;
 
@@ -124,14 +127,14 @@ public class EntryPointsUtils {
 	private static class PossibleEntryPointExtractor
 			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
 
-		final Set<CFGDescriptor> descriptors;
+		final Set<CodeMemberDescriptor> descriptors;
 
 		/**
 		 * Builds an instance of the extractor of possible entry points
 		 * 
 		 * @param descriptors the descriptors
 		 */
-		public PossibleEntryPointExtractor(Set<CFGDescriptor> descriptors) {
+		public PossibleEntryPointExtractor(Set<CodeMemberDescriptor> descriptors) {
 			this.descriptors = descriptors;
 		}
 

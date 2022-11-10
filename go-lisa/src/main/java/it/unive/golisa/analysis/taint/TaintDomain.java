@@ -1,8 +1,13 @@
 package it.unive.golisa.analysis.taint;
 
+import it.unive.golisa.cfg.expression.unary.GoRange;
+import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
+import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
+import it.unive.golisa.cfg.runtime.conversion.GoConv;
+import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
+import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.annotations.Annotation;
@@ -10,18 +15,22 @@ import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 
 /**
  * The taint domain, used for the taint analysis.
  */
-public class TaintDomain extends BaseInferredValue<TaintDomain> {
+public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 	/**
 	 * The annotation Tainted.
@@ -79,6 +88,19 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 
 	@Override
 	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
+
+		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
+
+			Statement condition = g.getCondition();
+			if (condition instanceof GoRange && isMapRange((GoRange) condition)
+					&& matchMapRangeIds((GoRange) condition, id))
+				return true;
+			return false;
+		});
+
+		if (isAssignedFromMapIteration)
+			return TAINTED;
+
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
 			return super.variable(id, pp);
@@ -92,11 +114,45 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 		return super.variable(id, pp);
 	}
 
+	private boolean matchMapRangeIds(GoRange range, Identifier id) {
+
+		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
+	}
+
+	private boolean matchMapRangeId(Statement st, Identifier id) {
+
+		if (st instanceof VariableRef) {
+			VariableRef vRef = (VariableRef) st;
+			if (vRef.getVariable().equals(id)) {
+				Statement pred = st.getEvaluationPredecessor();
+				if (pred != null) {
+					if (pred instanceof GoRangeGetNextIndex
+							|| pred instanceof GoRangeGetNextValue) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private boolean isMapRange(GoRange range) {
+
+		if (range.getCollectionTypes() == null) {
+			// range not evaluated yet
+			return false;
+		}
+
+		return range.getCollectionTypes().stream()
+				.anyMatch(type -> type instanceof GoMapType || type == Untyped.INSTANCE);
+	}
+
 	@Override
 	public DomainRepresentation representation() {
-		return this == BOTTOM ? Lattice.BOTTOM_REPR
+		return this == BOTTOM ? Lattice.bottomRepresentation()
 				: this == CLEAN ? new StringRepresentation("_")
-						: this == TAINTED ? new StringRepresentation("#") : Lattice.TOP_REPR;
+						: this == TAINTED ? new StringRepresentation("#") : Lattice.topRepresentation();
 	}
 
 	@Override
@@ -118,54 +174,69 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 		return this == TAINTED;
 	}
 
-	@Override
-	protected InferredPair<TaintDomain> evalNullConstant(TaintDomain state, ProgramPoint pp)
-			throws SemanticException {
-		return new InferredPair<>(this, CLEAN, bottom());
+	/**
+	 * Yields if the state is cleaned.
+	 * 
+	 * @return {@code true} if is clean, otherwise {@code false}
+	 */
+	public boolean isClean() {
+		return this == CLEAN;
 	}
 
 	@Override
-	protected InferredPair<TaintDomain> evalNonNullConstant(Constant constant, TaintDomain state,
-			ProgramPoint pp) throws SemanticException {
+	public TaintDomain evalNullConstant(ProgramPoint pp) throws SemanticException {
+		return CLEAN;
+	}
+
+	@Override
+	public TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
 		if (constant instanceof Tainted)
-			return new InferredPair<>(this, TAINTED, bottom());
-		return new InferredPair<>(this, CLEAN, bottom());
+			return TAINTED;
+		return CLEAN;
 	}
 
 	@Override
-	protected InferredPair<TaintDomain> evalUnaryExpression(UnaryOperator operator, TaintDomain arg,
-			TaintDomain state, ProgramPoint pp) throws SemanticException {
-		return new InferredPair<>(this, arg, bottom());
+	public TaintDomain evalUnaryExpression(UnaryOperator operator, TaintDomain arg, ProgramPoint pp)
+			throws SemanticException {
+		return arg;
 	}
 
 	@Override
-	protected InferredPair<TaintDomain> evalBinaryExpression(BinaryOperator operator, TaintDomain left,
-			TaintDomain right, TaintDomain state, ProgramPoint pp) throws SemanticException {
+	public TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
+			ProgramPoint pp) throws SemanticException {
+
+		if (operator == GoConv.INSTANCE)
+			return left;
+
 		if (left == TAINTED || right == TAINTED)
-			return new InferredPair<>(this, TAINTED, bottom());
+			return TAINTED;
 
 		if (left == TOP || right == TOP)
-			return new InferredPair<>(this, TOP, bottom());
+			return TOP;
 
-		return new InferredPair<>(this, CLEAN, bottom());
+		return CLEAN;
 	}
 
 	@Override
-	protected InferredPair<TaintDomain> evalTernaryExpression(TernaryOperator operator, TaintDomain left,
-			TaintDomain middle, TaintDomain right, TaintDomain state, ProgramPoint pp)
-			throws SemanticException {
+	public TaintDomain evalTernaryExpression(TernaryOperator operator, TaintDomain left, TaintDomain middle,
+			TaintDomain right, ProgramPoint pp) throws SemanticException {
 		if (left == TAINTED || right == TAINTED || middle == TAINTED)
-			return new InferredPair<>(this, TAINTED, bottom());
+			return TAINTED;
 
 		if (left == TOP || right == TOP || middle == TOP)
-			return new InferredPair<>(this, TOP, bottom());
+			return TOP;
 
-		return new InferredPair<>(this, CLEAN, bottom());
+		return CLEAN;
+	}
+
+	@Override
+	public TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
+		return TAINTED;
 	}
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
-		for (Type t : id.getRuntimeTypes())
+		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
 		return false;
@@ -177,17 +248,17 @@ public class TaintDomain extends BaseInferredValue<TaintDomain> {
 	}
 
 	@Override
-	protected TaintDomain lubAux(TaintDomain other) throws SemanticException {
+	public TaintDomain lubAux(TaintDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected TaintDomain wideningAux(TaintDomain other) throws SemanticException {
+	public TaintDomain wideningAux(TaintDomain other) throws SemanticException {
 		return TOP; // should never happen
 	}
 
 	@Override
-	protected boolean lessOrEqualAux(TaintDomain other) throws SemanticException {
+	public boolean lessOrEqualAux(TaintDomain other) throws SemanticException {
 		return false; // should never happen
 	}
 

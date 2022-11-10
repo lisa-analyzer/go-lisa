@@ -57,7 +57,7 @@ public class List extends GoStructType {
 
 		return INSTANCE;
 	}
-	
+
 	/**
 	 * Registers the methods of List type.
 	 */

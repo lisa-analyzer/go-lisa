@@ -293,13 +293,12 @@ public interface GoRuntimeLoader {
 
 		program.addUnit(jsonUnit);
 	}
-	
+
 	private void loadList(Program program) {
-		
-		
+
 		CodeUnit listUnit = new CodeUnit(runtimeLocation, program, "container/list");
 
-		 List list = it.unive.golisa.cfg.runtime.container.list.type.List.getListType(program);
+		List list = it.unive.golisa.cfg.runtime.container.list.type.List.getListType(program);
 
 		// adding types
 		program.getTypes().registerType(list);
@@ -309,7 +308,7 @@ public interface GoRuntimeLoader {
 		List.registerMethods();
 
 		program.addUnit(list.getUnit());
-		
+
 		// adding functions
 
 		program.addUnit(listUnit);

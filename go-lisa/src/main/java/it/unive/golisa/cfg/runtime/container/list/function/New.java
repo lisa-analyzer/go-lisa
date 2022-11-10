@@ -2,7 +2,6 @@ package it.unive.golisa.cfg.runtime.container.list.function;
 
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -17,8 +16,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
-import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -35,8 +34,8 @@ public class New extends NativeCFG {
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location   the location where this native cfg is defined
-	 * @param errorsUnit the unit to which this native cfg belongs to
+	 * @param location the location where this native cfg is defined
+	 * @param listUnit the unit to which this native cfg belongs to
 	 */
 	public New(CodeLocation location, ProgramUnit listUnit) {
 		super(new CodeMemberDescriptor(location, listUnit, false, "New", List.INSTANCE),
@@ -84,13 +83,15 @@ public class New extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.smallStepSemantics(new Clean(List.INSTANCE, getLocation()), original);
 		}
-
 
 	}
 }

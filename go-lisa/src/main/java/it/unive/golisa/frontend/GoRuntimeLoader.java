@@ -79,6 +79,7 @@ import it.unive.golisa.cfg.runtime.shim.type.Handler;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
 import it.unive.golisa.cfg.runtime.strconv.Atoi;
 import it.unive.golisa.cfg.runtime.strconv.Itoa;
+import it.unive.golisa.cfg.runtime.strconv.ParseFloat;
 import it.unive.golisa.cfg.runtime.strings.Contains;
 import it.unive.golisa.cfg.runtime.strings.HasPrefix;
 import it.unive.golisa.cfg.runtime.strings.HasSuffix;
@@ -455,6 +456,7 @@ public interface GoRuntimeLoader {
 		CodeUnit strconv = new CodeUnit(runtimeLocation, program, "strconv");
 		strconv.addCodeMember(new Atoi(runtimeLocation, strconv));
 		strconv.addCodeMember(new Itoa(runtimeLocation, strconv));
+		strconv.addCodeMember(new ParseFloat(runtimeLocation, strconv));
 
 		program.addUnit(strconv);
 	}

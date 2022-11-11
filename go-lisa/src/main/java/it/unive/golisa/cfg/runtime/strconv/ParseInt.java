@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -94,7 +95,7 @@ public class ParseInt extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 				StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new Clean(GoInt64Type.INSTANCE, getLocation()), original);
 		}	
 	}
 }

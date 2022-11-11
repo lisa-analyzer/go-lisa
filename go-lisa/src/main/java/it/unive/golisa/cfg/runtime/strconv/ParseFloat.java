@@ -1,9 +1,11 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -91,7 +93,7 @@ public class ParseFloat extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 				throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new Clean(GoInt64Type.INSTANCE, getLocation()), original);
 		}
 	}
 }

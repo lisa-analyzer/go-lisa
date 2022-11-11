@@ -2127,6 +2127,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Expression[] args = visitArguments(ctx.arguments());
 
 				if (primary instanceof VariableRef)
+					// FIXME: this is a work-around 
+					// for string conversiom
+					if (primary.toString().equals("string"))
+						return new UnresolvedCall(cfg, locationOf(ctx),
+								CallType.STATIC,
+								"", primary.toString(),
+								visitArguments(ctx.arguments()));					else
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name

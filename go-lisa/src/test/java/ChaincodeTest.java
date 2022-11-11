@@ -14,6 +14,7 @@ import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -234,5 +235,34 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/implicit-flow", "ni", "implicit.go", conf, annSet);
+	}
+	
+	@Test
+	public void testAdaephon() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/adaephon-ben", "taint", "main.go", conf, annSet);
+	}
+	
+	@Test
+	public void testAdaephonNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.analysisGraphs = GraphType.HTML;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/adaephon-ben", "ni", "main.go", conf, annSet);
 	}
 }

@@ -1,10 +1,11 @@
-package it.unive.golisa.cfg.runtime.strconv;
+package it.unive.golisa.cfg.runtime.net.http.function;
 
+import it.unive.golisa.cfg.runtime.io.type.Reader;
+import it.unive.golisa.cfg.runtime.net.http.type.Response;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -26,25 +27,25 @@ import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func ParseInt(s string, base int, bitSize int) (i int64, err error)
+ * func Post(url, contentType string, body io.Reader) (resp *Response, err error)
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class ParseInt extends NativeCFG {
+public class Post extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
 	 * 
 	 * @param location    the location where this native cfg is defined
-	 * @param strconvUnit the unit to which this native cfg belongs to
+	 * @param httpUnit the unit to which this native cfg belongs to
 	 */
-	public ParseInt(CodeLocation location, CodeUnit strconvUnit) {
-		super(new CodeMemberDescriptor(location, strconvUnit, false, "ParseInt", 
-				GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE),
-				new Parameter(location, "s", GoStringType.INSTANCE),
-				new Parameter(location, "base", GoIntType.INSTANCE),
-				new Parameter(location, "bitSize", GoIntType.INSTANCE)),
-				ParseIntImpl.class);
+	public Post(CodeLocation location, CodeUnit httpUnit) {
+		super(new CodeMemberDescriptor(location, httpUnit, false, "Post", 
+				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Response.getResponseType(httpUnit.getProgram())), GoErrorType.INSTANCE),
+				new Parameter(location, "url", GoStringType.INSTANCE),
+				new Parameter(location, "contentType", GoStringType.INSTANCE),
+				new Parameter(location, "body", Reader.getReaderType(httpUnit.getProgram()))),
+				PostImpl.class);
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class ParseInt extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class ParseIntImpl extends TernaryExpression implements PluggableStatement {
+	public static class PostImpl extends TernaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -71,8 +72,8 @@ public class ParseInt extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static ParseIntImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new ParseIntImpl(cfg, location, params[0], params[1], params[2]);
+		public static PostImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new PostImpl(cfg, location, params[0], params[1], params[2]);
 		}
 
 		/**
@@ -85,8 +86,8 @@ public class ParseInt extends NativeCFG {
 		 * @param middle     the middle expression
 		 * @param right     the right expression
 		 */
-		public ParseIntImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
-			super(cfg, location, "ParseInt", GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE), left, middle, right);
+		public PostImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
+			super(cfg, location, "ParseInt", GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Response.getResponseType(null)), GoErrorType.INSTANCE), left, middle, right);
 		}
 
 		@Override

@@ -47,6 +47,7 @@ import it.unive.golisa.cfg.runtime.math.rand.function.Shuffle;
 import it.unive.golisa.cfg.runtime.math.rand.function.UInt32;
 import it.unive.golisa.cfg.runtime.math.rand.function.UInt64;
 import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
+import it.unive.golisa.cfg.runtime.net.http.function.Post;
 import it.unive.golisa.cfg.runtime.os.file.function.Create;
 import it.unive.golisa.cfg.runtime.os.file.function.CreateTemp;
 import it.unive.golisa.cfg.runtime.os.file.function.NewFile;
@@ -154,6 +155,8 @@ public interface GoRuntimeLoader {
 			loadJson(program);
 		else if (module.equals("container/list"))
 			loadList(program);
+		else if (module.equals("net/http"))
+			loadHttp(program);
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
@@ -430,6 +433,15 @@ public interface GoRuntimeLoader {
 
 	}
 
+	private void loadHttp(Program program) {
+		CodeUnit http = new CodeUnit(runtimeLocation, program, "http");		
+		GoStructType.registerType(it.unive.golisa.cfg.runtime.net.http.type.Response.getResponseType(program));
+
+		http.addCodeMember(new Post(runtimeLocation, http));
+
+		program.addUnit(http);
+	}
+	
 	private void loadUrl(Program program) {
 		CodeUnit url = new CodeUnit(runtimeLocation, program, "url");
 		url.addCodeMember(new QueryEscape(runtimeLocation, url));

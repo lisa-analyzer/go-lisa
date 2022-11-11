@@ -1,5 +1,11 @@
 package it.unive.golisa.analysis.heap;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
@@ -20,10 +26,6 @@ import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * A field-sensitive point-based heap implementation for Go that abstracts heap

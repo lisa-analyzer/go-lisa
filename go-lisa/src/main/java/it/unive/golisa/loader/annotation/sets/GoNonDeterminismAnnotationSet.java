@@ -1,8 +1,5 @@
 package it.unive.golisa.loader.annotation.sets;
 
-import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
-import it.unive.golisa.golang.util.GoLangAPISignatureLoader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -10,6 +7,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.golisa.golang.util.GoLangAPISignatureLoader;
 
 /**
  * The class represents the set of annotations for the non-determinism analysis

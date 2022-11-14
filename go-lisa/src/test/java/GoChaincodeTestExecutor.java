@@ -55,7 +55,7 @@ public abstract class GoChaincodeTestExecutor {
 	 *                          be ignored, as it will be overwritten by the
 	 *                          computed workdir)
 	 */
-	protected void perform(String folder, String source, LiSAConfiguration configuration, AnnotationSet annSet) {
+	protected void perform(String folder, String source, LiSAConfiguration configuration, AnnotationSet[] annSet) {
 		System.out.println("Testing " + getCaller());
 		performAux(folder, null, source, configuration, annSet);
 	}
@@ -92,14 +92,14 @@ public abstract class GoChaincodeTestExecutor {
 	 *                          computed workdir)
 	 */
 	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration,
-			AnnotationSet annSet) {
+			AnnotationSet[] annSet) {
 		System.out.println("Testing " + getCaller());
 		performAux(folder, subfolder, source, configuration, annSet);
 
 	}
 
 	private void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration,
-			AnnotationSet annSet) {
+			AnnotationSet[] annSet) {
 		Path expectedPath = Paths.get(EXPECTED_RESULTS_DIR, folder);
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, folder);
 		Path target = Paths.get(expectedPath.toString(), source);

@@ -10,8 +10,8 @@ import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
-import it.unive.golisa.loader.annotation.AnnotationSet;
-import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
+import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAConfiguration.GraphType;
@@ -25,7 +25,7 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
-	private final AnnotationSet annSet = new HyperledgerFabricNonDeterminismAnnotationSet();
+	private final NonDeterminismAnnotationSet[] annSet = FrameworkNonDeterminismAnnotationSetFactory.getAnnotationSets("HYPERLEDGER-FABRIC");
 
 	@Test
 	public void testBoleto() throws AnalysisException, IOException {

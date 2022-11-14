@@ -23,7 +23,7 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 
-	private final AnnotationSet annSet = new SimpleTaintAnnotationSet();
+	private final AnnotationSet[] annSet = {new SimpleTaintAnnotationSet()};
 
 	@Test
 	public void taintTest001() throws AnalysisSetupException {

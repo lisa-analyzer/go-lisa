@@ -87,7 +87,7 @@ public class Post extends NativeCFG {
 		 * @param right     the right expression
 		 */
 		public PostImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
-			super(cfg, location, "ParseInt", GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Response.getResponseType(null)), GoErrorType.INSTANCE), left, middle, right);
+			super(cfg, location, "PostImpl", GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Response.getResponseType(null)), GoErrorType.INSTANCE), left, middle, right);
 		}
 
 		@Override
@@ -95,7 +95,12 @@ public class Post extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 				StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.top();
+			
+			AnalysisState<A, H, V, T> result = state.bottom();
+			result = result.lub(state.smallStepSemantics(left, original));
+			result = result.lub(state.smallStepSemantics(middle, original));
+			result = result.lub(state.smallStepSemantics(right, original));
+			return result;
 		}	
 	}
 }

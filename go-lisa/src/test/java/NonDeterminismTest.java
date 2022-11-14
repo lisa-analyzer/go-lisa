@@ -5,7 +5,8 @@ import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
-import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
+import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
@@ -17,6 +18,8 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
 public class NonDeterminismTest extends GoChaincodeTestExecutor {
 
+	private final NonDeterminismAnnotationSet[] annSet = FrameworkNonDeterminismAnnotationSetFactory.getAnnotationSets("HYPERLEDGER-FABRIC");
+	
 	@Test
 	public void testMapIteration() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
@@ -28,7 +31,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
-		perform("non-det/map-iter", "MapIteration.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+		perform("non-det/map-iter", "MapIteration.go", conf, annSet);
 
 	}
 
@@ -43,7 +46,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
-		perform("non-det/channel", "Channel.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+		perform("non-det/channel", "Channel.go", conf, annSet);
 
 	}
 
@@ -58,6 +61,6 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
-		perform("non-det/goroutines", "GoRoutines.go", conf, new HyperledgerFabricNonDeterminismAnnotationSet());
+		perform("non-det/goroutines", "GoRoutines.go", conf, annSet);
 	}
 }

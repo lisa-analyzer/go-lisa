@@ -123,8 +123,7 @@ public class AnnotationLoader implements Loader {
 	private void checkAndAddAnnotation(CodeMemberDescriptor descriptor, CodeAnnotation ca) {
 		if (ca instanceof MethodAnnotation) {
 			MethodAnnotation ma = (MethodAnnotation) ca;
-			if (descriptor.getUnit().getName().equals(ma.getUnit())
-					&& descriptor.getName().equals(ma.getName())) {
+			if (matchUnit(ma,descriptor) && descriptor.getName().equals(ma.getName())) {
 				if (ca instanceof MethodParameterAnnotation) {
 					MethodParameterAnnotation mpa = (MethodParameterAnnotation) ca;
 					descriptor.getFormals()[mpa.getParam()].addAnnotation(mpa.getAnnotation());
@@ -134,5 +133,10 @@ public class AnnotationLoader implements Loader {
 				appliedAnnotations.add(Pair.of(ca, descriptor));
 			}
 		}
+	}
+
+	private boolean matchUnit(MethodAnnotation ma, CodeMemberDescriptor descriptor) {
+		return (ma.getUnit().equals(descriptor.getUnit().getName())) || (ma.getUnit().contains("/") && ma.getUnit().endsWith(descriptor.getUnit().getName()));
+		 
 	}
 }

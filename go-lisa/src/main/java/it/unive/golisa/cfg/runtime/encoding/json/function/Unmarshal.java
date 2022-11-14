@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -25,7 +26,6 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Unmarshal(data []byte, v interface{}) error.
@@ -99,9 +99,10 @@ public class Unmarshal extends NativeCFG {
 						throws SemanticException {
 
 			AnalysisState<A, H, V, T> errorValue = state
-					.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+					.smallStepSemantics(new Clean(GoErrorType.INSTANCE, getLocation()), original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			
 			return errorValue.lub(nilValue);
 		}
 	}

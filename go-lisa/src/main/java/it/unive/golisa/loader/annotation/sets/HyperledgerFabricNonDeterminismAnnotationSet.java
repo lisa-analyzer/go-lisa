@@ -34,6 +34,7 @@ public class HyperledgerFabricNonDeterminismAnnotationSet extends NonDeterminism
 						Pair.of("PutPrivateData", 1), Pair.of("PutPrivateData", 2), Pair.of("DelPrivateData", 1)));
 
 		map2.put("shim", Set.of(Pair.of("Success", 0)));
+		map2.put("shim", Set.of(Pair.of("Error", 0)));
 
 		SINK_CONSTRUCTOR_PARAMETER_ANNOTATIONS.put(Kind.PARAM, map2);
 	}

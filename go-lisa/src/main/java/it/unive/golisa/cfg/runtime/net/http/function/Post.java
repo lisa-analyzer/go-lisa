@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.net.http.function;
 
-import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.runtime.net.http.type.Response;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -25,6 +24,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.type.Untyped;
 
 /**
  * func Post(url, contentType string, body io.Reader) (resp *Response, err error)
@@ -44,7 +44,7 @@ public class Post extends NativeCFG {
 				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Response.getResponseType(httpUnit.getProgram())), GoErrorType.INSTANCE),
 				new Parameter(location, "url", GoStringType.INSTANCE),
 				new Parameter(location, "contentType", GoStringType.INSTANCE),
-				new Parameter(location, "body", Reader.getReaderType(httpUnit.getProgram()))),
+				new Parameter(location, "body", Untyped.INSTANCE)),
 				PostImpl.class);
 	}
 

@@ -1,8 +1,10 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
 import java.util.Collections;
+import java.util.Set;
 
-import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.cfg.expression.literal.GoString;
+import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
@@ -19,18 +21,22 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeTokenType;
 
 /**
- * func (t Time) Format(layout string) string.
+ * func (t Time) String() string
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class Format extends NativeCFG {
+public class StringTime extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
@@ -38,21 +44,20 @@ public class Format extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param timeUnit the unit to which this native cfg belongs to
 	 */
-	public Format(CodeLocation location, CompilationUnit timeUnit) {
-		super(new CodeMemberDescriptor(location, timeUnit, true, "Format",
+	public StringTime(CodeLocation location, CompilationUnit timeUnit) {
+		super(new CodeMemberDescriptor(location, timeUnit, true, "String",
 				GoStringType.INSTANCE,
-				new Parameter(location, "t", Time.getTimeType(timeUnit.getProgram())),
-				new Parameter(location, "layout", GoStringType.INSTANCE)),
-				FormatImpl.class);
+				new Parameter(location, "this", Time.getTimeType(timeUnit.getProgram()))),
+				StringImpl.class);
 	}
 
 	/**
-	 * The Format implementation.
+	 * The String implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class FormatImpl extends BinaryExpression
-			implements PluggableStatement {
+	public static class StringImpl extends UnaryExpression
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -71,8 +76,8 @@ public class Format extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static FormatImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new FormatImpl(cfg, location, params[0], params[1]);
+		public static StringImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new StringImpl(cfg, location, params[0]);
 		}
 
 		/**
@@ -83,22 +88,19 @@ public class Format extends NativeCFG {
 		 *                     defined
 		 * @param expr     the expression
 		 */
-		public FormatImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "FormatImpl", GoStringType.INSTANCE, left, right);
+		public StringImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "StringImpl", Time.getTimeType(null), expr);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+		public <A extends AbstractState<A, H, V, T>,
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
-			
-			AnalysisState<A, H, V, T> resultState = state.smallStepSemantics(left, original)
-					.lub(state.smallStepSemantics(right, original))
-					.lub(state.smallStepSemantics(new Clean(GoStringType.INSTANCE, getLocation()), original));
-//			for (SymbolicExpression exp : resultState.getComputedExpressions())
-//				exp.setRuntimeTypes(Collections.singleton(GoStringType.INSTANCE));
-			return resultState;
+				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+			expr.setRuntimeTypes(Collections.singleton(GoStringType.INSTANCE));
+			return state.smallStepSemantics(expr, original);
 		}
 	}
 }

@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
-import java.util.Collections;
-
-import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
@@ -94,10 +91,7 @@ public class Format extends NativeCFG {
 				throws SemanticException {
 			
 			AnalysisState<A, H, V, T> resultState = state.smallStepSemantics(left, original)
-					.lub(state.smallStepSemantics(right, original))
-					.lub(state.smallStepSemantics(new Clean(GoStringType.INSTANCE, getLocation()), original));
-//			for (SymbolicExpression exp : resultState.getComputedExpressions())
-//				exp.setRuntimeTypes(Collections.singleton(GoStringType.INSTANCE));
+					.lub(state.smallStepSemantics(right, original));
 			return resultState;
 		}
 	}

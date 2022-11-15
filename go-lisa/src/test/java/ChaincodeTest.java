@@ -14,7 +14,6 @@ import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFac
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -255,7 +254,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testAdaephonNI() throws AnalysisException, IOException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
-		conf.analysisGraphs = GraphType.HTML;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
@@ -264,5 +262,33 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/adaephon-ben", "ni", "main.go", conf, annSet);
+	}
+	
+	@Test
+	public void testCristianoAndrade() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/cristiano-an", "taint", "chaincode-test.go", conf, annSet);
+	}
+	
+	@Test
+	public void testCristianoAndradeNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/cristiano-an", "ni", "chaincode-test.go", conf, annSet);
 	}
 }

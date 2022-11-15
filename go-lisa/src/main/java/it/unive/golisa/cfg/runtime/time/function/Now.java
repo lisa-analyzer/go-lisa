@@ -4,8 +4,6 @@ import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
-import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -25,7 +23,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.Untyped;
 
 /**
  * func Now() Time.
@@ -97,8 +94,10 @@ public class Now extends NativeCFG {
 			GoNonKeyedLiteral time = new GoNonKeyedLiteral(getCFG(), (SourceCodeLocation) getLocation(), new Expression[0], getStaticType());
 			AnalysisState<A, H, V, T> allocResult = time.semantics(state, interprocedural, expressions);
 			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression id : allocResult.getComputedExpressions()) 
+			for (SymbolicExpression id : allocResult.getComputedExpressions()) { 
+				result = result.lub(allocResult.assign(id, new Tainted(type, getLocation()), original));
 				result = result.lub(allocResult.assign(id, new Tainted(getLocation()), original));
+			}
 			return result;
 		}
 	}

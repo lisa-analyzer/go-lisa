@@ -44,12 +44,6 @@ public class GoModule extends it.unive.lisa.program.cfg.statement.BinaryExpressi
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		Type leftType = left.getDynamicType();
-		if (!(leftType.isNumericType() && leftType.asNumericType().isIntegral()) && !leftType.isUntyped())
-			return state.bottom();
-
-		Type rightType = right.getDynamicType();
-		if (!(rightType.isNumericType() && rightType.asNumericType().isIntegral()) && !rightType.isUntyped())
-			return state.bottom();
 
 		return state
 				.smallStepSemantics(new BinaryExpression(leftType, left, right,

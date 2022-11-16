@@ -43,10 +43,7 @@ public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpr
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
-			return state.bottom();
-		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())
-			return state.bottom();
+
 		return state
 				.smallStepSemantics(
 						new BinaryExpression(GoBoolType.INSTANCE, left, right,

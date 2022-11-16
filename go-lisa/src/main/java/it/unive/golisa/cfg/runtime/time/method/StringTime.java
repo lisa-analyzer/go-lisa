@@ -1,10 +1,7 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
 import java.util.Collections;
-import java.util.Set;
 
-import it.unive.golisa.cfg.expression.literal.GoString;
-import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
@@ -26,10 +23,6 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeTokenType;
 
 /**
  * func (t Time) String() string

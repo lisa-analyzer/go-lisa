@@ -1,0 +1,8 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/cc/cristiano-an/chaincode-test.go':107:45] on 'untyped SimpleChaincode::MakePayment(*SimpleChaincode t, shim.ChaincodeStubInterface stub, string accountKey)': [EXPRESSION] The execution of this call is guarded by a tainted condition resulting in an implicit flow"
+  }, {
+    "message" : "['go-testcases/cc/cristiano-an/chaincode-test.go':110:38] on 'untyped SimpleChaincode::MakePayment(*SimpleChaincode t, shim.ChaincodeStubInterface stub, string accountKey)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ ]
+}

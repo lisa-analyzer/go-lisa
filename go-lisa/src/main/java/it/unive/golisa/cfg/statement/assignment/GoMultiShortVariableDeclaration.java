@@ -74,8 +74,10 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		// if the right state is top,
 		// we put all the variables to top
 		if (rightState.isTop()
-				|| isClean(rightState.getComputedExpressions()) || rightState.getComputedExpressions().size() > 1) {
-			AnalysisState<A, H, V, T> result = entryState;
+				|| isClean(rightState.getComputedExpressions()) 
+				|| rightState.getComputedExpressions().size() > 1
+				|| isOpenCall(rightState.getComputedExpressions())) {
+			AnalysisState<A, H, V, T> result = rightState;
 
 			for (int i = 0; i < ids.length; i++) {
 				if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
@@ -117,5 +119,9 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		}
 
 		return super.semantics(entryState, interprocedural, expressions);
+	}
+
+	private boolean isOpenCall(ExpressionSet<SymbolicExpression> computedExpressions) {
+		return computedExpressions.size() == 1 && computedExpressions.iterator().next().toString().startsWith("open_call");
 	}
 }

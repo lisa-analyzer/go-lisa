@@ -10,6 +10,7 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -294,6 +295,12 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
+	@Override
+	public Satisfiability satisfies(ValueExpression expression, InferenceSystem<IntegrityNIDomain> environment,
+			ProgramPoint pp) throws SemanticException {
+		return Satisfiability.UNKNOWN;
+	}
+	
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
 		for (Type t : id.getRuntimeTypes(null))

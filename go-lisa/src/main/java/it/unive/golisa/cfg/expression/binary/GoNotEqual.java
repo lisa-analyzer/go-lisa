@@ -45,20 +45,10 @@ public class GoNotEqual extends it.unive.lisa.program.cfg.statement.BinaryExpres
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
+		
+		return state.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
+			left, right,
+				ComparisonNe.INSTANCE, getLocation()), this);
 
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types))
-				if (rightType.canBeAssignedTo(leftType) || leftType.canBeAssignedTo(rightType)) {
-					// TODO: not covering composite types (e.g., channels,
-					// arrays, structs...)
-					AnalysisState<A, H, V, T> tmp = state
-							.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-									left, right,
-									ComparisonNe.INSTANCE, getLocation()), this);
-					result = result.lub(tmp);
-				}
-		return result;
 	}
 }

@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,6 +16,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -46,6 +48,8 @@ public class GoCollectionAccess extends BinaryExpression {
 					throws SemanticException {
 		if (getLeft().toString().startsWith("args"))
 			return state.smallStepSemantics(left, this);
+		if(getLeft().toString().equals("time") && getRight().toString().equals("Second"))
+			return state.smallStepSemantics(new Constant(Duration.INSTANCE,"SECOND_VALUE",getLocation()), this);
 
 		AnalysisState<A, H, V, T> result = state.bottom();
 

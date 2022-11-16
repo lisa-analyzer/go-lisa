@@ -5,6 +5,7 @@ import it.unive.golisa.cfg.runtime.shim.method.DelPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.DelState;
 import it.unive.golisa.cfg.runtime.shim.method.GetArgs;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
+import it.unive.golisa.cfg.runtime.shim.method.GetPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.GetState;
 import it.unive.golisa.cfg.runtime.shim.method.GetStringArgs;
 import it.unive.golisa.cfg.runtime.shim.method.PutPrivateData;
@@ -88,7 +89,14 @@ public class ChaincodeStub extends GoStructType {
 		chaincodeStubUnit
 				.addInstanceCodeMember(
 						new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
-
+		chaincodeStubUnit
+			.addInstanceCodeMember(new GetState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		
+		chaincodeStubUnit
+			.addInstanceCodeMember(
+				new GetPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		
+		
 	}
 
 	@Override

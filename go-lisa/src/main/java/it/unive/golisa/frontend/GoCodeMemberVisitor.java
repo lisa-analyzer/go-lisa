@@ -389,6 +389,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @return the {@link CFG} built from the block
 	 */
 	public CFG visitCodeMember(MethodDeclContext ctx) {
+//		CompilationUnit packageUnit = currentUnit;
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
 				? ((GoPointerType) receiver.getStaticType()).getInnerType().toString()
@@ -2127,19 +2128,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Expression[] args = visitArguments(ctx.arguments());
 
 				if (primary instanceof VariableRef)
-					// FIXME: this is a work-around 
-					// for string conversiom
-					if (primary.toString().equals("string"))
-						return new UnresolvedCall(cfg, locationOf(ctx),
-								CallType.STATIC,
-								"", primary.toString(),
-								visitArguments(ctx.arguments()));					else
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name
 					return new UnresolvedCall(cfg, locationOf(ctx),
 							CallType.STATIC,
-							currentUnit.getName(), primary.toString(),
+							"", primary.toString(),
 							visitArguments(ctx.arguments()));
 
 				else if (primary instanceof GoCollectionAccess) {

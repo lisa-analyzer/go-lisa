@@ -1,1 +1,113 @@
-{"name":"untyped main::main()","description":null,"nodes":[{"id":0,"text":"main::blankAssig()"},{"id":1,"text":"ret"}],"edges":[{"sourceId":0,"destId":1,"kind":"SequentialEdge"}],"descriptions":[{"nodeId":0,"description":{"expressions":["call_ret_value@'go-testcases/blankidentifier/blankidentifier.go':14:12"],"state":{"heap":"#TOP#","type":{"map":{"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]":["int"]},"stack":"#TOP#"},"value":{"map":{"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]":"[1, 1]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]":"[2, 2]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]":"[1, 1]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]":"[2, 2]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]":"[1, 1]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]":"[2, 2]"},"stack":"_|_"}}}},{"nodeId":1,"description":{"expressions":["skip"],"state":{"heap":"#TOP#","type":{"map":{"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]":["int"],"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]":["int"]},"stack":"_|_"},"value":{"map":{"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]":"[1, 1]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]":"[2, 2]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]":"[1, 1]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]":"[2, 2]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]":"[1, 1]","heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]":"[2, 2]"},"stack":"_|_"}}}}]}
+{
+	"name": "untyped main::main()",
+	"description": null,
+	"nodes": [
+		{
+			"id": 0,
+			"text": "blankAssig()"
+		},
+		{
+			"id": 1,
+			"text": "ret"
+		}
+	],
+	"edges": [
+		{
+			"sourceId": 0,
+			"destId": 1,
+			"kind": "SequentialEdge"
+		}
+	],
+	"descriptions": [
+		{
+			"nodeId": 0,
+			"description": {
+				"expressions": [
+					"call_ret_value@'go-testcases/blankidentifier/blankidentifier.go':14:12"
+				],
+				"state": {
+					"heap": "#TOP#",
+					"type": {
+						"map": {
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]": [
+								"int"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]": "[2, 2]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 1,
+			"description": {
+				"expressions": [
+					"skip"
+				],
+				"state": {
+					"heap": "#TOP#",
+					"type": {
+						"map": {
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]": [
+								"int"
+							],
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]": [
+								"int"
+							]
+						},
+						"stack": "_|_"
+					},
+					"value": {
+						"map": {
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':10:14[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':4:10[1]": "[2, 2]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[0]": "[1, 1]",
+							"heap[s]:pp@'go-testcases/blankidentifier/blankidentifier.go':9:14[1]": "[2, 2]"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		}
+	]
+}

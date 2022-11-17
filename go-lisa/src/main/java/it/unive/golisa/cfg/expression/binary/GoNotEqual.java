@@ -15,8 +15,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go equal expression (e.g., x == y).
@@ -45,9 +43,9 @@ public class GoNotEqual extends it.unive.lisa.program.cfg.statement.BinaryExpres
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		
+
 		return state.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-			left, right,
+				left, right,
 				ComparisonNe.INSTANCE, getLocation()), this);
 
 	}

@@ -48,8 +48,8 @@ public class GoCollectionAccess extends BinaryExpression {
 					throws SemanticException {
 		if (getLeft().toString().startsWith("args"))
 			return state.smallStepSemantics(left, this);
-		if(getLeft().toString().equals("time") && getRight().toString().equals("Second"))
-			return state.smallStepSemantics(new Constant(Duration.INSTANCE,"SECOND_VALUE",getLocation()), this);
+		if (getLeft().toString().equals("time") && getRight().toString().equals("Second"))
+			return state.smallStepSemantics(new Constant(Duration.INSTANCE, "SECOND_VALUE", getLocation()), this);
 
 		AnalysisState<A, H, V, T> result = state.bottom();
 

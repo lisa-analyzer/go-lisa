@@ -40,7 +40,7 @@ public class ParseInt extends NativeCFG {
 	 * @param strconvUnit the unit to which this native cfg belongs to
 	 */
 	public ParseInt(CodeLocation location, CodeUnit strconvUnit) {
-		super(new CodeMemberDescriptor(location, strconvUnit, false, "ParseInt", 
+		super(new CodeMemberDescriptor(location, strconvUnit, false, "ParseInt",
 				GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "s", GoStringType.INSTANCE),
 				new Parameter(location, "base", GoIntType.INSTANCE),
@@ -83,19 +83,24 @@ public class ParseInt extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param left     the left expression
-		 * @param middle     the middle expression
-		 * @param right     the right expression
+		 * @param middle   the middle expression
+		 * @param right    the right expression
 		 */
 		public ParseIntImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
-			super(cfg, location, "ParseInt", GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE), left, middle, right);
+			super(cfg, location, "ParseInt",
+					GoTupleType.getTupleTypeOf(location, GoInt64Type.INSTANCE, GoErrorType.INSTANCE), left, middle,
+					right);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
-				StatementStore<A, H, V, T> expressions) throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+						StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(new Clean(GoInt64Type.INSTANCE, getLocation()), original);
-		}	
+		}
 	}
 }

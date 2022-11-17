@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.time.type;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.SourceCodeLocation;
@@ -11,6 +8,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * A Month specifies a month of the year (January = 1, ...).

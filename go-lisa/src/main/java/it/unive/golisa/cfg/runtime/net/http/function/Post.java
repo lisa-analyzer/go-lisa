@@ -27,7 +27,8 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func Post(url, contentType string, body io.Reader) (resp *Response, err error)
+ * func Post(url, contentType string, body io.Reader) (resp *Response, err
+ * error)
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -36,12 +37,13 @@ public class Post extends NativeCFG {
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location    the location where this native cfg is defined
+	 * @param location the location where this native cfg is defined
 	 * @param httpUnit the unit to which this native cfg belongs to
 	 */
 	public Post(CodeLocation location, CodeUnit httpUnit) {
-		super(new CodeMemberDescriptor(location, httpUnit, false, "Post", 
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Response.getResponseType(httpUnit.getProgram())), GoErrorType.INSTANCE),
+		super(new CodeMemberDescriptor(location, httpUnit, false, "Post",
+				GoTupleType.getTupleTypeOf(location,
+						GoPointerType.lookup(Response.getResponseType(httpUnit.getProgram())), GoErrorType.INSTANCE),
 				new Parameter(location, "url", GoStringType.INSTANCE),
 				new Parameter(location, "contentType", GoStringType.INSTANCE),
 				new Parameter(location, "body", Untyped.INSTANCE)),
@@ -83,24 +85,28 @@ public class Post extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param left     the left expression
-		 * @param middle     the middle expression
-		 * @param right     the right expression
+		 * @param middle   the middle expression
+		 * @param right    the right expression
 		 */
 		public PostImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
-			super(cfg, location, "PostImpl", GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Response.getResponseType(null)), GoErrorType.INSTANCE), left, middle, right);
+			super(cfg, location, "PostImpl", GoTupleType.getTupleTypeOf(location,
+					GoPointerType.lookup(Response.getResponseType(null)), GoErrorType.INSTANCE), left, middle, right);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
-				StatementStore<A, H, V, T> expressions) throws SemanticException {
-			
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+						StatementStore<A, H, V, T> expressions) throws SemanticException {
+
 			AnalysisState<A, H, V, T> result = state.bottom();
 			result = result.lub(state.smallStepSemantics(left, original));
 			result = result.lub(state.smallStepSemantics(middle, original));
 			result = result.lub(state.smallStepSemantics(right, original));
 			return result;
-		}	
+		}
 	}
 }

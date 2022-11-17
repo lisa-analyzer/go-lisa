@@ -1,14 +1,5 @@
 package it.unive.golisa.loader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
@@ -19,6 +10,13 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class represents an annotation loader for programs.
@@ -123,7 +121,7 @@ public class AnnotationLoader implements Loader {
 	private void checkAndAddAnnotation(CodeMemberDescriptor descriptor, CodeAnnotation ca) {
 		if (ca instanceof MethodAnnotation) {
 			MethodAnnotation ma = (MethodAnnotation) ca;
-			if (matchUnit(ma,descriptor) && descriptor.getName().equals(ma.getName())) {
+			if (matchUnit(ma, descriptor) && descriptor.getName().equals(ma.getName())) {
 				if (ca instanceof MethodParameterAnnotation) {
 					MethodParameterAnnotation mpa = (MethodParameterAnnotation) ca;
 					descriptor.getFormals()[mpa.getParam()].addAnnotation(mpa.getAnnotation());
@@ -136,7 +134,8 @@ public class AnnotationLoader implements Loader {
 	}
 
 	private boolean matchUnit(MethodAnnotation ma, CodeMemberDescriptor descriptor) {
-		return (ma.getUnit().equals(descriptor.getUnit().getName())) || (ma.getUnit().contains("/") && ma.getUnit().endsWith(descriptor.getUnit().getName()));
-		 
+		return (ma.getUnit().equals(descriptor.getUnit().getName()))
+				|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(descriptor.getUnit().getName()));
+
 	}
 }

@@ -435,14 +435,14 @@ public interface GoRuntimeLoader {
 	}
 
 	private void loadHttp(Program program) {
-		CodeUnit http = new CodeUnit(runtimeLocation, program, "http");		
+		CodeUnit http = new CodeUnit(runtimeLocation, program, "http");
 		GoStructType.registerType(it.unive.golisa.cfg.runtime.net.http.type.Response.getResponseType(program));
 
 		http.addCodeMember(new Post(runtimeLocation, http));
 
 		program.addUnit(http);
 	}
-	
+
 	private void loadUrl(Program program) {
 		CodeUnit url = new CodeUnit(runtimeLocation, program, "url");
 		url.addCodeMember(new QueryEscape(runtimeLocation, url));
@@ -499,7 +499,7 @@ public interface GoRuntimeLoader {
 		time.addCodeMember(new Parse(runtimeLocation, time));
 		time.addCodeMember(new Sleep(runtimeLocation, time));
 		Time.registerMethods();
-		
+
 		program.addUnit(time);
 	}
 

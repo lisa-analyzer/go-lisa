@@ -1,12 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unive.golisa.antlr.GoParser.ExpressionContext;
 import it.unive.golisa.antlr.GoParser.FunctionDeclContext;
 import it.unive.golisa.antlr.GoParser.FunctionLitContext;
@@ -36,6 +29,11 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * An {@link GoParserBaseVisitor} that will parse the code of an Go function.

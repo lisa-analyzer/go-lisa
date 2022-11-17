@@ -1,7 +1,5 @@
 package it.unive.golisa;
 
-import java.util.Set;
-
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.call.Call;
@@ -15,6 +13,7 @@ import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
 import it.unive.lisa.program.language.validation.BaseValidationLogic;
 import it.unive.lisa.program.language.validation.ProgramValidationLogic;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * Go's {@link LanguageFeatures} implementation.
@@ -38,13 +37,12 @@ public class GoFeatures extends LanguageFeatures {
 			return true;
 		}
 	}
-	
+
 	@Override
 	public ParameterMatchingStrategy getMatchingStrategy() {
-		
+
 		return RelaxedTypesMatchingStrategy.INSTANCE;
 	}
-	
 
 	@Override
 	public HierarcyTraversalStrategy getTraversalStrategy() {

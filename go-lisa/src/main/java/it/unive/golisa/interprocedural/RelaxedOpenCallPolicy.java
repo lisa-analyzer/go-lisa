@@ -1,11 +1,5 @@
 package it.unive.golisa.interprocedural;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
@@ -15,7 +9,6 @@ import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
-import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.golisa.loader.annotation.sets.GoNonDeterminismAnnotationSet;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -27,7 +20,6 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.OpenCallPolicy;
-import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
@@ -36,6 +28,9 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.Variable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * OpenCall policy to be less conservative during taint and non-interference
@@ -76,12 +71,12 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 				} else if (((TaintDomain) stackValue).isClean()) { // &&
 																	// isRuntimeAPI(call))
 																	// {
-					if(!isSourceForNonDeterminism(call))
+					if (!isSourceForNonDeterminism(call))
 						return entryState.assign(var,
 								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
 					else
 						return entryState.assign(var, new Tainted(call.getLocation()), call);
-					
+
 				} else if (((TaintDomain) stackValue).isBottom()) {
 					return entryState;
 				}
@@ -96,7 +91,7 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 					PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
 					return entryState.assign(var, pushany, call);
 				} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call)) {
-					if(!isSourceForNonDeterminism(call))
+					if (!isSourceForNonDeterminism(call))
 						return entryState.assign(var,
 								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
 					else
@@ -174,19 +169,20 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 
 		return false;
 	}
-	
+
 	private boolean isSourceForNonDeterminism(Call call) {
 		GoNonDeterminismAnnotationSet sources = new GoNonDeterminismAnnotationSet();
-		for( CodeAnnotation ca : sources.getAnnotationForSources()) {
+		for (CodeAnnotation ca : sources.getAnnotationForSources()) {
 			if (ca instanceof MethodAnnotation) {
 				MethodAnnotation ma = (MethodAnnotation) ca;
 				if (call.getTargetName().equals(ma.getName()))
-					if(call.getQualifier() != null && (ma.getUnit().equals(call.getQualifier()) || (ma.getUnit().contains("/") && ma.getUnit().endsWith(call.getQualifier()))))
+					if (call.getQualifier() != null && (ma.getUnit().equals(call.getQualifier())
+							|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(call.getQualifier()))))
 						return true;
 			}
 		}
-			
+
 		return false;
-		
+
 	}
 }

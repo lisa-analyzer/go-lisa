@@ -26,7 +26,6 @@ import it.unive.lisa.type.VoidType;
  * func Sleep(d Duration)
  * 
  * @link https://pkg.go.dev/time#Sleep
- * 
  */
 public class Sleep extends NativeCFG {
 
@@ -64,7 +63,7 @@ public class Sleep extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param expr the expression
+		 * @param expr     the expression
 		 * 
 		 * @return the pluggable statement
 		 */
@@ -72,23 +71,25 @@ public class Sleep extends NativeCFG {
 			return new SleepImpl(cfg, location, exprs[0]);
 		}
 
-		
 		/**
 		 * Builds the pluggable statement.
 		 * 
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param expr     the  expression
+		 * @param expr     the expression
 		 */
 		public SleepImpl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "SleepImpl", VoidType.INSTANCE, expr);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(expr, original);
 		}
 

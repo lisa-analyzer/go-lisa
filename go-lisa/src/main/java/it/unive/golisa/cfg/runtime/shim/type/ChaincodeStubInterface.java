@@ -140,10 +140,10 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
 					true,
 					"GetCreator",
-					GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE),
+					GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+							GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE),
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
-
 
 			// missing
 			// - InvokeChaincode

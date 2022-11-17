@@ -91,10 +91,11 @@ public class Now extends NativeCFG {
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			Time type = Time.getTimeType(null);
-			GoNonKeyedLiteral time = new GoNonKeyedLiteral(getCFG(), (SourceCodeLocation) getLocation(), new Expression[0], getStaticType());
+			GoNonKeyedLiteral time = new GoNonKeyedLiteral(getCFG(), (SourceCodeLocation) getLocation(),
+					new Expression[0], getStaticType());
 			AnalysisState<A, H, V, T> allocResult = time.semantics(state, interprocedural, expressions);
 			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression id : allocResult.getComputedExpressions()) { 
+			for (SymbolicExpression id : allocResult.getComputedExpressions()) {
 				result = result.lub(allocResult.assign(id, new Tainted(type, getLocation()), original));
 				result = result.lub(allocResult.assign(id, new Tainted(getLocation()), original));
 			}

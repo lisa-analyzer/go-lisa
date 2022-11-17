@@ -1,7 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -25,6 +23,7 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import java.util.Collection;
 
 /**
  * A Go taint checker.
@@ -143,23 +142,27 @@ public class TaintChecker implements
 
 	}
 
-	private void checkSignature(UnresolvedCall call, CheckToolWithAnalysisResults<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>, GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
-		if(call != null) {
+	private void checkSignature(UnresolvedCall call,
+			CheckToolWithAnalysisResults<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
+		if (call != null) {
 			String targetName = call.getTargetName();
-			if(((targetName.equals("PutState") || targetName.equals("PutPrivateData")) && call.getParameters().length == 3) 
-					|| ((targetName.equals("DelState") || targetName.equals("DelPrivateData")) && call.getParameters().length == 2)){
-			for (CFGWithAnalysisResults<
-					GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, ValueEnvironment<TaintDomain>,
-					TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-					for(int i = 1; i< call.getParameters().length;i++)
-						if(result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-						.getValueOnStack().isTainted())
+			if (((targetName.equals("PutState") || targetName.equals("PutPrivateData"))
+					&& call.getParameters().length == 3)
+					|| ((targetName.equals("DelState") || targetName.equals("DelPrivateData"))
+							&& call.getParameters().length == 2)) {
+				for (CFGWithAnalysisResults<
+						GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+						GoPointBasedHeap, ValueEnvironment<TaintDomain>,
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+					for (int i = 1; i < call.getParameters().length; i++)
+						if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
+								.getValueOnStack().isTainted())
 							tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-							+ " parameter of "+targetName+"call is tainted");
+									+ " parameter of " + targetName + "call is tainted");
 			}
-		} 
-		
+		}
+
 	}
 
 	@Override

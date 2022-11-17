@@ -35,8 +35,9 @@ public class GetCreator extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public GetCreator(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, true, "GetCreator", 
-				GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE),
+		super(new CodeMemberDescriptor(location, shimUnit, true, "GetCreator",
+				GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoSliceType.getSliceOfBytes(),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),
 				GetCreatorImpl.class);
 	}
@@ -76,16 +77,22 @@ public class GetCreator extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param params   the parameters
+		 * @param expr     the expression
 		 */
 		public GetCreatorImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "GetCreatorImpl", GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE), expr);
+			super(cfg, location, "GetCreatorImpl",
+					GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+							GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE),
+					expr);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 		}
 	}

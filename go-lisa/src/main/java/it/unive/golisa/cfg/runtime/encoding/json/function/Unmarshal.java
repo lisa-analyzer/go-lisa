@@ -102,7 +102,7 @@ public class Unmarshal extends NativeCFG {
 					.smallStepSemantics(new Clean(GoErrorType.INSTANCE, getLocation()), original);
 			AnalysisState<A, H, V, T> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
-			
+
 			return errorValue.lub(nilValue);
 		}
 	}

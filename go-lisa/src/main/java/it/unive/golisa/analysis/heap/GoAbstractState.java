@@ -1,11 +1,5 @@
 package it.unive.golisa.analysis.heap;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -22,6 +16,10 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An abstract state of the analysis for Go, composed by a value state modeling
@@ -34,9 +32,9 @@ import it.unive.lisa.type.Type;
  * @param <T> the type of {@link TypeDomain} embedded in this state
  */
 public class GoAbstractState<V extends ValueDomain<V>,
-T extends TypeDomain<T>>
-extends BaseLattice<GoAbstractState<V, T>>
-implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
+		T extends TypeDomain<T>>
+		extends BaseLattice<GoAbstractState<V, T>>
+		implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 
 	/**
 	 * The domain containing information regarding heap structures
@@ -90,45 +88,47 @@ implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 	@Override
 	public GoAbstractState<V, T> assign(Identifier id, SymbolicExpression expression, ProgramPoint pp)
 			throws SemanticException {
-		//		GoPointBasedHeap heap = heapState.assign(id, expression, pp);
-		//		ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
+		// GoPointBasedHeap heap = heapState.assign(id, expression, pp);
+		// ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
 		//
-		//		V value = valueState;
-		//		T type = typeState;
+		// V value = valueState;
+		// T type = typeState;
 		//
-		//		for (Pair<HeapLocation, HeapLocation> p : heap.getDecouples()) {
-		//			type = type.assign(p.getLeft(), p.getRight(), pp);
+		// for (Pair<HeapLocation, HeapLocation> p : heap.getDecouples()) {
+		// type = type.assign(p.getLeft(), p.getRight(), pp);
 		//
-		//			Set<Type> rt = type.getInferredRuntimeTypes();
-		//			p.getLeft().setRuntimeTypes(rt);
-		//			p.getRight().setRuntimeTypes(rt);
-		//			value = value.assign(p.getLeft(), p.getRight(), pp);
-		//		}
+		// Set<Type> rt = type.getInferredRuntimeTypes();
+		// p.getLeft().setRuntimeTypes(rt);
+		// p.getRight().setRuntimeTypes(rt);
+		// value = value.assign(p.getLeft(), p.getRight(), pp);
+		// }
 		//
-		//		heap.getDecouples().clear();
+		// heap.getDecouples().clear();
 		//
-		//		if (heap.getSubstitution() != null && !heap.getSubstitution().isEmpty()) {
-		//			type = type.applySubstitution(heap.getSubstitution(), pp);
-		//			value = value.applySubstitution(heap.getSubstitution(), pp);
-		//		}
+		// if (heap.getSubstitution() != null &&
+		// !heap.getSubstitution().isEmpty()) {
+		// type = type.applySubstitution(heap.getSubstitution(), pp);
+		// value = value.applySubstitution(heap.getSubstitution(), pp);
+		// }
 		//
-		//		T typeRes = type.bottom();
-		//		V valueRes = value.bottom();
-		//		for (ValueExpression expr : exprs) {
-		//			T tmp = type.assign(id, expr, pp);
+		// T typeRes = type.bottom();
+		// V valueRes = value.bottom();
+		// for (ValueExpression expr : exprs) {
+		// T tmp = type.assign(id, expr, pp);
 		//
-		//			Set<Type> rt = type.getInferredRuntimeTypes();
-		//			id.setRuntimeTypes(rt);
-		//			expr.setRuntimeTypes(rt);
+		// Set<Type> rt = type.getInferredRuntimeTypes();
+		// id.setRuntimeTypes(rt);
+		// expr.setRuntimeTypes(rt);
 		//
-		//			typeRes = typeRes.lub(tmp);
-		//			if (expr instanceof MemoryPointer)
-		//				valueRes = valueRes.lub(value.assign(id, ((MemoryPointer) expr).getReferencedLocation(), pp));
-		//			else
-		//				valueRes = valueRes.lub(value.assign(id, expr, pp));
-		//		}
+		// typeRes = typeRes.lub(tmp);
+		// if (expr instanceof MemoryPointer)
+		// valueRes = valueRes.lub(value.assign(id, ((MemoryPointer)
+		// expr).getReferencedLocation(), pp));
+		// else
+		// valueRes = valueRes.lub(value.assign(id, expr, pp));
+		// }
 		//
-		//		return new GoAbstractState<>(heap, valueRes, typeRes);
+		// return new GoAbstractState<>(heap, valueRes, typeRes);
 
 		GoPointBasedHeap heap = heapState.assign(id, expression, pp);
 		ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
@@ -175,33 +175,35 @@ implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 	@Override
 	public GoAbstractState<V, T> smallStepSemantics(SymbolicExpression expression, ProgramPoint pp)
 			throws SemanticException {
-		//		GoPointBasedHeap heap = heapState.smallStepSemantics(expression, pp);
-		//		ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
+		// GoPointBasedHeap heap = heapState.smallStepSemantics(expression, pp);
+		// ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
 		//
-		//		T type = typeState;
-		//		V value = valueState;
-		//		if (heap.getSubstitution() != null && !heap.getSubstitution().isEmpty()) {
-		//			type = type.applySubstitution(heap.getSubstitution(), pp);
-		//			value = value.applySubstitution(heap.getSubstitution(), pp);
-		//		}
+		// T type = typeState;
+		// V value = valueState;
+		// if (heap.getSubstitution() != null &&
+		// !heap.getSubstitution().isEmpty()) {
+		// type = type.applySubstitution(heap.getSubstitution(), pp);
+		// value = value.applySubstitution(heap.getSubstitution(), pp);
+		// }
 		//
-		//		T typeRes = type.bottom();
-		//		V valueRes = value.bottom();
-		//		for (ValueExpression expr : exprs) {
-		//			T tmp = type.smallStepSemantics(expr, pp);
+		// T typeRes = type.bottom();
+		// V valueRes = value.bottom();
+		// for (ValueExpression expr : exprs) {
+		// T tmp = type.smallStepSemantics(expr, pp);
 		//
-		//			Set<Type> rt = type.getInferredRuntimeTypes();
-		//			expr.setRuntimeTypes(rt);
+		// Set<Type> rt = type.getInferredRuntimeTypes();
+		// expr.setRuntimeTypes(rt);
 		//
-		//			typeRes = typeRes.lub(tmp);
-		//			if (expr instanceof MemoryPointer)
-		//				valueRes = valueRes.lub(value.smallStepSemantics(((MemoryPointer) expr).getReferencedLocation(), pp));
-		//			else
-		//				valueRes = valueRes.lub(value.smallStepSemantics(expr, pp));
+		// typeRes = typeRes.lub(tmp);
+		// if (expr instanceof MemoryPointer)
+		// valueRes = valueRes.lub(value.smallStepSemantics(((MemoryPointer)
+		// expr).getReferencedLocation(), pp));
+		// else
+		// valueRes = valueRes.lub(value.smallStepSemantics(expr, pp));
 		//
-		//		}
+		// }
 		//
-		//		return new GoAbstractState<>(heap, valueRes, typeRes);
+		// return new GoAbstractState<>(heap, valueRes, typeRes);
 
 		GoPointBasedHeap heap = heapState.smallStepSemantics(expression, pp);
 		ExpressionSet<ValueExpression> exprs = heap.rewrite(expression, pp);
@@ -257,8 +259,6 @@ implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 
 		return new GoAbstractState<>(heap, valueRes, typeRes);
 	}
-	
-	
 
 	@Override
 	public Satisfiability satisfies(SymbolicExpression expression, ProgramPoint pp) throws SemanticException {

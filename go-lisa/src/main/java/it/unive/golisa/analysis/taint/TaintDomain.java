@@ -6,8 +6,8 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -242,6 +242,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 			ProgramPoint pp) throws SemanticException {
 		return Satisfiability.UNKNOWN;
 	}
+
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
 		for (Type t : id.getRuntimeTypes(null))

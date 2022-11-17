@@ -1,11 +1,10 @@
 package it.unive.golisa.analysis;
 
+import it.unive.lisa.analysis.lattices.InverseSetLattice;
+import it.unive.lisa.symbolic.SymbolicExpression;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import it.unive.lisa.analysis.lattices.InverseSetLattice;
-import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * A inverse set lattice containing a set of symbolic expressions.

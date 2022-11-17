@@ -41,7 +41,7 @@ public class ParseFloat extends NativeCFG {
 	 * @param strconvUnit the unit to which this native cfg belongs to
 	 */
 	public ParseFloat(CodeLocation location, CodeUnit strconvUnit) {
-		super(new CodeMemberDescriptor(location, strconvUnit, false, "ParseFloat", 
+		super(new CodeMemberDescriptor(location, strconvUnit, false, "ParseFloat",
 				GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "s", GoStringType.INSTANCE),
 				new Parameter(location, "bitSize", GoIntType.INSTANCE)),
@@ -85,14 +85,18 @@ public class ParseFloat extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public ParseFloatImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "ParseFloat", GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE), left, right);
+			super(cfg, location, "ParseFloat",
+					GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE), left, right);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+						throws SemanticException {
 			return state.smallStepSemantics(new Clean(GoInt64Type.INSTANCE, getLocation()), original);
 		}
 	}

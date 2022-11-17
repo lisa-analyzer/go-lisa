@@ -1,8 +1,7 @@
 
-import org.junit.Test;
-
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import org.junit.Test;
 
 public class CFGTest extends GoAnalysisTestExecutor {
 

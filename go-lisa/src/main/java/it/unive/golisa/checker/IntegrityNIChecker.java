@@ -1,16 +1,12 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
@@ -29,6 +25,7 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import java.util.Collection;
 
 /**
  * A non-interference integrity checker.
@@ -134,7 +131,7 @@ public class IntegrityNIChecker implements
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-		} else 
+		} else
 			checkSignature(call, tool);
 
 		return true;
@@ -142,31 +139,35 @@ public class IntegrityNIChecker implements
 	}
 
 	private void checkSignature(UnresolvedCall call,
-			CheckToolWithAnalysisResults<GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>, GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
-		if(call != null) {
-			String targetName = call.getTargetName();
-			if(((targetName.equals("PutState") || targetName.equals("PutPrivateData")) && call.getParameters().length == 3) 
-					|| ((targetName.equals("DelState") || targetName.equals("DelPrivateData")) && call.getParameters().length == 2)){
-			for (CFGWithAnalysisResults<
+			CheckToolWithAnalysisResults<
 					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-					TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-					for(int i = 1; i< call.getParameters().length;i++) {
+					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
+		if (call != null) {
+			String targetName = call.getTargetName();
+			if (((targetName.equals("PutState") || targetName.equals("PutPrivateData"))
+					&& call.getParameters().length == 3)
+					|| ((targetName.equals("DelState") || targetName.equals("DelPrivateData"))
+							&& call.getParameters().length == 2)) {
+				for (CFGWithAnalysisResults<
+						GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+						GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+					for (int i = 1; i < call.getParameters().length; i++) {
 						if (result.getAnalysisStateAfter(call.getParameters()[i])
 								.getState().getValueState().getInferredValue().isLowIntegrity())
 							tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-									+ " parameter of "+targetName+" call is tainted");
-						if (result.getAnalysisStateAfter(call.getParameters()[call.getParameters().length - 1]).getState()
+									+ " parameter of " + targetName + " call is tainted");
+						if (result.getAnalysisStateAfter(call.getParameters()[call.getParameters().length - 1])
+								.getState()
 								.getValueState().getExecutionState()
 								.isLowIntegrity())
 							tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
 									+ " resulting in an implicit flow");
 					}
 			}
-		} 
-		
-	}
+		}
 
+	}
 
 	private void process(
 			CheckToolWithAnalysisResults<

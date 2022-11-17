@@ -18,7 +18,7 @@ public class Tainted extends Constant {
 	public Tainted(CodeLocation location) {
 		this(Untyped.INSTANCE, location);
 	}
-	
+
 	public Tainted(Type type, CodeLocation location) {
 		super(type, "T", location);
 	}

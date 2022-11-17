@@ -137,18 +137,13 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-//			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
-//					"SetStateValidationParameter",
-//					GoErrorType.INSTANCE,
-//					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE),
-//					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "ep", GoSliceType.getSliceOfBytes()));
-//			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
+			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
+					true,
+					"GetCreator",
+					GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE),
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
+			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
-//			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
-//					"GetStateValidationParameter",
-//					tuple2,
-//					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
-//			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 			// missing
 			// - InvokeChaincode

@@ -53,9 +53,6 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {
-		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof Clean;
-	}
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
@@ -122,5 +119,9 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 	private boolean isOpenCall(ExpressionSet<SymbolicExpression> computedExpressions) {
 		return computedExpressions.size() == 1
 				&& computedExpressions.iterator().next().toString().startsWith("open_call");
+	}
+	
+	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {
+		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof Clean;
 	}
 }

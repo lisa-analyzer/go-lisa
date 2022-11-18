@@ -48,30 +48,8 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type type : expr.getRuntimeTypes(types)) {
-			if (type.isArrayType() || type instanceof GoSliceType) {
-				// When expr is an array or a slice, we access the len property
-				AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
-				AnalysisState<A, H, V, T> partialResult = state.bottom();
 
-				for (SymbolicExpression recExpr : rec.getComputedExpressions()) {
-					HeapDereference deref = new HeapDereference(type, recExpr, getLocation());
-					AnalysisState<A, H, V, T> refState = state.smallStepSemantics(deref, this);
-
-					for (SymbolicExpression l : refState.getComputedExpressions()) {
-						AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(type, l,
-								new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
-						partialResult = partialResult.lub(tmp);
-					}
-				}
-				result = result.lub(partialResult);
-			} else if (type.isStringType())
-				result = result.lub(state.smallStepSemantics(
-						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));
-		}
-
-		return result;
+		return state.smallStepSemantics(
+						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this);
 	}
 }

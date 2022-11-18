@@ -44,19 +44,6 @@ public class GoBitwiseXOr extends BinaryExpression implements GoBinaryNumericalO
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types))
-				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) &&
-						(rightType.isUntyped()
-								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
-					// TODO: LiSA has not symbolic expression handling bitwise,
-					// return top at the moment
-					AnalysisState<A, H, V, T> tmp = state
-							.smallStepSemantics(new PushAny(resultType(leftType, rightType), getLocation()), this);
-					result = result.lub(tmp);
-				}
-		return result;
+		return state.smallStepSemantics(new PushAny(resultType(left.getStaticType(), right.getStaticType()), getLocation()), this);
 	}
 }

@@ -44,14 +44,8 @@ public class GoDiv extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types))
-				if (leftType.isNumericType() && rightType.isNumericType())
-					result = result.lub(
-							state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
-									NumericNonOverflowingDiv.INSTANCE, getLocation()), this));
-		return result;
+
+		return state.smallStepSemantics(new BinaryExpression(resultType(left.getStaticType(), right.getStaticType()), left, right,
+									NumericNonOverflowingDiv.INSTANCE, getLocation()), this);
 	}
 }

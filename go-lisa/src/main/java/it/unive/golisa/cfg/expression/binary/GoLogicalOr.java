@@ -44,11 +44,6 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		// FIXME: need to check which state needs to be returned (left/right)
-		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
-			return state.bottom();
-		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())
-			return state.bottom();
 
 		if (state.satisfies(left, this) == Satisfiability.SATISFIED)
 			return state;
@@ -56,11 +51,9 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 			return state
 					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 							left, right, LogicalOr.INSTANCE, getLocation()), this);
-		else if (state.satisfies(left, this) == Satisfiability.UNKNOWN)
+		else
 			return state.lub(state
 					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 							left, right, LogicalOr.INSTANCE, getLocation()), this));
-		else
-			return state.bottom();
 	}
 }

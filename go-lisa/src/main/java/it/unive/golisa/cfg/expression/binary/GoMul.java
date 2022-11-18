@@ -14,8 +14,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingMul;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go multiplication expression (e.g., x * y).
@@ -44,15 +42,8 @@ public class GoMul extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
 
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types))
-				if (leftType.isNumericType() && rightType.isNumericType())
-					result = result.lub(
-							state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
-									NumericNonOverflowingMul.INSTANCE, getLocation()), this));
-		return result;
+				return state.smallStepSemantics(new BinaryExpression(resultType(left.getStaticType(), right.getStaticType()), left, right,
+									NumericNonOverflowingMul.INSTANCE, getLocation()), this);
 	}
 }

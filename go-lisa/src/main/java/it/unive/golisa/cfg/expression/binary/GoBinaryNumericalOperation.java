@@ -21,6 +21,10 @@ public interface GoBinaryNumericalOperation {
 	 *             {@code left} and {@code right}
 	 */
 	public default Type resultType(Type left, Type right) {
+		
+		if(left == null || right == null )
+			return Untyped.INSTANCE;
+		
 		if (!left.isNumericType() && !right.isNumericType())
 			// if none have numeric types in them, we cannot really compute the
 			// result

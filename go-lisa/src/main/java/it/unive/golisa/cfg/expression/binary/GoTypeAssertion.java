@@ -47,17 +47,6 @@ public class GoTypeAssertion extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		// A type assertion provides access to an interface value's underlying
-		// concrete value,
-		// hence we need to check if the static type of the arguments is an
-		// interface
-		TypeSystem types = getProgram().getTypes();
-		Type argStaticType = getSubExpressions()[0].getStaticType();
-		if (argStaticType instanceof GoInterfaceType || argStaticType instanceof Untyped)
-			for (Type exprType : expr.getRuntimeTypes(types))
-				if (exprType.canBeAssignedTo(type))
-					return state;
-
-		return state.bottom();
+		return state;
 	}
 }

@@ -45,21 +45,10 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type middleType : middle.getRuntimeTypes(types))
-				for (Type rightType : right.getRuntimeTypes(types))
-					if ((leftType.isStringType() || leftType.isUntyped())
-							&& (middleType.isNumericType() || middleType.isUntyped())
-							&& (rightType.isNumericType() || rightType.isUntyped())) {
-						AnalysisState<A, H,
-								V, T> tmp = state.smallStepSemantics(
-										new TernaryExpression(GoStringType.INSTANCE,
-												left, middle, right, StringSubstring.INSTANCE, getLocation()),
-										this);
-						result = result.lub(tmp);
-					}
-		return result;
+
+		return state.smallStepSemantics(
+				new TernaryExpression(GoStringType.INSTANCE,
+						left, middle, right, StringSubstring.INSTANCE, getLocation()),
+				this);
 	}
 }

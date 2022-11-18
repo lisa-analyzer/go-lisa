@@ -46,8 +46,10 @@ public class GoCollectionAccess extends BinaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		if (getLeft().toString().startsWith("args"))
+		if (getLeft().toString().startsWith("args") || getLeft().toString().startsWith("para"))
 			return state.smallStepSemantics(left, this);
+		if (getLeft().toString().startsWith("blocks"))
+				return state;
 		if (getLeft().toString().equals("time") && getRight().toString().equals("Second"))
 			return state.smallStepSemantics(new Constant(Duration.INSTANCE, "SECOND_VALUE", getLocation()), this);
 

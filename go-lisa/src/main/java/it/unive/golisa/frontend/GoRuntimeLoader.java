@@ -13,6 +13,7 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
 import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.fmt.Sprint;
+import it.unive.golisa.cfg.runtime.fmt.Sprintf;
 import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.runtime.io.function.Copy;
 import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
@@ -480,6 +481,7 @@ public interface GoRuntimeLoader {
 		CodeUnit fmt = new CodeUnit(runtimeLocation, program, "fmt");
 		fmt.addCodeMember(new Println(runtimeLocation, fmt));
 		fmt.addCodeMember(new Sprint(runtimeLocation, fmt));
+		fmt.addCodeMember(new Sprintf(runtimeLocation, fmt));
 
 		program.addUnit(fmt);
 	}

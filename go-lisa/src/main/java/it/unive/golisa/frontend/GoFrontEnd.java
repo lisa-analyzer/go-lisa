@@ -271,7 +271,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 				"Global declarations"))
 			visitDeclarationContext(decl);
 
-		updateGlobals();
 		updateUnitReferences();
 
 		for (MethodDeclContext decl : IterationLogger.iterate(log, ctx.methodDecl(), "Parsing method declarations...",
@@ -298,12 +297,16 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 	}
 
 	private void visitDeclarationContext(DeclarationContext decl) {
+		if (decl.varDecl() != null)
+			visitGlobals(decl.varDecl());
+
+		updateGlobals();
+
 		if (decl.typeDecl() != null)
 			for (CompilationUnit unit : visitTypeDecl(decl.typeDecl()))
 				program.addUnit(unit);
 
-		if (decl.varDecl() != null)
-			visitGlobals(decl.varDecl());
+
 
 		if (decl.constDecl() != null)
 			visitConstDeclContext(decl.constDecl());

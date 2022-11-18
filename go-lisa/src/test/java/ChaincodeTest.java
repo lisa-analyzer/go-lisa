@@ -291,4 +291,376 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		perform("cc/cristiano-an", "ni", "chaincode-test.go", conf, annSet);
 	}
+	
+	@Test
+	public void testAkm4() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/akm4", "taint", "insurance_chaincode_state.go", conf, annSet);
+	}
+	
+	@Test
+	public void testAkm4NI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/akm4", "ni", "insurance_chaincode_state.go", conf, annSet);
+	}
+
+	@Test
+	public void testEshita53() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/eshita53", "taint", "fabcar.go", conf, annSet);
+	}
+	
+	@Test
+	public void testEshita53NI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/eshita53", "ni", "fabcar.go", conf, annSet);
+	}
+	
+
+	@Test
+	public void testJuniorug() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/juniorug", "taint", "foodSCM.go", conf, annSet);
+	}
+	
+	@Test
+	public void testJuniorugNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/juniorug", "ni", "foodSCM.go", conf, annSet);
+	}
+
+	@Test
+	public void testKompiTech() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/KompiTech", "taint", "mockstub.go", conf, annSet);
+	}
+	
+	@Test
+	public void testKompiTechNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/KompiTech", "ni", "mockstub.go", conf, annSet);
+	}
+	
+
+	@Test
+	public void testLakshay2395() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/lakshay2395", "taint", "schoolsChaincode.go", conf, annSet);
+	}
+	
+	@Test
+	public void testLakshay2395NI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/lakshay2395", "ni", "schoolsChaincode.go", conf, annSet);
+	}
+	
+
+	@Test
+	public void testSachinCpu() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/sachin-ngpws", "taint", "cpu-use.go", conf, annSet);
+	}
+	
+	@Test
+	public void testSachinCpuNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/sachin-ngpws", "ni", "cpu-use.go", conf, annSet);
+	}
+	
+
+	@Test
+	public void testTkalai25298Cpu() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/tkalai25298", "taint", "cpu-use.go", conf, annSet);
+	}
+	
+	@Test
+	public void testTkalai25298CpuNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/tkalai25298", "ni", "cpu-use.go", conf, annSet);
+	}
+	
+
+	@Test
+	public void testTrustContract() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/Trust-Contract", "taint", "cargo-chaincode.go", conf, annSet);
+	}
+	
+	@Test
+	public void testTrustContractNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/Trust-Contract", "ni", "cargo-chaincode.go", conf, annSet);
+	}
+	
+
+	@Test
+	public void testVmorris() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/vmorris", "taint", "procon.go", conf, annSet);
+	}
+	
+	@Test
+	public void testVmorrisNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/vmorris", "ni", "procon.go", conf, annSet);
+	}
+	
+
+	@Test
+	public void testXuansonha17031991D() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/xuansonha17031991", "taint", "drug_information.go", conf, annSet);
+	}
+	
+	@Test
+	public void testXuansonha17031991DNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/xuansonha17031991", "ni", "drug_information.go", conf, annSet);
+	}
+	
+	@Test
+	public void testXuansonha17031991H() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/xuansonha17031991", "taint", "hospital_fees.go", conf, annSet);
+	}
+	
+	@Test
+	public void testXuansonha17031991HNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/xuansonha17031991", "ni", "hospital_fees.go", conf, annSet);
+	}
+	
+	@Test
+	public void testXuansonha17031991M() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/xuansonha17031991", "taint", "medical_record.go", conf, annSet);
+	}
+	
+	@Test
+	public void testXuansonha17031991MNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/xuansonha17031991", "ni", "medical_record.go", conf, annSet);
+	}
+
+	@Test
+	public void testXuansonha17031991P() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new TaintChecker());
+		perform("cc/xuansonha17031991", "taint", "patient_inormation.go", conf, annSet);
+	}
+	
+	@Test
+	public void testXuansonha17031991PNI() throws AnalysisException, IOException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		perform("cc/xuansonha17031991", "ni", "patient_inormation.go", conf, annSet);
+	}
+	
 }

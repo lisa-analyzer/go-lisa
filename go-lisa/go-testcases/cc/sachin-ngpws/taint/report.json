@@ -1,0 +1,16 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/cc/sachin-ngpws/cpu-use.go':100:31] on 'untyped SimpleChaincode::AddCPU(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/sachin-ngpws/cpu-use.go':165:31] on 'untyped SimpleChaincode::AddUsage(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/sachin-ngpws/cpu-use.go':168:35] on 'untyped SimpleChaincode::AddUsage(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  }, {
+    "message" : "['go-testcases/cc/sachin-ngpws/cpu-use.go':171:31] on 'untyped SimpleChaincode::AddUsage(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/sachin-ngpws/cpu-use.go':94:31] on 'untyped SimpleChaincode::AddCPU(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/sachin-ngpws/cpu-use.go':97:35] on 'untyped SimpleChaincode::AddCPU(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ ]
+}

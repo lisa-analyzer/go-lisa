@@ -1,0 +1,12 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/cc/KompiTech/mockstub.go':754:31] on 'untyped MockStub::Init(*MockStub stub, ...interface{} iargs)': [EXPRESSION] The execution of this call is guarded by a tainted condition resulting in an implicit flow"
+  }, {
+    "message" : "['go-testcases/cc/KompiTech/mockstub.go':754:31] on 'untyped MockStub::Init(*MockStub stub, ...interface{} iargs)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/KompiTech/mockstub.go':766:31] on 'untyped MockStub::Invoke(*MockStub stub, string funcName, ...interface{} iargs)': [EXPRESSION] The execution of this call is guarded by a tainted condition resulting in an implicit flow"
+  }, {
+    "message" : "['go-testcases/cc/KompiTech/mockstub.go':766:31] on 'untyped MockStub::Invoke(*MockStub stub, string funcName, ...interface{} iargs)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  } ],
+  "files" : [ ]
+}

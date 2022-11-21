@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -88,7 +89,7 @@ public class Atoi extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(expr, original);
+			return state.smallStepSemantics(expr, original).lub(state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original));
 		}
 	}
 }

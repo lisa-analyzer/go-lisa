@@ -293,8 +293,7 @@ public class GoMultiAssignment extends Expression {
 
 	private boolean isOpenCall(ExpressionSet<SymbolicExpression> computedExpressions) {
 		return (computedExpressions.size() == 1
-				&& (computedExpressions.iterator().next().toString().startsWith("open_call")
-				|| computedExpressions.iterator().next().toString().startsWith("args"))); 
+				&& (computedExpressions.iterator().next().toString().startsWith("open_call"))); 
 	}
 
 	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {

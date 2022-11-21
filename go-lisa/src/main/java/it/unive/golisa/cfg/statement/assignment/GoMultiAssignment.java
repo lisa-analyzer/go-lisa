@@ -170,7 +170,6 @@ public class GoMultiAssignment extends Expression {
 		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
-
 		// if the right state is top,
 		// we put all the variables to top
 		if (rightState.isTop()
@@ -294,7 +293,8 @@ public class GoMultiAssignment extends Expression {
 
 	private boolean isOpenCall(ExpressionSet<SymbolicExpression> computedExpressions) {
 		return (computedExpressions.size() == 1
-				&& computedExpressions.iterator().next().toString().startsWith("open_call")); 
+				&& (computedExpressions.iterator().next().toString().startsWith("open_call")
+				|| computedExpressions.iterator().next().toString().startsWith("args"))); 
 	}
 
 	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {

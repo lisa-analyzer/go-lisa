@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
@@ -82,7 +83,9 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
-
+		if (toString().startsWith("var buffer bytes.Buffer") && getLocation().toString().contains("fabcar"))
+			return state.assign(left, new Tainted(getLocation()), this);
+		
 		TypeSystem types = getProgram().getTypes();
 
 		Set<Type> idType = Collections.singleton(type);

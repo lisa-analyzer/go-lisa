@@ -49,7 +49,14 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 
-		return state.smallStepSemantics(
-						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this);
+		TypeSystem type = getProgram().getTypes();
+		AnalysisState<A, H, V, T> result = state.bottom();
+		for (Type exprType : expr.getRuntimeTypes(type))
+			if (exprType.isStringType())
+				result = result.lub(state.smallStepSemantics(
+						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));
+			else
+				result = result.lub(state.smallStepSemantics(expr, this));
+				return result;
 	}
 }

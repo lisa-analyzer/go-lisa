@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -52,7 +53,9 @@ public class GoCollectionAccess extends BinaryExpression {
 				return state;
 		if (getLeft().toString().equals("time") && getRight().toString().equals("Second"))
 			return state.smallStepSemantics(new Constant(Duration.INSTANCE, "SECOND_VALUE", getLocation()), this);
-
+		if (right instanceof Tainted)
+			return state.smallStepSemantics(right, this);
+	
 		AnalysisState<A, H, V, T> result = state.bottom();
 
 		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);

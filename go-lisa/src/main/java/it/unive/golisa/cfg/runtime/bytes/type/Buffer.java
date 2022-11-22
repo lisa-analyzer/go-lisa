@@ -1,11 +1,15 @@
 package it.unive.golisa.cfg.runtime.bytes.type;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
+import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.runtime.bytes.function.Bytes;
+import it.unive.golisa.cfg.runtime.bytes.method.WriteRune;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -47,7 +51,7 @@ public class Buffer extends GoStructType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoInteger(cfg, location, 0);
+		return new GoNonKeyedLiteral(cfg, location, new Expression[0], INSTANCE);
 	}
 
 	@Override
@@ -75,7 +79,11 @@ public class Buffer extends GoStructType {
 	public static Buffer getBufferType(Program program) {
 		if (INSTANCE == null) {
 			ClassUnit bufferUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Buffer", false);
+			bufferUnit.addInstanceGlobal(
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, bufferUnit, "field", true,
+							GoIntType.INSTANCE));			
 			INSTANCE = new Buffer("Buffer", bufferUnit);
+			
 			return INSTANCE;
 		}
 
@@ -88,5 +96,6 @@ public class Buffer extends GoStructType {
 	public static void registerMethods() {
 		CompilationUnit bufferUnit = INSTANCE.getUnit();
 		bufferUnit.addInstanceCodeMember(new Bytes(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, bufferUnit));
+		bufferUnit.addInstanceCodeMember(new WriteRune(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, bufferUnit));
 	}
 }

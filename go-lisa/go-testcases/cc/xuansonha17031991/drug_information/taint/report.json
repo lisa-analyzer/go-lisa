@@ -1,0 +1,12 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/cc/xuansonha17031991/drug_information/drug_information.go':103:42] on 'untyped DrugInformation_Chainode::query(*DrugInformation_Chainode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/xuansonha17031991/drug_information/drug_information.go':186:42] on 'untyped DrugInformation_Chainode::modifyDrugData(*DrugInformation_Chainode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/xuansonha17031991/drug_information/drug_information.go':192:42] on 'untyped DrugInformation_Chainode::modifyDrugData(*DrugInformation_Chainode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
+    "message" : "['go-testcases/cc/xuansonha17031991/drug_information/drug_information.go':97:42] on 'untyped DrugInformation_Chainode::query(*DrugInformation_Chainode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  } ],
+  "files" : [ ]
+}

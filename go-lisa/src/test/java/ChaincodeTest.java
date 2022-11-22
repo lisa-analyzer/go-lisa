@@ -562,7 +562,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new ValueEnvironment<>(new TaintDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/xuansonha17031991", "taint", "drug_information.go", conf, annSet);
+		perform("cc/xuansonha17031991/drug_information", "taint", "drug_information.go", conf, annSet);
 	}
 	
 	@Test
@@ -576,7 +576,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/xuansonha17031991", "ni", "drug_information.go", conf, annSet);
+		perform("cc/xuansonha17031991/drug_information", "ni", "drug_information.go", conf, annSet);
 	}
 	
 	@Test
@@ -590,7 +590,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new ValueEnvironment<>(new TaintDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/xuansonha17031991", "taint", "hospital_fees.go", conf, annSet);
+		perform("cc/xuansonha17031991/hospital_fees", "taint", "hospital_fees.go", conf, annSet);
 	}
 	
 	@Test
@@ -604,7 +604,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/xuansonha17031991", "ni", "hospital_fees.go", conf, annSet);
+		perform("cc/xuansonha17031991/hospital_fees", "ni", "hospital_fees.go", conf, annSet);
 	}
 	
 	@Test
@@ -618,7 +618,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new ValueEnvironment<>(new TaintDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/xuansonha17031991", "taint", "medical_record.go", conf, annSet);
+		perform("cc/xuansonha17031991/medical_record", "taint", "medical_record.go", conf, annSet);
 	}
 	
 	@Test
@@ -632,7 +632,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/xuansonha17031991", "ni", "medical_record.go", conf, annSet);
+		perform("cc/xuansonha17031991/medical_record", "ni", "medical_record.go", conf, annSet);
 	}
 
 	@Test
@@ -646,7 +646,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new ValueEnvironment<>(new TaintDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/xuansonha17031991", "taint", "patient_inormation.go", conf, annSet);
+		perform("cc/xuansonha17031991/patient_inormation", "taint", "patient_inormation.go", conf, annSet);
 	}
 	
 	@Test
@@ -660,7 +660,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/xuansonha17031991", "ni", "patient_inormation.go", conf, annSet);
+		perform("cc/xuansonha17031991/patient_inormation", "ni", "patient_inormation.go", conf, annSet);
 	}
 	
 }

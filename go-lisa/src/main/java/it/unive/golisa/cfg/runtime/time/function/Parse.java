@@ -100,11 +100,7 @@ public class Parse extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(
-					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_", Time.getTimeType(null)),
-							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
-							original.getLocation()),
-					original);
+			return state.smallStepSemantics(left, original).lub(state.smallStepSemantics(right, original));
 		}
 	}
 }

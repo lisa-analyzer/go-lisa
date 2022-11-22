@@ -14,6 +14,7 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
 import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.fmt.Sprint;
 import it.unive.golisa.cfg.runtime.fmt.Sprintf;
+import it.unive.golisa.cfg.runtime.google.uuid.function.NewUUID;
 import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.runtime.io.function.Copy;
 import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
@@ -160,6 +161,8 @@ public interface GoRuntimeLoader {
 			loadList(program);
 		else if (module.equals("net/http"))
 			loadHttp(program);
+		else if (module.endsWith("google/uuid"))
+			loadUuid(program);
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
@@ -488,6 +491,12 @@ public interface GoRuntimeLoader {
 		program.addUnit(fmt);
 	}
 
+	private void loadUuid(Program program) {
+		CodeUnit uuid = new CodeUnit(runtimeLocation, program, "uuid");
+		uuid.addCodeMember(new NewUUID(runtimeLocation, uuid));
+		program.addUnit(uuid);
+	}
+	
 	private void loadTime(Program program) {
 		CodeUnit time = new CodeUnit(runtimeLocation, program, "time");
 

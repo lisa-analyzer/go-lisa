@@ -331,7 +331,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new ValueEnvironment<>(new TaintDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/eshita53", "taint", "fabcar.go", conf, annSet);
+		perform("cc/eshida", "taint", "fabcar.go", conf, annSet);
 	}
 	
 	@Test
@@ -345,7 +345,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/eshita53", "ni", "fabcar.go", conf, annSet);
+		perform("cc/eshida", "ni", "fabcar.go", conf, annSet);
 	}
 	
 

@@ -5,6 +5,7 @@ import it.unive.golisa.cfg.runtime.time.method.Format;
 import it.unive.golisa.cfg.runtime.time.method.Local;
 import it.unive.golisa.cfg.runtime.time.method.Month;
 import it.unive.golisa.cfg.runtime.time.method.StringTime;
+import it.unive.golisa.cfg.runtime.time.method.UTC;
 import it.unive.golisa.cfg.runtime.time.method.Unix;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
@@ -80,6 +81,7 @@ public class Time extends GoStructType {
 		timeUnit.addInstanceCodeMember(new Format(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 		timeUnit.addInstanceCodeMember(new StringTime(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 		timeUnit.addInstanceCodeMember(new Local(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
+		timeUnit.addInstanceCodeMember(new UTC(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, timeUnit));
 	}
 
 }

@@ -21,6 +21,7 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
@@ -254,6 +255,18 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 		return false;
 	}
 
+	@Override
+	public TaintDomain evalTypeCast(BinaryExpression cast, TaintDomain left, TaintDomain right, ProgramPoint pp)
+			throws SemanticException {
+		return left;
+	}
+	
+	@Override
+	public TaintDomain evalTypeConv(BinaryExpression conv, TaintDomain left, TaintDomain right, ProgramPoint pp)
+			throws SemanticException {
+		return left;
+	}
+	
 	@Override
 	public boolean canProcess(SymbolicExpression expression) {
 		return true;

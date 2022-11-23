@@ -273,7 +273,7 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A, H, V, T> result = state.bottom();
 				for (ExpressionSet<SymbolicExpression> p : params) {
 					for (SymbolicExpression e : p) {
-						state.lub(state.smallStepSemantics(e, this));
+						result = result.lub(state.smallStepSemantics(e, this));
 					}
 				}
 

@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.expression;
 
+import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
+
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.lisa.analysis.AbstractState;
@@ -10,7 +13,9 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -56,6 +61,15 @@ public class GoCollectionAccess extends BinaryExpression {
 		if (right instanceof Tainted)
 			return state.smallStepSemantics(right, this);
 	
+		
+		
+		// Access global
+		for (Unit unit : getProgram().getUnits())
+			if (unit.toString().equals(getReceiver().toString()))
+			for (Global g : unit.getGlobals())
+				if (g.toString().endsWith(getTarget().toString()))
+					return state.smallStepSemantics(new Clean(g.getStaticType(), getLocation()), getReceiver());
+			
 		AnalysisState<A, H, V, T> result = state.bottom();
 
 		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);

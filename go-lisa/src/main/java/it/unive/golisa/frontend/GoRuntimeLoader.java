@@ -108,9 +108,11 @@ import it.unive.golisa.cfg.runtime.url.PathEscape;
 import it.unive.golisa.cfg.runtime.url.QueryEscape;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 
@@ -405,6 +407,11 @@ public interface GoRuntimeLoader {
 	private void loadShim(Program program) {
 		CodeUnit shim = new CodeUnit(runtimeLocation, program, "shim");
 
+		// shim globals
+		shim.addGlobal(new Global(runtimeLocation, shim, "OK", false));
+		shim.addGlobal(new Global(runtimeLocation, shim, "ERROR", false));
+		shim.addGlobal(new Global(runtimeLocation, shim, "ERRORTHRESHOLD", false));
+		
 		// FIXME
 		GoStructType.registerType(Buffer.getBufferType(program));
 		GoStructType.registerType(Reader.getReaderType(program));
@@ -516,6 +523,8 @@ public interface GoRuntimeLoader {
 	
 	private void loadTime(Program program) {
 		CodeUnit time = new CodeUnit(runtimeLocation, program, "time");
+
+		time.addGlobal(new Global(runtimeLocation, time, "Millisecond", false, GoInt64Type.INSTANCE));
 
 		Time timeType = Time.getTimeType(program);
 		GoStructType.registerType(timeType);

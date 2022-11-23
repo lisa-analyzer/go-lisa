@@ -8,6 +8,7 @@ import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -20,6 +21,7 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
@@ -248,9 +250,23 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
+		if (id instanceof AllocationSite)
+			return true;
 		return false;
 	}
 
+	@Override
+	public TaintDomain evalTypeCast(BinaryExpression cast, TaintDomain left, TaintDomain right, ProgramPoint pp)
+			throws SemanticException {
+		return left;
+	}
+	
+	@Override
+	public TaintDomain evalTypeConv(BinaryExpression conv, TaintDomain left, TaintDomain right, ProgramPoint pp)
+			throws SemanticException {
+		return left;
+	}
+	
 	@Override
 	public boolean canProcess(SymbolicExpression expression) {
 		return true;

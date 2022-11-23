@@ -95,7 +95,7 @@ public class Success extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			
-		return	Response.getResponseType(null).defaultValue(getCFG(), (SourceCodeLocation) getLocation())
+		return Response.getResponseType(null).defaultValue(getCFG(), (SourceCodeLocation) getLocation())
 			.semantics(state, interprocedural, expressions);
 		}
 	}

@@ -1,7 +1,9 @@
 package it.unive.golisa.cfg.runtime.peer.type;
 
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
@@ -38,7 +40,13 @@ public class Response extends GoStructType {
 			ClassUnit responseUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "Response", false);
 			responseUnit.addInstanceGlobal(
 					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, responseUnit, "Payload", true,
-							GoSliceType.getSliceOfBytes()));			
+							GoSliceType.getSliceOfBytes()));		
+			responseUnit.addInstanceGlobal(
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, responseUnit, "Status", true,
+							GoInt32Type.INSTANCE));	
+			responseUnit.addInstanceGlobal(
+					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, responseUnit, "Message", true,
+							GoStringType.INSTANCE));	
 			INSTANCE = new Response(responseUnit);
 		}
 

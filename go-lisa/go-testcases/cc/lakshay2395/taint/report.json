@@ -4,17 +4,25 @@
   }, {
     "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':482:41] on 'untyped SchoolsChaincode::RejectSchoolLeavingApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
   }, {
+    "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':484:31] on 'untyped SchoolsChaincode::RejectSchoolLeavingApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
     "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':527:31] on 'untyped SchoolsChaincode::AcceptSchoolLeavingApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
   }, {
     "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':529:41] on 'untyped SchoolsChaincode::AcceptSchoolLeavingApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  }, {
+    "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':531:31] on 'untyped SchoolsChaincode::AcceptSchoolLeavingApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
   }, {
     "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':578:31] on 'untyped SchoolsChaincode::RejectSchoolAdmissionApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
   }, {
     "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':580:41] on 'untyped SchoolsChaincode::RejectSchoolAdmissionApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
   }, {
+    "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':582:31] on 'untyped SchoolsChaincode::RejectSchoolAdmissionApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
+  }, {
     "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':625:31] on 'untyped SchoolsChaincode::AcceptSchoolAdmissionApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
   }, {
     "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':627:41] on 'untyped SchoolsChaincode::AcceptSchoolAdmissionApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  }, {
+    "message" : "['go-testcases/cc/lakshay2395/schoolsChaincode.go':629:31] on 'untyped SchoolsChaincode::AcceptSchoolAdmissionApplication(*SchoolsChaincode sc, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
   } ],
   "files" : [ ]
 }

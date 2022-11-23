@@ -7,6 +7,7 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
@@ -302,6 +303,8 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public boolean tracksIdentifiers(Identifier id) {
+		if (id instanceof AllocationSite)
+			return true;
 		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;

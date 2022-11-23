@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.bytes.type;
 
-import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.runtime.bytes.function.Bytes;
 import it.unive.golisa.cfg.runtime.bytes.method.WriteRune;

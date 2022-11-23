@@ -7,6 +7,7 @@ import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -248,6 +249,8 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
+		if (id instanceof AllocationSite)
+			return true;
 		return false;
 	}
 

@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
@@ -27,8 +30,6 @@ import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.TypeTokenType;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Go variable declaration class (e.g., var x int = 5).

@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.type.composite;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.GoType;
@@ -11,8 +14,6 @@ import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A Go slice type.

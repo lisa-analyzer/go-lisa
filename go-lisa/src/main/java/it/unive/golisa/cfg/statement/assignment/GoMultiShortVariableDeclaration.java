@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -22,8 +26,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi short variable declaration statement.

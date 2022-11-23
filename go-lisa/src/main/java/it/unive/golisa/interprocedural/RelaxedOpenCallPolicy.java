@@ -1,5 +1,9 @@
 package it.unive.golisa.interprocedural;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
@@ -28,9 +32,6 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.Variable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * OpenCall policy to be less conservative during taint and non-interference

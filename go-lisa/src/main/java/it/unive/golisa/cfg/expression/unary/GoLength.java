@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.expression.unary;
 
-import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -14,14 +13,10 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.value.UnaryExpression;
-import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import it.unive.lisa.type.Untyped;
 
 /**
  * A Go len expression (e.g., len(x)).

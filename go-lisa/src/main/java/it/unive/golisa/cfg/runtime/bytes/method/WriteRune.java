@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.bytes.method;
 
-import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;

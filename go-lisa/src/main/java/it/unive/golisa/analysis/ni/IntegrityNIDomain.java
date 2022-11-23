@@ -1,5 +1,8 @@
 package it.unive.golisa.analysis.ni;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
@@ -7,8 +10,8 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
-import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -31,8 +34,6 @@ import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 /**
  * The type-system based implementation of the non interference analysis.

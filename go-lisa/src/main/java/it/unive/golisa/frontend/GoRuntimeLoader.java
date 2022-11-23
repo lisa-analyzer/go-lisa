@@ -11,6 +11,9 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Marshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
+import it.unive.golisa.cfg.runtime.encoding.pem.function.Decode;
+import it.unive.golisa.cfg.runtime.encoding.pem.function.Encode;
+import it.unive.golisa.cfg.runtime.encoding.pem.function.EncodeToMemory;
 import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.fmt.Sprint;
 import it.unive.golisa.cfg.runtime.fmt.Sprintf;
@@ -161,6 +164,8 @@ public interface GoRuntimeLoader {
 			loadList(program);
 		else if (module.equals("net/http"))
 			loadHttp(program);
+		else if (module.equals("encoding/pem"))
+			loadPem(program);
 		else if (module.endsWith("google/uuid"))
 			loadUuid(program);
 		else if (module.startsWith("github.com/hyperledger")) {
@@ -447,6 +452,18 @@ public interface GoRuntimeLoader {
 
 		program.addUnit(http);
 	}
+	
+	private void loadPem(Program program) {
+		CodeUnit pem = new CodeUnit(runtimeLocation, program, "pem");
+		GoStructType.registerType(it.unive.golisa.cfg.runtime.encoding.pem.type.Block.getBlockType(program));
+
+		pem.addCodeMember(new Encode(runtimeLocation, pem));
+		pem.addCodeMember(new EncodeToMemory(runtimeLocation, pem));
+		pem.addCodeMember(new Decode(runtimeLocation, pem));
+		program.addUnit(pem);
+	}
+	
+	
 
 	private void loadUrl(Program program) {
 		CodeUnit url = new CodeUnit(runtimeLocation, program, "url");

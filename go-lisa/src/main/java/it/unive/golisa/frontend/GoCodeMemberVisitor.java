@@ -359,7 +359,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		for (Global g : globals) {
 			visibleIds.putIfAbsent(g.getName(), new HashSet<>());
 			visibleIds.get(g.getName())
-					.add(new IdInfo(new VariableRef(cfg, g.getLocation(), g.getName(), g.getStaticType()), -1));
+			.add(new IdInfo(new VariableRef(cfg, g.getLocation(), g.getName(), g.getStaticType()), -1));
 		}
 	}
 
@@ -389,11 +389,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @return the {@link CFG} built from the block
 	 */
 	public CFG visitCodeMember(MethodDeclContext ctx) {
-//		CompilationUnit packageUnit = currentUnit;
+		//		CompilationUnit packageUnit = currentUnit;
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
 				? ((GoPointerType) receiver.getStaticType()).getInnerType().toString()
-				: receiver.getStaticType().toString();
+						: receiver.getStaticType().toString();
 
 		SourceCodeLocation location = locationOf(ctx);
 		if (program.getUnit(unitName) == null) {
@@ -417,7 +417,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		addGlobalsToVisibleIds();
 
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
-				Statement> body = visitMethodBlock(ctx.block());
+		Statement> body = visitMethodBlock(ctx.block());
 
 		processGotos();
 
@@ -553,7 +553,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		blockList.addLast(new BlockInfo(open));
 
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
-				Statement> res = visitStatementList(ctx.statementList());
+		Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
 
 		cfs.forEach(cfg::addControlFlowStructure);
@@ -704,7 +704,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		blockList.addLast(new BlockInfo(open));
 
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
-				Statement> res = visitStatementList(ctx.statementList());
+		Statement> res = visitStatementList(ctx.statementList());
 		block.mergeWith(res.getMiddle());
 		addEdge(new SequentialEdge(open, res.getLeft()), block);
 
@@ -783,7 +783,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		for (int i = 0; i < ctx.statement().size(); i++) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> currentStmt = visitStatement(ctx.statement(i));
+			Statement> currentStmt = visitStatement(ctx.statement(i));
 			block.mergeWith(currentStmt.getMiddle());
 
 			if (lastStmt != null)
@@ -815,7 +815,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		for (int i = 0; i < ctx.statement().size(); i++) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> currentStmt = visitStatement(ctx.statement(i));
+			Statement> currentStmt = visitStatement(ctx.statement(i));
 			block.mergeWith(currentStmt.getMiddle());
 
 			if (lastStmt != null)
@@ -1602,7 +1602,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (ctx.block(1) != null) {
 				// If statement with else branch with no other if statements
 				Triple<Statement, NodeList<CFG, Statement, Edge>,
-						Statement> falseBlock = visitBlock(ctx.block(1));
+				Statement> falseBlock = visitBlock(ctx.block(1));
 				block.mergeWith(falseBlock.getMiddle());
 				Statement exitStatementFalseBranch = falseBlock.getRight();
 				Statement entryStatementFalseBranch = falseBlock.getLeft();
@@ -1617,7 +1617,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			} else {
 				// If statement with else branch with other if statements
 				Triple<Statement, NodeList<CFG, Statement, Edge>,
-						Statement> falseBlock = visitIfStmt(ctx.ifStmt());
+				Statement> falseBlock = visitIfStmt(ctx.ifStmt());
 				block.mergeWith(falseBlock.getMiddle());
 
 				Statement exitStatementFalseBranch = falseBlock.getRight();
@@ -1706,7 +1706,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> caseBlock = visitStatementListOfSwitchCase(switchCase.statementList());
+			Statement> caseBlock = visitStatementListOfSwitchCase(switchCase.statementList());
 			case_.mergeWith(caseBlock.getMiddle());
 			body.mergeWith(caseBlock.getMiddle());
 
@@ -1768,7 +1768,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		if (ctx.simpleStmt() != null) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
+			Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
 			block.mergeWith(simpleStmt.getMiddle());
 			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode), block);
 			entryNode = simpleStmt.getLeft();
@@ -2364,13 +2364,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			}
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
-			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type == null ? Untyped.INSTANCE : type);
+				.lookup(((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
+				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type == null ? Untyped.INSTANCE : type);
 		} else {
 
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
-						.lookup(((GoArrayType) type).getContenType(), ((Expression[]) raw).length);
+				.lookup(((GoArrayType) type).getContenType(), ((Expression[]) raw).length);
 			return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) raw,
 					type == null ? Untyped.INSTANCE : type);
 		}
@@ -2402,7 +2402,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 1; i < ctx.keyedElement().size(); i++) {
 				@SuppressWarnings("unchecked")
 				Pair<Expression,
-						Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
+				Expression> keyed = (Pair<Expression, Expression>) visitKeyedElement(ctx.keyedElement(i), type);
 				result.put(keyed.getLeft(), keyed.getRight());
 			}
 
@@ -2493,7 +2493,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 					type = GoArrayType.lookup(
 							((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
-				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
+					return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 			} else
 				throw new IllegalStateException(
 						"Expression, Expression[] or  LinkedHashMap expected, found Statement instead");
@@ -2626,7 +2626,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			TypeCaseClauseContext typeSwitchCase = ctx.typeCaseClause(i);
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> caseBlock = visitStatementList(typeSwitchCase.statementList());
+			Statement> caseBlock = visitStatementList(typeSwitchCase.statementList());
 			case_.mergeWith(caseBlock.getMiddle());
 			body.mergeWith(caseBlock.getMiddle());
 
@@ -2699,7 +2699,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		if (ctx.simpleStmt() != null) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
+			Statement> simpleStmt = visitSimpleStmt(ctx.simpleStmt());
 			block.mergeWith(simpleStmt.getMiddle());
 			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode), block);
 			entryNode = simpleStmt.getLeft();

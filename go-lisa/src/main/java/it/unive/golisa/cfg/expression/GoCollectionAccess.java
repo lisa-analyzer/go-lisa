@@ -68,7 +68,7 @@ public class GoCollectionAccess extends BinaryExpression {
 			if (unit.toString().equals(getReceiver().toString()))
 			for (Global g : unit.getGlobals())
 				if (g.toString().endsWith(getTarget().toString()))
-					return state.smallStepSemantics(new Clean(Untyped.INSTANCE,getLocation()), getReceiver());
+					return state.smallStepSemantics(new Clean(g.getStaticType(), getLocation()), getReceiver());
 			
 		AnalysisState<A, H, V, T> result = state.bottom();
 

@@ -105,6 +105,7 @@ import it.unive.golisa.cfg.runtime.url.PathEscape;
 import it.unive.golisa.cfg.runtime.url.QueryEscape;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
+import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CodeUnit;
@@ -505,6 +506,8 @@ public interface GoRuntimeLoader {
 	
 	private void loadTime(Program program) {
 		CodeUnit time = new CodeUnit(runtimeLocation, program, "time");
+
+		time.addGlobal(new Global(runtimeLocation, time, "Millisecond", false, GoInt64Type.INSTANCE));
 
 		Time timeType = Time.getTimeType(program);
 		GoStructType.registerType(timeType);

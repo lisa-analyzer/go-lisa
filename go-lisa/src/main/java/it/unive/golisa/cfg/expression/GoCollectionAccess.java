@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
@@ -9,6 +10,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
@@ -86,6 +88,19 @@ public class GoCollectionAccess extends BinaryExpression {
 		if (env != null) {
 			NonRelationalValueDomain<?> stack = env.getValueOnStack();
 			if (stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+				AnalysisState<A, H, V, T> tmp = state.bottom();
+				for (SymbolicExpression id : result.getComputedExpressions())
+					tmp = tmp.lub(result.assign(id, tainted, this));
+				return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
+						tmp.getAliasing());
+			}
+		}
+		
+		InferenceSystem<?> sys = rightState.getDomainInstance(InferenceSystem.class);
+		if (sys != null) {
+			Object value = sys.getInferredValue();
+			if (value instanceof IntegrityNIDomain 
+					&& ((IntegrityNIDomain) value).isLowIntegrity()) {
 				AnalysisState<A, H, V, T> tmp = state.bottom();
 				for (SymbolicExpression id : result.getComputedExpressions())
 					tmp = tmp.lub(result.assign(id, tainted, this));

@@ -104,6 +104,7 @@ import it.unive.golisa.cfg.runtime.time.function.Now;
 import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
 import it.unive.golisa.cfg.runtime.time.function.Sleep;
+import it.unive.golisa.cfg.runtime.time.method.In;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Month;
 import it.unive.golisa.cfg.runtime.time.type.Time;

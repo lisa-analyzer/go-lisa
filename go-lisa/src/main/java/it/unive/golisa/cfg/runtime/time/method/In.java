@@ -1,7 +1,8 @@
-package it.unive.golisa.cfg.runtime.shim.method;
+package it.unive.golisa.cfg.runtime.time.method;
 
-import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.analysis.taint.Tainted;
+import it.unive.golisa.cfg.runtime.time.type.Time;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -16,40 +17,40 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func (s *ChaincodeStub) GetTxTimestamp() (*timestamp.Timestamp, error)
+ * func (t Time) In(loc *Location) Time 
  * 
- * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GetTxTimestamp extends NativeCFG {
+public class In extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
 	 * 
 	 * @param location the location where this native cfg is defined
-	 * @param shimUnit the unit to which this native cfg belongs to
+	 * @param timeUnit the unit to which this native cfg belongs to
 	 */
-	public GetTxTimestamp(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, true, "GetTxTimestamp",
-				GoErrorType.INSTANCE,
-				new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),
-				GetTxTimestampImpl.class);
+	public In(CodeLocation location, CompilationUnit timeUnit) {
+		super(new CodeMemberDescriptor(location, timeUnit, true, "In",
+				Time.getTimeType(timeUnit.getProgram()),
+				new Parameter(location, "this", Time.getTimeType(timeUnit.getProgram())), 
+				new Parameter(location, "loc", GoStringType.INSTANCE)),
+				InImpl.class);
 	}
 
 	/**
-	 * The {@link GetTxTimestamp} implementation.
+	 * The {@link InImpl} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class GetTxTimestampImpl extends UnaryExpression
-			implements PluggableStatement {
+	public static class InImpl extends BinaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -68,8 +69,8 @@ public class GetTxTimestamp extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static GetTxTimestampImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new GetTxTimestampImpl(cfg, location, params[0]);
+		public static InImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new InImpl(cfg, location, params);
 		}
 
 		/**
@@ -80,17 +81,16 @@ public class GetTxTimestamp extends NativeCFG {
 		 *                     defined
 		 * @param params   the parameters
 		 */
-		public GetTxTimestampImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "GetTxTimestamp", Untyped.INSTANCE, expr);
+		public InImpl(CFG cfg, CodeLocation location, Expression... params) {
+			super(cfg, location, "In", Time.getTimeType(null), params[0], params[1]);
 		}
-
-
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(expr, original);
-		}
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+				throws SemanticException {
+			return state.smallStepSemantics(left, original);
+		}	
 	}
 }

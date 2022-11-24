@@ -3,10 +3,10 @@ package it.unive.golisa.cfg;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.golisa.frontend.GoCodeMemberVisitor;
@@ -128,6 +128,7 @@ public class VariableScopingCFG extends CFG {
 
 	@Override
 	public void simplify() {
+		List<Statement> stray = new LinkedList<>();
 		// we remove all edges connecting return statements with noops
 		list.getEdges().stream()
 				.filter(e -> GoCodeMemberVisitor.isReturnStmt(e.getSource()) && e.getDestination() instanceof NoOp)
@@ -138,20 +139,25 @@ public class VariableScopingCFG extends CFG {
 						&& list.getOutgoingEdges(n).isEmpty())
 				.forEach(n -> {
 					preSimplify(n);
-					list.removeNode(n);
+					stray.add(n);
 				});
 		// we might have stray noop connected to a ret
-		List<Statement> stray = list.getNodes().stream()
+		list.getNodes().stream()
 				.filter(n -> n instanceof Ret)
 				.map(n -> allNonNoopPredecessorsAreReturns(list, n))
 				.filter(l -> l != null)
 				.flatMap(l -> l.stream())
-				.collect(Collectors.toList());
+				.forEach(stray::add);
+		
+		// actually remove the nodes
 		stray.forEach(n -> {
 			preSimplify(n);
 			list.removeNode(n);
+			entrypoints.remove(n);
 		});
-
+		
+		if (getNodesCount() == 0)
+			addNode(new Ret(this, getDescriptor().getLocation()), true);
 		super.simplify();
 	}
 

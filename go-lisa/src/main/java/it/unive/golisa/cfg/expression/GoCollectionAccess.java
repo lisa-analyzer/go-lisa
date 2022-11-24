@@ -25,6 +25,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapExpression;
+import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
 
@@ -47,6 +49,11 @@ public class GoCollectionAccess extends BinaryExpression {
 		super(cfg, location, container + "::" + child, container, child);
 	}
 
+	@Override
+	public String toString() {
+		return getReceiver() + "::" + getTarget();
+	}
+	
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
@@ -75,10 +82,15 @@ public class GoCollectionAccess extends BinaryExpression {
 					if (g.toString().endsWith(getTarget().toString()))
 						return state.smallStepSemantics(new Clean(g.getStaticType(), getLocation()), getReceiver());
 
-		AnalysisState<A, H, V, T> result = state.smallStepSemantics(
-				new AccessChild(Untyped.INSTANCE,
-						new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
-				this);
+		SymbolicExpression inner;
+		if (left instanceof HeapReference)
+			inner = ((HeapReference) left).getExpression();
+		else if (left instanceof HeapExpression)
+			inner = left;
+		else
+			inner = new HeapDereference(getStaticType(), left, getLocation());
+		AnalysisState<A, H, V, T> result = state
+				.smallStepSemantics(new AccessChild(Untyped.INSTANCE, inner, right, getLocation()), this);
 
 		// Workaround for cases such as arr[t], where t is tainted
 

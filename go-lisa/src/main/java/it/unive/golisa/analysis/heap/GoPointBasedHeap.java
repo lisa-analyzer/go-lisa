@@ -370,38 +370,38 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 
 		@Override
 		public ExpressionSet<ValueExpression> visit(HeapDereference expression, ExpressionSet<ValueExpression> arg,
-				Object... params)
-						throws SemanticException {			Set<ValueExpression> result = new HashSet<>();
+				Object... params) throws SemanticException {
+			Set<ValueExpression> result = new HashSet<>();
 
-						for (ValueExpression ref : arg)
-							if (ref instanceof MemoryPointer)
-								result.add(((MemoryPointer) ref).getReferencedLocation());
-							else if (ref instanceof Identifier) {
-								// this could be aliasing!
-								Identifier id = (Identifier) ref;
-								if (heapEnv.getKeys().contains(id))
-									result.addAll(resolveIdentifier(id));
-								else if (id instanceof Variable) {
-									// this is a variable from the program that we know
-									// nothing about
-									CodeLocation loc = expression.getCodeLocation();
-									if (id.hasRuntimeTypes()) {
-										for (Type t : id.getRuntimeTypes(null))
-											if (t.isPointerType())
-												result.add(new HeapAllocationSite(t, "unknown@" + id.getName(), true, loc));
-											else 
-												result.add(new StackAllocationSite(t, "unknown@" + id.getName(), true, loc));
-									} else if (id.getStaticType().isPointerType())
-										result.add(
-												new HeapAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
-									else if (id.getStaticType().isInMemoryType())
-										result.add(
-												new StackAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
-								}
-							} else
-								result.add(ref);
+			for (ValueExpression ref : arg)
+				if (ref instanceof MemoryPointer)
+					result.add(((MemoryPointer) ref).getReferencedLocation());
+				else if (ref instanceof Identifier) {
+					// this could be aliasing!
+					Identifier id = (Identifier) ref;
+					if (heapEnv.getKeys().contains(id))
+						result.addAll(resolveIdentifier(id));
+					else if (id instanceof Variable) {
+						// this is a variable from the program that we know
+						// nothing about
+						CodeLocation loc = expression.getCodeLocation();
+						if (id.hasRuntimeTypes()) {
+							for (Type t : id.getRuntimeTypes(null))
+								if (t.isPointerType())
+									result.add(new HeapAllocationSite(t, "unknown@" + id.getName(), true, loc));
+								else
+									result.add(new StackAllocationSite(t, "unknown@" + id.getName(), true, loc));
+						} else if (id.getStaticType().isPointerType())
+							result.add(
+									new HeapAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
+						else if (id.getStaticType().isInMemoryType())
+							result.add(
+									new StackAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
+					}
+				} else
+					result.add(ref);
 
-						return new ExpressionSet<>(result);
+			return new ExpressionSet<>(result);
 		}
 
 		@Override

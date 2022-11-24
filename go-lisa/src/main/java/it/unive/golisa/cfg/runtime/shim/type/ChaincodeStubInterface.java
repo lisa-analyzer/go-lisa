@@ -168,7 +168,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 
 	@Override
 	public String toString() {
-		return "ChaincodeStubInterface";
+		return "shim.ChaincodeStubInterface";
 	}
 
 	@Override

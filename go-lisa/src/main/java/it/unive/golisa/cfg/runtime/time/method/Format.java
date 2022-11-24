@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
+import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
@@ -7,6 +10,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -21,6 +25,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.type.Untyped;
 
 /**
  * func (t Time) Format(layout string) string.
@@ -92,7 +97,18 @@ public class Format extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-
+			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
+			if (env != null) {
+				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
+				ValueEnvironment<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(ValueEnvironment.class);
+				if (linst.getValueOnStack() instanceof TaintDomain) {
+					if (((TaintDomain)linst.getValueOnStack()).isTainted()
+							|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
+						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
 			AnalysisState<A, H, V, T> resultState = state.smallStepSemantics(left, original)
 					.lub(state.smallStepSemantics(right, original));
 			return resultState;

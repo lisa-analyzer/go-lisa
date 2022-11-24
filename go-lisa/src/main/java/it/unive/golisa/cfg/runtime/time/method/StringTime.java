@@ -2,6 +2,7 @@ package it.unive.golisa.cfg.runtime.time.method;
 
 import java.util.Collections;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
@@ -93,7 +94,7 @@ public class StringTime extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			expr.setRuntimeTypes(Collections.singleton(GoStringType.INSTANCE));
-			return state.smallStepSemantics(expr, original);
+			return state.smallStepSemantics(expr, original).lub(state.smallStepSemantics(new Clean(GoStringType.INSTANCE, getLocation()), original));
 		}
 	}
 }

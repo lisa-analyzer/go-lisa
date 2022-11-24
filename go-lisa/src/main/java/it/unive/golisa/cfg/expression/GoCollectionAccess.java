@@ -1,17 +1,14 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
@@ -50,13 +47,13 @@ public class GoCollectionAccess extends BinaryExpression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		
+
 		if (getLeft().toString().startsWith("args") || getLeft().toString().startsWith("para"))
 			return state.smallStepSemantics(left, this);
 		if (getLeft().toString().startsWith("blocks"))
@@ -65,8 +62,9 @@ public class GoCollectionAccess extends BinaryExpression {
 			return state.smallStepSemantics(new Constant(Duration.INSTANCE, "SECOND_VALUE", getLocation()), this);
 		if (right instanceof Tainted)
 			return state.smallStepSemantics(right, this);
+		Tainted tainted = new Tainted(getLocation());
 		if (getLeft().toString().equals("resp") && getRight().toString().equals("Body"))
-			return state.smallStepSemantics(new Tainted(getLocation()), this);
+			return state.smallStepSemantics(tainted, this);
 
 		// Access global
 		for (Unit unit : getProgram().getUnits())
@@ -79,21 +77,23 @@ public class GoCollectionAccess extends BinaryExpression {
 				new AccessChild(Untyped.INSTANCE,
 						new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
 				this);
-		
-		//Workaround for cases such as arr[t], where t is tainted
-		
+
+		// Workaround for cases such as arr[t], where t is tainted
+
 		AnalysisState<A, H, V, T> rightState = state.smallStepSemantics(right, this);
-		
-		if(rightState.getState().getValueState().getDomainInstance(ValueEnvironment.class) != null) {
-			 NonRelationalValueDomain<?> rightStackValue =  rightState.getState().getValueState().getDomainInstance(ValueEnvironment.class).getValueOnStack();
-			 if(rightStackValue instanceof TaintDomain && ((TaintDomain) rightStackValue).isTainted()) {
-				 if(result.getState().getValueState().getDomainInstance(ValueEnvironment.class) != null) {
-					 
-					 return result.smallStepSemantics(new Tainted(getLocation()), this);
-				 }
-			 }
+
+		ValueEnvironment<?> env = rightState.getDomainInstance(ValueEnvironment.class);
+		if (env != null) {
+			NonRelationalValueDomain<?> stack = env.getValueOnStack();
+			if (stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+				AnalysisState<A, H, V, T> tmp = state.bottom();
+				for (SymbolicExpression id : result.getComputedExpressions())
+					tmp = tmp.lub(result.assign(id, tainted, this));
+				return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
+						tmp.getAliasing());
+			}
 		}
-				
+
 		return result;
 
 	}

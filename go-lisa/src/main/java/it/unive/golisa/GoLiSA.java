@@ -42,6 +42,7 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
+import it.unive.lisa.checks.warnings.Warning;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
@@ -184,7 +185,7 @@ public class GoLiSA {
 			return;
 		} catch (IOException e) {
 			// the file does not exists
-			System.err.println("File " + filePath + "does not exist.");
+			System.err.println("File " + filePath + " does not exist.");
 			return;
 		} catch (UnsupportedOperationException e1) {
 			// an unsupported operations has been encountered
@@ -206,6 +207,12 @@ public class GoLiSA {
 			// an error occurred during the analysis
 			e.printStackTrace();
 			return;
+		}
+		
+		if (!lisa.getWarnings().isEmpty()) {
+			System.out.println("The analysis has generated the following warnings:");
+			for (Warning warn : lisa.getWarnings())
+				System.out.println(warn);
 		}
 	}
 

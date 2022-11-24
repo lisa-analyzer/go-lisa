@@ -3,18 +3,25 @@ package it.unive.golisa.cfg;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import it.unive.golisa.cfg.statement.block.IdInfo;
+import it.unive.golisa.frontend.GoCodeMemberVisitor;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.NoOp;
+import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.util.collections.workset.LIFOWorkingSet;
+import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 
 /**
@@ -117,6 +124,47 @@ public class VariableScopingCFG extends CFG {
 					|| table.getLocation().equals(location))
 				return table;
 		return null;
+	}
 
+	@Override
+	public void simplify() {
+		// we remove all edges connecting return statements with noops
+		list.getEdges().stream()
+				.filter(e -> GoCodeMemberVisitor.isReturnStmt(e.getSource()) && e.getDestination() instanceof NoOp)
+				.forEach(e -> list.removeEdge(e));
+		// now remove all isolated noops
+		list.getNodes().stream()
+				.filter(n -> n instanceof NoOp && list.getIngoingEdges(n).isEmpty()
+						&& list.getOutgoingEdges(n).isEmpty())
+				.forEach(n -> {
+					preSimplify(n);
+					list.removeNode(n);
+				});
+		// we might have stray noop connected to a ret
+		List<Statement> stray = list.getNodes().stream()
+				.filter(n -> n instanceof Ret)
+				.map(n -> allNonNoopPredecessorsAreReturns(list, n))
+				.filter(l -> l != null)
+				.flatMap(l -> l.stream())
+				.collect(Collectors.toList());
+		stray.forEach(n -> {
+			preSimplify(n);
+			list.removeNode(n);
+		});
+
+		super.simplify();
+	}
+
+	private Collection<Statement> allNonNoopPredecessorsAreReturns(NodeList<CFG, Statement, Edge> block,
+			Statement last) {
+		VisitOnceWorkingSet<Statement> ws = VisitOnceWorkingSet.mk(LIFOWorkingSet.mk());
+		ws.push(last);
+		while (!ws.isEmpty()) {
+			Statement current = ws.pop();
+			if (!(current instanceof NoOp) && current != last)
+				return null;
+			block.predecessorsOf(current).forEach(ws::push);
+		}
+		return ws.getSeen();
 	}
 }

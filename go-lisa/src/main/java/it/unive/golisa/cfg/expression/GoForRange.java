@@ -37,7 +37,10 @@ public class GoForRange extends Loop {
 
 	@Override
 	public boolean contains(Statement st) {
-		return super.contains(st) || idxKey.equals(st) || idxValue.equals(st);
+		return super.contains(st)
+				// the two idx can be null: leave them as parameters instead of
+				// receivers
+				|| st.equals(idxKey) || st.equals(idxValue);
 	}
 
 }

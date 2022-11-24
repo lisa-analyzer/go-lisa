@@ -144,6 +144,13 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 							GoSliceType.getSliceOfBytes(), GoErrorType.INSTANCE),
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
+			
+			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
+					true,
+					"GetTxTimestamp",
+					Untyped.INSTANCE,
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType));
+			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 			// missing
 			// - InvokeChaincode
@@ -161,7 +168,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 
 	@Override
 	public String toString() {
-		return "shim.ChaincodeStubInterface";
+		return "ChaincodeStubInterface";
 	}
 
 	@Override
@@ -173,9 +180,4 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-
-//	@Override
-//	public Collection<Type> allInstances() {
-//		return Collections.singleton(this);
-//	}
 }

@@ -27,7 +27,7 @@ public class Time extends GoStructType {
 	/**
 	 * Unique instance of a {@link Time} type.
 	 */
-	private static Time INSTANCE;
+	public static Time INSTANCE;
 
 	private Time(String name, CompilationUnit unit) {
 		super(name, unit);

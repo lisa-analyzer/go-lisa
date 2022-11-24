@@ -104,6 +104,7 @@ import it.unive.golisa.cfg.runtime.time.function.Now;
 import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
 import it.unive.golisa.cfg.runtime.time.function.Sleep;
+import it.unive.golisa.cfg.runtime.time.function.Unix;
 import it.unive.golisa.cfg.runtime.time.method.In;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Month;
@@ -556,6 +557,8 @@ public interface GoRuntimeLoader {
 		time.addCodeMember(new Since(runtimeLocation, time));
 		time.addCodeMember(new Parse(runtimeLocation, time));
 		time.addCodeMember(new Sleep(runtimeLocation, time));
+		time.addCodeMember(new Unix(runtimeLocation, time));
+
 		Time.registerMethods();
 
 		program.addUnit(time);

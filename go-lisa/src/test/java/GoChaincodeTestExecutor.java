@@ -150,17 +150,21 @@ public abstract class GoChaincodeTestExecutor {
 			expFile = Paths.get(expectedPath.toString() + File.separator + FilenameUtils.removeExtension(source),
 					"report.json").toFile();
 		File actFile = Paths.get(actualPath.toString(), "report.json").toFile();
-		try (FileReader l = new FileReader(expFile); FileReader r = new FileReader(actFile)) {
-			JsonReport expected = JsonReport.read(l);
-			JsonReport actual = JsonReport.read(r);
-			assertTrue("Results are different", compare(expected, actual, expectedPath.toFile(), actualPath.toFile()));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace(System.err);
-			fail("Unable to find report file");
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-			fail("Unable to compare reports");
-		}
+		if (!expFile.exists())
+			System.err.println("EXPECTED REPORT NOT FOUND, SKIPPING");
+		else
+			try (FileReader l = new FileReader(expFile); FileReader r = new FileReader(actFile)) {
+				JsonReport expected = JsonReport.read(l);
+				JsonReport actual = JsonReport.read(r);
+				assertTrue("Results are different",
+						compare(expected, actual, expectedPath.toFile(), actualPath.toFile()));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace(System.err);
+				fail("Unable to find report file");
+			} catch (IOException e) {
+				e.printStackTrace(System.err);
+				fail("Unable to compare reports");
+			}
 	}
 
 	private String getCaller() {

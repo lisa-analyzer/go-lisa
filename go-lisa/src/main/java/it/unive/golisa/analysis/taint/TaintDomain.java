@@ -93,7 +93,13 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
+		TaintDomain def = defaultApprox(id, pp);
+		if (def != BOTTOM)
+			return def;
+		return super.variable(id, pp);
+	}
 
+	private TaintDomain defaultApprox(Identifier id, ProgramPoint pp) throws SemanticException {
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
 
 			Statement condition = g.getCondition();
@@ -116,7 +122,16 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 		if (annots.contains(CLEAN_MATCHER))
 			return CLEAN;
 
-		return super.variable(id, pp);
+		return BOTTOM;
+	}
+
+	@Override
+	public TaintDomain evalIdentifier(Identifier id, ValueEnvironment<TaintDomain> environment, ProgramPoint pp)
+			throws SemanticException {
+		TaintDomain def = defaultApprox(id, pp);
+		if (def != BOTTOM)
+			return def;
+		return super.evalIdentifier(id, environment, pp);
 	}
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {
@@ -260,13 +275,13 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 			throws SemanticException {
 		return left;
 	}
-	
+
 	@Override
 	public TaintDomain evalTypeConv(BinaryExpression conv, TaintDomain left, TaintDomain right, ProgramPoint pp)
 			throws SemanticException {
 		return left;
 	}
-	
+
 	@Override
 	public boolean canProcess(SymbolicExpression expression) {
 		return true;

@@ -18,6 +18,7 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
@@ -29,6 +30,8 @@ import it.unive.lisa.symbolic.value.HeapLocation;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.type.Type;
 
 /**
  * A field-insensitive point-based heap implementation for Go that abstracts
@@ -380,6 +383,23 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 					Identifier id = (Identifier) ref;
 					if (heapEnv.getKeys().contains(id))
 						result.addAll(resolveIdentifier(id));
+					else if (id instanceof Variable) {
+						// this is a variable from the program that we know
+						// nothing about
+						CodeLocation loc = expression.getCodeLocation();
+						if (id.hasRuntimeTypes()) {
+							for (Type t : id.getRuntimeTypes(null))
+								if (t.isPointerType())
+									result.add(new HeapAllocationSite(t, "unknown@" + id.getName(), true, loc));
+								else if (t.isInMemoryType())
+									result.add(new StackAllocationSite(t, "unknown@" + id.getName(), true, loc));
+						} else if (id.getStaticType().isPointerType())
+							result.add(
+									new HeapAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
+						else if (id.getStaticType().isInMemoryType())
+							result.add(
+									new StackAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
+					}
 				} else
 					result.add(ref);
 
@@ -408,6 +428,30 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 
 			return result;
 		}
+
+//		@Override
+//		public ExpressionSet<ValueExpression> visit(PushAny expression, Object... params)
+//				throws SemanticException {
+//			Set<ValueExpression> result = new HashSet<>();
+//			CodeLocation loc = expression.getCodeLocation();
+//			if (expression.hasRuntimeTypes()) {
+//				for (Type t : expression.getRuntimeTypes(null))
+//					if (t.isPointerType())
+//						result.add(new HeapAllocationSite(t, "unknown@" + loc.getCodeLocation(), true, loc));
+//					else if (t.isInMemoryType())
+//						result.add(new StackAllocationSite(t, "unknown@" + loc.getCodeLocation(), true, loc));
+//			} else if (expression.getStaticType().isPointerType())
+//				result.add(
+//						new HeapAllocationSite(expression.getStaticType(), "unknown@" + loc.getCodeLocation(), true,
+//								loc));
+//			else if (expression.getStaticType().isInMemoryType())
+//				result.add(
+//						new StackAllocationSite(expression.getStaticType(), "unknown@" + loc.getCodeLocation(), true,
+//								loc));
+//			if (!result.isEmpty())
+//				return new ExpressionSet<>(result);
+//			return new ExpressionSet<>(expression);
+//		}
 	}
 
 	/**

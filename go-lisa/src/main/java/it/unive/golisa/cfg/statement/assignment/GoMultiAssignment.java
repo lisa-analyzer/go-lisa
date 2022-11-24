@@ -1,7 +1,13 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.analysis.taint.Clean;
-import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -19,10 +25,10 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
+import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -32,22 +38,13 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi-assignment.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoMultiAssignment extends Expression {
-	// FIXME this should be an instance of NaryExpression to make it work
-	// correctly with lisa
-
+public class GoMultiAssignment extends NaryExpression {
 	/**
 	 * The identifiers to assign.
 	 */
@@ -79,7 +76,7 @@ public class GoMultiAssignment extends Expression {
 	 */
 	public GoMultiAssignment(CFG cfg, SourceCodeLocation location, Expression[] ids, Expression e,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {
-		super(cfg, location);
+		super(cfg, location, ":=", RightToLeftEvaluation.INSTANCE, make(ids, e));
 		this.ids = ids;
 		this.e = e;
 		this.blocksToDeclaration = new HashMap<>();
@@ -88,31 +85,13 @@ public class GoMultiAssignment extends Expression {
 			if (id instanceof VariableRef)
 				blocksToDeclaration.put((VariableRef) id, BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, id));
 		this.containingBlock = containingBlock;
-
-		this.e.setParentStatement(this);
-		for (Expression id : ids)
-			id.setParentStatement(this);
 	}
 
-	@Override
-	public int setOffset(int offset) {
-		this.offset = offset;
-		ids[0].setOffset(offset + 1);
-		for (int i = 1; i < ids.length; i++)
-			ids[i].setOffset(ids[i - 1].getOffset() + 1);
-		return e.setOffset(ids[ids.length - 1].getOffset() + 1);
-	}
-
-	@Override
-	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		for (int i = 0; i < ids.length; i++)
-			if (!ids[i].accept(visitor, tool))
-				return false;
-
-		if (!e.accept(visitor, tool))
-			return false;
-
-		return visitor.visit(tool, getCFG(), this);
+	private static Expression[] make(Expression[] ids, Expression e) {
+		Expression[] res = new Expression[ids.length + 1];
+		System.arraycopy(ids, 0, res, 0, ids.length);
+		res[res.length - 1] = e;
+		return res;
 	}
 
 	@Override
@@ -121,10 +100,10 @@ public class GoMultiAssignment extends Expression {
 	}
 
 	private <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,
-			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,
+					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
 					throws SemanticException {
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
@@ -160,18 +139,64 @@ public class GoMultiAssignment extends Expression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-			StatementStore<A, H, V, T> expressions) throws SemanticException {
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+					StatementStore<A, H, V, T> expressions) throws SemanticException {
 
 		TypeSystem types = getProgram().getTypes();
 
 		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
-		
+		// if the right state is top,
+		// we put all the variables to top
+		if (rightState.isTop()
+				|| isClean(rightState.getComputedExpressions())
+				|| rightState.getComputedExpressions().size() > 1
+				|| isOpenCall(rightState.getComputedExpressions())) {
+			AnalysisState<A, H, V, T> result = rightState;
+
+			for (int i = 0; i < ids.length; i++) {
+				if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+					continue;
+
+				AnalysisState<A, H, V, T> idState = ids[i].semantics(result, interprocedural, expressions);
+				expressions.put(ids[i], idState);
+
+				AnalysisState<A, H, V, T> tmp = result;
+
+				for (SymbolicExpression id : idState.getComputedExpressions()) {
+					if (isClean(rightState.getComputedExpressions())) {
+						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
+						for (Type type : id.getRuntimeTypes(types)) {
+							AnalysisState<A, H, V,
+									T> assign = tmp.assign((Identifier) id, new Clean(type, getLocation()), this);
+							if (!assign.getState().getHeapState().isTop() || !assign.getState().getValueState().isTop())
+								tmp2 = tmp2.lub(assign);
+						}
+
+						tmp = tmp2;
+					} else if (rightState.isTop()) {
+						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
+						for (Type type : id.getRuntimeTypes(types))
+							tmp2 = tmp2.lub(tmp.assign((Identifier) id, new PushAny(type, getLocation()), this));
+						tmp = tmp2;
+					} else {
+						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
+						for (SymbolicExpression s : rightState.getComputedExpressions())
+							tmp2 = tmp2.lub(tmp.assign((Identifier) id, s, this));
+						tmp = tmp2;
+					}
+				}
+
+				result = tmp;
+			}
+
+			return result;
+		}
+
 		AnalysisState<A, H, V, T> result = rightState;
 
 		for (int i = 0; i < ids.length; i++) {
@@ -203,61 +228,6 @@ public class GoMultiAssignment extends Expression {
 
 			result = tmp2;
 		}
-		
-		// if the right state is top,
-		// we put all the variables to top
-		if (rightState.isTop()
-				|| isClean(rightState.getComputedExpressions())
-				|| isTainted(rightState.getComputedExpressions())
-				|| rightState.getComputedExpressions().size() > 1
-				|| isOpenCall(rightState.getComputedExpressions())) {
-			result = rightState;
-
-			for (int i = 0; i < ids.length; i++) {
-				if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
-					continue;
-
-				AnalysisState<A, H, V, T> idState = ids[i].semantics(result, interprocedural, expressions);
-				expressions.put(ids[i], idState);
-
-				AnalysisState<A, H, V, T> tmp = result;
-
-				for (SymbolicExpression id : idState.getComputedExpressions()) {
-					if (isClean(rightState.getComputedExpressions()) || isTainted(rightState.getComputedExpressions())) {
-						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-						for (Type type : id.getRuntimeTypes(types)) {
-							AnalysisState<A, H, V,
-							T> assign = null;
-							if (isClean(rightState.getComputedExpressions()))
-								assign = tmp.assign((Identifier) id, new Clean(type, getLocation()), this);
-							else if (isTainted(rightState.getComputedExpressions()))
-								assign = tmp.assign((Identifier) id, new Tainted(type, getLocation()), this);
-
-							if (!assign.getState().getHeapState().isTop() || !assign.getState().getValueState().isTop())
-								tmp2 = tmp2.lub(assign);
-						}
-
-						tmp = tmp2;
-					} else if (rightState.isTop()) {
-						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-						for (Type type : id.getRuntimeTypes(types))
-							tmp2 = tmp2.lub(tmp.assign((Identifier) id, new PushAny(type, getLocation()), this));
-						tmp = tmp2;
-					} else {
-						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-						for (SymbolicExpression s : rightState.getComputedExpressions())
-							tmp2 = tmp2.lub(tmp.assign((Identifier) id, s, this));
-						tmp = tmp2;
-					}
-				}
-
-				result = tmp;
-			}
-
-			return result;
-		}
-
-		
 
 		AnalysisState<A, H, V, T> finalResult = result;
 		for (int i = 0; i < ids.length; i++) {
@@ -282,7 +252,7 @@ public class GoMultiAssignment extends Expression {
 				for (SymbolicExpression accessExp : accessState.getComputedExpressions())
 					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 						AnalysisState<A, H, V,
-						T> assign = finalResult.assign(idExp, NumericalTyper.type(accessExp), this);
+								T> assign = finalResult.assign(idExp, NumericalTyper.type(accessExp), this);
 						partialResult = partialResult.lub(assign);
 					}
 				finalResult = partialResult;
@@ -303,14 +273,22 @@ public class GoMultiAssignment extends Expression {
 
 	private boolean isOpenCall(ExpressionSet<SymbolicExpression> computedExpressions) {
 		return (computedExpressions.size() == 1
-				&& (computedExpressions.iterator().next().toString().startsWith("open_call"))); 
+				&& (computedExpressions.iterator().next().toString().startsWith("open_call")));
 	}
 
 	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {
 		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof Clean;
 	}
 
-	private boolean isTainted(ExpressionSet<SymbolicExpression> computedExpressions) {
-		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof Tainted;
+	@Override
+	public <A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+					throws SemanticException {
+		// Never invoked as we redefined the semantics
+		return null;
 	}
 }

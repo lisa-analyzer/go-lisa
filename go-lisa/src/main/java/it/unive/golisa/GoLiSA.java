@@ -26,6 +26,7 @@ import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.golisa.interprocedural.GoContextBasedAnalysis;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
@@ -41,7 +42,6 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
@@ -173,7 +173,7 @@ public class GoLiSA {
 			}
 
 			if (!program.getEntryPoints().isEmpty()) {
-				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+				conf.interproceduralAnalysis = new GoContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 				conf.callGraph = new RTACallGraph();
 			} else
 				LOG.info("Entry points not found!");

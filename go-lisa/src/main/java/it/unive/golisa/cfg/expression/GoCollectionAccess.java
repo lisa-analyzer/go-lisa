@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression;
 
-import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
-
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
@@ -60,6 +58,9 @@ public class GoCollectionAccess extends BinaryExpression {
 			return state.smallStepSemantics(new Constant(Duration.INSTANCE, "SECOND_VALUE", getLocation()), this);
 		if (right instanceof Tainted)
 			return state.smallStepSemantics(right, this);
+		if (getLeft().toString().equals("resp") && getRight().toString().equals("Body"))
+			return state.smallStepSemantics(new Tainted(getLocation()), this);
+
 	
 		
 		

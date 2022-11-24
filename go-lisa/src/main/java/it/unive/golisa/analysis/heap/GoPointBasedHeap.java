@@ -352,7 +352,7 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		@Override
 		public ExpressionSet<ValueExpression> visit(HeapReference expression, ExpressionSet<ValueExpression> arg,
 				Object... params)
-				throws SemanticException {
+						throws SemanticException {
 			Set<ValueExpression> result = new HashSet<>();
 
 			for (ValueExpression loc : arg)
@@ -361,7 +361,6 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 							(GoAllocationSite) loc,
 							loc.getCodeLocation());
 					if (expression.hasRuntimeTypes())
-//						e.setRuntimeTypes(loc.getRuntimeTypes(null));
 						e.setRuntimeTypes(expression.getRuntimeTypes(null));
 					result.add(e);
 				} else
@@ -372,38 +371,37 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 		@Override
 		public ExpressionSet<ValueExpression> visit(HeapDereference expression, ExpressionSet<ValueExpression> arg,
 				Object... params)
-				throws SemanticException {
-			Set<ValueExpression> result = new HashSet<>();
+						throws SemanticException {			Set<ValueExpression> result = new HashSet<>();
 
-			for (ValueExpression ref : arg)
-				if (ref instanceof MemoryPointer)
-					result.add(((MemoryPointer) ref).getReferencedLocation());
-				else if (ref instanceof Identifier) {
-					// this could be aliasing!
-					Identifier id = (Identifier) ref;
-					if (heapEnv.getKeys().contains(id))
-						result.addAll(resolveIdentifier(id));
-					else if (id instanceof Variable) {
-						// this is a variable from the program that we know
-						// nothing about
-						CodeLocation loc = expression.getCodeLocation();
-						if (id.hasRuntimeTypes()) {
-							for (Type t : id.getRuntimeTypes(null))
-								if (t.isPointerType())
-									result.add(new HeapAllocationSite(t, "unknown@" + id.getName(), true, loc));
-								else if (t.isInMemoryType())
-									result.add(new StackAllocationSite(t, "unknown@" + id.getName(), true, loc));
-						} else if (id.getStaticType().isPointerType())
-							result.add(
-									new HeapAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
-						else if (id.getStaticType().isInMemoryType())
-							result.add(
-									new StackAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
-					}
-				} else
-					result.add(ref);
+						for (ValueExpression ref : arg)
+							if (ref instanceof MemoryPointer)
+								result.add(((MemoryPointer) ref).getReferencedLocation());
+							else if (ref instanceof Identifier) {
+								// this could be aliasing!
+								Identifier id = (Identifier) ref;
+								if (heapEnv.getKeys().contains(id))
+									result.addAll(resolveIdentifier(id));
+								else if (id instanceof Variable) {
+									// this is a variable from the program that we know
+									// nothing about
+									CodeLocation loc = expression.getCodeLocation();
+									if (id.hasRuntimeTypes()) {
+										for (Type t : id.getRuntimeTypes(null))
+											if (t.isPointerType())
+												result.add(new HeapAllocationSite(t, "unknown@" + id.getName(), true, loc));
+											else 
+												result.add(new StackAllocationSite(t, "unknown@" + id.getName(), true, loc));
+									} else if (id.getStaticType().isPointerType())
+										result.add(
+												new HeapAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
+									else if (id.getStaticType().isInMemoryType())
+										result.add(
+												new StackAllocationSite(id.getStaticType(), "unknown@" + id.getName(), true, loc));
+								}
+							} else
+								result.add(ref);
 
-			return new ExpressionSet<>(result);
+						return new ExpressionSet<>(result);
 		}
 
 		@Override
@@ -429,29 +427,29 @@ public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
 			return result;
 		}
 
-//		@Override
-//		public ExpressionSet<ValueExpression> visit(PushAny expression, Object... params)
-//				throws SemanticException {
-//			Set<ValueExpression> result = new HashSet<>();
-//			CodeLocation loc = expression.getCodeLocation();
-//			if (expression.hasRuntimeTypes()) {
-//				for (Type t : expression.getRuntimeTypes(null))
-//					if (t.isPointerType())
-//						result.add(new HeapAllocationSite(t, "unknown@" + loc.getCodeLocation(), true, loc));
-//					else if (t.isInMemoryType())
-//						result.add(new StackAllocationSite(t, "unknown@" + loc.getCodeLocation(), true, loc));
-//			} else if (expression.getStaticType().isPointerType())
-//				result.add(
-//						new HeapAllocationSite(expression.getStaticType(), "unknown@" + loc.getCodeLocation(), true,
-//								loc));
-//			else if (expression.getStaticType().isInMemoryType())
-//				result.add(
-//						new StackAllocationSite(expression.getStaticType(), "unknown@" + loc.getCodeLocation(), true,
-//								loc));
-//			if (!result.isEmpty())
-//				return new ExpressionSet<>(result);
-//			return new ExpressionSet<>(expression);
-//		}
+		//		@Override
+		//		public ExpressionSet<ValueExpression> visit(PushAny expression, Object... params)
+		//				throws SemanticException {
+		//			Set<ValueExpression> result = new HashSet<>();
+		//			CodeLocation loc = expression.getCodeLocation();
+		//			if (expression.hasRuntimeTypes()) {
+		//				for (Type t : expression.getRuntimeTypes(null))
+		//					if (t.isPointerType())
+		//						result.add(new HeapAllocationSite(t, "unknown@" + loc.getCodeLocation(), true, loc));
+		//					else if (t.isInMemoryType())
+		//						result.add(new StackAllocationSite(t, "unknown@" + loc.getCodeLocation(), true, loc));
+		//			} else if (expression.getStaticType().isPointerType())
+		//				result.add(
+		//						new HeapAllocationSite(expression.getStaticType(), "unknown@" + loc.getCodeLocation(), true,
+		//								loc));
+		//			else if (expression.getStaticType().isInMemoryType())
+		//				result.add(
+		//						new StackAllocationSite(expression.getStaticType(), "unknown@" + loc.getCodeLocation(), true,
+		//								loc));
+		//			if (!result.isEmpty())
+		//				return new ExpressionSet<>(result);
+		//			return new ExpressionSet<>(expression);
+		//		}
 	}
 
 	/**

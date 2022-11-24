@@ -44,16 +44,16 @@ public class GoCollectionAccess extends BinaryExpression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		if (getLeft().toString().startsWith("args") || getLeft().toString().startsWith("para"))
 			return state.smallStepSemantics(left, this);
 		if (getLeft().toString().startsWith("blocks"))
-				return state;
+			return state;
 		if (getLeft().toString().equals("time") && getRight().toString().equals("Second"))
 			return state.smallStepSemantics(new Constant(Duration.INSTANCE, "SECOND_VALUE", getLocation()), this);
 		if (right instanceof Tainted)
@@ -61,28 +61,21 @@ public class GoCollectionAccess extends BinaryExpression {
 		if (getLeft().toString().equals("resp") && getRight().toString().equals("Body"))
 			return state.smallStepSemantics(new Tainted(getLocation()), this);
 
-	
-		
-		
+		if (getLeft().toString().startsWith("obj"))
+			System.err.println("h");
+
 		// Access global
 		for (Unit unit : getProgram().getUnits())
 			if (unit.toString().equals(getReceiver().toString()))
-			for (Global g : unit.getGlobals())
-				if (g.toString().endsWith(getTarget().toString()))
-					return state.smallStepSemantics(new Clean(g.getStaticType(), getLocation()), getReceiver());
-			
-		AnalysisState<A, H, V, T> result = state.bottom();
+				for (Global g : unit.getGlobals())
+					if (g.toString().endsWith(getTarget().toString()))
+						return state.smallStepSemantics(new Clean(g.getStaticType(), getLocation()), getReceiver());
 
-		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);
-		for (SymbolicExpression expr : rec.getComputedExpressions()) {
-			AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(
-					new AccessChild(Untyped.INSTANCE,
-							new HeapDereference(getStaticType(), expr, getLocation()), right, getLocation()),
-					this);
-			result = result.lub(tmp);
-		}
+		return state.smallStepSemantics(
+				new AccessChild(Untyped.INSTANCE,
+						new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
+				this);
 
-		return result;
 	}
 
 	/**

@@ -461,6 +461,26 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					if (preExits.contains(entry.getScopeEnd()))
 						entry.setScopeEnd(ret);
 			}
+		} else {
+			Ret ret = null;
+			for (Statement st : matrix.getNodes())
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty()) 
+					ret = new Ret(cfg, cfg.getDescriptor().getLocation());
+				
+			if (ret != null) {
+				matrix.addNode(ret);
+				Collection<Statement> preExits = new LinkedList<>();
+				for (Statement st : matrix.getNodes())
+					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+						preExits.add(st);
+				matrix.addNode(ret);
+				for (Statement st : preExits)
+					matrix.addEdge(new SequentialEdge(st, ret));
+
+				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
+					if (preExits.contains(entry.getScopeEnd()))
+						entry.setScopeEnd(ret);
+			}
 		}
 	}
 
@@ -1638,7 +1658,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement entryNode = booleanGuard;
 		if (ctx.simpleStmt() != null) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> initialStmt = visitSimpleStmt(ctx.simpleStmt());
+			Statement> initialStmt = visitSimpleStmt(ctx.simpleStmt());
 			block.mergeWith(initialStmt.getMiddle());
 			entryNode = initialStmt.getLeft();
 			addEdge(new SequentialEdge(initialStmt.getRight(), booleanGuard), block);
@@ -2365,7 +2385,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 				type = GoArrayType
 				.lookup(((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
-				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type == null ? Untyped.INSTANCE : type);
+			return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type == null ? Untyped.INSTANCE : type);
 		} else {
 
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
@@ -2493,7 +2513,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)
 					type = GoArrayType.lookup(
 							((GoArrayType) type).getContenType(), ((Expression[]) keys).length);
-					return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
+				return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 			} else
 				throw new IllegalStateException(
 						"Expression, Expression[] or  LinkedHashMap expected, found Statement instead");

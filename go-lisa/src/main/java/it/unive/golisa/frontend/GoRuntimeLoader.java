@@ -86,6 +86,7 @@ import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.Handler;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
 import it.unive.golisa.cfg.runtime.strconv.Atoi;
+import it.unive.golisa.cfg.runtime.strconv.FormatInt;
 import it.unive.golisa.cfg.runtime.strconv.Itoa;
 import it.unive.golisa.cfg.runtime.strconv.ParseBool;
 import it.unive.golisa.cfg.runtime.strconv.ParseFloat;
@@ -518,6 +519,7 @@ public interface GoRuntimeLoader {
 		strconv.addCodeMember(new ParseFloat(runtimeLocation, strconv));
 		strconv.addCodeMember(new ParseBool(runtimeLocation, strconv));
 		strconv.addCodeMember(new ParseInt(runtimeLocation, strconv));
+		strconv.addCodeMember(new FormatInt(runtimeLocation, strconv));
 
 		program.addUnit(strconv);
 	}

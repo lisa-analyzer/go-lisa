@@ -4,6 +4,8 @@ import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
 import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
 import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
+import it.unive.golisa.cfg.runtime.crypto.x509.function.ParseCertificate;
+import it.unive.golisa.cfg.runtime.crypto.x509.type.Certificate;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;
 import it.unive.golisa.cfg.runtime.encoding.json.function.HtmlEscape;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Indent;
@@ -141,7 +143,9 @@ public interface GoRuntimeLoader {
 		else if (module.equals("fmt"))
 			loadFmt(program);
 		else if (module.equals("math/rand"))
-			loadMathRand(program);
+			loadMathRand(program);		
+		else if (module.equals("crypto/x509"))
+			loadX509(program);
 		else if (module.equals("io"))
 			loadIO(program);
 		else if (module.equals("io/ioutil"))
@@ -181,6 +185,18 @@ public interface GoRuntimeLoader {
 				loadCosmosErrors(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
+	}
+
+	private void loadX509(Program program) {
+		CodeUnit x509 = new CodeUnit(runtimeLocation, program, "x509");
+
+		GoStructType.registerType(Certificate.getCertificateFile(program));
+
+		// adding functions
+		x509.addCodeMember(new ParseCertificate(runtimeLocation, x509));
+
+		// adding compilation units to program
+		program.addUnit(x509);
 	}
 
 	private void loadCosmosErrors(Program program) {
@@ -288,9 +304,9 @@ public interface GoRuntimeLoader {
 		// adding functions
 		cryptoRand.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Int(runtimeLocation, cryptoRand));
 		cryptoRand
-				.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
+		.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Read(runtimeLocation, cryptoRand));
 		cryptoRand
-				.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
+		.addCodeMember(new it.unive.golisa.cfg.runtime.crypto.rand.function.Prime(runtimeLocation, cryptoRand));
 
 		// adding compilation units to program
 		program.addUnit(cryptoRand);
@@ -411,7 +427,7 @@ public interface GoRuntimeLoader {
 		shim.addGlobal(new Global(runtimeLocation, shim, "OK", false));
 		shim.addGlobal(new Global(runtimeLocation, shim, "ERROR", false));
 		shim.addGlobal(new Global(runtimeLocation, shim, "ERRORTHRESHOLD", false));
-		
+
 		// FIXME
 		GoStructType.registerType(Buffer.getBufferType(program));
 		GoStructType.registerType(Reader.getReaderType(program));
@@ -435,7 +451,7 @@ public interface GoRuntimeLoader {
 		ChaincodeServer.registerMethods();
 
 		ChaincodeStub.getChaincodeStubType(program).getUnit()
-				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
+		.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 
 		// FIXME: we should register this type just in GoInterfaceType
 		program.getTypes().registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
@@ -459,7 +475,7 @@ public interface GoRuntimeLoader {
 
 		program.addUnit(http);
 	}
-	
+
 	private void loadPem(Program program) {
 		CodeUnit pem = new CodeUnit(runtimeLocation, program, "pem");
 		GoStructType.registerType(it.unive.golisa.cfg.runtime.encoding.pem.type.Block.getBlockType(program));
@@ -469,8 +485,8 @@ public interface GoRuntimeLoader {
 		pem.addCodeMember(new Decode(runtimeLocation, pem));
 		program.addUnit(pem);
 	}
-	
-	
+
+
 
 	private void loadUrl(Program program) {
 		CodeUnit url = new CodeUnit(runtimeLocation, program, "url");
@@ -520,7 +536,7 @@ public interface GoRuntimeLoader {
 		uuid.addCodeMember(new NewUUID(runtimeLocation, uuid));
 		program.addUnit(uuid);
 	}
-	
+
 	private void loadTime(Program program) {
 		CodeUnit time = new CodeUnit(runtimeLocation, program, "time");
 

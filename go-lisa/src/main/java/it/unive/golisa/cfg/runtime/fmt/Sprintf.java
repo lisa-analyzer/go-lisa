@@ -1,12 +1,17 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
+import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -17,9 +22,9 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
@@ -47,7 +52,7 @@ public class Sprintf extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class SprintfImpl extends NaryExpression implements PluggableStatement {
+	public static class SprintfImpl extends TernaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -83,19 +88,44 @@ public class Sprintf extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
-
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression left : params[0])
-				for (SymbolicExpression middle : params[1])
-					for (SymbolicExpression right : params[2]) {
-						result = result.lub(state.smallStepSemantics(left, original).smallStepSemantics(middle, original).smallStepSemantics(right, original));
-					}
-			return result;
-
+		public <A extends AbstractState<A, H, V, T>,
+				H extends HeapDomain<H>,
+				V extends ValueDomain<V>,
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
+						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+						StatementStore<A, H, V, T> expressions) throws SemanticException {
+			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
+			if (env != null) {
+				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
+				ValueEnvironment<?> minst = state.smallStepSemantics(middle, original).getDomainInstance(ValueEnvironment.class);
+				ValueEnvironment<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(ValueEnvironment.class);
+				if (linst.getValueOnStack() instanceof TaintDomain) {
+					if (((TaintDomain)linst.getValueOnStack()).isTainted()
+							|| ((TaintDomain)minst.getValueOnStack()).isTainted()
+							|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
+						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
+			InferenceSystem<?> sys = state.getDomainInstance(InferenceSystem.class);
+			if (sys != null) {
+				InferenceSystem<?> linst = state.smallStepSemantics(left, original).getDomainInstance(InferenceSystem.class);
+				InferenceSystem<?> minst = state.smallStepSemantics(middle, original).getDomainInstance(InferenceSystem.class);
+				InferenceSystem<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(InferenceSystem.class);
+				if (linst.getInferredValue() instanceof IntegrityNIDomain) {
+					if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity()
+							|| ((IntegrityNIDomain)minst.getInferredValue()).isLowIntegrity()
+							|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity())
+						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
+			return state.smallStepSemantics(left, original)
+								.lub(state.smallStepSemantics(middle, original))
+								.lub(state.smallStepSemantics(right, original));
 		}
 	}
 }

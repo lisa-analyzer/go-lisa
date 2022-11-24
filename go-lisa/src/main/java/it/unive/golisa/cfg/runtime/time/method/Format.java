@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
@@ -10,6 +11,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -104,6 +106,18 @@ public class Format extends NativeCFG {
 				if (linst.getValueOnStack() instanceof TaintDomain) {
 					if (((TaintDomain)linst.getValueOnStack()).isTainted()
 							|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
+						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
+			InferenceSystem<?> sys = state.getDomainInstance(InferenceSystem.class);
+			if (sys != null) {
+				InferenceSystem<?> linst = state.smallStepSemantics(left, original).getDomainInstance(InferenceSystem.class);
+				InferenceSystem<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(InferenceSystem.class);
+				if (linst.getInferredValue() instanceof IntegrityNIDomain) {
+					if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity()
+							|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity())
 						return state.smallStepSemantics(new Tainted(getLocation()), original);
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}

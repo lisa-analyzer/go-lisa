@@ -4,10 +4,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.VariableScopingCFG;
+import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.cfg.statement.block.IdInfo;
+import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.checks.syntactic.CheckTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
 import it.unive.lisa.program.Global;
@@ -45,6 +48,41 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 				Map<String, Set<IdInfo>> visibleIds = ((VariableScopingCFG) graph).getVisibleIds(routine);
 				checkGoRoutine((VariableScopingCFG) graph, visibleIds, (CFGCall) expr);
 			}
+			
+			//mark actual parameters as tainted; a side effect might occur 
+			if (expr instanceof it.unive.lisa.program.cfg.statement.call.Call) {
+				it.unive.lisa.program.cfg.statement.call.Call call = (it.unive.lisa.program.cfg.statement.call.Call) expr;
+				for( Expression ee : call.getSubExpressions()) { //TODO: maybe needs a recursive check on the sub exprs
+					
+					Expression tmp = ee;
+					if(ee instanceof GoCollectionAccess) {
+						GoCollectionAccess acc = (GoCollectionAccess) ee;
+						tmp = acc.getLeft();
+					}
+					
+					if (tmp instanceof VariableRef) {
+						VariableRef ref = (VariableRef) tmp;
+						for (Entry<String, Set<IdInfo>> e : ((VariableScopingCFG) graph).getVisibleIds(routine).entrySet())
+							if (e.getKey().equals(ref.getName()))
+								for (IdInfo info : e.getValue())
+									for (VariableTableEntry table : graph.getDescriptor().getVariables())
+										if (table.getName().equals(info.getRef().getName())
+												|| table.getLocation().equals(info.getRef().getLocation())) {
+											table.addAnnotation(TaintDomain.TAINTED_ANNOTATION);
+											table.addAnnotation(IntegrityNIDomain.LOW_ANNOTATION);
+										}
+					} 
+				}
+					
+			}
+			/*
+			 * 	
+			 * 
+			 for (VariableTableEntry table : graph.getDescriptor().getVariables())
+				if (table.getName().equals(info.getRef().getName())
+						|| table.getLocation().equals(info.getRef().getLocation()))
+					table.addAnnotation(TaintDomain.TAINTED_ANNOTATION);
+			 */
 		}
 
 		return true;
@@ -67,8 +105,10 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 							for (IdInfo info : e.getValue())
 								for (VariableTableEntry table : graph.getDescriptor().getVariables())
 									if (table.getName().equals(info.getRef().getName())
-											|| table.getLocation().equals(info.getRef().getLocation()))
+											|| table.getLocation().equals(info.getRef().getLocation())) {
 										table.addAnnotation(TaintDomain.TAINTED_ANNOTATION);
+										table.addAnnotation(IntegrityNIDomain.LOW_ANNOTATION);
+									}
 				}
 				return true;
 			}
@@ -100,6 +140,9 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 
 	@Override
 	public void visitGlobal(CheckTool tool, Unit unit, Global global, boolean instance) {
-		global.addAnnotation(TaintDomain.TAINTED_ANNOTATION);
+		if(!global.getLocation().getCodeLocation().contains(GoLangUtils.GO_RUNTIME_SOURCE)) {
+			global.addAnnotation(TaintDomain.TAINTED_ANNOTATION);
+			global.addAnnotation(IntegrityNIDomain.LOW_ANNOTATION);
+		}
 	}
 }

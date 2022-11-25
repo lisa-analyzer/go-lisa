@@ -1,13 +1,17 @@
 package it.unive.golisa.cfg.runtime.time.method;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
+import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Time;
-import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -41,7 +45,7 @@ public class In extends NativeCFG {
 		super(new CodeMemberDescriptor(location, timeUnit, true, "In",
 				Time.getTimeType(timeUnit.getProgram()),
 				new Parameter(location, "this", Time.getTimeType(timeUnit.getProgram())), 
-				new Parameter(location, "loc", GoStringType.INSTANCE)),
+				new Parameter(location, "loc", Untyped.INSTANCE)),
 				InImpl.class);
 	}
 
@@ -90,6 +94,31 @@ public class In extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 				throws SemanticException {
+			
+			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
+			if (env != null) {
+				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
+				ValueEnvironment<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(ValueEnvironment.class);
+				if (linst.getValueOnStack() instanceof TaintDomain) {
+					if (((TaintDomain)linst.getValueOnStack()).isTainted()
+							|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
+						return state.smallStepSemantics(new Tainted(getStaticType(), getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
+			InferenceSystem<?> sys = state.getDomainInstance(InferenceSystem.class);
+			if (sys != null) {
+				InferenceSystem<?> linst = state.smallStepSemantics(left, original).getDomainInstance(InferenceSystem.class);
+				InferenceSystem<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(InferenceSystem.class);
+				if (linst.getInferredValue() instanceof IntegrityNIDomain) {
+					if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity()
+							|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity())
+						return state.smallStepSemantics(new Tainted(getStaticType(),getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
 			return state.smallStepSemantics(left, original);
 		}	
 	}

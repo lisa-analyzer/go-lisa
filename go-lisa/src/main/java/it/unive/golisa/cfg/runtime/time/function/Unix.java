@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
+import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.lisa.analysis.AbstractState;
@@ -10,20 +12,18 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.ProgramUnit;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.program.cfg.statement.BinaryExpression;
-import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Unix(sec int64, nsec int64) Time
@@ -92,8 +92,16 @@ public class Unix extends NativeCFG {
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 				throws SemanticException {
 			
-			return state.smallStepSemantics(left, original).lub(state.smallStepSemantics(right, original));
-		}
+			Time type = Time.getTimeType(null);
+			GoNonKeyedLiteral time = new GoNonKeyedLiteral(getCFG(), (SourceCodeLocation) getLocation(),
+					new Expression[0], getStaticType());
+			AnalysisState<A, H, V, T> allocResult = time.semantics(state, interprocedural, expressions);
+			AnalysisState<A, H, V, T> result = state.bottom();
+			for (SymbolicExpression id : allocResult.getComputedExpressions()) {
+				result = result.lub(allocResult.assign(id, new Clean(type, getLocation()), original));
+//				result = result.lub(allocResult.assign(id, new Tainted(getLocation()), original));
+			}
+			return result;		}
 
 
 	}

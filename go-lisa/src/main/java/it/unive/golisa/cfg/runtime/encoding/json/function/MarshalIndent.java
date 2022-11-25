@@ -11,7 +11,6 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -22,9 +21,9 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
@@ -55,7 +54,7 @@ public class MarshalIndent extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class MarshalIndentImpl extends NaryExpression
+	public static class MarshalIndentImpl extends TernaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -91,18 +90,17 @@ public class MarshalIndent extends NativeCFG {
 			super(cfg, location, "MarshalIndentImpl",
 					GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 							GoErrorType.INSTANCE),
-					params);
+					params[0], params[1], params[2]);
 		}
-
 		@Override
 		public <A extends AbstractState<A, H, V, T>,
 				H extends HeapDomain<H>,
 				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+				T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-						throws SemanticException {
-			return state.top();
+						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+						StatementStore<A, H, V, T> expressions) throws SemanticException {
+			return state.smallStepSemantics(left, original);
 		}
 	}
 }

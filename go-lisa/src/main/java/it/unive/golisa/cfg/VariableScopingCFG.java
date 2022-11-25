@@ -15,6 +15,9 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.VariableTableEntry;
+import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
+import it.unive.lisa.program.cfg.controlFlow.IfThenElse;
+import it.unive.lisa.program.cfg.controlFlow.Loop;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
@@ -129,18 +132,27 @@ public class VariableScopingCFG extends CFG {
 	@Override
 	public void simplify() {
 		List<Statement> stray = new LinkedList<>();
-		// we remove all edges connecting return statements with noops
+		Collection<Statement> noPreds = list.getEntries();
+		// we remove all edges going out from return statements
 		list.getEdges().stream()
-				.filter(e -> GoCodeMemberVisitor.isReturnStmt(e.getSource()) && e.getDestination() instanceof NoOp)
+				.filter(e -> GoCodeMemberVisitor.isReturnStmt(e.getSource()))
 				.forEach(e -> list.removeEdge(e));
+		// removing edges might have left new dangling nodes that we 
+		// do not want: remove them as well
+		Collection<Statement> dangling = null;
+		do {
+			dangling = list.getEntries();
+			dangling.removeAll(noPreds);
+			dangling.forEach(n -> {
+				preSimplify(n);
+				list.removeNode(n);
+			});
+		} while (!dangling.isEmpty());
 		// now remove all isolated noops
 		list.getNodes().stream()
 				.filter(n -> n instanceof NoOp && list.getIngoingEdges(n).isEmpty()
 						&& list.getOutgoingEdges(n).isEmpty())
-				.forEach(n -> {
-					preSimplify(n);
-					stray.add(n);
-				});
+				.forEach(stray::add);
 		// we might have stray noop connected to a ret
 		list.getNodes().stream()
 				.filter(n -> n instanceof Ret)
@@ -158,7 +170,23 @@ public class VariableScopingCFG extends CFG {
 		
 		if (getNodesCount() == 0)
 			addNode(new Ret(this, getDescriptor().getLocation()), true);
+		
 		super.simplify();
+	}
+	
+	@Override
+	public void preSimplify(Statement node) {
+		super.preSimplify(node);
+		for (ControlFlowStructure cfs : getControlFlowStructures())
+			if (cfs instanceof Loop)
+				((Loop) cfs).getBody().remove(node);
+			else if (cfs instanceof IfThenElse) {
+				((IfThenElse) cfs).getTrueBranch().remove(node);
+				((IfThenElse) cfs).getFalseBranch().remove(node);
+			} else if (cfs instanceof Switch)
+				((Switch) cfs).getCases().remove(node);
+			else if (cfs instanceof SwitchCase)
+				((SwitchCase) cfs).getBody().remove(node);
 	}
 
 	private Collection<Statement> allNonNoopPredecessorsAreReturns(NodeList<CFG, Statement, Edge> block,

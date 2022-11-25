@@ -33,6 +33,10 @@ public class Switch extends ControlFlowStructure {
 		this.cases = cases;
 	}
 
+	public Collection<Statement> getCases() {
+		return cases;
+	}
+
 	@Override
 	protected Collection<Statement> bodyStatements() {
 		return cases;

@@ -32,6 +32,10 @@ public class SwitchCase extends ControlFlowStructure {
 		this.body = body;
 	}
 
+	public Collection<Statement> getBody() {
+		return body;
+	}
+	
 	@Override
 	protected Collection<Statement> bodyStatements() {
 		return body;

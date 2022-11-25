@@ -1,11 +1,17 @@
 package it.unive.golisa.cfg.expression.ternary;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
+import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -15,6 +21,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
+import it.unive.lisa.type.Untyped;
 
 /**
  * A Go slice expression (e.g., s[1:5]).
@@ -44,6 +51,35 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 					SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
 
+		
+		ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
+		if (env != null) {
+			ValueEnvironment<?> linst = state.smallStepSemantics(left, this).getDomainInstance(ValueEnvironment.class);
+			ValueEnvironment<?> minst = state.smallStepSemantics(middle, this).getDomainInstance(ValueEnvironment.class);
+			ValueEnvironment<?> rinst = state.smallStepSemantics(right, this).getDomainInstance(ValueEnvironment.class);
+			if (linst.getValueOnStack() instanceof TaintDomain) {
+				if (((TaintDomain)linst.getValueOnStack()).isTainted()
+						|| ((TaintDomain)minst.getValueOnStack()).isTainted()
+						|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
+					return state.smallStepSemantics(new Tainted(getLocation()), this);
+				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), this);
+			}
+		}
+		
+		InferenceSystem<?> sys = state.getDomainInstance(InferenceSystem.class);
+		if (sys != null) {
+			InferenceSystem<?> linst = state.smallStepSemantics(left, this).getDomainInstance(InferenceSystem.class);
+			InferenceSystem<?> minst = state.smallStepSemantics(left, this).getDomainInstance(InferenceSystem.class);
+			InferenceSystem<?> rinst = state.smallStepSemantics(right, this).getDomainInstance(InferenceSystem.class);
+			if (linst.getInferredValue() instanceof IntegrityNIDomain) {
+				if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity()
+						|| ((IntegrityNIDomain)minst.getInferredValue()).isLowIntegrity()
+						|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity())
+					return state.smallStepSemantics(new Tainted(getLocation()), this);
+				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), this);
+			}
+		}
+		
 		return state.smallStepSemantics(
 				new TernaryExpression(GoStringType.INSTANCE,
 						left, middle, right, StringSubstring.INSTANCE, getLocation()),

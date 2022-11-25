@@ -14,6 +14,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go numerical subtraction expression (e.g., x - y).
@@ -44,9 +46,14 @@ public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExp
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		
-		return state.smallStepSemantics(
-							new BinaryExpression(resultType(left.getStaticType(), right.getStaticType()), left, right,
-									NumericNonOverflowingSub.INSTANCE, getLocation()),
-							this);
+		TypeSystem types = getProgram().getTypes();
+
+		AnalysisState<A, H, V, T> result = state.bottom();
+
+		for (Type leftType : left.getRuntimeTypes(types))
+			for (Type rightType : right.getRuntimeTypes(types)) 
+					result = result.lub(state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
+							NumericNonOverflowingSub.INSTANCE, getLocation()), this));
+		return result;
 	}
 }

@@ -1,9 +1,12 @@
 package it.unive.golisa.frontend;
 
+import it.unive.golisa.cfg.runtime.bytes.function.IndexAny;
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
 import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
 import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
+import it.unive.golisa.cfg.runtime.crypto.md5.function.New;
+import it.unive.golisa.cfg.runtime.crypto.md5.type.Hash;
 import it.unive.golisa.cfg.runtime.crypto.x509.function.ParseCertificate;
 import it.unive.golisa.cfg.runtime.crypto.x509.type.Certificate;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;
@@ -105,7 +108,6 @@ import it.unive.golisa.cfg.runtime.time.function.Parse;
 import it.unive.golisa.cfg.runtime.time.function.Since;
 import it.unive.golisa.cfg.runtime.time.function.Sleep;
 import it.unive.golisa.cfg.runtime.time.function.Unix;
-import it.unive.golisa.cfg.runtime.time.method.In;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Month;
 import it.unive.golisa.cfg.runtime.time.type.Time;
@@ -149,6 +151,8 @@ public interface GoRuntimeLoader {
 			loadMathRand(program);		
 		else if (module.equals("crypto/x509"))
 			loadX509(program);
+		else if (module.equals("crypto/md5"))
+			loadXMd5(program);
 		else if (module.equals("io"))
 			loadIO(program);
 		else if (module.equals("io/ioutil"))
@@ -188,6 +192,13 @@ public interface GoRuntimeLoader {
 				loadCosmosErrors(program);
 		} else
 			loadUnhandledLib(module, program, mapper);
+	}
+
+	private void loadXMd5(Program program) {
+		CodeUnit md5 = new CodeUnit(runtimeLocation, program, "md5");
+		GoStructType.registerType(Hash.getHashType(program));
+		md5.addCodeMember(new New(runtimeLocation, md5));
+		program.addUnit(md5);
 	}
 
 	private void loadX509(Program program) {
@@ -400,6 +411,7 @@ public interface GoRuntimeLoader {
 		CodeUnit bytes = new CodeUnit(runtimeLocation, program, "bytes");
 
 		Buffer bufferType = Buffer.getBufferType(program);
+		bytes.addCodeMember(new IndexAny(runtimeLocation, bytes));
 
 		// adding types
 		program.getTypes().registerType(bufferType);

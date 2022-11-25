@@ -1,16 +1,14 @@
-package it.unive.golisa.cfg.runtime.crypto.x509.function;
+package it.unive.golisa.cfg.runtime.crypto.md5.function;
 
 import it.unive.golisa.analysis.taint.Clean;
-import it.unive.golisa.cfg.runtime.crypto.x509.type.Certificate;
+import it.unive.golisa.cfg.runtime.crypto.md5.type.Hash;
 import it.unive.golisa.cfg.runtime.shim.method.GetState;
-import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoPointerType;
-import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -19,28 +17,24 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
-import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.type.Untyped;
 
-public class ParseCertificate extends NativeCFG {
+public class New extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
 	 * 
 	 * @param location the location where this native cfg is defined
-	 * @param x509Unit the unit to which this native cfg belongs to
+	 * @param md5Unit the unit to which this native cfg belongs to
 	 */
-	public ParseCertificate(CodeLocation location, CodeUnit x509Unit) {
-		super(new CodeMemberDescriptor(location, x509Unit, false, "ParseCertificate",
-				GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Certificate.getCertificateFile(x509Unit.getProgram())),
-						GoErrorType.INSTANCE),
-				new Parameter(location, "s", Untyped.INSTANCE)),
-				ParseCertificateImpl.class);
+	public New(CodeLocation location, CodeUnit md5Unit) {
+		super(new CodeMemberDescriptor(location, md5Unit, false, "New",
+				Hash.getHashType(md5Unit.getProgram())),
+				NewImpl.class);
 	}
 
 	/**
@@ -48,7 +42,7 @@ public class ParseCertificate extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class ParseCertificateImpl extends UnaryExpression
+	public static class NewImpl extends NaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -68,8 +62,8 @@ public class ParseCertificate extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static ParseCertificateImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new ParseCertificateImpl(cfg, location, params[0]);
+		public static NewImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new NewImpl(cfg, location);
 		}
 
 		/**
@@ -80,16 +74,15 @@ public class ParseCertificate extends NativeCFG {
 		 *                     defined
 		 * @param params   the parameters
 		 */
-		public ParseCertificateImpl(CFG cfg, CodeLocation location, Expression exp) {
-			super(cfg, location, "ParseCertificateImpl", GoTupleType.getTupleTypeOf(location, GoPointerType.lookup(Certificate.getCertificateFile(null)), GoErrorType.INSTANCE), exp);
+		public NewImpl(CFG cfg, CodeLocation location) {
+			super(cfg, location, "NewImpl");
 		}
 
-
-
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+				throws SemanticException {
 			return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 		}
 	}

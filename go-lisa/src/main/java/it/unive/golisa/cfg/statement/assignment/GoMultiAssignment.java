@@ -159,7 +159,7 @@ public class GoMultiAssignment extends NaryExpression {
 			AnalysisState<A, H, V, T> result = rightState;
 
 			for (int i = 0; i < ids.length; i++) {
-				if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+				if ( ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
 					continue;
 
 				AnalysisState<A, H, V, T> idState = ids[i].semantics(result, interprocedural, expressions);

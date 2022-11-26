@@ -131,7 +131,7 @@ public class GoMapType implements GoType, InMemoryType {
 
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoNil(cfg, location);
+		return new GoNil(this,cfg, location);
 	}
 
 	/**

@@ -1,6 +1,9 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -11,6 +14,8 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -26,6 +31,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.type.Untyped;
 
 /**
  * func Unmarshal(data []byte, v interface{}) error.
@@ -98,6 +104,30 @@ public class Unmarshal extends NativeCFG {
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 
+			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
+			if (env != null) {
+				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
+				ValueEnvironment<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(ValueEnvironment.class);
+				if (linst.getValueOnStack() instanceof TaintDomain) {
+					if (((TaintDomain)linst.getValueOnStack()).isTainted()
+							|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
+						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
+			InferenceSystem<?> sys = state.getDomainInstance(InferenceSystem.class);
+			if (sys != null) {
+				InferenceSystem<?> linst = state.smallStepSemantics(left, original).getDomainInstance(InferenceSystem.class);
+				InferenceSystem<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(InferenceSystem.class);
+				if (linst.getInferredValue() instanceof IntegrityNIDomain) {
+					if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity()
+							|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity())
+						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+			}
+			
 			AnalysisState<A, H, V, T> errorValue = state
 					.smallStepSemantics(new Clean(GoErrorType.INSTANCE, getLocation()), original);
 			AnalysisState<A, H, V, T> nilValue = state

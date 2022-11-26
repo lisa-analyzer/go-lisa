@@ -950,10 +950,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			VariableRef[] left = visitIdentifierList(ctx.identifierList());
 
-			for (int i = 0; i < left.length; i++)
-				if (visibleIds.containsKey(left[i].getName()))
-					for(IdInfo info : visibleIds.get(left[i].getName()))
-						if(info.getBlockDeep() == blockDeep)
+			for (int i = 0; i < left.length; i++) {
+				VariableRef target = left[i];
+				if (visibleIds.containsKey(target.getName()))
+					if(visibleIds.get(target.getName()).stream()
+							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 						throw new GoSyntaxException(
 								"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
 				else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
@@ -961,7 +962,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
 					blockList.getLast().addVarDeclaration(left[i], DeclarationType.MULTI_SHORT_VARIABLE);
 				}
-
+			}
 			Expression right = visitExpression(exps.expression(0));
 
 			// We can safely reause the multi-short variable declaration class
@@ -1430,17 +1431,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			VariableRef[] left = visitIdentifierList(ctx.identifierList());
 
-			for (int i = 0; i < left.length; i++)
-				if (visibleIds.containsKey(left[i].getName()))
-					for(IdInfo info : visibleIds.get(left[i].getName()))
-						if(info.getBlockDeep() == blockDeep)
+			for (int i = 0; i < left.length; i++) {
+				VariableRef target = left[i];
+				if (visibleIds.containsKey(target.getName())) {
+					if(visibleIds.get(target.getName()).stream()
+							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 							throw new GoSyntaxException(
 									"Duplicate variable '" + left[i].getName() + "' declared at "
 											+ left[i].getLocation());
-				else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
+				}else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
 					visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
 					visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
 				}
+			}
 
 			Expression right = visitExpression(exps.expression(0));
 
@@ -1469,10 +1472,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
 						type);
 
-				// if (visibleIds.containsKey(target.getName()))
-				// throw new GoSyntaxException(
-				// "Duplicate variable '" + target.getName() + "' declared at "
-				// + target.getLocation());
+				if (visibleIds.containsKey(target.getName()))
+					if(visibleIds.get(target.getName()).stream()
+							.anyMatch(info -> info.getBlockDeep() == blockDeep))
+						throw new GoSyntaxException(
+								"Duplicate variable '" + target.getName() + "' declared at "
+										+ target.getLocation());
 
 				if (!GoLangUtils.refersToBlankIdentifier(target)) {
 					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());

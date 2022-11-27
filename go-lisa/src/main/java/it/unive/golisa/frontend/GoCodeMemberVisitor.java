@@ -953,14 +953,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < left.length; i++) {
 				VariableRef target = left[i];
 				if (visibleIds.containsKey(target.getName()))
-					if(visibleIds.get(target.getName()).stream()
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
 							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 						throw new GoSyntaxException(
-								"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
+								"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 				else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
-					visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
-					visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
-					blockList.getLast().addVarDeclaration(left[i], DeclarationType.MULTI_SHORT_VARIABLE);
+					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
+					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
+					blockList.getLast().addVarDeclaration(target, DeclarationType.MULTI_SHORT_VARIABLE);
 				}
 			}
 			Expression right = visitExpression(exps.expression(0));
@@ -1006,7 +1006,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				block.addNode(asg);
 
 				if (visibleIds.containsKey(target.getName()))
-					if (visibleIds.get(target.getName()).stream()
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
 							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 						throw new GoSyntaxException(
 								"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
@@ -1203,7 +1203,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			storeIds(asg);
 
 			if (visibleIds.containsKey(target.getName()))
-				if (visibleIds.get(target.getName()).stream()
+				if (!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
 						.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 					throw new GoSyntaxException(
 							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
@@ -1434,14 +1434,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			for (int i = 0; i < left.length; i++) {
 				VariableRef target = left[i];
 				if (visibleIds.containsKey(target.getName())) {
-					if(visibleIds.get(target.getName()).stream()
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
 							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 							throw new GoSyntaxException(
-									"Duplicate variable '" + left[i].getName() + "' declared at "
-											+ left[i].getLocation());
-				}else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
-					visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
-					visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
+									"Duplicate variable '" + target.getName() + "' declared at "
+											+ target.getLocation());
+				}else if (!GoLangUtils.refersToBlankIdentifier(target)) {
+					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
+					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
 				}
 			}
 
@@ -1473,7 +1473,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						type);
 
 				if (visibleIds.containsKey(target.getName()))
-					if(visibleIds.get(target.getName()).stream()
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
 							.anyMatch(info -> info.getBlockDeep() == blockDeep))
 						throw new GoSyntaxException(
 								"Duplicate variable '" + target.getName() + "' declared at "

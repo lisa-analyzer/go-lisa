@@ -100,6 +100,12 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	private TaintDomain defaultApprox(Identifier id, ProgramPoint pp) throws SemanticException {
+		
+		boolean isGlobal = pp.getProgram().getGlobals().stream().anyMatch(g -> g.getName().equals(id.getName()));
+		
+		if(isGlobal)
+			return TAINTED;
+		
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
 
 			Statement condition = g.getCondition();

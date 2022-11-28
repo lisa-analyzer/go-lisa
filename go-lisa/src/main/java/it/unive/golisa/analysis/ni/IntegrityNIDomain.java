@@ -114,6 +114,12 @@ public class IntegrityNIDomain extends BaseInferredValue<IntegrityNIDomain> {
 	@Override
 	public IntegrityNIDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
 
+		
+		boolean isGlobal = pp.getProgram().getGlobals().stream().anyMatch(g -> g.getName().equals(id.getName()));
+		
+		if(isGlobal)
+			return LOW;
+		
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
 
 			Statement condition = g.getCondition();

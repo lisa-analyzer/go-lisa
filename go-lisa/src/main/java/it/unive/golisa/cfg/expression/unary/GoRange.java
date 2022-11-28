@@ -19,7 +19,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
 
 /**
@@ -59,8 +61,8 @@ public class GoRange extends UnaryExpression {
 					AnalysisState<A, H, V, T> s = ((GoType) g.getStaticType()).defaultValue(getCFG(), (SourceCodeLocation) getLocation()).semantics(state, interprocedural, expressions);
 					for (SymbolicExpression e : s.getComputedExpressions())
 						state = state.assign(expr, e, this);
-				}
-		
+				} else if(g.getStaticType().equals(Untyped.INSTANCE))
+					state = state.assign(expr, new PushAny(getStaticType(), getLocation()), this);
 		
 		return state.smallStepSemantics(expr, this);
 	}

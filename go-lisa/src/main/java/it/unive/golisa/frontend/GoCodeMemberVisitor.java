@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -158,6 +159,7 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
+import it.unive.golisa.cfg.statement.GoContinue;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
@@ -293,7 +295,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	/**
 	 * Stack of loop entry points (used for continue statements).
 	 */
-	private final List<Statement> entryPoints = new ArrayList<>();
+	private final List<Statement> entryPoints = new LinkedList<>();
+
+	/**
+	 * Loop entrypoint to pending continue statements that must be connected to the "post". 
+	 */
+	private final Map<Statement, List<Pair<GoContinue, List<BlockInfo>>>> pendingContinues = new IdentityHashMap<>();
 
 	private NodeList<CFG, Statement, Edge> matrix;
 
@@ -735,7 +742,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		updateVisileIds(backup, last);
 		if (isReturnStmt(last))
 			return Triple.of(open, block, last);
-		if (isGoTo(last)) {
+		if (isGoTo(last) || last instanceof GoContinue) {
 			// we still decrement as the actual closing
 			// blocks will be added in the post processing
 			blockDeep--;
@@ -1577,13 +1584,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitContinueStmt(
 			ContinueStmtContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
-		NoOp continueSt = new NoOp(cfg, locationOf(ctx));
+		GoContinue continueSt = new GoContinue(cfg, locationOf(ctx));
 		block.addNode(continueSt);
 		storeIds(continueSt);
-
 		Statement entry = entryPoints.get(entryPoints.size() - 1);
-		block.addNode(entry);
-		addEdge(new SequentialEdge(continueSt, entry), block);
+		pendingContinues.computeIfAbsent(entry, k -> new LinkedList<>()).add(Pair.of(continueSt, new LinkedList<>(blockList)));
 		return Triple.of(continueSt, block, continueSt);
 	}
 
@@ -1716,7 +1721,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param block the current {@link AdjacencyMatrix}
 	 */
 	protected static void addEdge(Edge edge, NodeList<CFG, Statement, Edge> block) {
-		if (/*!isReturnStmt(edge.getSource()) &&*/ !isGoTo(edge.getSource()))
+		if (/*!isReturnStmt(edge.getSource()) &&*/ !isGoTo(edge.getSource()) && !(edge.getSource() instanceof GoContinue))
 			block.addEdge(edge);
 	}
 
@@ -1880,7 +1885,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		entryPoints.remove(entryPoints.size() - 1);
 		exitPoints.remove(exitPoints.size() - 1);
-
+		
+		closeContinues(block, cond, exitNode);
+		
 		cfs.add(new Loop(matrix, cond, exitNode, body.getMiddle().getNodes()));
 
 		return Triple.of(cond, block, exitNode);
@@ -1905,6 +1912,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		entryPoints.remove(entryPoints.size() - 1);
 		exitPoints.remove(exitPoints.size() - 1);
+		
+		closeContinues(block, guard, exitNode);
 
 		cfs.add(new Loop(matrix, guard, exitNode, body.getMiddle().getNodes()));
 
@@ -2002,8 +2011,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		entryPoints.remove(entryPoints.size() - 1);
 		exitPoints.remove(exitPoints.size() - 1);
-		restoreVisibleIdsAfterForLoop(backup);
 
+		closeContinues(block, rangeNode, exitNode);
+		
+		restoreVisibleIdsAfterForLoop(backup);
+		
 		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
 
 		return Triple.of(rangeNode, block, exitNode);
@@ -2075,8 +2087,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		NodeList<CFG, Statement, Edge> body;
 		if (hasPostStmt) {
-			addEdge(new SequentialEdge(exitNodeBlock, post.getRight()), block);
-			addEdge(new SequentialEdge(post.getLeft(), cond), block);
+			addEdge(new SequentialEdge(exitNodeBlock, post.getLeft()), block);
+			addEdge(new SequentialEdge(post.getRight(), cond), block);
 			body = new NodeList<>(inner.getMiddle());
 			body.mergeWith(post.getMiddle());
 		} else {
@@ -2086,10 +2098,43 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		entryPoints.remove(entryPoints.size() - 1);
 		exitPoints.remove(exitPoints.size() - 1);
+		
+		closeContinues(block, cond, hasPostStmt ? post.getLeft() : exitNode);
 
 		cfs.add(new Loop(matrix, cond, exitNode, body.getNodes()));
 
 		return Triple.of(entryNode, block, exitNode);
+	}
+
+	private void closeContinues(NodeList<CFG, Statement, Edge> block, Statement cond, Statement exitNode) {
+		List<Pair<GoContinue, List<BlockInfo>>> pending = pendingContinues.remove(cond);
+		if (pending != null)
+			for (Pair<GoContinue, List<BlockInfo>> cont : pending) {
+				List<BlockInfo> scope = cont.getRight();
+				List<BlockInfo> targetScope = blockList;
+
+				// The continue can only jump to a containing scope.
+				// this means that 'targetScope' must be a prefix of 'scope'
+				// and every other scope can be closed.
+
+				if (scope.size() < targetScope.size())
+					throw new IllegalStateException("continue cannot jump to a scope that it is not already part of");
+				for (int i = 0; i < targetScope.size(); i++)
+					if (!scope.get(i).equals(targetScope.get(i)))
+						throw new IllegalStateException("continue cannot jump to a scope that it is not already part of");
+
+				// add closing blocks
+				Statement last = cont.getLeft();
+				for (int i = scope.size() - 1; i >= targetScope.size(); i--) {
+					BlockInfo info = scope.get(i);
+					CloseBlock close = new CloseBlock(cfg, cont.getLeft().getLocation(), info.getOpen());
+					block.addNode(close);
+					block.addEdge(new SequentialEdge(last, close));
+					last = close;
+				}
+				// force the addition of the edge - do not use the static addEdge method
+				block.addEdge(new SequentialEdge(last, exitNode));
+			}
 	}
 
 	private void restoreVisibleIdsAfterForLoop(Map<String, Set<IdInfo>> backup) {

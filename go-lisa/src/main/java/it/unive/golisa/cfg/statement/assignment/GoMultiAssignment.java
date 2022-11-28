@@ -181,12 +181,12 @@ public class GoMultiAssignment extends NaryExpression {
 					} else if (rightState.isTop()) {
 						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
 						for (Type type : id.getRuntimeTypes(types))
-							tmp2 = tmp2.lub(tmp.assign((Identifier) id, new PushAny(type, getLocation()), this));
+							tmp2 = tmp2.lub(tmp.assign(id, new PushAny(type, getLocation()), this));
 						tmp = tmp2;
 					} else {
 						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
 						for (SymbolicExpression s : rightState.getComputedExpressions())
-							tmp2 = tmp2.lub(tmp.assign((Identifier) id, s, this));
+							tmp2 = tmp2.lub(tmp.assign(id, s, this));
 						tmp = tmp2;
 					}
 				}

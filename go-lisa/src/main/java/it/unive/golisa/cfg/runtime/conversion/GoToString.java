@@ -24,10 +24,9 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeTokenType;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -96,10 +95,15 @@ public class GoToString extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			Set<Type> castType = Collections.singleton(GoStringType.INSTANCE);
-			Constant typeCast = new Constant(new TypeTokenType(castType), GoStringType.INSTANCE, getLocation());
+
 			return state.smallStepSemantics(
-					new BinaryExpression(GoStringType.INSTANCE, expr, typeCast, GoConv.INSTANCE,
+					new it.unive.lisa.symbolic.value.UnaryExpression(GoStringType.INSTANCE, expr, new UnaryOperator() {
+						
+						@Override
+						public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+							return Collections.singleton(GoStringType.INSTANCE);
+						}
+					},
 							original.getLocation()),
 					original);
 		}

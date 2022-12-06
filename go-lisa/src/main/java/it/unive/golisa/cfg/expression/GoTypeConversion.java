@@ -19,7 +19,9 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.TypeTokenType;
 
 /**
@@ -51,9 +53,13 @@ public class GoTypeConversion extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		Set<Type> castType = Collections.singleton(type);
-		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
-		return state.smallStepSemantics(
-				new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
+
+		return state.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(type, expr, new UnaryOperator() {
+			
+			@Override
+			public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+				return Collections.singleton(type);
+			}
+		}, getLocation()), this);
 	}
 }

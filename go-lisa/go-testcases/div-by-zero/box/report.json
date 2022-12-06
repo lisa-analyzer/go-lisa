@@ -1,8 +1,0 @@
-{
-  "warnings" : [ {
-    "message" : "['go-testcases/div-by-zero/box/example.go':4:45] on 'int64 ~LiSAProgram::timeToMillis1(time.Time t)': [EXPRESSION] [MAYBE-DIV-BY-ZERO] maybe a division by zero!"
-  }, {
-    "message" : "['go-testcases/div-by-zero/box/example.go':8:23] on 'int64 ~LiSAProgram::timeToMillis2(time.Time t)': [EXPRESSION] [DEFINITE-DIV-BY-ZERO] division by zero!"
-  } ],
-  "files" : [ "analysis___int64_~LiSAProgram.timeToMillis1(time.Time_t).dot", "analysis___int64_~LiSAProgram.timeToMillis2(time.Time_t).dot" ]
-}

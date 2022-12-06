@@ -1,8 +1,0 @@
-{
-	"warnings": [
-		{
-			"message": "['go-testcases/cc/boleto/boleto.go':140:40] on 'untyped SmartContract::registrarBoleto(*SmartContract s, shim.ChaincodeStubInterface APIstub, []string args)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
-		}
-	],
-	"files": []
-}

@@ -1,4 +1,0 @@
-{
-  "warnings" : [ ],
-  "files" : [ "untyped_array.alias().json", "untyped_array.allocs().json", "untyped_array.defaultArray().json", "untyped_array.emptyAllocs().json" ]
-}

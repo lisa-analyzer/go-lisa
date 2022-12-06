@@ -1,8 +1,0 @@
-{
-  "warnings" : [ {
-    "message" : "['go-testcases/cc/xuansonha17031991/patient_inormation/patient_inormation.go':164:42] on 'untyped PatientInformation_Chaincode::query(*PatientInformation_Chaincode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
-  }, {
-    "message" : "['go-testcases/cc/xuansonha17031991/patient_inormation/patient_inormation.go':170:42] on 'untyped PatientInformation_Chaincode::query(*PatientInformation_Chaincode t, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'msg' of shim::Error"
-  } ],
-  "files" : [ ]
-}

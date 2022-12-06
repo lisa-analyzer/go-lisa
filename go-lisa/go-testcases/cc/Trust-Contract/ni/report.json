@@ -1,6 +1,0 @@
-{
-  "warnings" : [ {
-    "message" : "['go-testcases/cc/Trust-Contract/cargo-chaincode.go':150:52] on 'untyped SmartContract::initLedger(*SmartContract t, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
-  } ],
-  "files" : [ ]
-}

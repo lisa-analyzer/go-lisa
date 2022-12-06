@@ -1,4 +1,0 @@
-{
-  "warnings" : [ ],
-  "files" : [ "untyped_main.aliasing().json", "untyped_main.alloc().json", "untyped_main.forAlloc().json", "untyped_main.ifAlloc(int_a,_int_b).json", "untyped_main.main().json" ]
-}

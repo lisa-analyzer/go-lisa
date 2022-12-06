@@ -1,8 +1,0 @@
-{
-  "warnings" : [ {
-    "message" : "['go-testcases/cc/implicit-flow/implicit.go':29:34] on 'untyped SampleChaincode::Init(*SampleChaincode t, shim.ChaincodeStubInterface stub)': [EXPRESSION] The execution of this call is guarded by a tainted condition resulting in an implicit flow"
-  }, {
-    "message" : "['go-testcases/cc/implicit-flow/implicit.go':31:34] on 'untyped SampleChaincode::Init(*SampleChaincode t, shim.ChaincodeStubInterface stub)': [EXPRESSION] The execution of this call is guarded by a tainted condition resulting in an implicit flow"
-  } ],
-  "files" : [ ]
-}

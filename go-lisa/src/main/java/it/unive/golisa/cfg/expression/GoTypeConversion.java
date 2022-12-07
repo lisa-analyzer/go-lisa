@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.expression;
 
-import java.util.Collections;
-import java.util.Set;
-
-import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -17,12 +13,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
-import it.unive.lisa.type.TypeTokenType;
 
 /**
  * A Go type casting (e.g., (string) x).
@@ -54,12 +45,6 @@ public class GoTypeConversion extends UnaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 
-		return state.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(type, expr, new UnaryOperator() {
-			
-			@Override
-			public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-				return Collections.singleton(type);
-			}
-		}, getLocation()), this);
+		return state.smallStepSemantics(expr, this);
 	}
 }

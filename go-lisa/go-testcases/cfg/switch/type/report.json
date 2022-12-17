@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.typeSwitch1()_cfg.json", "untyped_main.typeSwitch2()_cfg.json", "untyped_main.typeSwitch3()_cfg.json" ]
+  "files" : [ "report.json", "untyped_main.typeSwitch1()_cfg.json", "untyped_main.typeSwitch2()_cfg.json", "untyped_main.typeSwitch3()_cfg.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "296ms",
+    "end" : "2022-12-17T15:33:33.841+01:00",
+    "expressions" : "67",
+    "files" : "3",
+    "globals" : "0",
+    "members" : "7",
+    "programs" : "1",
+    "start" : "2022-12-17T15:33:33.545+01:00",
+    "statements" : "29",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cfg/switch/type"
+  }
 }

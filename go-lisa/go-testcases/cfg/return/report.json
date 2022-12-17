@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.returnInIfStmt1(int_i)_cfg.json", "int_main.returnInIfStmt2(int_i)_cfg.json", "int_main.returnInLoop()_cfg.json" ]
+  "files" : [ "int_main.returnInIfStmt1(int_i)_cfg.json", "int_main.returnInIfStmt2(int_i)_cfg.json", "int_main.returnInLoop()_cfg.json", "report.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "26ms",
+    "end" : "2022-12-17T15:33:35.441+01:00",
+    "expressions" : "29",
+    "files" : "3",
+    "globals" : "0",
+    "members" : "7",
+    "programs" : "1",
+    "start" : "2022-12-17T15:33:35.415+01:00",
+    "statements" : "13",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cfg/return"
+  }
 }

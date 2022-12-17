@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.types()_cfg.json" ]
+  "files" : [ "report.json", "untyped_main.types()_cfg.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "16ms",
+    "end" : "2022-12-17T15:33:34.359+01:00",
+    "expressions" : "28",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "5",
+    "programs" : "1",
+    "start" : "2022-12-17T15:33:34.343+01:00",
+    "statements" : "15",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cfg/types"
+  }
 }

@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.asgs()_cfg.json", "untyped_main.elseIf()_cfg.json", "untyped_main.elseIfAsgs()_cfg.json", "untyped_main.ifWithAsg()_cfg.json", "untyped_main.ifWithoutElse()_cfg.json", "untyped_main.simpleIf()_cfg.json" ]
+  "files" : [ "report.json", "untyped_main.asgs()_cfg.json", "untyped_main.elseIf()_cfg.json", "untyped_main.elseIfAsgs()_cfg.json", "untyped_main.ifWithAsg()_cfg.json", "untyped_main.ifWithoutElse()_cfg.json", "untyped_main.simpleIf()_cfg.json" ],
+  "info" : {
+    "cfgs" : "6",
+    "duration" : "33ms",
+    "end" : "2022-12-17T15:33:34.650+01:00",
+    "expressions" : "72",
+    "files" : "6",
+    "globals" : "0",
+    "members" : "10",
+    "programs" : "1",
+    "start" : "2022-12-17T15:33:34.617+01:00",
+    "statements" : "42",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cfg/if"
+  }
 }

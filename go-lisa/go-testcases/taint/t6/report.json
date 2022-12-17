@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "9ms",
+    "end" : "2022-12-17T14:59:18.824+01:00",
+    "expressions" : "7",
+    "files" : "0",
+    "globals" : "0",
+    "members" : "7",
+    "programs" : "1",
+    "start" : "2022-12-17T14:59:18.815+01:00",
+    "statements" : "7",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/taint/t6"
+  }
 }

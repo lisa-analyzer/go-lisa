@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_Vertex.f1(Vertex_v)_151257236.json", "int_main.f2(Vertex_v)_179885426.json", "untyped_main.main().json" ]
+  "files" : [ "int_Vertex.f1(Vertex_v)_151257236.json", "int_main.f2(Vertex_v)_179885426.json", "report.json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "72ms",
+    "end" : "2022-12-17T15:21:07.156+01:00",
+    "expressions" : "40",
+    "files" : "3",
+    "globals" : "2",
+    "members" : "5",
+    "programs" : "1",
+    "start" : "2022-12-17T15:21:07.084+01:00",
+    "statements" : "6",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/interprocedural/interproc4"
+  }
 }

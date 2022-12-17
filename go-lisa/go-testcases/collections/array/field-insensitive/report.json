@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_array.alias().json", "untyped_array.allocs().json", "untyped_array.defaultArray().json", "untyped_array.emptyAllocs().json" ]
+  "files" : [ "report.json", "untyped_array.alias().json", "untyped_array.allocs().json", "untyped_array.defaultArray().json", "untyped_array.emptyAllocs().json" ],
+  "info" : {
+    "cfgs" : "4",
+    "duration" : "49ms",
+    "end" : "2022-12-17T15:11:42.309+01:00",
+    "expressions" : "43",
+    "files" : "4",
+    "globals" : "0",
+    "members" : "6",
+    "programs" : "1",
+    "start" : "2022-12-17T15:11:42.260+01:00",
+    "statements" : "14",
+    "units" : "1",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/collections/array/field-insensitive"
+  }
 }

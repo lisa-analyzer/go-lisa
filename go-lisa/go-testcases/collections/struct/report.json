@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_structs.allocs().json" ]
+  "files" : [ "report.json", "untyped_structs.allocs().json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "16ms",
+    "end" : "2022-12-17T15:11:42.194+01:00",
+    "expressions" : "8",
+    "files" : "1",
+    "globals" : "2",
+    "members" : "3",
+    "programs" : "1",
+    "start" : "2022-12-17T15:11:42.178+01:00",
+    "statements" : "3",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/collections/struct"
+  }
 }

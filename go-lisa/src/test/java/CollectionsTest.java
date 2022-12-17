@@ -1,4 +1,7 @@
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
@@ -7,15 +10,14 @@ import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class CollectionsTest extends GoAnalysisTestExecutor {
 
@@ -25,7 +27,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/struct", "struct.go", conf);
 	}
 
@@ -38,7 +42,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/array/field-insensitive", "array.go", conf);
 	}
 
@@ -48,7 +54,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/array/field-sensitive", "array.go", conf);
 	}
 
@@ -61,7 +69,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/map/field-insensitive", "map.go", conf);
 	}
 
@@ -71,7 +81,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/map/field-sensitive", "map.go", conf);
 	}
 
@@ -84,7 +96,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/slice/field-insensitive", "slice.go", conf);
 	}
 
@@ -94,6 +108,8 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
 				new Interval(), new InferredTypes());
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/slice/field-sensitive", "slice.go", conf);
 	}
 
@@ -103,7 +119,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/1", "interface.go", conf);
@@ -115,7 +131,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/2", "interface.go", conf);
@@ -127,7 +143,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/3", "interface.go", conf);
@@ -139,7 +155,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("collections/interface/4", "interface.go", conf);

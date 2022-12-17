@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.m2(int_a).json", "untyped_main.m3(int_a).json", "untyped_main.m4(int_a).json", "untyped_main.m5().json", "untyped_main.main().json" ]
+  "files" : [ "report.json", "untyped_main.m2(int_a).json", "untyped_main.m3(int_a).json", "untyped_main.m4(int_a).json", "untyped_main.m5().json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "5",
+    "duration" : "455ms",
+    "end" : "2022-12-17T15:31:39.147+01:00",
+    "expressions" : "24",
+    "files" : "5",
+    "globals" : "0",
+    "members" : "25",
+    "programs" : "1",
+    "start" : "2022-12-17T15:31:38.692+01:00",
+    "statements" : "23",
+    "units" : "3",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/instrumentation/return-statement"
+  }
 }

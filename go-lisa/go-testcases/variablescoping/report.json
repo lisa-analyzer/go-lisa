@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.m1().json", "untyped_main.m2().json", "untyped_main.m3().json", "untyped_main.m4().json", "untyped_main.m5().json" ]
+  "files" : [ "report.json", "untyped_main.m1().json", "untyped_main.m2().json", "untyped_main.m3().json", "untyped_main.m4().json", "untyped_main.m5().json" ],
+  "info" : {
+    "cfgs" : "5",
+    "duration" : "427ms",
+    "end" : "2022-12-17T15:36:56.518+01:00",
+    "expressions" : "70",
+    "files" : "5",
+    "globals" : "0",
+    "members" : "7",
+    "programs" : "1",
+    "start" : "2022-12-17T15:36:56.091+01:00",
+    "statements" : "28",
+    "units" : "1",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/variablescoping"
+  }
 }

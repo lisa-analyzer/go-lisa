@@ -1,5 +1,4 @@
 
-import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -17,10 +16,14 @@ import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.Unit;
@@ -74,8 +77,11 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	public void shadowingTest() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
-		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new Interval(),
-				new InferredTypes());
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), 
+				new ValueEnvironment<>(new Interval()), 
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeResults = true;
 
 		perform("variablescoping", "shadowing.go", conf);

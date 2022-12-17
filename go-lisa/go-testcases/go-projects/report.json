@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.main().json", "untyped_main.sum(int_a,_int_b)_1412154867.json", "untyped_morestrings.anotherSum(int_x,_int_y)_-2137217571.json", "untyped_morestrings.sum(int_a,_int_b)_1411232369.json" ]
+  "files" : [ "report.json", "untyped_main.main().json", "untyped_main.sum(int_a,_int_b)_1412154867.json", "untyped_morestrings.anotherSum(int_x,_int_y)_-2137217571.json", "untyped_morestrings.sum(int_a,_int_b)_1411232369.json" ],
+  "info" : {
+    "cfgs" : "4",
+    "duration" : "395ms",
+    "end" : "2022-12-17T15:25:06.193+01:00",
+    "expressions" : "19",
+    "files" : "4",
+    "globals" : "0",
+    "members" : "10",
+    "programs" : "1",
+    "start" : "2022-12-17T15:25:05.798+01:00",
+    "statements" : "6",
+    "units" : "3",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/go-projects"
+  }
 }

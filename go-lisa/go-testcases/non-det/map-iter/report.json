@@ -2,5 +2,34 @@
   "warnings" : [ {
     "message" : "['go-testcases/non-det/map-iter/MapIteration.go':20:53] on 'untyped main::Invoke(shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'payload' of shim::Success"
   } ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "2",
+    "duration" : "59ms",
+    "end" : "2022-12-17T15:15:27.975+01:00",
+    "expressions" : "20",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "60",
+    "programs" : "1",
+    "start" : "2022-12-17T15:15:27.916+01:00",
+    "statements" : "9",
+    "units" : "13",
+    "version" : "0.1b7",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/non-det/map-iter"
+  }
 }

@@ -1,4 +1,6 @@
 
+import org.junit.Test;
+
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -6,13 +8,12 @@ import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.value.TypeDomain;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Test;
 
 public class NonDeterminismTest extends GoChaincodeTestExecutor {
 
@@ -21,7 +22,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -36,7 +37,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -51,7 +52,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;

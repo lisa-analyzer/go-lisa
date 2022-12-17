@@ -52,7 +52,7 @@ import it.unive.tarsis.automata.Automaton;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDomain<Tarsis> {
+public class Tarsis implements BaseLattice<Tarsis>, NonRelationalValueDomain<Tarsis> {
 
 	private static final Tarsis TOP = new Tarsis();
 	private static final Tarsis BOTTOM = new Tarsis(new AutomatonString(Automata.mkEmptyLanguage()),

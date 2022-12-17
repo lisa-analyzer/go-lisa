@@ -39,7 +39,7 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
  * 
  * @author <a href="mailto:vincenzo.arceri@unive.it">Vincenzo Arceri</a>
  */
-public class TarsisIntv extends BaseNonRelationalValueDomain<TarsisIntv> {
+public class TarsisIntv implements BaseNonRelationalValueDomain<TarsisIntv> {
 
 	private static final TarsisIntv ZERO = new TarsisIntv(TarsisIntInterval.ZERO);
 	private static final TarsisIntv TOP = new TarsisIntv(TarsisIntInterval.INFINITY);

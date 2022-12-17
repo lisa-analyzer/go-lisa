@@ -1,5 +1,11 @@
 package it.unive.golisa.analysis.heap;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -16,10 +22,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An abstract state of the analysis for Go, composed by a value state modeling
@@ -33,8 +35,7 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class GoAbstractState<V extends ValueDomain<V>,
 		T extends TypeDomain<T>>
-		extends BaseLattice<GoAbstractState<V, T>>
-		implements AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
+		implements BaseLattice<GoAbstractState<V, T>>, AbstractState<GoAbstractState<V, T>, GoPointBasedHeap, V, T> {
 
 	/**
 	 * The domain containing information regarding heap structures
@@ -340,4 +341,20 @@ public class GoAbstractState<V extends ValueDomain<V>,
 
 		return valueState.getDomainInstance(domain);
 	}
+
+	@Override
+	public GoAbstractState<V, T> withTopHeap() {
+		return new GoAbstractState<>(heapState.top(), valueState, typeState);
+	}
+
+	@Override
+	public GoAbstractState<V, T> withTopValue() {
+		return new GoAbstractState<>(heapState, valueState.top(), typeState);
+	}
+
+	@Override
+	public GoAbstractState<V, T> withTopType() {
+		return new GoAbstractState<>(heapState, valueState, typeState.top());
+	}
+
 }

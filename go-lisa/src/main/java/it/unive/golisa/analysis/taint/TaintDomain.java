@@ -30,7 +30,7 @@ import it.unive.lisa.type.Untyped;
 /**
  * The taint domain, used for the taint analysis.
  */
-public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
+public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	/**
 	 * The annotation Tainted.
@@ -103,7 +103,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
-			return super.variable(id, pp);
+			return BaseNonRelationalValueDomain.super.variable(id, pp);
 
 		if (annots.contains(TAINTED_MATCHER))
 			return TAINTED;
@@ -111,7 +111,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 		if (annots.contains(CLEAN_MATCHER))
 			return CLEAN;
 
-		return super.variable(id, pp);
+		return BaseNonRelationalValueDomain.super.variable(id, pp);
 	}
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {

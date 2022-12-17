@@ -1,18 +1,6 @@
-import static it.unive.lisa.outputs.compare.JsonReportComparer.compare;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import it.unive.golisa.frontend.GoFrontEnd;
-import it.unive.golisa.loader.Loader;
-import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.outputs.compare.JsonReportComparer.DiffReporter;
-import it.unive.lisa.outputs.compare.JsonReportComparer.REPORTED_COMPONENT;
-import it.unive.lisa.outputs.compare.JsonReportComparer.REPORT_TYPE;
-import it.unive.lisa.outputs.json.JsonReport;
-import it.unive.lisa.outputs.json.JsonReport.JsonWarning;
-import it.unive.lisa.program.Program;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -23,124 +11,228 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.HashSet;
-import org.apache.commons.io.FileUtils;
+
+import it.unive.golisa.frontend.GoFrontEnd;
+import it.unive.lisa.AnalysisException;
+import it.unive.lisa.LiSA;
+import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.outputs.compare.JsonReportComparer;
+import it.unive.lisa.outputs.compare.JsonReportComparer.DiffReporter;
+import it.unive.lisa.outputs.compare.JsonReportComparer.REPORTED_COMPONENT;
+import it.unive.lisa.outputs.compare.JsonReportComparer.REPORT_TYPE;
+import it.unive.lisa.outputs.json.JsonReport;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.util.file.FileManager;
 
 public abstract class GoAnalysisTestExecutor {
 
 	protected static final String EXPECTED_RESULTS_DIR = "go-testcases";
 	protected static final String ACTUAL_RESULTS_DIR = "go-outputs";
 
-	protected void perform(String folder, String source, LiSAConfiguration configuration, Loader... loaders) {
+	/**
+	 * Performs a test, running an analysis. The test will fail if:
+	 * <ul>
+	 * <li>The imp file cannot be parsed (i.e. a {@link ParsingException} is
+	 * thrown)</li>
+	 * <li>The previous working directory using for the test execution cannot be
+	 * deleted</li>
+	 * <li>The analysis run terminates with an {@link AnalysisException}</li>
+	 * <li>One of the json reports (either the one generated during the test
+	 * execution or the one used as baseline) cannot be found or cannot be
+	 * opened</li>
+	 * <li>The two json reports are different</li>
+	 * <li>The external files mentioned in the reports are different</li>
+	 * </ul>
+	 * 
+	 * @param folder        the name of the sub-folder; this is used for
+	 *                          searching expected results and as a working
+	 *                          directory for executing tests in the test
+	 *                          execution folder
+	 * @param source        the name of the imp source file to be searched in
+	 *                          the given folder
+	 * @param configuration the configuration of the analysis to run (note that
+	 *                          the workdir present into the configuration will
+	 *                          be ignored, as it will be overwritten by the
+	 *                          computed workdir)
+	 */
+	protected void perform(String folder, String source, LiSAConfiguration configuration) {
 		System.out.println("Testing " + getCaller());
-		performAux(folder, null, source, configuration, false, loaders);
+		performAux(folder, null, source, configuration, false);
 	}
 
+	/**
+	 * Performs a test, running an analysis. The test will fail if:
+	 * <ul>
+	 * <li>The imp file cannot be parsed (i.e. a {@link ParsingException} is
+	 * thrown)</li>
+	 * <li>The previous working directory using for the test execution cannot be
+	 * deleted</li>
+	 * <li>The analysis run terminates with an {@link AnalysisException}</li>
+	 * <li>One of the json reports (either the one generated during the test
+	 * execution or the one used as baseline) cannot be found or cannot be
+	 * opened</li>
+	 * <li>The two json reports are different</li>
+	 * <li>The external files mentioned in the reports are different</li>
+	 * </ul>
+	 * 
+	 * @param folder        the name of the sub-folder; this is used for
+	 *                          searching expected results and as a working
+	 *                          directory for executing tests in the test
+	 *                          execution folder
+	 * @param source        the name of the imp source file to be searched in
+	 *                          {@code folder}
+	 * @param configuration the configuration of the analysis to run (note that
+	 *                          the workdir present into the configuration will
+	 *                          be ignored, as it will be overwritten by the
+	 *                          computed workdir)
+	 * @param forceUpdate   if {@code true}, baselines will be updated if the
+	 *                          test fails
+	 */
+	protected void perform(String folder, String source, LiSAConfiguration configuration, boolean forceUpdate) {
+		System.out.println("Testing " + getCaller());
+		performAux(folder, null, source, configuration, forceUpdate);
+
+	}
+
+	/**
+	 * Performs a test, running an analysis. The test will fail if:
+	 * <ul>
+	 * <li>The imp file cannot be parsed (i.e. a {@link ParsingException} is
+	 * thrown)</li>
+	 * <li>The previous working directory using for the test execution cannot be
+	 * deleted</li>
+	 * <li>The analysis run terminates with an {@link AnalysisException}</li>
+	 * <li>One of the json reports (either the one generated during the test
+	 * execution or the one used as baseline) cannot be found or cannot be
+	 * opened</li>
+	 * <li>The two json reports are different</li>
+	 * <li>The external files mentioned in the reports are different</li>
+	 * </ul>
+	 * 
+	 * @param folder        the name of the sub-folder; this is used for
+	 *                          searching expected results and as a working
+	 *                          directory for executing tests in the test
+	 *                          execution folder
+	 * @param source        the name of the imp source file to be searched in
+	 *                          {@code folder}
+	 * @param subfolder     an additional folder that is appended to
+	 *                          {@code folder} both when computing the working
+	 *                          directory and when searching for the expected
+	 *                          results, but <b>not</b> for searching the source
+	 *                          IMP program
+	 * @param configuration the configuration of the analysis to run (note that
+	 *                          the workdir present into the configuration will
+	 *                          be ignored, as it will be overwritten by the
+	 *                          computed workdir)
+	 */
+	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration) {
+		System.out.println("Testing " + getCaller());
+		performAux(folder, subfolder, source, configuration, false);
+	}
+
+	/**
+	 * Performs a test, running an analysis. The test will fail if:
+	 * <ul>
+	 * <li>The imp file cannot be parsed (i.e. a {@link ParsingException} is
+	 * thrown)</li>
+	 * <li>The previous working directory using for the test execution cannot be
+	 * deleted</li>
+	 * <li>The analysis run terminates with an {@link AnalysisException}</li>
+	 * <li>One of the json reports (either the one generated during the test
+	 * execution or the one used as baseline) cannot be found or cannot be
+	 * opened</li>
+	 * <li>The two json reports are different</li>
+	 * <li>The external files mentioned in the reports are different</li>
+	 * </ul>
+	 * 
+	 * @param folder        the name of the sub-folder; this is used for
+	 *                          searching expected results and as a working
+	 *                          directory for executing tests in the test
+	 *                          execution folder
+	 * @param source        the name of the imp source file to be searched in
+	 *                          {@code folder}
+	 * @param subfolder     an additional folder that is appended to
+	 *                          {@code folder} both when computing the working
+	 *                          directory and when searching for the expected
+	 *                          results, but <b>not</b> for searching the source
+	 *                          IMP program
+	 * @param configuration the configuration of the analysis to run (note that
+	 *                          the workdir present into the configuration will
+	 *                          be ignored, as it will be overwritten by the
+	 *                          computed workdir)
+	 * @param forceUpdate   if {@code true}, baselines will be updated if the
+	 *                          test fails
+	 */
 	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration,
-			Loader... loaders) {
+			boolean forceUpdate) {
 		System.out.println("Testing " + getCaller());
-		performAux(folder, subfolder, source, configuration, false, loaders);
+		performAux(folder, subfolder, source, configuration, forceUpdate);
 	}
 
-	protected void perform(String folder, String source, LiSAConfiguration configuration, boolean update,
-			Loader... loaders) {
-		System.out.println("Testing " + getCaller());
-		performAux(folder, null, source, configuration, update, loaders);
-	}
-
-	protected void perform(String folder, String subfolder, String source, LiSAConfiguration configuration,
-			boolean update,
-			Loader... loaders) {
-		System.out.println("Testing " + getCaller());
-		performAux(folder, subfolder, source, configuration, update, loaders);
-	}
-
-	protected void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration,
-			Loader... loaders) {
-		System.out.println("Testing " + getCaller());
-		performAux(folder, subfolder, source, configuration, false, loaders);
-	}
-
-	protected void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration,
-			boolean update,
-			Loader... loaders) {
+	private void performAux(String folder, String subfolder, String source, LiSAConfiguration configuration,
+			boolean forceUpdate) {
 		Path expectedPath = Paths.get(EXPECTED_RESULTS_DIR, folder);
 		Path actualPath = Paths.get(ACTUAL_RESULTS_DIR, folder);
 		Path target = Paths.get(expectedPath.toString(), source);
-
-		Program program = null;
-		try {
-			program = GoFrontEnd.processFile(target.toString());
-			for (Loader loader : loaders)
-				loader.load(program);
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-			fail("Exception while parsing '" + target + "': " + e.getMessage());
-		}
-
 		if (subfolder != null) {
 			expectedPath = Paths.get(expectedPath.toString(), subfolder);
 			actualPath = Paths.get(actualPath.toString(), subfolder);
 		}
 
-		File workdir = actualPath.toFile();
-		if (workdir.exists()) {
-			System.out.println(workdir + " already exists: deleting...");
-			try {
-				FileUtils.forceDelete(workdir);
-			} catch (IOException e) {
-				e.printStackTrace(System.err);
-				fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
-			}
-		}
-		configuration.workdir = workdir.toString();
+		Program program = readProgram(target);
+
+		setupWorkdir(configuration, actualPath);
 
 		configuration.jsonOutput = true;
 
-		LiSA lisa = new LiSA(configuration);
-		try {
-			lisa.run(program);
-		} catch (AnalysisException e) {
-			e.printStackTrace(System.err);
-			fail("Analysis terminated with errors");
-		}
+		// save disk space!
+		System.clearProperty("lisa.json.indent");
+
+		run(configuration, program);
 
 		File expFile = Paths.get(expectedPath.toString(), "report.json").toFile();
 		File actFile = Paths.get(actualPath.toString(), "report.json").toFile();
+
+		if (!expFile.exists()) {
+			// no baseline defined, we end the test here
+			System.out.println("No 'report.json' found in the expected folder, exiting...");
+			return;
+		}
+
+		boolean update = "true".equals(System.getProperty("lisa.cron.update")) || forceUpdate;
 		try (FileReader l = new FileReader(expFile); FileReader r = new FileReader(actFile)) {
 			JsonReport expected = JsonReport.read(l);
 			JsonReport actual = JsonReport.read(r);
 			Accumulator acc = new Accumulator(expectedPath);
 			if (!update)
 				assertTrue("Results are different",
-						compare(expected, actual, expectedPath.toFile(), actualPath.toFile()));
-			else {
-				boolean compare = compare(expected, actual, expectedPath.toFile(), actualPath.toFile(), acc);
-				if (!compare)
-					regen(expectedPath, actualPath, expFile, actFile, acc);
-				assertTrue("Results are different", compare);
+						JsonReportComparer.compare(
+								expected,
+								actual,
+								expectedPath.toFile(),
+								actualPath.toFile()));
+			else if (!JsonReportComparer.compare(
+					expected,
+					actual,
+					expectedPath.toFile(),
+					actualPath.toFile(),
+					acc)) {
+				System.err.println("Results are different, regenerating differences");
+				regen(expectedPath, actualPath, expFile, actFile, acc);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace(System.err);
-			fail("Unable to find report file");
+			fail("File not found: " + e.getMessage());
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
-			fail("Unable to compare reports");
+			fail("Unable to compare reports: " + e.getMessage());
 		}
-	}
 
-	private String getCaller() {
-		StackTraceElement[] trace = Thread.getAllStackTraces().get(Thread.currentThread());
-		// 0: java.lang.Thread.dumpThreads()
-		// 1: java.lang.Thread.getAllStackTraces()
-		// 2: it.unive.lisa.test.AnalysisTest.getCaller()
-		// 3: it.unive.lisa.test.AnalysisTest.perform()
-		// 4: caller
-		return trace[4].getClassName() + "::" + trace[4].getMethodName();
 	}
 
 	private void regen(Path expectedPath, Path actualPath, File expFile, File actFile, Accumulator acc)
 			throws IOException {
-		boolean updateReport = !acc.addedWarning.isEmpty() || !acc.removedWarning.isEmpty()
+		boolean updateReport = acc.changedWarnings || acc.changedConf || acc.changedInfos
 				|| !acc.addedFilePaths.isEmpty() || !acc.removedFilePaths.isEmpty()
 				|| !acc.changedFileName.isEmpty();
 		if (updateReport) {
@@ -151,11 +243,12 @@ public abstract class GoAnalysisTestExecutor {
 			Files.delete(Paths.get(expectedPath.toString(), f.toString()));
 			System.err.println("- Deleted " + f);
 		}
-		for (Path f : acc.addedFilePaths) {
-			Files.copy(Paths.get(actualPath.toString(), f.toString()),
-					Paths.get(expectedPath.toString(), f.toString()));
-			System.err.println("- Copied (new) " + f);
-		}
+		for (Path f : acc.addedFilePaths)
+			if (!f.getFileName().toString().equals("report.json")) {
+				Files.copy(Paths.get(actualPath.toString(), f.toString()),
+						Paths.get(expectedPath.toString(), f.toString()));
+				System.err.println("- Copied (new) " + f);
+			}
 		for (Path f : acc.changedFileName) {
 			Path fresh = Paths.get(expectedPath.toString(), f.toString());
 			Files.copy(
@@ -166,13 +259,47 @@ public abstract class GoAnalysisTestExecutor {
 		}
 	}
 
+	private Program readProgram(Path target) {
+		Program program = null;
+		try {
+			program = GoFrontEnd.processFile(target.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail("Exception while parsing '" + target + "': " + e.getMessage());
+		}
+		return program;
+	}
+
+	private void run(LiSAConfiguration configuration, Program program) {
+		LiSA lisa = new LiSA(configuration);
+		try {
+			lisa.run(program);
+		} catch (AnalysisException e) {
+			e.printStackTrace(System.err);
+			fail("Analysis terminated with errors");
+		}
+	}
+
+	private void setupWorkdir(LiSAConfiguration configuration, Path actualPath) {
+		File workdir = actualPath.toFile();
+		try {
+			FileManager.forceDeleteFolder(workdir.toString());
+		} catch (IOException e) {
+			e.printStackTrace(System.err);
+			fail("Cannot delete working directory '" + workdir + "': " + e.getMessage());
+		}
+		configuration.workdir = workdir.toString();
+	}
+
 	private class Accumulator implements DiffReporter {
 
 		private final Collection<Path> changedFileName = new HashSet<>();
 		private final Collection<Path> addedFilePaths = new HashSet<>();
 		private final Collection<Path> removedFilePaths = new HashSet<>();
-		private final Collection<JsonWarning> addedWarning = new HashSet<>();
-		private final Collection<JsonWarning> removedWarning = new HashSet<>();
+		private boolean changedInfos = false;
+		private boolean changedConf = false;
+		private boolean changedWarnings = false;
+
 		private final Path exp;
 
 		public Accumulator(Path exp) {
@@ -188,7 +315,13 @@ public abstract class GoAnalysisTestExecutor {
 					reported.forEach(e -> removedFilePaths.add(Paths.get((String) e)));
 					break;
 				case WARNINGS:
-					reported.forEach(e -> removedWarning.add((JsonWarning) e));
+					changedWarnings = true;
+					break;
+				case INFO:
+					changedInfos = true;
+					break;
+				case CONFIGURATION:
+					changedConf = true;
 					break;
 				default:
 					break;
@@ -200,7 +333,13 @@ public abstract class GoAnalysisTestExecutor {
 					reported.forEach(e -> addedFilePaths.add(Paths.get((String) e)));
 					break;
 				case WARNINGS:
-					reported.forEach(e -> addedWarning.add((JsonWarning) e));
+					changedWarnings = true;
+					break;
+				case INFO:
+					changedInfos = true;
+					break;
+				case CONFIGURATION:
+					changedConf = true;
 					break;
 				default:
 					break;
@@ -218,5 +357,25 @@ public abstract class GoAnalysisTestExecutor {
 			Path file = Paths.get(first);
 			changedFileName.add(exp.relativize(file));
 		}
+
+		@Override
+		public void infoDiff(String key, String first, String second) {
+			changedInfos = true;
+		}
+
+		@Override
+		public void configurationDiff(String key, String first, String second) {
+			changedConf = true;
+		}
+	}
+
+	private String getCaller() {
+		StackTraceElement[] trace = Thread.getAllStackTraces().get(Thread.currentThread());
+		// 0: java.lang.Thread.dumpThreads()
+		// 1: java.lang.Thread.getAllStackTraces()
+		// 2: it.unive.lisa.test.AnalysisTest.getCaller()
+		// 3: it.unive.lisa.test.AnalysisTest.perform()
+		// 4: caller
+		return trace[4].getClassName() + "::" + trace[4].getMethodName();
 	}
 }

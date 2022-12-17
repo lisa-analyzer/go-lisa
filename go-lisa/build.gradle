@@ -27,11 +27,12 @@ version = '0.1'
 mainClassName = 'it.unive.golisa.GoLiSA'
 
 dependencies {
-    antlr 'org.antlr:antlr4:4.8-1'    
+    antlr 'org.antlr:antlr4:4.11.1'    
     testImplementation 'junit:junit:4.12'
-    implementation 'io.github.lisa-analyzer:lisa-core:0.1b7'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b7'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b7'
+    implementation 'io.github.lisa-analyzer:lisa-program:0.1b8-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b8-SNAPSHOT'
     implementation 'com.github.unive-ssv:tarsis:1.0'      
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
     

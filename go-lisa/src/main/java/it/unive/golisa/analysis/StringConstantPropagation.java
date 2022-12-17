@@ -28,7 +28,7 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class StringConstantPropagation extends BaseNonRelationalValueDomain<StringConstantPropagation> {
+public class StringConstantPropagation implements BaseNonRelationalValueDomain<StringConstantPropagation> {
 
 	private static final StringConstantPropagation TOP = new StringConstantPropagation(true, false);
 	private static final StringConstantPropagation BOTTOM = new StringConstantPropagation(false, true);

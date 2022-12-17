@@ -41,7 +41,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * @see <a href=
  *          "https://mitpress.mit.edu/books/introduction-static-analysis">https://mitpress.mit.edu/books/introduction-static-analysis</a>
  */
-public class GoPointBasedHeap extends BaseHeapDomain<GoPointBasedHeap> {
+public class GoPointBasedHeap implements BaseHeapDomain<GoPointBasedHeap> {
 
 	/**
 	 * An heap environment tracking which allocation sites are associated to

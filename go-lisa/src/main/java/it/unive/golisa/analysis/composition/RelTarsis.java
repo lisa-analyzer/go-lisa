@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class RelTarsis extends BaseLattice<RelTarsis> implements ValueDomain<RelTarsis> {
+public class RelTarsis implements BaseLattice<RelTarsis>, ValueDomain<RelTarsis> {
 
 	private final ValueEnvironment<Tarsis> tarsis;
 	private final ValueEnvironment<StringConstantPropagation> constant;

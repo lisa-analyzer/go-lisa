@@ -57,7 +57,7 @@ import java.util.function.Predicate;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class RSubs extends BaseLattice<RSubs> implements ValueDomain<RSubs> {
+public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 
 	private static final RSubs TOP = new RSubs(true, false);
 	private static final RSubs BOTTOM = new RSubs(false, false);

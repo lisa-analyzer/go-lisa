@@ -45,8 +45,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class RelationalSubstringDomain
-		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
-		implements ValueDomain<RelationalSubstringDomain> {
+extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
+implements ValueDomain<RelationalSubstringDomain> {
 
 	/**
 	 * Builds the top abstract value.
@@ -91,7 +91,8 @@ public class RelationalSubstringDomain
 		return new RelationalSubstringDomain(lattice, func);
 	}
 
-	private RelationalSubstringDomain glb(RelationalSubstringDomain other) throws SemanticException {
+	@Override
+	public RelationalSubstringDomain glb(RelationalSubstringDomain other) throws SemanticException {
 		return super.lub(other);
 	}
 
@@ -460,7 +461,7 @@ public class RelationalSubstringDomain
 					constants.add(string);
 					for (String str : constants)
 						previousRelations = previousRelations
-								.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
+						.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
 				}
 			}
 

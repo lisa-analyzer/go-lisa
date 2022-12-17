@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ "[int__,_int__]_main.f()_-15099452.json", "[int__,_int__]_main.f()_-706087372.json", "untyped_main.blankAssig()_-702393350.json", "untyped_main.main().json" ]
+  "files" : [ "[int__,_int__]_main.f()_-15099452.json", "[int__,_int__]_main.f()_-706087372.json", "report.json", "untyped_main.blankAssig()_-702393350.json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "435ms",
+    "end" : "2022-12-17T15:18:22.939+01:00",
+    "expressions" : "9",
+    "files" : "4",
+    "globals" : "0",
+    "members" : "5",
+    "programs" : "1",
+    "start" : "2022-12-17T15:18:22.504+01:00",
+    "statements" : "6",
+    "units" : "1",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/blankidentifier"
+  }
 }

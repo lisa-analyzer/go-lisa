@@ -1,6 +1,4 @@
 
-import org.junit.Test;
-
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -12,6 +10,7 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class TypingTest extends GoAnalysisTestExecutor {
 
@@ -19,8 +18,8 @@ public class TypingTest extends GoAnalysisTestExecutor {
 	public void testTypingDeclaration() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), 
-				new ValueEnvironment<>(new Interval()), 
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
@@ -31,8 +30,8 @@ public class TypingTest extends GoAnalysisTestExecutor {
 	public void testStringsTypingDeclaration() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(), 
-				new ValueEnvironment<>(new Interval()), 
+		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
+				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 		conf.callGraph = new RTACallGraph();

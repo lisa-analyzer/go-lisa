@@ -4,5 +4,34 @@
   }, {
     "message" : "['go-testcases/cc/implicit-flow/implicit.go':31:34] on 'untyped SampleChaincode::Init(*SampleChaincode t, shim.ChaincodeStubInterface stub)': [EXPRESSION] The execution of this call is guarded by a tainted condition resulting in an implicit flow"
   } ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "48ms",
+    "end" : "2022-12-19T08:35:33.925+01:00",
+    "expressions" : "28",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "44",
+    "programs" : "1",
+    "start" : "2022-12-19T08:35:33.877+01:00",
+    "statements" : "10",
+    "units" : "10",
+    "version" : "0.1b7",
+    "warnings" : "2"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "semanticChecks" : "IntegrityNIChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cc/implicit-flow/ni"
+  }
 }

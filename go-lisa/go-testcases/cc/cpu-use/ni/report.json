@@ -1,0 +1,35 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/cc/cpu-use/cpu-use.go':168:35] on 'untyped SimpleChaincode::AddUsage(*SimpleChaincode c, shim.ChaincodeStubInterface stub, []string args)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "8",
+    "duration" : "226ms",
+    "end" : "2022-12-19T08:47:48.461+01:00",
+    "expressions" : "324",
+    "files" : "0",
+    "globals" : "9",
+    "members" : "44",
+    "programs" : "1",
+    "start" : "2022-12-19T08:47:48.235+01:00",
+    "statements" : "109",
+    "units" : "14",
+    "version" : "0.1b7",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "semanticChecks" : "IntegrityNIChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cc/cpu-use/ni"
+  }
+}

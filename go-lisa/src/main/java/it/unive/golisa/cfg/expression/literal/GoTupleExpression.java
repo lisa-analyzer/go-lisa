@@ -19,9 +19,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
 
 /**
@@ -60,7 +60,7 @@ public class GoTupleExpression extends NaryExpression {
 
 		GoTupleType tupleType = GoTupleType.lookup(types);
 
-		HeapAllocation created = new HeapAllocation(tupleType, getLocation());
+		MemoryAllocation created = new MemoryAllocation(tupleType, getLocation());
 
 		// Allocates the new heap allocation
 		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);

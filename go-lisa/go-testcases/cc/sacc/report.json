@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "5",
+    "duration" : "55ms",
+    "end" : "2022-12-19T08:35:34.455+01:00",
+    "expressions" : "131",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "30",
+    "programs" : "1",
+    "start" : "2022-12-19T08:35:34.400+01:00",
+    "statements" : "34",
+    "units" : "9",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cc/sacc"
+  }
 }

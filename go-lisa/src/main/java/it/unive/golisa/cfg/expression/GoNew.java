@@ -14,7 +14,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.heap.HeapAllocation;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.type.Type;
 
 /**
@@ -48,7 +48,7 @@ public class GoNew extends NaryExpression {
 		// type, not a value,
 		// and the value returned is a pointer to a newly allocated zero value
 		// of that type. pointer =
-		HeapAllocation created = new HeapAllocation(GoPointerType.lookup(getStaticType()), getLocation());
+		MemoryAllocation created = new MemoryAllocation(GoPointerType.lookup(getStaticType()), getLocation());
 		return state.smallStepSemantics(created, this);
 	}
 }

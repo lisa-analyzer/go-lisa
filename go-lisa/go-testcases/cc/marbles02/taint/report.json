@@ -2,17 +2,17 @@
   "warnings" : [ ],
   "files" : [ "report.json" ],
   "info" : {
-    "cfgs" : "5",
-    "duration" : "76ms",
-    "end" : "2022-12-19T08:35:34.176+01:00",
-    "expressions" : "74",
+    "cfgs" : "18",
+    "duration" : "341ms",
+    "end" : "2022-12-19T08:44:10.458+01:00",
+    "expressions" : "989",
     "files" : "0",
-    "globals" : "6",
-    "members" : "30",
+    "globals" : "11",
+    "members" : "79",
     "programs" : "1",
-    "start" : "2022-12-19T08:35:34.100+01:00",
-    "statements" : "23",
-    "units" : "9",
+    "start" : "2022-12-19T08:44:10.117+01:00",
+    "statements" : "306",
+    "units" : "19",
     "version" : "0.1b7",
     "warnings" : "0"
   },
@@ -28,6 +28,6 @@
     "serializeResults" : "false",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "go-outputs/cc/mycc"
+    "workdir" : "go-outputs/cc/marbles02/taint"
   }
 }

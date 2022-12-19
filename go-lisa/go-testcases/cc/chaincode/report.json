@@ -1,4 +1,33 @@
 {
   "warnings" : [ ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "7",
+    "duration" : "20ms",
+    "end" : "2022-12-19T08:35:44.782+01:00",
+    "expressions" : "566",
+    "files" : "0",
+    "globals" : "14",
+    "members" : "46",
+    "programs" : "1",
+    "start" : "2022-12-19T08:35:44.762+01:00",
+    "statements" : "151",
+    "units" : "16",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "semanticChecks" : "IntegrityNIChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cc/chaincode"
+  }
 }

@@ -1,6 +1,4 @@
 
-import org.junit.Test;
-
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -12,6 +10,7 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import org.junit.Test;
 
 public class InstrumentationTest extends GoAnalysisTestExecutor {
 
@@ -20,8 +19,8 @@ public class InstrumentationTest extends GoAnalysisTestExecutor {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), 
-				new ValueEnvironment<>(new Interval()), 
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();

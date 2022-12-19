@@ -22,9 +22,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
@@ -99,7 +99,7 @@ public class GoMake extends NaryExpression {
 			// to the underlying array, length and capability
 			GoSliceType sliceType = GoSliceType.lookup(contentType);
 
-			HeapAllocation sliceCreated = new HeapAllocation(sliceType, getLocation());
+			MemoryAllocation sliceCreated = new MemoryAllocation(sliceType, getLocation());
 
 			// Allocates the new heap allocation
 			AnalysisState<A, H, V, T> containerState = arraySemantics.smallStepSemantics(sliceCreated, this);

@@ -1418,7 +1418,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				// the type of exp
 				Type type = exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
-						type);
+						Untyped.INSTANCE);
 
 				// if (visibleIds.containsKey(target.getName()))
 				// throw new GoSyntaxException(

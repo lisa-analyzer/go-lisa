@@ -30,7 +30,9 @@ import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -39,6 +41,8 @@ import it.unive.lisa.type.Untyped;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoNonKeyedLiteral extends NaryExpression {
+
+	private final boolean isStackAllocated;
 
 	/**
 	 * Builds the non-keyed literal.
@@ -49,7 +53,13 @@ public class GoNonKeyedLiteral extends NaryExpression {
 	 * @param staticType the static type of this non-keyed literal
 	 */
 	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] values, Type staticType) {
+		this(cfg, location, values, staticType, true);
+
+	}
+
+	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] values, Type staticType, boolean isStackAllocated) {
 		super(cfg, location, "nonKeyedLit(" + staticType + ")", staticType, values);
+		this.isStackAllocated = isStackAllocated;
 	}
 
 	private SymbolicExpression getVariable(Global global) {
@@ -70,15 +80,14 @@ public class GoNonKeyedLiteral extends NaryExpression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-
 		Type type = getStaticType();
-		MemoryAllocation created = new MemoryAllocation(type, getLocation());
+		MemoryAllocation created = new MemoryAllocation(type, getLocation(), isStackAllocated);
 
 		// Allocates the new heap allocation
 		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);
@@ -91,7 +100,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			AnalysisState<A, H, V, T> result = state.bottom();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(type, containerExp, getLocation());
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				if (getSubExpressions().length == 0) {

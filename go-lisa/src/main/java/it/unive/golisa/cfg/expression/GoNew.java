@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,7 +13,9 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 
 /**
@@ -47,8 +48,9 @@ public class GoNew extends NaryExpression {
 		// The new built-in function allocates memory. The first argument is a
 		// type, not a value,
 		// and the value returned is a pointer to a newly allocated zero value
-		// of that type. pointer =
-		MemoryAllocation created = new MemoryAllocation(GoPointerType.lookup(getStaticType()), getLocation());
-		return state.smallStepSemantics(created, this);
+		// of that type.
+		MemoryAllocation created = new MemoryAllocation(getStaticType(), getLocation(), false);
+		HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), created, getLocation());
+		return state.smallStepSemantics(ref, this);
 	}
 }

@@ -1,25 +1,26 @@
 
-import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
+import org.junit.Test;
+
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Test;
 
 public class NonDeterminismTest extends GoChaincodeTestExecutor {
 
 	@Test
 	public void testMapIteration() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -34,7 +35,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	@Test
 	public void testChannel() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -49,7 +50,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	@Test
 	public void testGoRoutine() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());

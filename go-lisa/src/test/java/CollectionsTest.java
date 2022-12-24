@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
@@ -50,7 +49,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldSensitivePointBasedArrayTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();

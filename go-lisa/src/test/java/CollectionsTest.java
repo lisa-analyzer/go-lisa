@@ -1,12 +1,12 @@
 
-import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAFactory;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
@@ -15,8 +15,6 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class CollectionsTest extends GoAnalysisTestExecutor {
 
@@ -24,7 +22,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void structTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -39,7 +37,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldInsensitivedPointBasedArrayTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -51,7 +49,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldSensitivePointBasedArrayTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -66,7 +64,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldInsensitivedPointBasedMapTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -78,7 +76,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldSensitivedPointBasedMapTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -93,7 +91,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldInsensitivedPointBasedSliceTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -105,8 +103,9 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldSensitivePointBasedSliceTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = LiSAFactory.getDefaultFor(AbstractState.class, new FieldSensitivePointBasedHeap(),
-				new Interval(), new InferredTypes());
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		perform("collections/slice/field-sensitive", "slice.go", conf);
@@ -116,7 +115,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void interfaceTest1() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -128,7 +127,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void interfaceTest2() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -140,7 +139,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void interfaceTest3() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
@@ -152,7 +151,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void interfaceTest4() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();

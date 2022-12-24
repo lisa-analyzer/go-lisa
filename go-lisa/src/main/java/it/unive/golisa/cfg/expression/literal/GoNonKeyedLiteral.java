@@ -32,7 +32,6 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -140,8 +139,8 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			int arrayLength = arrayType.getLength();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(type, containerExp, getLocation());
-				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
+				HeapReference reference = new HeapReference(new ReferenceType(arrayType), containerExp, getLocation());
+				HeapDereference dereference = new HeapDereference(arrayType, reference, getLocation());
 				// Assign the len property to this hid
 				Variable lenProperty = new Variable(Untyped.INSTANCE, "len",
 						getLocation());
@@ -195,7 +194,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 			int sliceLenght = getSubExpressions().length;
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(type, containerExp, getLocation());
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				// Assign the len property to this hid

@@ -951,7 +951,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						: getCol(exps.expression(i));
 
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
-						type);
+						Untyped.INSTANCE);
 				GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col),
 						type, target, exp);
 				block.addNode(asg);

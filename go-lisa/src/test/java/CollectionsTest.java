@@ -76,7 +76,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 	public void fieldSensitivedPointBasedMapTest() throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();

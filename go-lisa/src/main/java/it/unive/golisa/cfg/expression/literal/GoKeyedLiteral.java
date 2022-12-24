@@ -101,7 +101,7 @@ public class GoKeyedLiteral extends NaryExpression {
 					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		Type type = getStaticType();
-		MemoryAllocation created = new MemoryAllocation(type, getLocation());
+		MemoryAllocation created = new MemoryAllocation(type, getLocation(), true);
 
 		// Allocates the new heap allocation
 		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);

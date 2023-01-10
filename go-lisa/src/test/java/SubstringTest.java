@@ -2,13 +2,11 @@ import static it.unive.lisa.LiSAFactory.getDefaultFor;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.numeric.Interval;
@@ -33,7 +31,7 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/prefix", "subs.go", conf, true);
+		perform("tarsis/substring/prefix", "subs.go", conf);
 	}
 	
 	@Test
@@ -45,7 +43,7 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/suffix", "subs.go", conf, true);
+		perform("tarsis/substring/suffix", "subs.go", conf);
 
 	}
 	
@@ -56,14 +54,13 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<CharInclusion>(new Interval(), new CharInclusion()),
 				new InferredTypes());
 		conf.serializeResults = true;
-		conf.analysisGraphs = GraphType.DOT;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/ci", "subs.go", conf, true);
+		perform("tarsis/substring/ci", "subs.go", conf);
 		
 	}
 	
-	@Ignore
+	@Test
 	public void faTest() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
@@ -86,7 +83,7 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/tarsis", "subs.go", conf, true);
+		perform("tarsis/substring/tarsis", "subs.go", conf);
 
 	}
 }

@@ -83,7 +83,7 @@ public class LoopTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/loop/tarsis", "loop.go", conf, true);
+		perform("tarsis/loop/tarsis", "loop.go", conf);
 
 	}
 }

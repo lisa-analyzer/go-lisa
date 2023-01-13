@@ -51,7 +51,7 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 		TypeSystem types = getProgram().getTypes();
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type type : expr.getRuntimeTypes(types)) {
-			if (type.isArrayType() || type instanceof GoSliceType) {
+			if (type.isPointerType() && (type.asPointerType().getInnerType().isArrayType() || type.asPointerType().getInnerType() instanceof GoSliceType)) {
 				// When expr is an array or a slice, we access the len property
 				AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
 				AnalysisState<A, H, V, T> partialResult = state.bottom();
@@ -61,7 +61,7 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 					AnalysisState<A, H, V, T> refState = state.smallStepSemantics(deref, this);
 
 					for (SymbolicExpression l : refState.getComputedExpressions()) {
-						AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(type, l,
+						AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(GoIntType.INSTANCE, l,
 								new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
 						partialResult = partialResult.lub(tmp);
 					}

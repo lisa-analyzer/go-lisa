@@ -50,7 +50,7 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.jsonOutput = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.serializeResults = true;

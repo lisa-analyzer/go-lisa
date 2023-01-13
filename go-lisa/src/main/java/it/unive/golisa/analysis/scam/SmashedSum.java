@@ -3,6 +3,8 @@ package it.unive.golisa.analysis.scam;
 import java.math.BigDecimal;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
@@ -19,6 +21,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
+import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
@@ -98,12 +101,17 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 	public SmashedSum<S> evalBinaryExpression(BinaryOperator operator, SmashedSum<S> left, SmashedSum<S> right,
 			ProgramPoint pp) throws SemanticException {
 		if (operator == StringConcat.INSTANCE)
-			return mkSmashedValue(stringValue.evalBinaryExpression(operator, left.stringValue, right.stringValue, pp));
+			if (!left.stringValue.isBottom())
+				return mkSmashedValue(stringValue.evalBinaryExpression(operator, left.stringValue, right.stringValue, pp));
+			else
+				return bottom();
 		else if (operator == NumericNonOverflowingAdd.INSTANCE)
 			if (!left.intValue.isBottom())
 				return mkSmashedValue(intValue.evalBinaryExpression(operator, left.intValue, right.intValue, pp));
 			else
 				return bottom();
+		else if (operator == StringIndexOf.INSTANCE)
+				return mkSmashedValue(indexOf(left.stringValue, right.stringValue));
 		return top();
 	}
 
@@ -156,6 +164,39 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 		throw new RuntimeException("Unsupported string domain");
 	}
 
+	private Interval indexOf(S str, S search) {
+		Pair<Integer, Integer> io = Pair.of(-1, Integer.MAX_VALUE);
+		if (str instanceof Prefix) {
+			Prefix pr = (Prefix) str;
+			Prefix s = (Prefix) search;
+			io = pr.indexOf(s);
+		} else if (str instanceof Suffix){
+			Suffix su = (Suffix) str;
+			Suffix s = (Suffix) search;
+			io = su.indexOf(s);
+		} else if (str instanceof CharInclusion) {
+			CharInclusion ci = (CharInclusion) str;
+			CharInclusion s = (CharInclusion) search;
+			io = ci.indexOf(s);
+		} else if (str instanceof FSA) {
+			FSA fsa = (FSA) str;
+			FSA s = (FSA) search;
+//			io = fsa.indexOf(s);
+		} else if (str instanceof Tarsis) {
+			Tarsis t = (Tarsis) str;
+			Tarsis s = (Tarsis) search;
+			try {
+				io = t.indexOf(s);
+			} catch (CyclicAutomatonException e) {
+				io = Pair.of(-1, Integer.MAX_VALUE);
+			}
+		} else
+			throw new RuntimeException("Unsupported string domain");
+
+		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(io.getRight())), io.getLeft() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(io.getLeft())));
+		return new Interval(i);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private S substring(S str, long begin, long end)  {
 		if (str instanceof Prefix)
@@ -177,32 +218,26 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 	}
 
 	private Interval length(S str) {
-		int minL;
-		int maxL;
+		Pair<Integer, Integer> len;
 		if (str instanceof Prefix) {
 			Prefix pr = (Prefix) str;
-			minL = pr.minLength();
-			maxL = pr.maxLength();
+			len = pr.length();
 		} else if (str instanceof Suffix){
-			Suffix pr = (Suffix) str;
-			minL = pr.minLength();
-			maxL = pr.maxLength();
+			Suffix su = (Suffix) str;
+			len = su.length();
 		} else if (str instanceof CharInclusion) {
 			CharInclusion pr = (CharInclusion) str;
-			minL = pr.minLength();
-			maxL = pr.maxLength();
+			len = pr.length();
 		} else if (str instanceof FSA) {
 			FSA pr = (FSA) str;
-			minL = pr.minLength();
-			maxL = pr.maxLength();
+			len = pr.length();
 		} else if (str instanceof Tarsis) {
-			Tarsis pr = (Tarsis) str;
-			minL = pr.minLength();
-			maxL = pr.maxLength();
+			Tarsis t = (Tarsis) str;
+			len = t.length();
 		} else
 			throw new RuntimeException("Unsupported string domain");
 
-		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(minL)), maxL == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(maxL)));
+		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(len.getRight())), len.getRight() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(len.getRight())));
 		return new Interval(i);
 
 	}

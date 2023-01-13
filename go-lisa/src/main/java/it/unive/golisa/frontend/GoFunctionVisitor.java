@@ -12,6 +12,7 @@ import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
+import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -107,7 +108,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Statement entryNode = null;
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
-				Statement> body = visitMethodBlock(ctx.block());
+		Statement> body = visitMethodBlock(ctx.block());
 
 		processGotos();
 
@@ -116,7 +117,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			program.addEntryPoint(cfg);
 
 		Type returnType = cfg.getDescriptor().getReturnType();
-
+		if (returnType.isInMemoryType())
+			returnType = GoPointerType.lookup(returnType);
+		
 		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
 		entryNode = findEntryNode(entryNode, body, returnType, matrix);
 
@@ -177,7 +180,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
-				Statement> body = visitMethodBlock(ctx.block());
+		Statement> body = visitMethodBlock(ctx.block());
 
 		processGotos();
 
@@ -209,7 +212,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 			cfgArgs = ArrayUtils.addAll(cfgArgs, visitParameterDecl(formalPars.parameterDecl(i)));
 
 		Type returnType = getGoReturnType(funcDecl.signature());
-
+		if (returnType.isInMemoryType())
+			returnType = GoPointerType.lookup(returnType);
 		CodeMemberDescriptor descriptor = new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), unit, false,
 				funcName,
 				returnType, cfgArgs);
@@ -260,8 +264,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	public GoType visitFunctionType(FunctionTypeContext ctx) {
 		SignatureContext sign = ctx.signature();
 		Type returnType = getGoReturnType(sign);
+		if (returnType.isInMemoryType())
+			returnType = GoPointerType.lookup(returnType);
 		Parameter[] params = visitParameters(sign.parameters());
-
 		return GoFunctionType.lookup(returnType, params);
 	}
 }

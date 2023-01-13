@@ -19,7 +19,7 @@ public class GoFeatures extends LanguageFeatures {
 
 	@Override
 	public ParameterMatchingStrategy getMatchingStrategy() {
-		return RuntimeTypesMatchingStrategy.INSTANCE;
+		return GoMatchingStrategy.INSTANCE;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class GoFeatures extends LanguageFeatures {
 
 	@Override
 	public ParameterAssigningStrategy getAssigningStrategy() {
-		return OrderPreservingAssigningStrategy.INSTANCE;
+		return GoAssigningStrategy.INSTANCE;
 	}
 
 	@Override

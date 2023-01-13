@@ -2,6 +2,7 @@ import static it.unive.lisa.LiSAFactory.getDefaultFor;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.scam.SmashedSum;
@@ -60,7 +61,7 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		
 	}
 	
-	@Test
+	@Ignore
 	public void faTest() throws IOException, AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;

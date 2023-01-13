@@ -403,7 +403,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		String methodName = ctx.IDENTIFIER().getText();
 		Parameter[] params = visitParameters(ctx.signature().parameters());
 		params = ArrayUtils.insert(0, params, receiver);
-		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
+		Type returnType;
+		if (ctx.signature().result() == null) 
+			returnType = Untyped.INSTANCE;
+		else {
+			Type t = visitResult(ctx.signature().result());
+			if (t.isInMemoryType())
+				returnType = GoPointerType.lookup(t);
+			else
+				returnType = t;
+		}
 
 		if (returnType == null)
 			returnType = Untyped.INSTANCE;
@@ -2068,12 +2077,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public CodeMemberDescriptor visitMethodSpec(MethodSpecContext ctx) {
 		if (ctx.typeName() == null) {
-			Type returnType = ctx.result() == null ? Untyped.INSTANCE : visitResult(ctx.result());
+			Type returnType;
+			if (ctx.result() == null) 
+				returnType = Untyped.INSTANCE;
+			else {
+				Type t = visitResult(ctx.result());
+				if (t.isInMemoryType())
+					returnType = GoPointerType.lookup(t);
+				else
+					returnType = t;
+			}
 			String name = ctx.IDENTIFIER().getText();
 
 			Parameter[] params = visitParameters(ctx.parameters());
-			// return new GoMethodSpecification(name, returnType, params);
-
 			return new CodeMemberDescriptor(locationOf(ctx), currentUnit, false, name, returnType, params);
 		}
 

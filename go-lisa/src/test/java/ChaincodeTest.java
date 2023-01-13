@@ -1,6 +1,8 @@
 
-import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
+import java.io.IOException;
+
+import org.junit.Test;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -10,6 +12,8 @@ import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -17,8 +21,6 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
-import java.io.IOException;
-import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
@@ -31,7 +33,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -45,7 +47,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
@@ -59,7 +61,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -73,7 +75,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -87,7 +89,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -101,7 +103,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -115,7 +117,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
@@ -129,7 +131,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
@@ -143,7 +145,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
@@ -157,7 +159,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
@@ -171,7 +173,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -185,7 +187,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -199,7 +201,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
@@ -213,7 +215,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
@@ -227,7 +229,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());

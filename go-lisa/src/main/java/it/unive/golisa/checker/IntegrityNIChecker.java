@@ -1,10 +1,12 @@
 package it.unive.golisa.checker;
 
-import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
+import java.util.Collection;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
@@ -25,7 +27,6 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-import java.util.Collection;
 
 /**
  * A non-interference integrity checker.
@@ -34,8 +35,8 @@ import java.util.Collection;
  */
 public class IntegrityNIChecker implements
 		SemanticCheck<
-				GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-				GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> {
+				SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+				PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> {
 
 	/**
 	 * The sink annotation.
@@ -49,21 +50,21 @@ public class IntegrityNIChecker implements
 
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
+			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
 	@Override
 	public boolean visitUnit(CheckToolWithAnalysisResults<
-			GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-			GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit) {
 		return true;
 	}
@@ -71,8 +72,8 @@ public class IntegrityNIChecker implements
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<PointBasedHeap,InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
@@ -94,8 +95,8 @@ public class IntegrityNIChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph) {
 		return true;
 	}
@@ -103,8 +104,8 @@ public class IntegrityNIChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
@@ -139,13 +140,13 @@ public class IntegrityNIChecker implements
 
 	private void process(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			UnresolvedCall call, Call resolved, CodeMemberDescriptor desc) throws SemanticException {
 		if (desc.getAnnotations().contains(SINK_MATCHER))
 			for (CFGWithAnalysisResults<
-					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> result : tool
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> result : tool
 							.getResultOf(call.getCFG())) {
 				if (result.getAnalysisStateAfter(call).getState()
 						.getValueState().getExecutionState()
@@ -157,8 +158,8 @@ public class IntegrityNIChecker implements
 		for (int i = 0; i < parameters.length; i++)
 			if (parameters[i].getAnnotations().contains(SINK_MATCHER))
 				for (CFGWithAnalysisResults<
-						GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-						GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+						SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+						PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
 						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
 					if (result.getAnalysisStateAfter(call.getParameters()[i])
 							.getState().getValueState().getInferredValue().isLowIntegrity())
@@ -176,8 +177,8 @@ public class IntegrityNIChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					GoAbstractState<InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}

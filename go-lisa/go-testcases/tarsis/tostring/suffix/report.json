@@ -1,0 +1,33 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json", "untyped_main.main(string_top).json", "untyped_main.toString([]string_names)_-2005924980.json" ],
+  "info" : {
+    "cfgs" : "2",
+    "duration" : "187ms",
+    "end" : "2023-01-16T11:29:05.102+01:00",
+    "expressions" : "34",
+    "files" : "2",
+    "globals" : "0",
+    "members" : "4",
+    "programs" : "1",
+    "start" : "2023-01-16T11:29:04.915+01:00",
+    "statements" : "12",
+    "units" : "1",
+    "version" : "0.1b7",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/tarsis/tostring/suffix"
+  }
+}

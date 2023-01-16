@@ -8,7 +8,6 @@ import org.junit.Test;
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.numeric.Interval;
@@ -31,7 +30,6 @@ public class ToStringTest extends GoAnalysisTestExecutor {
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<Prefix>(new Interval(), new Prefix()),
 				new InferredTypes());
 		conf.serializeResults = true;
-		conf.analysisGraphs = GraphType.DOT;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("tarsis/tostring/prefix", "tostring.go", conf);
@@ -44,7 +42,6 @@ public class ToStringTest extends GoAnalysisTestExecutor {
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<Suffix>(new Interval(), new Suffix()),
 				new InferredTypes());
 		conf.serializeResults = true;
-		conf.analysisGraphs = GraphType.DOT;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("tarsis/tostring/suffix", "tostring.go", conf);
@@ -58,7 +55,6 @@ public class ToStringTest extends GoAnalysisTestExecutor {
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<CharInclusion>(new Interval(), new CharInclusion()),
 				new InferredTypes());
 		conf.serializeResults = true;
-		conf.analysisGraphs = GraphType.DOT;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("tarsis/tostring/ci", "tostring.go", conf);
@@ -72,7 +68,6 @@ public class ToStringTest extends GoAnalysisTestExecutor {
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<FSA>(new Interval(), new FSA()),
 				new InferredTypes());
 		conf.serializeResults = true;
-		conf.analysisGraphs = GraphType.DOT;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("tarsis/tostring/fa", "tostring.go", conf);
@@ -87,7 +82,6 @@ public class ToStringTest extends GoAnalysisTestExecutor {
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<Tarsis>(new Interval(), new Tarsis()),
 				new InferredTypes());
 		conf.serializeResults = true;
-		conf.analysisGraphs = GraphType.DOT;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		perform("tarsis/tostring/tarsis", "tostring.go", conf);

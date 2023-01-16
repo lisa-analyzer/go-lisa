@@ -2,7 +2,6 @@ package it.unive.golisa.analysis.composition;
 
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.analysis.rsubs.RelationalSubstringDomain;
-import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -10,6 +9,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.ListRepresentation;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;

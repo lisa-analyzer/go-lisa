@@ -1,0 +1,2598 @@
+{
+	"name": "untyped main::toString([]string names)",
+	"description": "[['go-testcases/tarsis/tostring/fa/tostring.go':19:12]]",
+	"nodes": [
+		{
+			"id": 0,
+			"subNodes": [
+				1,
+				2
+			],
+			"text": "res := \"People : {\""
+		},
+		{
+			"id": 1,
+			"text": "res"
+		},
+		{
+			"id": 2,
+			"text": "\"People : {\""
+		},
+		{
+			"id": 3,
+			"subNodes": [
+				4,
+				5
+			],
+			"text": "i := 0"
+		},
+		{
+			"id": 4,
+			"text": "i"
+		},
+		{
+			"id": 5,
+			"text": "0"
+		},
+		{
+			"id": 6,
+			"subNodes": [
+				7,
+				8
+			],
+			"text": "<(i, len(names))"
+		},
+		{
+			"id": 7,
+			"text": "i"
+		},
+		{
+			"id": 8,
+			"subNodes": [
+				9
+			],
+			"text": "len(names)"
+		},
+		{
+			"id": 9,
+			"text": "names"
+		},
+		{
+			"id": 10,
+			"text": "Open block: 'go-testcases/tarsis/tostring/fa/tostring.go':6:20"
+		},
+		{
+			"id": 11,
+			"subNodes": [
+				12,
+				13
+			],
+			"text": "res = +(res, names::i(names, i))"
+		},
+		{
+			"id": 12,
+			"text": "res"
+		},
+		{
+			"id": 13,
+			"subNodes": [
+				14,
+				15
+			],
+			"text": "+(res, names::i(names, i))"
+		},
+		{
+			"id": 14,
+			"text": "res"
+		},
+		{
+			"id": 15,
+			"subNodes": [
+				16,
+				17
+			],
+			"text": "names::i(names, i)"
+		},
+		{
+			"id": 16,
+			"text": "names"
+		},
+		{
+			"id": 17,
+			"text": "i"
+		},
+		{
+			"id": 18,
+			"subNodes": [
+				19,
+				20
+			],
+			"text": "!=(i, -(len(names), 1))"
+		},
+		{
+			"id": 19,
+			"text": "i"
+		},
+		{
+			"id": 20,
+			"subNodes": [
+				21,
+				23
+			],
+			"text": "-(len(names), 1)"
+		},
+		{
+			"id": 21,
+			"subNodes": [
+				22
+			],
+			"text": "len(names)"
+		},
+		{
+			"id": 22,
+			"text": "names"
+		},
+		{
+			"id": 23,
+			"text": "1"
+		},
+		{
+			"id": 24,
+			"text": "Open block: 'go-testcases/tarsis/tostring/fa/tostring.go':8:24"
+		},
+		{
+			"id": 25,
+			"subNodes": [
+				26,
+				27
+			],
+			"text": "res = +(res, \",\")"
+		},
+		{
+			"id": 26,
+			"text": "res"
+		},
+		{
+			"id": 27,
+			"subNodes": [
+				28,
+				29
+			],
+			"text": "+(res, \",\")"
+		},
+		{
+			"id": 28,
+			"text": "res"
+		},
+		{
+			"id": 29,
+			"text": "\",\""
+		},
+		{
+			"id": 30,
+			"text": "Close block: 'go-testcases/tarsis/tostring/fa/tostring.go':8:24"
+		},
+		{
+			"id": 31,
+			"subNodes": [
+				34,
+				33
+			],
+			"text": "i = +(i, 1)"
+		},
+		{
+			"id": 33,
+			"subNodes": [
+				34,
+				35
+			],
+			"text": "+(i, 1)"
+		},
+		{
+			"id": 34,
+			"text": "i"
+		},
+		{
+			"id": 35,
+			"text": "1"
+		},
+		{
+			"id": 36,
+			"text": "Close block: 'go-testcases/tarsis/tostring/fa/tostring.go':6:20"
+		},
+		{
+			"id": 37,
+			"subNodes": [
+				38,
+				39
+			],
+			"text": "res = +(res, \"}\")"
+		},
+		{
+			"id": 38,
+			"text": "res"
+		},
+		{
+			"id": 39,
+			"subNodes": [
+				40,
+				41
+			],
+			"text": "+(res, \"}\")"
+		},
+		{
+			"id": 40,
+			"text": "res"
+		},
+		{
+			"id": 41,
+			"text": "\"}\""
+		},
+		{
+			"id": 42,
+			"text": "ret"
+		}
+	],
+	"edges": [
+		{
+			"sourceId": 0,
+			"destId": 3,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 3,
+			"destId": 6,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 6,
+			"destId": 10,
+			"kind": "TrueEdge"
+		},
+		{
+			"sourceId": 6,
+			"destId": 37,
+			"kind": "FalseEdge"
+		},
+		{
+			"sourceId": 10,
+			"destId": 11,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 11,
+			"destId": 18,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 18,
+			"destId": 24,
+			"kind": "TrueEdge"
+		},
+		{
+			"sourceId": 18,
+			"destId": 31,
+			"kind": "FalseEdge"
+		},
+		{
+			"sourceId": 24,
+			"destId": 25,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 25,
+			"destId": 30,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 30,
+			"destId": 31,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 31,
+			"destId": 36,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 36,
+			"destId": 6,
+			"kind": "SequentialEdge"
+		},
+		{
+			"sourceId": 37,
+			"destId": 42,
+			"kind": "SequentialEdge"
+		}
+	],
+	"descriptions": [
+		{
+			"nodeId": 0,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"res": "People : {"
+						},
+						"stack": "People : {"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 1,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"names": [
+								"[]string*"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 2,
+			"description": {
+				"expressions": [
+					"\"People : {\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"names": [
+								"[]string*"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#"
+						},
+						"stack": "People : {"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 3,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, 0]",
+							"res": "People : {"
+						},
+						"stack": "[0, 0]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 4,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": "#TOP#"
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"res": "People : {"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 5,
+			"description": {
+				"expressions": [
+					"0"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"res": "People : {"
+						},
+						"stack": "[0, 0]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 6,
+			"description": {
+				"expressions": [
+					"i < *(names)->len"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"bool"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 7,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[0, +Inf]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 8,
+			"description": {
+				"expressions": [
+					"*(names)->len"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"[]string",
+							"int",
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 9,
+			"description": {
+				"expressions": [
+					"names"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"[]string*"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 10,
+			"description": {
+				"expressions": [
+					"i < *(names)->len"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"bool"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 11,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 12,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 13,
+			"description": {
+				"expressions": [
+					"res + *(names)->i",
+					"res strcat *(names)->i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 14,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 15,
+			"description": {
+				"expressions": [
+					"*(names)->i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"[]string",
+							"int",
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 16,
+			"description": {
+				"expressions": [
+					"names"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"[]string*"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 17,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[0, +Inf]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 18,
+			"description": {
+				"expressions": [
+					"i != *(names)->len - 1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"bool"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 19,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[0, +Inf]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 20,
+			"description": {
+				"expressions": [
+					"*(names)->len - 1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 21,
+			"description": {
+				"expressions": [
+					"*(names)->len"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"[]string",
+							"int",
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 22,
+			"description": {
+				"expressions": [
+					"names"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"[]string*"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 23,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 24,
+			"description": {
+				"expressions": [
+					"i != *(names)->len - 1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"bool"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "#TOP#"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 25,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*"
+						},
+						"stack": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 26,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 27,
+			"description": {
+				"expressions": [
+					"res strcat \",\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 28,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 29,
+			"description": {
+				"expressions": [
+					"\",\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':8:24]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": ","
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 30,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*"
+						},
+						"stack": "People : {((~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (,,*~ + ,,*(} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*,,*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 31,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[1, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[1, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[1, +Inf]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 33,
+			"description": {
+				"expressions": [
+					"i + 1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[1, +Inf]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 34,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[0, +Inf]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 35,
+			"description": {
+				"expressions": [
+					"1"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": [
+								"int"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:names": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int(untyped)"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:i": "[0, +Inf]",
+							"['go-testcases/tarsis/tostring/fa/tostring.go':6:20]:res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[1, 1]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 36,
+			"description": {
+				"expressions": [
+					"i"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"int"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[1, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "[1, +Inf]"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 37,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {((~ + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (}}*~ + }}*(| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*}}*"
+						},
+						"stack": "People : {((~ + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (}}*~ + }}*(| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*}}*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 38,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 39,
+			"description": {
+				"expressions": [
+					"res strcat \"}\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {((~ + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (}}*~ + }}*(| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*}}*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 40,
+			"description": {
+				"expressions": [
+					"res"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 41,
+			"description": {
+				"expressions": [
+					"\"}\""
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": [
+							"string"
+						]
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {(~ + (} + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*"
+						},
+						"stack": "}"
+					}
+				}
+			}
+		},
+		{
+			"nodeId": 42,
+			"description": {
+				"expressions": [
+					"skip"
+				],
+				"state": {
+					"heap": "monolith",
+					"type": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:sl": [
+								"[]string*"
+							],
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": [
+								"string"
+							],
+							"heap[w]:heap": [
+								"[]string",
+								"int",
+								"string"
+							],
+							"i": [
+								"int"
+							],
+							"names": [
+								"[]string*"
+							],
+							"res": [
+								"string"
+							]
+						},
+						"stack": "_|_"
+					},
+					"value": {
+						"map": {
+							"['go-testcases/tarsis/tostring/fa/tostring.go':19:12]:top": "#TOP#",
+							"heap[w]:heap": "#TOP#",
+							"i": "[0, +Inf]",
+							"res": "People : {((~ + (| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) + (}}*~ + }}*(| + ({ + (z + (y + (x + (w + (v + (u + (t + (s + (r + (q + (p + (o + (n + (m + (l + (k + (j + (i + (h + (g + (f + (e + (d + (c + (b + (a + (` + (_ + (^ + (] + (\\ + ([ + (Z + (Y + (X + (W + (V + (U + (T + (S + (R + (Q + (P + (O + (N + (M + (L + (K + (J + (I + (H + (G + (F + (E + (D + (C + (B + (A + (@ + (? + (> + (= + (< + (; + (: + (9 + (8 + (7 + (6 + (5 + (4 + (3 + (2 + (1 + (0 + (/ + (. + (- + (, + (+ + (* + () + (( + (' + (& + (% + ($ + (# + (! + \")))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))*}}*"
+						},
+						"stack": "_|_"
+					}
+				}
+			}
+		}
+	]
+}

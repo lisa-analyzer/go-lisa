@@ -9,6 +9,7 @@ import org.junit.Test;
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.numeric.Interval;
@@ -22,7 +23,7 @@ import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 
-public class SubstringTest extends GoAnalysisTestExecutor {
+public class CountMatchesTest extends GoAnalysisTestExecutor {
 	
 	@Test
 	public void prefixTest() throws IOException, AnalysisSetupException {
@@ -33,7 +34,8 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/prefix", "subs.go", conf);
+		conf.wideningThreshold = 0;
+		perform("tarsis/count/prefix", "count.go", conf);
 	}
 	
 	@Test
@@ -45,7 +47,8 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/suffix", "subs.go", conf);
+		conf.wideningThreshold = 0;
+		perform("tarsis/count/suffix", "count.go", conf);
 
 	}
 	
@@ -58,7 +61,8 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/ci", "subs.go", conf);
+		conf.wideningThreshold = 0;
+		perform("tarsis/count/ci", "count.go", conf);
 		
 	}
 	
@@ -70,8 +74,10 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 				new InferredTypes());
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
+		conf.analysisGraphs = GraphType.DOT;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/fa", "subs.go", conf);
+		conf.wideningThreshold = 0;
+		perform("tarsis/count/fa", "count.go", conf);
 
 	}
 	
@@ -85,7 +91,8 @@ public class SubstringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/substring/tarsis", "subs.go", conf);
+		conf.wideningThreshold = 0;
+		perform("tarsis/count/tarsis", "count.go", conf);
 
 	}
 }

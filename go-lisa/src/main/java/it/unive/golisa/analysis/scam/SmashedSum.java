@@ -193,7 +193,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 		} else
 			throw new RuntimeException("Unsupported string domain");
 
-		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(io.getRight())), io.getLeft() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(io.getLeft())));
+		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(io.getLeft())), io.getRight() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(io.getRight())));
 		return new Interval(i);
 	}
 	
@@ -237,7 +237,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 		} else
 			throw new RuntimeException("Unsupported string domain");
 
-		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(len.getRight())), len.getRight() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(len.getRight())));
+		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(len.getLeft())), len.getRight() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(len.getRight())));
 		return new Interval(i);
 
 	}

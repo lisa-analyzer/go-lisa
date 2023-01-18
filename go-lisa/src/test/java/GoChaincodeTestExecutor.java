@@ -12,8 +12,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.HashSet;
 
+import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
+import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
@@ -269,6 +271,11 @@ public abstract class GoChaincodeTestExecutor {
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annSet);
 			annotationLoader.load(program);
+			
+			EntryPointLoader entryLoader = new EntryPointLoader();
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("HYPERLEDGER-FABRIC"));
+			entryLoader.load(program);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail("Exception while parsing '" + target + "': " + e.getMessage());

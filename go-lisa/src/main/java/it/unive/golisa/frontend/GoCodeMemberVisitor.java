@@ -1493,8 +1493,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return Triple.of(ret, block, ret);
 		} else {
 			Type returnType = cfg.getDescriptor().getReturnType();
-			if (returnType instanceof GoTupleType) {
-				GoTupleType tuple = (GoTupleType) returnType;
+			if (returnType.isPointerType() && returnType.asPointerType().getInnerType() instanceof GoTupleType) {
+				GoTupleType tuple = (GoTupleType) returnType.asPointerType().getInnerType();
 
 				if (tuple.isNamedValues()) {
 					Expression[] result = new Expression[tuple.size()];

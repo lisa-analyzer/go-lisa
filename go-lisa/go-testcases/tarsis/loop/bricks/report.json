@@ -1,18 +1,18 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_Emp.GetSalary(Emp_e,_int_basic,_int_tax)_961665227.json", "report.json", "string_Emp.GetFullName(Emp_e,_string_name)_331854657.json", "untyped_main.main().json" ],
+  "files" : [ "report.json", "untyped_main.main(string_value,_bool_nondet).json" ],
   "info" : {
-    "cfgs" : "5",
-    "duration" : "11ms",
-    "end" : "2023-01-30T08:39:37.713+01:00",
-    "expressions" : "22",
-    "files" : "3",
-    "globals" : "1",
-    "members" : "9",
+    "cfgs" : "1",
+    "duration" : "488ms",
+    "end" : "2023-01-30T09:20:41.100+01:00",
+    "expressions" : "8",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "3",
     "programs" : "1",
-    "start" : "2023-01-30T08:39:37.702+01:00",
-    "statements" : "7",
-    "units" : "4",
+    "start" : "2023-01-30T09:20:40.612+01:00",
+    "statements" : "4",
+    "units" : "1",
     "version" : "0.1b7",
     "warnings" : "0"
   },
@@ -28,6 +28,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "go-outputs/collections/interface/3"
+    "workdir" : "go-outputs/tarsis/loop/bricks"
   }
 }

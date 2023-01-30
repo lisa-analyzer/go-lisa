@@ -12,6 +12,7 @@ import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
@@ -107,6 +108,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		perform("cc/cpu-use", "taint", "cpu-use.go", conf, annSet);
 	}
 

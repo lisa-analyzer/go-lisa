@@ -12,6 +12,7 @@ import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.string.Bricks;
 import it.unive.lisa.analysis.string.CharInclusion;
 import it.unive.lisa.analysis.string.Prefix;
 import it.unive.lisa.analysis.string.Suffix;
@@ -58,8 +59,19 @@ public class LoopTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/loop/ci", "loop.go", conf);
-		
+		perform("tarsis/loop/ci", "loop.go", conf);	
+	}
+	
+	@Test
+	public void bricksTest() throws IOException, AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<Bricks>(new Interval(), new Bricks()),
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		perform("tarsis/loop/bricks", "loop.go", conf);
 	}
 	
 	@Ignore

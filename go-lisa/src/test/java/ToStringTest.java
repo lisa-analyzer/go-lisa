@@ -9,9 +9,11 @@ import org.junit.Test;
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.string.Bricks;
 import it.unive.lisa.analysis.string.CharInclusion;
 import it.unive.lisa.analysis.string.Prefix;
 import it.unive.lisa.analysis.string.Suffix;
@@ -58,7 +60,20 @@ public class ToStringTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("tarsis/tostring/ci", "tostring.go", conf);
+		perform("tarsis/tostring/ci", "tostring.go", conf);	
+	}
+	
+	@Test
+	public void bricksTest() throws IOException, AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new SmashedSum<Bricks>(new Interval(), new Bricks()),
+				new InferredTypes());
+		conf.serializeResults = true;
+		conf.analysisGraphs = GraphType.DOT;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		perform("tarsis/tostring/bricks", "tostring.go", conf);
 		
 	}
 	

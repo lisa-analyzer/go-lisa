@@ -144,7 +144,7 @@ public class CollectionsTest extends GoAnalysisTestExecutor {
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		perform("collections/interface/3", "interface.go", conf, true);
+		perform("collections/interface/3", "interface.go", conf);
 	}
 
 	@Test

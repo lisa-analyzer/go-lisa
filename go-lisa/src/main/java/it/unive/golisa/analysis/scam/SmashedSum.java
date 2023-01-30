@@ -11,6 +11,7 @@ import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
+import it.unive.lisa.analysis.string.Bricks;
 import it.unive.lisa.analysis.string.CharInclusion;
 import it.unive.lisa.analysis.string.Prefix;
 import it.unive.lisa.analysis.string.Suffix;
@@ -211,6 +212,11 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 			} catch (CyclicAutomatonException e) {
 				return (S) new FSA();
 			}
+		else if (str instanceof Bricks) {
+			Bricks br = (Bricks) str;
+			return (S) br.substring(begin, end);
+		}
+
 		else if (str instanceof Tarsis)
 			return (S) ((Tarsis) str).substring(begin, end);
 

@@ -1,9 +1,6 @@
 package it.unive.golisa.analysis.scam;
 
-import java.math.BigDecimal;
 import java.util.TreeSet;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
@@ -11,10 +8,10 @@ import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
-import it.unive.lisa.analysis.string.Bricks;
 import it.unive.lisa.analysis.string.CharInclusion;
 import it.unive.lisa.analysis.string.Prefix;
 import it.unive.lisa.analysis.string.Suffix;
+import it.unive.lisa.analysis.string.bricks.Bricks;
 import it.unive.lisa.analysis.string.fsa.FSA;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -166,7 +163,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 	}
 
 	private Interval indexOf(S str, S search) {
-		Pair<Integer, Integer> io = Pair.of(-1, Integer.MAX_VALUE);
+		IntInterval io;
 		if (str instanceof Prefix) {
 			Prefix pr = (Prefix) str;
 			Prefix s = (Prefix) search;
@@ -179,23 +176,30 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 			CharInclusion ci = (CharInclusion) str;
 			CharInclusion s = (CharInclusion) search;
 			io = ci.indexOf(s);
+		} else if (str instanceof Bricks) {
+			Bricks br = (Bricks) str;
+			Bricks s = (Bricks) search;
+			io = br.indexOf(s);
 		} else if (str instanceof FSA) {
 			FSA fsa = (FSA) str;
 			FSA s = (FSA) search;
-//			io = fsa.indexOf(s);
+			try {
+				io = fsa.indexOf(s);
+			} catch (CyclicAutomatonException e) {
+				io = new IntInterval(MathNumber.ONE, MathNumber.PLUS_INFINITY);
+			}
 		} else if (str instanceof Tarsis) {
 			Tarsis t = (Tarsis) str;
 			Tarsis s = (Tarsis) search;
 			try {
 				io = t.indexOf(s);
 			} catch (CyclicAutomatonException e) {
-				io = Pair.of(-1, Integer.MAX_VALUE);
+				io = new IntInterval(MathNumber.ONE, MathNumber.PLUS_INFINITY);
 			}
 		} else
 			throw new RuntimeException("Unsupported string domain");
 
-		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(io.getLeft())), io.getRight() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(io.getRight())));
-		return new Interval(i);
+		return new Interval(io);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -224,7 +228,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 	}
 
 	private Interval length(S str) {
-		Pair<Integer, Integer> len;
+		IntInterval len = null;
 		if (str instanceof Prefix) {
 			Prefix pr = (Prefix) str;
 			len = pr.length();
@@ -232,8 +236,12 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 			Suffix su = (Suffix) str;
 			len = su.length();
 		} else if (str instanceof CharInclusion) {
-			CharInclusion pr = (CharInclusion) str;
-			len = pr.length();
+			CharInclusion ci = (CharInclusion) str;
+			len = ci.length();
+		} else if (str instanceof Bricks) {
+			Bricks br = (Bricks) str;
+			len = br.length();
+		} else if (str instanceof Tarsis) {
 		} else if (str instanceof FSA) {
 			FSA pr = (FSA) str;
 			len = pr.length();
@@ -243,9 +251,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 		} else
 			throw new RuntimeException("Unsupported string domain");
 
-		IntInterval i = new IntInterval(new MathNumber(new BigDecimal(len.getLeft())), len.getRight() == Integer.MAX_VALUE ? MathNumber.PLUS_INFINITY : new MathNumber(new BigDecimal(len.getRight())));
-		return new Interval(i);
-
+		return new Interval(len);
 	}
 
 	@Override

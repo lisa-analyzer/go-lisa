@@ -14,6 +14,7 @@ import it.unive.lisa.analysis.string.Suffix;
 import it.unive.lisa.analysis.string.bricks.Bricks;
 import it.unive.lisa.analysis.string.fsa.FSA;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
@@ -156,9 +157,10 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 		else if (str instanceof CharInclusion)
 			return (S) new CharInclusion(new TreeSet<>(), new TreeSet<>());
 		else if (str instanceof FSA || str instanceof Tarsis)
-			return (S) str.evalNonNullConstant(new Constant(Untyped.INSTANCE, "", null), null);
-
-
+			return (S) str.evalNonNullConstant(new Constant(Untyped.INSTANCE, "", SyntheticLocation.INSTANCE), null);
+		else if (str instanceof Bricks)
+			return (S) str.evalNonNullConstant(new Constant(Untyped.INSTANCE, "", SyntheticLocation.INSTANCE), null);
+		
 		throw new RuntimeException("Unsupported string domain");
 	}
 

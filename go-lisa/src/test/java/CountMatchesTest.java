@@ -34,7 +34,6 @@ public class CountMatchesTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.wideningThreshold = 0;
 		perform("tarsis/count/prefix", "count.go", conf);
 	}
 	
@@ -47,9 +46,7 @@ public class CountMatchesTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.wideningThreshold = 0;
 		perform("tarsis/count/suffix", "count.go", conf);
-
 	}
 	
 	@Test
@@ -61,7 +58,6 @@ public class CountMatchesTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.wideningThreshold = 0;
 		perform("tarsis/count/ci", "count.go", conf);
 	}
 	
@@ -74,9 +70,7 @@ public class CountMatchesTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.wideningThreshold = 0;
 		perform("tarsis/count/bricks", "count.go", conf);
-		
 	}
 	
 	@Ignore
@@ -88,9 +82,7 @@ public class CountMatchesTest extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.wideningThreshold = 0;
 		perform("tarsis/count/fa", "count.go", conf);
-
 	}
 	
 
@@ -102,9 +94,8 @@ public class CountMatchesTest extends GoAnalysisTestExecutor {
 				new InferredTypes());
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
+		conf.wideningThreshold = 2;
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.wideningThreshold = 0;
 		perform("tarsis/count/tarsis", "count.go", conf);
-
 	}
 }

@@ -1,16 +1,16 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.Count(string_s,_string_substr)_-1584961543.json", "report.json", "untyped_main.main(boolean_nondet).json" ],
+  "files" : [ "int_main.Count(string_s,_string_substr)_1066283706.json", "report.json", "untyped_main.main(boolean_nondet).json" ],
   "info" : {
     "cfgs" : "2",
-    "duration" : "165ms",
-    "end" : "2023-02-07T14:15:41.464+01:00",
+    "duration" : "72ms",
+    "end" : "2023-02-07T14:16:42.349+01:00",
     "expressions" : "38",
     "files" : "2",
     "globals" : "0",
     "members" : "13",
     "programs" : "1",
-    "start" : "2023-02-07T14:15:41.299+01:00",
+    "start" : "2023-02-07T14:16:42.277+01:00",
     "statements" : "15",
     "units" : "2",
     "version" : "0.1b7",
@@ -28,6 +28,6 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
-    "workdir" : "go-outputs/tarsis/count/suffix"
+    "workdir" : "go-outputs/tarsis/count/bricks"
   }
 }

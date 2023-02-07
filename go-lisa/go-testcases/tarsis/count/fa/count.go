@@ -3,20 +3,19 @@ package main
 import "strings"
 
 func Count(s, substr string) int {
-	// special case
-	if len(substr) == 0 {
-		return len(s) + 1
+	count := 0
+	len := len(substr)
+	
+	for (strings.Contains(s, substr)) {
+		idx := strings.Index(s, substr)
+		count = count + 1
+		start := idx + len
+		end := len(s)
+		s = s[start:end]
+		
 	}
 
-	n := 0
-	for {
-		i := strings.Index(s, substr)
-		if i == -1 {
-			return n
-		}
-		n++
-		s = s[i+len(substr):]
-	}
+	return count
 }
 
 func main(nondet boolean) {

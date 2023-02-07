@@ -1,17 +1,17 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.Count(string_s,_string_substr)_1844630180.json", "report.json", "untyped_main.main(boolean_nondet).json" ],
+  "files" : [ "int_main.Count(string_s,_string_substr)_1214788858.json", "report.json", "untyped_main.main(boolean_nondet).json" ],
   "info" : {
     "cfgs" : "2",
-    "duration" : "109ms",
-    "end" : "2023-01-18T09:59:01.796+01:00",
-    "expressions" : "40",
+    "duration" : "755ms",
+    "end" : "2023-02-07T14:17:28.532+01:00",
+    "expressions" : "38",
     "files" : "2",
     "globals" : "0",
     "members" : "13",
     "programs" : "1",
-    "start" : "2023-01-18T09:59:01.687+01:00",
-    "statements" : "16",
+    "start" : "2023-02-07T14:17:27.777+01:00",
+    "statements" : "15",
     "units" : "2",
     "version" : "0.1b7",
     "warnings" : "0"
@@ -27,7 +27,7 @@
     "serializeInputs" : "false",
     "serializeResults" : "true",
     "syntacticChecks" : "",
-    "wideningThreshold" : "0",
+    "wideningThreshold" : "5",
     "workdir" : "go-outputs/tarsis/count/prefix"
   }
 }

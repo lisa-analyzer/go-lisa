@@ -124,16 +124,17 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 			if (!begin.isFinite() || !end.isFinite())
 				return mkSmashedValue(stringValue.top());
 
-			S partial = null; //stringSingleton.bottom();
-			S temp = null;
+			S partial = bottom().stringValue;
+			S temp = bottom().stringValue;
 			outer:
 				for (long b : begin)
 					if (b >= 0)
 						for (long e : end) { 
+							System.err.println(b + " " + e);
 							if (b < e) 
-								temp = partial == null ? substring(left.stringValue, b, e) : partial.lub(substring(left.stringValue, b, e));
+								temp = partial.lub(substring(left.stringValue, b, e));
 							else if (b == e) 
-								temp = partial == null ? mkEmptyString(this.stringValue) :  partial.lub(mkEmptyString(this.stringValue));
+								temp = partial.lub(mkEmptyString(this.stringValue));
 
 							if (temp.equals(partial))
 								break outer;
@@ -243,7 +244,6 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 		} else if (str instanceof Bricks) {
 			Bricks br = (Bricks) str;
 			len = br.length();
-		} else if (str instanceof Tarsis) {
 		} else if (str instanceof FSA) {
 			FSA pr = (FSA) str;
 			len = pr.length();

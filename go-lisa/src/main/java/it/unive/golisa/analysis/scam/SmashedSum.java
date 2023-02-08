@@ -4,6 +4,7 @@ import java.util.TreeSet;
 
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -20,6 +21,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
+import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
@@ -130,7 +132,6 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 				for (long b : begin)
 					if (b >= 0)
 						for (long e : end) { 
-							System.err.println(b + " " + e);
 							if (b < e) 
 								temp = partial.lub(substring(left.stringValue, b, e));
 							else if (b == e) 
@@ -147,7 +148,15 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 
 		return top();
 	}
-
+	
+	
+	@Override
+	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, SmashedSum<S> left, SmashedSum<S> right,
+			ProgramPoint pp) throws SemanticException {
+		if (operator == StringContains.INSTANCE)
+			return left.stringValue.satisfiesBinaryExpression(operator, left.stringValue, right.stringValue, pp);
+		return Satisfiability.UNKNOWN;
+	}
 
 	@SuppressWarnings("unchecked")
 	private S mkEmptyString(S str) throws SemanticException {

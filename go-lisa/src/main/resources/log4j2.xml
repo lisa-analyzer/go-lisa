@@ -8,6 +8,7 @@
 
 	<Loggers>
 		<Logger name="it.unive.golisa" level="DEBUG" />
+		<Logger name="org.reflections" level="ERROR" />
 		
 		<Root level="DEBUG">
 			<AppenderRef ref="console" level="DEBUG"/>

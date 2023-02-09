@@ -155,7 +155,7 @@ implements ValueDomain<RelationalSubstringDomain> {
 	}
 
 	@Override
-	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
 		// rsubs can assume contains, equals, and & or expressions (all binary
 		// expressions)
 
@@ -170,8 +170,8 @@ implements ValueDomain<RelationalSubstringDomain> {
 
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
-			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft(), pp);
-			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight(), pp);
+			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft(), src);
+			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight(), src);
 
 			it.unive.lisa.symbolic.value.operator.binary.BinaryOperator op = binary.getOperator();
 			if (op == ComparisonEq.INSTANCE) {

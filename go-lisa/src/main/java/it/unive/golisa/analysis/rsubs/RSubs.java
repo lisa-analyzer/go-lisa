@@ -217,7 +217,7 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	}
 
 	@Override
-	public RSubs assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public RSubs assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
 	}
 

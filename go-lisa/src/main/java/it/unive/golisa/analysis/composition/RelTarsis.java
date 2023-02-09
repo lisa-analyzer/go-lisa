@@ -56,9 +56,9 @@ public class RelTarsis implements BaseLattice<RelTarsis>, ValueDomain<RelTarsis>
 	}
 
 	@Override
-	public RelTarsis assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		return new RelTarsis(tarsis.assume(expression, pp), rsubs.assume(expression, pp),
-				constant.assume(expression, pp));
+	public RelTarsis assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
+		return new RelTarsis(tarsis.assume(expression, src, dest), rsubs.assume(expression,  src, dest),
+				constant.assume(expression,  src, dest));
 	}
 
 	@Override

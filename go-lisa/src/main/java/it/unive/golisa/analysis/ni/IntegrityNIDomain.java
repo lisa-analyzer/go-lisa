@@ -375,11 +375,11 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public InferenceSystem<IntegrityNIDomain> assume(InferenceSystem<IntegrityNIDomain> environment,
-			ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		InferredPair<IntegrityNIDomain> eval = eval(expression, environment, pp);
+			ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
+		InferredPair<IntegrityNIDomain> eval = eval(expression, environment, src);
 		IntegrityNIDomain inf = eval.getInferred();
 		eval.getState().guards.forEach(inf.guards::put);
-		inf.guards.put(pp, inf);
+		inf.guards.put(src, inf);
 		return new InferenceSystem<>(environment, inf);
 	}
 }

@@ -23,6 +23,7 @@ import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
+import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
@@ -144,7 +145,8 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 								break outer;
 						}
 			return mkSmashedValue(partial);
-		}
+		} else if (operator == StringReplace.INSTANCE)
+			return mkSmashedValue(stringValue.evalTernaryExpression(operator, left.stringValue, middle.stringValue, right.stringValue, pp));
 
 		return top();
 	}

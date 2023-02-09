@@ -20,7 +20,7 @@ func Count(s, substr string) int {
 func main(nondet boolean) {
 	str := ""
 	if nondet {
-		str = "this is the";
+		str = "this is the thing";
 	} else {
 		str = "the throat";
 	}

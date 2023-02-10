@@ -18,6 +18,7 @@ import it.unive.lisa.analysis.string.Suffix;
 import it.unive.lisa.analysis.string.bricks.Bricks;
 import it.unive.lisa.analysis.string.fsa.FSA;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.analysis.traces.TracePartitioning;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
@@ -32,6 +33,19 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class),
 				new SmashedSum<>(new Interval(), stringDomain),
 				new InferredTypes());
+		conf.serializeResults = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		return conf;
+	}
+	
+	public static <S extends BaseNonRelationalValueDomain<S>> LiSAConfiguration tracePartitioningConf(S stringDomain)
+			throws AnalysisSetupException {
+		LiSAConfiguration conf = new LiSAConfiguration();
+		conf.jsonOutput = true;
+		conf.abstractState = new TracePartitioning<>(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class),
+				new SmashedSum<>(new Interval(), stringDomain),
+				new InferredTypes()));
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
@@ -155,6 +169,10 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void cmTarsisTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/tarsis", "count.go", baseConf(new Tarsis()));
+		perform("tarsis/count/tarsis/base", "count.go", baseConf(new Tarsis()));
+	}
+	@Test
+	public void cmTarsisWithTraceParitioningTest() throws IOException, AnalysisSetupException {
+		perform("tarsis/count/tarsis/tp", "count.go", tracePartitioningConf(new Tarsis()));
 	}
 }

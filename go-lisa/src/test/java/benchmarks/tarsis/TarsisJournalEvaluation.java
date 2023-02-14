@@ -1,5 +1,7 @@
 package benchmarks.tarsis;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -17,6 +17,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,14 +33,8 @@ import org.junit.runners.MethodSorters;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.string.fsa.FSA;
-import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.logging.TimeFormat;
-import it.unive.lisa.util.datastructures.automaton.State;
-import it.unive.lisa.util.datastructures.automaton.Transition;
-import it.unive.lisa.util.datastructures.regex.Atom;
-import it.unive.lisa.util.datastructures.regex.RegularExpression;
-import it.unive.lisa.util.datastructures.regex.TopAtom;
 import it.unive.lisa.util.numeric.IntInterval;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -49,7 +44,7 @@ public class TarsisJournalEvaluation {
 
 	private static final String FSA_KEY = "FSA";
 
-	private static final Random GEN = new Random(-37736743);
+	static final Random GEN = new Random(-37736743);
 
 	private static final Logger LOG = LogManager.getLogger(TarsisJournalEvaluation.class);
 
@@ -61,9 +56,9 @@ public class TarsisJournalEvaluation {
 
 	private static final int WARMUP = 1;
 
-	private static final int ROUNDS = 50;
+	private static final int ROUNDS_PER_CLASS = 5;
 
-	private static final int STATE_TRANSITIONS = 2;
+	private static final int ROUNDS = 100;
 
 	private static final List<Triple<Tarsis, Tarsis, Tarsis>> TARSIS_TRIPLES = new ArrayList<>(ROUNDS + WARMUP);
 
@@ -71,90 +66,67 @@ public class TarsisJournalEvaluation {
 
 	private static final List<Pair<Integer, Integer>> SUBSTRING_INDEXES = new ArrayList<>(ROUNDS + WARMUP);
 
-	private static final SortedSet<State> STATES = new TreeSet<>();
-
-	private static final Map<Integer, State> MAPPING = new HashMap<>();
-
 	@BeforeClass
 	public static void initialize() {
-		State q0 = new State(0, true, false);
-		STATES.add(q0);
-		MAPPING.put(0, q0);
+		LOG.info("Generating automata for warmups");
+		for (int k = 0; k < WARMUP; k++)
+			generateSingle(AutomataGenerator::random);
+		LOG.info("Generating automata for atoms");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::atom);
+		LOG.info("Generating automata for tops");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::top);
+		LOG.info("Generating automata for concatenated constants");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::concatConstants);
+		LOG.info("Generating automata for concatenated constants and tops");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::concatConstantsAndTop);
+		LOG.info("Generating automata for single paths");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::singlePath);
+		LOG.info("Generating automata for single paths with top");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::singlePathWithTop);
+		LOG.info("Generating automata for joined constants");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::joinConstants);
+		LOG.info("Generating automata for joined constants with tops");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::joinConstantsAndTop);
+		LOG.info("Generating automata for loops with constants");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::loopingConstants);
+		LOG.info("Generating automata for loops with constants and tops");
+		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+			generateSingle(AutomataGenerator::loopingConstantsAndTop);
+		LOG.info("Generating random automata");
+		for (int k = 0; k < ROUNDS - (ROUNDS_PER_CLASS * 10); k++)
+			generateSingle(AutomataGenerator::random);
+		
+		assertEquals(ROUNDS + WARMUP, TARSIS_TRIPLES.size());
+		assertEquals(ROUNDS + WARMUP, FSA_TRIPLES.size());
+		assertEquals(ROUNDS + WARMUP, SUBSTRING_INDEXES.size());
+	}
 
-		State q1 = new State(1, false, false);
-		STATES.add(q1);
-		MAPPING.put(1, q1);
+	private static void generateSingle(Supplier<Tarsis> gen) {
+		Tarsis l = gen.get();
+		Tarsis m = gen.get();
+		Tarsis r = gen.get();
+		TARSIS_TRIPLES.add(Triple.of(l, m, r));
 
-		State q2 = new State(2, false, false);
-		STATES.add(q2);
-		MAPPING.put(2, q2);
+		FSA lfsa = l.toFSA();
+		FSA mfsa = m.toFSA();
+		FSA rfsa = r.toFSA();
+		FSA_TRIPLES.add(Triple.of(lfsa, mfsa, rfsa));
 
-		State q3 = new State(3, false, true);
-		STATES.add(q3);
-		MAPPING.put(3, q3);
-
-		State q4 = new State(4, false, true);
-		STATES.add(q4);
-		MAPPING.put(4, q4);
-
-		State q5 = new State(5, false, false);
-		STATES.add(q5);
-		MAPPING.put(5, q5);
-
-		LOG.info("Generating automata...");
-		for (int k = 0; k < WARMUP + ROUNDS; k++) {
-			LOG.trace("Generating automata for round " + (k + 1));
-			Tarsis l = generateSingleTarsis();
-			Tarsis m = generateSingleTarsis();
-			Tarsis r = generateSingleTarsis();
-			TARSIS_TRIPLES.add(Triple.of(l, m, r));
-
-			LOG.trace("Converting round " + (k + 1) + " automata to fsa");
-			FSA lfsa = l.toFSA();
-			FSA mfsa = m.toFSA();
-			FSA rfsa = r.toFSA();
-			FSA_TRIPLES.add(Triple.of(lfsa, mfsa, rfsa));
-
-			SUBSTRING_INDEXES.add(Pair.of(GEN.nextInt(20), GEN.nextInt(20)));
-		}
+		SUBSTRING_INDEXES.add(Pair.of(GEN.nextInt(20), GEN.nextInt(20)));
 	}
 
 	@AfterClass
 	public static void shutdown() {
 		EXECUTORS.shutdown();
-	}
-
-	private static RegularExpression randomString() {
-		if (GEN.nextDouble() >= 0.9)
-			return TopAtom.INSTANCE;
-
-		String ALPHA_NUMERIC_STRING = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-		int init = GEN.nextInt(ALPHA_NUMERIC_STRING.length());
-		int end = GEN.nextInt(ALPHA_NUMERIC_STRING.length());
-
-		if (init > end) {
-			int tmp = init;
-			init = end;
-			end = tmp;
-		}
-
-		return new Atom(ALPHA_NUMERIC_STRING.substring(init, end));
-	}
-
-	private static Tarsis generateSingleTarsis() {
-		RegexAutomaton a = null;
-
-		do {
-			SortedSet<Transition<RegularExpression>> delta = new TreeSet<>();
-
-			for (State s : STATES)
-				for (int i = 0; i < STATE_TRANSITIONS; i++)
-					delta.add(new Transition<>(s, MAPPING.get(GEN.nextInt(STATES.size())), randomString()));
-
-			a = new RegexAutomaton(STATES, delta).minimize();
-		} while (a.acceptsEmptyLanguage());
-
-		return new Tarsis(a);
 	}
 
 	@Test
@@ -266,7 +238,7 @@ public class TarsisJournalEvaluation {
 		}
 
 		int timeouts = 0, failures = 0, successes = 0;
-		long max = -1L, min = Long.MAX_VALUE;
+		long max = -1L, min = Long.MAX_VALUE, total = 0;
 		double average = 0;
 		for (RunResult<O> entry : results.values()) {
 			if (entry.timeout)
@@ -274,6 +246,7 @@ public class TarsisJournalEvaluation {
 			else if (entry.e != null)
 				failures++;
 			else {
+				total += entry.elapsed;
 				min = Math.min(min, entry.elapsed);
 				max = Math.max(max, entry.elapsed);
 				average = ((average * successes) + entry.elapsed) / (successes + 1);
@@ -287,9 +260,10 @@ public class TarsisJournalEvaluation {
 
 		LOG.info("  Results for " + key + ": " + successes + " successes, " + failures + " failures, " + timeouts
 				+ " timeouts");
-		LOG.info("    Execution time for successes: average " + TimeFormat.SECONDS_AND_MILLIS.format((long) average)
-				+ ", minimum " + TimeFormat.SECONDS_AND_MILLIS.format(min) + ", maximum "
-				+ TimeFormat.SECONDS_AND_MILLIS.format(max));
+		LOG.info("    Execution time for successes: total: " + TimeFormat.SECONDS_AND_MILLIS.format(total) 
+				+ ", average: " + TimeFormat.SECONDS_AND_MILLIS.format((long) average)
+				+ ", minimum: " + TimeFormat.SECONDS_AND_MILLIS.format(min) 
+				+ ", maximum: " + TimeFormat.SECONDS_AND_MILLIS.format(max));
 
 		return results;
 	}

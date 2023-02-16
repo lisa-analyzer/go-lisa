@@ -1,16 +1,21 @@
 import static it.unive.lisa.LiSAFactory.getDefaultFor;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.CFGWithAnalysisResults;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.string.CharInclusion;
 import it.unive.lisa.analysis.string.Prefix;
@@ -20,26 +25,94 @@ import it.unive.lisa.analysis.string.fsa.FSA;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.traces.TracePartitioning;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.analysis.value.TypeDomain;
+import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
+import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
-import it.unive.lisa.interprocedural.RecursionFreeToken;
-import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.interprocedural.ContextInsensitiveToken;
+import it.unive.lisa.interprocedural.ReturnTopPolicy;
+import it.unive.lisa.program.Global;
+import it.unive.lisa.program.Unit;
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import it.unive.lisa.symbolic.SymbolicExpression;
 
 public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
-	public static <S extends BaseNonRelationalValueDomain<S>> LiSAConfiguration baseConf(S stringDomain)
-			throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.jsonOutput = true;
-		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class),
-				new SmashedSum<>(new Interval(), stringDomain),
-				new InferredTypes());
-		conf.serializeResults = true;
-		conf.callGraph = new RTACallGraph();
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		return conf;
+	private static class AssertionCheck<A extends AbstractState<A, H, V, T>,
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> implements SemanticCheck<A, H, V, T> {
+
+		@Override
+		public void beforeExecution(CheckToolWithAnalysisResults<A, H, V, T> tool) {
+		}
+
+		@Override
+		public void afterExecution(CheckToolWithAnalysisResults<A, H, V, T> tool) {
+		}
+
+		@Override
+		public boolean visitUnit(CheckToolWithAnalysisResults<A, H, V, T> tool, Unit unit) {
+			return true;
+		}
+
+		@Override
+		public void visitGlobal(CheckToolWithAnalysisResults<A, H, V, T> tool, Unit unit, Global global,
+				boolean instance) {
+		}
+
+		@Override
+		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph) {
+			return true;
+		}
+
+		private boolean dumped = false;
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Statement node) {
+			if (node instanceof UnresolvedCall)
+				if (((UnresolvedCall) node).getTargetName().equals("assert")) {
+					for (CFGWithAnalysisResults<A, H, V, T> res : tool.getResultOf(graph)) {
+						AnalysisState<A, H, V, T> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
+						try {
+							if (!dumped) {
+								ValueEnvironment<?> stack = post.getDomainInstance(ValueEnvironment.class);
+								System.err.println("Final approximation: " + stack.representation().toString());
+								dumped = true;
+							}
+							for (SymbolicExpression expr : post.getComputedExpressions()) {
+								Satisfiability sat = post.satisfies(expr, node);
+								if (sat == Satisfiability.UNKNOWN)
+									tool.warnOn(node, "This assertion might fail");
+								else if (sat == Satisfiability.NOT_SATISFIED)
+									tool.warnOn(node, "This assertion always fails");
+							}
+						} catch (SemanticException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+			return true;
+		}
+
+		@Override
+		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Edge edge) {
+			return true;
+		}
+
 	}
-	
-	public static <S extends BaseNonRelationalValueDomain<S>> LiSAConfiguration tracePartitioningConf(S stringDomain)
+
+	private static <S extends BaseNonRelationalValueDomain<S>> LiSAConfiguration baseConf(S stringDomain)
+			throws AnalysisSetupException {
+		return baseConf(stringDomain, false);
+	}
+
+	private static <S extends BaseNonRelationalValueDomain<S>> LiSAConfiguration baseConf(S stringDomain, boolean dump)
 			throws AnalysisSetupException {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
@@ -47,132 +120,151 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 				new SmashedSum<>(new Interval(), stringDomain),
 				new InferredTypes()));
 		conf.serializeResults = true;
-		conf.callGraph = new RTACallGraph();
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.semanticChecks.add(new AssertionCheck<>());
+		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(ContextInsensitiveToken.getSingleton());
+		if (dump)
+			conf.analysisGraphs = it.unive.lisa.LiSAConfiguration.GraphType.HTML_WITH_SUBNODES;
 		return conf;
 	}
 
 	@Test
 	public void toStringPrefixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/tostring/prefix", "tostring.go", baseConf(new Prefix()));
+		perform("tarsis/tostring", "prefix", "tostring.go", baseConf(new Prefix()));
 	}
 
 	@Test
 	public void toStringSuffixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/tostring/suffix", "tostring.go", baseConf(new Suffix()));
+		perform("tarsis/tostring", "suffix", "tostring.go", baseConf(new Suffix()));
 	}
 
 	@Test
 	public void toStringCiTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/tostring/ci", "tostring.go", baseConf(new CharInclusion()));
+		perform("tarsis/tostring", "ci", "tostring.go", baseConf(new CharInclusion()));
 	}
 
 	@Test
 	public void toStringBricksTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/tostring/bricks", "tostring.go", baseConf(new Bricks()));
+		perform("tarsis/tostring", "bricks", "tostring.go", baseConf(new Bricks()));
 	}
 
-	@Ignore
+	@Test
 	public void toStringFaTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/tostring/fa", "tostring.go", baseConf(new FSA()));
+		fail("INCORRECT APPROXIMATION OF RES THAT LEADS TO FAILURES");
+		LiSAConfiguration conf = baseConf(new FSA());
+		conf.serializeResults = false; // too expensive
+		perform("tarsis/tostring", "fa", "tostring.go", conf);
 	}
 
 	@Test
 	public void toStringTarsisTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/tostring/tarsis", "tostring.go", baseConf(new Tarsis()));
+		fail("INCORRECT APPROXIMATION OF RES THAT LEADS TO FAILURES");
+		LiSAConfiguration conf = baseConf(new Tarsis());
+		conf.serializeResults = false; // too expensive
+		perform("tarsis/tostring", "tarsis", "tostring.go", conf);
 	}
 
 	@Test
 	public void substringPrefixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/substring/prefix", "subs.go", baseConf(new Prefix()));
+		fail("SEMANTICS IN THE ORIGINAL PAPER WAS NOT CORRECT g* AND NOT g");
+		perform("tarsis/substring", "prefix", "subs.go", baseConf(new Prefix()));
 	}
 
 	@Test
 	public void substringSuffixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/substring/suffix", "subs.go", baseConf(new Suffix()));
+		perform("tarsis/substring", "suffix", "subs.go", baseConf(new Suffix()));
 	}
 
 	@Test
 	public void substringCiTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/substring/ci", "subs.go", baseConf(new CharInclusion()));
+		perform("tarsis/substring", "ci", "subs.go", baseConf(new CharInclusion()));
 	}
 
 	@Test
 	public void substringBricksTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/substring/bricks", "subs.go", baseConf(new Bricks()));
+		perform("tarsis/substring", "bricks", "subs.go", baseConf(new Bricks()));
 	}
 
-	@Ignore
+	@Test
 	public void substringFaTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/substring/fa", "subs.go", baseConf(new FSA()));
+		fail("FAILS AND TAKES TOO MUCH TO DEBUG");
+		LiSAConfiguration conf = baseConf(new FSA());
+		conf.serializeResults = false; // too expensive
+		perform("tarsis/substring", "fa", "subs.go", conf);
 	}
 
 	@Test
 	public void substringTarsisTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/substring/tarsis", "subs.go", baseConf(new Tarsis()));
+		perform("tarsis/substring", "tarsis", "subs.go", baseConf(new Tarsis()));
 	}
 
 	@Test
 	public void loopPrefixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/loop/prefix", "loop.go", baseConf(new Prefix()));
+		fail("SEMANTICS IN THE ORIGINAL PAPER WAS NOT CORRECT t* AND NOT t");
+		perform("tarsis/loop", "prefix", "loop.go", baseConf(new Prefix()));
 	}
 
 	@Test
 	public void loopSuffixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/loop/suffix", "loop.go", baseConf(new Suffix()));
+		perform("tarsis/loop", "suffix", "loop.go", baseConf(new Suffix()));
 	}
 
 	@Test
 	public void loopCiTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/loop/ci", "loop.go", baseConf(new CharInclusion()));
+		fail("SEMANTICS IN THE ORIGINAL PAPER WAS NOT CORRECT AS RIGHT IS NOT A SINGLE CHAR BUT A STRING");
+		perform("tarsis/loop", "ci", "loop.go", baseConf(new CharInclusion()));
 	}
 
 	@Test
 	public void loopBricksTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/loop/bricks", "loop.go", baseConf(new Bricks()));
+		fail("NON-DETERMINISTIC: RUN vs DEBUG, WIDENING DOES NOT GO TO TOP");
+		perform("tarsis/loop", "bricks", "loop.go", baseConf(new Bricks()));
 	}
 
-	@Ignore
+	@Test
 	public void loopFaTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/loop/fa", "loop.go", baseConf(new FSA()));
+		fail("FAILS AND TAKES TOO MUCH TO DEBUG");
+		LiSAConfiguration conf = baseConf(new FSA());
+		conf.serializeResults = false;
+		perform("tarsis/loop", "fa", "loop.go", conf);
 	}
 
 	@Test
 	public void loopTarsisTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/loop/tarsis", "loop.go", baseConf(new Tarsis()));
+		fail("FAILS AND TAKES TOO MUCH TO DEBUG");
+		perform("tarsis/loop", "tarsis", "loop.go", baseConf(new Tarsis()));
 	}
 
 	@Test
 	public void cmPrefixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/prefix", "count.go", baseConf(new Prefix()));
+		perform("tarsis/count", "prefix", "count.go", baseConf(new Prefix()));
 	}
 
 	@Test
 	public void cmSuffixTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/suffix", "count.go", baseConf(new Suffix()));
+		perform("tarsis/count", "suffix", "count.go", baseConf(new Suffix()));
 	}
 
 	@Test
 	public void cmCiTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/ci", "count.go", baseConf(new CharInclusion()));
+		perform("tarsis/count", "ci", "count.go", baseConf(new CharInclusion()));
 	}
 
 	@Test
 	public void cmBricksTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/bricks", "count.go", baseConf(new Bricks()));
+		perform("tarsis/count", "bricks", "count.go", baseConf(new Bricks()));
 	}
 
-	@Ignore
+	@Test
 	public void cmFaTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/fa", "count.go", baseConf(new FSA()));
+		fail("WARNINGS ARE WRONG");
+		LiSAConfiguration conf = baseConf(new FSA());
+		conf.serializeResults = false;
+		perform("tarsis/count", "fa", "count.go", conf);
 	}
 
 	@Test
 	public void cmTarsisTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/tarsis/base", "count.go", baseConf(new Tarsis()));
-	}
-	@Test
-	public void cmTarsisWithTraceParitioningTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/tarsis/tp", "count.go", tracePartitioningConf(new Tarsis()));
+		perform("tarsis/count", "tarsis", "count.go", baseConf(new Tarsis()));
 	}
 }

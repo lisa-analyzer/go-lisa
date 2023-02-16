@@ -16,6 +16,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
@@ -67,6 +68,18 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 					}
 				}
 				result = result.lub(partialResult);
+			} else if (type.isArrayType() || type instanceof GoSliceType) {
+				// When expr is an array or a slice, we access the len property
+//				AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
+//				AnalysisState<A, H, V, T> partialResult = state.bottom();
+//
+//				for (SymbolicExpression recExpr : rec.getComputedExpressions()) {
+//					AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(GoIntType.INSTANCE, recExpr,
+//							new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
+//					partialResult = partialResult.lub(tmp);
+//				}
+				// FIXME we get here when rec is a parameter of an entrypoint, and len is not defined yet..
+				result = result.lub(state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), this));
 			} else if (type.isStringType())
 				result = result.lub(state.smallStepSemantics(
 						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));

@@ -48,7 +48,7 @@ public class AutomataGenerator {
 		states.add(qfinal);
 		SortedSet<Transition<RegularExpression>> delta = new TreeSet<>();
 		delta.add(new Transition<>(qinit, qfinal, randomString(10, false, 0.0)));
-		return new Tarsis(new RegexAutomaton(states, delta));
+		return new Tarsis(new RegexAutomaton(states, delta).minimize());
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class AutomataGenerator {
 		states.add(qfinal);
 		SortedSet<Transition<RegularExpression>> delta = new TreeSet<>();
 		delta.add(new Transition<>(qinit, qfinal, randomString(0, true, 2.0)));
-		return new Tarsis(new RegexAutomaton(states, delta));
+		return new Tarsis(new RegexAutomaton(states, delta).minimize());
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class AutomataGenerator {
 		SortedSet<Transition<RegularExpression>> delta = new TreeSet<>();
 		for (int i = 0; i < n; i++)
 			delta.add(new Transition<>(states.get(i), states.get(i + 1), randomString(10, false, 0.0)));
-		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta));
+		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta).minimize());
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class AutomataGenerator {
 		SortedSet<Transition<RegularExpression>> delta = new TreeSet<>();
 		for (int i = 0; i < n; i++)
 			delta.add(new Transition<>(states.get(i), states.get(i + 1), randomString(10, true, 0.1)));
-		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta));
+		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta).minimize());
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class AutomataGenerator {
 			transitions.add(new Transition<>(nState, mState, randomString(10, false, 0.0)));
 		}
 
-		return new Tarsis(new RegexAutomaton(states, transitions));
+		return new Tarsis(new RegexAutomaton(states, transitions).minimize());
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class AutomataGenerator {
 			transitions.add(new Transition<>(nState, mState, randomString(10, true, 0.1)));
 		}
 
-		return new Tarsis(new RegexAutomaton(states, transitions));
+		return new Tarsis(new RegexAutomaton(states, transitions).minimize());
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class AutomataGenerator {
 		SortedSet<Transition<RegularExpression>> delta = new TreeSet<>();
 		for (int i = 0; i < n; i++)
 			delta.add(new Transition<>(states.get(i), states.get(i + 1), randomString(10, false, 0.0)));
-		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta));
+		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta).minimize());
 	}
 
 	/**
@@ -229,7 +229,7 @@ public class AutomataGenerator {
 		SortedSet<Transition<RegularExpression>> delta = new TreeSet<>();
 		for (int i = 0; i < n; i++)
 			delta.add(new Transition<>(states.get(i), states.get(i + 1), randomString(10, true, 0.1)));
-		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta));
+		return new Tarsis(new RegexAutomaton(new TreeSet<>(states), delta).minimize());
 	}
 
 	/**

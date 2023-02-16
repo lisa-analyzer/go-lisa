@@ -156,8 +156,8 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, SmashedSum<S> left, SmashedSum<S> right,
 			ProgramPoint pp) throws SemanticException {
 		if (operator == StringContains.INSTANCE)
-			return left.stringValue.satisfiesBinaryExpression(operator, left.stringValue, right.stringValue, pp);
-		return Satisfiability.UNKNOWN;
+			return stringValue.satisfiesBinaryExpression(operator, left.stringValue, right.stringValue, pp);
+		return intValue.satisfiesBinaryExpression(operator, left.intValue, right.intValue, pp);
 	}
 
 	@SuppressWarnings("unchecked")

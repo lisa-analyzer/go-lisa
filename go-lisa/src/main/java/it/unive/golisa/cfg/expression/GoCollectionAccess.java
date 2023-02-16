@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,6 +16,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -48,7 +51,28 @@ public class GoCollectionAccess extends BinaryExpression {
 			return state.smallStepSemantics(left, this);
 
 		AnalysisState<A, H, V, T> result = state.bottom();
-
+		for (Type type : left.getRuntimeTypes(getProgram().getTypes())) {
+			if (type.isArrayType() || type instanceof GoSliceType) {
+				// When expr is an array or a slice, we access the len property
+//			AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
+//			AnalysisState<A, H, V, T> partialResult = state.bottom();
+//
+//			for (SymbolicExpression recExpr : rec.getComputedExpressions()) {
+//				AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(GoIntType.INSTANCE, recExpr,
+//						new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
+//				partialResult = partialResult.lub(tmp);
+//			}
+				// FIXME we get here when left is a parameter of an entrypoint,
+				// and nothing is defined in the heap for its elements..
+				Type inner;
+				if (type.isArrayType())
+					inner = type.asArrayType().getInnerType();
+				else 
+					inner = ((GoSliceType) type).getContentType();
+				return state.smallStepSemantics(new PushAny(inner, getLocation()), this);
+			}
+		}
+		
 		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);
 		for (SymbolicExpression expr : rec.getComputedExpressions()) {
 			AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(

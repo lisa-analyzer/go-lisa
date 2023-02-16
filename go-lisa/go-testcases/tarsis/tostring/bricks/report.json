@@ -1,0 +1,39 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/tarsis/tostring/tostring.go':18:40] on 'untyped main::main([]string names)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/tostring/tostring.go':19:35] on 'untyped main::main([]string names)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/tostring/tostring.go':20:37] on 'untyped main::main([]string names)': [EXPRESSION] This assertion might fail"
+  } ],
+  "files" : [ "report.json", "untyped_main.main([]string_names).json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "3s 169ms",
+    "end" : "2023-02-16T16:20:37.175+01:00",
+    "expressions" : "39",
+    "files" : "1",
+    "globals" : "0",
+    "members" : "12",
+    "programs" : "1",
+    "start" : "2023-02-16T16:20:34.006+01:00",
+    "statements" : "12",
+    "units" : "2",
+    "version" : "0.1b7",
+    "warnings" : "3"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingGlbThreshold" : "5",
+    "descendingPhaseType" : "NONE",
+    "fixpointWorkingSet" : "FIFOWorkingSet",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "semanticChecks" : "AssertionCheck",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/tarsis/tostring/bricks"
+  }
+}

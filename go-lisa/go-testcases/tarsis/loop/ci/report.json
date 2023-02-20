@@ -1,26 +1,24 @@
 {
   "warnings" : [ {
-    "message" : "['go-testcases/tarsis/loop/loop.go':10:35] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+    "message" : "['go-testcases/tarsis/loop/loop.go':11:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
   }, {
-    "message" : "['go-testcases/tarsis/loop/loop.go':11:35] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
-  }, {
-    "message" : "['go-testcases/tarsis/loop/loop.go':12:35] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+    "message" : "['go-testcases/tarsis/loop/loop.go':12:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
   } ],
   "files" : [ "report.json", "untyped_main.main(string_value,_bool_nondet).json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "796ms",
-    "end" : "2023-02-16T17:24:08.190+01:00",
+    "duration" : "571ms",
+    "end" : "2023-02-20T23:04:44.894+01:00",
     "expressions" : "17",
     "files" : "1",
     "globals" : "0",
     "members" : "12",
     "programs" : "1",
-    "start" : "2023-02-16T17:24:07.394+01:00",
+    "start" : "2023-02-20T23:04:44.323+01:00",
     "statements" : "7",
     "units" : "2",
     "version" : "0.1b7",
-    "warnings" : "3"
+    "warnings" : "2"
   },
   "configuration" : {
     "analysisGraphs" : "NONE",

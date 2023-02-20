@@ -1,20 +1,26 @@
 {
-  "warnings" : [ ],
+  "warnings" : [ {
+    "message" : "['go-testcases/tarsis/loop/loop.go':10:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/loop/loop.go':11:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/loop/loop.go':12:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+  } ],
   "files" : [ "report.json", "untyped_main.main(string_value,_bool_nondet).json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "488ms",
-    "end" : "2023-01-30T09:20:41.100+01:00",
-    "expressions" : "8",
+    "duration" : "789ms",
+    "end" : "2023-02-20T23:05:23.535+01:00",
+    "expressions" : "17",
     "files" : "1",
     "globals" : "0",
-    "members" : "3",
+    "members" : "12",
     "programs" : "1",
-    "start" : "2023-01-30T09:20:40.612+01:00",
-    "statements" : "4",
-    "units" : "1",
+    "start" : "2023-02-20T23:05:22.746+01:00",
+    "statements" : "7",
+    "units" : "2",
     "version" : "0.1b7",
-    "warnings" : "0"
+    "warnings" : "3"
   },
   "configuration" : {
     "analysisGraphs" : "NONE",
@@ -22,8 +28,8 @@
     "descendingPhaseType" : "NONE",
     "fixpointWorkingSet" : "FIFOWorkingSet",
     "jsonOutput" : "true",
-    "openCallPolicy" : "WorstCasePolicy",
-    "semanticChecks" : "",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "semanticChecks" : "AssertionCheck",
     "serializeInputs" : "false",
     "serializeResults" : "true",
     "syntacticChecks" : "",

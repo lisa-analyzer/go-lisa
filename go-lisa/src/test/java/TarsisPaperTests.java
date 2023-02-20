@@ -223,7 +223,6 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void loopPrefixTest() throws IOException, AnalysisSetupException {
-		fail("SEMANTICS IN THE ORIGINAL PAPER WAS NOT CORRECT t* AND NOT t");
 		perform("tarsis/loop", "prefix", "loop.go", baseConf(new Prefix()));
 	}
 
@@ -234,7 +233,6 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void loopCiTest() throws IOException, AnalysisSetupException {
-		fail("SEMANTICS IN THE ORIGINAL PAPER WAS NOT CORRECT AS RIGHT IS NOT A SINGLE CHAR BUT A STRING");
 		perform("tarsis/loop", "ci", "loop.go", baseConf(new CharInclusion()));
 	}
 

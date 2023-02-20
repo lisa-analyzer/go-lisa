@@ -43,6 +43,14 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 		this.stringValue = stringValue;
 	}
 
+	public Interval getIntValue() {
+		return intValue;
+	}
+	
+	public S getStringValue() {
+		return stringValue;
+	}
+	
 	@Override
 	public SmashedSum<S> evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
 		if (constant.getValue() instanceof Integer)

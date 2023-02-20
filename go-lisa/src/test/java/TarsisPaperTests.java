@@ -3,9 +3,12 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import it.unive.golisa.analysis.scam.SmashedSum;
+import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
@@ -13,11 +16,13 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.string.CharInclusion;
+import it.unive.lisa.analysis.string.ContainsCharProvider;
 import it.unive.lisa.analysis.string.Prefix;
 import it.unive.lisa.analysis.string.Suffix;
 import it.unive.lisa.analysis.string.bricks.Bricks;
@@ -36,10 +41,13 @@ import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	private static class AssertionCheck<A extends AbstractState<A, H, V, T>,
@@ -70,28 +78,39 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 			return true;
 		}
 
-		private boolean dumped = false;
-
 		@Override
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Statement node) {
 			if (node instanceof UnresolvedCall)
 				if (((UnresolvedCall) node).getTargetName().equals("assert")) {
 					for (CFGWithAnalysisResults<A, H, V, T> res : tool.getResultOf(graph)) {
 						AnalysisState<A, H, V, T> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
 						try {
-							if (!dumped) {
-								ValueEnvironment<?> stack = post.getDomainInstance(ValueEnvironment.class);
-								System.err.println("Final approximation: " + stack.representation().toString());
-								dumped = true;
-							}
-							for (SymbolicExpression expr : post.getComputedExpressions()) {
-								Satisfiability sat = post.satisfies(expr, node);
-								if (sat == Satisfiability.UNKNOWN)
-									tool.warnOn(node, "This assertion might fail");
-								else if (sat == Satisfiability.NOT_SATISFIED)
-									tool.warnOn(node, "This assertion always fails");
-							}
+							SimpleAbstractState state = post.getDomainInstance(SimpleAbstractState.class);
+							if (((UnresolvedCall) node).getParameters()[0].toString()
+									.startsWith("main::containsChar")) {
+								Expression[] args = ((UnresolvedCall) ((UnresolvedCall) node).getParameters()[0])
+										.getParameters();
+								VariableRef variable = (VariableRef) args[0];
+								GoString ch = (GoString) args[1];
+								AnalysisState<A, H, V, T> target = res.getAnalysisStateAfter(variable);
+								for (SymbolicExpression expr : target.getComputedExpressions()) {
+									ContainsCharProvider lattice = (ContainsCharProvider) ((SmashedSum) target
+											.getDomainInstance(ValueEnvironment.class).getState(expr)).getStringValue();
+									Satisfiability sat = lattice.containsChar(ch.getValue().charAt(0));
+									if (sat == Satisfiability.UNKNOWN)
+										tool.warnOn(node, "This assertion might fail");
+									else if (sat == Satisfiability.NOT_SATISFIED)
+										tool.warnOn(node, "This assertion always fails");
+								}
+							} else
+								for (SymbolicExpression expr : post.getComputedExpressions()) {
+									Satisfiability sat = state.satisfies(expr, node);
+									if (sat == Satisfiability.UNKNOWN)
+										tool.warnOn(node, "This assertion might fail");
+									else if (sat == Satisfiability.NOT_SATISFIED)
+										tool.warnOn(node, "This assertion always fails");
+								}
 						} catch (SemanticException e) {
 							throw new RuntimeException(e);
 						}
@@ -122,7 +141,12 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.semanticChecks.add(new AssertionCheck<>());
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(ContextInsensitiveToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(ContextInsensitiveToken.getSingleton());// TODO
+																											// cambia
+																											// questo
+																											// in
+																											// recursion
+																											// free
 		if (dump)
 			conf.analysisGraphs = it.unive.lisa.LiSAConfiguration.GraphType.HTML_WITH_SUBNODES;
 		return conf;
@@ -166,7 +190,6 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void substringPrefixTest() throws IOException, AnalysisSetupException {
-		fail("SEMANTICS IN THE ORIGINAL PAPER WAS NOT CORRECT g* AND NOT g");
 		perform("tarsis/substring", "prefix", "subs.go", baseConf(new Prefix()));
 	}
 
@@ -217,7 +240,6 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void loopBricksTest() throws IOException, AnalysisSetupException {
-		fail("NON-DETERMINISTIC: RUN vs DEBUG, WIDENING DOES NOT GO TO TOP");
 		perform("tarsis/loop", "bricks", "loop.go", baseConf(new Bricks()));
 	}
 

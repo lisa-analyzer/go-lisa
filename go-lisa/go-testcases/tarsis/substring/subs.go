@@ -12,8 +12,8 @@ func main(nondet bool) {
 
 	res = res[5:18]
 	
-	assert (strings.Contains(res, "g"));
-	assert (strings.Contains(res, "p"));
-	assert (strings.Contains(res, "f"));
-	assert (strings.Contains(res, "d"));
+	assert (containsChar(res, "g"));
+	assert (containsChar(res, "p"));
+	assert (containsChar(res, "f"));
+	assert (containsChar(res, "d"));
 }

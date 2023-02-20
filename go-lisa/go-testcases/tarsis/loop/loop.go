@@ -7,7 +7,7 @@ func main(value string, nondet bool) {
 	for nondet {
 		res = res + value + "!"
 	}
-	assert (strings.Contains(res, "t")); 
-	assert (strings.Contains(res, "!")); 
-	assert (strings.Contains(res, "f"));
+	assert (containsChar(res, "t")); 
+	assert (containsChar(res, "!")); 
+	assert (containsChar(res, "f"));
 }

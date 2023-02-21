@@ -26,6 +26,7 @@ import it.unive.lisa.symbolic.value.operator.binary.StringIndexOf;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
+import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Untyped;
@@ -99,9 +100,10 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>> implements Ba
 	@Override
 	public SmashedSum<S> evalUnaryExpression(UnaryOperator operator, SmashedSum<S> arg, ProgramPoint pp)
 			throws SemanticException {
-
 		if (operator == StringLength.INSTANCE)
 			return mkSmashedValue(length(arg.stringValue));
+		else if (operator == NumericNegation.INSTANCE)
+			return new SmashedSum<S>(intValue.evalUnaryExpression(operator, arg.intValue, pp), stringValue.bottom());
 
 		return top();
 	}

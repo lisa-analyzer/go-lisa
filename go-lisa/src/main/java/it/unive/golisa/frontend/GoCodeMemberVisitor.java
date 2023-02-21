@@ -723,9 +723,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		Statement last = res.getRight();
 		updateVisileIds(backup, last);
-		if (isReturnStmt(last))
+		if (isReturnStmt(last)) {
+			blockDeep--;
+			blockList.removeLast();
 			return Triple.of(open, block, last);
-		if (isGoTo(last)) {
+		} if (isGoTo(last)) {
 			// we still decrement as the actual closing
 			// blocks will be added in the post processing
 			blockDeep--;

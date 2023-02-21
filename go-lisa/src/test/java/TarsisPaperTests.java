@@ -11,6 +11,7 @@ import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
+import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
@@ -286,5 +287,10 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 	@Test
 	public void cmTarsisTest() throws IOException, AnalysisSetupException {
 		perform("tarsis/count", "tarsis", "count.go", baseConf(new Tarsis()));
+	}
+	
+	@Test
+	public void cmNewTarsisTest() throws IOException, AnalysisSetupException {
+		perform("tarsis/count/new-tarsis", "count.go", baseConf(new Tarsis()));
 	}
 }

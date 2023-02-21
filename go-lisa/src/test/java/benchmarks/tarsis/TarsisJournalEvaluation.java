@@ -165,9 +165,9 @@ public class TarsisJournalEvaluation {
 	public void bench04widening() throws SemanticException {
 		LOG.info("Benchmarking widening");
 		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-				triple -> triple.getLeft().widening(triple.getLeft()));
+				triple -> triple.getLeft().widening(triple.getRight()));
 		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-				triple -> triple.getLeft().widening(triple.getLeft()));
+				triple -> triple.getLeft().widening(triple.getRight()));
 //		compare(tarsis, fsa);
 	}
 

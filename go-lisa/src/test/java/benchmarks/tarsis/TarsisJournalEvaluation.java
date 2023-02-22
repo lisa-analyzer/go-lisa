@@ -138,6 +138,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().lub(triple.getMiddle()));
 		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().lub(triple.getMiddle()));
+		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
 	
@@ -148,6 +149,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().glb(triple.getMiddle()));
 		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().glb(triple.getMiddle()));
+		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
 
@@ -158,6 +160,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().lessOrEqual(triple.getMiddle()));
 		Map<Integer, RunResult<Boolean>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().lessOrEqual(triple.getMiddle()));
+		speedup(tarsis, fsa);
 //		compareBools(tarsis, fsa);
 	}
 
@@ -168,6 +171,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().widening(triple.getRight()));
 		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().widening(triple.getRight()));
+		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
 
@@ -178,6 +182,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().concat(triple.getMiddle()));
 		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().concat(triple.getMiddle()));
+		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
 
@@ -188,6 +193,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().contains(triple.getMiddle()));
 		Map<Integer, RunResult<Satisfiability>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().contains(triple.getMiddle()));
+		speedup(tarsis, fsa);
 //		compareSats(tarsis, fsa);
 	}
 
@@ -198,6 +204,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().indexOf(triple.getMiddle()));
 		Map<Integer, RunResult<IntInterval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().indexOf(triple.getMiddle()));
+		speedup(tarsis, fsa);
 //		compareIntervals(tarsis, fsa);
 	}
 
@@ -207,6 +214,7 @@ public class TarsisJournalEvaluation {
 		Map<Integer, RunResult<IntInterval>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
 				triple -> triple.getLeft().length());
 		Map<Integer, RunResult<IntInterval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY, triple -> triple.getLeft().length());
+		speedup(tarsis, fsa);
 //		compareIntervals(tarsis, fsa);
 	}
 
@@ -217,6 +225,7 @@ public class TarsisJournalEvaluation {
 				triple -> triple.getLeft().replace(triple.getMiddle(), triple.getRight()));
 		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().replace(triple.getMiddle(), triple.getRight()));
+		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
 
@@ -232,6 +241,7 @@ public class TarsisJournalEvaluation {
 				RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 						triple -> triple.getLeft().substring(SUBSTRING_INDEXES.get(idx.get()).getLeft(),
 								SUBSTRING_INDEXES.get(idx.getAndIncrement()).getRight()));
+		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
 
@@ -280,6 +290,22 @@ public class TarsisJournalEvaluation {
 				+ ", maximum: " + TimeFormat.UP_TO_MINUTES.format(max));
 
 		return results;
+	}
+
+	private static <O1, O2> void speedup(Map<Integer, RunResult<O1>> tarsis, Map<Integer, RunResult<O2>> fsa) {
+		long totalTarsis = 0, totalFSA = 0;
+		for (Entry<Integer, RunResult<O1>> entry : tarsis.entrySet()) {
+			RunResult<O1> t = entry.getValue();
+			if (!t.timeout && t.e == null && t.result != null) {
+				RunResult<O2> f = fsa.get(entry.getKey());
+				if (!f.timeout && f.e == null && f.result != null) {
+					totalTarsis += t.elapsed;
+					totalFSA += f.elapsed;
+				}
+			}
+		}
+
+		LOG.info("  Average speedup: " + (((totalFSA - totalTarsis) / totalFSA) * 100) + "%");
 	}
 
 	private static <I, O> RunResult<O> benchmarkSingle(I input, FailableFunction<I, O, Exception> action) {

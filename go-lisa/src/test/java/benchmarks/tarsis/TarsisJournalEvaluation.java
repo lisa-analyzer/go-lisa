@@ -24,6 +24,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -129,6 +130,11 @@ public class TarsisJournalEvaluation {
 	@AfterClass
 	public static void shutdown() {
 		EXECUTORS.shutdown();
+	}
+	
+	@After 
+	public void runGC() {
+		System.gc();
 	}
 
 	@Test
@@ -294,18 +300,22 @@ public class TarsisJournalEvaluation {
 
 	private static <O1, O2> void speedup(Map<Integer, RunResult<O1>> tarsis, Map<Integer, RunResult<O2>> fsa) {
 		long totalTarsis = 0, totalFSA = 0;
+		int count = 0;
 		for (Entry<Integer, RunResult<O1>> entry : tarsis.entrySet()) {
 			RunResult<O1> t = entry.getValue();
 			if (!t.timeout && t.e == null && t.result != null) {
 				RunResult<O2> f = fsa.get(entry.getKey());
 				if (!f.timeout && f.e == null && f.result != null) {
+					count++;
 					totalTarsis += t.elapsed;
 					totalFSA += f.elapsed;
 				}
 			}
 		}
 
-		LOG.info("  Average speedup: " + (((totalFSA - totalTarsis) / totalFSA) * 100) + "%");
+		LOG.info("  Total Tarsis time over " + count + " rounds: " + TimeFormat.UP_TO_MINUTES.format(totalTarsis));
+		LOG.info("  Total FSA time over " + count + " rounds: " + TimeFormat.UP_TO_MINUTES.format(totalFSA));
+		LOG.info("  Speedup: " + (((totalFSA - totalTarsis) / (double) totalFSA) * 100) + "%");
 	}
 
 	private static <I, O> RunResult<O> benchmarkSingle(I input, FailableFunction<I, O, Exception> action) {

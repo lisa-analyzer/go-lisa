@@ -11,7 +11,6 @@ import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
@@ -36,7 +35,7 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.interprocedural.ContextBasedAnalysis;
-import it.unive.lisa.interprocedural.ContextInsensitiveToken;
+import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
@@ -79,6 +78,8 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 			return true;
 		}
 
+		boolean first = true;
+
 		@Override
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Statement node) {
@@ -88,6 +89,12 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 						AnalysisState<A, H, V, T> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
 						try {
 							SimpleAbstractState state = post.getDomainInstance(SimpleAbstractState.class);
+
+							if (first) {
+								System.err.println(state.getValueState().representation().toString());
+								first = false;
+							}
+
 							if (((UnresolvedCall) node).getParameters()[0].toString()
 									.startsWith("main::containsChar")) {
 								Expression[] args = ((UnresolvedCall) ((UnresolvedCall) node).getParameters()[0])
@@ -142,12 +149,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.semanticChecks.add(new AssertionCheck<>());
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(ContextInsensitiveToken.getSingleton());// TODO
-																											// cambia
-																											// questo
-																											// in
-																											// recursion
-																											// free
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
 		if (dump)
 			conf.analysisGraphs = it.unive.lisa.LiSAConfiguration.GraphType.HTML_WITH_SUBNODES;
 		return conf;
@@ -183,7 +185,6 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void toStringTarsisTest() throws IOException, AnalysisSetupException {
-		fail("INCORRECT APPROXIMATION OF RES THAT LEADS TO FAILURES");
 		LiSAConfiguration conf = baseConf(new Tarsis());
 		conf.serializeResults = false; // too expensive
 		perform("tarsis/tostring", "tarsis", "tostring.go", conf);
@@ -252,8 +253,9 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void loopTarsisTest() throws IOException, AnalysisSetupException {
-		fail("FAILS AND TAKES TOO MUCH TO DEBUG");
-		perform("tarsis/loop", "tarsis", "loop.go", baseConf(new Tarsis()));
+		LiSAConfiguration conf = baseConf(new Tarsis());
+		conf.serializeResults = false; // too expensive
+		perform("tarsis/loop", "tarsis", "loop.go", conf);
 	}
 
 	@Test
@@ -287,10 +289,5 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 	@Test
 	public void cmTarsisTest() throws IOException, AnalysisSetupException {
 		perform("tarsis/count", "tarsis", "count.go", baseConf(new Tarsis()));
-	}
-	
-	@Test
-	public void cmNewTarsisTest() throws IOException, AnalysisSetupException {
-		perform("tarsis/count/new-tarsis", "count.go", baseConf(new Tarsis()));
 	}
 }

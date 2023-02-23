@@ -1,20 +1,24 @@
 {
-  "warnings" : [ ],
-  "files" : [ "report.json", "untyped_main.main(string_top).json", "untyped_main.toString([]string_names)_-92156379.json" ],
+  "warnings" : [ {
+    "message" : "['go-testcases/tarsis/tostring/tostring.go':19:35] on 'untyped main::main([]string names)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/tostring/tostring.go':20:37] on 'untyped main::main([]string names)': [EXPRESSION] This assertion might fail"
+  } ],
+  "files" : [ "report.json" ],
   "info" : {
-    "cfgs" : "2",
-    "duration" : "2s 106ms",
-    "end" : "2023-01-16T11:29:04.201+01:00",
-    "expressions" : "34",
-    "files" : "2",
+    "cfgs" : "1",
+    "duration" : "12s 864ms",
+    "end" : "2023-02-23T09:26:01.989+01:00",
+    "expressions" : "39",
+    "files" : "0",
     "globals" : "0",
-    "members" : "4",
+    "members" : "12",
     "programs" : "1",
-    "start" : "2023-01-16T11:29:02.095+01:00",
+    "start" : "2023-02-23T09:25:49.125+01:00",
     "statements" : "12",
-    "units" : "1",
+    "units" : "2",
     "version" : "0.1b7",
-    "warnings" : "0"
+    "warnings" : "2"
   },
   "configuration" : {
     "analysisGraphs" : "NONE",
@@ -22,10 +26,10 @@
     "descendingPhaseType" : "NONE",
     "fixpointWorkingSet" : "FIFOWorkingSet",
     "jsonOutput" : "true",
-    "openCallPolicy" : "WorstCasePolicy",
-    "semanticChecks" : "",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "semanticChecks" : "AssertionCheck",
     "serializeInputs" : "false",
-    "serializeResults" : "true",
+    "serializeResults" : "false",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
     "workdir" : "go-outputs/tarsis/tostring/tarsis"

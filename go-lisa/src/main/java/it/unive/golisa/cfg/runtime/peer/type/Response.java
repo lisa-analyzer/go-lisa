@@ -22,7 +22,7 @@ public class Response extends GoStructType {
 	/**
 	 * Unique instance of Response type.
 	 */
-	private static Response INSTANCE;
+	public static Response INSTANCE;
 
 	private Response(CompilationUnit unit) {
 		super("Response", unit);

@@ -12,6 +12,7 @@ import it.unive.golisa.cfg.runtime.shim.method.GetState;
 import it.unive.golisa.cfg.runtime.shim.method.GetStringArgs;
 import it.unive.golisa.cfg.runtime.shim.method.GetTxId;
 import it.unive.golisa.cfg.runtime.shim.method.GetTxTimestamp;
+import it.unive.golisa.cfg.runtime.shim.method.InvokeChaincode;
 import it.unive.golisa.cfg.runtime.shim.method.PutPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.PutState;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -122,7 +123,10 @@ public class ChaincodeStub extends GoStructType {
 		chaincodeStubUnit
 		.addInstanceCodeMember(
 				new GetTxId(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
-
+		
+		chaincodeStubUnit
+		.addInstanceCodeMember(
+				new InvokeChaincode(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 	}
 
 	@Override

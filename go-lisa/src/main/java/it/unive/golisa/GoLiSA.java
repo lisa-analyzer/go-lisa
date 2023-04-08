@@ -12,6 +12,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,27 +21,24 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
-import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.golisa.checker.GoRoutineSourcesChecker;
-import it.unive.golisa.checker.IntegrityNIChecker;
-import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.checker.UCCICheckerPhase1;
+import it.unive.golisa.checker.UCCICheckerPhase2;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.GoContextBasedAnalysis;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
-import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.HyperledgerFabricUCCIAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UCCIAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
-import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.checks.warnings.Warning;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
@@ -77,15 +75,6 @@ public class GoLiSA {
 		output.setRequired(true);
 		options.addOption(output);
 
-		Option framework = new Option("f", "framework", true,
-				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
-		framework.setRequired(false);
-		options.addOption(framework);
-
-		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
-		analysis_opt.setRequired(true);
-		options.addOption(analysis_opt);
-
 		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
 		dump_opt.setRequired(false);
 		options.addOption(dump_opt);
@@ -105,59 +94,47 @@ public class GoLiSA {
 
 		String filePath = cmd.getOptionValue("input");
 
+		try {
+			if(!FileUtils.readFileToString(new File(filePath)).contains("InvokeChaincode")) {
+				System.out.println("File "+filePath+" does not contain cross-contract invocations");
+				System.exit(0);
+			}
+		} catch (IOException e3) {
+			e3.printStackTrace();
+		}
+		
 		String outputDir = cmd.getOptionValue("output");
 
-		String analysis = cmd.getOptionValue("analysis");
+		LiSAConfiguration confPhase1 = new LiSAConfiguration();
 
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.workdir = outputDir;
-		conf.jsonOutput = true;
-		conf.syntacticChecks.add(new GoRoutineSourcesChecker());
+		confPhase1.jsonOutput = true;
 
-		switch (analysis) {
+		confPhase1.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		confPhase1.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomainForPhase1()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		confPhase1.semanticChecks.add(new UCCICheckerPhase1());
 
-		case "taint":
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-					new ValueEnvironment<>(new TaintDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
-			conf.semanticChecks.add(new TaintChecker());
-			break;
-		case "non-interference":
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-					new InferenceSystem<>(new IntegrityNIDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
-			conf.semanticChecks.add(new IntegrityNIChecker());
-			break;
-		default:
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-					new ValueEnvironment<>(new Interval()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
-			break;
-
-		}
-
-		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
+		confPhase1.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 
 		Program program = null;
 
-		File theDir = new File(outputDir);
-		if (!theDir.exists())
-			theDir.mkdirs();
+		File theDirP1 = new File(outputDir, "Phase1");
+		if (!theDirP1.exists())
+			theDirP1.mkdirs();
 
+		confPhase1.workdir = theDirP1.getAbsolutePath();
+		
 		try {
 
-			NonDeterminismAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory
-					.getAnnotationSets(cmd.getOptionValue("framework"));
+			UCCIAnnotationSet[] annotationSet = new UCCIAnnotationSet[] {new HyperledgerFabricUCCIAnnotationSet()};
 			program = GoFrontEnd.processFile(filePath);
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annotationSet);
 			annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("hyperledger-fabric"));
 			entryLoader.load(program);
 
 			if (!entryLoader.isEntryFound()) {
@@ -174,10 +151,10 @@ public class GoLiSA {
 			}
 
 			if (!program.getEntryPoints().isEmpty()) {
-				conf.interproceduralAnalysis = new GoContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-				conf.callGraph = new RTACallGraph();
+				confPhase1.interproceduralAnalysis = new GoContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+				confPhase1.callGraph = new RTACallGraph();
 			} else
-				LOG.info("Entry points not found!");
+				LOG.info("Entry points not found in Phase 1!");
 
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
@@ -199,19 +176,106 @@ public class GoLiSA {
 			return;
 		}
 
-		LiSA lisa = new LiSA(conf);
+		LiSA lisaP1 = new LiSA(confPhase1);
 
 		try {
-			lisa.run(program);
+			lisaP1.run(program);
 		} catch (Exception e) {
 			// an error occurred during the analysis
 			e.printStackTrace();
 			return;
 		}
 		
-		if (!lisa.getWarnings().isEmpty()) {
-			System.out.println("The analysis has generated the following warnings:");
-			for (Warning warn : lisa.getWarnings())
+		if (!lisaP1.getWarnings().isEmpty()) {
+			System.out.println("The analysis in the Phase 1 has generated the following warnings:");
+			for (Warning warn : lisaP1.getWarnings())
+				System.out.println(warn);
+		}
+		
+		
+		LiSAConfiguration confPhase2 = new LiSAConfiguration();
+		
+		confPhase2.jsonOutput = true;
+
+		confPhase2.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		confPhase2.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomainForPhase2()),
+				LiSAFactory.getDefaultFor(TypeDomain.class));
+		confPhase2.semanticChecks.add(new UCCICheckerPhase2());
+
+		confPhase2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
+
+		File theDirP2 = new File(outputDir, "Phase2");
+		if (!theDirP2.exists())
+			theDirP2.mkdirs();
+
+		confPhase2.workdir = theDirP2.getAbsolutePath();
+		
+		try {
+
+			UCCIAnnotationSet[] annotationSet = new UCCIAnnotationSet[] {new HyperledgerFabricUCCIAnnotationSet()};
+			
+			program = GoFrontEnd.processFile(filePath);
+			AnnotationLoader annotationLoader = new AnnotationLoader();
+			annotationLoader.addAnnotationSet(annotationSet);
+			annotationLoader.load(program);
+
+			EntryPointLoader entryLoader = new EntryPointLoader();
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("hyperledger-fabric"));
+			entryLoader.load(program);
+
+			if (!entryLoader.isEntryFound()) {
+				Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
+						.getAppliedAnnotations();
+
+				// if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations,
+				// annotationSet)) {
+				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
+						appliedAnnotations, annotationSet);
+				for (CFG c : cfgs)
+					program.addEntryPoint(c);
+				// }
+			}
+
+			if (!program.getEntryPoints().isEmpty()) {
+				confPhase2.interproceduralAnalysis = new GoContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+				confPhase2.callGraph = new RTACallGraph();
+			} else
+				LOG.info("Entry points not found in Phase 1!");
+
+		} catch (ParseCancellationException e) {
+			// a parsing error occurred
+			System.err.println("Parsing error.");
+			return;
+		} catch (IOException e) {
+			// the file does not exists
+			System.err.println("File " + filePath + " does not exist.");
+			return;
+		} catch (UnsupportedOperationException e1) {
+			// an unsupported operations has been encountered
+			System.err.println(e1 + " " + e1.getStackTrace()[0].toString());
+			e1.printStackTrace();
+			return;
+		} catch (Exception e2) {
+			// other exception
+			e2.printStackTrace();
+			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());
+			return;
+		}
+
+		LiSA lisaP2 = new LiSA(confPhase2);
+
+		try {
+			lisaP2.run(program);
+		} catch (Exception e) {
+			// an error occurred during the analysis
+			e.printStackTrace();
+			return;
+		}
+		
+		if (!lisaP2.getWarnings().isEmpty()) {
+			System.out.println("The analysis in the Phase 2 has generated the following warnings:");
+			for (Warning warn : lisaP2.getWarnings())
 				System.out.println(warn);
 		}
 	}

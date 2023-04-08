@@ -16,7 +16,7 @@ public abstract class AnnotationSet {
 	/**
 	 * The kind of annotation.
 	 */
-	protected enum Kind {
+	public enum Kind {
 		/**
 		 * Method annotation.
 		 */

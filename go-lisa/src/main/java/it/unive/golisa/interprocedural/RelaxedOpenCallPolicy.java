@@ -6,6 +6,8 @@ import java.util.Set;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
@@ -14,6 +16,8 @@ import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
 import it.unive.golisa.loader.annotation.sets.GoNonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.HyperledgerFabricUCCIAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UCCIAnnotationSet;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -79,6 +83,42 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 						return entryState.assign(var, new Tainted(call.getLocation()), call);
 
 				} else if (((TaintDomain) stackValue).isBottom()) {
+					return entryState;
+				}
+			}
+			if (stackValue instanceof TaintDomainForPhase1) {
+				Variable var = new Variable(call.getStaticType(), RETURNED_VARIABLE_NAME, call.getLocation());
+				if (((TaintDomainForPhase1) stackValue).isTainted() || ((TaintDomainForPhase1) stackValue).isTop()) {
+					PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+					return entryState.assign(var, pushany, call);
+				} else if (((TaintDomainForPhase1) stackValue).isClean()) { // &&
+																	// isRuntimeAPI(call))
+																	// {
+					if (!isSourceForUCCIP1(call))
+						return entryState.assign(var,
+								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+					else
+						return entryState.assign(var, new Tainted(call.getLocation()), call);
+
+				} else if (((TaintDomainForPhase1) stackValue).isBottom()) {
+					return entryState;
+				}
+			}
+			if (stackValue instanceof TaintDomainForPhase2) {
+				Variable var = new Variable(call.getStaticType(), RETURNED_VARIABLE_NAME, call.getLocation());
+				if (((TaintDomainForPhase2) stackValue).isTainted() || ((TaintDomainForPhase2) stackValue).isTop()) {
+					PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+					return entryState.assign(var, pushany, call);
+				} else if (((TaintDomainForPhase2) stackValue).isClean()) { // &&
+																	// isRuntimeAPI(call))
+																	// {
+				//	if (!isSourceForUCCIP2(call))
+						return entryState.assign(var,
+								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+				//	else
+				//		return entryState.assign(var, new Tainted(call.getLocation()), call);
+
+				} else if (((TaintDomainForPhase2) stackValue).isBottom()) {
 					return entryState;
 				}
 			}
@@ -173,6 +213,22 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 
 	private boolean isSourceForNonDeterminism(Call call) {
 		GoNonDeterminismAnnotationSet sources = new GoNonDeterminismAnnotationSet();
+		for (CodeAnnotation ca : sources.getAnnotationForSources()) {
+			if (ca instanceof MethodAnnotation) {
+				MethodAnnotation ma = (MethodAnnotation) ca;
+				if (call.getTargetName().equals(ma.getName()))
+					if (call.getQualifier() != null && (ma.getUnit().equals(call.getQualifier())
+							|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(call.getQualifier()))))
+						return true;
+			}
+		}
+
+		return false;
+
+	}
+	
+	private boolean isSourceForUCCIP1(Call call) {
+		UCCIAnnotationSet sources = new HyperledgerFabricUCCIAnnotationSet();
 		for (CodeAnnotation ca : sources.getAnnotationForSources()) {
 			if (ca instanceof MethodAnnotation) {
 				MethodAnnotation ma = (MethodAnnotation) ca;

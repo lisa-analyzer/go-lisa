@@ -3,6 +3,8 @@ package it.unive.golisa.cfg.expression;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.lisa.analysis.AbstractState;
@@ -71,10 +73,12 @@ public class GoCollectionAccess extends BinaryExpression {
 			return state.smallStepSemantics(new Constant(Duration.INSTANCE, "SECOND_VALUE", getLocation()), this);
 		if (right instanceof Tainted)
 			return state.smallStepSemantics(right, this);
-		Tainted tainted = new Tainted(getLocation());
-		if (getLeft().toString().equals("resp") && getRight().toString().equals("Body"))
-			return state.smallStepSemantics(tainted, this);
-
+		if (getLeft().toString().startsWith("response") || getRight().toString().startsWith("Payload"))
+			return state.smallStepSemantics(left, this);
+		if (getLeft().toString().startsWith("resp") || getRight().toString().startsWith("Payload"))
+			return state.smallStepSemantics(left, this);
+		if (getRight().toString().startsWith("Payload"))
+			return state.smallStepSemantics(left, this);
 		// Access global
 		for (Unit unit : getProgram().getUnits())
 			if (unit.toString().equals(getReceiver().toString()))
@@ -99,10 +103,12 @@ public class GoCollectionAccess extends BinaryExpression {
 		ValueEnvironment<?> env = rightState.getDomainInstance(ValueEnvironment.class);
 		if (env != null) {
 			NonRelationalValueDomain<?> stack = env.getValueOnStack();
-			if (stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+			if (stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()
+					|| stack instanceof TaintDomainForPhase1 && ((TaintDomainForPhase1) stack).isTainted()
+					|| stack instanceof TaintDomainForPhase2 && ((TaintDomainForPhase2) stack).isTainted()) {
 				AnalysisState<A, H, V, T> tmp = state.bottom();
 				for (SymbolicExpression id : result.getComputedExpressions())
-					tmp = tmp.lub(result.assign(id, tainted, this));
+					tmp = tmp.lub(result.assign(id, new Tainted(getLocation()), this));
 				return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
 						tmp.getAliasing());
 			}
@@ -115,7 +121,7 @@ public class GoCollectionAccess extends BinaryExpression {
 					&& ((IntegrityNIDomain) value).isLowIntegrity()) {
 				AnalysisState<A, H, V, T> tmp = state.bottom();
 				for (SymbolicExpression id : result.getComputedExpressions())
-					tmp = tmp.lub(result.assign(id, tainted, this));
+					tmp = tmp.lub(result.assign(id, new Tainted(getLocation()), this));
 				return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
 						tmp.getAliasing());
 			}

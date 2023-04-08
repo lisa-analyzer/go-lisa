@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UCCIAnnotationSet;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
@@ -69,10 +70,10 @@ public class EntryPointsUtils {
 	 */
 	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			UCCIAnnotationSet... annotationSets) {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
-		for (NonDeterminismAnnotationSet as : annotationSets) {
+		for (UCCIAnnotationSet as : annotationSets) {
 			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
 			appliedAnnotations.stream()
 					.forEach(e -> {
@@ -96,7 +97,7 @@ public class EntryPointsUtils {
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			UCCIAnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
 

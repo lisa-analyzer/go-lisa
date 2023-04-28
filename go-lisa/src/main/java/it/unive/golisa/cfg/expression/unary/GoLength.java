@@ -52,7 +52,8 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 		TypeSystem types = getProgram().getTypes();
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type type : expr.getRuntimeTypes(types)) {
-			if (type.isPointerType() && (type.asPointerType().getInnerType().isArrayType() || type.asPointerType().getInnerType() instanceof GoSliceType)) {
+			if (type.isPointerType() && (type.asPointerType().getInnerType().isArrayType()
+					|| type.asPointerType().getInnerType() instanceof GoSliceType)) {
 				// When expr is an array or a slice, we access the len property
 				AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
 				AnalysisState<A, H, V, T> partialResult = state.bottom();
@@ -78,7 +79,8 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 //							new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
 //					partialResult = partialResult.lub(tmp);
 //				}
-				// FIXME we get here when rec is a parameter of an entrypoint, and len is not defined yet..
+				// FIXME we get here when rec is a parameter of an entrypoint,
+				// and len is not defined yet..
 				result = result.lub(state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), this));
 			} else if (type.isStringType())
 				result = result.lub(state.smallStepSemantics(

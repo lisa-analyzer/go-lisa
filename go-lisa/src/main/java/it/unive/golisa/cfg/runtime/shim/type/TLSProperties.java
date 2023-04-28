@@ -39,8 +39,9 @@ public class TLSProperties extends GoStructType {
 					"TLSProperties", false);
 
 			// add globals
-			TLSPropertiesType.addInstanceGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType,
-					"Disabled", true, GoBoolType.INSTANCE));
+			TLSPropertiesType
+					.addInstanceGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType,
+							"Disabled", true, GoBoolType.INSTANCE));
 			GoSliceType byteSliceType = GoSliceType.lookup(GoSliceType.lookup(GoUInt8Type.INSTANCE));
 			TLSPropertiesType.addInstanceGlobal(
 					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType, "Key", true,
@@ -48,8 +49,9 @@ public class TLSProperties extends GoStructType {
 			TLSPropertiesType.addInstanceGlobal(
 					new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType, "Cert", true,
 							byteSliceType));
-			TLSPropertiesType.addInstanceGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType,
-					"ClientCACerts", true, byteSliceType));
+			TLSPropertiesType
+					.addInstanceGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, TLSPropertiesType,
+							"ClientCACerts", true, byteSliceType));
 
 			INSTANCE = new TLSProperties(TLSPropertiesType);
 		}

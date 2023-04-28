@@ -156,7 +156,8 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	public StrictUpperBounds assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
+	public StrictUpperBounds assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+			throws SemanticException {
 		Satisfiability isSat = satisfies(expression, src);
 		if (isSat == Satisfiability.SATISFIED)
 			return this;

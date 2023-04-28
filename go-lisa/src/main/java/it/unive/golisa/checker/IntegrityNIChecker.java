@@ -1,9 +1,8 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.lisa.analysis.CFGWithAnalysisResults;
+import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
@@ -27,6 +26,10 @@ import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.util.StringUtilities;
+import java.util.Collection;
 
 /**
  * A non-interference integrity checker.
@@ -57,7 +60,8 @@ public class IntegrityNIChecker implements
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
 	}
 
@@ -72,30 +76,17 @@ public class IntegrityNIChecker implements
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap,InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit, Global global, boolean instance) {
-	}
-
-	private static final String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th",
-			"th" };
-
-	private static String ordinal(int i) {
-		switch (i % 100) {
-		case 11:
-		case 12:
-		case 13:
-			return i + "th";
-		default:
-			return i + suffixes[i % 10];
-
-		}
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph) {
 		return true;
@@ -104,34 +95,35 @@ public class IntegrityNIChecker implements
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
 
 		UnresolvedCall call = (UnresolvedCall) node;
-		Call resolved = (Call) tool.getResolvedVersion(call);
+		try {
+			for (AnalyzedCFG<
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+					TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+				Call resolved = (Call) tool.getResolvedVersion(call, result);
 
-		if (resolved instanceof NativeCall) {
-			NativeCall nativeCfg = (NativeCall) resolved;
-			Collection<NativeCFG> nativeCfgs = nativeCfg.getTargetedConstructs();
-			for (NativeCFG n : nativeCfgs)
-				try {
-					process(tool, call, resolved, n.getDescriptor());
-				} catch (SemanticException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (resolved instanceof NativeCall) {
+					NativeCall nativeCfg = (NativeCall) resolved;
+					Collection<NativeCFG> nativeCfgs = nativeCfg.getTargetedConstructs();
+					for (NativeCFG n : nativeCfgs)
+						process(tool, call, resolved, n.getDescriptor(), result);
+				} else if (resolved instanceof CFGCall) {
+					CFGCall cfg = (CFGCall) resolved;
+					for (CFG n : cfg.getTargetedCFGs())
+						process(tool, call, resolved, n.getDescriptor(), result);
 				}
-		} else if (resolved instanceof CFGCall) {
-			CFGCall cfg = (CFGCall) resolved;
-			for (CFG n : cfg.getTargetedCFGs())
-				try {
-					process(tool, call, resolved, n.getDescriptor());
-				} catch (SemanticException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			}
+		} catch (SemanticException e) {
+			e.printStackTrace();
 		}
 
 		return true;
@@ -140,44 +132,49 @@ public class IntegrityNIChecker implements
 
 	private void process(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
-			UnresolvedCall call, Call resolved, CodeMemberDescriptor desc) throws SemanticException {
-		if (desc.getAnnotations().contains(SINK_MATCHER))
-			for (CFGWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> result : tool
-							.getResultOf(call.getCFG())) {
-				if (result.getAnalysisStateAfter(call).getState()
+			UnresolvedCall call, Call resolved, CodeMemberDescriptor desc,
+			AnalyzedCFG<
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> res)
+			throws SemanticException {
+		if (desc.getAnnotations().contains(SINK_MATCHER)) {
+			if (res.getAnalysisStateAfter(call).getState()
+					.getValueState().getExecutionState()
+					.isLowIntegrity())
+				tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
+						+ " resulting in an implicit flow");
+		}
+
+		Parameter[] parameters = desc.getFormals();
+		for (int i = 0; i < parameters.length; i++)
+			if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
+				AnalysisState<
+						SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+								TypeEnvironment<InferredTypes>>,
+						PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+						TypeEnvironment<InferredTypes>> state = res.getAnalysisStateAfter(call.getParameters()[i]);
+				for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), call))
+					if (state.getState().getValueState().eval((ValueExpression) stack, call).isLowIntegrity())
+						tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
+								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+								+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+				if (res.getAnalysisStateAfter(call.getParameters()[call.getParameters().length - 1]).getState()
 						.getValueState().getExecutionState()
 						.isLowIntegrity())
 					tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
 							+ " resulting in an implicit flow");
 			}
-		Parameter[] parameters = desc.getFormals();
-		for (int i = 0; i < parameters.length; i++)
-			if (parameters[i].getAnnotations().contains(SINK_MATCHER))
-				for (CFGWithAnalysisResults<
-						SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-						PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
-					if (result.getAnalysisStateAfter(call.getParameters()[i])
-							.getState().getValueState().getInferredValue().isLowIntegrity())
-						tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-								+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-								+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-					if (result.getAnalysisStateAfter(call.getParameters()[call.getParameters().length - 1]).getState()
-							.getValueState().getExecutionState()
-							.isLowIntegrity())
-						tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
-								+ " resulting in an implicit flow");
-				}
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
+					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+							TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Edge edge) {
 		return true;

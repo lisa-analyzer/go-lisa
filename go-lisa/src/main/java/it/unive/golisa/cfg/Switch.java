@@ -3,10 +3,10 @@ package it.unive.golisa.cfg;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
 import it.unive.lisa.program.cfg.edge.Edge;
-import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * A switch control flow structure.
@@ -15,7 +15,9 @@ import java.util.Collection;
  */
 public class Switch extends ControlFlowStructure {
 
-	private final Collection<Statement> cases;
+	private final SwitchCase[] cases;
+
+	private final DefaultSwitchCase defaultCase;
 
 	/**
 	 * Builds the switch control flow structure.
@@ -27,24 +29,33 @@ public class Switch extends ControlFlowStructure {
 	 *                          structure
 	 */
 	public Switch(NodeList<CFG, Statement, Edge> cfgMatrix, Statement condition, Statement firstFollower,
-			Collection<Statement> cases) {
+			SwitchCase[] cases, DefaultSwitchCase defaultCase) {
 		super(cfgMatrix, condition, firstFollower);
 		this.cases = cases;
+		this.defaultCase = defaultCase;
 	}
 
 	@Override
 	protected Collection<Statement> bodyStatements() {
-		return cases;
+		Collection<Statement> body = new HashSet<>();
+		for (SwitchCase case_ : cases)
+			body.addAll(case_.getBody());
+		if (defaultCase != null)
+			body.addAll(defaultCase.getBody());
+		return body;
 	}
 
 	@Override
 	public boolean contains(Statement st) {
-		return cases.contains(st);
+		return bodyStatements().contains(st);
 	}
 
 	@Override
 	public void simplify() {
-		cases.removeIf(NoOp.class::isInstance);
+		for (SwitchCase case_ : cases)
+			case_.simplify();
+		if (defaultCase != null)
+			defaultCase.simplify();
 	}
 
 	@Override
@@ -75,5 +86,16 @@ public class Switch extends ControlFlowStructure {
 		} else if (!cases.equals(other.cases))
 			return false;
 		return true;
+	}
+
+	@Override
+	public Collection<Statement> getTargetedStatements() {
+		Collection<Statement> targeted = new HashSet<>(cfgMatrix.followersOf(getCondition()));
+		for (SwitchCase case_ : cases)
+			targeted.add(case_.getCondition());
+		if (defaultCase != null)
+			targeted.add(defaultCase.getEntry());
+		targeted.add(getFirstFollower());
+		return targeted;
 	}
 }

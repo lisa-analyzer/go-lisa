@@ -1,18 +1,11 @@
 import static it.unive.lisa.LiSAFactory.getDefaultFor;
 
-import java.io.IOException;
-
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.lisa.AnalysisSetupException;
-import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.CFGWithAnalysisResults;
+import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -33,9 +26,9 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
-import it.unive.lisa.interprocedural.ContextBasedAnalysis;
-import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
+import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
@@ -45,6 +38,10 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import java.io.IOException;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TarsisPaperTests extends GoAnalysisTestExecutor {
@@ -84,7 +81,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Statement node) {
 			if (node instanceof UnresolvedCall)
 				if (((UnresolvedCall) node).getTargetName().equals("assert")) {
-					for (CFGWithAnalysisResults<A, H, V, T> res : tool.getResultOf(graph)) {
+					for (AnalyzedCFG<A, H, V, T> res : tool.getResultOf(graph)) {
 						AnalysisState<A, H, V, T> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
 						try {
 							SimpleAbstractState state = post.getDomainInstance(SimpleAbstractState.class);
@@ -133,14 +130,14 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	}
 
-	private static <S extends BaseNonRelationalValueDomain<S>> LiSAConfiguration baseConf(S stringDomain)
+	private static <S extends BaseNonRelationalValueDomain<S>> CronConfiguration baseConf(S stringDomain)
 			throws AnalysisSetupException {
 		return baseConf(stringDomain, false);
 	}
 
-	private static <S extends BaseNonRelationalValueDomain<S>> LiSAConfiguration baseConf(S stringDomain, boolean dump)
+	private static <S extends BaseNonRelationalValueDomain<S>> CronConfiguration baseConf(S stringDomain, boolean dump)
 			throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.abstractState = new TracePartitioning<>(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class),
 				new SmashedSum<>(new Interval(), stringDomain),
@@ -148,10 +145,18 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		conf.serializeResults = true;
 		conf.semanticChecks.add(new AssertionCheck<>());
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.compareWithOptimization = false;
 		if (dump)
-			conf.analysisGraphs = it.unive.lisa.LiSAConfiguration.GraphType.HTML_WITH_SUBNODES;
+			conf.analysisGraphs = it.unive.lisa.conf.LiSAConfiguration.GraphType.HTML_WITH_SUBNODES;
 		return conf;
+	}
+
+	private void perform(String dir, String subDir, String program, CronConfiguration conf) {
+		conf.testDir = dir;
+		conf.testSubDir = subDir;
+		conf.programFile = program;
+		perform(conf);
 	}
 
 	@Test
@@ -176,7 +181,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void toStringFaTest() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = baseConf(new FSA());
+		CronConfiguration conf = baseConf(new FSA());
 		conf.serializeResults = false; // too expensive
 		conf.semanticChecks.clear();
 		perform("tarsis/tostring", "fa", "tostring.go", conf);
@@ -184,7 +189,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void toStringTarsisTest() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = baseConf(new Tarsis());
+		CronConfiguration conf = baseConf(new Tarsis());
 		conf.serializeResults = false; // too expensive
 		perform("tarsis/tostring", "tarsis", "tostring.go", conf);
 	}
@@ -211,7 +216,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void substringFaTest() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = baseConf(new FSA());
+		CronConfiguration conf = baseConf(new FSA());
 		conf.serializeResults = false; // too expensive
 		conf.semanticChecks.clear();
 		perform("tarsis/substring", "fa", "subs.go", conf);
@@ -244,7 +249,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void loopFaTest() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = baseConf(new FSA());
+		CronConfiguration conf = baseConf(new FSA());
 		conf.serializeResults = false;
 		conf.semanticChecks.clear();
 		perform("tarsis/loop", "fa", "loop.go", conf);
@@ -252,7 +257,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void loopTarsisTest() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = baseConf(new Tarsis());
+		CronConfiguration conf = baseConf(new Tarsis());
 		conf.serializeResults = false; // too expensive
 		perform("tarsis/loop", "tarsis", "loop.go", conf);
 	}
@@ -279,7 +284,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void cmFaTest() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = baseConf(new FSA());
+		CronConfiguration conf = baseConf(new FSA());
 		conf.serializeResults = false;
 		conf.semanticChecks.clear();
 		perform("tarsis/count", "fa", "count.go", conf);

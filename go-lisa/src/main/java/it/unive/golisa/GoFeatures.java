@@ -3,10 +3,8 @@ package it.unive.golisa;
 import it.unive.lisa.program.language.LanguageFeatures;
 import it.unive.lisa.program.language.hierarchytraversal.HierarcyTraversalStrategy;
 import it.unive.lisa.program.language.hierarchytraversal.SingleInheritanceTraversalStrategy;
-import it.unive.lisa.program.language.parameterassignment.OrderPreservingAssigningStrategy;
 import it.unive.lisa.program.language.parameterassignment.ParameterAssigningStrategy;
 import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
-import it.unive.lisa.program.language.resolution.RuntimeTypesMatchingStrategy;
 import it.unive.lisa.program.language.validation.BaseValidationLogic;
 import it.unive.lisa.program.language.validation.ProgramValidationLogic;
 

@@ -56,7 +56,8 @@ public class GoNonKeyedLiteral extends NaryExpression {
 
 	}
 
-	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] values, Type staticType, boolean isStackAllocated) {
+	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] values, Type staticType,
+			boolean isStackAllocated) {
 		super(cfg, location, "nonKeyedLit(" + staticType + ")", staticType, values);
 		this.isStackAllocated = isStackAllocated;
 	}
@@ -79,11 +80,11 @@ public class GoNonKeyedLiteral extends NaryExpression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-			ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		Type type = getStaticType();
 		MemoryAllocation created = new MemoryAllocation(type, getLocation(), isStackAllocated);

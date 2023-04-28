@@ -5,7 +5,6 @@ import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
 import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CodeMember;
@@ -97,10 +96,7 @@ public class AnnotationLoader implements Loader {
 			}
 		}
 
-		Collection<Global> globals = program.getGlobals();
-		for (Global g : globals) {
-			// TODO
-		}
+		// TODO globals
 	}
 
 	/**

@@ -16,8 +16,6 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.VariableTableEntry;
@@ -58,22 +56,6 @@ public class GoKeyedLiteral extends NaryExpression {
 			Type staticType) {
 		super(cfg, location, "keyedLiteral(" + staticType + ")", staticType, values);
 		this.keys = keys;
-	}
-
-	private Variable getVariable(Global varRef) {
-		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
-				.getVariableTableEntryIfExist(varRef.getName(), varRef.getLocation());
-
-		Variable id;
-
-		if (varTableEntry == null)
-			id = new Variable(varRef.getStaticType(), varRef.getName(),
-					varRef.getLocation());
-		else
-			id = new Variable(varRef.getStaticType(), varRef.getName(), varTableEntry.getAnnotations(),
-					varRef.getLocation());
-
-		return id;
 	}
 
 	private Variable getVariable(VariableRef varRef) {
@@ -154,8 +136,6 @@ public class GoKeyedLiteral extends NaryExpression {
 		 */
 
 		if (getStaticType() instanceof GoSliceType) {
-
-			GoSliceType sliceType = (GoSliceType) getStaticType();
 			int arrayLength = 0;
 
 			for (SymbolicExpression containerExp : containerExps) {
@@ -195,9 +175,6 @@ public class GoKeyedLiteral extends NaryExpression {
 		 * Struct allocation
 		 */
 		if (getStaticType() instanceof GoStructType) {
-			// Retrieve the struct type (that is a compilation unit)
-			CompilationUnit structUnit = ((GoStructType) getStaticType()).getUnit();
-
 			AnalysisState<A, H, V, T> result = state.bottom();
 
 			for (SymbolicExpression containerExp : containerExps) {

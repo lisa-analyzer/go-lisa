@@ -67,12 +67,12 @@ public class GoCollectionAccess extends BinaryExpression {
 				Type inner;
 				if (type.isArrayType())
 					inner = type.asArrayType().getInnerType();
-				else 
+				else
 					inner = ((GoSliceType) type).getContentType();
 				return state.smallStepSemantics(new PushAny(inner, getLocation()), this);
 			}
 		}
-		
+
 		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);
 		for (SymbolicExpression expr : rec.getComputedExpressions()) {
 			AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(

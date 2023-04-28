@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisSetupException;
-import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
@@ -45,7 +44,7 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 	@Test
 	public void testSingle() throws IOException, ProgramValidationException {
 		Program prog = GoFrontEnd.processFile("go-testcases/variablescoping/scoping.go");
-//		prog.validateAndFinalize();
+		prog.getFeatures().getProgramValidationLogic().validateAndFinalize(prog);
 		// we just check that no exception is thrown
 	}
 
@@ -73,7 +72,7 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void shadowingTest() throws IOException, AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.abstractState = new SimpleAbstractState<>(new MonolithicHeap(),
 				new ValueEnvironment<>(new Interval()),
@@ -81,8 +80,9 @@ public class VariableScopingTest extends GoAnalysisTestExecutor {
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeResults = true;
-
-		perform("variablescoping", "shadowing.go", conf);
+		conf.testDir = "variablescoping";
+		conf.programFile = "shadowing.go";
+		perform(conf);
 	}
 
 	private Map<String, Set<String>> expectedResultForLoopVariableScooping() {

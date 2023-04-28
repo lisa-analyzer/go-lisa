@@ -108,7 +108,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 
 		Statement entryNode = null;
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
-		Statement> body = visitMethodBlock(ctx.block());
+				Statement> body = visitMethodBlock(ctx.block());
 
 		processGotos();
 
@@ -119,7 +119,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		Type returnType = cfg.getDescriptor().getReturnType();
 		if (returnType.isInMemoryType())
 			returnType = GoPointerType.lookup(returnType);
-		
+
 		NodeList<CFG, Statement, Edge> matrix = cfg.getNodeList();
 		entryNode = findEntryNode(entryNode, body, returnType, matrix);
 
@@ -180,7 +180,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	protected CFG buildAnonymousCFG(FunctionLitContext ctx) {
 		Statement entryNode = null;
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
-		Statement> body = visitMethodBlock(ctx.block());
+				Statement> body = visitMethodBlock(ctx.block());
 
 		processGotos();
 

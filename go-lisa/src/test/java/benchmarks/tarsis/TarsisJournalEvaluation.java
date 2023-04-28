@@ -2,6 +2,12 @@ package benchmarks.tarsis;
 
 import static org.junit.Assert.assertEquals;
 
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.string.fsa.FSA;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.logging.TimeFormat;
+import it.unive.lisa.util.numeric.IntInterval;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -28,16 +33,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.string.fsa.FSA;
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.logging.TimeFormat;
-import it.unive.lisa.util.numeric.IntInterval;
-
+@Ignore("This test should only be manually executed for the benchmark as it takes few hours")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TarsisJournalEvaluation {
 
@@ -103,7 +103,7 @@ public class TarsisJournalEvaluation {
 			generateSingle(AutomataGenerator::loopingConstantsAndTop);
 		LOG.info("Generating random automata");
 		// 1 is to account for the top automaton
-		for (int k = 0; k < ROUNDS - (ROUNDS_PER_CLASS * 9) - 1; k++) 
+		for (int k = 0; k < ROUNDS - (ROUNDS_PER_CLASS * 9) - 1; k++)
 			generateSingle(AutomataGenerator::random);
 
 		assertEquals(ROUNDS + WARMUP, TARSIS_TRIPLES.size());
@@ -131,8 +131,8 @@ public class TarsisJournalEvaluation {
 	public static void shutdown() {
 		EXECUTORS.shutdown();
 	}
-	
-	@After 
+
+	@After
 	public void runGC() {
 		System.gc();
 	}
@@ -147,7 +147,7 @@ public class TarsisJournalEvaluation {
 		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
-	
+
 	@Test
 	public void bench03glb() throws SemanticException {
 		LOG.info("Benchmarking glb");
@@ -382,7 +382,7 @@ public class TarsisJournalEvaluation {
 		}
 	}
 
-	private static void compareIntervals(Map<Integer, RunResult<IntInterval>> tarsisRes,
+	static void compareIntervals(Map<Integer, RunResult<IntInterval>> tarsisRes,
 			Map<Integer, RunResult<IntInterval>> fsaRes) {
 		int available = 0, equal = 0, tarsisBetter = 0, fsaBetter = 0, incomparable = 0;
 		for (Entry<Integer, RunResult<IntInterval>> entry : tarsisRes.entrySet()) {
@@ -410,7 +410,7 @@ public class TarsisJournalEvaluation {
 				+ incomparable + " incomparable");
 	}
 
-	private static void compareSats(Map<Integer, RunResult<Satisfiability>> tarsisRes,
+	static void compareSats(Map<Integer, RunResult<Satisfiability>> tarsisRes,
 			Map<Integer, RunResult<Satisfiability>> fsaRes) throws SemanticException {
 		int available = 0, equal = 0, tarsisBetter = 0, fsaBetter = 0, incomparable = 0;
 		for (Entry<Integer, RunResult<Satisfiability>> entry : tarsisRes.entrySet()) {
@@ -438,7 +438,7 @@ public class TarsisJournalEvaluation {
 				+ incomparable + " incomparable");
 	}
 
-	private static void compareBools(Map<Integer, RunResult<Boolean>> tarsisRes,
+	static void compareBools(Map<Integer, RunResult<Boolean>> tarsisRes,
 			Map<Integer, RunResult<Boolean>> fsaRes) {
 		int available = 0, equal = 0, incomparable = 0;
 		for (Entry<Integer, RunResult<Boolean>> entry : tarsisRes.entrySet()) {
@@ -458,7 +458,7 @@ public class TarsisJournalEvaluation {
 				+ incomparable + " different result");
 	}
 
-	private static void compare(Map<Integer, RunResult<Tarsis>> tarsisRes, Map<Integer, RunResult<FSA>> fsaRes)
+	static void compare(Map<Integer, RunResult<Tarsis>> tarsisRes, Map<Integer, RunResult<FSA>> fsaRes)
 			throws SemanticException {
 		int available = 0, equal = 0, tarsisBetter = 0, fsaBetter = 0, incomparable = 0;
 		for (Entry<Integer, RunResult<Tarsis>> entry : tarsisRes.entrySet()) {

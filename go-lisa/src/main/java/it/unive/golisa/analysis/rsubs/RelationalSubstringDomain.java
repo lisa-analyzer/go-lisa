@@ -45,8 +45,8 @@ import org.apache.commons.lang3.ArrayUtils;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class RelationalSubstringDomain
-extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
-implements ValueDomain<RelationalSubstringDomain> {
+		extends FunctionalLattice<RelationalSubstringDomain, Identifier, ExpressionInverseSet<ValueExpression>>
+		implements ValueDomain<RelationalSubstringDomain> {
 
 	/**
 	 * Builds the top abstract value.
@@ -155,7 +155,8 @@ implements ValueDomain<RelationalSubstringDomain> {
 	}
 
 	@Override
-	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
+	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+			throws SemanticException {
 		// rsubs can assume contains, equals, and & or expressions (all binary
 		// expressions)
 
@@ -461,7 +462,7 @@ implements ValueDomain<RelationalSubstringDomain> {
 					constants.add(string);
 					for (String str : constants)
 						previousRelations = previousRelations
-						.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
+								.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
 				}
 			}
 

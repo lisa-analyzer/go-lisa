@@ -12,6 +12,8 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -21,9 +23,10 @@ import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Skip;
-import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -56,48 +59,50 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 			return entryState.smallStepSemantics(new Skip(call.getLocation()), call);
 
 		if (entryState.getState().getValueState() instanceof ValueEnvironment<?>) {
-
 			ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) entryState.getState().getValueState();
-			var stackValue = valueEnv.getValueOnStack();
-			if (stackValue instanceof TaintDomain) {
-				Variable var = new Variable(call.getStaticType(), RETURNED_VARIABLE_NAME, call.getLocation());
-				if (((TaintDomain) stackValue).isTainted() || ((TaintDomain) stackValue).isTop()) {
-					PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
-					return entryState.assign(var, pushany, call);
-				} else if (((TaintDomain) stackValue).isClean()) { // &&
-																	// isRuntimeAPI(call))
-																	// {
-					return entryState.assign(var,
-							new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
-
-				} else if (((TaintDomain) stackValue).isBottom()) {
-					return entryState;
+			for (SymbolicExpression stack : entryState.rewrite(entryState.getComputedExpressions(), call)) {
+				NonRelationalValueDomain<?> stackValue = valueEnv.eval((ValueExpression) stack, call);
+				if (stackValue instanceof TaintDomain) {
+					Identifier var = call.getMetaVariable();
+					if (((TaintDomain) stackValue).isTainted() || ((TaintDomain) stackValue).isTop()) {
+						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+						return entryState.assign(var, pushany, call);
+					} else if (((TaintDomain) stackValue).isClean()) {
+						// && isRuntimeAPI(call)) {
+						return entryState.assign(var,
+								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+					} else if (((TaintDomain) stackValue).isBottom()) {
+						return entryState;
+					}
 				}
 			}
 		} else if (entryState.getState().getValueState() instanceof InferenceSystem<?>) {
-			Variable var = new Variable(call.getStaticType(), RETURNED_VARIABLE_NAME, call.getLocation());
+			Identifier var = call.getMetaVariable();
 			var infSys = ((InferenceSystem<?>) entryState.getState().getValueState());
-			var value = infSys.getInferredValue();
-			if (value != null && value instanceof IntegrityNIDomain) {
-				IntegrityNIDomain ni = (IntegrityNIDomain) value;
-				if (ni.isLowIntegrity() || ni.isTop()) {
-					PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
-					return entryState.assign(var, pushany, call);
-				} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call)) {
-					return entryState.assign(var,
-							new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+			for (SymbolicExpression stack : entryState.rewrite(entryState.getComputedExpressions(), call)) {
+				InferredValue<?> value = infSys.eval((ValueExpression) stack, call);
+				if (value != null && value instanceof IntegrityNIDomain) {
+					IntegrityNIDomain ni = (IntegrityNIDomain) value;
+					if (ni.isLowIntegrity() || ni.isTop()) {
+						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+						return entryState.assign(var, pushany, call);
+					} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call))
+														// {
+						return entryState.assign(var,
+								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
 
-				} else if (ni.isBottom())
-					return entryState;
+					} else if (ni.isBottom())
+						return entryState;
+				}
 			}
 		}
 
 		PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
-		Variable var = new Variable(call.getStaticType(), RETURNED_VARIABLE_NAME, call.getLocation());
+		Identifier var = call.getMetaVariable();
 		return entryState.assign(var, pushany, call);
 	}
 
-	private boolean isRuntimeAPI(OpenCall call) {
+	boolean isRuntimeAPI(OpenCall call) {
 
 		if (call.getCallType().equals(CallType.STATIC)) {
 			if (call.getQualifier() != null)

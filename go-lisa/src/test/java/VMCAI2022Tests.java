@@ -1,4 +1,3 @@
-import static it.unive.lisa.LiSAFactory.getDefaultFor;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -10,15 +9,16 @@ import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.interprocedural.ContextBasedAnalysis;
-import it.unive.lisa.interprocedural.RecursionFreeToken;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Program;
-
 
 public class VMCAI2022Tests {
 	private String tmpDir = "go-outputs/vmcai2022";
@@ -30,11 +30,13 @@ public class VMCAI2022Tests {
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
-		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-				new InferredTypes());
+		conf.abstractState = new SimpleAbstractState<>(
+				new MonolithicHeap(),
+				new RelTarsis(),
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);
@@ -52,8 +54,12 @@ public class VMCAI2022Tests {
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
-		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-				new InferredTypes());
+		conf.abstractState = new SimpleAbstractState<>(
+				new MonolithicHeap(),
+				new RelTarsis(),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
 		conf.serializeResults = true;
 		conf.workdir = tmpDir;
 
@@ -72,11 +78,13 @@ public class VMCAI2022Tests {
 
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.jsonOutput = true;
-		conf.abstractState = getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class), new RelTarsis(),
-				new InferredTypes());
+		conf.abstractState = new SimpleAbstractState<>(
+				new MonolithicHeap(),
+				new RelTarsis(),
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.serializeResults = true;
 		conf.callGraph = new RTACallGraph();
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.workdir = tmpDir;
 
 		LiSA lisa = new LiSA(conf);

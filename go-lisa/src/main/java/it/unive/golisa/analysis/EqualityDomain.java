@@ -82,7 +82,8 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
-	public EqualityDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint destx) throws SemanticException {
+	public EqualityDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint destx)
+			throws SemanticException {
 		Satisfiability isSat = satisfies(expression, src);
 		if (isSat == Satisfiability.SATISFIED)
 			return this;

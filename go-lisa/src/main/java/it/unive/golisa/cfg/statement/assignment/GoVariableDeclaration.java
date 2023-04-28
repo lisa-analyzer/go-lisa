@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
@@ -30,6 +27,8 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.TypeTokenType;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Go variable declaration class (e.g., var x int = 5).
@@ -88,7 +87,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		TypeSystem types = getProgram().getTypes();
 		Type idType = type.isInMemoryType() ? new ReferenceType(type) : type;
 		Set<Type> setIdType = Collections.singleton(idType);
-		
+
 		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
 				.getVariableTableEntryIfExist(((VariableRef) getLeft()).getName(), getLeft().getLocation());
 

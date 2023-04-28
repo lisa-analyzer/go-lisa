@@ -51,8 +51,9 @@ public class ChaincodeStub extends GoStructType {
 			chaincodeStubUnit
 					.addInstanceGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit, "TxID",
 							true, GoStringType.INSTANCE));
-			chaincodeStubUnit.addInstanceGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit,
-					"ChannelID", true, GoStringType.INSTANCE));
+			chaincodeStubUnit
+					.addInstanceGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit,
+							"ChannelID", true, GoStringType.INSTANCE));
 
 			INSTANCE = new ChaincodeStub(chaincodeStubUnit);
 		}

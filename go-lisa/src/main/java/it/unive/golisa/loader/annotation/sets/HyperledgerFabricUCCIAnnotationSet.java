@@ -33,21 +33,23 @@ public class HyperledgerFabricUCCIAnnotationSet extends UCCIAnnotationSet {
 		SOURCE_ANNOTATIONS_PHASE_1.put(Kind.METHOD, map1);
 		
 		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();
+		
+		map2.put("ChaincodeStub", Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2)));
 
-		map2.put("ChaincodeStub", Set.of(Pair.of("InvokeChaincode", 2)));
-
-		map2.put("ChaincodeStubInterface", Set.of(Pair.of("InvokeChaincode", 2)));
+		map2.put("ChaincodeStubInterface", Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2)));
 		
 		SINK_ANNOTATIONS_PHASE_1.put(Kind.PARAM, map2);
 		
 		Map<String, Set<Pair<String, Integer>>> map3 = new HashMap<>();
 
-		map3.put("ChaincodeStub", Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
+		map2.put("ChaincodeStub", Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
 				Pair.of("PutPrivateData", 1), Pair.of("PutPrivateData", 2), Pair.of("DelPrivateData", 1)));
 
-		map3.put("ChaincodeStubInterface",
+		map2.put("ChaincodeStubInterface",
 				Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
 						Pair.of("PutPrivateData", 1), Pair.of("PutPrivateData", 2), Pair.of("DelPrivateData", 1)));
+
+		map2.put("shim", Set.of(Pair.of("Success", 0), Pair.of("Error", 0)));
 		
 		SINK_ANNOTATIONS_PHASE_2.put(Kind.PARAM, map3);
 		

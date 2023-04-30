@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
@@ -96,8 +97,7 @@ public class Now extends NativeCFG {
 			AnalysisState<A, H, V, T> allocResult = time.semantics(state, interprocedural, expressions);
 			AnalysisState<A, H, V, T> result = state.bottom();
 			for (SymbolicExpression id : allocResult.getComputedExpressions()) {
-				result = result.lub(allocResult.assign(id, new Tainted(type, getLocation()), original));
-				result = result.lub(allocResult.assign(id, new Tainted(getLocation()), original));
+				result = result.lub(allocResult.assign(id, new Clean(type, getLocation()), original));
 			}
 			return result;
 		}

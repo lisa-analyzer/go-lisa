@@ -88,7 +88,7 @@ public class AnnotationLoader implements Loader {
 			if (unit instanceof CompilationUnit) {
 				CompilationUnit cUnit = (CompilationUnit) unit;
 
-				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {
+				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {					
 					for (AnnotationSet set : annotationSets) {
 						for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 							checkAndAddAnnotation(cm.getDescriptor(), ca);

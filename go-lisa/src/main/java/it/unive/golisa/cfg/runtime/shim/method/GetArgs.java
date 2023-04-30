@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintedP1;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
@@ -94,7 +95,7 @@ public class GetArgs extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(new Clean(GoSliceType.getSliceOfSliceOfBytes(), getLocation()), original);
+			return state.smallStepSemantics(new TaintedP1(GoSliceType.getSliceOfSliceOfBytes(), getLocation()), original);
 		}
 	}
 }

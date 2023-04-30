@@ -14,6 +14,9 @@ import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.NativeCall;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -95,6 +98,8 @@ public class TaintDomainForPhase1 extends BaseNonRelationalValueDomain<TaintDoma
 	private TaintDomainForPhase1 defaultApprox(Identifier id, ProgramPoint pp) throws SemanticException {
 		
 		Annotations annots = id.getAnnotations();
+		if(pp.toString().contains("GetFunctionAndParameters") && pp instanceof Call)
+			System.out.println();
 		if (annots.isEmpty())
 			return super.variable(id, pp);
 
@@ -126,7 +131,7 @@ public class TaintDomainForPhase1 extends BaseNonRelationalValueDomain<TaintDoma
 
 	@Override
 	public TaintDomainForPhase1 top() {
-		return TAINTED;
+		return TOP;
 	}
 
 	@Override
@@ -159,7 +164,7 @@ public class TaintDomainForPhase1 extends BaseNonRelationalValueDomain<TaintDoma
 
 	@Override
 	public TaintDomainForPhase1 evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
-		if (constant instanceof Tainted)
+		if (constant instanceof TaintedP1)
 			return TAINTED;
 		return CLEAN;
 	}

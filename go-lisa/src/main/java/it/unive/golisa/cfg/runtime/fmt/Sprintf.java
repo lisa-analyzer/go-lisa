@@ -3,7 +3,10 @@ package it.unive.golisa.cfg.runtime.fmt;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
 import it.unive.golisa.analysis.taint.Tainted;
+import it.unive.golisa.analysis.taint.TaintedP1;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -100,6 +103,20 @@ public class Sprintf extends NativeCFG {
 				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
 				ValueEnvironment<?> minst = state.smallStepSemantics(middle, original).getDomainInstance(ValueEnvironment.class);
 				ValueEnvironment<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(ValueEnvironment.class);
+				if (linst.getValueOnStack() instanceof TaintDomainForPhase1) {
+					if (((TaintDomainForPhase1)linst.getValueOnStack()).isTainted()
+							|| ((TaintDomainForPhase1)minst.getValueOnStack()).isTainted()
+							|| ((TaintDomainForPhase1)rinst.getValueOnStack()).isTainted())
+						return state.smallStepSemantics(new TaintedP1(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
+				if (linst.getValueOnStack() instanceof TaintDomainForPhase2) {
+					if (((TaintDomainForPhase1)linst.getValueOnStack()).isTainted()
+							|| ((TaintDomainForPhase2)minst.getValueOnStack()).isTainted()
+							|| ((TaintDomainForPhase2)rinst.getValueOnStack()).isTainted())
+						return state.smallStepSemantics(new TaintedP1(getLocation()), original);
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+				}
 				if (linst.getValueOnStack() instanceof TaintDomain) {
 					if (((TaintDomain)linst.getValueOnStack()).isTainted()
 							|| ((TaintDomain)minst.getValueOnStack()).isTainted()

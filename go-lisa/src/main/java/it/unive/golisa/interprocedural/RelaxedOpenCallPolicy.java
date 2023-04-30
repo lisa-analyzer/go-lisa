@@ -9,6 +9,8 @@ import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
 import it.unive.golisa.analysis.taint.Tainted;
+import it.unive.golisa.analysis.taint.TaintedP1;
+import it.unive.golisa.analysis.taint.TaintedP2;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
@@ -95,10 +97,9 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 																	// isRuntimeAPI(call))
 																	// {
 					if (!isSourceForUCCIP1(call))
-						return entryState.assign(var,
-								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+						return entryState.assign(var, new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
 					else
-						return entryState.assign(var, new Tainted(call.getLocation()), call);
+						return entryState.assign(var, new TaintedP1(call.getLocation()), call);
 
 				} else if (((TaintDomainForPhase1) stackValue).isBottom()) {
 					return entryState;
@@ -111,13 +112,13 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 					return entryState.assign(var, pushany, call);
 				} else if (((TaintDomainForPhase2) stackValue).isClean()) { // &&
 																	// isRuntimeAPI(call))
-																	// {
-				//	if (!isSourceForUCCIP2(call))
+/*																	// {
+				if (!isSourceForUCCIP2(call))
 						return entryState.assign(var,
 								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
-				//	else
-				//		return entryState.assign(var, new Tainted(call.getLocation()), call);
-
+					else
+						return entryState.assign(var, new TaintedP2(call.getLocation()), call);
+*/
 				} else if (((TaintDomainForPhase2) stackValue).isBottom()) {
 					return entryState;
 				}

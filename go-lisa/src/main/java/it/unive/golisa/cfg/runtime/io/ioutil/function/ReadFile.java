@@ -99,7 +99,7 @@ public class ReadFile extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new Tainted(GoNilType.INSTANCE, getLocation()), original);
+			return state.smallStepSemantics(expr, original);
 		}
 	}
 }

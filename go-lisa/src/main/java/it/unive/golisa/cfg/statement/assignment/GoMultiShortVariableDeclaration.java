@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintedP1;
+import it.unive.golisa.analysis.taint.TaintedP2;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -114,8 +116,53 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
 			return result;
 		}
+		
+		if(isTaintedP1(rightState.getComputedExpressions()) || isTaintedP2(rightState.getComputedExpressions())) {
+			AnalysisState<A, H, V, T> result = rightState;
+
+			for (int i = 0; i < ids.length; i++) {
+				if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+					continue;
+
+				AnalysisState<A, H, V, T> idState = ids[i].semantics(result, interprocedural, expressions);
+				expressions.put(ids[i], idState);
+
+				AnalysisState<A, H, V, T> tmp = result;
+
+				for (SymbolicExpression id : idState.getComputedExpressions()) {
+					if (isTaintedP1(rightState.getComputedExpressions())) {
+						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
+						for (Type type : id.getRuntimeTypes(types)) {
+							SymbolicExpression expr= null;
+							if(isTaintedP1(rightState.getComputedExpressions()))
+								expr = new TaintedP1(type, getLocation());
+							if(isTaintedP2(rightState.getComputedExpressions()))
+								expr = new TaintedP2(type, getLocation());
+														
+							AnalysisState<A, H, V,
+									T> assign = tmp.assign((Identifier) id, expr, this);
+							if (!assign.getState().getHeapState().isTop() || !assign.getState().getValueState().isTop())
+								tmp2 = tmp2.lub(assign);
+						}
+
+						tmp = tmp2;
+					}
+				}
+
+				result = tmp;
+			}
+
+			return result;
+		}
 
 		return super.semantics(entryState, interprocedural, expressions);
+	}
+
+	private boolean isTaintedP1(ExpressionSet<SymbolicExpression> computedExpressions) {
+		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof TaintedP1;
+	}
+	private boolean isTaintedP2(ExpressionSet<SymbolicExpression> computedExpressions) {
+		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof TaintedP2;
 	}
 
 	private boolean isOpenCall(ExpressionSet<SymbolicExpression> computedExpressions) {

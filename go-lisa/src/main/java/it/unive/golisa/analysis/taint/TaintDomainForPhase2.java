@@ -162,7 +162,7 @@ public class TaintDomainForPhase2 extends BaseNonRelationalValueDomain<TaintDoma
 
 	@Override
 	public TaintDomainForPhase2 evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
-		if (constant instanceof Tainted)
+		if (constant instanceof TaintedP2)
 			return TAINTED;
 		return CLEAN;
 	}

@@ -84,8 +84,8 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
-		if (toString().startsWith("var buffer bytes.Buffer") && getLocation().toString().contains("fabcar"))
-			return state.assign(left, new Tainted(getLocation()), this);
+//		if (toString().startsWith("var buffer bytes.Buffer") && getLocation().toString().contains("fabcar"))0
+//			return state.assign(left, new Tainted(getLocation()), this);
 		
 		TypeSystem types = getProgram().getTypes();
 

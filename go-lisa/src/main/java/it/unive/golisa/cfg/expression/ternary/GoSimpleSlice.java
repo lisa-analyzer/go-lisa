@@ -3,7 +3,11 @@ package it.unive.golisa.cfg.expression.ternary;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
 import it.unive.golisa.analysis.taint.Tainted;
+import it.unive.golisa.analysis.taint.TaintedP1;
+import it.unive.golisa.analysis.taint.TaintedP2;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -57,6 +61,18 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 			ValueEnvironment<?> linst = state.smallStepSemantics(left, this).getDomainInstance(ValueEnvironment.class);
 			ValueEnvironment<?> minst = state.smallStepSemantics(middle, this).getDomainInstance(ValueEnvironment.class);
 			ValueEnvironment<?> rinst = state.smallStepSemantics(right, this).getDomainInstance(ValueEnvironment.class);
+			if (linst.getValueOnStack() instanceof TaintDomainForPhase1) {
+				if (((TaintDomainForPhase1)linst.getValueOnStack()).isTainted()
+						|| ((TaintDomainForPhase1)minst.getValueOnStack()).isTainted()
+						|| ((TaintDomainForPhase1)rinst.getValueOnStack()).isTainted())
+					return state.smallStepSemantics(new TaintedP1(getLocation()), this);
+			}
+			if (linst.getValueOnStack() instanceof TaintDomainForPhase2) {
+				if (((TaintDomainForPhase2)linst.getValueOnStack()).isTainted()
+						|| ((TaintDomainForPhase2)minst.getValueOnStack()).isTainted()
+						|| ((TaintDomainForPhase2)rinst.getValueOnStack()).isTainted())
+					return state.smallStepSemantics(new TaintedP2(getLocation()), this);
+			}
 			if (linst.getValueOnStack() instanceof TaintDomain) {
 				if (((TaintDomain)linst.getValueOnStack()).isTainted()
 						|| ((TaintDomain)minst.getValueOnStack()).isTainted()

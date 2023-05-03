@@ -192,6 +192,8 @@ public class GoLiSA {
 				System.out.println(warn);
 		}
 		
+		if(lisaP1.getWarnings().isEmpty())
+			return;
 		
 		LiSAConfiguration confPhase2 = new LiSAConfiguration();
 		

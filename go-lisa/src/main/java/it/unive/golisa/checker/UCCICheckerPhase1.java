@@ -117,7 +117,8 @@ public class UCCICheckerPhase1 implements
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 										+ " parameter of this cross-contract invocation is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-								n.getDescriptor().addAnnotation(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2);
+								if(!n.getDescriptor().getAnnotations().contains(TaintDomainForPhase2.TAINTED_MATCHER_PHASE2))
+									n.getDescriptor().addAnnotation(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2);
 							}
 			}
 		} else if (resolved instanceof CFGCall) {
@@ -135,7 +136,8 @@ public class UCCICheckerPhase1 implements
 								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
 										+ " parameter of this cross-contract invocation is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-								n.getDescriptor().addAnnotation(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2);
+								if(!n.getDescriptor().getAnnotations().contains(TaintDomainForPhase2.TAINTED_MATCHER_PHASE2))
+									n.getDescriptor().addAnnotation(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2);
 							}
 
 			}

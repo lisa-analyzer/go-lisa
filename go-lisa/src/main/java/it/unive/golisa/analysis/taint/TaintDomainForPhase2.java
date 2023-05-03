@@ -38,7 +38,7 @@ public class TaintDomainForPhase2 extends BaseNonRelationalValueDomain<TaintDoma
 	/**
 	 * The matcher for the Tainted annotation.
 	 */
-	private static final AnnotationMatcher TAINTED_MATCHER_PHASE2 = new BasicAnnotationMatcher(TAINTED_ANNOTATION_PHASE2);
+	public static final AnnotationMatcher TAINTED_MATCHER_PHASE2 = new BasicAnnotationMatcher(TAINTED_ANNOTATION_PHASE2);
 
 	/**
 	 * The annotation Clean.

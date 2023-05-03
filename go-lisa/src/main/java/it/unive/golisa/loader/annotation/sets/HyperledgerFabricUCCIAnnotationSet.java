@@ -34,9 +34,9 @@ public class HyperledgerFabricUCCIAnnotationSet extends UCCIAnnotationSet {
 		
 		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();
 		
-		map2.put("ChaincodeStub", Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2)));
+		map2.put("ChaincodeStub", Set.of(Pair.of("InvokeChaincode", 1)));
 
-		map2.put("ChaincodeStubInterface", Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2)));
+		map2.put("ChaincodeStubInterface", Set.of(Pair.of("InvokeChaincode", 1)));
 		
 		SINK_ANNOTATIONS_PHASE_1.put(Kind.PARAM, map2);
 		

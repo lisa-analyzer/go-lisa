@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.expression;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -85,23 +88,48 @@ public class GoCollectionAccess extends BinaryExpression {
 			return state.smallStepSemantics(left, this);
 		
 
+		Expression rec = getReceiver();
 		if (state.getDomainInstance(ValueEnvironment.class) != null) {
 			ValueEnvironment<?> linst = state.smallStepSemantics(left, getReceiver()).getDomainInstance(ValueEnvironment.class);
 			ValueEnvironment<?> rinst = state.smallStepSemantics(right, getReceiver()).getDomainInstance(ValueEnvironment.class);
 			if (linst.getValueOnStack() instanceof TaintDomainForPhase1) {
+				if(rec instanceof GoCollectionAccess) {
+					rec = getGoCollectionReceiver((GoCollectionAccess) rec);
+
+				}	
 				if (((TaintDomainForPhase1)linst.getValueOnStack()).isTainted()
 						|| ((TaintDomainForPhase1)rinst.getValueOnStack()).isTainted()) {
-					return state.smallStepSemantics(new TaintedP1(getLocation()), getReceiver());
+					if(rec instanceof VariableRef) {
+						VariableRef var = (VariableRef) rec;
+						return state.assign(var.getVariable(),new TaintedP1(getLocation()), getReceiver());
+					}else
+						return state.smallStepSemantics(new TaintedP1(getLocation()), getReceiver());
 				}
-				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), getReceiver());
+				if( rec instanceof VariableRef) {
+					VariableRef var = (VariableRef) rec;
+					return state.assign(var.getVariable(),new Clean(Untyped.INSTANCE, getLocation()),  getReceiver());
+				} else
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), getReceiver());
 			}
 		
 			if (linst.getValueOnStack() instanceof TaintDomainForPhase2) {
+				if(rec instanceof GoCollectionAccess) {
+					rec = getGoCollectionReceiver((GoCollectionAccess) rec);
+
+				}	
 				if (((TaintDomainForPhase2)linst.getValueOnStack()).isTainted()
 						|| ((TaintDomainForPhase2)rinst.getValueOnStack()).isTainted()) {
-					return state.smallStepSemantics(new TaintedP2(getLocation()), getReceiver());
+					if(rec instanceof VariableRef) {
+						VariableRef var = (VariableRef) rec;
+						return state.assign(var.getVariable(),new TaintedP2(getLocation()), getReceiver());
+					}else
+						return state.smallStepSemantics(new TaintedP2(getLocation()), getReceiver());
 				}
-				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), getReceiver());
+				if( rec instanceof VariableRef) {
+					VariableRef var = (VariableRef) rec;
+					return state.assign(var.getVariable(),new Clean(Untyped.INSTANCE, getLocation()),  getReceiver());
+				} else
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), getReceiver());
 			}
 		}
 		// Access global
@@ -154,6 +182,24 @@ public class GoCollectionAccess extends BinaryExpression {
 
 		return result;
 
+	}
+
+	private Expression getGoCollectionReceiver(GoCollectionAccess ca) {
+		Set<Expression> seen = new HashSet<>();
+		return getGoCollectionReceiverRecursive(ca, seen);
+	}
+	
+
+	private Expression getGoCollectionReceiverRecursive(GoCollectionAccess ca, Set<Expression> seen) {
+		
+		if(!seen.contains(ca)) {
+			seen.add(ca);
+			Expression res = ca.getLeft();
+			if(res instanceof GoCollectionAccess) 
+				return getGoCollectionReceiverRecursive((GoCollectionAccess) res, seen);
+			return res;
+		}
+		return ca;
 	}
 
 	/**

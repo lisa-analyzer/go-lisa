@@ -8,6 +8,7 @@ import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.analysis.taint.TaintedP1;
 import it.unive.golisa.analysis.taint.TaintedP2;
+import it.unive.golisa.cfg.expression.unary.GoDeref;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -33,6 +34,7 @@ import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Untyped;
@@ -114,20 +116,35 @@ public class Unmarshal extends NativeCFG {
 				ValueEnvironment<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(ValueEnvironment.class);
 				if (linst.getValueOnStack() instanceof TaintDomainForPhase1) {
 					if (((TaintDomainForPhase1)linst.getValueOnStack()).isTainted()
-							|| ((TaintDomainForPhase1)rinst.getValueOnStack()).isTainted())
+							|| ((TaintDomainForPhase1)rinst.getValueOnStack()).isTainted()) {
+						if(getRight() instanceof GoDeref && ((GoDeref) getRight()).getSubExpression() instanceof VariableRef) {
+								VariableRef var = (VariableRef) ((GoDeref) getRight()).getSubExpression();
+								state = state.assign(var.getVariable(),new TaintedP1(getLocation()), original);
+						}
 						return state.smallStepSemantics(new TaintedP1(getLocation()), original);
+					}
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 				if (linst.getValueOnStack() instanceof TaintDomainForPhase2) {
 					if (((TaintDomainForPhase2)linst.getValueOnStack()).isTainted()
-							|| ((TaintDomainForPhase2)rinst.getValueOnStack()).isTainted())
+							|| ((TaintDomainForPhase2)rinst.getValueOnStack()).isTainted()) {
+						if(getRight() instanceof GoDeref && ((GoDeref) getRight()).getSubExpression() instanceof VariableRef) {
+							VariableRef var = (VariableRef) ((GoDeref) getRight()).getSubExpression();
+							state = state.assign(var.getVariable(),new TaintedP2(getLocation()), original);
+						}
 						return state.smallStepSemantics(new TaintedP2(getLocation()), original);
+					}
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 				if (linst.getValueOnStack() instanceof TaintDomain) {
 					if (((TaintDomain)linst.getValueOnStack()).isTainted()
-							|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
+							|| ((TaintDomain)rinst.getValueOnStack()).isTainted()) {
+						if(getRight() instanceof GoDeref && ((GoDeref) getRight()).getSubExpression() instanceof VariableRef) {
+							VariableRef var = (VariableRef) ((GoDeref) getRight()).getSubExpression();
+							state = state.assign(var.getVariable(),new Tainted(getLocation()), original);
+						}
 						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					}
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 			}
@@ -138,8 +155,13 @@ public class Unmarshal extends NativeCFG {
 				InferenceSystem<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(InferenceSystem.class);
 				if (linst.getInferredValue() instanceof IntegrityNIDomain) {
 					if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity()
-							|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity())
+							|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity()) {
+						if(getRight() instanceof GoDeref && ((GoDeref) getRight()).getSubExpression() instanceof VariableRef) {
+							VariableRef var = (VariableRef) ((GoDeref) getRight()).getSubExpression();
+							state = state.assign(var.getVariable(),new Tainted(getLocation()), original);
+						}
 						return state.smallStepSemantics(new Tainted(getLocation()), original);
+					}
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 			}

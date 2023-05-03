@@ -8,6 +8,7 @@ import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.analysis.taint.TaintedP1;
 import it.unive.golisa.analysis.taint.TaintedP2;
+import it.unive.golisa.cfg.expression.unary.GoDeref;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -26,6 +27,7 @@ import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -81,6 +83,27 @@ public class GoCollectionAccess extends BinaryExpression {
 			return state.smallStepSemantics(left, this);
 		if (getRight().toString().startsWith("Payload"))
 			return state.smallStepSemantics(left, this);
+		
+
+		if (state.getDomainInstance(ValueEnvironment.class) != null) {
+			ValueEnvironment<?> linst = state.smallStepSemantics(left, getReceiver()).getDomainInstance(ValueEnvironment.class);
+			ValueEnvironment<?> rinst = state.smallStepSemantics(right, getReceiver()).getDomainInstance(ValueEnvironment.class);
+			if (linst.getValueOnStack() instanceof TaintDomainForPhase1) {
+				if (((TaintDomainForPhase1)linst.getValueOnStack()).isTainted()
+						|| ((TaintDomainForPhase1)rinst.getValueOnStack()).isTainted()) {
+					return state.smallStepSemantics(new TaintedP1(getLocation()), getReceiver());
+				}
+				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), getReceiver());
+			}
+		
+			if (linst.getValueOnStack() instanceof TaintDomainForPhase2) {
+				if (((TaintDomainForPhase2)linst.getValueOnStack()).isTainted()
+						|| ((TaintDomainForPhase2)rinst.getValueOnStack()).isTainted()) {
+					return state.smallStepSemantics(new TaintedP2(getLocation()), getReceiver());
+				}
+				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), getReceiver());
+			}
+		}
 		// Access global
 		for (Unit unit : getProgram().getUnits())
 			if (unit.toString().equals(getReceiver().toString()))

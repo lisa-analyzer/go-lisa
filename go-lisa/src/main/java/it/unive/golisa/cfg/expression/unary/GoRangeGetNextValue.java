@@ -1,5 +1,10 @@
 package it.unive.golisa.cfg.expression.unary;
 
+import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.analysis.taint.Tainted;
+import it.unive.golisa.analysis.taint.TaintedP1;
+import it.unive.golisa.analysis.taint.TaintedP2;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
@@ -11,13 +16,14 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.NaryExpression;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
@@ -28,7 +34,7 @@ import it.unive.lisa.type.Untyped;
  * 
  * @author OlivieriL
  */
-public class GoRangeGetNextValue extends NaryExpression {
+public class GoRangeGetNextValue extends UnaryExpression {
 
 	/**
 	 * Builds the next value expression.
@@ -38,7 +44,7 @@ public class GoRangeGetNextValue extends NaryExpression {
 	 * @param rangeItem the subexpression
 	 */
 	public GoRangeGetNextValue(CFG cfg, CodeLocation location, Expression rangeItem) {
-		super(cfg, location, "GoRangeGetNextValue", computeType(rangeItem.getStaticType()));
+		super(cfg, location, "GoRangeGetNextValue", computeType(rangeItem.getStaticType()), rangeItem);
 	}
 
 	private static Type computeType(Type type) {
@@ -56,13 +62,24 @@ public class GoRangeGetNextValue extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-					throws SemanticException {
+	public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		
+		if (state.getDomainInstance(ValueEnvironment.class) != null) {
+			ValueEnvironment<?> vexpr = state.smallStepSemantics(expr, this).getDomainInstance(ValueEnvironment.class);
+			if (vexpr.getValueOnStack() instanceof TaintDomainForPhase1) {
+				if (((TaintDomainForPhase1)vexpr.getValueOnStack()).isTainted()) {
+					return state.smallStepSemantics(new TaintedP1(this.getLocation()),this);
+				}
+			}
+			if (vexpr.getValueOnStack() instanceof TaintDomainForPhase2) {
+				if (((TaintDomainForPhase2)vexpr.getValueOnStack()).isTainted()) {
+					return state.smallStepSemantics(new TaintedP2(this.getLocation()),this);
+				}
+			}
+		}
+		
 		if (state.getComputedExpressions().size() == 1) {
 			for (SymbolicExpression e : state.getComputedExpressions()) {
 				if (!computeType(e.getDynamicType()).equals(Untyped.INSTANCE))

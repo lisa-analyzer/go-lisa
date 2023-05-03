@@ -94,9 +94,6 @@ public class TaintDomainForPhase2 extends BaseNonRelationalValueDomain<TaintDoma
 
 	private TaintDomainForPhase2 defaultApprox(Identifier id, ProgramPoint pp) throws SemanticException {
 		
-		if(pp.toString().contains("InvokeChaincode"))
-			System.out.println();
-		
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
 			return super.variable(id, pp);

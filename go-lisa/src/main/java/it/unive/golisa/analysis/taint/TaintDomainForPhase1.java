@@ -98,8 +98,7 @@ public class TaintDomainForPhase1 extends BaseNonRelationalValueDomain<TaintDoma
 	private TaintDomainForPhase1 defaultApprox(Identifier id, ProgramPoint pp) throws SemanticException {
 		
 		Annotations annots = id.getAnnotations();
-		if(pp.toString().contains("GetFunctionAndParameters") && pp instanceof Call)
-			System.out.println();
+
 		if (annots.isEmpty())
 			return super.variable(id, pp);
 

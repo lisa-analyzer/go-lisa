@@ -1,4 +1,8 @@
-import static it.unive.lisa.LiSAFactory.getDefaultFor;
+import java.io.IOException;
+
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.golisa.cfg.expression.literal.GoString;
@@ -10,7 +14,9 @@ import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.heap.MonolithicHeap;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.string.CharInclusion;
@@ -27,6 +33,7 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Global;
@@ -38,10 +45,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import java.io.IOException;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TarsisPaperTests extends GoAnalysisTestExecutor {
@@ -139,12 +142,14 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 			throws AnalysisSetupException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.abstractState = new TracePartitioning<>(getDefaultFor(AbstractState.class, getDefaultFor(HeapDomain.class),
-				new SmashedSum<>(new Interval(), stringDomain),
-				new InferredTypes()));
+		conf.abstractState = new TracePartitioning<>(new SimpleAbstractState<>(
+				new MonolithicHeap(),
+				new ValueEnvironment<>(new SmashedSum<>(new Interval(), stringDomain)),
+				new TypeEnvironment<>(new InferredTypes())));
 		conf.serializeResults = true;
 		conf.semanticChecks.add(new AssertionCheck<>());
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.compareWithOptimization = false;
 		if (dump)

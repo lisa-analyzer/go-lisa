@@ -1,4 +1,8 @@
 
+import java.io.IOException;
+
+import org.junit.Test;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -13,12 +17,9 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
-import java.io.IOException;
-import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
@@ -130,7 +131,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
 		conf.compareWithOptimization = false;
-		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		conf.testDir = "cc/cpu-use";
 		conf.testSubDir = "taint";
 		conf.programFile = "cpu-use.go";

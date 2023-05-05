@@ -1,6 +1,7 @@
 import java.io.IOException;
 
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
@@ -49,6 +50,10 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
+	private static boolean isAssert(Statement st) {
+		return st instanceof UnresolvedCall && ((UnresolvedCall) st).getTargetName().equals("assert");
+	}
+
 	private static class AssertionCheck<A extends AbstractState<A, H, V, T>,
 			H extends HeapDomain<H>,
 			V extends ValueDomain<V>,
@@ -77,52 +82,44 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 			return true;
 		}
 
-		boolean first = true;
-
 		@Override
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Statement node) {
-			if (node instanceof UnresolvedCall)
-				if (((UnresolvedCall) node).getTargetName().equals("assert")) {
-					for (AnalyzedCFG<A, H, V, T> res : tool.getResultOf(graph)) {
-						AnalysisState<A, H, V, T> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
-						try {
-							SimpleAbstractState state = post.getDomainInstance(SimpleAbstractState.class);
+			if (isAssert(node)) {
+				for (AnalyzedCFG<A, H, V, T> res : tool.getResultOf(graph)) {
+					AnalysisState<A, H, V, T> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
+					try {
+						SimpleAbstractState state = post.getDomainInstance(SimpleAbstractState.class);
 
-							if (first) {
-								System.err.println(state.getValueState().representation().toString());
-								first = false;
+						if (((UnresolvedCall) node).getParameters()[0].toString()
+								.startsWith("main::containsChar")) {
+							Expression[] args = ((UnresolvedCall) ((UnresolvedCall) node).getParameters()[0])
+									.getParameters();
+							VariableRef variable = (VariableRef) args[0];
+							GoString ch = (GoString) args[1];
+							AnalysisState<A, H, V, T> target = res.getAnalysisStateAfter(variable);
+							for (SymbolicExpression expr : target.getComputedExpressions()) {
+								ContainsCharProvider lattice = (ContainsCharProvider) ((SmashedSum) target
+										.getDomainInstance(ValueEnvironment.class).getState(expr)).getStringValue();
+								Satisfiability sat = lattice.containsChar(ch.getValue().charAt(0));
+								if (sat == Satisfiability.UNKNOWN)
+									tool.warnOn(node, "This assertion might fail");
+								else if (sat == Satisfiability.NOT_SATISFIED)
+									tool.warnOn(node, "This assertion always fails");
 							}
-
-							if (((UnresolvedCall) node).getParameters()[0].toString()
-									.startsWith("main::containsChar")) {
-								Expression[] args = ((UnresolvedCall) ((UnresolvedCall) node).getParameters()[0])
-										.getParameters();
-								VariableRef variable = (VariableRef) args[0];
-								GoString ch = (GoString) args[1];
-								AnalysisState<A, H, V, T> target = res.getAnalysisStateAfter(variable);
-								for (SymbolicExpression expr : target.getComputedExpressions()) {
-									ContainsCharProvider lattice = (ContainsCharProvider) ((SmashedSum) target
-											.getDomainInstance(ValueEnvironment.class).getState(expr)).getStringValue();
-									Satisfiability sat = lattice.containsChar(ch.getValue().charAt(0));
-									if (sat == Satisfiability.UNKNOWN)
-										tool.warnOn(node, "This assertion might fail");
-									else if (sat == Satisfiability.NOT_SATISFIED)
-										tool.warnOn(node, "This assertion always fails");
-								}
-							} else
-								for (SymbolicExpression expr : post.getComputedExpressions()) {
-									Satisfiability sat = state.satisfies(expr, node);
-									if (sat == Satisfiability.UNKNOWN)
-										tool.warnOn(node, "This assertion might fail");
-									else if (sat == Satisfiability.NOT_SATISFIED)
-										tool.warnOn(node, "This assertion always fails");
-								}
-						} catch (SemanticException e) {
-							throw new RuntimeException(e);
-						}
+						} else
+							for (SymbolicExpression expr : post.getComputedExpressions()) {
+								Satisfiability sat = state.satisfies(expr, node);
+								if (sat == Satisfiability.UNKNOWN)
+									tool.warnOn(node, "This assertion might fail");
+								else if (sat == Satisfiability.NOT_SATISFIED)
+									tool.warnOn(node, "This assertion always fails");
+							}
+					} catch (SemanticException e) {
+						throw new RuntimeException(e);
 					}
 				}
+			}
 			return true;
 		}
 
@@ -146,14 +143,18 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 				new MonolithicHeap(),
 				new ValueEnvironment<>(new SmashedSum<>(new Interval(), stringDomain)),
 				new TypeEnvironment<>(new InferredTypes())));
-		conf.serializeResults = true;
 		conf.semanticChecks.add(new AssertionCheck<>());
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.compareWithOptimization = false;
-		if (dump)
+		conf.optimize = true;
+		conf.hotspots = st -> isAssert(st)
+				|| (st instanceof Expression && isAssert(((Expression) st).getRootStatement()));
+		if (dump) {
+			conf.serializeResults = true;
 			conf.analysisGraphs = it.unive.lisa.conf.LiSAConfiguration.GraphType.HTML_WITH_SUBNODES;
+		}
 		return conf;
 	}
 
@@ -185,18 +186,14 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 	}
 
 	@Test
+	@Ignore("This takes ~10 minutes to execute, so we keep it disabled by default")
 	public void toStringFaTest() throws IOException, AnalysisSetupException {
-		CronConfiguration conf = baseConf(new FSA());
-		conf.serializeResults = false; // too expensive
-		conf.semanticChecks.clear();
-		perform("tarsis/tostring", "fa", "tostring.go", conf);
+		perform("tarsis/tostring", "fa", "tostring.go", baseConf(new FSA()));
 	}
 
 	@Test
 	public void toStringTarsisTest() throws IOException, AnalysisSetupException {
-		CronConfiguration conf = baseConf(new Tarsis());
-		conf.serializeResults = false; // too expensive
-		perform("tarsis/tostring", "tarsis", "tostring.go", conf);
+		perform("tarsis/tostring", "tarsis", "tostring.go", baseConf(new Tarsis()));
 	}
 
 	@Test
@@ -221,10 +218,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void substringFaTest() throws IOException, AnalysisSetupException {
-		CronConfiguration conf = baseConf(new FSA());
-		conf.serializeResults = false; // too expensive
-		conf.semanticChecks.clear();
-		perform("tarsis/substring", "fa", "subs.go", conf);
+		perform("tarsis/substring", "fa", "subs.go", baseConf(new FSA()));
 	}
 
 	@Test
@@ -254,17 +248,12 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void loopFaTest() throws IOException, AnalysisSetupException {
-		CronConfiguration conf = baseConf(new FSA());
-		conf.serializeResults = false;
-		conf.semanticChecks.clear();
-		perform("tarsis/loop", "fa", "loop.go", conf);
+		perform("tarsis/loop", "fa", "loop.go", baseConf(new FSA()));
 	}
 
 	@Test
 	public void loopTarsisTest() throws IOException, AnalysisSetupException {
-		CronConfiguration conf = baseConf(new Tarsis());
-		conf.serializeResults = false; // too expensive
-		perform("tarsis/loop", "tarsis", "loop.go", conf);
+		perform("tarsis/loop", "tarsis", "loop.go", baseConf(new Tarsis()));
 	}
 
 	@Test
@@ -289,10 +278,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 
 	@Test
 	public void cmFaTest() throws IOException, AnalysisSetupException {
-		CronConfiguration conf = baseConf(new FSA());
-		conf.serializeResults = false;
-		conf.semanticChecks.clear();
-		perform("tarsis/count", "fa", "count.go", conf);
+		perform("tarsis/count", "fa", "count.go", baseConf(new FSA()));
 	}
 
 	@Test

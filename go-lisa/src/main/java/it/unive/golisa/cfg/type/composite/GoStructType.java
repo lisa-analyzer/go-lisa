@@ -56,6 +56,17 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	}
 
 	/**
+	 * Gets the struct type for the given name.
+	 * 
+	 * @param name the name of the struct type
+	 * 
+	 * @return the type
+	 */
+	public static GoStructType get(String name) {
+		return structTypes.get(name);
+	}
+
+	/**
 	 * Updates the reference to a struct type.
 	 * 
 	 * @param name name of the struct type to be updated

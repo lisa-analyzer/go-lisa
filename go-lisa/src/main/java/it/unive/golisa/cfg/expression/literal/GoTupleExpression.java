@@ -31,6 +31,8 @@ import it.unive.lisa.symbolic.value.Constant;
  */
 public class GoTupleExpression extends NaryExpression {
 
+	private final GoTupleType tupleType;
+	
 	/**
 	 * Builds a Go tuple expression.
 	 * 
@@ -40,6 +42,15 @@ public class GoTupleExpression extends NaryExpression {
 	 */
 	public GoTupleExpression(CFG cfg, CodeLocation location, Expression... expressions) {
 		super(cfg, location, "(tuple)", expressions);
+		
+		int len = expressions.length;
+		Parameter[] types = new Parameter[len];
+		for (int i = 0; i < types.length; i++) {
+			Expression p = expressions[i];
+			types[i] = new Parameter(p.getLocation(), "_", p.getStaticType());
+		}
+
+		tupleType = GoTupleType.lookup(types);
 	}
 
 	@Override
@@ -50,16 +61,6 @@ public class GoTupleExpression extends NaryExpression {
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		// Length of the expression tuple
-		int len = getSubExpressions().length;
-		Parameter[] types = new Parameter[len];
-		for (int i = 0; i < types.length; i++) {
-			Expression p = getSubExpressions()[i];
-			types[i] = new Parameter(p.getLocation(), "_", p.getStaticType());
-		}
-
-		GoTupleType tupleType = GoTupleType.lookup(types);
-
 		MemoryAllocation created = new MemoryAllocation(tupleType, getLocation());
 
 		// Allocates the new heap allocation
@@ -76,7 +77,7 @@ public class GoTupleExpression extends NaryExpression {
 					getLocation());
 
 			AnalysisState<A, H, V, T> tmp = containerState;
-			for (int i = 0; i < len; i++) {
+			for (int i = 0; i < getSubExpressions().length; i++) {
 				AccessChild access = new AccessChild(tupleType.getTypeAt(i), dereference,
 						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				AnalysisState<A, H, V, T> accessState = tmp.smallStepSemantics(access, this);

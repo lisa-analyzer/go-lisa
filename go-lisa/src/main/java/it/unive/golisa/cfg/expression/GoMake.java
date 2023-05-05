@@ -51,6 +51,21 @@ public class GoMake extends NaryExpression {
 	public GoMake(CFG cfg, CodeLocation location, Type type, Expression[] parameters) {
 		super(cfg, location, "make " + type, parameters);
 		this.type = type;
+		
+		if (type instanceof GoSliceType) {
+			// register the types
+			Type contentType = ((GoSliceType) type).getContentType();
+			
+			// FIXME: currently, we handle just slice allocation where the
+			// length is integer
+			if (!(getSubExpressions()[0] instanceof GoInteger))
+				return;
+
+			int length = (int) ((GoInteger) getSubExpressions()[0]).getValue();
+
+			GoArrayType.lookup(contentType, length);
+			GoSliceType.lookup(contentType);
+		}
 	}
 
 	@Override

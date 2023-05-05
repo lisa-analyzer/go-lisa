@@ -176,9 +176,9 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		Set<Type> instances = new HashSet<>();
 		for (Unit un : unit.getInstances())
 			if (un instanceof InterfaceUnit)
-				instances.add(GoInterfaceType.lookup(un.getName(), null, null));
+				instances.add(interfaces.get(un.getName()));
 			else
-				instances.add(GoStructType.lookup(un.getName(), null));
+				instances.add(GoStructType.get(un.getName()));
 		return instances;
 	}
 

@@ -1,5 +1,10 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.analysis.taint.TaintedP1;
+import it.unive.golisa.analysis.taint.TaintedP2;
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
@@ -12,6 +17,7 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -65,6 +71,31 @@ public class GoMake extends NaryExpression {
 		// is passed as argument and it should be allocated
 		if (type == null)
 			return state.top();
+		
+		ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
+		if (env != null) {
+			boolean found = false;
+			for(ExpressionSet<SymbolicExpression> set : params) {
+				for(SymbolicExpression e : set.elements()) {
+					ValueEnvironment<?> ve= state.smallStepSemantics(e, this).getDomainInstance(ValueEnvironment.class);
+					if (ve.getValueOnStack() instanceof TaintDomainForPhase1) {
+						found = true;
+						if (((TaintDomainForPhase1)ve.getValueOnStack()).isTainted())
+								return state.smallStepSemantics(new TaintedP1(getLocation()), this);
+					}
+					if (ve.getValueOnStack() instanceof TaintDomainForPhase2) {
+						found = true;
+						if (((TaintDomainForPhase2)ve.getValueOnStack()).isTainted())
+							return state.smallStepSemantics(new TaintedP2(getLocation()), this);
+					}
+				}
+				
+			}
+			
+			if(found)
+				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), this);
+
+		}
 
 		// slice allocation
 		if (type instanceof GoSliceType) {

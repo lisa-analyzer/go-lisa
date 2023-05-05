@@ -23,6 +23,7 @@ import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.fmt.Sprint;
 import it.unive.golisa.cfg.runtime.fmt.Sprintf;
 import it.unive.golisa.cfg.runtime.google.uuid.function.NewUUID;
+import it.unive.golisa.cfg.runtime.hyperledger.fabric.common.util.function.ToChaincodeArgs;
 import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.runtime.io.function.Copy;
 import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
@@ -184,6 +185,8 @@ public interface GoRuntimeLoader {
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
+			if(module.endsWith("/util"))
+				loadHyperledgerUtil(program);
 			if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
 		} else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
@@ -434,7 +437,14 @@ public interface GoRuntimeLoader {
 		// adding compilation unit to program
 		program.addUnit(statebased);
 	}
-
+	
+	private void loadHyperledgerUtil(Program program) {
+		CodeUnit util = new CodeUnit(runtimeLocation, program, "util");
+		
+		// adding functions
+		util.addCodeMember(new ToChaincodeArgs(runtimeLocation, util));
+		program.addUnit(util);
+	}
 	private void loadShim(Program program) {
 		CodeUnit shim = new CodeUnit(runtimeLocation, program, "shim");
 

@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.analysis.taint.TaintedP2;
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -98,6 +100,10 @@ public class InvokeChaincode extends NativeCFG {
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 			AnalysisState<A, H, V, T> result = state.bottom();
+			
+		//	if(getDescriptor().getAnnotations().contains(TaintDomainForPhase2.TAINTED_MATCHER_PHASE2))
+		//		return state.smallStepSemantics(new TaintedP2(getLocation()), original);
+			
 			for (ExpressionSet<SymbolicExpression> exprs : params)
 				for (SymbolicExpression expr : exprs)
 					result = result.lub(state.smallStepSemantics(expr, original));

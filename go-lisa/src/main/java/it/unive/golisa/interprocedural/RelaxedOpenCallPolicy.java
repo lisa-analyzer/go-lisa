@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
+import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
@@ -112,13 +113,12 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 					return entryState.assign(var, pushany, call);
 				} else if (((TaintDomainForPhase2) stackValue).isClean()) { // &&
 																	// isRuntimeAPI(call))
-/*																	// {
-				if (!isSourceForUCCIP2(call))
-						return entryState.assign(var,
-								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+																	// {
+					if (!isSourceForUCCIP2(call))
+						return entryState.assign(var, new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
 					else
 						return entryState.assign(var, new TaintedP2(call.getLocation()), call);
-*/
+
 				} else if (((TaintDomainForPhase2) stackValue).isBottom()) {
 					return entryState;
 				}
@@ -240,6 +240,12 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 			}
 		}
 
+		return false;
+
+	}
+	
+	private boolean isSourceForUCCIP2(Call call) {
+		//TODO
 		return false;
 
 	}

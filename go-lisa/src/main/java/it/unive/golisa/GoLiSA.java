@@ -93,15 +93,6 @@ public class GoLiSA {
 		}
 
 		String filePath = cmd.getOptionValue("input");
-
-		try {
-			if(!FileUtils.readFileToString(new File(filePath)).contains("InvokeChaincode")) {
-				System.out.println("File "+filePath+" does not contain cross-contract invocations");
-				System.exit(0);
-			}
-		} catch (IOException e3) {
-			e3.printStackTrace();
-		}
 		
 		String outputDir = cmd.getOptionValue("output");
 

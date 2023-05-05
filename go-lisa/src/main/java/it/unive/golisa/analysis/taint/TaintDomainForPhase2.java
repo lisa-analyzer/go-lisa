@@ -1,6 +1,7 @@
 package it.unive.golisa.analysis.taint;
 
 import it.unive.golisa.cfg.runtime.conversion.GoConv;
+import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,6 +15,8 @@ import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -95,6 +98,15 @@ public class TaintDomainForPhase2 extends BaseNonRelationalValueDomain<TaintDoma
 	private TaintDomainForPhase2 defaultApprox(Identifier id, ProgramPoint pp) throws SemanticException {
 		
 		Annotations annots = id.getAnnotations();
+		
+		if(pp instanceof GoShortVariableDeclaration) {
+			GoShortVariableDeclaration decl = (GoShortVariableDeclaration) pp;
+			Expression right = decl.getRight();
+			if(right instanceof Call && right.toString().contains("InvokeChaincode")) {
+				return TAINTED; //TODO: insert the annotation logic in the semantic of InvokeChaincode
+			}
+		}
+	
 		if (annots.isEmpty())
 			return super.variable(id, pp);
 

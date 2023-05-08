@@ -20,6 +20,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
@@ -51,6 +52,8 @@ public class GoRangeGetNextValue extends NaryExpression {
 				return ((GoSliceType) type).getContentType();
 			else if (type instanceof GoMapType)
 				return ((GoMapType) type).getElementType();
+			else if (type instanceof ReferenceType)
+				return computeType(((ReferenceType) type).getInnerType());
 		}
 		return Untyped.INSTANCE;
 	}
@@ -65,8 +68,10 @@ public class GoRangeGetNextValue extends NaryExpression {
 					throws SemanticException {
 		if (state.getComputedExpressions().size() == 1) {
 			for (SymbolicExpression e : state.getComputedExpressions()) {
-				if (!computeType(e.getDynamicType()).equals(Untyped.INSTANCE))
-					return state.smallStepSemantics(new PushAny(computeType(e.getDynamicType()), this.getLocation()),
+				Type computed = computeType(e.getDynamicType());
+				if (!computed.equals(Untyped.INSTANCE))
+					return state.smallStepSemantics(
+							new PushAny(computed, this.getLocation()),
 							this);
 			}
 		}

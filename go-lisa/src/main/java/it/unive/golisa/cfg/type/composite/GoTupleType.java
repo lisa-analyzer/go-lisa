@@ -146,8 +146,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 		for (int i = 0; i < types.length; i++)
 			pars[i] = new Parameter(location, "_", types[i]);
 
-		GoTupleType type = new GoTupleType(pars);
-		return tupleTypes.stream().filter(x -> x.equals(type)).findFirst().get();
+		return lookup(pars);
 	}
 
 	/**

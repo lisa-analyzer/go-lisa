@@ -23,11 +23,11 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
- * The Println function from fmt package.
+ * The Print function from fmt package.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class Println extends NativeCFG {
+public class Print extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
@@ -35,14 +35,14 @@ public class Println extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param fmtUnit  the unit to which this native cfg belongs to
 	 */
-	public Println(CodeLocation location, CodeUnit fmtUnit) {
-		super(new CodeMemberDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
+	public Print(CodeLocation location, CodeUnit fmtUnit) {
+		super(new CodeMemberDescriptor(location, fmtUnit, false, "Print", Untyped.INSTANCE,
 				new VarArgsParameter(location, "a", GoSliceType.lookup(Untyped.INSTANCE))),
 				PrintlnImpl.class);
 	}
 
 	/**
-	 * The {@link Println} implementation.
+	 * The {@link Print} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -78,7 +78,7 @@ public class Println extends NativeCFG {
 		 * @param arg      the expression
 		 */
 		public PrintlnImpl(CFG cfg, CodeLocation location, Expression arg) {
-			super(cfg, location, "Println", Untyped.INSTANCE, arg);
+			super(cfg, location, "Print", Untyped.INSTANCE, arg);
 		}
 
 		@Override

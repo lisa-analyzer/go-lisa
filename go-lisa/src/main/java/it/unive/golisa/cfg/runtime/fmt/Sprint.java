@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
+import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,7 +16,6 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
-import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -38,7 +39,7 @@ public class Sprint extends NativeCFG {
 	 */
 	public Sprint(CodeLocation location, CodeUnit fmtUnit) {
 		super(new CodeMemberDescriptor(location, fmtUnit, false, "Sprint", GoStringType.INSTANCE,
-				new Parameter(location, "this", Untyped.INSTANCE)),
+				new VarArgsParameter(location, "a", GoSliceType.lookup(Untyped.INSTANCE))),
 				SprintImpl.class);
 	}
 

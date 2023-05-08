@@ -1,5 +1,29 @@
 package it.unive.golisa.frontend;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unive.golisa.GoFeatures;
 import it.unive.golisa.GoTypeSystem;
 import it.unive.golisa.antlr.GoLexer;
@@ -39,7 +63,6 @@ import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
@@ -70,28 +93,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * This class manages the translation from a Go program to the corresponding
@@ -199,7 +200,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoTupleType.clearAll();
 		GoChannelType.clearAll();
 		GoFunctionType.clearAll();
-		GoVariadicType.clearAll();
 		GoAliasType.clearAll();
 		GoInterfaceType.clearAll();
 	}
@@ -236,7 +236,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoTupleType.all().forEach(program.getTypes()::registerType);
 		GoChannelType.all().forEach(program.getTypes()::registerType);
 		GoFunctionType.all().forEach(program.getTypes()::registerType);
-		GoVariadicType.all().forEach(program.getTypes()::registerType);
 		GoAliasType.all().forEach(program.getTypes()::registerType);
 		GoInterfaceType.all().forEach(program.getTypes()::registerType);
 

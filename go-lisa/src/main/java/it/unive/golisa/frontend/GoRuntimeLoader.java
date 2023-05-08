@@ -11,8 +11,12 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Marshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
+import it.unive.golisa.cfg.runtime.fmt.Print;
+import it.unive.golisa.cfg.runtime.fmt.Printf;
 import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.fmt.Sprint;
+import it.unive.golisa.cfg.runtime.fmt.Sprintf;
+import it.unive.golisa.cfg.runtime.fmt.Sprintln;
 import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.runtime.io.function.Copy;
 import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
@@ -461,8 +465,12 @@ public interface GoRuntimeLoader {
 
 	private void loadFmt(Program program) {
 		CodeUnit fmt = new CodeUnit(runtimeLocation, program, "fmt");
+		fmt.addCodeMember(new Print(runtimeLocation, fmt));
+		fmt.addCodeMember(new Printf(runtimeLocation, fmt));
 		fmt.addCodeMember(new Println(runtimeLocation, fmt));
 		fmt.addCodeMember(new Sprint(runtimeLocation, fmt));
+		fmt.addCodeMember(new Sprintf(runtimeLocation, fmt));
+		fmt.addCodeMember(new Sprintln(runtimeLocation, fmt));
 
 		program.addUnit(fmt);
 	}

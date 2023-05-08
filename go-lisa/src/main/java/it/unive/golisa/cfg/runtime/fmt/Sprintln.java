@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
 import it.unive.golisa.cfg.VarArgsParameter;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -20,14 +21,15 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Untyped;
 
 /**
- * The Println function from fmt package.
+ * The Sprintln function from fmt package.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class Println extends NativeCFG {
+public class Sprintln extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
@@ -35,18 +37,18 @@ public class Println extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param fmtUnit  the unit to which this native cfg belongs to
 	 */
-	public Println(CodeLocation location, CodeUnit fmtUnit) {
-		super(new CodeMemberDescriptor(location, fmtUnit, false, "Println", Untyped.INSTANCE,
+	public Sprintln(CodeLocation location, CodeUnit fmtUnit) {
+		super(new CodeMemberDescriptor(location, fmtUnit, false, "Sprintln", GoStringType.INSTANCE,
 				new VarArgsParameter(location, "a", GoSliceType.lookup(Untyped.INSTANCE))),
-				PrintlnImpl.class);
+				SprintImpl.class);
 	}
 
 	/**
-	 * The {@link Println} implementation.
+	 * The {@link Sprintln} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class PrintlnImpl extends UnaryExpression implements PluggableStatement {
+	public static class SprintImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -65,8 +67,8 @@ public class Println extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static PrintlnImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new PrintlnImpl(cfg, location, params[0]);
+		public static SprintImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new SprintImpl(cfg, location, params[0]);
 		}
 
 		/**
@@ -77,8 +79,8 @@ public class Println extends NativeCFG {
 		 *                     defined
 		 * @param arg      the expression
 		 */
-		public PrintlnImpl(CFG cfg, CodeLocation location, Expression arg) {
-			super(cfg, location, "Println", Untyped.INSTANCE, arg);
+		public SprintImpl(CFG cfg, CodeLocation location, Expression arg) {
+			super(cfg, location, "Sprintln", GoStringType.INSTANCE, arg);
 		}
 
 		@Override
@@ -88,7 +90,7 @@ public class Println extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(expr, original);
+			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
 	}
 }

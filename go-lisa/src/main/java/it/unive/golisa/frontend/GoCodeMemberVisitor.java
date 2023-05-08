@@ -1,5 +1,31 @@
 package it.unive.golisa.frontend;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -85,6 +111,7 @@ import it.unive.golisa.cfg.Switch;
 import it.unive.golisa.cfg.SwitchCase;
 import it.unive.golisa.cfg.TypeSwitch;
 import it.unive.golisa.cfg.TypeSwitchCase;
+import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoForRange;
@@ -157,7 +184,6 @@ import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
@@ -191,30 +217,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method.
@@ -669,13 +671,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Parameter[] result = new Parameter[] {};
 		Type type = visitType_(ctx.type_());
 		type = type == null ? Untyped.INSTANCE : type;
+		boolean variadic = ctx.ELLIPSIS() != null; 
 
 		// the parameter's type is variadic (e.g., ...string)
-		if (ctx.ELLIPSIS() != null)
-			type = GoVariadicType.lookup(type);
+		if (variadic)
+			type = GoSliceType.lookup(type);
 
 		if (ctx.identifierList() == null)
-			result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
+			if (variadic)
+				result = ArrayUtils.add(result, new VarArgsParameter(locationOf(ctx), "_", type));
+			else
+				result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
 		else
 			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) {
 				TerminalNode par = ctx.identifierList().IDENTIFIER(i);

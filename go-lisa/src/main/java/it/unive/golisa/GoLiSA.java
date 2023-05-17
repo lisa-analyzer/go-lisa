@@ -6,6 +6,7 @@ import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
+import it.unive.golisa.checker.NumericalOverflowChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
@@ -20,8 +21,10 @@ import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
@@ -109,11 +112,13 @@ public class GoLiSA {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.workdir = outputDir;
 		conf.jsonOutput = true;
-		conf.syntacticChecks.add(new GoRoutineSourcesChecker());
+		conf.optimize = false;
+		//conf.hotspots
 
 		switch (analysis) {
 
 		case "taint":
+			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new TaintDomain()),
@@ -121,19 +126,22 @@ public class GoLiSA {
 			conf.semanticChecks.add(new TaintChecker());
 			break;
 		case "non-interference":
+			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new InferenceSystem<>(new IntegrityNIDomain()),
 					LiSAFactory.getDefaultFor(TypeDomain.class));
 			conf.semanticChecks.add(new IntegrityNIChecker());
 			break;
-		default:
+		case "numerical-overflow":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new Interval()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
+					new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new NumericalOverflowChecker());
 			break;
-
+		default:
+			
 		}
 
 		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;

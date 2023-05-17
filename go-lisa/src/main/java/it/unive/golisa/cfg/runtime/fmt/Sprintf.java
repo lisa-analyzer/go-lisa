@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -22,7 +24,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -95,7 +99,30 @@ public class Sprintf extends NativeCFG {
 						SymbolicExpression left,
 						SymbolicExpression right,
 						StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			
+			return state.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), left, right, GoSprintfOperator.INSTANCE, getLocation()), original);
+		}
+	}
+	
+	private static class GoSprintfOperator implements BinaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final GoSprintfOperator INSTANCE = new GoSprintfOperator();
+
+		private GoSprintfOperator() {
+		}
+
+		@Override
+		public String toString() {
+			return "SprintfOperator";
+		}
+
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+			return Set.of(types.getStringType());
 		}
 	}
 }

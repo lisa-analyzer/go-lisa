@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
-import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -10,8 +9,6 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -27,7 +24,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
@@ -132,21 +128,7 @@ public class Atoi extends NativeCFG {
 			}
 			
 			return result;
-			
-			/*
-			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
-			if (env != null) {
-				ValueEnvironment<?> ve = state.smallStepSemantics(expr, original).getDomainInstance(ValueEnvironment.class);
-				if (ve.lattice instanceof Interval) {
-					return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
-				}
-			}
-			
-			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
-				return state.bottom();
-		
-			return state.smallStepSemantics(expr, original);
-			*/
+
 		}
 	}
 }

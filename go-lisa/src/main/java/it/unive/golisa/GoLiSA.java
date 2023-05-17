@@ -77,19 +77,6 @@ public class GoLiSA {
 		output.setRequired(true);
 		options.addOption(output);
 
-		Option framework = new Option("f", "framework", true,
-				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
-		framework.setRequired(false);
-		options.addOption(framework);
-
-		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
-		analysis_opt.setRequired(true);
-		options.addOption(analysis_opt);
-
-		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
-		dump_opt.setRequired(false);
-		options.addOption(dump_opt);
-
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
@@ -107,44 +94,19 @@ public class GoLiSA {
 
 		String outputDir = cmd.getOptionValue("output");
 
-		String analysis = cmd.getOptionValue("analysis");
-
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.workdir = outputDir;
 		conf.jsonOutput = true;
 		conf.optimize = false;
-		//conf.hotspots
 
-		switch (analysis) {
 
-		case "taint":
-			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new TaintDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
-			conf.semanticChecks.add(new TaintChecker());
-			break;
-		case "non-interference":
-			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new InferenceSystem<>(new IntegrityNIDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
-			conf.semanticChecks.add(new IntegrityNIChecker());
-			break;
-		case "numerical-overflow":
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new Interval()),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new NumericalOverflowChecker());
-			break;
-		default:
-			
-		}
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.semanticChecks.add(new NumericalOverflowChecker());
 
-		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 
 		Program program = null;
 
@@ -154,29 +116,12 @@ public class GoLiSA {
 
 		try {
 
-			NonDeterminismAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory
-					.getAnnotationSets(cmd.getOptionValue("framework"));
+
 			program = GoFrontEnd.processFile(filePath);
-			AnnotationLoader annotationLoader = new AnnotationLoader();
-			annotationLoader.addAnnotationSet(annotationSet);
-			annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("hyperledger-fabric"));
 			entryLoader.load(program);
-
-			if (!entryLoader.isEntryFound()) {
-				Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
-						.getAppliedAnnotations();
-
-				// if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations,
-				// annotationSet)) {
-				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
-						appliedAnnotations, annotationSet);
-				for (CFG c : cfgs)
-					program.addEntryPoint(c);
-				// }
-			}
 
 			if (!program.getEntryPoints().isEmpty()) {
 				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());

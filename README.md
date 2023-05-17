@@ -17,7 +17,9 @@ It can be executed within different Java runtime environments (currently up to J
 ## How to use GoLiSA
 
 This version of GoLiSA can be run by using the launcher with the following command line: 
-`go-lisa -i <go-file-path> -o <output-dir-path>`
+```
+go-lisa -i <go-file-path> -o <output-dir-path>
+```
 where `<go-file-path>` is the path of the file written in Go to analyze and `<output-dir-path>` is the directory path of GoLiSA outputs. The overflow analysis and the Hyperledger Fabric framework in this case are set by default.
 
 Alternatively, if GoLiSA is imported to an external project and used as a library, the following snipped can be used to setup and run the analysis:

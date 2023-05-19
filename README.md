@@ -39,15 +39,23 @@ LiSA lisa = new LiSA(conf);
 lisa.run(program);
 ```
 
-### Analyze Running Example
+### Walkthrough to Analyze Running Example
 
-The running example `running-example.go` is located in the root folder of repository. The analysis con be executed running the launcher with the following command line:
-```
-go-lisa -i running-example.go -o output
-```
-The result of analysis will stored in the `output` directory which will be created in the root folder where the launcher runs.
+- It is possible compile the go-lisa project within `go-lisa` folder using the command `gradle install`, then the compiled binaries will be created in the `build` folder
+![alt text](https://github.com/lisa-analyzer/go-lisa/tree/issta23-demo-tool/img/build.png?raw=true)
+
+- The running example `running-example.go` is located in the root folder of repository. At this point, it is possible extract the binaries and the GoLiSA's launcher contained in the archive of `build` folder and analyze the running example
+![alt text](https://github.com/lisa-analyzer/go-lisa/tree/issta23-demo-tool/img/go-lisa-run.png?raw=true)
+
+- The result of analysis will stored in the `output` directory which will be created in the root folder where the launcher runs.
+![alt text](https://github.com/lisa-analyzer/go-lisa/tree/issta23-demo-tool/img/go-lisa-res.png?raw=true)
+
 The `output` directory will contain several files:
 
 - `report.json` the analysis report in JSON format containing the warning triggered by the analysis
+![alt text](https://github.com/lisa-analyzer/go-lisa/tree/issta23-demo-tool/img/warnings.png?raw=true)
+
 - `*.html` analysis dump of CFGs in HTML format, where each CFG node contains analysis information for each program point
+![alt text](https://github.com/lisa-analyzer/go-lisa/tree/issta23-demo-tool/img/cfg.png?raw=true)
+
 - `js` folder that contains supporting material for HTML visualization of CFGs 

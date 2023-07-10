@@ -4,7 +4,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/lisa-analyzer/go-lisa)
 ![GitHub issues](https://img.shields.io/github/issues-raw/lisa-analyzer/go-lisa)
 
-GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications (OOPSLA 2022)
+GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications
 
 ## How to use GoLiSA
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) and it expects four paramaters:

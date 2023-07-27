@@ -8,6 +8,7 @@ import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.readwrite.ReadWriteChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
@@ -24,6 +25,7 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.conf.LiSAConfiguration;
@@ -139,6 +141,13 @@ public class GoLiSA {
 					new ValueEnvironment<>(new Interval()),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new NumericalOverflowChecker());
+			break;
+		case "read-write":
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+					new ValueEnvironment<>(new Tarsis()),
+					new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new ReadWriteChecker());
 			break;
 		default:
 			

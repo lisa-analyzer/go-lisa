@@ -34,6 +34,8 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
+import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 
 
 
@@ -87,7 +89,7 @@ public class ReadWriteChecker implements
 			return true;
 
 		UnresolvedCall call = (UnresolvedCall) node;
-		if(ReadWriteHFUtils.isReadOrWriteCall(call)) {
+		if(ReadWriteHFUtils.isWriteCall(call)) {
 			try {
 				Pair<TypeInstruction, Triple<String, KeyType, int[]>> info = ReadWriteHFUtils.getReadWriteInfo(call);
 				int[] keyParams = info.getRight().getRight();
@@ -171,6 +173,16 @@ public class ReadWriteChecker implements
 					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit) {
 		return true;
+	}
+	
+	public Collection<CodeMember> getCalleesTransitively(CheckToolWithAnalysisResults<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CodeMember cm) {
+		VisitOnceWorkingSet<CodeMember> ws = VisitOnceFIFOWorkingSet.mk();
+		tool.getCallees(cm).stream().forEach(ws::push);
+		while (!ws.isEmpty())
+			tool.getCallees(ws.pop()).stream().forEach(ws::push);
+		return ws.getSeen();
 	}
 
 }

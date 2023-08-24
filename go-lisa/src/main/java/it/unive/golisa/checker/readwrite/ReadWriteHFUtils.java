@@ -43,6 +43,12 @@ public class ReadWriteHFUtils {
 	public static boolean isReadOrWriteCall(UnresolvedCall call) {
 		return signatures.stream().anyMatch(e -> e.getRight().getLeft().equals(call.getTargetName()));
 	}
+	public static boolean isWriteCall(UnresolvedCall call) {
+		return signatures.stream().anyMatch(e -> e.getRight().getLeft().equals(call.getTargetName()) && e.getLeft().equals(TypeInstruction.WRITE));
+	}
+	public static boolean isReadCall(UnresolvedCall call) {
+		return signatures.stream().anyMatch(e -> e.getRight().getLeft().equals(call.getTargetName())&& e.getLeft().equals(TypeInstruction.READ));
+	}
 	
 	public static Pair<TypeInstruction, Triple<String, KeyType, int[]>> getReadWriteInfo(UnresolvedCall call) {
 		for(Pair<TypeInstruction, Triple<String, KeyType, int[]>> e : signatures) {

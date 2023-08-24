@@ -7,8 +7,11 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
+import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 
 public class UtilsCFG {
 
@@ -80,4 +83,5 @@ public class UtilsCFG {
 		}
 		return false;
 	}
+	
 }

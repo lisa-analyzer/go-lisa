@@ -6,12 +6,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
-import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 
 public class UtilsCFG {
 
@@ -22,33 +22,34 @@ public class UtilsCFG {
 	
 	public static boolean existPath(CFG graph, Statement source, Statement destination, Search search) {
 			if(search.equals(Search.BFS))
-				searchBFS(graph, source, destination);
+				return searchBFS(graph, source, destination);
 			else if(search.equals(Search.DFS))
-				searchDFS(graph, source, destination);
+				return searchDFS(graph, source, destination);
 			else
 				throw new IllegalArgumentException("The following search algorithm \"" + search + "\" is not supported");
-			
-		return false;
 	}
 	
 	public static boolean searchBFS(CFG graph, Statement source, Statement destination) {
 
-		if(graph.containsNode(source) && graph.containsNode(destination)) {
+		if(containsNode(graph, source) && containsNode(graph, destination)) {
 			Set<Statement> seen = new HashSet<>();
 	
 			LinkedList<Statement> workingList = new LinkedList<Statement>();
-			workingList.add(source);
-			
-			while(!workingList.isEmpty()) {
-				Statement node = workingList.remove();
-				if(!seen.contains(node)) {
-					seen.add(node);
-					
-					if(node.equals(destination))
-						return true;
-
-					Collection<Edge> edges = graph.getOutgoingEdges(node);
-					edges.forEach(e -> workingList.add(e.getDestination()));
+			Statement start = extractSourceFromGraph(graph, source);
+			if(start != null) {
+				workingList.add(start);
+	
+				while(!workingList.isEmpty()) {
+					Statement node = workingList.remove();
+					if(!seen.contains(node)) {
+						seen.add(node);
+						
+						if(equalsOrContains(node, destination))
+							return true;
+	
+						Collection<Edge> edges = graph.getOutgoingEdges(node);
+						edges.forEach(e -> workingList.add(e.getDestination()));
+					}
 				}
 			}
 		}
@@ -56,11 +57,54 @@ public class UtilsCFG {
 		return false;
 	}
 	
+	private static Statement extractSourceFromGraph(CFG graph, Statement source) {
+		for(Statement n : graph.getNodes()) 
+			if(equalsOrContains(n,source))
+				return n;
+		return null;
+	}
+
+	private static boolean equalsOrContains(Statement n1, Statement n2) {
+		Set<Statement> seen = new HashSet<>();
+		return equalsOrContainsRecursive(n1, n2, seen);
+	}
+
+	private static boolean equalsOrContainsRecursive(Statement n1, Statement n2, Set<Statement> seen) {
+		if(seen.contains(n1))
+			return false;
+		seen.add(n1);
+		
+		if(n1.equals(n2)) {
+			return true;
+		} else if(n1 instanceof NaryExpression) {
+			NaryExpression nExpr = (NaryExpression) n1;
+			for(Expression subExp : nExpr.getSubExpressions()) {
+				if(equalsOrContains(subExp, n2))
+					return true;
+			}
+		} else if(n1 instanceof GoMultiAssignment ) {
+			GoMultiAssignment multiAssign = (GoMultiAssignment) n1;
+			if(equalsOrContains(multiAssign.getExpressionToAssign(),n2))
+				return true;
+		}
+	
+		return false;
+	}
+
+	private static boolean containsNode(CFG graph, Statement node) {
+
+		for(Statement n : graph.getNodes()) 
+			if(equalsOrContains(n,node))
+				return true;
+		
+		return false;
+	}
+
 	public static boolean searchDFS(CFG graph, Statement source, Statement destination) {
 
-		if(graph.containsNode(source) && graph.containsNode(destination)) {
+		if(containsNode(graph, source) && containsNode(graph, destination)) {
 			Set<Statement> seen = new HashSet<>();
-			recursiveDFS(graph, source, destination, seen);
+			recursiveDFS(graph, extractSourceFromGraph(graph, source), destination, seen);
 		}
 		
 		return false;
@@ -70,7 +114,7 @@ public class UtilsCFG {
 		if(!seen.contains(source)) {
 			seen.add(source);
 			
-			if(source.equals(destination))
+			if(equalsOrContains(source, destination))
 				return true;
 
 			Collection<Edge> edges = graph.getOutgoingEdges(source);

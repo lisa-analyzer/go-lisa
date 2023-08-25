@@ -95,7 +95,9 @@ public class ReadWritePathChecker implements
 	private void checkReadAfterWriteIssues(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
 		for(Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
 			if(p.getLeft().getCall().equals(node)) {
-				if(UtilsCFG.existPath(graph, (Statement) p.getLeft().getCall(),(Statement) p.getRight().getCall(), Search.BFS))
+				Statement read = (Statement) p.getLeft().getCall();
+				Statement write = (Statement) p.getRight().getCall();
+				if(UtilsCFG.existPath(graph, write, read, Search.BFS))
 					tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
 				
 				//TODO: interproc and defer

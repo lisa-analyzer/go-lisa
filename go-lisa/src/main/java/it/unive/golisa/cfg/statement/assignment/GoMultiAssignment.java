@@ -234,4 +234,8 @@ public class GoMultiAssignment extends Expression {
 	public Expression[] getIds() {
 		return ids;
 	}
+	
+	public Expression getExpressionToAssign() {
+		return e;
+	}
 }

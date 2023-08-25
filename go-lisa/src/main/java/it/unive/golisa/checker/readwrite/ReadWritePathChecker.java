@@ -26,7 +26,6 @@ import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
 import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 
 
-
 /**
  * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.
  * 
@@ -95,8 +94,8 @@ public class ReadWritePathChecker implements
 	private void checkReadAfterWriteIssues(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
 		for(Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
 			if(p.getLeft().getCall().equals(node)) {
-				Statement read = (Statement) p.getLeft().getCall();
-				Statement write = (Statement) p.getRight().getCall();
+				Statement write = (Statement) p.getLeft().getCall();
+				Statement read = (Statement) p.getRight().getCall();
 				if(UtilsCFG.existPath(graph, write, read, Search.BFS))
 					tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
 				

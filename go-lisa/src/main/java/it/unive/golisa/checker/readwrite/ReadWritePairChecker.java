@@ -32,8 +32,6 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
-import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 
 
 
@@ -97,8 +95,8 @@ public class ReadWritePairChecker implements
 								break;
 							for(Tarsis rkvState : rkeyValues) {
 								if(wkvState.isTop() || rkvState.isTop()
-									|| rkvState.getAutomaton().toString()
-									.equals(wkvState.getAutomaton().toString())) { //TODO: find a more elegant way to check key values using Tarsis
+									|| extractValueStringFromTarsisStates(rkvState)
+									.equals(extractValueStringFromTarsisStates(wkvState))) { //TODO: find a more elegant way to check key values using Tarsis
 									res.add(Pair.of(w,r));
 									found = true;
 									break;
@@ -112,12 +110,12 @@ public class ReadWritePairChecker implements
 						for(Tarsis wkvState : wkeyValues) {
 							if(found)
 								break;
-							for(Tarsis rstartKeyValueState : endKeyValue) {
-								for(Tarsis rendKeyValueState : startKeyValue) {
+							for(Tarsis rstartKeyValueState : startKeyValue) {
+								for(Tarsis rendKeyValueState : endKeyValue) {
 									if(wkvState.isTop() || rendKeyValueState.isTop()
 										|| ( rstartKeyValueState.isTop() ? 
-												"".compareTo(wkvState.getAutomaton().toString()) <= 0 && wkvState.getAutomaton().toString().compareTo(rendKeyValueState.getAutomaton().toString()) < 0
-										: rstartKeyValueState.getAutomaton().toString().compareTo(wkvState.getAutomaton().toString()) <= 0 && wkvState.getAutomaton().toString().compareTo(rendKeyValueState.getAutomaton().toString()) < 0)
+												"".compareTo(extractValueStringFromTarsisStates(wkvState)) <= 0 && extractValueStringFromTarsisStates(wkvState).compareTo(extractValueStringFromTarsisStates(rendKeyValueState)) < 0
+										: extractValueStringFromTarsisStates(rstartKeyValueState).compareTo(extractValueStringFromTarsisStates(wkvState)) <= 0 && extractValueStringFromTarsisStates(wkvState).compareTo(extractValueStringFromTarsisStates(rendKeyValueState)) < 0)
 										) { //TODO: find a more elegant way to check key values using Tarsis
 										res.add(Pair.of(w,r));
 										found = true;
@@ -166,7 +164,7 @@ public class ReadWritePairChecker implements
 							break;
 						for(Tarsis w2kvState : w2keyValues) {
 							if(w1kvState.isTop() || w2kvState.isTop()
-								|| w1kvState.getAutomaton().toString().equals(w2kvState.getAutomaton().toString())) { //TODO: find a more elegant way to check key values using Tarsis
+								|| extractValueStringFromTarsisStates(w1kvState).equals(extractValueStringFromTarsisStates(w2kvState))) { //TODO: find a more elegant way to check key values using Tarsis
 								res.add(Pair.of(w1,w2));
 								found = true;
 								break;
@@ -221,23 +219,25 @@ public class ReadWritePairChecker implements
 						Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
 						for (CodeMember n : nativeCfgs) {
 							Parameter[] parameters = n.getDescriptor().getFormals();
-							keyValues = extractKeyValues(call, keyParams, parameters, node, result);
+							keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
 						}
 					} else if (resolved instanceof CFGCall) {
 						CFGCall cfg = (CFGCall) resolved;
 						
 						for (CodeMember n : cfg.getTargets()) {
 							Parameter[] parameters = n.getDescriptor().getFormals();
-							keyValues = extractKeyValues(call, keyParams, parameters, node, result);
+							keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
 						}
+					} else {
+						keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
 					}
 					
 					AnalysisReadWriteHFInfo infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
 					
 					if(ReadWriteHFUtils.isReadCall(call))
-						writers.add(infoForAnalysis);
-					else if(ReadWriteHFUtils.isWriteCall(call))
 						readers.add(infoForAnalysis);
+					else if(ReadWriteHFUtils.isWriteCall(call))
+						writers.add(infoForAnalysis);
 				}
 				
 				
@@ -250,16 +250,22 @@ public class ReadWritePairChecker implements
 		return true;
 	}
 
+	private String extractValueStringFromTarsisStates(Tarsis state) {
+		if(state.getAutomaton().emptyString().equals(state.getAutomaton()))
+			return "";
+		else
+			return state.getAutomaton().toString();
+	}
+	
 
-
-	private ArrayList<Set<Tarsis>> extractKeyValues(Call call, int[] keyParams, Parameter[] parameters, Statement node, AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result) throws SemanticException {
+	private ArrayList<Set<Tarsis>> extractKeyValues(UnresolvedCall call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result) throws SemanticException {
 		
 		ArrayList<Set<Tarsis>> valStringDomain = new ArrayList<>(keyParams.length);
 		
 		for(int i=0; i < keyParams.length; i++) {
 			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i]+1;
 			valStringDomain.add(new HashSet<>());
-			if(par < parameters.length) {
+			if(par < parametersLength) {
 				
 				AnalysisState<
 				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,

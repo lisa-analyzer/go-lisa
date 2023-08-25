@@ -20,39 +20,39 @@ public class ReadWriteHFUtils {
 		COMPOSITE
 	}
 
-	private static final List<Pair<TypeInstruction, Triple<String, KeyType, int[]>>> signatures = List.of(
-			Pair.of(TypeInstruction.READ ,Triple.of("GetState",KeyType.SINGLE, new int[]{0})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetStateValidationParameter", KeyType.SINGLE, new int[]{0})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetStateByRange", KeyType.RANGE, new int[]{0,1})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetStateByRangeWithPagination", KeyType.RANGE, new int[]{0,1})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetStateByPartial", KeyType.COMPOSITE, new int[]{1})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetHistoryForKey", KeyType.SINGLE, new int[]{0})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetPrivateData", KeyType.SINGLE, new int[]{1})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetPrivateDataByRange", KeyType.RANGE, new int[]{1,2})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetPrivateDataHash", KeyType.SINGLE, new int[]{1})),
-			Pair.of(TypeInstruction.READ ,Triple.of("GetPrivateDataByPartialCompositeKey", KeyType.COMPOSITE, new int[]{2})),
-			Pair.of(TypeInstruction.WRITE, Triple.of("PutState", KeyType.SINGLE, new int[]{0})),
-			Pair.of(TypeInstruction.WRITE, Triple.of("DelState", KeyType.SINGLE, new int[]{0})),
-			Pair.of(TypeInstruction.WRITE, Triple.of("SetStateValidationParameter", KeyType.SINGLE, new int[]{1})),
-			Pair.of(TypeInstruction.WRITE, Triple.of("PutPrivateData", KeyType.SINGLE, new int[]{1})),
-			Pair.of(TypeInstruction.WRITE, Triple.of("DelPrivateData", KeyType.SINGLE, new int[]{1})),
-			Pair.of(TypeInstruction.WRITE, Triple.of("PurgePrivateData", KeyType.SINGLE, new int[]{1})),
-			Pair.of(TypeInstruction.WRITE, Triple.of("SetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1})));
+	private static final List<ReadWriteInfo> signatures = List.of(
+			new ReadWriteInfo(TypeInstruction.READ , "GetState",KeyType.SINGLE, new int[]{0}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetStateValidationParameter", KeyType.SINGLE, new int[]{0}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetStateByRange", KeyType.RANGE, new int[]{0,1}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetStateByRangeWithPagination", KeyType.RANGE, new int[]{0,1}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetStateByPartial", KeyType.COMPOSITE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetHistoryForKey", KeyType.SINGLE, new int[]{0}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateData", KeyType.SINGLE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataByRange", KeyType.RANGE, new int[]{1,2}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataHash", KeyType.SINGLE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataByPartialCompositeKey", KeyType.COMPOSITE, new int[]{2}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "PutState", KeyType.SINGLE, new int[]{0}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "DelState", KeyType.SINGLE, new int[]{0}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "SetStateValidationParameter", KeyType.SINGLE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "PutPrivateData", KeyType.SINGLE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "DelPrivateData", KeyType.SINGLE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "PurgePrivateData", KeyType.SINGLE, new int[]{1}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "SetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1}));
 	
 	public static boolean isReadOrWriteCall(UnresolvedCall call) {
-		return signatures.stream().anyMatch(e -> e.getRight().getLeft().equals(call.getTargetName()));
+		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName()));
 	}
 	public static boolean isWriteCall(UnresolvedCall call) {
-		return signatures.stream().anyMatch(e -> e.getRight().getLeft().equals(call.getTargetName()) && e.getLeft().equals(TypeInstruction.WRITE));
+		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName()) && e.getInstructionType().equals(TypeInstruction.WRITE));
 	}
 	public static boolean isReadCall(UnresolvedCall call) {
-		return signatures.stream().anyMatch(e -> e.getRight().getLeft().equals(call.getTargetName())&& e.getLeft().equals(TypeInstruction.READ));
+		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName())&& e.getInstructionType().equals(TypeInstruction.READ));
 	}
 	
-	public static Pair<TypeInstruction, Triple<String, KeyType, int[]>> getReadWriteInfo(UnresolvedCall call) {
-		for(Pair<TypeInstruction, Triple<String, KeyType, int[]>> e : signatures) {
-			if(e.getRight().getLeft().equals(call.getTargetName()))
+	public static ReadWriteInfo getReadWriteInfo(UnresolvedCall call) {
+		for(ReadWriteInfo e : signatures) {
+			if(e.getSignature().equals(call.getTargetName()))
 				return e;
 		}
 		return null;

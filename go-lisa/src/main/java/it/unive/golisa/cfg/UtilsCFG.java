@@ -15,18 +15,18 @@ import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 
 public class UtilsCFG {
 
-	enum Search {
+	public enum Search {
 		BFS,
 		DFS
 	}
 	
-	public static boolean existPath(CFG graph, Statement source, Statement destination, Search search) throws IllegalAccessException {
+	public static boolean existPath(CFG graph, Statement source, Statement destination, Search search) {
 			if(search.equals(Search.BFS))
 				searchBFS(graph, source, destination);
 			else if(search.equals(Search.DFS))
 				searchDFS(graph, source, destination);
 			else
-				throw new IllegalAccessException("The following search algorithm \"" + search + "\" is not supported");
+				throw new IllegalArgumentException("The following search algorithm \"" + search + "\" is not supported");
 			
 		return false;
 	}

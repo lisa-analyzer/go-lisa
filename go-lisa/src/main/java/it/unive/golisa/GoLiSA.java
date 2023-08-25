@@ -8,7 +8,8 @@ import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowChecker;
 import it.unive.golisa.checker.TaintChecker;
-import it.unive.golisa.checker.readwrite.ReadWriteChecker;
+import it.unive.golisa.checker.readwrite.ReadWritePairChecker;
+import it.unive.golisa.checker.readwrite.ReadWritePathChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
@@ -116,6 +117,8 @@ public class GoLiSA {
 		conf.jsonOutput = true;
 		conf.optimize = false;
 		//conf.hotspots
+		
+		ReadWritePairChecker readWritePairChecker = null; 
 
 		switch (analysis) {
 
@@ -147,7 +150,8 @@ public class GoLiSA {
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new Tarsis()),
 					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new ReadWriteChecker());
+			readWritePairChecker = new ReadWritePairChecker();
+			conf.semanticChecks.add(readWritePairChecker);
 			break;
 		default:
 			
@@ -221,6 +225,39 @@ public class GoLiSA {
 			// an error occurred during the analysis
 			e.printStackTrace();
 			return;
+		}
+	
+		if(analysis.equals("read-write")) {
+			//phase 2
+
+			LiSAConfiguration conf2 = new LiSAConfiguration();
+			conf2.workdir = outputDir;
+			conf2.jsonOutput = true;
+			conf2.optimize = false;
+			
+			conf2.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+					new ValueEnvironment<>(new Tarsis()),
+					new TypeEnvironment<>(new InferredTypes()));
+			conf2.semanticChecks.add(new ReadWritePathChecker(readWritePairChecker.getReadAfterWriteCandidates(), readWritePairChecker.getOverWriteCandidates()));
+			
+			conf2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
+			
+			if (!program.getEntryPoints().isEmpty()) {
+				conf2.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+				conf2.callGraph = new RTACallGraph();
+			} else
+				LOG.info("Entry points not found!");
+			
+			LiSA lisa2 = new LiSA(conf2);
+	
+			try {
+				lisa2.run(program);
+			} catch (Exception e) {
+				// an error occurred during the analysis
+				e.printStackTrace();
+				return;
+			}
 		}
 	}
 

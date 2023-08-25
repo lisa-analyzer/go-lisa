@@ -4,14 +4,14 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/lisa-analyzer/go-lisa)
 ![GitHub issues](https://img.shields.io/github/issues-raw/lisa-analyzer/go-lisa)
 
-GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications (OOPSLA 2022)
+GoLiSA: A Static Analyzer for Go Smart Contracts and Decentralized Applications
 
 ## How to use GoLiSA
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) and it expects four paramaters:
 - `-i path`: the Go file to be analyzed
 - `-o path`: the output directory
 - `-f framework`: the blockchain framework used in the input file (hyperledger-fabric, cosmos-sdk, tendermint-core)
-- `-a analysis`: the analysis to perform to detect issues of non-determinism (taint, non-interference)
+- `-a analysis`: the analysis to perform to detect issues of non-determinism (taint, non-interference, read-write)
 
 ### Example of command line
 

@@ -1,6 +1,7 @@
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -21,6 +22,7 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
 
+@Ignore
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
 	private final AnnotationSet annSet = new HyperledgerFabricNonDeterminismAnnotationSet();

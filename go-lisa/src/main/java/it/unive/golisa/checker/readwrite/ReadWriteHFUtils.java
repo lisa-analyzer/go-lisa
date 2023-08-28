@@ -2,9 +2,6 @@ package it.unive.golisa.checker.readwrite;
 
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 
 public class ReadWriteHFUtils {

@@ -2,6 +2,7 @@ package it.unive.golisa.checker.readwrite;
 
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Set;
 
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
@@ -30,6 +31,25 @@ public class AnalysisReadWriteHFInfo {
 	public ArrayList<Set<Tarsis>> getKeyValues() {
 		return keyValues;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(call, info, keyValues);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AnalysisReadWriteHFInfo other = (AnalysisReadWriteHFInfo) obj;
+		return call.equals(other.call) && info.equals(other.info)
+				&& keyValues.equals(other.keyValues);
+	}
+	
 	
 }
 

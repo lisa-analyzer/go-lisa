@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.function.Function;
 
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.lisa.program.cfg.CFG;
@@ -13,7 +14,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
 
-public class UtilsCFG {
+public class CFGUtils {
 
 	public enum Search {
 		BFS,
@@ -35,7 +36,7 @@ public class UtilsCFG {
 			Set<Statement> seen = new HashSet<>();
 	
 			LinkedList<Statement> workingList = new LinkedList<Statement>();
-			Statement start = extractSourceFromGraph(graph, source);
+			Statement start = extractTargetNodeFromGraph(graph, source);
 			if(start != null) {
 				workingList.add(start);
 	
@@ -57,7 +58,7 @@ public class UtilsCFG {
 		return false;
 	}
 	
-	private static Statement extractSourceFromGraph(CFG graph, Statement source) {
+	public static Statement extractTargetNodeFromGraph(CFG graph, Statement source) {
 		for(Statement n : graph.getNodes()) 
 			if(equalsOrContains(n,source))
 				return n;
@@ -104,7 +105,7 @@ public class UtilsCFG {
 
 		if(containsNode(graph, source) && containsNode(graph, destination)) {
 			Set<Statement> seen = new HashSet<>();
-			recursiveDFS(graph, extractSourceFromGraph(graph, source), destination, seen);
+			recursiveDFS(graph, extractTargetNodeFromGraph(graph, source), destination, seen);
 		}
 		
 		return false;
@@ -125,6 +126,41 @@ public class UtilsCFG {
 					return true;
 			}
 		}
+		return false;
+	}
+	
+	public static boolean anyMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
+		return cfg.getNodes().stream().anyMatch(n ->matchNodeOrSubExpressions(n, condition));
+	}
+	
+	public static boolean allMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
+		return cfg.getNodes().stream().allMatch(n ->matchNodeOrSubExpressions(n, condition));
+	}
+	
+	private static boolean matchNodeOrSubExpressions(Statement st, Function<Statement, Boolean> condition) {
+		Set<Statement> seen = new HashSet<>();
+		return matchNodeOrSubExpressionsRecursive(st, condition, seen);
+	}
+
+	private static boolean matchNodeOrSubExpressionsRecursive(Statement st, Function<Statement, Boolean> condition, Set<Statement> seen) {
+		if(seen.contains(st))
+			return false;
+		seen.add(st);
+		
+		if(condition.apply(st).booleanValue()) {
+			return true;
+		} else if(st instanceof NaryExpression) {
+			NaryExpression nExpr = (NaryExpression) st;
+			for(Expression subExp : nExpr.getSubExpressions()) {
+				if(matchNodeOrSubExpressions(subExp, condition))
+					return true;
+			}
+		} else if(st instanceof GoMultiAssignment ) {
+			GoMultiAssignment multiAssign = (GoMultiAssignment) st;
+			if(matchNodeOrSubExpressions(multiAssign.getExpressionToAssign(), condition))
+				return true;
+		}
+	
 		return false;
 	}
 	

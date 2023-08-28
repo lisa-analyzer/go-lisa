@@ -175,7 +175,7 @@ public class GoLiSA {
 			annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(cmd.getOptionValue("framework")));
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(program, cmd.getOptionValue("framework"), cmd.getOptionValue("analysis")));
 			entryLoader.load(program);
 
 			if (!entryLoader.isEntryFound()) {

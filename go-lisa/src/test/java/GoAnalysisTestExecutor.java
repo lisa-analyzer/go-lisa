@@ -228,7 +228,7 @@ public abstract class GoAnalysisTestExecutor {
 		return program;
 	}
 
-	private void run(LiSAConfiguration configuration, Program program) {
+	protected void run(LiSAConfiguration configuration, Program program) {
 		LiSA lisa = new LiSA(configuration);
 		try {
 			lisa.run(program);

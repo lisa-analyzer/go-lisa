@@ -20,7 +20,7 @@ public abstract class GoChaincodeTestExecutor extends GoAnalysisTestExecutor {
 			annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("HYPERLEDGER-FABRIC"));
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(program, "HYPERLEDGER-FABRIC", ""));
 			entryLoader.load(program);
 
 		} catch (IOException e) {

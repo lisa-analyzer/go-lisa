@@ -35,5 +35,22 @@ public abstract class EntryPointSet {
 	public Set<String> getEntryPoints() {
 		return entryPoints;
 	}
+	
+	public static EntryPointSet mergeEntryPointSets(EntryPointSet... entryPointSets ) {
+		Set<String> collectedEntryPoints = new HashSet<String>();
+		for(EntryPointSet set : entryPointSets)
+			if(set != null)
+				collectedEntryPoints.addAll(set.entryPoints);
+
+		
+		return new EntryPointSet() {
+			
+			@Override
+			protected void build(Set<String> entryPoints) {
+				entryPoints.addAll(collectedEntryPoints);
+				
+			}
+		};
+	}
 
 }

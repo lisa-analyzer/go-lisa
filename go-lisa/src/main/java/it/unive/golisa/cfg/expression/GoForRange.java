@@ -1,11 +1,12 @@
 package it.unive.golisa.cfg.expression;
 
+import java.util.Collection;
+
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.controlFlow.Loop;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.Collection;
 
 /**
  * The Go for-range loop.
@@ -36,7 +37,10 @@ public class GoForRange extends Loop {
 
 	@Override
 	public boolean contains(Statement st) {
-		return super.contains(st) || idxKey.equals(st) || idxValue.equals(st);
+		return super.contains(st)
+				// the two idx can be null: leave them as parameters instead of
+				// receivers
+				|| st.equals(idxKey) || st.equals(idxValue);
 	}
 
 }

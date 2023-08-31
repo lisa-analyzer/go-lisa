@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
+import it.unive.golisa.analysis.taint.Tainted;
+import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.lisa.analysis.AbstractState;
@@ -12,6 +14,7 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -20,7 +23,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Now() Time.
@@ -88,8 +90,16 @@ public class Now extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(
-					new PushAny(Time.getTimeType(null), getLocation()), original);
+			Time type = Time.getTimeType(null);
+			GoNonKeyedLiteral time = new GoNonKeyedLiteral(getCFG(), (SourceCodeLocation) getLocation(),
+					new Expression[0], getStaticType());
+			AnalysisState<A, H, V, T> allocResult = time.semantics(state, interprocedural, expressions);
+			AnalysisState<A, H, V, T> result = state.bottom();
+			for (SymbolicExpression id : allocResult.getComputedExpressions()) {
+				result = result.lub(allocResult.assign(id, new Tainted(type, getLocation()), original));
+				result = result.lub(allocResult.assign(id, new Tainted(getLocation()), original));
+			}
+			return result;
 		}
 	}
 }

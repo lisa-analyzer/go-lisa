@@ -1,1 +1,0 @@
-{"name":"untyped main::m1()","description":null,"nodes":[{"id":0,"subNodes":[1,2],"text":"x := 1"},{"id":1,"text":"x"},{"id":2,"text":"1"},{"id":3,"text":"ret"}],"edges":[{"sourceId":0,"destId":3,"kind":"SequentialEdge"}],"descriptions":[]}

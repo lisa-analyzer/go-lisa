@@ -1,5 +1,8 @@
 package it.unive.golisa.checker;
 
+
+import java.util.Collection;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -29,7 +32,6 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.StringUtilities;
-import java.util.Collection;
 
 /**
  * A non-interference integrity checker.
@@ -105,29 +107,63 @@ public class IntegrityNIChecker implements
 		UnresolvedCall call = (UnresolvedCall) node;
 		try {
 			for (AnalyzedCFG<
-					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-							TypeEnvironment<InferredTypes>>,
-					PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-					TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
-				Call resolved = (Call) tool.getResolvedVersion(call, result);
-
-				if (resolved instanceof NativeCall) {
-					NativeCall nativeCfg = (NativeCall) resolved;
-					Collection<NativeCFG> nativeCfgs = nativeCfg.getTargetedConstructs();
-					for (NativeCFG n : nativeCfgs)
-						process(tool, call, resolved, n.getDescriptor(), result);
-				} else if (resolved instanceof CFGCall) {
-					CFGCall cfg = (CFGCall) resolved;
-					for (CFG n : cfg.getTargetedCFGs())
-						process(tool, call, resolved, n.getDescriptor(), result);
-				}
-			}
+						SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+								TypeEnvironment<InferredTypes>>,
+						PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+					Call resolved = (Call) tool.getResolvedVersion(call, result);
+	
+					if (resolved instanceof NativeCall) {
+						NativeCall nativeCfg = (NativeCall) resolved;
+						Collection<NativeCFG> nativeCfgs = nativeCfg.getTargetedConstructs();
+						for (NativeCFG n : nativeCfgs)
+							process(tool, call, resolved, n.getDescriptor(), result);
+					} else if (resolved instanceof CFGCall) {
+						CFGCall cfg = (CFGCall) resolved;
+						for (CFG n : cfg.getTargetedCFGs())
+							process(tool, call, resolved, n.getDescriptor(), result);
+					} else
+						checkSignature(call, tool);
+			} 
 		} catch (SemanticException e) {
+			System.err.println("Cannot check " + node);
 			e.printStackTrace();
 		}
-
 		return true;
 
+	}
+
+	private void checkSignature(UnresolvedCall call,
+			CheckToolWithAnalysisResults<
+			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+					TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
+		if (call != null) {
+			String targetName = call.getTargetName();
+			if (((targetName.equals("PutState") || targetName.equals("PutPrivateData"))
+					&& call.getParameters().length == 3)
+					|| ((targetName.equals("DelState") || targetName.equals("DelPrivateData"))
+							&& call.getParameters().length == 2)) {
+				for (AnalyzedCFG<
+						SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+						TypeEnvironment<InferredTypes>>,
+				PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
+				TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+					for (int i = 1; i < call.getParameters().length; i++) {
+						if (result.getAnalysisStateAfter(call.getParameters()[i])
+								.getState().getValueState().getExecutionState()
+								.isLowIntegrity())
+							tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
+									+ " parameter of " + targetName + " call is tainted");
+						if (result.getAnalysisStateAfter(call.getParameters()[call.getParameters().length - 1])
+								.getState()
+								.getValueState().getExecutionState()
+								.isLowIntegrity())
+							tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
+									+ " resulting in an implicit flow");
+					}
+			}
+		}
 	}
 
 	private void process(

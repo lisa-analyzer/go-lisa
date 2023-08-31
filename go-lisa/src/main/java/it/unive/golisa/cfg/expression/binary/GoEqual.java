@@ -15,8 +15,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go equal expression (e.g., x == y).
@@ -45,20 +43,10 @@ public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpressio
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types))
 
-				if (rightType.canBeAssignedTo(leftType) || leftType.canBeAssignedTo(rightType)) {
-					// TODO: not covering composite types (e.g., channels,
-					// arrays, structs...)
-					AnalysisState<A, H, V, T> tmp = state
-							.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-									left, right,
-									ComparisonEq.INSTANCE, getLocation()), this);
-					result = result.lub(tmp);
-				}
-		return result;
+		return state
+				.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
+						left, right,
+						ComparisonEq.INSTANCE, getLocation()), this);
 	}
 }

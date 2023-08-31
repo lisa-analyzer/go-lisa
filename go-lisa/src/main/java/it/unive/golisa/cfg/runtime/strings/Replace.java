@@ -21,8 +21,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * The Replace function from string package.
@@ -95,23 +93,9 @@ public class Replace extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 						StatementStore<A, H, V, T> expressions) throws SemanticException {
-			TypeSystem types = getProgram().getTypes();
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (Type leftType : left.getRuntimeTypes(types))
-				for (Type middleType : middle.getRuntimeTypes(types))
-					for (Type rightType : right.getRuntimeTypes(types))
-						if (!leftType.isStringType() && !leftType.isUntyped())
-							continue;
-						else if (!middleType.isStringType() && !middleType.isUntyped())
-							continue;
-						else if (!rightType.isStringType() && !rightType.isUntyped())
-							continue;
-						else
-							result = result.lub(state
-									.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(
+			return state.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(
 											GoStringType.INSTANCE,
-											left, middle, right, StringReplace.INSTANCE, getLocation()), original));
-			return result;
+											left, middle, right, StringReplace.INSTANCE, getLocation()), original);
 		}
 	}
 }

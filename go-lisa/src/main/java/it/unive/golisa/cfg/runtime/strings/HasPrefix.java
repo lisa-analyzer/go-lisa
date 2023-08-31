@@ -94,11 +94,6 @@ public class HasPrefix extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			if (!left.getDynamicType().isStringType() && !left.getDynamicType().isUntyped())
-				return state.bottom();
-
-			if (!right.getDynamicType().isStringType() && !right.getDynamicType().isUntyped())
-				return state.bottom();
 
 			return state
 					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,

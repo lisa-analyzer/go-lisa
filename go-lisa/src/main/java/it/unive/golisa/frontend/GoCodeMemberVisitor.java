@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,6 +163,7 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.expression.unary.GoRef;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
+import it.unive.golisa.cfg.statement.GoContinue;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
 import it.unive.golisa.cfg.statement.GoReturn;
@@ -215,12 +217,14 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.literal.TrueLiteral;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.collections.workset.VisitOnceLIFOWorkingSet;
+import it.unive.lisa.util.collections.workset.WorkingSet;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method.
- * 
+ *
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
@@ -293,7 +297,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	/**
 	 * Stack of loop entry points (used for continue statements).
 	 */
-	private final List<Statement> entryPoints = new ArrayList<>();
+	private final List<Statement> entryPoints = new LinkedList<>();
+
+	/**
+	 * Loop entrypoint to pending continue statements that must be connected to the "post".
+	 */
+	private final Map<Statement, List<Pair<GoContinue, List<BlockInfo>>>> pendingContinues = new IdentityHashMap<>();
 
 	private NodeList<CFG, Statement, Edge> matrix;
 
@@ -305,7 +314,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Builds the code member visitor.
-	 * 
+	 *
 	 * @param unit      the current unit
 	 * @param file      the file path
 	 * @param program   the program
@@ -330,7 +339,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Builds the code member visitor.
-	 * 
+	 *
 	 * @param unit      the current unit
 	 * @param ctx       the method declaration context to visit
 	 * @param file      the file path
@@ -386,12 +395,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	/**
 	 * Visits the code of a {@link BlockContext} representing the code block of
 	 * a method or constructor.
-	 * 
+	 *
 	 * @param ctx the block context
-	 * 
+	 *
 	 * @return the {@link CFG} built from the block
 	 */
 	public CFG visitCodeMember(MethodDeclContext ctx) {
+		// CompilationUnit packageUnit = currentUnit;
 		Parameter receiver = visitReceiver(ctx.receiver());
 		String unitName = receiver.getStaticType() instanceof GoPointerType
 				? ((GoPointerType) receiver.getStaticType()).getInnerType().toString()
@@ -445,7 +455,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Adds a return statement is not present in the cfg.
-	 * 
+	 *
 	 * @param matrix the adjacency matrix
 	 */
 	protected void addReturnStatement(NodeList<CFG, Statement, Edge> matrix) {
@@ -472,12 +482,32 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					if (preExits.contains(entry.getScopeEnd()))
 						entry.setScopeEnd(ret);
 			}
+		} else {
+			Ret ret = null;
+			for (Statement st : matrix.getNodes())
+				if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+					ret = new Ret(cfg, cfg.getDescriptor().getLocation());
+
+			if (ret != null) {
+				matrix.addNode(ret);
+				Collection<Statement> preExits = new LinkedList<>();
+				for (Statement st : matrix.getNodes())
+					if (!st.stopsExecution() && matrix.followersOf(st).isEmpty())
+						preExits.add(st);
+				matrix.addNode(ret);
+				for (Statement st : preExits)
+					matrix.addEdge(new SequentialEdge(st, ret));
+
+				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
+					if (preExits.contains(entry.getScopeEnd()))
+						entry.setScopeEnd(ret);
+			}
 		}
 	}
 
 	/**
 	 * Adds a return statement is not present in matrix given as argument.
-	 * 
+	 *
 	 * @param matrix the adjacency matrix
 	 */
 	protected void addFinalRet(NodeList<CFG, Statement, Edge> matrix) {
@@ -492,7 +522,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Resolves goto jumps.
-	 * 
+	 *
 	 * @throws IllegalStateException if a goto jumps into other scopes
 	 */
 	protected void processGotos() {
@@ -539,9 +569,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Visits a method block.
-	 * 
+	 *
 	 * @param ctx the block context to visit
-	 * 
+	 *
 	 * @return the adjacency matrix behind the visited block, together with the
 	 *             entry and the exit nodes
 	 */
@@ -584,9 +614,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Yields the line of a parse rule context.
-	 * 
+	 *
 	 * @param ctx the parse rule context
-	 * 
+	 *
 	 * @return the line of a parse rule context
 	 */
 	static protected int getLine(ParserRuleContext ctx) {
@@ -595,9 +625,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Yields the line of a terminal node.
-	 * 
+	 *
 	 * @param ctx the terminal node
-	 * 
+	 *
 	 * @return the line of a terminal node
 	 */
 	static protected int getLine(TerminalNode ctx) {
@@ -606,9 +636,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Yields the column of a parse rule context.
-	 * 
+	 *
 	 * @param ctx the parse rule context
-	 * 
+	 *
 	 * @return the column of a parse rule context
 	 */
 	static protected int getCol(ParserRuleContext ctx) {
@@ -617,9 +647,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Yields the column of a terminal node.
-	 * 
+	 *
 	 * @param ctx the terminal node
-	 * 
+	 *
 	 * @return the column of a terminal node
 	 */
 	static protected int getCol(TerminalNode ctx) {
@@ -628,9 +658,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Yields the source code location of a parse rule context.
-	 * 
+	 *
 	 * @param ctx the parse rule context
-	 * 
+	 *
 	 * @return the source code location of a parse rule context
 	 */
 	protected SourceCodeLocation locationOf(ParserRuleContext ctx) {
@@ -639,9 +669,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Yields the source code location of a terminal node.
-	 * 
+	 *
 	 * @param ctx the terminal node
-	 * 
+	 *
 	 * @return the source code location of a terminal node
 	 */
 	protected SourceCodeLocation locationOf(TerminalNode ctx) {
@@ -671,7 +701,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Parameter[] result = new Parameter[] {};
 		Type type = visitType_(ctx.type_());
 		type = type == null ? Untyped.INSTANCE : type;
-		boolean variadic = ctx.ELLIPSIS() != null; 
+		boolean variadic = ctx.ELLIPSIS() != null;
 
 		// the parameter's type is variadic (e.g., ...string)
 		if (variadic)
@@ -739,11 +769,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			blockList.removeLast();
 			return Triple.of(open, block, last);
 		}
-		if (isGoTo(last)) {
+		if (isGoTo(last) || last instanceof GoContinue) {
 			// we still decrement as the actual closing
 			// blocks will be added in the post processing
 			blockDeep--;
 			blockList.removeLast();
+			return Triple.of(open, block, last);
+		}
+		if (last instanceof NoOp && allNonNoopPredecessorsAreReturns(block, last)) {
+			// corner case: conditional structure always ending with a return,
+			// but where where the noop at the end has been added with no
+			// predecessors
 			return Triple.of(open, block, last);
 		}
 
@@ -756,9 +792,23 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(open, block, close);
 	}
 
+	private boolean allNonNoopPredecessorsAreReturns(NodeList<CFG, Statement, Edge> block, Statement last) {
+		WorkingSet<Statement> ws = VisitOnceLIFOWorkingSet.mk();
+		ws.push(last);
+		while (!ws.isEmpty()) {
+			Statement current = ws.pop();
+			if (isReturnStmt(current))
+				continue;
+			else if (!(current instanceof NoOp))
+				return false;
+			block.predecessorsOf(current).forEach(ws::push);
+		}
+		return true;
+	}
+
 	/**
 	 * Updates the visible ids.
-	 * 
+	 *
 	 * @param backup the current visible ids
 	 * @param last   the statement
 	 */
@@ -934,16 +984,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			VariableRef[] left = visitIdentifierList(ctx.identifierList());
 
-			for (int i = 0; i < left.length; i++)
-				if (visibleIds.containsKey(left[i].getName()))
-					throw new GoSyntaxException(
-							"Duplicate variable '" + left[i].getName() + "' declared at " + left[i].getLocation());
+			for (int i = 0; i < left.length; i++) {
+				VariableRef target = left[i];
+				if (visibleIds.containsKey(target.getName()))
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
+							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
+						throw new GoSyntaxException(
+								"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
 				else if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
-					visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
-					visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
-					blockList.getLast().addVarDeclaration(left[i], DeclarationType.MULTI_SHORT_VARIABLE);
+					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
+					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
+					blockList.getLast().addVarDeclaration(target, DeclarationType.MULTI_SHORT_VARIABLE);
 				}
-
+			}
 			Expression right = visitExpression(exps.expression(0));
 
 			// We can safely reause the multi-short variable declaration class
@@ -987,7 +1040,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				block.addNode(asg);
 
 				if (visibleIds.containsKey(target.getName()))
-					if (visibleIds.get(target.getName()).stream()
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
 							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 						throw new GoSyntaxException(
 								"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
@@ -1184,7 +1237,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			storeIds(asg);
 
 			if (visibleIds.containsKey(target.getName()))
-				if (visibleIds.get(target.getName()).stream()
+				if (!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
 						.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
 					throw new GoSyntaxException(
 							"Duplicate variable '" + target.getName() + "' declared at " + target.getLocation());
@@ -1412,16 +1465,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			VariableRef[] left = visitIdentifierList(ctx.identifierList());
 
-			for (int i = 0; i < left.length; i++)
-				// if (visibleIds.containsKey(left[i].getName()))
-				// throw new GoSyntaxException(
-				// "Duplicate variable '" + left[i].getName() + "' declared at "
-				// + left[i].getLocation());
-				// else
-				if (!GoLangUtils.refersToBlankIdentifier(left[i])) {
-					visibleIds.putIfAbsent(left[i].getName(), new HashSet<IdInfo>());
-					visibleIds.get(left[i].getName()).add(new IdInfo(left[i], blockDeep));
+			for (int i = 0; i < left.length; i++) {
+				VariableRef target = left[i];
+				if (visibleIds.containsKey(target.getName())) {
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
+							.anyMatch(info -> info.equals(new IdInfo(target, blockDeep))))
+							throw new GoSyntaxException(
+									"Duplicate variable '" + target.getName() + "' declared at "
+											+ target.getLocation());
+				}else if (!GoLangUtils.refersToBlankIdentifier(target)) {
+					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
+					visibleIds.get(target.getName()).add(new IdInfo(target, blockDeep));
 				}
+			}
 
 			Expression right = visitExpression(exps.expression(0));
 
@@ -1449,10 +1505,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
 						Untyped.INSTANCE);
 
-				// if (visibleIds.containsKey(target.getName()))
-				// throw new GoSyntaxException(
-				// "Duplicate variable '" + target.getName() + "' declared at "
-				// + target.getLocation());
+				if (visibleIds.containsKey(target.getName()))
+					if(!target.getName().equals("err") && visibleIds.get(target.getName()).stream()
+							.anyMatch(info -> info.getBlockDeep() == blockDeep))
+						throw new GoSyntaxException(
+								"Duplicate variable '" + target.getName() + "' declared at "
+										+ target.getLocation());
 
 				if (!GoLangUtils.refersToBlankIdentifier(target)) {
 					visibleIds.putIfAbsent(target.getName(), new HashSet<IdInfo>());
@@ -1552,13 +1610,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitContinueStmt(
 			ContinueStmtContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
-		NoOp continueSt = new NoOp(cfg, locationOf(ctx));
+		GoContinue continueSt = new GoContinue(cfg, locationOf(ctx));
 		block.addNode(continueSt);
 		storeIds(continueSt);
-
 		Statement entry = entryPoints.get(entryPoints.size() - 1);
-		block.addNode(entry);
-		addEdge(new SequentialEdge(continueSt, entry), block);
+		pendingContinues.computeIfAbsent(entry, k -> new LinkedList<>()).add(Pair.of(continueSt, new LinkedList<>(blockList)));
 		return Triple.of(continueSt, block, continueSt);
 	}
 
@@ -1675,7 +1731,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(entryNode, block, ifExitNode);
 	}
 
-	private static boolean isReturnStmt(Statement stmt) {
+	public static boolean isReturnStmt(Statement stmt) {
 		return stmt instanceof GoReturn || stmt instanceof Ret;
 	}
 
@@ -1686,12 +1742,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	/**
 	 * Adds the edge iff the source is not an instance of {@link Return} of
 	 * {@link GoTo} statements.
-	 * 
+	 *
 	 * @param edge  the edge to be added
 	 * @param block the current {@link AdjacencyMatrix}
 	 */
 	protected static void addEdge(Edge edge, NodeList<CFG, Statement, Edge> block) {
-		if (!isReturnStmt(edge.getSource()) && !isGoTo(edge.getSource()))
+		if (/*!isReturnStmt(edge.getSource()) &&*/ !isGoTo(edge.getSource()) && !(edge.getSource() instanceof GoContinue))
 			block.addEdge(edge);
 	}
 
@@ -1763,7 +1819,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					addEdge(new FalseEdge(previousGuard, caseBooleanGuard), block);
 				}
 				previousGuard = caseBooleanGuard;
-				scases.add(new SwitchCase(caseBooleanGuard, caseBlock.getMiddle().getNodes()));
+				scases.add(new SwitchCase(matrix ,caseBooleanGuard, exitNode, caseBlock.getMiddle().getNodes()));
 			} else {
 				defaultBlock = caseBlock;
 				block.mergeWith(body);
@@ -1794,7 +1850,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
-		cfs.add(new Switch(matrix, entryNode, exitNode, scases.toArray(SwitchCase[]::new), def));
+		cfs.add(new Switch(matrix, entryNode, exitNode, scases, def));
 
 		return Triple.of(entryNode, block, exitNode);
 	}
@@ -1842,6 +1898,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entryPoints.remove(entryPoints.size() - 1);
 		exitPoints.remove(exitPoints.size() - 1);
 
+		closeContinues(block, cond, exitNode);
+
 		cfs.add(new Loop(matrix, cond, exitNode, body.getMiddle().getNodes()));
 
 		return Triple.of(cond, block, exitNode);
@@ -1867,6 +1925,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entryPoints.remove(entryPoints.size() - 1);
 		exitPoints.remove(exitPoints.size() - 1);
 
+		closeContinues(block, guard, exitNode);
+
 		cfs.add(new Loop(matrix, guard, exitNode, body.getMiddle().getNodes()));
 
 		return Triple.of(guard, block, exitNode);
@@ -1879,6 +1939,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Expression rangedCollection = visitExpression(range.expression());
 
 		GoRange rangeNode = new GoRange(cfg, location, rangedCollection);
+		entryPoints.add(rangeNode);
 
 		VariableRef idxRange = null;
 		VariableRef valRange = null;
@@ -1960,8 +2021,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
 		}
 
-		// entryPoints.remove(entryPoints.size() - 1);
-		// exitPoints.remove(exitPoints.size() - 1);
+		entryPoints.remove(entryPoints.size() - 1);
+		exitPoints.remove(exitPoints.size() - 1);
+
+		closeContinues(block, rangeNode, exitNode);
+
 		restoreVisibleIdsAfterForLoop(backup);
 
 		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
@@ -2035,8 +2099,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		NodeList<CFG, Statement, Edge> body;
 		if (hasPostStmt) {
-			addEdge(new SequentialEdge(exitNodeBlock, post.getRight()), block);
-			addEdge(new SequentialEdge(post.getLeft(), cond), block);
+			addEdge(new SequentialEdge(exitNodeBlock, post.getLeft()), block);
+			addEdge(new SequentialEdge(post.getRight(), cond), block);
 			body = new NodeList<>(inner.getMiddle());
 			body.mergeWith(post.getMiddle());
 		} else {
@@ -2047,9 +2111,42 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entryPoints.remove(entryPoints.size() - 1);
 		exitPoints.remove(exitPoints.size() - 1);
 
+		closeContinues(block, cond, hasPostStmt ? post.getLeft() : exitNode);
+
 		cfs.add(new Loop(matrix, cond, exitNode, body.getNodes()));
 
 		return Triple.of(entryNode, block, exitNode);
+	}
+
+	private void closeContinues(NodeList<CFG, Statement, Edge> block, Statement cond, Statement exitNode) {
+		List<Pair<GoContinue, List<BlockInfo>>> pending = pendingContinues.remove(cond);
+		if (pending != null)
+			for (Pair<GoContinue, List<BlockInfo>> cont : pending) {
+				List<BlockInfo> scope = cont.getRight();
+				List<BlockInfo> targetScope = blockList;
+
+				// The continue can only jump to a containing scope.
+				// this means that 'targetScope' must be a prefix of 'scope'
+				// and every other scope can be closed.
+
+				if (scope.size() < targetScope.size())
+					throw new IllegalStateException("continue cannot jump to a scope that it is not already part of");
+				for (int i = 0; i < targetScope.size(); i++)
+					if (!scope.get(i).equals(targetScope.get(i)))
+						throw new IllegalStateException("continue cannot jump to a scope that it is not already part of");
+
+				// add closing blocks
+				Statement last = cont.getLeft();
+				for (int i = scope.size() - 1; i >= targetScope.size(); i--) {
+					BlockInfo info = scope.get(i);
+					CloseBlock close = new CloseBlock(cfg, cont.getLeft().getLocation(), info.getOpen());
+					block.addNode(close);
+					block.addEdge(new SequentialEdge(last, close));
+					last = close;
+				}
+				// force the addition of the edge - do not use the static addEdge method
+				block.addEdge(new SequentialEdge(last, exitNode));
+			}
 	}
 
 	private void restoreVisibleIdsAfterForLoop(Map<String, Set<IdInfo>> backup) {
@@ -2152,7 +2249,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					// the callee's name is concatenated to the function name
 					return new UnresolvedCall(cfg, locationOf(ctx),
 							CallType.STATIC,
-							currentUnit.getName(), primary.toString(),
+							"", primary.toString(),
 							visitArguments(ctx.arguments()));
 
 				else if (primary instanceof GoCollectionAccess) {
@@ -2403,10 +2500,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	/**
 	 * Visits a element list context.
-	 * 
+	 *
 	 * @param ctx  the context
 	 * @param type the type of the first element
-	 * 
+	 *
 	 * @return the visit result
 	 */
 	public Object visitElementList(ElementListContext ctx, Type type) {
@@ -2692,7 +2789,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						addEdge(new FalseEdge(previousGuard, shortDecl), block);
 
 					previousGuard = caseBooleanGuard;
-					scases.add(new TypeSwitchCase(shortDecl, caseBooleanGuard, caseBlock.getMiddle().getNodes()));
+					scases.add(new TypeSwitchCase(shortDecl, matrix, caseBooleanGuard,exitNode,caseBlock.getMiddle().getNodes()));
+
 				}
 
 			} else {

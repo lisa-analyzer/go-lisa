@@ -14,7 +14,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
-import it.unive.lisa.type.Type;
 
 /**
  * A Go bitwise unary not expression (e.g., ^x).
@@ -41,12 +40,7 @@ public class GoBitwiseNot extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		Type exprType = expr.getDynamicType();
-		if (!exprType.isUntyped() || (exprType.isNumericType() && !exprType.asNumericType().isIntegral()))
-			return state.bottom();
 
-		// TODO: LiSA has not symbolic expression handling bitwise, return top
-		// at the moment
 		return state.smallStepSemantics(
 				new PushAny(expr.getDynamicType(), getLocation()), this);
 	}

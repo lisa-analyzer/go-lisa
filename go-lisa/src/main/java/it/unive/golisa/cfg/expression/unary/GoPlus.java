@@ -44,8 +44,6 @@ public class GoPlus extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
-			return state.bottom();
 
 		Constant zero = new Constant(GoUntypedInt.INSTANCE,
 				new GoInteger(getCFG(), (SourceCodeLocation) getLocation(), 0), getLocation());

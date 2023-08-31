@@ -15,8 +15,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go greater than expression (e.g., x > y).
@@ -45,28 +43,12 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
 
-		AnalysisState<A, H, V, T> result = state.bottom();
-		// following the Golang specification:
-		// in any comparison, the first operand must be assignable to the type
-		// of the second operand, or vice versa.
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types)) {
-				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
-					// TODO: only, integer, floating point values, strings are
-					// ordered
-					// but missing lexicographical string order in LiSA
-					AnalysisState<A, H,
-							V, T> tmp = state
-									.smallStepSemantics(
-											new BinaryExpression(GoBoolType.INSTANCE,
-													left, right, ComparisonGt.INSTANCE, getLocation()),
+		return state
+				.smallStepSemantics(
+						new BinaryExpression(GoBoolType.INSTANCE,
+								left, right, ComparisonGt.INSTANCE, getLocation()),
 
-											this);
-					result = result.lub(tmp);
-				}
-			}
-		return result;
+						this);
 	}
 }

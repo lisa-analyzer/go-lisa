@@ -14,6 +14,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
+import it.unive.lisa.type.Untyped;
 
 /**
  * The Go unary minus expression (e.g., -x).
@@ -41,7 +42,10 @@ public class GoMinus extends it.unive.lisa.program.cfg.statement.UnaryExpression
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 		if (!expr.getDynamicType().isNumericType() && !expr.getDynamicType().isUntyped())
-			return state.bottom();
+			return state.smallStepSemantics(
+					new UnaryExpression(Untyped.INSTANCE, expr,
+							NumericNegation.INSTANCE, getLocation()),
+					this);
 
 		return state.smallStepSemantics(
 				new UnaryExpression(expr.getDynamicType(), expr,

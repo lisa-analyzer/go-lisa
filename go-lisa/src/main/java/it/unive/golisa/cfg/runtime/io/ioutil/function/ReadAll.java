@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -97,7 +98,7 @@ public class ReadAll extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.top();
+			return state.smallStepSemantics(new Tainted(getStaticType(),getLocation()), original);
 		}
 	}
 }

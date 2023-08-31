@@ -14,8 +14,6 @@ import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go bit-wise or expression (e.g., x | y).
@@ -44,19 +42,6 @@ public class GoBitwiseOr extends BinaryExpression implements GoBinaryNumericalOp
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types))
-				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) &&
-						(rightType.isUntyped()
-								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
-					// TODO: LiSA has not symbolic expression handling bitwise,
-					// return top at the moment
-					AnalysisState<A, H, V, T> tmp = state
-							.smallStepSemantics(new PushAny(resultType(leftType, rightType), getLocation()), this);
-					result = result.lub(tmp);
-				}
-		return result;
+				return state.smallStepSemantics(new PushAny(resultType(left.getStaticType(), right.getStaticType()), getLocation()), this);
 	}
 }

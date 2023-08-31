@@ -2,6 +2,7 @@ package it.unive.golisa.analysis.taint;
 
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -15,7 +16,11 @@ public class Tainted extends Constant {
 	 * @param location the location
 	 */
 	public Tainted(CodeLocation location) {
-		super(Untyped.INSTANCE, "T", location);
+		this(Untyped.INSTANCE, location);
+	}
+
+	public Tainted(Type type, CodeLocation location) {
+		super(type, "T", location);
 	}
 
 }

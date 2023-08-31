@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -20,7 +21,6 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Intn(n int) int.
@@ -90,7 +90,7 @@ public class Intn extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			return state.smallStepSemantics(
-					new PushAny(GoIntType.INSTANCE, getLocation()), original);
+					new Tainted(GoIntType.INSTANCE, getLocation()), original);
 		}
 	}
 }

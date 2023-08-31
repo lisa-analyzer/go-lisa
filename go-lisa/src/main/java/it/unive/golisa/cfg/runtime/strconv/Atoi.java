@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
-import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
+import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -10,8 +12,10 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -27,22 +31,22 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.ValueExpression;
 
 /**
  * func Atoi(s string) int.
- * 
+ *
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Atoi extends NativeCFG {
 
 	/**
 	 * Builds the native cfg.
-	 * 
+	 *
 	 * @param location    the location where this native cfg is defined
 	 * @param strconvUnit the unit to which this native cfg belongs to
 	 */
@@ -55,7 +59,7 @@ public class Atoi extends NativeCFG {
 
 	/**
 	 * The Atoi implementation.
-	 * 
+	 *
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class AtoiImpl extends UnaryExpression implements PluggableStatement {
@@ -69,12 +73,12 @@ public class Atoi extends NativeCFG {
 
 		/**
 		 * Builds the pluggable statement.
-		 * 
+		 *
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param params   the parameters
-		 * 
+		 *
 		 * @return the pluggable statement
 		 */
 		public static AtoiImpl build(CFG cfg, CodeLocation location, Expression... params) {
@@ -83,7 +87,7 @@ public class Atoi extends NativeCFG {
 
 		/**
 		 * Builds the pluggable statement.
-		 * 
+		 *
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
@@ -100,7 +104,7 @@ public class Atoi extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		
+
 			GoTupleType returnType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
 			MemoryAllocation memalloc = new MemoryAllocation(returnType, getLocation());
 
@@ -109,44 +113,48 @@ public class Atoi extends NativeCFG {
 			for(SymbolicExpression e : state.getComputedExpressions()) {
 				AnalysisState<A, H, V, T> res = state.bottom();
 				HeapReference heapRef = new HeapReference(GoPointerType.lookup(returnType), e, getLocation());
-								
+
 				AnalysisState<A, H, V, T> tmp = state.smallStepSemantics(heapRef, original);
 				for(SymbolicExpression e2 : tmp.getComputedExpressions()) {
-				
+
 					AccessChild acRight = new AccessChild(GoIntType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 0, getLocation()), getLocation());
 					AccessChild acLeft = new AccessChild(GoErrorType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 1, getLocation()), getLocation());
-					
+
 					AnalysisState<A, H, V, T> tmp2 = tmp.smallStepSemantics(acRight, original);
 					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
 						res = res.lub(tmp2.assign(e3, new PushAny(GoIntType.INSTANCE, getLocation()),original));
 					}
-					
+
 					tmp2 = tmp2.smallStepSemantics(acLeft, original);
 					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
 						res = res.lub(tmp2.assign(e3, new PushAny(GoErrorType.INSTANCE, getLocation()),original));
 					}
 				}
-				
+
 				result = result.lub(res.smallStepSemantics(heapRef, original));
-				
+
 			}
-			
-			return result;
-			
-			/*
-			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
-			if (env != null) {
-				ValueEnvironment<?> ve = state.smallStepSemantics(expr, original).getDomainInstance(ValueEnvironment.class);
-				if (ve.lattice instanceof Interval) {
-					return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
+
+
+			if (state.getState().getValueState() instanceof ValueEnvironment<?>) {
+				ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) state.getState().getValueState();
+				for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), this)) {
+					NonRelationalValueDomain<?> stackValue = valueEnv.eval((ValueExpression) stack, this);
+					if (stackValue instanceof TaintDomain) {
+						return state.smallStepSemantics(expr, original).lub(state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original));
+					}
+				}
+			}  else if (state.getState().getValueState() instanceof InferenceSystem<?>) {
+				var infSys = ((InferenceSystem<?>) state.getState().getValueState());
+				for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), this)) {
+					InferredValue<?> value = infSys.eval((ValueExpression) stack, this);
+					if (value != null && value instanceof IntegrityNIDomain) {
+						return state.smallStepSemantics(expr, original).lub(state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original));
+					}	
 				}
 			}
 			
-			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
-				return state.bottom();
-		
-			return state.smallStepSemantics(expr, original);
-			*/
+			return result;
 		}
 	}
 }

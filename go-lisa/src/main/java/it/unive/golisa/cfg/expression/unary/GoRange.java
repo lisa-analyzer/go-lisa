@@ -1,6 +1,9 @@
 package it.unive.golisa.cfg.expression.unary;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -9,15 +12,17 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import java.util.Set;
 
 /**
  * A Go range expression, tracking the beginning of a range statement.
@@ -49,6 +54,16 @@ public class GoRange extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+	
+		for (Global g : getProgram().getGlobals())
+			if (g.getName().endsWith(expr.toString()))
+				if (g.getStaticType() instanceof GoType) {
+					AnalysisState<A, H, V, T> s = ((GoType) g.getStaticType()).defaultValue(getCFG(), (SourceCodeLocation) getLocation()).semantics(state, interprocedural, expressions);
+					for (SymbolicExpression e : s.getComputedExpressions())
+						state = state.assign(expr, e, this);
+				} else if(g.getStaticType().equals(Untyped.INSTANCE))
+					state = state.assign(expr, new PushAny(getStaticType(), getLocation()), this);
+		
 		return state.smallStepSemantics(expr, this);
 	}
 

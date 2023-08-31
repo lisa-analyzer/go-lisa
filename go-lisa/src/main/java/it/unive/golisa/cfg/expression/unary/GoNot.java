@@ -15,8 +15,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * Go unary not Boolean expression (e.g., !(x > y)).
@@ -43,15 +41,10 @@ public class GoNot extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
 
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type type : expr.getRuntimeTypes(types))
-			if (type.isBooleanType() || type.isUntyped())
-				result = result.lub(state.smallStepSemantics(
-						new UnaryExpression(GoBoolType.INSTANCE, expr, LogicalNegation.INSTANCE,
-								getLocation()),
-						this));
-		return result;
+		return state.smallStepSemantics(
+				new UnaryExpression(GoBoolType.INSTANCE, expr, LogicalNegation.INSTANCE,
+						getLocation()),
+				this);
 	}
 }

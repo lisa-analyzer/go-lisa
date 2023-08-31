@@ -1,11 +1,5 @@
 package it.unive.golisa.golang.util;
 
-import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.GoLangApiSignature;
-import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,7 +14,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
+
+import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.GoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 
 public class GoLangAPISignatureLoader {
 

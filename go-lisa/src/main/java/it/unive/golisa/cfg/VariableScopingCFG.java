@@ -1,20 +1,31 @@
 package it.unive.golisa.cfg;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.cfg.statement.block.IdInfo;
+import it.unive.golisa.frontend.GoCodeMemberVisitor;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.VariableTableEntry;
+import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
+import it.unive.lisa.program.cfg.controlFlow.IfThenElse;
+import it.unive.lisa.program.cfg.controlFlow.Loop;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.NoOp;
+import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.util.collections.workset.LIFOWorkingSet;
+import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A control flow graph, that has {@link Statement}s as nodes and {@link Edge}s
@@ -116,6 +127,78 @@ public class VariableScopingCFG extends CFG {
 					|| table.getLocation().equals(location))
 				return table;
 		return null;
+	}
 
+	@Override
+	public void simplify() {
+		List<Statement> stray = new LinkedList<>();
+		Collection<Statement> noPreds = list.getEntries();
+		// we remove all edges going out from return statements
+		list.getEdges().stream()
+				.filter(e -> GoCodeMemberVisitor.isReturnStmt(e.getSource()))
+				.forEach(e -> list.removeEdge(e));
+		// removing edges might have left new dangling nodes that we 
+		// do not want: remove them as well
+		Collection<Statement> dangling = null;
+		do {
+			dangling = list.getEntries();
+			dangling.removeAll(noPreds);
+			dangling.forEach(n -> {
+				preSimplify(n);
+				list.removeNode(n);
+			});
+		} while (!dangling.isEmpty());
+		// now remove all isolated noops
+		list.getNodes().stream()
+				.filter(n -> n instanceof NoOp && list.getIngoingEdges(n).isEmpty()
+						&& list.getOutgoingEdges(n).isEmpty())
+				.forEach(stray::add);
+		// we might have stray noop connected to a ret
+		list.getNodes().stream()
+				.filter(n -> n instanceof Ret)
+				.map(n -> allNonNoopPredecessorsAreReturns(list, n))
+				.filter(l -> l != null)
+				.flatMap(l -> l.stream())
+				.forEach(stray::add);
+		
+		// actually remove the nodes
+		stray.forEach(n -> {
+			preSimplify(n);
+			list.removeNode(n);
+			entrypoints.remove(n);
+		});
+		
+		if (getNodesCount() == 0)
+			addNode(new Ret(this, getDescriptor().getLocation()), true);
+		
+		super.simplify();
+	}
+	
+	@Override
+	public void preSimplify(Statement node) {
+		super.preSimplify(node);
+		for (ControlFlowStructure cfs : getControlFlowStructures())
+			if (cfs instanceof Loop)
+				((Loop) cfs).getBody().remove(node);
+			else if (cfs instanceof IfThenElse) {
+				((IfThenElse) cfs).getTrueBranch().remove(node);
+				((IfThenElse) cfs).getFalseBranch().remove(node);
+			} else if (cfs instanceof Switch)
+				((Switch) cfs).getCases().remove(node);
+			else if (cfs instanceof SwitchCase)
+				((SwitchCase) cfs).getBody().remove(node);
+	}
+
+	private Collection<Statement> allNonNoopPredecessorsAreReturns(NodeList<CFG, Statement, Edge> block,
+			Statement last) {
+		VisitOnceWorkingSet<Statement> ws = VisitOnceWorkingSet.mk(LIFOWorkingSet.mk());
+		ws.push(last);
+		while (!ws.isEmpty()) {
+			Statement current = ws.pop();
+			if (!(current instanceof NoOp) && current != last)
+				return null;
+			block.predecessorsOf(current).forEach(ws::push);
+		}
+		return ws.getSeen();
 	}
 }

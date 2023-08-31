@@ -1,5 +1,8 @@
 package it.unive.golisa.checker;
 
+
+import java.util.Collection;
+
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -28,7 +31,6 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.StringUtilities;
-import java.util.Collection;
 
 /**
  * A Go taint checker.
@@ -137,14 +139,44 @@ public class TaintChecker implements
 							}
 
 					}
+				} else {
+					checkSignature(call, tool);
 				}
 			}
+
 		} catch (SemanticException e) {
 			System.err.println("Cannot check " + node);
 			e.printStackTrace(System.err);
-		}
+		} 
 
 		return true;
+	}
+	
+
+	private void checkSignature(UnresolvedCall call,
+			CheckToolWithAnalysisResults<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool) throws SemanticException {
+		if (call != null) {
+			String targetName = call.getTargetName();
+			if (((targetName.equals("PutState") || targetName.equals("PutPrivateData"))
+					&& call.getParameters().length == 3)
+					|| ((targetName.equals("DelState") || targetName.equals("DelPrivateData"))
+							&& call.getParameters().length == 2)) {
+				for (AnalyzedCFG<
+						SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+						PointBasedHeap, ValueEnvironment<TaintDomain>,
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+					for (int i = 1; i < call.getParameters().length; i++) {
+						 AnalysisState<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> state = result.getAnalysisStateAfter(call.getParameters()[i]);
+							for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), call))
+								if (state.getState().getValueState().eval((ValueExpression) stack, call)
+										.isTainted())
+							tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
+									+ " parameter of " + targetName + "call is tainted");
+					}
+			}
+		}
 
 	}
 

@@ -1,12 +1,14 @@
 package it.unive.golisa.cfg;
 
+import java.util.Collection;
+
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.Collection;
 import java.util.HashSet;
+
 
 /**
  * A switch control flow structure.
@@ -15,7 +17,7 @@ import java.util.HashSet;
  */
 public class Switch extends ControlFlowStructure {
 
-	private final SwitchCase[] cases;
+	private final Collection<SwitchCase> cases;
 
 	private final DefaultSwitchCase defaultCase;
 
@@ -29,10 +31,14 @@ public class Switch extends ControlFlowStructure {
 	 *                          structure
 	 */
 	public Switch(NodeList<CFG, Statement, Edge> cfgMatrix, Statement condition, Statement firstFollower,
-			SwitchCase[] cases, DefaultSwitchCase defaultCase) {
+			Collection<SwitchCase> cases, DefaultSwitchCase defaultCase) {
 		super(cfgMatrix, condition, firstFollower);
 		this.cases = cases;
 		this.defaultCase = defaultCase;
+	}
+
+	public Collection<SwitchCase> getCases() {
+		return cases;
 	}
 
 	@Override

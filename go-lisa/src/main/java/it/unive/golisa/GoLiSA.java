@@ -1,5 +1,21 @@
 package it.unive.golisa;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
+
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -37,24 +53,10 @@ import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * The Go frontend for LiSA.
- * 
+ *
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GoLiSA {
@@ -63,9 +65,9 @@ public class GoLiSA {
 
 	/**
 	 * Entry point of {@link GoLiSA}.
-	 * 
+	 *
 	 * @param args the arguments
-	 * 
+	 *
 	 * @throws AnalysisSetupException if something goes wrong with the analysis
 	 */
 	public static void main(String[] args) throws AnalysisSetupException {
@@ -117,8 +119,8 @@ public class GoLiSA {
 		conf.jsonOutput = true;
 		conf.optimize = false;
 		//conf.hotspots
-		
-		ReadWritePairChecker readWritePairChecker = null; 
+
+		ReadWritePairChecker readWritePairChecker = null;
 
 		switch (analysis) {
 
@@ -154,7 +156,7 @@ public class GoLiSA {
 			conf.semanticChecks.add(readWritePairChecker);
 			break;
 		default:
-			
+
 		}
 
 		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
@@ -203,7 +205,7 @@ public class GoLiSA {
 			return;
 		} catch (IOException e) {
 			// the file does not exists
-			System.err.println("File " + filePath + "does not exist.");
+			System.err.println("File " + filePath + " does not exist.");
 			return;
 		} catch (UnsupportedOperationException e1) {
 			// an unsupported operations has been encountered
@@ -226,7 +228,7 @@ public class GoLiSA {
 			e.printStackTrace();
 			return;
 		}
-	
+		
 		if(analysis.equals("read-write")) {
 			//phase 2
 
@@ -234,23 +236,22 @@ public class GoLiSA {
 			conf2.workdir = outputDir;
 			conf2.jsonOutput = true;
 			conf2.optimize = false;
-			
+
 			conf2.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new Tarsis()),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf2.semanticChecks.add(new ReadWritePathChecker(readWritePairChecker.getReadAfterWriteCandidates(), readWritePairChecker.getOverWriteCandidates()));
-			
+
 			conf2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
-			
+
 			if (!program.getEntryPoints().isEmpty()) {
 				conf2.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 				conf2.callGraph = new RTACallGraph();
 			} else
 				LOG.info("Entry points not found!");
-			
+
 			LiSA lisa2 = new LiSA(conf2);
-	
 			try {
 				lisa2.run(program);
 			} catch (Exception e) {
@@ -258,7 +259,7 @@ public class GoLiSA {
 				e.printStackTrace();
 				return;
 			}
+
 		}
 	}
-
 }

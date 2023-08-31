@@ -1,11 +1,19 @@
 package it.unive.golisa.interprocedural;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
+import it.unive.golisa.loader.annotation.CodeAnnotation;
+import it.unive.golisa.loader.annotation.MethodAnnotation;
+import it.unive.golisa.loader.annotation.sets.GoNonDeterminismAnnotationSet;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -30,6 +38,8 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import it.unive.lisa.symbolic.value.Variable;
+
 
 /**
  * OpenCall policy to be less conservative during taint and non-interference
@@ -63,36 +73,42 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 			for (SymbolicExpression stack : entryState.rewrite(entryState.getComputedExpressions(), call)) {
 				NonRelationalValueDomain<?> stackValue = valueEnv.eval((ValueExpression) stack, call);
 				if (stackValue instanceof TaintDomain) {
-					Identifier var = call.getMetaVariable();
+					Variable var = new Variable(call.getStaticType(), "RETURNED_VARIABLE_NAME", call.getLocation());
 					if (((TaintDomain) stackValue).isTainted() || ((TaintDomain) stackValue).isTop()) {
 						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
 						return entryState.assign(var, pushany, call);
-					} else if (((TaintDomain) stackValue).isClean()) {
-						// && isRuntimeAPI(call)) {
-						return entryState.assign(var,
-								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+					} else if (((TaintDomain) stackValue).isClean()) { // &&
+																		// isRuntimeAPI(call))
+																		// {
+						if (!isSourceForNonDeterminism(call))
+							return entryState.assign(var,
+									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+						else
+							return entryState.assign(var, new Tainted(call.getLocation()), call);
+	
 					} else if (((TaintDomain) stackValue).isBottom()) {
 						return entryState;
 					}
-				}
-			}
-		} else if (entryState.getState().getValueState() instanceof InferenceSystem<?>) {
-			Identifier var = call.getMetaVariable();
-			var infSys = ((InferenceSystem<?>) entryState.getState().getValueState());
-			for (SymbolicExpression stack : entryState.rewrite(entryState.getComputedExpressions(), call)) {
-				InferredValue<?> value = infSys.eval((ValueExpression) stack, call);
-				if (value != null && value instanceof IntegrityNIDomain) {
-					IntegrityNIDomain ni = (IntegrityNIDomain) value;
-					if (ni.isLowIntegrity() || ni.isTop()) {
-						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
-						return entryState.assign(var, pushany, call);
-					} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call))
-														// {
-						return entryState.assign(var,
-								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
-
-					} else if (ni.isBottom())
-						return entryState;
+				} else if (entryState.getState().getValueState() instanceof InferenceSystem<?>) {
+					Identifier var = call.getMetaVariable();
+					var infSys = ((InferenceSystem<?>) entryState.getState().getValueState());
+						InferredValue<?> value = infSys.eval((ValueExpression) stack, call);
+						if (value != null && value instanceof IntegrityNIDomain) {
+							IntegrityNIDomain ni = (IntegrityNIDomain) value;
+							if (ni.isLowIntegrity() || ni.isTop()) {
+								PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+								return entryState.assign(var, pushany, call);
+							} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call))
+																// {
+								if (!isSourceForNonDeterminism(call))
+									return entryState.assign(var,
+											new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+								else
+									return entryState.assign(var, new PushAny(call.getStaticType(), call.getLocation()), call);
+		
+							} else if (ni.isBottom())
+								return entryState;
+						}
 				}
 			}
 		}
@@ -165,4 +181,19 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 		return false;
 	}
 
+	private boolean isSourceForNonDeterminism(Call call) {
+		GoNonDeterminismAnnotationSet sources = new GoNonDeterminismAnnotationSet();
+		for (CodeAnnotation ca : sources.getAnnotationForSources()) {
+			if (ca instanceof MethodAnnotation) {
+				MethodAnnotation ma = (MethodAnnotation) ca;
+				if (call.getTargetName().equals(ma.getName()))
+					if (call.getQualifier() != null && (ma.getUnit().equals(call.getQualifier())
+							|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(call.getQualifier()))))
+						return true;
+			}
+		}
+
+		return false;
+
+	}
 }

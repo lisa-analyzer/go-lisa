@@ -6,8 +6,11 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
 import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.annotations.Annotation;
@@ -18,9 +21,11 @@ import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
@@ -88,6 +93,19 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
+		TaintDomain def = defaultApprox(id, pp);
+		if (def != BOTTOM)
+			return def;
+		return BaseNonRelationalValueDomain.super.variable(id, pp);
+	}
+	
+
+	private TaintDomain defaultApprox(Identifier id, ProgramPoint pp) throws SemanticException {
+
+		boolean isGlobal = pp.getProgram().getGlobals().stream().anyMatch(g -> g.getName().equals(id.getName()));
+
+		if(isGlobal)
+			return TAINTED;
 
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
 
@@ -111,13 +129,25 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 		if (annots.contains(CLEAN_MATCHER))
 			return CLEAN;
 
-		return BaseNonRelationalValueDomain.super.variable(id, pp);
+		return BOTTOM;
 	}
+
+	@Override
+	public TaintDomain evalIdentifier(Identifier id, ValueEnvironment<TaintDomain> environment, ProgramPoint pp)
+			throws SemanticException {
+		TaintDomain def = defaultApprox(id, pp);
+		if (def != BOTTOM)
+			return def;
+		return BaseNonRelationalValueDomain.super.evalIdentifier(id, environment, pp);
+	}
+	
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {
 
 		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
 	}
+
+
 
 	private boolean matchMapRangeId(Statement st, Identifier id) {
 
@@ -167,7 +197,7 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	/**
 	 * Yields if the state is tainted.
-	 * 
+	 *
 	 * @return {@code true} if is tainted, otherwise {@code false}
 	 */
 	public boolean isTainted() {
@@ -176,7 +206,7 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	/**
 	 * Yields if the state is cleaned.
-	 * 
+	 *
 	 * @return {@code true} if is clean, otherwise {@code false}
 	 */
 	public boolean isClean() {
@@ -235,11 +265,31 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
+	public Satisfiability satisfies(ValueExpression expression, ValueEnvironment<TaintDomain> environment,
+			ProgramPoint pp) throws SemanticException {
+		return Satisfiability.UNKNOWN;
+	}
+
+	@Override
 	public boolean tracksIdentifiers(Identifier id) {
 		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;
+		if (id instanceof AllocationSite)
+			return true;
 		return false;
+	}
+
+	@Override
+	public TaintDomain evalTypeCast(BinaryExpression cast, TaintDomain left, TaintDomain right, ProgramPoint pp)
+			throws SemanticException {
+		return left;
+	}
+
+	@Override
+	public TaintDomain evalTypeConv(BinaryExpression conv, TaintDomain left, TaintDomain right, ProgramPoint pp)
+			throws SemanticException {
+		return left;
 	}
 
 	@Override

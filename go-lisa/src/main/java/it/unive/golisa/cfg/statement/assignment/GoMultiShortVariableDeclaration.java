@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
@@ -22,8 +26,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi short variable declaration statement.
@@ -53,9 +55,6 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {
-		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof Clean;
-	}
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
@@ -72,8 +71,10 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		// if the right state is top,
 		// we put all the variables to top
 		if (rightState.isTop()
-				|| isClean(rightState.getComputedExpressions()) || rightState.getComputedExpressions().size() > 1) {
-			AnalysisState<A, H, V, T> result = entryState;
+				|| isClean(rightState.getComputedExpressions())
+				|| rightState.getComputedExpressions().size() > 1
+				|| isOpenCall(rightState.getComputedExpressions())) {
+			AnalysisState<A, H, V, T> result = rightState;
 
 			for (int i = 0; i < ids.length; i++) {
 				if (GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
@@ -115,5 +116,14 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 		}
 
 		return super.semantics(entryState, interprocedural, expressions);
+	}
+
+	private boolean isOpenCall(ExpressionSet<SymbolicExpression> computedExpressions) {
+		return computedExpressions.size() == 1
+				&& computedExpressions.iterator().next().toString().startsWith("open_call");
+	}
+	
+	private boolean isClean(ExpressionSet<SymbolicExpression> computedExpressions) {
+		return computedExpressions.size() == 1 && computedExpressions.iterator().next() instanceof Clean;
 	}
 }

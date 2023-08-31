@@ -9,7 +9,9 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.representation.DomainRepresentation;
@@ -112,6 +114,12 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	@Override
 	public IntegrityNIDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
 
+		
+		boolean isGlobal = pp.getProgram().getGlobals().stream().anyMatch(g -> g.getName().equals(id.getName()));
+		
+		if(isGlobal)
+			return LOW;
+		
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
 
 			Statement condition = g.getCondition();
@@ -295,7 +303,15 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
+	public Satisfiability satisfies(ValueExpression expression, InferenceSystem<IntegrityNIDomain> environment,
+			ProgramPoint pp) throws SemanticException {
+		return Satisfiability.UNKNOWN;
+	}
+
+	@Override
 	public boolean tracksIdentifiers(Identifier id) {
+		if (id instanceof AllocationSite)
+			return true;
 		for (Type t : id.getRuntimeTypes(null))
 			if (!(t.isInMemoryType()))
 				return true;

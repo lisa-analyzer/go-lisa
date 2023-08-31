@@ -49,9 +49,10 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
+
+		TypeSystem typeSys = getProgram().getTypes();
 		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type type : expr.getRuntimeTypes(types)) {
+		for (Type type : expr.getRuntimeTypes(typeSys)) {
 			if (type.isPointerType() && (type.asPointerType().getInnerType().isArrayType()
 					|| type.asPointerType().getInnerType() instanceof GoSliceType)) {
 				// When expr is an array or a slice, we access the len property
@@ -83,10 +84,11 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 				// and len is not defined yet..
 				result = result.lub(state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), this));
 			} else if (type.isStringType())
-				result = result.lub(state.smallStepSemantics(
+				return result.lub(state.smallStepSemantics(
 						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));
+			else
+				result = result.lub(state.smallStepSemantics(expr, this));
 		}
-
 		return result;
 	}
 }

@@ -1,1 +1,0 @@
-{"name":"untyped main::anonymousFunction0()","description":null,"nodes":[{"id":0,"subNodes":[1,2],"text":"<-(messages, \"ping\")"},{"id":1,"text":"messages"},{"id":2,"text":"\"ping\""},{"id":3,"text":"ret"}],"edges":[{"sourceId":0,"destId":3,"kind":"SequentialEdge"}],"descriptions":[]}

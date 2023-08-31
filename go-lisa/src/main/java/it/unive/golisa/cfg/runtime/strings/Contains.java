@@ -22,8 +22,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * func Contains(s, substr string) bool.
@@ -97,19 +95,9 @@ public class Contains extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			TypeSystem types = getProgram().getTypes();
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (Type leftType : left.getRuntimeTypes(types))
-				for (Type rightType : right.getRuntimeTypes(types))
-					if (!leftType.isStringType() && !leftType.isUntyped())
-						continue;
-					else if (!rightType.isStringType() && !rightType.isUntyped())
-						continue;
-					else
-						result = result.lub(state
-								.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-										left, right, StringContains.INSTANCE, getLocation()), original));
-			return result;
+			
+			return state.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
+										left, right, StringContains.INSTANCE, getLocation()), original);
 		}
 	}
 }

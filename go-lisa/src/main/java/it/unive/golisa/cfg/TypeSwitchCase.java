@@ -2,8 +2,11 @@ package it.unive.golisa.cfg;
 
 import java.util.Collection;
 
+import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.util.datastructures.graph.code.NodeList;
 
 /**
  * A type switch-case control flow structure.
@@ -20,8 +23,10 @@ public class TypeSwitchCase extends SwitchCase {
 	 * @param condition the switch-case condition
 	 * @param body      the body associated with this switch-case
 	 */
-	public TypeSwitchCase(Expression initialization, Expression condition, Collection<Statement> body) {
-		super(condition, body);
+	public TypeSwitchCase(Expression initialization, NodeList<CFG, Statement, Edge> cfgMatrix, Statement condition, Statement firstFollower,
+			Collection<Statement> body) {
+		
+		super(cfgMatrix, firstFollower, condition, body);
 		this.initialization = initialization;
 	}
 

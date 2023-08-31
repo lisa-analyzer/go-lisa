@@ -12,6 +12,8 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -27,6 +29,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -99,6 +102,8 @@ public class Format extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
+			
+/*
 			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
 			if (env != null) {
 				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
@@ -122,7 +127,7 @@ public class Format extends NativeCFG {
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 			}
-			
+*/	
 			AnalysisState<A, H, V, T> resultState = state.smallStepSemantics(left, original)
 					.lub(state.smallStepSemantics(right, original));
 			return resultState;

@@ -94,7 +94,7 @@ public class In extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 				throws SemanticException {
-			
+/*	
 			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
 			if (env != null) {
 				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
@@ -118,7 +118,7 @@ public class In extends NativeCFG {
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 			}
-			
+*/
 			return state.smallStepSemantics(left, original);
 		}	
 	}

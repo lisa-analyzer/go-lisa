@@ -103,7 +103,7 @@ public class Unmarshal extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-
+/*
 			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
 			if (env != null) {
 				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
@@ -127,7 +127,7 @@ public class Unmarshal extends NativeCFG {
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 			}
-			
+*/
 			AnalysisState<A, H, V, T> errorValue = state
 					.smallStepSemantics(new Clean(GoErrorType.INSTANCE, getLocation()), original);
 			AnalysisState<A, H, V, T> nilValue = state

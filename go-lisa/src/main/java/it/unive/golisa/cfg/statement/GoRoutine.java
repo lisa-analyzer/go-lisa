@@ -10,6 +10,7 @@ import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryStatement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -46,5 +47,9 @@ public class GoRoutine extends UnaryStatement {
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 		// TODO semantics of go routine not supported yet
 		return state;
+	}
+
+	public Expression getExpression() {
+		return getSubExpressions()[0];
 	}
 }

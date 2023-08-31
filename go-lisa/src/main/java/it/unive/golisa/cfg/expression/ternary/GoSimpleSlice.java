@@ -1,5 +1,10 @@
 package it.unive.golisa.cfg.expression.ternary;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -8,18 +13,25 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.type.Untyped;
 
@@ -50,13 +62,16 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 					StatementStore<A, H, V, T> expressions) throws SemanticException {
-
 		
+/*
 		ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
 		if (env != null) {
 			ValueEnvironment<?> linst = state.smallStepSemantics(left, this).getDomainInstance(ValueEnvironment.class);
 			ValueEnvironment<?> minst = state.smallStepSemantics(middle, this).getDomainInstance(ValueEnvironment.class);
 			ValueEnvironment<?> rinst = state.smallStepSemantics(right, this).getDomainInstance(ValueEnvironment.class);
+			
+			
+			
 			if (linst.getValueOnStack() instanceof TaintDomain) {
 				if (((TaintDomain)linst.getValueOnStack()).isTainted()
 						|| ((TaintDomain)minst.getValueOnStack()).isTainted()
@@ -79,7 +94,7 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 				return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), this);
 			}
 		}
-		
+*/
 		return state.smallStepSemantics(
 				new TernaryExpression(GoStringType.INSTANCE,
 						left, middle, right, StringSubstring.INSTANCE, getLocation()),

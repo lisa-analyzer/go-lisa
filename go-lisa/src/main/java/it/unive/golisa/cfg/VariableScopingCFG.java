@@ -23,7 +23,7 @@ import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Ret;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
-import it.unive.lisa.util.collections.workset.LIFOWorkingSet;
+import it.unive.lisa.util.collections.workset.VisitOnceLIFOWorkingSet;
 import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
 
@@ -191,7 +191,7 @@ public class VariableScopingCFG extends CFG {
 
 	private Collection<Statement> allNonNoopPredecessorsAreReturns(NodeList<CFG, Statement, Edge> block,
 			Statement last) {
-		VisitOnceWorkingSet<Statement> ws = VisitOnceWorkingSet.mk(LIFOWorkingSet.mk());
+		VisitOnceWorkingSet<Statement> ws = VisitOnceLIFOWorkingSet.mk();
 		ws.push(last);
 		while (!ws.isEmpty()) {
 			Statement current = ws.pop();

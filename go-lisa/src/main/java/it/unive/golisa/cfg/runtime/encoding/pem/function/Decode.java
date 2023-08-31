@@ -97,6 +97,8 @@ public class Decode extends NativeCFG {
 		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+			
+			/*
 			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
 			if (env != null) {
 				ValueEnvironment<?> linst = state.smallStepSemantics(expr, original).getDomainInstance(ValueEnvironment.class);
@@ -116,6 +118,7 @@ public class Decode extends NativeCFG {
 					return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 				}
 			}
+			*/
 			return state.smallStepSemantics(expr, original);
 		}
 	}

@@ -1,20 +1,17 @@
 package it.unive.golisa.cfg.expression;
 
-
-import it.unive.golisa.cfg.type.composite.GoSliceType;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
-
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
@@ -29,14 +26,10 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
-
-import it.unive.lisa.symbolic.value.PushAny;
-import it.unive.lisa.type.Type;
-
 import it.unive.lisa.symbolic.heap.HeapExpression;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
-
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -84,29 +77,6 @@ public class GoCollectionAccess extends BinaryExpression {
 		if (getLeft().toString().equals("resp") && getRight().toString().equals("Body"))
 			return state.smallStepSemantics(tainted, this);
 
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type type : left.getRuntimeTypes(getProgram().getTypes())) {
-			if (type.isArrayType() || type instanceof GoSliceType) {
-				// When expr is an array or a slice, we access the len property
-//			AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
-//			AnalysisState<A, H, V, T> partialResult = state.bottom();
-//
-//			for (SymbolicExpression recExpr : rec.getComputedExpressions()) {
-//				AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(GoIntType.INSTANCE, recExpr,
-//						new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
-//				partialResult = partialResult.lub(tmp);
-//			}
-				// FIXME we get here when left is a parameter of an entrypoint,
-				// and nothing is defined in the heap for its elements..
-				Type inner;
-				if (type.isArrayType())
-					inner = type.asArrayType().getInnerType();
-				else
-					inner = ((GoSliceType) type).getContentType();
-				return state.smallStepSemantics(new PushAny(inner, getLocation()), this);
-			}
-		}
-
 		// Access global
 		for (Unit unit : getProgram().getUnits())
 			if (unit.toString().equals(getReceiver().toString()))
@@ -114,7 +84,6 @@ public class GoCollectionAccess extends BinaryExpression {
 					if (g.toString().endsWith(getTarget().toString()))
 						return state.smallStepSemantics(new Clean(g.getStaticType(), getLocation()), getReceiver());
 
-		
 		SymbolicExpression inner;
 		if (left instanceof HeapReference)
 			inner = ((HeapReference) left).getExpression();
@@ -122,40 +91,39 @@ public class GoCollectionAccess extends BinaryExpression {
 			inner = left;
 		else
 			inner = new HeapDereference(getStaticType(), left, getLocation());
-		
-		result = state
+		AnalysisState<A, H, V, T> result = state
 				.smallStepSemantics(new AccessChild(Untyped.INSTANCE, inner, right, getLocation()), this);
 
 		// Workaround for cases such as arr[t], where t is tainted
 
 		AnalysisState<A, H, V, T> rightState = state.smallStepSemantics(right, this);
-		
-		/*
+
 		ValueEnvironment<?> env = rightState.getDomainInstance(ValueEnvironment.class);
 		if (env != null) {
-			NonRelationalValueDomain<?> stack = env.getValueOnStack();
-			if (stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
-				AnalysisState<A, H, V, T> tmp = state.bottom();
-				for (SymbolicExpression id : result.getComputedExpressions())
-					tmp = tmp.lub(result.assign(id, tainted, this));
-				return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
-						tmp.getAliasing());
-			}
+				for( SymbolicExpression reWriteExpr : rightState.rewrite(rightState.getComputedExpressions(), this)) {
+					NonRelationalValueDomain<?> stack = env.eval((ValueExpression) reWriteExpr, this);
+					if (stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+						AnalysisState<A, H, V, T> tmp = state.bottom();
+						for (SymbolicExpression id : result.getComputedExpressions())
+							tmp = tmp.lub(result.assign(id, tainted, this));
+						return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
+								tmp.getAliasing());
+					}
+				}
 		}
-		
 		InferenceSystem<?> sys = rightState.getDomainInstance(InferenceSystem.class);
 		if (sys != null) {
-			Object value = sys.getInferredValue();
-			if (value instanceof IntegrityNIDomain 
-					&& ((IntegrityNIDomain) value).isLowIntegrity()) {
-				AnalysisState<A, H, V, T> tmp = state.bottom();
-				for (SymbolicExpression id : result.getComputedExpressions())
-					tmp = tmp.lub(result.assign(id, tainted, this));
-				return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
-						tmp.getAliasing());
-			}
+				for( SymbolicExpression reWriteExpr : rightState.rewrite(rightState.getComputedExpressions(), this)) {
+					InferredValue<?> stack = sys.eval((ValueExpression) reWriteExpr, this);
+					if (stack != null && stack instanceof IntegrityNIDomain) {
+						AnalysisState<A, H, V, T> tmp = state.bottom();
+						for (SymbolicExpression id : result.getComputedExpressions())
+							tmp = tmp.lub(result.assign(id, tainted, this));
+						return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
+								tmp.getAliasing());
+					}
+				}
 		}
-		*/
 
 		return result;
 

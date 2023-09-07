@@ -12,6 +12,7 @@ public class IdInfo {
 
 	private final VariableRef var;
 	private final int blockDeep;
+	private final boolean multiDeclar;
 
 	/**
 	 * Builds a identifier information.
@@ -22,6 +23,23 @@ public class IdInfo {
 	public IdInfo(VariableRef var, int blockDeep) {
 		this.var = var;
 		this.blockDeep = blockDeep;
+		this.multiDeclar = false;
+	}
+	
+	/**
+	 * Builds a identifier information.
+	 * 
+	 * @param var       the variable
+	 * @param blockDeep the block deep at which the variable is declared
+	 */
+	public IdInfo(VariableRef var, int blockDeep, boolean multiDeclar) {
+		this.var = var;
+		this.blockDeep = blockDeep;
+		this.multiDeclar = multiDeclar;
+	}
+
+	public boolean isMultiDeclar() {
+		return multiDeclar;
 	}
 
 	/**

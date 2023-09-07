@@ -21,6 +21,9 @@ import java.util.Set;
  */
 public class GoSliceType implements GoType, InMemoryType {
 
+	/**
+	 * The content type of the slice type.
+	 */
 	private Type contentType;
 
 	private static final Set<GoSliceType> sliceTypes = new HashSet<>();
@@ -154,7 +157,6 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * @return the slice type []string
 	 */
 	public static GoSliceType getSliceOfStrings() {
-		return GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
+		return GoSliceType.lookup(GoStringType.INSTANCE);
 	}
-
 }

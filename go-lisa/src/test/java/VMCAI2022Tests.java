@@ -2,6 +2,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.composition.RelTarsis;
@@ -20,6 +21,7 @@ import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Program;
 
+@Ignore
 public class VMCAI2022Tests {
 	private String tmpDir = "go-outputs/vmcai2022";
 	private String sourcePath = "go-testcases/vmcai2022/";

@@ -47,6 +47,7 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
+@Ignore("This test should only be manually executed for the benchmark as it takes few hours")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TarsisPaperTests extends GoAnalysisTestExecutor {
 

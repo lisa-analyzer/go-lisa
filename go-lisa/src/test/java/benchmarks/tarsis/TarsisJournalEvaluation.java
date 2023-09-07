@@ -25,12 +25,13 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.numeric.Interval;
@@ -40,7 +41,7 @@ import it.unive.lisa.logging.TimeFormat;
 import it.unive.lisa.util.numeric.IntInterval;
 import it.unive.lisa.util.numeric.MathNumber;
 
-//@Ignore("This test should only be manually executed for the benchmark as it takes few hours")
+@Ignore("This test should only be manually executed for the benchmark as it takes few hours")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TarsisJournalEvaluation {
 
@@ -52,15 +53,13 @@ public class TarsisJournalEvaluation {
 
 	private static final Logger LOG = LogManager.getLogger(TarsisJournalEvaluation.class);
 
-	private static final ExecutorService EXECUTORS = Executors.newSingleThreadExecutor();
+	private static final long TIMEOUT = 30;
 
-	private static final long TIMEOUT = 1;
-
-	private static final TimeUnit TIMEOUT_UNIT = TimeUnit.MINUTES;
+	private static final TimeUnit TIMEOUT_UNIT = TimeUnit.SECONDS;
 
 	private static final int WARMUP = 1;
 
-	private static final int ROUNDS_PER_CLASS = 5;
+	private static final int ROUNDS_PER_CLASS = 10;
 
 	private static final int ROUNDS = 100;
 
@@ -75,38 +74,33 @@ public class TarsisJournalEvaluation {
 		LOG.info("Generating automata for warmups");
 		for (int k = 0; k < WARMUP; k++)
 			generateSingle(AutomataGenerator::random);
-		LOG.info("Generating automata for top");
+
+		LOG.info("Class 1: Generating automata for top");
 		generateSingle(AutomataGenerator::top);
-		LOG.info("Class 1: Generating automata for atoms");
-		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
+		
+		LOG.info("Class 2: Generating automata for atoms");
+		for (int k = 0; k < 5; k++)
 			generateSingle(AutomataGenerator::atom);
-		LOG.info("Class 2: Generating automata for concatenated constants");
-		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
-			generateSingle(AutomataGenerator::concatConstants);
+		
 		LOG.info("Class 3: Generating automata for concatenated constants and tops");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::concatConstantsAndTop);
-		LOG.info("Class 4: Generating automata for single paths");
-		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
-			generateSingle(AutomataGenerator::singlePath);
-		LOG.info("Class 5: Generating automata for single paths with top");
+		
+		LOG.info("Class 4: Generating automata for single paths with top");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::singlePathWithTop);
-		LOG.info("Class 6: Generating automata for joined constants");
-		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
-			generateSingle(AutomataGenerator::joinConstants);
-		LOG.info("Class 7: Generating automata for joined constants with tops");
+		
+		LOG.info("Class 5: Generating automata for joined constants with tops");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::joinConstantsAndTop);
-		LOG.info("Class 8: Generating automata for loops with constants");
-		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
-			generateSingle(AutomataGenerator::loopingConstants);
-		LOG.info("Class 9: Generating automata for loops with constants and tops");
+			
+		LOG.info("Class 6: Generating automata for loops with constants and tops");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::loopingConstantsAndTop);
-		LOG.info("Generating random automata");
+		
+		LOG.info("Class 7: Generating random automata");
 		// 1 is to account for the top automaton
-		for (int k = 0; k < ROUNDS - (ROUNDS_PER_CLASS * 9) - 1; k++)
+		for (int k = 0; k < ROUNDS - (ROUNDS_PER_CLASS * 4) - 6; k++)
 			generateSingle(AutomataGenerator::random);
 
 		assertEquals(ROUNDS + WARMUP, TARSIS_TRIPLES.size());
@@ -129,140 +123,135 @@ public class TarsisJournalEvaluation {
 		int j = i + GEN.nextInt(20 - i);
 		SUBSTRING_INDEXES.add(Pair.of(i, j));
 	}
-
-	@AfterClass
-	public static void shutdown() {
-		EXECUTORS.shutdown();
-	}
-
+	
 	@After
 	public void runGC() {
 		System.gc();
 	}
 
-//	@Test
-//	public void bench02lub() throws SemanticException {
-//		LOG.info("Benchmarking lub");
-//		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().lub(triple.getMiddle()));
-//		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().lub(triple.getMiddle()));
-//		speedup(tarsis, fsa);
-////		compare(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench03glb() throws SemanticException {
-//		LOG.info("Benchmarking glb");
-//		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().glb(triple.getMiddle()));
-//		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().glb(triple.getMiddle()));
-//		speedup(tarsis, fsa);
-////		compare(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench01leq() throws SemanticException {
-//		LOG.info("Benchmarking leq");
-//		Map<Integer, RunResult<Boolean>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().lessOrEqual(triple.getMiddle()));
-//		Map<Integer, RunResult<Boolean>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().lessOrEqual(triple.getMiddle()));
-//		speedup(tarsis, fsa);
-////		compareBools(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench04widening() throws SemanticException {
-//		LOG.info("Benchmarking widening");
-//		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().widening(triple.getRight()));
-//		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().widening(triple.getRight()));
-//		speedup(tarsis, fsa);
-////		compare(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench05concat() throws SemanticException {
-//		LOG.info("Benchmarking concat");
-//		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().concat(triple.getMiddle()));
-//		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().concat(triple.getMiddle()));
-//		speedup(tarsis, fsa);
-////		compare(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench06contains() throws SemanticException {
-//		LOG.info("Benchmarking contains");
-//		Map<Integer, RunResult<Satisfiability>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().contains(triple.getMiddle()));
-//		Map<Integer, RunResult<Satisfiability>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().contains(triple.getMiddle()));
-//		speedup(tarsis, fsa);
-////		compareSats(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench08indexOf() throws SemanticException {
-//		LOG.info("Benchmarking indexOf");
-//		Map<Integer, RunResult<IntInterval>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().indexOf(triple.getMiddle()));
-//		Map<Integer, RunResult<IntInterval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().indexOf(triple.getMiddle()));
-//		speedup(tarsis, fsa);
-////		compareIntervals(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench07length() throws SemanticException {
-//		LOG.info("Benchmarking length");
-//		Map<Integer, RunResult<IntInterval>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().length());
-//		Map<Integer, RunResult<IntInterval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY, triple -> triple.getLeft().length());
-//		speedup(tarsis, fsa);
-////		compareIntervals(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench10replace() throws SemanticException {
-//		LOG.info("Benchmarking replace");
-//		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().replace(triple.getMiddle(), triple.getRight()));
-//		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//				triple -> triple.getLeft().replace(triple.getMiddle(), triple.getRight()));
-//		speedup(tarsis, fsa);
-////		compare(tarsis, fsa);
-//	}
-//
-//	@Test
-//	public void bench09substring() throws SemanticException {
-//		LOG.info("Benchmarking substring");
-//		AtomicInteger idx = new AtomicInteger();
-//		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().substring(SUBSTRING_INDEXES.get(idx.get()).getLeft(),
-//						SUBSTRING_INDEXES.get(idx.getAndIncrement()).getRight()));
-//		idx.set(0);
-//		Map<Integer,
-//				RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
-//						triple -> triple.getLeft().substring(SUBSTRING_INDEXES.get(idx.get()).getLeft(),
-//								SUBSTRING_INDEXES.get(idx.getAndIncrement()).getRight()));
-//		speedup(tarsis, fsa);
-////		compare(tarsis, fsa);
-//	}
-//	
-//	@Test
-//	public void bench10trim() throws SemanticException {
-//		LOG.info("Benchmarking trim");
-//		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
-//				triple -> triple.getLeft().trim());
-//		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY, triple -> triple.getLeft().trim());
-//		speedup(tarsis, fsa);
-////		compare(tarsis, fsa);
-//	}
+	@Test
+	public void bench02lub() throws SemanticException {
+		LOG.info("Benchmarking lub");
+		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().lub(triple.getMiddle()));
+		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> triple.getLeft().lub(triple.getMiddle()));
+		speedup(tarsis, fsa);
+//		compare(tarsis, fsa);
+	}
+
+	@Test
+	public void bench03glb() throws SemanticException {
+		LOG.info("Benchmarking glb");
+		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().glb(triple.getMiddle()));
+		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> triple.getLeft().glb(triple.getMiddle()));
+		speedup(tarsis, fsa);
+//		compare(tarsis, fsa);
+	}
+
+	@Test
+	public void bench01leq() throws SemanticException {
+		LOG.info("Benchmarking leq");
+		Map<Integer, RunResult<Satisfiability>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> Satisfiability.fromBoolean(triple.getLeft().lessOrEqual(triple.getMiddle())));
+		Map<Integer, RunResult<Satisfiability>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> Satisfiability.fromBoolean(triple.getLeft().lessOrEqual(triple.getMiddle())));
+		speedup(tarsis, fsa);
+//		compareBools(tarsis, fsa);
+	}
+
+	@Test
+	public void bench04widening() throws SemanticException {
+		LOG.info("Benchmarking widening");
+		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().widening(triple.getRight()));
+		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> triple.getLeft().widening(triple.getRight()));
+		speedup(tarsis, fsa);
+//		compare(tarsis, fsa);
+	}
+
+	@Test
+	public void bench05concat() throws SemanticException {
+		LOG.info("Benchmarking concat");
+		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().concat(triple.getMiddle()));
+		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> triple.getLeft().concat(triple.getMiddle()));
+		speedup(tarsis, fsa);
+//		compare(tarsis, fsa);
+	}
+
+	@Test
+	public void bench06contains() throws SemanticException {
+		LOG.info("Benchmarking contains");
+		Map<Integer, RunResult<Satisfiability>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().contains(triple.getMiddle()));
+		Map<Integer, RunResult<Satisfiability>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> triple.getLeft().contains(triple.getMiddle()));
+		speedup(tarsis, fsa);
+//		compareSats(tarsis, fsa);
+	}
+
+	@Test
+	public void bench08indexOf() throws SemanticException {
+		LOG.info("Benchmarking indexOf");
+		Map<Integer, RunResult<Interval>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> new Interval(triple.getLeft().indexOf(triple.getMiddle())));
+		Map<Integer, RunResult<Interval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> new Interval(triple.getLeft().indexOf(triple.getMiddle())));
+		speedup(tarsis, fsa);
+//		compareIntervals(tarsis, fsa);
+	}
+
+	@Test
+	public void bench07length() throws SemanticException {
+		LOG.info("Benchmarking length");
+		Map<Integer, RunResult<Interval>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> new Interval(triple.getLeft().length()));
+		Map<Integer, RunResult<Interval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY, triple -> new Interval(triple.getLeft().length()));
+		speedup(tarsis, fsa);
+//		compareIntervals(tarsis, fsa);
+	}
+
+	@Test
+	public void bench10replace() throws SemanticException {
+		LOG.info("Benchmarking replace");
+		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().replace(triple.getMiddle(), triple.getRight()));
+		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> triple.getLeft().replace(triple.getMiddle(), triple.getRight()));
+		speedup(tarsis, fsa);
+//		compare(tarsis, fsa);
+	}
+
+	@Test
+	public void bench09substring() throws SemanticException {
+		LOG.info("Benchmarking substring");
+		AtomicInteger idx = new AtomicInteger();
+		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().substring(SUBSTRING_INDEXES.get(idx.get()).getLeft(),
+						SUBSTRING_INDEXES.get(idx.getAndIncrement()).getRight()));
+		idx.set(0);
+		Map<Integer,
+				RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+						triple -> triple.getLeft().substring(SUBSTRING_INDEXES.get(idx.get()).getLeft(),
+								SUBSTRING_INDEXES.get(idx.getAndIncrement()).getRight()));
+		speedup(tarsis, fsa);
+//		compare(tarsis, fsa);
+	}
+	
+	@Test
+	public void bench10trim() throws SemanticException {
+		LOG.info("Benchmarking trim");
+		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
+				triple -> triple.getLeft().trim());
+		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY, triple -> triple.getLeft().trim());
+		speedup(tarsis, fsa);
+//		compare(tarsis, fsa);
+	}
 	
 	@Test
 	public void bench11repeat() throws SemanticException {
@@ -282,7 +271,7 @@ public class TarsisJournalEvaluation {
 //		compare(tarsis, fsa);
 	}
 
-	private static <I, O> Map<Integer, RunResult<O>> benchmark(Iterable<I> inputs, String key,
+	private static <I, O extends Lattice<?>> Map<Integer, RunResult<O>> benchmark(Iterable<I> inputs, String key,
 			FailableFunction<I, O, Exception> action) {
 		Iterator<I> iterator = inputs.iterator();
 		for (int i = 0; i < WARMUP; i++) {
@@ -297,6 +286,9 @@ public class TarsisJournalEvaluation {
 		}
 
 		int timeouts = 0, failures = 0, successes = 0;
+		int tops = 0;
+		int bottoms = 0;
+		
 		long max = -1L, min = Long.MAX_VALUE, total = 0;
 		double average = 0;
 		for (Entry<Integer, RunResult<O>> entry : results.entrySet()) {
@@ -306,7 +298,12 @@ public class TarsisJournalEvaluation {
 				failures++;
 				LOG.warn("Iteration " + entry.getKey() + " failed with exception", entry.getValue().e);
 			} else {
+				if (entry.getValue().result.isBottom())
+					bottoms++;
+				if (entry.getValue().result.isTop())
+					tops++;
 				long elapsed = entry.getValue().elapsed;
+				
 				total += elapsed;
 				min = Math.min(min, elapsed);
 				max = Math.max(max, elapsed);
@@ -324,7 +321,9 @@ public class TarsisJournalEvaluation {
 		LOG.info("    Execution time for successes: total: " + TimeFormat.UP_TO_MINUTES.format(total)
 				+ ", average: " + TimeFormat.UP_TO_MINUTES.format((long) average)
 				+ ", minimum: " + TimeFormat.UP_TO_MINUTES.format(min)
-				+ ", maximum: " + TimeFormat.UP_TO_MINUTES.format(max));
+				+ ", maximum: " + TimeFormat.UP_TO_MINUTES.format(max)
+				+ ", bottoms: " + bottoms
+				+ ", tops: " + tops);
 
 		return results;
 	}
@@ -347,10 +346,14 @@ public class TarsisJournalEvaluation {
 		LOG.info("  Total Tarsis time over " + count + " rounds: " + TimeFormat.UP_TO_MINUTES.format(totalTarsis));
 		LOG.info("  Total FSA time over " + count + " rounds: " + TimeFormat.UP_TO_MINUTES.format(totalFSA));
 		LOG.info("  Speedup: " + (((totalFSA - totalTarsis) / (double) totalFSA) * 100) + "%");
-	}
+		LOG.info("  Rate: " + (totalFSA / (double) totalTarsis) + "x");
 
+	}
+	
 	private static <I, O> RunResult<O> benchmarkSingle(I input, FailableFunction<I, O, Exception> action) {
 		RunResult<O> res;
+		final ExecutorService EXECUTORS = Executors.newSingleThreadExecutor();
+
 		final Future<RunResult<O>> future = EXECUTORS.submit(new SingleRun<>(action, input));
 
 		try {
@@ -361,9 +364,11 @@ public class TarsisJournalEvaluation {
 			res = new RunResult<>();
 		}
 
+		EXECUTORS.shutdownNow();
+		
 		return res;
 	}
-
+	
 	private static class SingleRun<I, O> implements Callable<RunResult<O>> {
 		private final FailableFunction<I, O, Exception> action;
 		private final I input;

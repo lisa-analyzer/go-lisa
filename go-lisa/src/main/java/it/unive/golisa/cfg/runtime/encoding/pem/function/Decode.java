@@ -5,6 +5,7 @@ import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.encoding.pem.type.Block;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -15,6 +16,8 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -30,6 +33,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.ValueExpression;
 
 /**
  * func Decode(data []byte) (p *Block, rest []byte)
@@ -98,28 +102,72 @@ public class Decode extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 			
-			/*
-			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
-			if (env != null) {
-				ValueEnvironment<?> linst = state.smallStepSemantics(expr, original).getDomainInstance(ValueEnvironment.class);
-				if (linst.getValueOnStack() instanceof TaintDomain) {
-					if (((TaintDomain)linst.getValueOnStack()).isTainted())
-						return state.smallStepSemantics(new Tainted(getStaticType(),getLocation()), original);
-					return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
-				}
+	
+			AnalysisState<A, H, V, T> exprState = state.smallStepSemantics(expr, this);
+			
+			AnalysisState<A, H, V, T> taintSemantics = semanticsForTaintDomain(state, exprState);
+			if(taintSemantics != null)
+				return taintSemantics;
+			
+			AnalysisState<A, H, V, T> integrityNISemantics = semanticsForIntegrityNIDomain(state, exprState);
+			if(integrityNISemantics != null)
+				return integrityNISemantics;
+			
+			
+			return state.smallStepSemantics(expr, original);
+		}
+		
+		
+		private <A extends AbstractState<A, H, V, T>,
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> semanticsForTaintDomain(AnalysisState<A, H, V, T>  state, AnalysisState<A, H, V, T>  exprState) throws SemanticException {
+				
+			ValueEnvironment<?> exprEnv = exprState.getDomainInstance(ValueEnvironment.class);
+
+			
+			if (exprEnv != null) {
+					boolean isTaintDomain = false;
+						for( SymbolicExpression reWriteExpr : exprState.rewrite(exprState.getComputedExpressions(), this)) {
+							NonRelationalValueDomain<?> stack = exprEnv.eval((ValueExpression) reWriteExpr, this);
+							isTaintDomain = isTaintDomain || stack instanceof TaintDomain;
+							if (stack != null && stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+							}
+						}
+					if(isTaintDomain)
+						return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 			}
 			
-			InferenceSystem<?> sys = state.getDomainInstance(InferenceSystem.class);
-			if (sys != null) {
-				InferenceSystem<?> linst = state.smallStepSemantics(expr, original).getDomainInstance(InferenceSystem.class);
-				if (linst.getInferredValue() instanceof IntegrityNIDomain) {
-					if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity())
-						return state.smallStepSemantics(new Tainted(getStaticType(), getLocation()), original);
-					return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
+			return null;
+			
+		}
+		
+		private <A extends AbstractState<A, H, V, T>,
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> semanticsForIntegrityNIDomain(AnalysisState<A, H, V, T>  state, AnalysisState<A, H, V, T>  exprState) throws SemanticException {
+			
+				InferenceSystem<?> exprSys = exprState.getDomainInstance(InferenceSystem.class);
+				
+				if (exprSys != null) {
+					boolean isIntegrityNIDomain = false;
+
+					for( SymbolicExpression reWriteExpr : exprState.rewrite(exprState.getComputedExpressions(), this)) {
+						InferredValue<?> stack = exprSys.eval((ValueExpression) reWriteExpr, this);
+						isIntegrityNIDomain = isIntegrityNIDomain || stack instanceof IntegrityNIDomain;
+						if (stack != null && stack instanceof IntegrityNIDomain) {
+							if(((IntegrityNIDomain) stack).isLowIntegrity())
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+						}
+					}
+
+					if(isIntegrityNIDomain)
+						return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 				}
-			}
-			*/
-			return state.smallStepSemantics(expr, original);
+				
+				return null;
+			
 		}
 	}
 }

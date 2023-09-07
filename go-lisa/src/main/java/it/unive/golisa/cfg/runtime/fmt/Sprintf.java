@@ -11,6 +11,8 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -26,6 +28,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -95,39 +98,117 @@ public class Sprintf extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 						StatementStore<A, H, V, T> expressions) throws SemanticException {
-			/*
-			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
-			if (env != null) {
-				ValueEnvironment<?> linst = state.smallStepSemantics(left, original).getDomainInstance(ValueEnvironment.class);
-				ValueEnvironment<?> minst = state.smallStepSemantics(middle, original).getDomainInstance(ValueEnvironment.class);
-				ValueEnvironment<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(ValueEnvironment.class);
-				if (linst.getValueOnStack() instanceof TaintDomain) {
-					if (((TaintDomain)linst.getValueOnStack()).isTainted()
-							|| ((TaintDomain)minst.getValueOnStack()).isTainted()
-							|| ((TaintDomain)rinst.getValueOnStack()).isTainted())
-						return state.smallStepSemantics(new Tainted(getLocation()), original);
-					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
-				}
-			}
-
-			InferenceSystem<?> sys = state.getDomainInstance(InferenceSystem.class);
-			if (sys != null) {
-				InferenceSystem<?> linst = state.smallStepSemantics(left, original).getDomainInstance(InferenceSystem.class);
-				InferenceSystem<?> minst = state.smallStepSemantics(middle, original).getDomainInstance(InferenceSystem.class);
-				InferenceSystem<?> rinst = state.smallStepSemantics(right, original).getDomainInstance(InferenceSystem.class);
-				if (linst.getInferredValue() instanceof IntegrityNIDomain) {
-					if (((IntegrityNIDomain)linst.getInferredValue()).isLowIntegrity()
-							|| ((IntegrityNIDomain)minst.getInferredValue()).isLowIntegrity()
-							|| ((IntegrityNIDomain)rinst.getInferredValue()).isLowIntegrity())
-						return state.smallStepSemantics(new Tainted(getLocation()), original);
-					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
-				}
-			}
-			*/
+			
+			
+			AnalysisState<A, H, V, T> rightState = state.smallStepSemantics(right, this);
+			AnalysisState<A, H, V, T> middleState = state.smallStepSemantics(middle, this);
+			AnalysisState<A, H, V, T> leftState = state.smallStepSemantics(left, this);
+			
+			AnalysisState<A, H, V, T> taintSemantics = semanticsForTaintDomain(state, rightState, middleState, leftState);
+			if(taintSemantics != null)
+				return taintSemantics;
+			
+			AnalysisState<A, H, V, T> integrityNISemantics = semanticsForIntegrityNIDomain(state, rightState, middleState, leftState);
+			if(integrityNISemantics != null)
+				return integrityNISemantics;
 			
 			return state.smallStepSemantics(left, original)
 								.lub(state.smallStepSemantics(middle, original))
 								.lub(state.smallStepSemantics(right, original));
 		}
+
+
+
+		private <A extends AbstractState<A, H, V, T>,
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> semanticsForTaintDomain(AnalysisState<A, H, V, T>  state, AnalysisState<A, H, V, T>  rightState,
+				AnalysisState<A, H, V, T>  middleState, AnalysisState<A, H, V, T> leftState) throws SemanticException {
+				
+			ValueEnvironment<?> rightEnv = rightState.getDomainInstance(ValueEnvironment.class);
+			ValueEnvironment<?> middleEnv = middleState.getDomainInstance(ValueEnvironment.class);
+			ValueEnvironment<?> leftEnv = leftState.getDomainInstance(ValueEnvironment.class);
+			
+			if (rightEnv != null || middleState != null ||leftEnv != null) {
+					boolean isTaintDomain = false;
+					if(rightEnv != null)
+						for( SymbolicExpression reWriteExpr : rightState.rewrite(rightState.getComputedExpressions(), this)) {
+							NonRelationalValueDomain<?> stack = rightEnv.eval((ValueExpression) reWriteExpr, this);
+							isTaintDomain = isTaintDomain || stack instanceof TaintDomain;
+							if (stack != null && stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+							}
+						}
+					if(middleState != null)
+						for( SymbolicExpression reWriteExpr : middleState.rewrite(middleState.getComputedExpressions(), this)) {
+							NonRelationalValueDomain<?> stack = middleEnv.eval((ValueExpression) reWriteExpr, this);
+							isTaintDomain = isTaintDomain || stack instanceof TaintDomain;
+							if (stack != null && stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+							}
+						}
+					if(leftEnv != null)
+						for( SymbolicExpression reWriteExpr : leftState.rewrite(leftState.getComputedExpressions(), this)) {
+							NonRelationalValueDomain<?> stack = leftEnv.eval((ValueExpression) reWriteExpr, this);
+							isTaintDomain = isTaintDomain || stack instanceof TaintDomain;
+							if (stack != null && stack instanceof TaintDomain && ((TaintDomain) stack).isTainted()) {
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+							}
+						}
+					if(isTaintDomain)
+						return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
+			}
+			
+			return null;
+			
+		}
+		
+		private <A extends AbstractState<A, H, V, T>,
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> semanticsForIntegrityNIDomain(AnalysisState<A, H, V, T>  state, AnalysisState<A, H, V, T>  rightState,
+				AnalysisState<A, H, V, T>  middleState, AnalysisState<A, H, V, T> leftState) throws SemanticException {
+			
+				InferenceSystem<?> rightSys = rightState.getDomainInstance(InferenceSystem.class);
+				InferenceSystem<?> middleSys = middleState.getDomainInstance(InferenceSystem.class);
+				InferenceSystem<?> leftSys = leftState.getDomainInstance(InferenceSystem.class);
+				
+				if (rightSys != null || middleSys != null || leftSys != null) {
+					boolean isIntegrityNIDomain = false;
+					if(rightSys != null)
+						for( SymbolicExpression reWriteExpr : rightState.rewrite(rightState.getComputedExpressions(), this)) {
+							InferredValue<?> stack = rightSys.eval((ValueExpression) reWriteExpr, this);
+							isIntegrityNIDomain = isIntegrityNIDomain || stack instanceof IntegrityNIDomain;
+							if (stack != null && stack instanceof IntegrityNIDomain && ((IntegrityNIDomain) stack).isLowIntegrity()) {
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+							}
+						}
+					if(middleSys != null)
+						for( SymbolicExpression reWriteExpr : middleState.rewrite(middleState.getComputedExpressions(), this)) {
+							InferredValue<?> stack = middleSys.eval((ValueExpression) reWriteExpr, this);
+							isIntegrityNIDomain = isIntegrityNIDomain || stack instanceof IntegrityNIDomain;
+							if (stack != null && stack instanceof IntegrityNIDomain && ((IntegrityNIDomain) stack).isLowIntegrity()) {
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+							}
+						}
+					
+					if(leftSys != null)
+						for( SymbolicExpression reWriteExpr : leftState.rewrite(leftState.getComputedExpressions(), this)) {
+							InferredValue<?> stack = leftSys.eval((ValueExpression) reWriteExpr, this);
+							isIntegrityNIDomain = isIntegrityNIDomain || stack instanceof IntegrityNIDomain;
+							if (stack != null && stack instanceof IntegrityNIDomain && ((IntegrityNIDomain) stack).isLowIntegrity()) {
+								return state.smallStepSemantics(new Tainted(getLocation()), original);
+							}
+						}
+					if(isIntegrityNIDomain)
+						return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
+						
+				}
+				
+				return null;
+			
+		}
+
+
 	}
 }

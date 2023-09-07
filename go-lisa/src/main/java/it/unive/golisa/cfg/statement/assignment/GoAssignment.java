@@ -107,12 +107,7 @@ public class GoAssignment extends BinaryExpression {
 					+ ", because it is declared as 'const'");
 
 		AnalysisState<A, H, V, T> result = assignScopedId(state, left, right);
-		//if(left instanceof PushAny)
-		//	System.out.println("left " + left);
-		if( right instanceof PushAny) {
-			System.out.println("right " + right);
-			System.out.println("this " + this);
-		}
+
 		result = result.assign(left, right, this);
 
 		if (!getRight().getMetaVariables().isEmpty())

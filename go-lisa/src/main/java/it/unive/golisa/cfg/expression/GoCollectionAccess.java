@@ -115,7 +115,7 @@ public class GoCollectionAccess extends BinaryExpression {
 		if (sys != null) {
 				for( SymbolicExpression reWriteExpr : rightState.rewrite(rightState.getComputedExpressions(), this)) {
 					InferredValue<?> stack = sys.eval((ValueExpression) reWriteExpr, this);
-					if (stack != null && stack instanceof IntegrityNIDomain) {
+					if (stack != null && stack instanceof IntegrityNIDomain && ((IntegrityNIDomain) stack).isLowIntegrity()) {
 						AnalysisState<A, H, V, T> tmp = state.bottom();
 						for (SymbolicExpression id : result.getComputedExpressions())
 							tmp = tmp.lub(result.assign(id, tainted, this));

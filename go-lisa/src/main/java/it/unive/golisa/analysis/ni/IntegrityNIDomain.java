@@ -244,7 +244,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	public InferredPair<IntegrityNIDomain> evalTernaryExpression(TernaryOperator operator,
 			IntegrityNIDomain left,
 			IntegrityNIDomain middle, IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp)
-			throws SemanticException {
+					throws SemanticException {
 		if (left == LOW || right == LOW || middle == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
 
@@ -304,7 +304,9 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public boolean canProcess(SymbolicExpression expression) {
-		return true;
+		if (expression.hasRuntimeTypes())
+			return expression.getRuntimeTypes(null).stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
+		return !expression.getStaticType().isPointerType() && !expression.getStaticType().isInMemoryType();
 	}
 
 	@Override

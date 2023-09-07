@@ -115,7 +115,6 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {
-
 		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
 	}
 
@@ -244,7 +243,9 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	public boolean canProcess(SymbolicExpression expression) {
-		return true;
+		if (expression.hasRuntimeTypes())
+			return expression.getRuntimeTypes(null).stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
+		return !expression.getStaticType().isPointerType() && !expression.getStaticType().isInMemoryType();
 	}
 
 	@Override

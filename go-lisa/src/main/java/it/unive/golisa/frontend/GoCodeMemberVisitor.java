@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -578,7 +579,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitMethodBlock(BlockContext ctx) {
 		this.matrix = this.cfg.getNodeList();
 
-		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+		Map<String, Set<IdInfo>> backup = deepCopy(visibleIds);
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 		if (ctx.statementList() == null) {
 			NoOp noop = new NoOp(cfg, locationOf(ctx.R_CURLY()));
@@ -740,7 +741,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitBlock(BlockContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
-		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+		Map<String, Set<IdInfo>> backup = deepCopy(visibleIds);
 		if (ctx.statementList() == null) {
 			NoOp noop = new NoOp(cfg, locationOf(ctx.R_CURLY()));
 			block.addNode(noop);
@@ -824,6 +825,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					toRemove.putIfAbsent(id.getKey(), new HashSet<IdInfo>());
 					toRemove.get(id.getKey()).add(idInfo);
 				}
+			} else {
+				// update values
+				for (IdInfo idInfo : id.getValue()) {
+					  if(!backup.get(id.getKey()).contains(idInfo)) {
+					    VariableRef ref = idInfo.getRef();
+					    cfg.getDescriptor().addVariable(new VariableTableEntry(ref.getLocation(),
+					        0, ref.getRootStatement(), last, id.getKey(), Untyped.INSTANCE));
+					    toRemove.putIfAbsent(id.getKey(), new HashSet<IdInfo>());
+					    toRemove.get(id.getKey()).add(idInfo);
+					  }
+					}
 			}
 
 		if (!toRemove.isEmpty()) {
@@ -888,7 +900,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement lastStmt = null;
 		Statement entryNode = null;
 
-		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+		Map<String, Set<IdInfo>> backup = deepCopy(visibleIds);
 
 		for (int i = 0; i < ctx.statement().size(); i++) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
@@ -1661,7 +1673,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		// Visit if statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
+		
 		block.addNode(booleanGuard);
+		
 		storeIds(booleanGuard);
 		NoOp ifExitNode = new NoOp(cfg, locationOf(ctx));
 		block.addNode(ifExitNode);
@@ -1860,7 +1874,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		SourceCodeLocation location = locationOf(ctx);
-		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+		Map<String, Set<IdInfo>> backup = deepCopy(visibleIds);
 		NoOp exitNode = new NoOp(cfg, locationOf(ctx.block().R_CURLY()));
 		block.addNode(exitNode);
 		storeIds(exitNode);
@@ -2912,6 +2926,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Statement visitRangeClause(RangeClauseContext ctx) {
 		// TODO range clause (see issue #4)
 		throw new UnsupportedOperationException("Unsupported translation: " + ctx.getText());
+	}
+	
+	public static <T> Map<String, Set<T>> deepCopy(Map<String, Set<T>> original)
+	{
+	    return original
+	            .entrySet()
+	            .stream()
+	            .collect(Collectors.toMap(Map.Entry::getKey, valueMapper -> new HashSet<>(valueMapper.getValue())));
 	}
 
 }

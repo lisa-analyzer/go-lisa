@@ -41,27 +41,15 @@ public class GoCollectionAccess extends BinaryExpression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
-		if (getLeft().toString().startsWith("args"))
-			return state.smallStepSemantics(left, this);
-
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type type : left.getRuntimeTypes(getProgram().getTypes())) {
 			if (type.isArrayType() || type instanceof GoSliceType) {
-				// When expr is an array or a slice, we access the len property
-//			AnalysisState<A, H, V, T> rec = state.smallStepSemantics(expr, this);
-//			AnalysisState<A, H, V, T> partialResult = state.bottom();
-//
-//			for (SymbolicExpression recExpr : rec.getComputedExpressions()) {
-//				AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(new AccessChild(GoIntType.INSTANCE, recExpr,
-//						new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation()), this);
-//				partialResult = partialResult.lub(tmp);
-//			}
 				// FIXME we get here when left is a parameter of an entrypoint,
 				// and nothing is defined in the heap for its elements..
 				Type inner;
@@ -70,16 +58,12 @@ public class GoCollectionAccess extends BinaryExpression {
 				else
 					inner = ((GoSliceType) type).getContentType();
 				return state.smallStepSemantics(new PushAny(inner, getLocation()), this);
-			}
-		}
+			} else
+				result = result.lub(state.smallStepSemantics(
+						new AccessChild(Untyped.INSTANCE,
+								new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
+						this));
 
-		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);
-		for (SymbolicExpression expr : rec.getComputedExpressions()) {
-			AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(
-					new AccessChild(Untyped.INSTANCE,
-							new HeapDereference(getStaticType(), expr, getLocation()), right, getLocation()),
-					this);
-			result = result.lub(tmp);
 		}
 
 		return result;

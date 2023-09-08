@@ -23,12 +23,13 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Untyped;
 
 /**
  * func (*ChaincodeStub) PutState(key string, value []byte) error.
- * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutState
  * 
+ * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutState
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class PutState extends NativeCFG {
@@ -55,6 +56,7 @@ public class PutState extends NativeCFG {
 	public static class PutStateImpl extends NaryExpression
 			implements PluggableStatement {
 
+		@SuppressWarnings("unused")
 		private Statement original;
 
 		@Override
@@ -96,11 +98,7 @@ public class PutState extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (ExpressionSet<SymbolicExpression> exprs : params)
-				for (SymbolicExpression expr : exprs)
-					result = result.lub(state.smallStepSemantics(expr, original));
-			return result;
+			return state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), this);
 		}
 	}
 }

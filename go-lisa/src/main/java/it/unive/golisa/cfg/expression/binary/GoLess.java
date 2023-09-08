@@ -45,26 +45,19 @@ public class GoLess extends it.unive.lisa.program.cfg.statement.BinaryExpression
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
+		// TODO: only, integer, floating point values, strings are
+		// ordered but missing lexicographical string order in LiSA
+		
 		TypeSystem types = getProgram().getTypes();
-
 		AnalysisState<A, H, V, T> result = state.bottom();
-		// following the Golang specification:
-		// in any comparison, the first operand must be assignable to the type
-		// of the second operand, or vice versa.
-		for (Type leftType : left.getRuntimeTypes(types))
-			for (Type rightType : right.getRuntimeTypes(types)) {
-				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
-					// TODO: only, integer, floating point values, strings are
-					// ordered
-					// but missing lexicographical string order in LiSA
-					AnalysisState<A, H,
-							V, T> tmp = state
-									.smallStepSemantics(
-											new BinaryExpression(GoBoolType.INSTANCE,
-													left, right, ComparisonLt.INSTANCE, getLocation()),
-											this);
-					result = result.lub(tmp);
-				}
+		for (Type lType : left.getRuntimeTypes(types))
+			for (Type rType : right.getRuntimeTypes(types)) {
+				if (lType.canBeAssignedTo(rType) || rType.canBeAssignedTo(lType))
+					result = result.lub(state
+							.smallStepSemantics(
+									new BinaryExpression(GoBoolType.INSTANCE,
+											left, right, ComparisonLt.INSTANCE, getLocation()),
+									this));
 			}
 		return result;
 	}

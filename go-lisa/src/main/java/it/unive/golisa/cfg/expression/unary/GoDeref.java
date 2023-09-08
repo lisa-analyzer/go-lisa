@@ -13,6 +13,8 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.type.ReferenceType;
 
 /**
  * A Go dereferencing expression (e.g., &x).
@@ -39,6 +41,7 @@ public class GoDeref extends UnaryExpression {
 			T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 					SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		return state.smallStepSemantics(expr, this);
+		// TODO: check if the semantics is correct
+		return state.smallStepSemantics(new HeapReference(new ReferenceType(getStaticType()), expr, getLocation()), this);
 	}
 }

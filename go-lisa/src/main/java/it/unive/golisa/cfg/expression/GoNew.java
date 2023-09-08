@@ -10,6 +10,7 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -49,7 +50,7 @@ public class GoNew extends NaryExpression {
 		// type, not a value,
 		// and the value returned is a pointer to a newly allocated zero value
 		// of that type.
-		MemoryAllocation created = new MemoryAllocation(getStaticType(), getLocation(), false);
+		MemoryAllocation created = new MemoryAllocation(getStaticType(), getLocation(), new Annotations(), false);
 		HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), created, getLocation());
 		return state.smallStepSemantics(ref, this);
 	}

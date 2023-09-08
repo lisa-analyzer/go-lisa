@@ -143,7 +143,6 @@ public class GetFunctionAndParameters extends NativeCFG {
 				result = result.lub(GoTupleExpression.allocateTupleExpression(capState, anns, this, getLocation(), tupleType, 
 						new PushAny(GoStringType.INSTANCE, getLocation()),
 						ref));
-
 			}
 
 			return result;

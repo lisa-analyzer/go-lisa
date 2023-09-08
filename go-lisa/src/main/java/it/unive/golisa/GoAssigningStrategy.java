@@ -16,6 +16,7 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -126,7 +127,7 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 		CodeLocation location = pp.getLocation();
 
 		// allocate the slice
-		MemoryAllocation created = new MemoryAllocation(type, location, false);
+		MemoryAllocation created = new MemoryAllocation(type, location, new Annotations(),false);
 		AnalysisState<A, H, V, T> createdSt = state.smallStepSemantics(created, pp);
 		ExpressionSet<SymbolicExpression> createdExps = createdSt.getComputedExpressions();
 

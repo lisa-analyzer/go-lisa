@@ -16,6 +16,7 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -114,7 +115,7 @@ public class GoMake extends NaryExpression {
 			// to the underlying array, length and capability
 			GoSliceType sliceType = GoSliceType.lookup(contentType);
 
-			MemoryAllocation sliceCreated = new MemoryAllocation(sliceType, getLocation());
+			MemoryAllocation sliceCreated = new MemoryAllocation(sliceType, getLocation(), new Annotations());
 
 			// Allocates the new heap allocation
 			AnalysisState<A, H, V, T> containerState = arraySemantics.smallStepSemantics(sliceCreated, this);

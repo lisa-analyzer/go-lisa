@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
+import java.util.Collections;
+
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
@@ -16,7 +18,9 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -83,7 +87,7 @@ public class GoKeyedLiteral extends NaryExpression {
 					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		Type type = getStaticType();
-		MemoryAllocation created = new MemoryAllocation(type, getLocation(), true);
+		MemoryAllocation created = new MemoryAllocation(type, getLocation(), new Annotations(), true);
 
 		// Allocates the new heap allocation
 		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);
@@ -175,10 +179,12 @@ public class GoKeyedLiteral extends NaryExpression {
 		 * Struct allocation
 		 */
 		if (getStaticType() instanceof GoStructType) {
+			// Retrieve the struct type (that is a compilation unit)
+			CompilationUnit structUnit = ((GoStructType) type).getUnit();
 			AnalysisState<A, H, V, T> result = state.bottom();
 
 			for (SymbolicExpression containerExp : containerExps) {
-				HeapReference reference = new HeapReference(type, containerExp, getLocation());
+				HeapReference reference = new HeapReference(new ReferenceType(type), containerExp, getLocation());
 				HeapDereference dereference = new HeapDereference(type, reference, getLocation());
 
 				if (getSubExpressions().length == 0) {
@@ -189,8 +195,9 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A, H, V, T> tmp = containerState;
 
 				for (int i = 0; i < keys.length; i++) {
+					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true).getStaticType();
 					Variable field = getVariable((VariableRef) keys[i]);
-					AccessChild access = new AccessChild(field.getStaticType(), dereference, field, getLocation());
+					AccessChild access = new AccessChild(fieldType, dereference, field, getLocation());
 					AnalysisState<A, H, V, T> fieldState = tmp.smallStepSemantics(access, this);
 					for (SymbolicExpression id : fieldState.getComputedExpressions())
 						for (SymbolicExpression v : params[i])

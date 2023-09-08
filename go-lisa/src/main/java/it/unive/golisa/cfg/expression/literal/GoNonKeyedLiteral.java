@@ -18,6 +18,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -87,7 +88,7 @@ public class GoNonKeyedLiteral extends NaryExpression {
 					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 		Type type = getStaticType();
-		MemoryAllocation created = new MemoryAllocation(type, getLocation(), isStackAllocated);
+		MemoryAllocation created = new MemoryAllocation(type, getLocation(), new Annotations(), isStackAllocated);
 
 		// Allocates the new heap allocation
 		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);

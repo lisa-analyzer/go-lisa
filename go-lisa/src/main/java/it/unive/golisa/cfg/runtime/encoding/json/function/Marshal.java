@@ -32,6 +32,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
@@ -112,7 +113,7 @@ public class Marshal extends NativeCFG {
 			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
 					new ReferenceType(sliceOfBytes), GoErrorType.INSTANCE);
-			
+
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
 			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
@@ -122,15 +123,15 @@ public class Marshal extends NativeCFG {
 				HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), allocId, expr.getCodeLocation());
 				HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
 				AnalysisState<A, H, V, T> asg = allocState.bottom();
-				
+
 				// Retrieves all the identifiers reachable from expr
 				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					it.unive.lisa.symbolic.value.UnaryExpression unary = new it.unive.lisa.symbolic.value.UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperator.INSTANCE, getLocation());
+					UnaryExpression unary = new UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperator.INSTANCE, getLocation());
 					asg = asg.lub(allocState.assign(deref, unary, original));
 				}
-				
+
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
 						ref,
 						new Clean(GoErrorType.INSTANCE, getLocation())

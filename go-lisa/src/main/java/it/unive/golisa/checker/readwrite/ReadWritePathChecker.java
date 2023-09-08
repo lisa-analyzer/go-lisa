@@ -97,39 +97,58 @@ public class ReadWritePathChecker implements
 	private void checkReadAfterWriteIssues(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
 		for(Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
 			if(p.getLeft().getCall().equals(node)) {
-				Statement write = (Statement) p.getLeft().getCall();
-				Statement read = (Statement) p.getRight().getCall();
-				
-				if(interproceduralCheck(tool, graph, write, read, new HashSet<CodeMember>(), new HashSet<CodeMember>()))
-					tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
-				
-				// TODO: defer statement checks
+				 AnalysisReadWriteHFInfo write = p.getLeft();
+				 AnalysisReadWriteHFInfo read = p.getRight();
+				 if(isIntraprocedural(graph, write, read)) {
+					if(intraproceduralCheck(graph, write, read))
+						tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
+				 } else if(interproceduralCheck(tool, graph, write.getCall(), read.getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>()))
+						tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
 			}
 
 		}
 		
 	}
 	
+	private boolean intraproceduralCheck(CFG graph, AnalysisReadWriteHFInfo info1, AnalysisReadWriteHFInfo info2) {
+		
+		if(deferCheck(graph, info1, info2))
+			return true;
+		else
+			return CFGUtils.existPath(graph, info1.getCall(), info2.getCall(), Search.BFS);
+	}
+
 	private void checkOverWriteIssue(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
 		for(Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : overWriteCandidates) {
 			if(p.getLeft().getCall().equals(node)) {
-				if(interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>()))
+				if(isIntraprocedural(graph, p.getLeft(), p.getRight())) {
+					if(intraproceduralCheck(graph, p.getLeft(), p.getRight()))
+							tool.warnOn(node, "Detected a possible over-write issue. Over-write location: " + p.getRight().getCall().getLocation());
+				} else if(interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>()))
 					tool.warnOn(node, "Detected a possible over-write issue. Over-write location: " + p.getRight().getCall().getLocation());
-				
-				// TODO: defer statement checks
 			}
 			
 		}
 	}
 	
+	private boolean isIntraprocedural(CFG graph, AnalysisReadWriteHFInfo info1, AnalysisReadWriteHFInfo info2) {
+		return CFGUtils.containsAllNodes(graph, info1.getCall(), info2.getCall());
+	}
+
+	private boolean deferCheck(CFG graph, AnalysisReadWriteHFInfo start, AnalysisReadWriteHFInfo end) {
+
+		if(start.isDeferred() && end.isDeferred()) {
+			return CFGUtils.existPath(graph, end.getCall(), start.getCall(), Search.BFS);
+		}
+
+		return false;
+	}
+
 	private boolean interproceduralCheck(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		
-		// intra-procedural check
 		if(CFGUtils.existPath(graph, start, end, Search.BFS))
 			return true;
-		
-		// inter-procedural checks
 		
 		if(checkCallees(tool, graph, start, end, seenCallees))
 			return true;

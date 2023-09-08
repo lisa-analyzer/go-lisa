@@ -65,7 +65,7 @@ public class CFGUtils {
 		return null;
 	}
 
-	private static boolean equalsOrContains(Statement n1, Statement n2) {
+	public static boolean equalsOrContains(Statement n1, Statement n2) {
 		Set<Statement> seen = new HashSet<>();
 		return equalsOrContainsRecursive(n1, n2, seen);
 	}
@@ -109,6 +109,18 @@ public class CFGUtils {
 		}
 		
 		return false;
+	}
+	
+	public static boolean containsAllNodes(CFG graph, Statement ...nodes ) {
+		boolean [] res = new boolean[nodes.length]; 
+		for(Statement cfgNode : graph.getNodes())
+			for(int i= 0; i < nodes.length;i++)
+				if(!res[i] && equalsOrContains(cfgNode, nodes[i]))
+					res[i] = true;
+		for(boolean found : res)
+			if(!found)
+				return false;
+		return true;
 	}
 	
 	private static boolean recursiveDFS(CFG graph, Statement source, Statement destination, Set<Statement> seen) {

@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.golisa.cfg.CFGUtils;
+import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -112,7 +114,7 @@ public class ReadWritePairChecker implements
 								break;
 							for(Tarsis rstartKeyValueState : startKeyValue) {
 								for(Tarsis rendKeyValueState : endKeyValue) {
-									if(wkvState.isTop() || rendKeyValueState.isTop()
+									if(wkvState.isTop() || rendKeyValueState.isTop() || extractValueStringFromTarsisStates(rendKeyValueState).equals("")
 										|| ( rstartKeyValueState.isTop() ? 
 												"".compareTo(extractValueStringFromTarsisStates(wkvState)) <= 0 && extractValueStringFromTarsisStates(wkvState).compareTo(extractValueStringFromTarsisStates(rendKeyValueState)) < 0
 										: extractValueStringFromTarsisStates(rstartKeyValueState).compareTo(extractValueStringFromTarsisStates(wkvState)) <= 0 && extractValueStringFromTarsisStates(wkvState).compareTo(extractValueStringFromTarsisStates(rendKeyValueState)) < 0)
@@ -232,7 +234,7 @@ public class ReadWritePairChecker implements
 						keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
 					}
 					
-					AnalysisReadWriteHFInfo infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
+					AnalysisReadWriteHFInfo infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, isDeferred(call, graph));
 					
 					if(ReadWriteHFUtils.isReadCall(call))
 						readers.add(infoForAnalysis);
@@ -248,6 +250,10 @@ public class ReadWritePairChecker implements
 		}
 				
 		return true;
+	}
+
+	private boolean isDeferred(UnresolvedCall call, CFG graph) {
+		return graph.getNodes().stream().anyMatch(node -> node instanceof GoDefer && CFGUtils.equalsOrContains(node, call));
 	}
 
 	private String extractValueStringFromTarsisStates(Tarsis state) {

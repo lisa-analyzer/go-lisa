@@ -13,11 +13,14 @@ public class AnalysisReadWriteHFInfo {
 	private final UnresolvedCall call;
 	private final ReadWriteInfo info;
 	private final ArrayList<Set<Tarsis>> keyValues;
+	private final boolean deferred;
+
 	
-	public AnalysisReadWriteHFInfo(UnresolvedCall call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues) {
+	public AnalysisReadWriteHFInfo(UnresolvedCall call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues, boolean deferred) {
 		this.call = call;
 		this.info = info;
 		this.keyValues = keyValues;
+		this.deferred = deferred;
 	}
 
 	public UnresolvedCall getCall() {
@@ -30,6 +33,10 @@ public class AnalysisReadWriteHFInfo {
 
 	public ArrayList<Set<Tarsis>> getKeyValues() {
 		return keyValues;
+	}
+	
+	public boolean isDeferred() {
+		return deferred;
 	}
 
 	@Override

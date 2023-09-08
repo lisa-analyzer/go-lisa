@@ -196,9 +196,10 @@ public class GoLiSA {
 			if (!program.getEntryPoints().isEmpty()) {
 				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 				conf.callGraph = new RTACallGraph();
-			} else
+			} else {
 				LOG.info("Entry points not found!");
-
+				return;
+			}
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
 			System.err.println("Parsing error.");
@@ -228,7 +229,7 @@ public class GoLiSA {
 			e.printStackTrace();
 			return;
 		}
-		
+	
 		if(analysis.equals("read-write")) {
 			//phase 2
 
@@ -248,9 +249,10 @@ public class GoLiSA {
 			if (!program.getEntryPoints().isEmpty()) {
 				conf2.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 				conf2.callGraph = new RTACallGraph();
-			} else
+			} else {
 				LOG.info("Entry points not found!");
-
+				return;
+			}
 			LiSA lisa2 = new LiSA(conf2);
 			try {
 				lisa2.run(program);
@@ -261,5 +263,6 @@ public class GoLiSA {
 			}
 
 		}
+		
 	}
 }

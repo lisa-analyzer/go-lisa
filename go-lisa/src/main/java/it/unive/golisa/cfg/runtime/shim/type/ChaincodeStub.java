@@ -9,6 +9,7 @@ import it.unive.golisa.cfg.runtime.shim.method.GetState;
 import it.unive.golisa.cfg.runtime.shim.method.GetStringArgs;
 import it.unive.golisa.cfg.runtime.shim.method.PutPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.PutState;
+import it.unive.golisa.cfg.runtime.shim.method.SplitCompositeKey;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -87,8 +88,11 @@ public class ChaincodeStub extends GoStructType {
 		chaincodeStubUnit
 				.addInstanceCodeMember(new GetState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
+		.addInstanceCodeMember(
+				new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit
 				.addInstanceCodeMember(
-						new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+						new SplitCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 
 	}
 

@@ -1,14 +1,16 @@
-package it.unive.golisa.cfg.runtime.encoding.json.function;
+package it.unive.golisa.cfg.runtime.shim.method;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -18,7 +20,7 @@ import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -40,32 +42,27 @@ import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func Marshal(v interface{}) ([]byte, error).
- * 
- * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ * func (s *ChaincodeStub) SplitCompositeKey(compositeKey string) (string, []string, error)
+ * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.SplitCompositeKey
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ *
  */
-public class Marshal extends NativeCFG {
-
+public class SplitCompositeKey extends NativeCFG {
 	/**
 	 * Builds the native cfg.
 	 * 
 	 * @param location the location where this native cfg is defined
-	 * @param jsonUnit the unit to which this native cfg belongs to
+	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
-	public Marshal(CodeLocation location, CodeUnit jsonUnit) {
-		super(new CodeMemberDescriptor(location, jsonUnit, false, "Marshal",
-				GoTupleType.getTupleTypeOf(location, GoSliceType.getSliceOfBytes(),
-						GoErrorType.INSTANCE),
-				new Parameter(location, "v", GoInterfaceType.getEmptyInterface())),
-				MarshalImpl.class);
+	public SplitCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
+		super(new CodeMemberDescriptor(location, shimUnit, true, "SplitCompositeKey",
+				GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE, GoSliceType.getSliceOfStrings() ,GoErrorType.INSTANCE),
+				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
+				new Parameter(location, "compositeKey", GoStringType.INSTANCE)),
+				SplitCompositeKeyImpl.class);
 	}
 
-	/**
-	 * The Marshal implementation.
-	 * 
-	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
-	 */
-	public static class MarshalImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
+	public static class SplitCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -85,8 +82,8 @@ public class Marshal extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static MarshalImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new MarshalImpl(cfg, location, params[0]);
+		public static SplitCompositeKeyImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new SplitCompositeKeyImpl(cfg, location, params[0]);
 		}
 
 		/**
@@ -97,74 +94,97 @@ public class Marshal extends NativeCFG {
 		 *                     defined
 		 * @param expr     the expression
 		 */
-		public MarshalImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "MarshalImpl",
-					GoTupleType.getTupleTypeOf(location, GoSliceType.getSliceOfBytes(),
+		public SplitCompositeKeyImpl(CFG cfg, CodeLocation location, Expression expr) {
+			super(cfg, location, "SplitCompositeKeyImpl",
+					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE, GoSliceType.getSliceOfBytes(),
 							GoErrorType.INSTANCE),
 					expr);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>,
-		T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-
-			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
+			Type sliceOfStrings = GoSliceType.getSliceOfStrings();
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
-					new ReferenceType(sliceOfBytes), GoErrorType.INSTANCE);
+					GoStringType.INSTANCE, new ReferenceType(sliceOfStrings), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(sliceOfStrings, expr.getCodeLocation(), new Annotations(), true);
 			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
 
 			AnalysisState<A, H, V, T> result = state.bottom();
 			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), allocId, expr.getCodeLocation());
-				HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
+				HeapReference ref = new HeapReference(new ReferenceType(sliceOfStrings), allocId, expr.getCodeLocation());
+				HeapDereference deref = new HeapDereference(sliceOfStrings, ref, expr.getCodeLocation());
 				AnalysisState<A, H, V, T> asg = allocState.bottom();
 
 				// Retrieves all the identifiers reachable from expr
 				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
-					asg = asg.lub(allocState.assign(deref, left, original));
+					UnaryExpression unary = new UnaryExpression(Untyped.INSTANCE, derefId, SplitCompositeKeySecondParameter.INSTANCE, getLocation());
+					asg = asg.lub(allocState.assign(deref, unary, original));
 				}
 
-				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
-
+				UnaryExpression lExp = new UnaryExpression(GoFloat64Type.INSTANCE, expr, SplitCompositeKeyFirstParameter.INSTANCE, getLocation());
+				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, SplitCompositeKeyThirdParameter.INSTANCE, getLocation());
+			
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+						lExp,
 						ref,
-						rExp
-						));
+						rExp));
 			}
 
 			return result;
 		}
 	}
 	
-	public static class JSONMarshalOperatorFirstParameter implements UnaryOperator {
-		
+	private static class SplitCompositeKeyFirstParameter implements UnaryOperator {
+
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final JSONMarshalOperatorFirstParameter INSTANCE = new JSONMarshalOperatorFirstParameter();
+		public static final SplitCompositeKeyFirstParameter INSTANCE = new SplitCompositeKeyFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow subclassing:
 		 * instances of this class should be unique, and the singleton can be
 		 * retrieved through field {@link #INSTANCE}.
 		 */
-		protected JSONMarshalOperatorFirstParameter() {
+		protected SplitCompositeKeyFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "marshal_first";
-		}	
+			return "SplitCompositeKeyFirstParameter_first";
+		}
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			return Collections.singleton(GoStringType.INSTANCE);
+		}
+	}
+
+	private static class SplitCompositeKeySecondParameter implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final SplitCompositeKeySecondParameter INSTANCE = new SplitCompositeKeySecondParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected SplitCompositeKeySecondParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "SplitCompositeKeySecondParameter_second";
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
@@ -172,25 +192,25 @@ public class Marshal extends NativeCFG {
 		}
 	}
 	
-	public static class JSONMarshalOperatorSecondParameter implements UnaryOperator {
-		
+	private static class SplitCompositeKeyThirdParameter implements UnaryOperator {
+
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final JSONMarshalOperatorSecondParameter INSTANCE = new JSONMarshalOperatorSecondParameter();
+		public static final SplitCompositeKeyThirdParameter INSTANCE = new SplitCompositeKeyThirdParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow subclassing:
 		 * instances of this class should be unique, and the singleton can be
 		 * retrieved through field {@link #INSTANCE}.
 		 */
-		protected JSONMarshalOperatorSecondParameter() {
+		protected SplitCompositeKeyThirdParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "marshal_second";
-		}	
+			return "SplitCompositeKeySecondParameter_third";
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {

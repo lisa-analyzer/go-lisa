@@ -8,13 +8,13 @@
     "expressions" : "566",
     "files" : "0",
     "globals" : "14",
-    "members" : "50",
+    "members" : "53",
     "programs" : "1",
     "start" : "2023-05-08T17:36:56.789+02:00",
     "statements" : "151",
     "units" : "16",
     "version" : "0.1b8",
-    "warnings" : "2"
+    "warnings" : "0"
   },
   "configuration" : {
     "analysisGraphs" : "NONE",

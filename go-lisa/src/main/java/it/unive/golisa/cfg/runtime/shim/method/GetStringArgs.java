@@ -136,7 +136,6 @@ public class GetStringArgs extends NativeCFG {
 			}
 
 			return result;
-
 		}
 	}
 }

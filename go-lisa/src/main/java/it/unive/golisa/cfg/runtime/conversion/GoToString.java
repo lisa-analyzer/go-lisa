@@ -102,6 +102,5 @@ public class GoToString extends NativeCFG {
 							original.getLocation()),
 					original);
 		}
-
 	}
 }

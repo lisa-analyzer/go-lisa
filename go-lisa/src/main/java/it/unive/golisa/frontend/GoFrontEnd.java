@@ -170,7 +170,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 		InputStream stream = new FileInputStream(getFilePath());
 
-		log.info("LOCS: " + Files.lines(Paths.get(getFilePath())).count());
+		log.info("Lines of code: " + Files.lines(Paths.get(getFilePath())).count());
 
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
@@ -411,8 +411,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private void loadCore() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		packageUnit.addCodeMember(new GoToString(unknownLocation, packageUnit));
-		packageUnit.addCodeMember(new ToInt64(unknownLocation, packageUnit));
+		program.addCodeMember(new GoToString(unknownLocation, program));
+		program.addCodeMember(new ToInt64(unknownLocation, program));
 	}
 
 	@Override

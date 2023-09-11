@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
@@ -46,7 +47,7 @@ import it.unive.lisa.type.Untyped;
  */
 public class GetFunctionAndParameters extends NativeCFG {
 
-	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION);
+	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION, IntegrityNIDomain.HIGH_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.

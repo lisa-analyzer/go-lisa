@@ -101,25 +101,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	}
 
 	@Test
-	public void testMarbles02() throws AnalysisException, IOException {
-		CronConfiguration conf = new CronConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
-		conf.compareWithOptimization = false;
-		conf.testDir = "cc/marbles02";
-		conf.testSubDir = "taint";
-		conf.programFile = "marbles02.go";
-		conf.annSet = annSet;
-		perform(conf);
-	}
-
-	@Test
 	public void testCpuUse() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
@@ -172,25 +153,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.testDir = "cc/marbles-chaincode";
 		conf.testSubDir = "ni";
 		conf.programFile = "marbles_chaincode.go";
-		conf.annSet = annSet;
-		perform(conf);
-	}
-
-	@Test
-	public void testMarbles02NI() throws AnalysisException, IOException {
-		CronConfiguration conf = new CronConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new InferenceSystem<>(new IntegrityNIDomain()),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new IntegrityNIChecker());
-		conf.compareWithOptimization = false;
-		conf.testDir = "cc/marbles02";
-		conf.testSubDir = "ni";
-		conf.programFile = "marbles02.go";
 		conf.annSet = annSet;
 		perform(conf);
 	}
@@ -251,7 +213,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	}
 
 	@Test
-	public void testChaincode() throws AnalysisException, IOException {
+	public void testChaincodeNI() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;

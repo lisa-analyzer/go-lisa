@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
@@ -40,7 +41,7 @@ public class Now extends NativeCFG {
 	/**
 	 * Annotations of this CFG. The output of this CFG is non-deterministic.
 	 */
-	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION);
+	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION, IntegrityNIDomain.LOW_ANNOTATION);
 	
 	/**
 	 * Builds the native cfg.
@@ -102,7 +103,7 @@ public class Now extends NativeCFG {
 				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
 
-			Time timeType = Time.getTimeType(null);
+			Time timeType = Time.getTimeType(getProgram());
 
 			// Allocates the new memory for a Time object
 			MemoryAllocation alloc = new MemoryAllocation(timeType, getLocation(), anns, true);

@@ -1,11 +1,16 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.function;
 
-import it.unive.golisa.analysis.taint.Clean;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
+import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
+import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -15,6 +20,7 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -23,8 +29,15 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.type.ReferenceType;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -56,7 +69,7 @@ public class NewStateEP extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class NewStateEPImpl extends UnaryExpression
+	public static class NewStateEPImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -102,7 +115,90 @@ public class NewStateEP extends NativeCFG {
 				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
+			
+			Type kepType = KeyEndorsementPolicy.getKeyEndorsementPolicyType(getProgram());
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+					new ReferenceType(kepType), GoErrorType.INSTANCE);
+
+			// Allocates the new heap allocation
+			MemoryAllocation created = new MemoryAllocation(kepType, expr.getCodeLocation(), new Annotations(), true);
+			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
+
+			AnalysisState<A, H, V, T> result = state.bottom();
+			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
+				HeapReference ref = new HeapReference(new ReferenceType(kepType), allocId, expr.getCodeLocation());
+				HeapDereference deref = new HeapDereference(kepType, ref, expr.getCodeLocation());
+				AnalysisState<A, H, V, T> asg = allocState.bottom();
+
+				// Retrieves all the identifiers reachable from expr
+				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
+				for (SymbolicExpression id : reachableIds) {
+					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
+					it.unive.lisa.symbolic.value.UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, KeyEndorsementPolicyFirstParameter.INSTANCE, getLocation());
+					asg = asg.lub(allocState.assign(deref, left, original));
+				}
+
+				UnaryExpression rightRes = new UnaryExpression(GoErrorType.INSTANCE, expr, KeyEndorsementPolicySecondParameter.INSTANCE, getLocation());
+
+				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+						ref,
+						rightRes
+						));
+			}
+
+			return result;
+		}
+	}
+	
+	public static class KeyEndorsementPolicyFirstParameter implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final KeyEndorsementPolicyFirstParameter INSTANCE = new KeyEndorsementPolicyFirstParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected KeyEndorsementPolicyFirstParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "KeyEndorsementPolicy_first";
+		}
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			return Collections.singleton(Untyped.INSTANCE);
+		}
+	}
+
+	public static class KeyEndorsementPolicySecondParameter implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final KeyEndorsementPolicySecondParameter INSTANCE = new KeyEndorsementPolicySecondParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected KeyEndorsementPolicySecondParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "CreateCompositeKey_second";
+		}
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			return Collections.singleton(GoErrorType.INSTANCE);
 		}
 	}
 }

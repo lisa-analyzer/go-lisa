@@ -21,9 +21,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.PushAny;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * A Go multi short variable declaration statement.
@@ -55,19 +52,17 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-					StatementStore<A, H, V, T> expressions) throws SemanticException {
-		TypeSystem types = getProgram().getTypes();
-
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+			StatementStore<A, H, V, T> expressions) throws SemanticException {
 		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
 		// if the right state is top,
 		// we put all the variables to top
-		if (rightState.isTop() || rightState.getComputedExpressions().size() > 1) {
+		if (rightState.getComputedExpressions().size() > 1) {
 			AnalysisState<A, H, V, T> result = entryState;
 
 			for (int i = 0; i < ids.length; i++) {
@@ -80,17 +75,10 @@ public class GoMultiShortVariableDeclaration extends GoMultiAssignment {
 				AnalysisState<A, H, V, T> tmp = result;
 
 				for (SymbolicExpression id : idState.getComputedExpressions()) {
-					if (rightState.isTop()) {
-						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-						for (Type type : id.getRuntimeTypes(types))
-							tmp2 = tmp2.lub(tmp.assign((Identifier) id, new PushAny(type, getLocation()), this));
-						tmp = tmp2;
-					} else {
-						AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
-						for (SymbolicExpression s : rightState.getComputedExpressions())
-							tmp2 = tmp2.lub(tmp.assign((Identifier) id, s, this));
-						tmp = tmp2;
-					}
+					AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
+					for (SymbolicExpression s : rightState.getComputedExpressions())
+						tmp2 = tmp2.lub(tmp.assign((Identifier) id, s, this));
+					tmp = tmp2;
 				}
 
 				result = tmp;

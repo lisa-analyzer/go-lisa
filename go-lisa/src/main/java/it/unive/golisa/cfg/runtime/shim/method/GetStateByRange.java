@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
@@ -36,6 +35,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
@@ -124,12 +124,13 @@ public class GetStateByRange extends NativeCFG {
 				// Retrieves all the identifiers reachable from expr
 				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, left, this);
 				for (SymbolicExpression id : reachableIds) {
+					// FIXME: first parameter is stub, but it is not tracked
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-					it.unive.lisa.symbolic.value.TernaryExpression lExp = new it.unive.lisa.symbolic.value.TernaryExpression(Untyped.INSTANCE, new Clean(Untyped.INSTANCE, getLocation()), middle, right, GetStateByRangeFirstParameter.INSTANCE, getLocation());
+					it.unive.lisa.symbolic.value.TernaryExpression lExp = new it.unive.lisa.symbolic.value.TernaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeFirstParameter.INSTANCE, getLocation());
 					asg = asg.lub(allocState.assign(deref, lExp, original));
 				}
 
-				it.unive.lisa.symbolic.value.TernaryExpression rExp = new it.unive.lisa.symbolic.value.TernaryExpression(GoErrorType.INSTANCE, new Clean(Untyped.INSTANCE, getLocation()), middle, right, GetStateByRangeSecondParameter.INSTANCE, getLocation());
+				it.unive.lisa.symbolic.value.TernaryExpression rExp = new it.unive.lisa.symbolic.value.TernaryExpression(GoErrorType.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeSecondParameter.INSTANCE, getLocation());
 
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
 						ref,

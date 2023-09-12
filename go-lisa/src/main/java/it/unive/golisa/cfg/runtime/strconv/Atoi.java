@@ -28,7 +28,6 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.PushAny;
 
 /**
  * func Atoi(s string) int.
@@ -47,7 +46,7 @@ public class Atoi extends NativeCFG {
 		super(new CodeMemberDescriptor(location, strconvUnit, false, "Atoi", GoIntType.INSTANCE,
 				new Parameter(location, "this", GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE))),
 				AtoiImpl.class);
-		GoPointerType.lookup(GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE)); //mandatory
+		GoPointerType.lookup(GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE));
 	}
 
 	/**
@@ -115,12 +114,12 @@ public class Atoi extends NativeCFG {
 					
 					AnalysisState<A, H, V, T> tmp2 = tmp.smallStepSemantics(acRight, original);
 					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
-						res = res.lub(tmp2.assign(e3, new PushAny(GoIntType.INSTANCE, getLocation()),original));
+						res = res.lub(tmp2.assign(e3, new Constant(GoIntType.INSTANCE, 1, getLocation()),original));
 					}
 					
 					tmp2 = tmp2.smallStepSemantics(acLeft, original);
 					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
-						res = res.lub(tmp2.assign(e3, new PushAny(GoErrorType.INSTANCE, getLocation()),original));
+						res = res.lub(tmp2.assign(e3, new Constant(GoErrorType.INSTANCE, 1, getLocation()),original));
 					}
 				}
 				
@@ -129,21 +128,6 @@ public class Atoi extends NativeCFG {
 			}
 			
 			return result;
-			
-			/*
-			ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
-			if (env != null) {
-				ValueEnvironment<?> ve = state.smallStepSemantics(expr, original).getDomainInstance(ValueEnvironment.class);
-				if (ve.lattice instanceof Interval) {
-					return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
-				}
-			}
-			
-			if (!expr.getDynamicType().isStringType() && !expr.getDynamicType().isUntyped())
-				return state.bottom();
-		
-			return state.smallStepSemantics(expr, original);
-			*/
 		}
 	}
 }

@@ -3,7 +3,6 @@ package it.unive.golisa.analysis.ni;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
@@ -216,8 +215,6 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	@Override
 	public InferredPair<IntegrityNIDomain> evalNonNullConstant(Constant constant, IntegrityNIDomain state,
 			ProgramPoint pp) throws SemanticException {
-		if (constant instanceof Tainted)
-			return new InferredPair<>(this, LOW, state(state, pp));
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 

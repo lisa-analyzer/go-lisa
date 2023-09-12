@@ -189,8 +189,6 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	public TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
-		if (constant instanceof Tainted)
-			return TAINTED;
 		return CLEAN;
 	}
 

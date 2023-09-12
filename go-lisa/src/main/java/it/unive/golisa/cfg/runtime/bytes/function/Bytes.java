@@ -38,7 +38,7 @@ public class Bytes extends NativeCFG {
 	 */
 	public Bytes(CodeLocation location, CompilationUnit unit) {
 		super(new CodeMemberDescriptor(location, unit, true, "Bytes",
-				GoSliceType.lookup(GoUInt8Type.INSTANCE),
+				GoSliceType.getSliceOfBytes(),
 				new Parameter(location, "b", Buffer.getBufferType(unit.getProgram()))),
 				BytesImpl.class);
 	}

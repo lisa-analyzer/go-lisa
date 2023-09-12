@@ -55,7 +55,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 */
 	protected GoFunctionVisitor(FunctionDeclContext funcDecl, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
-		super(packageUnit, file, program, constants, globals);
+		super(packageUnit, packageUnit,file, program, constants, globals);
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -78,7 +78,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 */
 	protected GoFunctionVisitor(FunctionLitContext funcLit, CompilationUnit packageUnit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
-		super(packageUnit, file, program, constants, globals);
+		super(packageUnit,packageUnit, file, program, constants, globals);
 		this.currentUnit = packageUnit;
 
 		// side effects on entrypoints and matrix will affect the cfg
@@ -98,9 +98,9 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * @param constants the constant mapping
 	 * @param globals   the global variables
 	 */
-	public GoFunctionVisitor(CompilationUnit unit, String file, Program program,
+	public GoFunctionVisitor(CompilationUnit unit, Unit pkgunit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
-		super(unit, file, program, constants, globals);
+		super(unit, pkgunit, file, program, constants, globals);
 	}
 
 	@Override
@@ -251,7 +251,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 		// The return type is not specified
 		if (signature.result() == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(currentUnit, file, program, constants, globals).visitResult(signature.result());
+		return new GoCodeMemberVisitor(currentUnit, pkgUnit, file, program, constants, globals).visitResult(signature.result());
 	}
 
 	/**

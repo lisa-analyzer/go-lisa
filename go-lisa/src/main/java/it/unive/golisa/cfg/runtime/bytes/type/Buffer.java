@@ -1,15 +1,11 @@
 package it.unive.golisa.cfg.runtime.bytes.type;
 
-import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.runtime.bytes.function.Bytes;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
-import it.unive.lisa.program.SourceCodeLocation;
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
@@ -43,11 +39,6 @@ public class Buffer extends GoStructType {
 		if (other instanceof Buffer || other.isUntyped())
 			return other;
 		return Untyped.INSTANCE;
-	}
-
-	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
-		return new GoInteger(cfg, location, 0);
 	}
 
 	@Override

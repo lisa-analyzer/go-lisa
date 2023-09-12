@@ -144,7 +144,16 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "compositeKey", GoStringType.INSTANCE));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
-
+			
+			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
+					true,
+					"GetStateByRange",
+					GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, Untyped.INSTANCE ,GoErrorType.INSTANCE),
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "startKey", GoStringType.INSTANCE),
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "endKey", GoStringType.INSTANCE));
+			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
+						
 //			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
 //					"SetStateValidationParameter",
 //					GoErrorType.INSTANCE,

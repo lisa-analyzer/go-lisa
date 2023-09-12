@@ -78,8 +78,10 @@ import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
+import it.unive.golisa.cfg.runtime.shim.type.CommonIterator;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.Handler;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
 import it.unive.golisa.cfg.runtime.strconv.Atoi;
 import it.unive.golisa.cfg.runtime.strconv.Itoa;
@@ -401,11 +403,13 @@ public interface GoRuntimeLoader {
 		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
+		GoInterfaceType.registerType(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program));
 		GoStructType.registerType(Handler.getHandlerType(program));
 		GoStructType.registerType(TLSProperties.getTLSPropertiesType(program));
 		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
 		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
 		GoStructType.registerType(Response.getResponseType(program));
+		GoStructType.registerType(CommonIterator.getCommonIteratorType(program));
 
 		// adding functions
 		shim.addCodeMember(new Start(runtimeLocation, shim));
@@ -415,7 +419,8 @@ public interface GoRuntimeLoader {
 		// register methods
 		ChaincodeStub.registerMethods();
 		ChaincodeServer.registerMethods();
-
+		CommonIterator.registerMethods();
+		
 		ChaincodeStub.getChaincodeStubType(program).getUnit()
 				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 
@@ -427,10 +432,10 @@ public interface GoRuntimeLoader {
 		program.addUnit(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 		program.addUnit(Chaincode.getChaincodeType(program).getUnit());
 		program.addUnit(CommonIteratorInterface.getCommonIteratorInterfaceType(program).getUnit());
+		program.addUnit(CommonIterator.getCommonIteratorType(program).getUnit());
 
 		program.addUnit(ChaincodeStub.getChaincodeStubType(program).getUnit());
 		program.addUnit(TLSProperties.getTLSPropertiesType(program).getUnit());
-
 	}
 
 	private void loadUrl(Program program) {

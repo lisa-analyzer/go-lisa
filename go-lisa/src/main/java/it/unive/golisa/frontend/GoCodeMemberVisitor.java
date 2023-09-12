@@ -191,6 +191,7 @@ import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.SyntheticLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
@@ -303,6 +304,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	private final Map<String, Set<IdInfo>> visibleIds;
 
+	protected final Unit pkgUnit;
+	
 	/**
 	 * Builds the code member visitor.
 	 * 
@@ -312,7 +315,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param constants constant mapping
 	 * @param globals   global variables
 	 */
-	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program,
+	public GoCodeMemberVisitor(CompilationUnit unit, Unit pkgUnit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
@@ -326,6 +329,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		this.labeledStmt = new HashMap<>();
 		this.currentUnit = unit;
 		this.globals = globals;
+		this.pkgUnit = pkgUnit;
 	}
 
 	/**
@@ -338,7 +342,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * @param constants constant mapping
 	 * @param globals   the global variables
 	 */
-	public GoCodeMemberVisitor(CompilationUnit unit, MethodDeclContext ctx, String file, Program program,
+	public GoCodeMemberVisitor(CompilationUnit unit, Unit pkgUnit, MethodDeclContext ctx, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
@@ -354,7 +358,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		visibleIds = new HashMap<>();
 		this.blockDeep = 0;
 		this.globals = globals;
-
+		this.pkgUnit = pkgUnit;
 		initializeVisibleIds();
 	}
 
@@ -1138,7 +1142,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			ClassUnit unit = new ClassUnit(
 					new SourceCodeLocation(file, getLine(typeSpec), getCol(typeSpec)), program, unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(file, unit, program, constants, globals).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(file, unit, pkgUnit, program, constants, globals).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
@@ -2159,7 +2163,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					else
 						return new UnresolvedCall(cfg, locationOf(ctx),
 								CallType.STATIC,
-								currentUnit.getName(), primary.toString(),
+								pkgUnit.getName(), primary.toString(),
 								args);
 
 				else if (primary instanceof GoCollectionAccess) {
@@ -2379,7 +2383,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Expression visitCompositeLit(CompositeLitContext ctx) {
-		Type type = new GoTypeVisitor(file, currentUnit, program, constants, globals)
+		Type type = new GoTypeVisitor(file, currentUnit, pkgUnit, program, constants, globals)
 				.visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>) {
@@ -2628,7 +2632,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Type visitType_(Type_Context ctx) {
-		return new GoTypeVisitor(file, currentUnit, program, constants, globals).visitType_(ctx);
+		return new GoTypeVisitor(file, currentUnit, pkgUnit, program, constants, globals).visitType_(ctx);
 	}
 
 	@Override

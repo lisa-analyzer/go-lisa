@@ -310,7 +310,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 			IdentifierListContext ids = spec.identifierList();
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Type type = spec.type_() == null ? Untyped.INSTANCE
-						: new GoTypeVisitor(filePath, packageUnit, program, constants, globals)
+						: new GoTypeVisitor(filePath, packageUnit, packageUnit, program, constants, globals)
 								.visitType_(spec.type_());
 				globals.add(new Global(
 						new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)),
@@ -348,7 +348,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 						program,
 						unitName, false);
 				units.add(unit);
-				new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
+				new GoTypeVisitor(filePath, unit, packageUnit, program, constants, globals).visitTypeSpec(typeSpec);
 			} else {
 				InterfaceUnit unit = new InterfaceUnit(
 
@@ -357,7 +357,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 						program,
 						unitName, false);
 				units.add(unit);
-				new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
+				new GoTypeVisitor(filePath, unit, packageUnit, program, constants, globals).visitTypeSpec(typeSpec);
 			}
 		}
 		return units;
@@ -422,6 +422,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	@Override
 	public CFG visitMethodDecl(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, constants, globals).visitCodeMember(ctx);
+		return new GoCodeMemberVisitor(packageUnit, packageUnit,ctx, filePath, program, constants, globals).visitCodeMember(ctx);
 	}
 }

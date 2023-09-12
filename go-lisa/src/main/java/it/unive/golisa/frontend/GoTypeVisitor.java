@@ -59,6 +59,7 @@ import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.ArrayList;
@@ -87,6 +88,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	private final List<Global> globals;
 
+	private final Unit pkgUnit;
+	
 	/**
 	 * Builds a type visitor.
 	 * 
@@ -96,13 +99,14 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * @param constants the constant mapping
 	 * @param globals   the global variables
 	 */
-	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants,
+	public GoTypeVisitor(String file, CompilationUnit unit, Unit pkgUnit, Program program, Map<String, ExpressionContext> constants,
 			List<Global> globals) {
 		this.file = file;
 		this.unit = unit;
 		this.program = program;
 		this.constants = constants;
 		this.globals = globals;
+		this.pkgUnit = pkgUnit;
 	}
 
 	/**
@@ -224,7 +228,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public GoType visitFunctionType(FunctionTypeContext ctx) {
-		return new GoFunctionVisitor(unit, file, program, constants, globals).visitFunctionType(ctx);
+		return new GoFunctionVisitor(unit, pkgUnit, file, program, constants, globals).visitFunctionType(ctx);
 	}
 
 	@Override
@@ -393,11 +397,12 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public GoStructType visitStructType(StructTypeContext ctx) {
 		for (FieldDeclContext field : ctx.fieldDecl())
 			for (Pair<String, Type> fd : visitFieldDecl(field)) {
-				SourceCodeLocation sourceCodeLocation = new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
+				SourceCodeLocation loc = new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
 						GoCodeMemberVisitor.getCol(field));
+				Type globalType = fd.getRight().isInMemoryType() ? new ReferenceType(fd.getRight()) : fd.getRight();
 				unit.addInstanceGlobal(new Global(
-						sourceCodeLocation, unit, fd.getLeft(), true,
-						fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
+						loc, unit, fd.getLeft(), true,
+						fd.getRight() == null ? Untyped.INSTANCE : globalType));
 			}
 		return GoStructType.lookup(unit.getName(), unit);
 	}
@@ -430,7 +435,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs,
-						new GoCodeMemberVisitor(unit, file, program, constants, globals)
+						new GoCodeMemberVisitor(unit, pkgUnit, file, program, constants, globals)
 								.visitParameterDecl(formalPars.parameterDecl(i)));
 
 			descs.add(new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), unit, true, funcName,
@@ -456,7 +461,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		// The return type is not specified
 		if (result == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(unit, file, program, constants, globals).visitResult(result);
+		return new GoCodeMemberVisitor(unit, pkgUnit, file, program, constants, globals).visitResult(result);
 	}
 
 	@Override

@@ -885,41 +885,77 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		return Triple.of(entryNode, block, lastStmt);
 	}
+	
 
 	private Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitStatementListOfSwitchCase(
 			StatementListContext ctx) {
+		
+		return visitImplicitBlock(ctx);
+	}
+	
+	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitImplicitBlock(StatementListContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
-
-		// It is an empty statement
+		
 		if (ctx == null || ctx.statement().size() == 0) {
-			NoOp nop = new NoOp(cfg, SyntheticLocation.INSTANCE);
-			block.addNode(nop);
-			return Triple.of(nop, block, nop);
-		}
+			OpenBlock open = new OpenBlock(cfg, SyntheticLocation.INSTANCE);
+			block.addNode(open);
 
-		Statement lastStmt = null;
-		Statement entryNode = null;
+			CloseBlock close = new CloseBlock(cfg, SyntheticLocation.INSTANCE, open);
+			block.addNode(close);
+			
+			blockList.addLast(new BlockInfo(open));
+			
+			addEdge(new SequentialEdge(open, close), block);
+
+			return Triple.of(open, block, close);
+		}
 
 		Map<String, Set<IdInfo>> backup = deepCopy(visibleIds);
+		
+		blockDeep++;
 
-		for (int i = 0; i < ctx.statement().size(); i++) {
-			Triple<Statement, NodeList<CFG, Statement, Edge>,
-					Statement> currentStmt = visitStatement(ctx.statement(i));
-			block.mergeWith(currentStmt.getMiddle());
+		OpenBlock open = new OpenBlock(cfg, locationOf(ctx));
+		block.addNode(open);
 
-			if (lastStmt != null)
-				addEdge(new SequentialEdge(lastStmt, currentStmt.getLeft()), block);
-			else
-				entryNode = currentStmt.getLeft();
+		CloseBlock close = new CloseBlock(cfg, locationOf(ctx), open);
 
-			lastStmt = currentStmt.getRight();
+		blockList.addLast(new BlockInfo(open));
 
-			// scoping must be updated for each case
-			updateVisileIds(backup, lastStmt);
+		Triple<Statement, NodeList<CFG, Statement, Edge>,
+				Statement> res = visitStatementList(ctx);
+		block.mergeWith(res.getMiddle());
+		addEdge(new SequentialEdge(open, res.getLeft()), block);
+
+		Statement last = res.getRight();
+		updateVisileIds(backup, last);
+		if (isReturnStmt(last)) {
+			blockDeep--;
+			blockList.removeLast();
+			return Triple.of(open, block, last);
+		}
+		if (isGoTo(last) || last instanceof GoContinue) {
+			// we still decrement as the actual closing
+			// blocks will be added in the post processing
+			blockDeep--;
+			blockList.removeLast();
+			return Triple.of(open, block, last);
+		}
+		if (last instanceof NoOp && allNonNoopPredecessorsAreReturns(block, last)) {
+			// corner case: conditional structure always ending with a return,
+			// but where where the noop at the end has been added with no
+			// predecessors
+			return Triple.of(open, block, last);
 		}
 
-		return Triple.of(entryNode, block, lastStmt);
+		block.addNode(close);
+		addEdge(new SequentialEdge(last, close), block);
+
+		blockDeep--;
+		blockList.removeLast();
+
+		return Triple.of(open, block, close);
 	}
+
 
 	@Override
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitStatement(StatementContext ctx) {

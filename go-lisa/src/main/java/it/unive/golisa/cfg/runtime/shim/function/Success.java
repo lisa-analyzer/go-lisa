@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
@@ -12,6 +15,7 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -20,9 +24,16 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.type.ReferenceType;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
+import it.unive.lisa.type.Untyped;
 
 /**
  * Success response chaincodes. func Success(payload []byte) pb.Response
@@ -51,8 +62,8 @@ public class Success extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class SuccessImpl extends UnaryExpression
-			implements PluggableStatement {
+	public static class SuccessImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -89,12 +100,50 @@ public class Success extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(Response.getResponseType(null), getLocation()), original);
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+
+			Response responseType = Response.getResponseType(null);
+
+			// Allocates the new memory for a Time object
+			MemoryAllocation alloc = new MemoryAllocation(responseType, getLocation(), new Annotations(), true);
+			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(alloc, this);
+
+			// Assigns an unknown object to each allocation identifier
+			HeapReference ref = new HeapReference(new ReferenceType(responseType), alloc, getLocation());
+			HeapDereference deref = new HeapDereference(responseType, ref, getLocation());
+			UnaryExpression un = new UnaryExpression(Untyped.INSTANCE, expr, SuccessOperator.INSTANCE, getLocation());
+			AnalysisState<A, H, V, T> asg = allocState.assign(deref, un, this);				
+			return asg.smallStepSemantics(ref, original);
+		}
+	}
+
+	public static class SuccessOperator implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final SuccessOperator INSTANCE = new SuccessOperator();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected SuccessOperator() {
+		}
+
+		@Override
+		public String toString() {
+			return "SuccessOperator";
+		}	
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			return Collections.singleton(Untyped.INSTANCE);
 		}
 	}
 }

@@ -42,7 +42,7 @@ public class Now extends NativeCFG {
 	 * Annotations of this CFG. The output of this CFG is non-deterministic.
 	 */
 	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION, IntegrityNIDomain.LOW_ANNOTATION);
-	
+
 	/**
 	 * Builds the native cfg.
 	 * 
@@ -110,15 +110,10 @@ public class Now extends NativeCFG {
 			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(alloc, this);
 
 			// Assigns an unknown object to each allocation identifier
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(timeType), allocId, getLocation());
-				HeapDereference deref = new HeapDereference(timeType, ref, getLocation());
-				AnalysisState<A, H, V, T> asg = allocState.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);				
-				result = result.lub(asg.smallStepSemantics(ref, original));
-			}
-
-			return result;
+			HeapReference ref = new HeapReference(new ReferenceType(timeType), alloc, getLocation());
+			HeapDereference deref = new HeapDereference(timeType, ref, getLocation());
+			AnalysisState<A, H, V, T> asg = allocState.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);				
+			return asg.smallStepSemantics(ref, original);
 		}
 	}
 }

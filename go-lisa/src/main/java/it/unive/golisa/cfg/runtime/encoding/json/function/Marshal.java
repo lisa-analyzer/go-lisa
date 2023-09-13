@@ -118,36 +118,29 @@ public class Marshal extends NativeCFG {
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
-			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
+			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, expr.getCodeLocation());
+			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
+			AnalysisState<A, H, V, T> asg = state.bottom();
 
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), allocId, expr.getCodeLocation());
-				HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
-				AnalysisState<A, H, V, T> asg = allocState.bottom();
-
-				// Retrieves all the identifiers reachable from expr
-				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
-				for (SymbolicExpression id : reachableIds) {
-					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
-					asg = asg.lub(allocState.assign(deref, left, original));
-				}
-
-				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
-
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
-						ref,
-						rExp
-						));
+			// Retrieves all the identifiers reachable from expr
+			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
+			for (SymbolicExpression id : reachableIds) {
+				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
+				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
+				asg = asg.lub(state.assign(deref, left, original));
 			}
 
-			return result;
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
+
+			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+					ref,
+					rExp
+					);
 		}
 	}
-	
+
 	public static class JSONMarshalOperatorFirstParameter implements UnaryOperator {
-		
+
 		/**
 		 * The singleton instance of this class.
 		 */
@@ -171,9 +164,9 @@ public class Marshal extends NativeCFG {
 			return Collections.singleton(Untyped.INSTANCE);
 		}
 	}
-	
+
 	public static class JSONMarshalOperatorSecondParameter implements UnaryOperator {
-		
+
 		/**
 		 * The singleton instance of this class.
 		 */

@@ -30,12 +30,12 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
@@ -65,7 +65,7 @@ public class GetStateByRange extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class GetStateByRangeImpl extends TernaryExpression
+	public static class GetStateByRangeImpl extends it.unive.lisa.program.cfg.statement.TernaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -74,7 +74,7 @@ public class GetStateByRange extends NativeCFG {
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -113,37 +113,29 @@ public class GetStateByRange extends NativeCFG {
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(allocType, left.getCodeLocation(), new Annotations(), true);
-			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
+			HeapReference ref = new HeapReference(new ReferenceType(allocType), created, left.getCodeLocation());
+			HeapDereference deref = new HeapDereference(allocType, ref, left.getCodeLocation());
+			AnalysisState<A, H, V, T> asg = state.bottom();
 
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(allocType), allocId, left.getCodeLocation());
-				HeapDereference deref = new HeapDereference(allocType, ref, left.getCodeLocation());
-				AnalysisState<A, H, V, T> asg = allocState.bottom();
-
-				// Retrieves all the identifiers reachable from expr
-				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, left, this);
-				for (SymbolicExpression id : reachableIds) {
-					// FIXME: first parameter is stub, but it is not tracked
-					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-					it.unive.lisa.symbolic.value.TernaryExpression lExp = new it.unive.lisa.symbolic.value.TernaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeFirstParameter.INSTANCE, getLocation());
-					asg = asg.lub(allocState.assign(deref, lExp, original));
-				}
-
-				it.unive.lisa.symbolic.value.TernaryExpression rExp = new it.unive.lisa.symbolic.value.TernaryExpression(GoErrorType.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeSecondParameter.INSTANCE, getLocation());
-
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
-						ref,
-						rExp
-						));
+			// Retrieves all the identifiers reachable from expr
+			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
+			for (SymbolicExpression id : reachableIds) {
+				// FIXME: first parameter is stub, but it is not tracked (put constant now)
+				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
+				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeFirstParameter.INSTANCE, getLocation());
+				asg = asg.lub(state.assign(deref, lExp, original));
 			}
 
-			return result;
+			TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeSecondParameter.INSTANCE, getLocation());
+
+			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+					ref,
+					rExp);
 		}
 	}
-	
+
 	public static class GetStateByRangeFirstParameter implements TernaryOperator {
-		
+
 		/**
 		 * The singleton instance of this class.
 		 */
@@ -167,9 +159,9 @@ public class GetStateByRange extends NativeCFG {
 			return Collections.singleton(Untyped.INSTANCE);
 		}
 	}
-	
+
 	public static class GetStateByRangeSecondParameter implements TernaryOperator {
-		
+
 		/**
 		 * The singleton instance of this class.
 		 */
@@ -193,6 +185,4 @@ public class GetStateByRange extends NativeCFG {
 			return Collections.singleton(GoErrorType.INSTANCE);
 		}
 	}
-	
-	
 }

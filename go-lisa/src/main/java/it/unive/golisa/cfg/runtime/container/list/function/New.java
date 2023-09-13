@@ -58,7 +58,7 @@ public class New extends NativeCFG {
 	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
 	 */
 	public static class NewImpl extends NaryExpression
-			implements PluggableStatement {
+	implements PluggableStatement {
 
 		private Statement original;
 
@@ -94,29 +94,21 @@ public class New extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			
+
 			List listType = List.getListType(getProgram());
 
 			// Allocates the new memory for a Time object
 			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), anns, true);
-			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(alloc, this);
-
-			// Assigns an unknown object to each allocation identifier
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(listType), allocId, getLocation());
-				HeapDereference deref = new HeapDereference(listType, ref, getLocation());
-				AnalysisState<A, H, V, T> asg = allocState.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);				
-				result = result.lub(asg.smallStepSemantics(ref, original));
-			}
-
-			return result;
+			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
+			HeapDereference deref = new HeapDereference(listType, ref, getLocation());
+			AnalysisState<A, H, V, T> asg = state.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);				
+			return asg.smallStepSemantics(ref, original);
 		}
 	}
 }

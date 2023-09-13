@@ -111,31 +111,25 @@ public class GetStringArgs extends NativeCFG {
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfString, getLocation(), anns, true);
-			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
+			HeapReference ref = new HeapReference(new ReferenceType(sliceOfString), created, getLocation());
+			HeapDereference deref = new HeapDereference(sliceOfString, ref,  getLocation());
 
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(sliceOfString), allocId, getLocation());
-				HeapDereference deref = new HeapDereference(sliceOfString, ref,  getLocation());
+			// Assign the len property to this hid
+			Variable len = new Variable(Untyped.INSTANCE, "len",
+					getLocation());
+			AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
+					len, getLocation());
+			AnalysisState<A, H, V, T> lenState = state.assign(lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
-				// Assign the len property to this hid
-				Variable len = new Variable(Untyped.INSTANCE, "len",
-						getLocation());
-				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
-						len, getLocation());
-				AnalysisState<A, H, V, T> lenState = allocState.assign(lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			// Assign the cap property to this hid
+			Variable cap = new Variable(Untyped.INSTANCE, "cap",
+					getLocation());
+			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
+					cap, getLocation());
+			AnalysisState<A, H, V, T> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
-				// Assign the cap property to this hid
-				Variable cap = new Variable(Untyped.INSTANCE, "cap",
-						getLocation());
-				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
-						cap, getLocation());
-				AnalysisState<A, H, V, T> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			return capState.smallStepSemantics(ref, original);
 
-				result = result.lub(capState.smallStepSemantics(ref, original));
-			}
-
-			return result;
 		}
 	}
 }

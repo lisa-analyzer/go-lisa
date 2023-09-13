@@ -120,33 +120,26 @@ public class GetFunctionAndParameters extends NativeCFG {
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfString, expr.getCodeLocation(), anns, true);
-			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
-			
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(sliceOfString), allocId, expr.getCodeLocation());
-				HeapDereference deref = new HeapDereference(sliceOfString, ref, expr.getCodeLocation());
+			HeapReference ref = new HeapReference(new ReferenceType(sliceOfString), created, expr.getCodeLocation());
+			HeapDereference deref = new HeapDereference(sliceOfString, ref, expr.getCodeLocation());
 
-				// Assign the len property to this hid
-				Variable len = new Variable(Untyped.INSTANCE, "len",
-						getLocation());
-				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
-						len, getLocation());
-				AnalysisState<A, H, V, T> lenState = allocState.assign(lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			// Assign the len property to this hid
+			Variable len = new Variable(Untyped.INSTANCE, "len",
+					getLocation());
+			AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
+					len, getLocation());
+			AnalysisState<A, H, V, T> lenState = state.assign(lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
-				// Assign the cap property to this hid
-				Variable cap = new Variable(Untyped.INSTANCE, "cap",
-						getLocation());
-				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
-						cap, getLocation());
-				AnalysisState<A, H, V, T> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			// Assign the cap property to this hid
+			Variable cap = new Variable(Untyped.INSTANCE, "cap",
+					getLocation());
+			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
+					cap, getLocation());
+			AnalysisState<A, H, V, T> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
-				result = result.lub(GoTupleExpression.allocateTupleExpression(capState, anns, this, getLocation(), tupleType, 
-						new PushAny(GoStringType.INSTANCE, getLocation()),
-						ref));
-			}
-
-			return result;
+			return GoTupleExpression.allocateTupleExpression(capState, anns, this, getLocation(), tupleType, 
+					new PushAny(GoStringType.INSTANCE, getLocation()),
+					ref);
 		}
 	}
 }

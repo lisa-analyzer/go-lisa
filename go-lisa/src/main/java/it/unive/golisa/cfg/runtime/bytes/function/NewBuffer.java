@@ -106,26 +106,18 @@ public class NewBuffer extends NativeCFG {
 
 			// Allocates the new memory for a Buffer object
 			MemoryAllocation alloc = new MemoryAllocation(bufferType, getLocation(), new Annotations(), true);
-			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(alloc, this);
-			AnalysisState<A, H, V, T> asg = allocState.bottom();
+			HeapReference ref = new HeapReference(new ReferenceType(bufferType), alloc, getLocation());
+			HeapDereference deref = new HeapDereference(bufferType, ref, getLocation());
 
-			// Assigns an unknown object to each allocation identifier
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
-				HeapReference ref = new HeapReference(new ReferenceType(bufferType), allocId, getLocation());
-				HeapDereference deref = new HeapDereference(bufferType, ref, getLocation());
-
-				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
-				for (SymbolicExpression id : reachableIds) {
-					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, NewBufferOperator.INSTANCE, getLocation());
-					asg = asg.lub(allocState.assign(deref, left, original));
-				}
-
-				result = result.lub(asg.smallStepSemantics(ref, original));
+			AnalysisState<A, H, V, T> asg = state.bottom();
+			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
+			for (SymbolicExpression id : reachableIds) {
+				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
+				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, NewBufferOperator.INSTANCE, getLocation());
+				asg = asg.lub(state.assign(deref, left, original));
 			}
 
-			return result;
+			return asg.smallStepSemantics(ref, original);
 		}
 	}
 

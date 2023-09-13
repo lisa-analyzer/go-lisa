@@ -24,7 +24,7 @@ type SampleChaincode struct {
 // Init is called during chaincode instantiation to initialize
 // data. We'll be adding more in this function later on.
 func (t *SampleChaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
-
+	args := stub.GetArgs()
 	if rand.Int() % 2 == 0 {
 		stub.PutState(args[0], []byte(0))
 	} else {
@@ -39,7 +39,7 @@ func (t *SampleChaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
 func (t *SampleChaincode) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
     // Return the result as success payload
-    return shim.Success([]byte(result))
+    return shim.Success(nil)
 }
 
 

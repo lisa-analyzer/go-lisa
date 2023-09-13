@@ -1,5 +1,6 @@
 package it.unive.golisa.frontend;
 
+import it.unive.golisa.cfg.runtime.bytes.function.NewBuffer;
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
 import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
@@ -369,6 +370,9 @@ public interface GoRuntimeLoader {
 	private void loadBytes(Program program) {
 		CodeUnit bytes = new CodeUnit(runtimeLocation, program, "bytes");
 
+		// adding functions
+		bytes.addCodeMember(new NewBuffer(runtimeLocation, bytes));
+		
 		Buffer bufferType = Buffer.getBufferType(program);
 
 		// adding types

@@ -24,8 +24,9 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func (b *Buffer) Bytes() []byte https://pkg.go.dev/bytes#Buffer.Bytes.
+ * func (b *Buffer) Bytes() []byte 
  * 
+ * @see https://pkg.go.dev/bytes#Buffer.Bytes.
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Bytes extends NativeCFG {

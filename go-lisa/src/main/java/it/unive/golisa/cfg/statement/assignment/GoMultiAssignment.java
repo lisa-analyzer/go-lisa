@@ -214,33 +214,24 @@ public class GoMultiAssignment extends Expression {
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {		
 				HeapDereference dereference = new HeapDereference(getStaticType(),
 						retExp, getLocation());
-				AccessChild access;
-				if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType)retExp.getStaticType()).getInnerType() instanceof GoTupleType)
-					access = new AccessChild(((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i), dereference,
-							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				else
-					access = new AccessChild(Untyped.INSTANCE, dereference,
-							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				AccessChild access = new AccessChild(Untyped.INSTANCE, dereference,
+						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 					AnalysisState<A, H, V, T> assign;
 					if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType) retExp.getStaticType()).getInnerType() instanceof GoTupleType) {
 						Type typeAtPos = ((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i);
 
 						if (typeAtPos instanceof ReferenceType) {
-
 							HeapReference ref = new HeapReference(new ReferenceType(access.getStaticType()), access, getLocation());
-
 							assign = finalResult.assign(idExp, NumericalTyper.type(ref), this);
-							partialResult = partialResult.lub(assign);
-						} else {
+						} else 
 							assign = finalResult.assign(idExp, NumericalTyper.type(access), this);
-							partialResult = partialResult.lub(assign);
-						}
-					} else {
+					} else 
 						assign = finalResult.assign(idExp, NumericalTyper.type(access), this);
-						partialResult = partialResult.lub(assign);
-					}
+
+					partialResult = partialResult.lub(assign);
 				}
+				
 				finalResult = partialResult;
 			}
 		}

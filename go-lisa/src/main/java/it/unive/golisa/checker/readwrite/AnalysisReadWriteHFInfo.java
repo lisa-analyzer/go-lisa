@@ -13,14 +13,23 @@ public class AnalysisReadWriteHFInfo {
 	private final UnresolvedCall call;
 	private final ReadWriteInfo info;
 	private final ArrayList<Set<Tarsis>> keyValues;
+	private final Set<Tarsis> collectionValues; 
 	private final boolean deferred;
-
 	
 	public AnalysisReadWriteHFInfo(UnresolvedCall call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues, boolean deferred) {
 		this.call = call;
 		this.info = info;
 		this.keyValues = keyValues;
 		this.deferred = deferred;
+		this.collectionValues = null;
+	}
+	
+	public AnalysisReadWriteHFInfo(UnresolvedCall call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues, Set<Tarsis> collectionValues, boolean deferred) {
+		this.call = call;
+		this.info = info;
+		this.keyValues = keyValues;
+		this.deferred = deferred;
+		this.collectionValues = collectionValues;
 	}
 
 	public UnresolvedCall getCall() {
@@ -39,10 +48,23 @@ public class AnalysisReadWriteHFInfo {
 		return deferred;
 	}
 
+	public boolean hasCollection() {
+		return collectionValues != null;
+	}
+	
+	
+	
+	public Set<Tarsis> getCollectionValues() {
+		return collectionValues;
+	}
+	
+	//Equals must evaluate only call and info
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(call, info, keyValues);
+		return Objects.hash(call, info);
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -53,10 +75,10 @@ public class AnalysisReadWriteHFInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		AnalysisReadWriteHFInfo other = (AnalysisReadWriteHFInfo) obj;
-		return call.equals(other.call) && info.equals(other.info)
-				&& keyValues.equals(other.keyValues);
+		return Objects.equals(call, other.call) && Objects.equals(info, other.info);
 	}
-	
+
+
 	
 }
 

@@ -88,6 +88,9 @@ public class ReadWritePairChecker implements
 		for(AnalysisReadWriteHFInfo w : writers) {
 			Set<Tarsis> wkeyValues = w.getKeyValues().get(0);
 			for(AnalysisReadWriteHFInfo r : readers) {
+				if(!matchCollection(r,w))
+					continue;
+				
 				boolean found = false;
 				switch(r.getInfo().getKeyType()) {
 					case SINGLE:
@@ -151,12 +154,43 @@ public class ReadWritePairChecker implements
 		return res;
 	}
 
+	private boolean matchCollection(AnalysisReadWriteHFInfo st1, AnalysisReadWriteHFInfo st2) {
+
+		ReadWriteInfo st1Info = st1.getInfo();
+		ReadWriteInfo st2Info = st2.getInfo();
+		
+		if((st1Info.hasCollection() && !st2Info.hasCollection())
+			|| (!st1Info.hasCollection() && st2Info.hasCollection()))
+			return false;
+			
+		if(st1.getInfo().hasCollection() && st2.getInfo().hasCollection()) {
+			Set<Tarsis> c1Values = st1.getCollectionValues();
+			Set<Tarsis> c2Values = st2.getCollectionValues();
+			for(Tarsis c1ValueState : c1Values) {
+				for(Tarsis c2ValuesState : c2Values) {
+					if(c1ValueState.isTop() || c2ValuesState.isTop()
+						|| extractValueStringFromTarsisStates(c2ValuesState)
+						.equals(extractValueStringFromTarsisStates(c1ValueState))) { //TODO: find a more elegant way to check key values using Tarsis
+						return true;
+					}
+				}
+			}
+			
+			return false;
+		}
+		
+		return true;
+	}
+
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> computeOverWriteCandidates() {
 		
 		Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> res = new HashSet<>();
 		
 		for(AnalysisReadWriteHFInfo w1 : writers)
 			for(AnalysisReadWriteHFInfo w2 : writers) {
+				if(!matchCollection(w1,w2))
+					continue;
+				
 				if(!w1.equals(w2)) {
 					Set<Tarsis> w1keyValues = w1.getKeyValues().get(0);
 					Set<Tarsis> w2keyValues = w2.getKeyValues().get(0);
@@ -234,7 +268,13 @@ public class ReadWritePairChecker implements
 						keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
 					}
 					
-					AnalysisReadWriteHFInfo infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, isDeferred(call, graph));
+					AnalysisReadWriteHFInfo infoForAnalysis;
+					if(!info.hasCollection())
+						infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, isDeferred(call, graph));
+					else {
+						Set<Tarsis> collectionValues = extractCollectionValues(call, info.getCollectionParam().intValue(), node, result);
+						infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, collectionValues, isDeferred(call, graph));
+					}
 					
 					if(ReadWriteHFUtils.isReadCall(call))
 						readers.add(infoForAnalysis);
@@ -250,6 +290,30 @@ public class ReadWritePairChecker implements
 		}
 				
 		return true;
+	}
+
+
+	private Set<Tarsis> extractCollectionValues(UnresolvedCall call, int collectionParam, Statement node,
+			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result) throws SemanticException {
+
+	
+		int par = call.getCallType().equals(CallType.STATIC) ? collectionParam : collectionParam+1;
+		Set<Tarsis> res = new HashSet<>();
+			
+		if(par < call.getParameters().length) {
+				
+			AnalysisState<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+					TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, ValueEnvironment<Tarsis>,
+			TypeEnvironment<InferredTypes>> state = result
+					.getAnalysisStateAfter(call.getParameters()[par]);
+			for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), node))
+				res.add(state.getState().getValueState().eval((ValueExpression) stack, node));
+		
+		}
+		
+		return res;
 	}
 
 	private boolean isDeferred(UnresolvedCall call, CFG graph) {

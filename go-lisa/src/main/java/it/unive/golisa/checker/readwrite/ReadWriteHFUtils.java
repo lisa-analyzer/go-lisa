@@ -24,18 +24,18 @@ public class ReadWriteHFUtils {
 			new ReadWriteInfo(TypeInstruction.READ , "GetStateByRangeWithPagination", KeyType.RANGE, new int[]{0,1}),
 			new ReadWriteInfo(TypeInstruction.READ , "GetStateByPartial", KeyType.COMPOSITE, new int[]{1}),
 			new ReadWriteInfo(TypeInstruction.READ , "GetHistoryForKey", KeyType.SINGLE, new int[]{0}),
-			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateData", KeyType.SINGLE, new int[]{1}),
-			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1}),
-			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataByRange", KeyType.RANGE, new int[]{1,2}),
-			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataHash", KeyType.SINGLE, new int[]{1}),
-			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataByPartialCompositeKey", KeyType.COMPOSITE, new int[]{2}),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateData", KeyType.SINGLE, new int[]{1}, 0),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1}, 0),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataByRange", KeyType.RANGE, new int[]{1,2}, 0),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataHash", KeyType.SINGLE, new int[]{1}, 0),
+			new ReadWriteInfo(TypeInstruction.READ , "GetPrivateDataByPartialCompositeKey", KeyType.COMPOSITE, new int[]{1}, 0),
 			new ReadWriteInfo(TypeInstruction.WRITE, "PutState", KeyType.SINGLE, new int[]{0}),
 			new ReadWriteInfo(TypeInstruction.WRITE, "DelState", KeyType.SINGLE, new int[]{0}),
-			new ReadWriteInfo(TypeInstruction.WRITE, "SetStateValidationParameter", KeyType.SINGLE, new int[]{1}),
-			new ReadWriteInfo(TypeInstruction.WRITE, "PutPrivateData", KeyType.SINGLE, new int[]{1}),
-			new ReadWriteInfo(TypeInstruction.WRITE, "DelPrivateData", KeyType.SINGLE, new int[]{1}),
-			new ReadWriteInfo(TypeInstruction.WRITE, "PurgePrivateData", KeyType.SINGLE, new int[]{1}),
-			new ReadWriteInfo(TypeInstruction.WRITE, "SetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1}));
+			new ReadWriteInfo(TypeInstruction.WRITE, "SetStateValidationParameter", KeyType.SINGLE, new int[]{0}),
+			new ReadWriteInfo(TypeInstruction.WRITE, "PutPrivateData", KeyType.SINGLE, new int[]{1}, 0),
+			new ReadWriteInfo(TypeInstruction.WRITE, "DelPrivateData", KeyType.SINGLE, new int[]{1}, 0),
+			new ReadWriteInfo(TypeInstruction.WRITE, "PurgePrivateData", KeyType.SINGLE, new int[]{1}, 0),
+			new ReadWriteInfo(TypeInstruction.WRITE, "SetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1}, 0));
 	
 	public static boolean isReadOrWriteCall(UnresolvedCall call) {
 		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName()));

@@ -13,12 +13,22 @@ public class ReadWriteInfo {
 	private final String signature;
 	private final KeyType keyType;
 	private final int[] keyParameters;
+	private final Integer collectionParam;
 	
 	public ReadWriteInfo(TypeInstruction instructionType, String signature, KeyType keyType, int[] keyParameters) {
 		this.instructionType = instructionType;
 		this.signature = signature;
 		this.keyType = keyType;
 		this.keyParameters = keyParameters;
+		this.collectionParam = null;
+	}
+	
+	public ReadWriteInfo(TypeInstruction instructionType, String signature, KeyType keyType, int[] keyParameters, int collectionParam) {
+		this.instructionType = instructionType;
+		this.signature = signature;
+		this.keyType = keyType;
+		this.keyParameters = keyParameters;
+		this.collectionParam = Integer.valueOf(collectionParam);
 	}
 
 	public TypeInstruction getInstructionType() {
@@ -36,13 +46,21 @@ public class ReadWriteInfo {
 	public int[] getKeyParameters() {
 		return keyParameters;
 	}
+	
+	public Integer getCollectionParam() {
+		return collectionParam;
+	}
+
+	public boolean hasCollection() {
+		return collectionParam != null;
+	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.hashCode(keyParameters);
-		result = prime * result + Objects.hash(instructionType, keyType, signature);
+		result = prime * result + Objects.hash(collectionParam, instructionType, keyType, signature);
 		return result;
 	}
 
@@ -55,11 +73,10 @@ public class ReadWriteInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		ReadWriteInfo other = (ReadWriteInfo) obj;
-		return instructionType == other.instructionType && Arrays.equals(keyParameters, other.keyParameters)
-				&& keyType == other.keyType && signature.equals(other.signature);
+		return Objects.equals(collectionParam, other.collectionParam) && instructionType == other.instructionType
+				&& Arrays.equals(keyParameters, other.keyParameters) && keyType == other.keyType
+				&& Objects.equals(signature, other.signature);
 	}
-
-	
 	
 }
 

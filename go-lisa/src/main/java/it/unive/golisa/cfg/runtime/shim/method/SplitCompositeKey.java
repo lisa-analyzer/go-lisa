@@ -34,6 +34,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
@@ -43,7 +44,8 @@ import it.unive.lisa.type.Untyped;
 
 /**
  * func (s *ChaincodeStub) SplitCompositeKey(compositeKey string) (string, []string, error)
- * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.SplitCompositeKey
+ * 
+ * see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.SplitCompositeKey
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  *
  */
@@ -62,7 +64,7 @@ public class SplitCompositeKey extends NativeCFG {
 				SplitCompositeKeyImpl.class);
 	}
 
-	public static class SplitCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
+	public static class SplitCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -83,7 +85,7 @@ public class SplitCompositeKey extends NativeCFG {
 		 * @return the pluggable statement
 		 */
 		public static SplitCompositeKeyImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new SplitCompositeKeyImpl(cfg, location, params[0]);
+			return new SplitCompositeKeyImpl(cfg, location, params[0], params[1]);
 		}
 
 		/**
@@ -94,38 +96,40 @@ public class SplitCompositeKey extends NativeCFG {
 		 *                     defined
 		 * @param expr     the expression
 		 */
-		public SplitCompositeKeyImpl(CFG cfg, CodeLocation location, Expression expr) {
+		public SplitCompositeKeyImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "SplitCompositeKeyImpl",
 					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE, GoSliceType.getSliceOfBytes(),
 							GoErrorType.INSTANCE),
-					expr);
+					left, right);
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+				throws SemanticException {
 			Type sliceOfStrings = GoSliceType.getSliceOfStrings();
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
 					GoStringType.INSTANCE, new ReferenceType(sliceOfStrings), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfStrings, expr.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(sliceOfStrings, left.getCodeLocation(), new Annotations(), true);
 
-			HeapReference ref = new HeapReference(new ReferenceType(sliceOfStrings), created, expr.getCodeLocation());
-			HeapDereference deref = new HeapDereference(sliceOfStrings, ref, expr.getCodeLocation());
+			HeapReference ref = new HeapReference(new ReferenceType(sliceOfStrings), created, left.getCodeLocation());
+			HeapDereference deref = new HeapDereference(sliceOfStrings, ref, left.getCodeLocation());
 			AnalysisState<A, H, V, T> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
+			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
 			for (SymbolicExpression id : reachableIds) {
-				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression unary = new UnaryExpression(Untyped.INSTANCE, derefId, SplitCompositeKeySecondParameter.INSTANCE, getLocation());
+				// FIXME: first parameter is stub, but it is not tracked (put constant now)
+				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
+				UnaryExpression unary = new UnaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), SplitCompositeKeySecondParameter.INSTANCE, getLocation());
 				asg = asg.lub(state.assign(deref, unary, original));
 			}
 
-			UnaryExpression lExp = new UnaryExpression(GoFloat64Type.INSTANCE, expr, SplitCompositeKeyFirstParameter.INSTANCE, getLocation());
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, SplitCompositeKeyThirdParameter.INSTANCE, getLocation());
+			UnaryExpression lExp = new UnaryExpression(GoFloat64Type.INSTANCE, right, SplitCompositeKeyFirstParameter.INSTANCE, getLocation());
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, right, SplitCompositeKeyThirdParameter.INSTANCE, getLocation());
 
 			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
 					lExp,

@@ -3,6 +3,7 @@ package it.unive.golisa.cfg.statement.assignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
@@ -23,7 +24,10 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.type.ReferenceType;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import java.util.Arrays;
@@ -114,10 +118,10 @@ public class GoMultiAssignment extends Expression {
 	}
 
 	private <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,
-					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> assignScopedId(AnalysisState<A, H, V, T> rightState,
+			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
 					throws SemanticException {
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
@@ -153,11 +157,11 @@ public class GoMultiAssignment extends Expression {
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-					StatementStore<A, H, V, T> expressions) throws SemanticException {
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
+			AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
+			StatementStore<A, H, V, T> expressions) throws SemanticException {
 		AnalysisState<A, H, V, T> rightState = e.semantics(entryState, interprocedural, expressions);
 		expressions.put(e, rightState);
 
@@ -170,22 +174,23 @@ public class GoMultiAssignment extends Expression {
 
 			List<BlockInfo> blockInfo = blocksToDeclaration.get(ids[i]);
 			AnalysisState<A, H, V, T> idState = ids[i].semantics(rightState, interprocedural, expressions);
-
 			AnalysisState<A, H, V, T> tmp2 = rightState.bottom();
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
 				HeapDereference dereference = new HeapDereference(getStaticType(),
 						retExp, getLocation());
-				AccessChild access = new AccessChild(Untyped.INSTANCE, dereference,
-						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				AnalysisState<A, H, V, T> accessState = rightState.smallStepSemantics(access, this);
+				AccessChild access;
+				if (retExp.getStaticType() instanceof GoTupleType)
+					access = new AccessChild(((GoTupleType) retExp.getStaticType()).getTypeAt(i), dereference,
+							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				else
+					access = new AccessChild(Untyped.INSTANCE, dereference,
+							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 
 				AnalysisState<A, H, V, T> tmp = rightState.bottom();
-				for (SymbolicExpression accessExp : accessState.getComputedExpressions()) {
-					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V, T> assign = assignScopedId(rightState, idExp,
-								NumericalTyper.type(accessExp), blockInfo, ids[i]);
-						tmp = tmp.lub(assign);
-					}
+				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
+					AnalysisState<A, H, V, T> assign = assignScopedId(rightState, idExp,
+							NumericalTyper.type(access), blockInfo, ids[i]);
+					tmp = tmp.lub(assign);
 				}
 				tmp2 = tmp.lub(tmp2);
 			}
@@ -206,19 +211,36 @@ public class GoMultiAssignment extends Expression {
 
 			AnalysisState<A, H, V, T> partialResult = entryState.bottom();
 
-			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
+			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {		
 				HeapDereference dereference = new HeapDereference(getStaticType(),
 						retExp, getLocation());
-				AccessChild access = new AccessChild(Untyped.INSTANCE, dereference,
-						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				AnalysisState<A, H, V, T> accessState = result.smallStepSemantics(access, this);
+				AccessChild access;
+				if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType)retExp.getStaticType()).getInnerType() instanceof GoTupleType)
+					access = new AccessChild(((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i), dereference,
+							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				else
+					access = new AccessChild(Untyped.INSTANCE, dereference,
+							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
+					AnalysisState<A, H, V, T> assign;
+					if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType) retExp.getStaticType()).getInnerType() instanceof GoTupleType) {
+						Type typeAtPos = ((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i);
 
-				for (SymbolicExpression accessExp : accessState.getComputedExpressions())
-					for (SymbolicExpression idExp : idState.getComputedExpressions()) {
-						AnalysisState<A, H, V,
-								T> assign = finalResult.assign(idExp, NumericalTyper.type(accessExp), this);
+						if (typeAtPos instanceof ReferenceType) {
+
+							HeapReference ref = new HeapReference(new ReferenceType(access.getStaticType()), access, getLocation());
+
+							assign = finalResult.assign(idExp, NumericalTyper.type(ref), this);
+							partialResult = partialResult.lub(assign);
+						} else {
+							assign = finalResult.assign(idExp, NumericalTyper.type(access), this);
+							partialResult = partialResult.lub(assign);
+						}
+					} else {
+						assign = finalResult.assign(idExp, NumericalTyper.type(access), this);
 						partialResult = partialResult.lub(assign);
 					}
+				}
 				finalResult = partialResult;
 			}
 		}

@@ -9,6 +9,7 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -43,21 +44,21 @@ import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func (s *ChaincodeStub) GetStateByRange(startKey, endKey string) (StateQueryIteratorInterface, error)
+ * func (s *ChaincodeStub) GetStateByPartialCompositeKey(objectType string, attributes []string) (StateQueryIteratorInterface, error)
  * 
- * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStateByRange
+ * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStateByPartialCompositeKey
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GetStateByRange extends NativeCFG {
+public class GetStateByPartialCompositeKey extends NativeCFG {
 
-	public GetStateByRange(CodeLocation location, CompilationUnit shimUnit) {
+	public GetStateByPartialCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, shimUnit,
 				true,
-				"GetStateByRange",
-				GoTupleType.getTupleTypeOf(location, StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(shimUnit.getProgram()) ,GoErrorType.INSTANCE),
+				"GetStateByPartialCompositeKey",
+				GoTupleType.getTupleTypeOf(location, StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(shimUnit.getProgram()), GoErrorType.INSTANCE),
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
-				new Parameter(location, "startKey", GoStringType.INSTANCE),
-				new Parameter(location, "endKey", GoStringType.INSTANCE)), GetStateByRangeImpl.class);
+				new Parameter(location, "objectType", GoStringType.INSTANCE),
+				new Parameter(location, "attributes", GoSliceType.getSliceOfStrings())), GetStateByPartialCompositeKeyImpl.class);
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class GetStateByRange extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class GetStateByRangeImpl extends it.unive.lisa.program.cfg.statement.TernaryExpression
+	public static class GetStateByPartialCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.TernaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -85,8 +86,8 @@ public class GetStateByRange extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static GetStateByRangeImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new GetStateByRangeImpl(cfg, location, params[0], params[1], params[2]);
+		public static GetStateByPartialCompositeKeyImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new GetStateByPartialCompositeKeyImpl(cfg, location, params[0], params[1], params[2]);
 		}
 
 		/**
@@ -98,8 +99,8 @@ public class GetStateByRange extends NativeCFG {
 		 * @param left     the left-hand side of this expression
 		 * @param right    the right-hand side of this expression
 		 */
-		public GetStateByRangeImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
-			super(cfg, location, "GetStateByRangeImpl", GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, Untyped.INSTANCE ,GoErrorType.INSTANCE), left, middle, right);
+		public GetStateByPartialCompositeKeyImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
+			super(cfg, location, "GetStateByPartialCompositeKeyImpl", GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, Untyped.INSTANCE ,GoErrorType.INSTANCE), left, middle, right);
 		}
 
 		@Override
@@ -119,14 +120,16 @@ public class GetStateByRange extends NativeCFG {
 
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
+			Collection<SymbolicExpression> reachableIdsRight = HeapResolver.resolve(state, right, this);
 			for (SymbolicExpression id : reachableIds) {
-				// FIXME: first parameter is stub, but it is not tracked (put constant now)
-				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeFirstParameter.INSTANCE, getLocation());
-				asg = asg.lub(state.assign(deref, lExp, original));
+				for (SymbolicExpression r : reachableIdsRight) {
+					// FIXME: first parameter is stub, but it is not tracked (put constant now)
+					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
+					TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, r, GetStateByPartialCompositeKeyFirstParameter.INSTANCE, getLocation());
+					asg = asg.lub(state.assign(deref, lExp, original));
+				}
 			}
-
-			TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeSecondParameter.INSTANCE, getLocation());
+			TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, new Constant(Untyped.INSTANCE, 1, getLocation()), GetStateByPartialCompositeKeySecondParameter.INSTANCE, getLocation());
 
 			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
 					ref,
@@ -134,24 +137,24 @@ public class GetStateByRange extends NativeCFG {
 		}
 	}
 
-	public static class GetStateByRangeFirstParameter implements TernaryOperator {
+	public static class GetStateByPartialCompositeKeyFirstParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final GetStateByRangeFirstParameter INSTANCE = new GetStateByRangeFirstParameter();
+		public static final GetStateByPartialCompositeKeyFirstParameter INSTANCE = new GetStateByPartialCompositeKeyFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow subclassing:
 		 * instances of this class should be unique, and the singleton can be
 		 * retrieved through field {@link #INSTANCE}.
 		 */
-		protected GetStateByRangeFirstParameter() {
+		protected GetStateByPartialCompositeKeyFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "getstatebyrange_first";
+			return "GetStateByPartialCompositeKey_first";
 		}
 
 		@Override
@@ -160,24 +163,24 @@ public class GetStateByRange extends NativeCFG {
 		}
 	}
 
-	public static class GetStateByRangeSecondParameter implements TernaryOperator {
+	public static class GetStateByPartialCompositeKeySecondParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final GetStateByRangeSecondParameter INSTANCE = new GetStateByRangeSecondParameter();
+		public static final GetStateByPartialCompositeKeySecondParameter INSTANCE = new GetStateByPartialCompositeKeySecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow subclassing:
 		 * instances of this class should be unique, and the singleton can be
 		 * retrieved through field {@link #INSTANCE}.
 		 */
-		protected GetStateByRangeSecondParameter() {
+		protected GetStateByPartialCompositeKeySecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "getstatebyrange_second";
+			return "GetStateByPartialCompositeKey_second";
 		}
 
 		@Override

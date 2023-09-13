@@ -139,7 +139,7 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * @return the slice type []byte
 	 */
 	public static GoSliceType getSliceOfBytes() {
-		return GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
+		return GoSliceType.lookup(GoUInt8Type.INSTANCE);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * @return the slice type [][]byte
 	 */
 	public static GoSliceType getSliceOfSliceOfBytes() {
-		return GoSliceType.lookup(new GoSliceType(new GoSliceType(GoUInt8Type.INSTANCE)));
+		return GoSliceType.lookup(GoSliceType.getSliceOfBytes());
 	}
 
 	/**

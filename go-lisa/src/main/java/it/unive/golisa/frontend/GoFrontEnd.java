@@ -225,9 +225,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		program.getTypes().registerType(GoErrorType.INSTANCE);
 		program.getTypes().registerType(GoNilType.INSTANCE);
 
-		// FIXME: this type should be removed
-		program.getTypes().registerType(Untyped.INSTANCE);
-
 		GoArrayType.all().forEach(program.getTypes()::registerType);
 		GoStructType.all().forEach(program.getTypes()::registerType);
 		GoSliceType.all().forEach(program.getTypes()::registerType);

@@ -64,31 +64,21 @@ public class GoTupleExpression extends NaryExpression {
 
 		// Allocates the new heap allocation
 		MemoryAllocation created = new MemoryAllocation(tupleType, getLocation(), new Annotations());
-		AnalysisState<A, H, V, T> allocstate = state.smallStepSemantics(created, this);
+		AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(created, this);
+		HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), created,
+				getLocation());
+		HeapDereference deref = new HeapDereference(getStaticType(), ref,
+				getLocation());
 
-		AnalysisState<A, H, V, T> result = state.bottom();
-
-		for (SymbolicExpression containerExp : allocstate.getComputedExpressions()) {
-			HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), containerExp,
-					getLocation());
-			HeapDereference deref = new HeapDereference(getStaticType(), ref,
-					getLocation());
-
-			AnalysisState<A, H, V, T> tmp = allocstate;
-			for (int i = 0; i < getSubExpressions().length; i++) {
-				AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
-						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
-				AnalysisState<A, H, V, T> indexState = tmp.smallStepSemantics(access, this);
-
-				for (SymbolicExpression idx : indexState.getComputedExpressions())
-					for (SymbolicExpression v : params[i])
-						tmp = tmp.assign(idx, NumericalTyper.type(v), this);
-			}
-
-			result = result.lub(tmp.smallStepSemantics(ref, this));
+		AnalysisState<A, H, V, T> tmp = allocState;
+		for (int i = 0; i < getSubExpressions().length; i++) {
+			AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
+					new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+			for (SymbolicExpression v : params[i])
+				tmp = tmp.assign(access, NumericalTyper.type(v), this);
 		}
 
-		return result;
+		return tmp.smallStepSemantics(ref, this);
 	}
 
 
@@ -99,29 +89,18 @@ public class GoTupleExpression extends NaryExpression {
 	T extends TypeDomain<T>> AnalysisState<A, H, V, T> allocateTupleExpression(AnalysisState<A, H, V, T> entryState, Annotations anns, ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps) throws SemanticException {
 		// Allocates the new heap allocation
 		MemoryAllocation created = new MemoryAllocation(tupleType, location, anns, true);
-		AnalysisState<A, H, V, T> allocState = entryState.smallStepSemantics(created, pp);
-		AnalysisState<A, H, V, T> result = entryState.bottom();
+		HeapReference ref = new HeapReference(new ReferenceType(tupleType), created,
+				location);
+		HeapDereference deref = new HeapDereference(tupleType, ref,
+				location);
 
-		for (SymbolicExpression containerExp : allocState.getComputedExpressions()) {
-			HeapReference ref = new HeapReference(new ReferenceType(tupleType), containerExp,
-					location);
-			HeapDereference deref = new HeapDereference(tupleType, ref,
-					location);
-
-			AnalysisState<A, H, V, T> tmp = allocState;
-			for (int i = 0; i < exps.length; i++) {
-				AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
-						new Constant(GoIntType.INSTANCE, i, location), location);
-				AnalysisState<A, H, V, T> accessState = tmp.smallStepSemantics(access, pp);
-
-				for (SymbolicExpression idx : accessState.getComputedExpressions()) 
-					tmp = tmp.assign(idx, NumericalTyper.type(exps[i]), pp);
-			}
-
-			result = result.lub(tmp.smallStepSemantics(ref, pp));
+		AnalysisState<A, H, V, T> tmp = entryState;
+		for (int i = 0; i < exps.length; i++) {
+			AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
+					new Constant(GoIntType.INSTANCE, i, location), location);
+			tmp = tmp.assign(access, NumericalTyper.type(exps[i]), pp);
 		}
 
-		return result;
+		return tmp.smallStepSemantics(ref, pp);
 	}
-
 }

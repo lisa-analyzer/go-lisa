@@ -5,6 +5,7 @@ import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,6 +15,7 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -29,6 +31,7 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapExpression;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Untyped;
 
@@ -65,7 +68,8 @@ public class GoCollectionAccess extends BinaryExpression {
 					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
 
-		if (getLeft().toString().startsWith("args") || getLeft().toString().startsWith("para"))
+
+		if(getLeft().toString().startsWith("para"))
 			return state.smallStepSemantics(left, this);
 		if (getLeft().toString().startsWith("blocks"))
 			return state;
@@ -106,6 +110,12 @@ public class GoCollectionAccess extends BinaryExpression {
 						AnalysisState<A, H, V, T> tmp = state.bottom();
 						for (SymbolicExpression id : result.getComputedExpressions())
 							tmp = tmp.lub(result.assign(id, tainted, this));
+						return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
+								tmp.getAliasing());
+					} else if(stack instanceof Tarsis && getLeft().toString().startsWith("args")){
+						AnalysisState<A, H, V, T> tmp = state.bottom();
+						for (SymbolicExpression id : result.getComputedExpressions())
+							tmp = tmp.lub(result.assign(id, new PushAny(GoStringType.INSTANCE, getLocation()), this));
 						return new AnalysisState<>(tmp.getState(), result.getComputedExpressions(),
 								tmp.getAliasing());
 					}

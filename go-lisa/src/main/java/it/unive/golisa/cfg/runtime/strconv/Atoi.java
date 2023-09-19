@@ -31,7 +31,6 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import it.unive.lisa.type.Untyped;
 
 /**
  * func Atoi(s string) (int, error)
@@ -101,8 +100,8 @@ public class Atoi extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 
-			UnaryExpression lExp = new UnaryExpression(Untyped.INSTANCE, expr, AtoiFirstParameter.INSTANCE, getLocation());
-			UnaryExpression rExp = new UnaryExpression(Untyped.INSTANCE, expr, AtoiSecondParameter.INSTANCE, getLocation());
+			UnaryExpression lExp = new UnaryExpression(GoIntType.INSTANCE, expr, AtoiFirstParameter.INSTANCE, getLocation());
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, AtoiSecondParameter.INSTANCE, getLocation());
 
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
 			
@@ -110,38 +109,6 @@ public class Atoi extends NativeCFG {
 					lExp,
 					rExp
 					);
-			
-//			GoTupleType returnType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
-//			MemoryAllocation memalloc = new MemoryAllocation(returnType, getLocation(), new Annotations());
-//
-//			state = state.smallStepSemantics(memalloc, original);
-//			AnalysisState<A, H, V, T> result = state.bottom();
-//			for(SymbolicExpression e : state.getComputedExpressions()) {
-//				AnalysisState<A, H, V, T> res = state.bottom();
-//				HeapReference heapRef = new HeapReference(GoPointerType.lookup(returnType), e, getLocation());
-//
-//				AnalysisState<A, H, V, T> tmp = state.smallStepSemantics(heapRef, original);
-//				for(SymbolicExpression e2 : tmp.getComputedExpressions()) {
-//
-//					AccessChild acRight = new AccessChild(GoIntType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 0, getLocation()), getLocation());
-//					AccessChild acLeft = new AccessChild(GoErrorType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 1, getLocation()), getLocation());
-//
-//					AnalysisState<A, H, V, T> tmp2 = tmp.smallStepSemantics(acRight, original);
-//					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
-//						res = res.lub(tmp2.assign(e3, new Constant(GoIntType.INSTANCE, 1, getLocation()),original));
-//					}
-//
-//					tmp2 = tmp2.smallStepSemantics(acLeft, original);
-//					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
-//						res = res.lub(tmp2.assign(e3, new Constant(GoErrorType.INSTANCE, 1, getLocation()),original));
-//					}
-//				}
-//
-//				result = result.lub(res.smallStepSemantics(heapRef, original));
-//
-//			}
-//
-//			return result;
 		}
 	}
 	

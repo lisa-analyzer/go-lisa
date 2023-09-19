@@ -120,22 +120,22 @@ public class Marshal extends NativeCFG {
 			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, expr.getCodeLocation());
 			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
-			AnalysisState<A, H, V, T> asg = state.bottom();
+			AnalysisState<A, H, V, T> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
-				asg = asg.lub(state.assign(deref, left, original));
+				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
+				AnalysisState<A, H, V, T> asg = state.assign(deref, left, original);
+				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+						ref,
+						right
+						));
 			}
 
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
-
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
-					ref,
-					rExp
-					);
+			return result;
 		}
 	}
 

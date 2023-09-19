@@ -88,7 +88,8 @@ public class GoKeyedLiteral extends NaryExpression {
 					throws SemanticException {
 		Type type = getStaticType();
 		MemoryAllocation created = new MemoryAllocation(type, getLocation(), new Annotations(), true);
-
+		created.setRuntimeTypes(Collections.singleton(type));
+		
 		// Allocates the new heap allocation
 		AnalysisState<A, H, V, T> containerState = state.smallStepSemantics(created, this);
 		ExpressionSet<SymbolicExpression> containerExps = containerState.getComputedExpressions();
@@ -198,6 +199,7 @@ public class GoKeyedLiteral extends NaryExpression {
 					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true).getStaticType();
 					Variable field = getVariable((VariableRef) keys[i]);
 					AccessChild access = new AccessChild(fieldType, dereference, field, getLocation());
+					access.setRuntimeTypes(Collections.singleton(fieldType));
 					AnalysisState<A, H, V, T> fieldState = tmp.smallStepSemantics(access, this);
 					for (SymbolicExpression id : fieldState.getComputedExpressions())
 						for (SymbolicExpression v : params[i])

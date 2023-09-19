@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
-import it.unive.golisa.cfg.runtime.fmt.Sprintf;
-import it.unive.golisa.cfg.runtime.fmt.Sprintf.SprintfImpl;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -54,11 +52,11 @@ public class ParseFloat extends NativeCFG {
 				GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "s", GoStringType.INSTANCE),
 				new Parameter(location, "bitSize", GoIntType.INSTANCE)),
-				SprintfImpl.class);
+				ParseFloatImpl.class);
 	}
 
 	/**
-	 * The {@link Sprintf} implementation.
+	 * The {@link ParseFloat} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

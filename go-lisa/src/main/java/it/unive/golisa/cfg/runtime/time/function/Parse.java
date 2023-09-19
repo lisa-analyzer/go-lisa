@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
+import java.util.Collections;
+import java.util.Set;
+
+import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -13,17 +17,25 @@ import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
-import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.type.ReferenceType;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
+import it.unive.lisa.type.Untyped;
 
 /**
  * func Parse(layout, value string) (Time, error).
@@ -54,7 +66,7 @@ public class Parse extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class ParseImpl extends BinaryExpression
+	public static class ParseImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -100,11 +112,76 @@ public class Parse extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
-			return state.smallStepSemantics(
-					new PushAny(GoTupleType.lookup(new Parameter(original.getLocation(), "_", Time.getTimeType(null)),
-							new Parameter(original.getLocation(), "_", GoErrorType.INSTANCE)),
-							original.getLocation()),
-					original);
+			
+			Type timeType = Time.getTimeType(getProgram());
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+					new ReferenceType(timeType), GoErrorType.INSTANCE);
+
+			// Allocates the new heap allocation
+			MemoryAllocation created = new MemoryAllocation(timeType, left.getCodeLocation(), new Annotations(), true);
+			HeapReference ref = new HeapReference(new ReferenceType(timeType), created, left.getCodeLocation());
+			HeapDereference deref = new HeapDereference(timeType, ref, left.getCodeLocation());
+
+			BinaryExpression rExp = new BinaryExpression(Untyped.INSTANCE, left, right, ParseOperatorFirstParameter.INSTANCE, getLocation());
+			BinaryExpression lExp = new BinaryExpression(GoErrorType.INSTANCE, left, right, ParseOperatorFirstParameter.INSTANCE, getLocation());
+			state = state.assign(deref, rExp, original);
+			
+			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType, 
+					ref,
+					lExp
+					);
+		}
+	}
+	
+	public static class ParseOperatorFirstParameter implements BinaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final ParseOperatorFirstParameter INSTANCE = new ParseOperatorFirstParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected ParseOperatorFirstParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "ParseOperator_first";
+		}	
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+			return Collections.singleton(Untyped.INSTANCE);
+		}
+	}
+	
+	public static class ParseOperatorSecondParameter implements BinaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final ParseOperatorSecondParameter INSTANCE = new ParseOperatorSecondParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected ParseOperatorSecondParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "ParseOperator_second";
+		}	
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+			return Collections.singleton(GoErrorType.INSTANCE);
 		}
 	}
 }

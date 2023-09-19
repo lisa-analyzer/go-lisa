@@ -29,7 +29,6 @@ import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.ReferenceType;
-import it.unive.lisa.type.Untyped;
 
 /**
  * func Now() Time.

@@ -17,6 +17,7 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
@@ -96,6 +97,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/high-throughput";
 		conf.programFile = "high-throughput.go";
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		conf.annSet = annSet;
 		perform(conf);
 	}
@@ -171,6 +173,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/tommystark";
 		conf.testSubDir = "ni";
+		conf.programFile = "contract_chaincode.go";
+		conf.annSet = annSet;
+		perform(conf);
+	}
+	
+	@Test
+	public void testTommyStark() throws AnalysisException, IOException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/tommystark";
+		conf.testSubDir = "taint";
 		conf.programFile = "contract_chaincode.go";
 		conf.annSet = annSet;
 		perform(conf);

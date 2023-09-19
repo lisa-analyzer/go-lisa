@@ -8,6 +8,7 @@ import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
+import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -42,7 +43,8 @@ public class GoNilType implements GoType {
 				|| other instanceof GoSliceType
 				|| other instanceof GoFunctionType
 				|| other instanceof GoNilType
-				|| other instanceof GoErrorType
+				|| other instanceof GoErrorType		
+				|| other instanceof GoTupleType
 				|| other instanceof Untyped;
 	}
 
@@ -56,6 +58,7 @@ public class GoNilType implements GoType {
 				|| other instanceof GoFunctionType
 				|| other instanceof GoNilType
 				|| other instanceof GoErrorType
+				|| other instanceof GoTupleType
 				|| other instanceof Untyped)
 			return other;
 		return Untyped.INSTANCE;

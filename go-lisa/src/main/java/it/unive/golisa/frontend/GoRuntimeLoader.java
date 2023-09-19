@@ -82,6 +82,7 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIterator;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.Handler;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
 import it.unive.golisa.cfg.runtime.strconv.Atoi;
@@ -414,6 +415,7 @@ public interface GoRuntimeLoader {
 		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
 		GoStructType.registerType(Response.getResponseType(program));
 		GoStructType.registerType(CommonIterator.getCommonIteratorType(program));
+		GoStructType.registerType(StateQueryIterator.getStateQueryIterator(program));
 
 		// adding functions
 		shim.addCodeMember(new Start(runtimeLocation, shim));
@@ -424,6 +426,7 @@ public interface GoRuntimeLoader {
 		ChaincodeStub.registerMethods();
 		ChaincodeServer.registerMethods();
 		CommonIterator.registerMethods();
+		StateQueryIterator.registerMethods();
 		
 		ChaincodeStub.getChaincodeStubType(program).getUnit()
 				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());

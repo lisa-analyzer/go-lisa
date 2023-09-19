@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.strings;
 
-import it.unive.golisa.cfg.runtime.strings.Len.LenImpl;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -39,7 +38,7 @@ public class ToLower extends NativeCFG {
 	public ToLower(CodeLocation location, CodeUnit stringUnit) {
 		super(new CodeMemberDescriptor(location, stringUnit, false, "ToLower", GoStringType.INSTANCE,
 				new Parameter(location, "this", GoStringType.INSTANCE)),
-				LenImpl.class);
+				ToLowerImpl.class);
 	}
 
 	/**

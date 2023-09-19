@@ -1,7 +1,11 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
+import java.util.Collections;
+import java.util.Set;
+
+import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
@@ -22,15 +26,15 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapReference;
-import it.unive.lisa.symbolic.heap.MemoryAllocation;
-import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
+import it.unive.lisa.type.Untyped;
 
 /**
- * func Atoi(s string) int.
+ * func Atoi(s string) (int, error)
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -43,10 +47,10 @@ public class Atoi extends NativeCFG {
 	 * @param strconvUnit the unit to which this native cfg belongs to
 	 */
 	public Atoi(CodeLocation location, CodeUnit strconvUnit) {
-		super(new CodeMemberDescriptor(location, strconvUnit, false, "Atoi", GoIntType.INSTANCE,
-				new Parameter(location, "this", GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE))),
+		super(new CodeMemberDescriptor(location, strconvUnit, false, "Atoi", 
+				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
+				new Parameter(location, "this", GoStringType.INSTANCE)),
 				AtoiImpl.class);
-		GoPointerType.lookup(GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE));
 	}
 
 	/**
@@ -54,7 +58,7 @@ public class Atoi extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class AtoiImpl extends UnaryExpression implements PluggableStatement {
+	public static class AtoiImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -91,43 +95,105 @@ public class Atoi extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
-		
-			GoTupleType returnType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
-			MemoryAllocation memalloc = new MemoryAllocation(returnType, getLocation(), new Annotations());
+		H extends HeapDomain<H>,
+		V extends ValueDomain<V>,
+		T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
+				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
 
-			state = state.smallStepSemantics(memalloc, original);
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for(SymbolicExpression e : state.getComputedExpressions()) {
-				AnalysisState<A, H, V, T> res = state.bottom();
-				HeapReference heapRef = new HeapReference(GoPointerType.lookup(returnType), e, getLocation());
-								
-				AnalysisState<A, H, V, T> tmp = state.smallStepSemantics(heapRef, original);
-				for(SymbolicExpression e2 : tmp.getComputedExpressions()) {
-				
-					AccessChild acRight = new AccessChild(GoIntType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 0, getLocation()), getLocation());
-					AccessChild acLeft = new AccessChild(GoErrorType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 1, getLocation()), getLocation());
-					
-					AnalysisState<A, H, V, T> tmp2 = tmp.smallStepSemantics(acRight, original);
-					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
-						res = res.lub(tmp2.assign(e3, new Constant(GoIntType.INSTANCE, 1, getLocation()),original));
-					}
-					
-					tmp2 = tmp2.smallStepSemantics(acLeft, original);
-					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
-						res = res.lub(tmp2.assign(e3, new Constant(GoErrorType.INSTANCE, 1, getLocation()),original));
-					}
-				}
-				
-				result = result.lub(res.smallStepSemantics(heapRef, original));
-				
-			}
+			UnaryExpression lExp = new UnaryExpression(Untyped.INSTANCE, expr, AtoiFirstParameter.INSTANCE, getLocation());
+			UnaryExpression rExp = new UnaryExpression(Untyped.INSTANCE, expr, AtoiSecondParameter.INSTANCE, getLocation());
+
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
 			
-			return result;
+			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType, 
+					lExp,
+					rExp
+					);
+			
+//			GoTupleType returnType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
+//			MemoryAllocation memalloc = new MemoryAllocation(returnType, getLocation(), new Annotations());
+//
+//			state = state.smallStepSemantics(memalloc, original);
+//			AnalysisState<A, H, V, T> result = state.bottom();
+//			for(SymbolicExpression e : state.getComputedExpressions()) {
+//				AnalysisState<A, H, V, T> res = state.bottom();
+//				HeapReference heapRef = new HeapReference(GoPointerType.lookup(returnType), e, getLocation());
+//
+//				AnalysisState<A, H, V, T> tmp = state.smallStepSemantics(heapRef, original);
+//				for(SymbolicExpression e2 : tmp.getComputedExpressions()) {
+//
+//					AccessChild acRight = new AccessChild(GoIntType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 0, getLocation()), getLocation());
+//					AccessChild acLeft = new AccessChild(GoErrorType.INSTANCE, e2, new Constant(GoIntType.INSTANCE, 1, getLocation()), getLocation());
+//
+//					AnalysisState<A, H, V, T> tmp2 = tmp.smallStepSemantics(acRight, original);
+//					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
+//						res = res.lub(tmp2.assign(e3, new Constant(GoIntType.INSTANCE, 1, getLocation()),original));
+//					}
+//
+//					tmp2 = tmp2.smallStepSemantics(acLeft, original);
+//					for(SymbolicExpression e3 : tmp2.getComputedExpressions()) {
+//						res = res.lub(tmp2.assign(e3, new Constant(GoErrorType.INSTANCE, 1, getLocation()),original));
+//					}
+//				}
+//
+//				result = result.lub(res.smallStepSemantics(heapRef, original));
+//
+//			}
+//
+//			return result;
+		}
+	}
+	
+	public static class AtoiFirstParameter implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final AtoiFirstParameter INSTANCE = new AtoiFirstParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected AtoiFirstParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "Atoi_first";
+		}	
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			return Collections.singleton(GoIntType.INSTANCE);
+		}
+	}
+	
+	public static class AtoiSecondParameter implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final AtoiSecondParameter INSTANCE = new AtoiSecondParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow subclassing:
+		 * instances of this class should be unique, and the singleton can be
+		 * retrieved through field {@link #INSTANCE}.
+		 */
+		protected AtoiSecondParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "Atoi_secon";
+		}	
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			return Collections.singleton(GoErrorType.INSTANCE);
 		}
 	}
 }

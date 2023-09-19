@@ -31,6 +31,7 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,15 +215,23 @@ public class GoMultiAssignment extends Expression {
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {		
 				HeapDereference dereference = new HeapDereference(getStaticType(),
 						retExp, getLocation());
-				AccessChild access = new AccessChild(Untyped.INSTANCE, dereference,
-						new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+				AccessChild access;
+				if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType) retExp.getStaticType()).getInnerType() instanceof GoTupleType) {
+					Type typeAtPos = ((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i);
+					access = new AccessChild(typeAtPos, dereference,
+							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
+					access.setRuntimeTypes(Collections.singleton(typeAtPos));
+				} else
+					access = new AccessChild(Untyped.INSTANCE, dereference,
+							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 					AnalysisState<A, H, V, T> assign;
 					if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType) retExp.getStaticType()).getInnerType() instanceof GoTupleType) {
 						Type typeAtPos = ((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i);
 
 						if (typeAtPos instanceof ReferenceType) {
-							HeapReference ref = new HeapReference(new ReferenceType(access.getStaticType()), access, getLocation());
+							HeapReference ref = new HeapReference(new ReferenceType(typeAtPos), access, getLocation());
+							ref.setRuntimeTypes(Collections.singleton(new ReferenceType(typeAtPos)));
 							assign = finalResult.assign(idExp, NumericalTyper.type(ref), this);
 						} else 
 							assign = finalResult.assign(idExp, NumericalTyper.type(access), this);
@@ -231,7 +240,7 @@ public class GoMultiAssignment extends Expression {
 
 					partialResult = partialResult.lub(assign);
 				}
-				
+
 				finalResult = partialResult;
 			}
 		}

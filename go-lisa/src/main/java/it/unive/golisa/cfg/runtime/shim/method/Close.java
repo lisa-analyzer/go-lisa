@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.cfg.runtime.shim.type.CommonIterator;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -40,7 +41,7 @@ public class Close extends NativeCFG {
 	 */
 	public Close(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "Close", GoErrorType.INSTANCE,
-				new Parameter(location, "this", CommonIterator.getCommonIteratorType(shimUnit.getProgram()))),
+				new Parameter(location, "this", StateQueryIterator.getStateQueryIterator(shimUnit.getProgram()))),
 				CloseImpl.class);
 	}
 
@@ -69,8 +70,8 @@ public class Close extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static CloseImpl build(CFG cfg, CodeLocation location, Expression e) {
-			return new CloseImpl(cfg, location, e);
+		public static CloseImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new CloseImpl(cfg, location, params[0]);
 		}
 
 		/**

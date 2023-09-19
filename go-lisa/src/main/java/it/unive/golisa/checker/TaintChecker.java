@@ -120,11 +120,11 @@ PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 								PointBasedHeap, ValueEnvironment<TaintDomain>,
 								TypeEnvironment<InferredTypes>> state = result
 								.getAnalysisStateAfter(call.getParameters()[i]);
-								
+
 								Set<SymbolicExpression> reachableIds = new HashSet<>();								
 								for (SymbolicExpression e : state.getComputedExpressions())
 									reachableIds.addAll(HeapResolver.resolve(state, e, node));
-								
+
 								for (SymbolicExpression s : reachableIds)
 									if (state.getState().getValueState().eval((ValueExpression) s, node)
 											.isTainted())
@@ -149,7 +149,7 @@ PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 								Set<SymbolicExpression> reachableIds = new HashSet<>();								
 								for (SymbolicExpression e : state.getComputedExpressions())
 									reachableIds.addAll(HeapResolver.resolve(state, e, node));
-								
+
 								for (SymbolicExpression s : reachableIds)
 									if (state.getState().getValueState().eval((ValueExpression) s, node)
 											.isTainted())
@@ -171,7 +171,7 @@ PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 	}
 
 
-	
+
 
 	@Override
 	public boolean visit(
@@ -190,9 +190,9 @@ PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 			Unit unit) {
 		return true;
 	}
-	
+
 	public static class HeapResolver {
-		
+
 		public static <A extends AbstractState<A, H, V, T>,
 		H extends HeapDomain<H>,
 		V extends ValueDomain<V>,
@@ -202,12 +202,12 @@ PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 				Statement pp) throws SemanticException {
 			Set<SymbolicExpression> ws = new HashSet<>();
 			ws.add(e);
-			
+
 			Set<SymbolicExpression> result = new HashSet<>();
 			Set<SymbolicExpression> prev = new HashSet<>();
 			Set<SymbolicExpression> locs = new HashSet<>();
 			entryState.rewrite(e, pp).elements().stream().forEach(result::add);
-			
+
 			do {
 				ws.addAll(locs);
 				prev = new HashSet<>(result);
@@ -219,9 +219,8 @@ PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 							HeapLocation l = ((MemoryPointer) r).getReferencedLocation();
 							locs.add(l);
 							result.add(l);
-						} 
-						
-						locs.add(r);
+						} else
+							locs.add(r);
 					}
 				}
 			} while (!prev.equals(result));

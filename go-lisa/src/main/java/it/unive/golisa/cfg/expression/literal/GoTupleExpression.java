@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
+import java.util.Collections;
+
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
@@ -89,6 +91,8 @@ public class GoTupleExpression extends NaryExpression {
 	T extends TypeDomain<T>> AnalysisState<A, H, V, T> allocateTupleExpression(AnalysisState<A, H, V, T> entryState, Annotations anns, ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps) throws SemanticException {
 		// Allocates the new heap allocation
 		MemoryAllocation created = new MemoryAllocation(tupleType, location, anns, true);
+		created.setRuntimeTypes(Collections.singleton(tupleType));
+		entryState = entryState.smallStepSemantics(created, pp);
 		HeapReference ref = new HeapReference(new ReferenceType(tupleType), created,
 				location);
 		HeapDereference deref = new HeapDereference(tupleType, ref,

@@ -39,12 +39,21 @@ public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpressio
 
 	@Override
 	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+			InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
 					throws SemanticException {
+
+		// FIXME: this should be removed eventually
+		if (left.getStaticType().canBeAssignedTo(right.getStaticType()) || right.getStaticType().canBeAssignedTo(left.getStaticType()))
+			return state
+					.smallStepSemantics(
+							new BinaryExpression(GoBoolType.INSTANCE,
+									left, right, ComparisonEq.INSTANCE, getLocation()),
+							this);
+
 		TypeSystem types = getProgram().getTypes();
 		AnalysisState<A, H, V, T> result = state.bottom();
 		for (Type leftType : left.getRuntimeTypes(types))

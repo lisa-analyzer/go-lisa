@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.cfg.runtime.shim.type.CommonIterator;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -39,7 +40,7 @@ public class HasNext extends NativeCFG {
 	 */
 	public HasNext(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "HasNext", GoBoolType.INSTANCE,
-				new Parameter(location, "this", CommonIterator.getCommonIteratorType(shimUnit.getProgram()))),
+				new Parameter(location, "this", StateQueryIterator.getStateQueryIterator(shimUnit.getProgram()))),
 				HasNextImpl.class);
 	}
 
@@ -68,8 +69,8 @@ public class HasNext extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static HasNextImpl build(CFG cfg, CodeLocation location, Expression e) {
-			return new HasNextImpl(cfg, location, e);
+		public static HasNextImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new HasNextImpl(cfg, location, params[0]);
 		}
 
 		/**

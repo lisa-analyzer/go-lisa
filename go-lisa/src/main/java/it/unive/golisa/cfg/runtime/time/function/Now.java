@@ -4,6 +4,7 @@ import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -112,7 +113,8 @@ public class Now extends NativeCFG {
 			// Assigns an unknown object to each allocation identifier
 			HeapReference ref = new HeapReference(new ReferenceType(timeType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(timeType, ref, getLocation());
-			AnalysisState<A, H, V, T> asg = allocState.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);				
+			AnalysisState<A, H, V, T> asg = allocState.assign(deref, new PushAny(timeType, getLocation()), this);				
+			asg = asg.assign(deref, new PushAny(GoIntType.INSTANCE, getLocation()), this);	 
 			return asg.smallStepSemantics(ref, original);
 		}
 	}

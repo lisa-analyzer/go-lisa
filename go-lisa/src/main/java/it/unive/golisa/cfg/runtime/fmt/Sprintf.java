@@ -30,8 +30,8 @@ import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
- * The Sprintf function from fmt package.
- * 
+ * func Sprintf(format string, a ...any) string
+ * @see https://pkg.go.dev/fmt#Sprintf
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Sprintf extends NativeCFG {

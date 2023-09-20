@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import java.util.Collections;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
@@ -120,6 +122,9 @@ public class GetFunctionAndParameters extends NativeCFG {
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfString, expr.getCodeLocation(), anns, true);
+			created.setRuntimeTypes(Collections.singleton(sliceOfString));
+			state = state.smallStepSemantics(created, original);
+			
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfString), created, expr.getCodeLocation());
 			HeapDereference deref = new HeapDereference(sliceOfString, ref, expr.getCodeLocation());
 

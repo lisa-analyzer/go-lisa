@@ -102,6 +102,7 @@ public class GoTupleExpression extends NaryExpression {
 		for (int i = 0; i < exps.length; i++) {
 			AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
 					new Constant(GoIntType.INSTANCE, i, location), location);
+			access.setRuntimeTypes(Collections.singleton(tupleType.getTypeAt(i)));
 			tmp = tmp.assign(access, NumericalTyper.type(exps[i]), pp);
 		}
 

@@ -216,8 +216,9 @@ public class GoMultiAssignment extends Expression {
 				HeapDereference dereference = new HeapDereference(getStaticType(),
 						retExp, getLocation());
 				AccessChild access;
-				if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType) retExp.getStaticType()).getInnerType() instanceof GoTupleType) {
-					Type typeAtPos = ((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i);
+				Type rightExpType = retExp.getStaticType();				
+				if (rightExpType instanceof ReferenceType && ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
+					Type typeAtPos = ((GoTupleType) ((ReferenceType) rightExpType).getInnerType()).getTypeAt(i);
 					access = new AccessChild(typeAtPos, dereference,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 					access.setRuntimeTypes(Collections.singleton(typeAtPos));
@@ -226,8 +227,8 @@ public class GoMultiAssignment extends Expression {
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 					AnalysisState<A, H, V, T> assign;
-					if (retExp.getStaticType() instanceof ReferenceType && ((ReferenceType) retExp.getStaticType()).getInnerType() instanceof GoTupleType) {
-						Type typeAtPos = ((GoTupleType) ((ReferenceType) retExp.getStaticType()).getInnerType()).getTypeAt(i);
+					if (rightExpType instanceof ReferenceType && ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
+						Type typeAtPos = ((GoTupleType) ((ReferenceType) rightExpType).getInnerType()).getTypeAt(i);
 
 						if (typeAtPos instanceof ReferenceType) {
 							HeapReference ref = new HeapReference(new ReferenceType(typeAtPos), access, getLocation());

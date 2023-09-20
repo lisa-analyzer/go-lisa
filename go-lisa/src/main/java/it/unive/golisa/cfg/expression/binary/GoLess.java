@@ -49,13 +49,13 @@ public class GoLess extends it.unive.lisa.program.cfg.statement.BinaryExpression
 		// ordered but missing lexicographical string order in LiSA
 		
 		
-		// FIXME: this should be removed eventually
-		if (left.getStaticType().canBeAssignedTo(right.getStaticType()) || right.getStaticType().canBeAssignedTo(left.getStaticType()))
-			return state
-					.smallStepSemantics(
-							new BinaryExpression(GoBoolType.INSTANCE,
-									left, right, ComparisonLt.INSTANCE, getLocation()),
-							this);
+//		// FIXME: this should be removed eventually
+//		if (left.getStaticType().canBeAssignedTo(right.getStaticType()) || right.getStaticType().canBeAssignedTo(left.getStaticType()))
+//			return state
+//					.smallStepSemantics(
+//							new BinaryExpression(GoBoolType.INSTANCE,
+//									left, right, ComparisonLt.INSTANCE, getLocation()),
+//							this);
 		
 		TypeSystem types = getProgram().getTypes();
 		AnalysisState<A, H, V, T> result = state.bottom();

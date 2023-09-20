@@ -391,6 +391,9 @@ public interface GoRuntimeLoader {
 		CodeUnit statebased = new CodeUnit(runtimeLocation, program, "statebased");
 		GoInterfaceType.registerType(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program));
 
+		KeyEndorsementPolicy.registerMethods();
+
+		
 		// adding functions
 		statebased.addCodeMember(new NewStateEP(runtimeLocation, statebased));
 

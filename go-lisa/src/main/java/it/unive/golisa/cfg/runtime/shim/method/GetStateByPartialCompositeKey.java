@@ -6,7 +6,7 @@ import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
-import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -35,7 +35,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.ReferenceType;
@@ -55,7 +54,7 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		super(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, shimUnit,
 				true,
 				"GetStateByPartialCompositeKey",
-				GoTupleType.getTupleTypeOf(location, StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(shimUnit.getProgram()), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, StateQueryIterator.getStateQueryIterator(shimUnit.getProgram()), GoErrorType.INSTANCE),
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "objectType", GoStringType.INSTANCE),
 				new Parameter(location, "attributes", GoSliceType.getSliceOfStrings())), GetStateByPartialCompositeKeyImpl.class);
@@ -108,7 +107,7 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 				StatementStore<A, H, V, T> expressions) throws SemanticException {
-			Type allocType = StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(getProgram());
+			Type allocType = StateQueryIterator.getStateQueryIterator(getProgram());
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
 					new ReferenceType(allocType), GoErrorType.INSTANCE);
 
@@ -116,24 +115,25 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 			MemoryAllocation created = new MemoryAllocation(allocType, left.getCodeLocation(), new Annotations(), true);
 			HeapReference ref = new HeapReference(new ReferenceType(allocType), created, left.getCodeLocation());
 			HeapDereference deref = new HeapDereference(allocType, ref, left.getCodeLocation());
-			AnalysisState<A, H, V, T> asg = state.bottom();
+			AnalysisState<A, H, V, T> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
 			Collection<SymbolicExpression> reachableIdsRight = HeapResolver.resolve(state, right, this);
 			for (SymbolicExpression id : reachableIds) {
 				for (SymbolicExpression r : reachableIdsRight) {
-					// FIXME: first parameter is stub, but it is not tracked (put constant now)
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-					TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, r, GetStateByPartialCompositeKeyFirstParameter.INSTANCE, getLocation());
-					asg = asg.lub(state.assign(deref, lExp, original));
+					TernaryExpression lExp = new TernaryExpression(new ReferenceType(allocType), derefId, middle, r, GetStateByPartialCompositeKeyFirstParameter.INSTANCE, getLocation());
+					AnalysisState<A, H, V, T> asg = state.assign(deref, lExp, original);
+					TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, derefId, middle, r, GetStateByPartialCompositeKeySecondParameter.INSTANCE, getLocation());
+					
+					result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+							ref,
+							rExp));
 				}
 			}
-			TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, new Constant(Untyped.INSTANCE, 1, getLocation()), GetStateByPartialCompositeKeySecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
-					ref,
-					rExp);
+			return result;
 		}
 	}
 
@@ -159,7 +159,7 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> middle, Set<Type> right) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(new ReferenceType(StateQueryIterator.getStateQueryIterator(null)));
 		}
 	}
 

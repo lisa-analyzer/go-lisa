@@ -78,6 +78,7 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 			}
 
 			i++;
+			callState = prepared;
 		}
 
 		// prepare the state for the call: assign the value to each
@@ -159,7 +160,7 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 
 			// Allocate the heap location
 			AnalysisState<A, H, V, T> tmp = capResult;
-			for (; i < sliceLenght; i++) {
+			for (; i < actuals.length; i++) {
 				AccessChild access = new AccessChild(contentType, dereference,
 						new Constant(GoIntType.INSTANCE, i, location), location);
 				AnalysisState<A, H, V, T> accessState = tmp.smallStepSemantics(access, pp);

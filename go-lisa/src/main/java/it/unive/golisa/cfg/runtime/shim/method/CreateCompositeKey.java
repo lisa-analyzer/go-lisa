@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
+import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -28,14 +30,16 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.MemoryPointer;
+import it.unive.lisa.symbolic.value.TernaryExpression;
+import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 
 /**
- * func CreateCompositeKey(objectType string, attributes []string) (string,
- * error).
+ * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes []string) (string, error)
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CreateCompositeKey
  * 
@@ -64,7 +68,7 @@ public class CreateCompositeKey extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class CreateCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
+	public static class CreateCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.TernaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -85,7 +89,7 @@ public class CreateCompositeKey extends NativeCFG {
 		 * @return the pluggable statement
 		 */
 		public static CreateCompositeKeyImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new CreateCompositeKeyImpl(cfg, location, params);
+			return new CreateCompositeKeyImpl(cfg, location, params[0], params[1], params[2]);
 		}
 
 		/**
@@ -100,27 +104,50 @@ public class CreateCompositeKey extends NativeCFG {
 			super(cfg, location, "CreateCompositeKeyImpl",
 					GoTupleType.getTupleTypeOf(location, GoStringType.INSTANCE,
 							GoErrorType.INSTANCE),
-					params[0], params[1]);
+					params[0], params[1], params[2]);
 		}
 
-	
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
+		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> ternarySemantics(
 				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-				throws SemanticException {
+				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+				StatementStore<A, H, V, T> expressions) throws SemanticException {
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoStringType.INSTANCE,
 					GoErrorType.INSTANCE);
-			BinaryExpression leftExp = new BinaryExpression(GoStringType.INSTANCE, left, right, CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
-			BinaryExpression rightExp = new BinaryExpression(GoErrorType.INSTANCE, left, right, CreateCompositeKeySecondParameter.INSTANCE, getLocation());
-			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), original, getLocation(), tupleType, 
-					leftExp,
-					rightExp);
+			AnalysisState<A, H, V, T> result = state.bottom();
+			// Retrieves all the identifiers reachable from expr
+			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
+			for (SymbolicExpression id : reachableIds) {
+				if (id instanceof MemoryPointer)
+					continue;
+				for (Type t : id.getRuntimeTypes(getProgram().getTypes())) {
+					if (t.isPointerType()) {
+						HeapDereference derefId = new HeapDereference(t.asPointerType().getInnerType(), id, getLocation());
+						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
+						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeySecondParameter.INSTANCE, getLocation());
+						AnalysisState<A, H, V, T> tupleState = GoTupleExpression.allocateTupleExpression(state, new Annotations(), original, getLocation(), tupleType, 
+								leftExp,
+								rightExp);
+
+						result = result.lub(tupleState);
+					} else {
+						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
+						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeySecondParameter.INSTANCE, getLocation());
+						AnalysisState<A, H, V, T> tupleState = GoTupleExpression.allocateTupleExpression(state, new Annotations(), original, getLocation(), tupleType, 
+								leftExp,
+								rightExp);
+
+						result = result.lub(tupleState);
+					}
+				}
+			}
+
+			return result;
 		}
 	}
 
-	public static class CreateCompositeKeyFirstParameter implements BinaryOperator {
+	public static class CreateCompositeKeyFirstParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
@@ -141,12 +168,12 @@ public class CreateCompositeKey extends NativeCFG {
 		}
 
 		@Override
-		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> middle, Set<Type> right) {
 			return Collections.singleton(GoStringType.INSTANCE);
 		}
 	}
 
-	public static class CreateCompositeKeySecondParameter implements BinaryOperator {
+	public static class CreateCompositeKeySecondParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
@@ -167,7 +194,7 @@ public class CreateCompositeKey extends NativeCFG {
 		}
 
 		@Override
-		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> middle, Set<Type> right) {
 			return Collections.singleton(GoErrorType.INSTANCE);
 		}
 	}

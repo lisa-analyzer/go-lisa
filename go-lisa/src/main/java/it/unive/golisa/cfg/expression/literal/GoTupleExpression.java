@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.expression.literal;
 
+import java.util.Collections;
+
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
@@ -15,6 +17,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -23,6 +26,7 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.type.ReferenceType;
 
 /**
  * A Go tuple expression (e.g., (5, 3, 7).
@@ -91,5 +95,27 @@ public class GoTupleExpression extends NaryExpression {
 		}
 
 		return result;
+	}
+	
+	public static <A extends AbstractState<A, H, V, T>,
+	H extends HeapDomain<H>,
+	V extends ValueDomain<V>,
+	T extends TypeDomain<T>> AnalysisState<A, H, V, T> allocateTupleExpression(AnalysisState<A, H, V, T> entryState,  ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps) throws SemanticException {
+		// Allocates the new heap allocation
+		MemoryAllocation created = new MemoryAllocation(tupleType, location, true);
+		created.setRuntimeTypes(Collections.singleton(tupleType));
+		entryState = entryState.smallStepSemantics(created, pp);
+		HeapReference ref = new HeapReference(new ReferenceType(tupleType), created,
+				location);
+		HeapDereference deref = new HeapDereference(tupleType, ref,
+				location);
+		AnalysisState<A, H, V, T> tmp = entryState;
+		for (int i = 0; i < exps.length; i++) {
+			AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
+					new Constant(GoIntType.INSTANCE, i, location), location);
+			access.setRuntimeTypes(Collections.singleton(tupleType.getTypeAt(i)));
+			tmp = tmp.assign(access, NumericalTyper.type(exps[i]), pp);
+		}
+		return tmp.smallStepSemantics(ref, pp);
 	}
 }

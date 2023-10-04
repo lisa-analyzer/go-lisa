@@ -2,6 +2,7 @@ package it.unive.golisa.checker.readwrite;
 
 import java.util.List;
 
+import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 
 public class ReadWriteHFUtils {
@@ -37,17 +38,17 @@ public class ReadWriteHFUtils {
 			new ReadWriteInfo(TypeInstruction.WRITE, "PurgePrivateData", KeyType.SINGLE, new int[]{1}, 0),
 			new ReadWriteInfo(TypeInstruction.WRITE, "SetPrivateDataValidationParameter", KeyType.SINGLE, new int[]{1}, 0));
 	
-	public static boolean isReadOrWriteCall(UnresolvedCall call) {
+	public static boolean isReadOrWriteCall(Call call) {
 		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName()));
 	}
-	public static boolean isWriteCall(UnresolvedCall call) {
+	public static boolean isWriteCall(Call call) {
 		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName()) && e.getInstructionType().equals(TypeInstruction.WRITE));
 	}
-	public static boolean isReadCall(UnresolvedCall call) {
+	public static boolean isReadCall(Call call) {
 		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName())&& e.getInstructionType().equals(TypeInstruction.READ));
 	}
 	
-	public static ReadWriteInfo getReadWriteInfo(UnresolvedCall call) {
+	public static ReadWriteInfo getReadWriteInfo(Call call) {
 		for(ReadWriteInfo e : signatures) {
 			if(e.getSignature().equals(call.getTargetName()))
 				return e;

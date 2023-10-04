@@ -2,12 +2,14 @@ package it.unive.golisa.checker.readwrite;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.cfg.CFGUtils;
 import it.unive.golisa.cfg.CFGUtils.Search;
+import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
@@ -83,9 +85,9 @@ public class ReadWritePathChecker implements
 					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
 
-		if(!(node instanceof UnresolvedCall))
+		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
+		if(calls.isEmpty())
 			return true;
-		
 		
 		checkReadAfterWriteIssues(tool, graph, node);
 		
@@ -96,101 +98,136 @@ public class ReadWritePathChecker implements
 
 	private void checkReadAfterWriteIssues(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
 		for(Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
-			if(p.getLeft().getCall().equals(node)) {
+			if(CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
 				 AnalysisReadWriteHFInfo write = p.getLeft();
 				 AnalysisReadWriteHFInfo read = p.getRight();
-				 if(isIntraprocedural(graph, write, read)) {
-					if(intraproceduralCheck(graph, write, read))
-						tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
-				 } else if(interproceduralCheck(tool, graph, write.getCall(), read.getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>()))
+				 if(interproceduralCheck(tool, graph, write.getCall(), read.getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>()))
 						tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
 			}
 
 		}
 		
 	}
-	
-	private boolean intraproceduralCheck(CFG graph, AnalysisReadWriteHFInfo info1, AnalysisReadWriteHFInfo info2) {
-		
-		if(deferCheck(graph, info1, info2))
-			return true;
-		else
-			return CFGUtils.existPath(graph, info1.getCall(), info2.getCall(), Search.BFS);
-	}
+
 
 	private void checkOverWriteIssue(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
 		for(Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : overWriteCandidates) {
-			if(p.getLeft().getCall().equals(node)) {
-				if(isIntraprocedural(graph, p.getLeft(), p.getRight())) {
-					if(intraproceduralCheck(graph, p.getLeft(), p.getRight()))
-							tool.warnOn(node, "Detected a possible over-write issue. Over-write location: " + p.getRight().getCall().getLocation());
-				} else if(interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>()))
+			if(CFGUtils.equalsOrContains(node, p.getLeft().getCall()))  {
+				if(interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>()))
 					tool.warnOn(node, "Detected a possible over-write issue. Over-write location: " + p.getRight().getCall().getLocation());
 			}
 			
 		}
 	}
-	
-	private boolean isIntraprocedural(CFG graph, AnalysisReadWriteHFInfo info1, AnalysisReadWriteHFInfo info2) {
-		return CFGUtils.containsAllNodes(graph, info1.getCall(), info2.getCall());
-	}
-
-	private boolean deferCheck(CFG graph, AnalysisReadWriteHFInfo start, AnalysisReadWriteHFInfo end) {
-
-		if(start.isDeferred() && end.isDeferred()) {
-			return CFGUtils.existPath(graph, end.getCall(), start.getCall(), Search.BFS);
-		}
-
-		return false;
-	}
 
 	private boolean interproceduralCheck(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
+		Statement startNode = CFGUtils.extractTargetNodeFromGraph(graph, start);
+		boolean isStartDeferred =  startNode instanceof GoDefer;
 		
-		if(CFGUtils.existPath(graph, start, end, Search.BFS))
+		Statement endNode = CFGUtils.extractTargetNodeFromGraph(graph, end);
+		if(endNode != null) {
+			
+			boolean isEndDeferred =  endNode instanceof GoDefer;
+			
+			if((isStartDeferred && isEndDeferred) || (!isStartDeferred && !isEndDeferred)) {
+				if(CFGUtils.existPath(graph, startNode, endNode, Search.BFS))
+					return true;
+			} else if ((!isStartDeferred && isEndDeferred))
+				if(CFGUtils.existPath(graph, startNode, endNode, Search.BFS) || CFGUtils.existPath(graph, endNode, startNode, Search.BFS))
+					return true;
+		} 
+
+		if(checkCallees(tool, graph, startNode, end, seenCallees, isStartDeferred))
 			return true;
-		
-		if(checkCallees(tool, graph, start, end, seenCallees))
+
+		if(checkCallers(tool, graph, end, seenCallees, seenCallers))
 			return true;
-		
-		if(checkCallers(tool, graph, start, end, seenCallees, seenCallers))
-			return true;
+	
 
 		return false;
 	}
 	
-	private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seen) {
+private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seen, boolean isStartDeferred) {
 		
 		if(seen.contains(graph))
 			return false;
-
-		if(CFGUtils.existPath(graph, start, end, Search.BFS))
-			return true;
-		
-		seen.add(graph);
+		seen.add(graph);	
 		
 		Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
 		for(CodeMember cm : codemembers) {
 			if(cm instanceof VariableScopingCFG) {
 				VariableScopingCFG interCFG = (VariableScopingCFG) cm;
-				for(Statement n : graph.getNodes())
-					if(n instanceof UnresolvedCall) {
-						if(tool.getCallSites(cm).contains(n)
-								&& CFGUtils.existPath(graph, start, n, Search.BFS)){
-							for(Statement e : interCFG.getEntrypoints())
-								if(checkCallees(tool, interCFG, e, end, seen))
-									return true;
+				
+				for(Statement n : graph.getNodes()) {
+					if(n.equals(start))
+						continue;
+					List<Call> calls = CFGUtils.extractCallsFromStatement(n);
+					if(!calls.isEmpty()) {
+
+						boolean isEndDeferred = n instanceof GoDefer;
+						
+						boolean toCheck = false;
+						if((isStartDeferred && isEndDeferred) || (!isStartDeferred && !isEndDeferred)) {
+							toCheck = CFGUtils.existPath(graph, start, n, Search.BFS);
+						} else if ((!isStartDeferred && isEndDeferred))
+							toCheck = CFGUtils.existPath(graph, start, n, Search.BFS) || CFGUtils.existPath(graph, n, start, Search.BFS);
+						
+						if(toCheck) {
+							for(Call c : calls)
+								if(c instanceof UnresolvedCall) {
+									if(tool.getCallSites(cm).contains(c)){
+										for(Statement e : interCFG.getEntrypoints())
+											if(checkCalleesRecursive(tool, interCFG, e, end, seen))
+												return true;
+									}
+								}
 						}
 					}
+				}
 			}
 		}
 		
 		return false;
 	}
+	
+	private boolean checkCalleesRecursive(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seen) {
+		
+		if(seen.contains(graph))
+			return false;
+		seen.add(graph);
+		
+		Statement endNode = CFGUtils.extractTargetNodeFromGraph(graph, end);
+		
+		if(endNode != null)
+			return true;
+		
+		Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
+		for(CodeMember cm : codemembers) {
+			if(cm instanceof VariableScopingCFG) {
+				VariableScopingCFG interCFG = (VariableScopingCFG) cm;
+				if(CFGUtils.extractTargetNodeFromGraph(graph, end) != null)
+				for(Statement n : graph.getNodes()) {
+					List<Call> calls = CFGUtils.extractCallsFromStatement(n);
+					if(!calls.isEmpty()) {
+							for(Call c : calls)
+								if(c instanceof UnresolvedCall) {
+									if(tool.getCallSites(cm).contains(c)){
+										for(Statement e : interCFG.getEntrypoints())
+											if(checkCalleesRecursive(tool, interCFG, e, end, seen))
+												return true;
+									}
+								}
+					}
+				}
+			}
+		}
+		return false;
+	}
 
 	private boolean checkCallers(
 			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
-			CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
+			CFG graph, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 		
 		Collection<CodeMember> callers = tool.getCallers(graph);
 

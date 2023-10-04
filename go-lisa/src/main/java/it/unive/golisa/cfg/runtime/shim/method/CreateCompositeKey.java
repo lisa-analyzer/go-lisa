@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.analysis.taint.Clean;
+import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -9,9 +10,14 @@ import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -26,6 +32,12 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.HeapLocation;
+import it.unive.lisa.symbolic.value.MemoryPointer;
+import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 
 /**
  * func CreateCompositeKey(objectType string, attributes []string) (string,
@@ -105,6 +117,45 @@ public class CreateCompositeKey extends NativeCFG {
 						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
 						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
 						throws SemanticException {
+			
+				ValueEnvironment<?> env = state.getDomainInstance(ValueEnvironment.class);
+				if (env != null) {
+					
+					ExpressionSet<SymbolicExpression> reWriteExprParam1 = state.rewrite(params[1], this);
+					Tarsis tarsisParam1 = null;
+					
+					for( SymbolicExpression reWriteExpr1 : state.rewrite(reWriteExprParam1, this)) {
+						NonRelationalValueDomain<?> stack1 = env.eval((ValueExpression) reWriteExpr1, this);
+						if (stack1 instanceof Tarsis )
+							tarsisParam1 = tarsisParam1 == null ? (Tarsis) stack1 : tarsisParam1.lub((Tarsis) stack1);
+					}
+					
+					ExpressionSet<SymbolicExpression> reWriteExprParam2 = state.rewrite(params[2], this);
+					Tarsis tarsisParam2 = null;
+					
+					for( SymbolicExpression reWriteExpr : state.rewrite(reWriteExprParam2, this)) {
+						if(reWriteExpr instanceof MemoryPointer) {
+							MemoryPointer memPointer = (MemoryPointer) reWriteExpr;
+							HeapLocation ref = memPointer.getReferencedLocation();
+							 state.smallStepSemantics(ref, this);
+						}
+							
+						NonRelationalValueDomain<?> stack = env.eval((ValueExpression) reWriteExpr, this);
+						if (stack instanceof Tarsis )
+							tarsisParam2 = tarsisParam2 == null ? (Tarsis) stack : tarsisParam2.lub((Tarsis) stack);
+					}
+			
+					
+					if(tarsisParam1 != null && tarsisParam2 != null) {
+						Tarsis result  = new Tarsis(tarsisParam1.getAutomaton().concat(RegexAutomaton.topString()));
+						ValueEnvironment newValueEnv = new ValueEnvironment<>(result);
+						SimpleAbstractState<H, V, T> resState = new SimpleAbstractState<>(state.getState().getHeapState(), newValueEnv, state.getState().getTypeState());
+						return new AnalysisState<A, H, V, T>( (A) resState, state.getComputedExpressions(),
+								state.getAliasing());
+						
+						
+					}
+				}
 			return state.smallStepSemantics(new Clean(getStaticType(), getLocation()), original);
 		}
 	}

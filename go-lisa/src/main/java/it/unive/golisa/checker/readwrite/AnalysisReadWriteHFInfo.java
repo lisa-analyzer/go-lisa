@@ -6,33 +6,30 @@ import java.util.Objects;
 import java.util.Set;
 
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+import it.unive.lisa.program.cfg.statement.call.Call;
 
 public class AnalysisReadWriteHFInfo {
 
-	private final UnresolvedCall call;
+	private final Call call;
 	private final ReadWriteInfo info;
 	private final ArrayList<Set<Tarsis>> keyValues;
 	private final Set<Tarsis> collectionValues; 
-	private final boolean deferred;
 	
-	public AnalysisReadWriteHFInfo(UnresolvedCall call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues, boolean deferred) {
+	public AnalysisReadWriteHFInfo(Call call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues) {
 		this.call = call;
 		this.info = info;
 		this.keyValues = keyValues;
-		this.deferred = deferred;
 		this.collectionValues = null;
 	}
 	
-	public AnalysisReadWriteHFInfo(UnresolvedCall call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues, Set<Tarsis> collectionValues, boolean deferred) {
+	public AnalysisReadWriteHFInfo(Call call, ReadWriteInfo info, ArrayList<Set<Tarsis>> keyValues, Set<Tarsis> collectionValues) {
 		this.call = call;
 		this.info = info;
 		this.keyValues = keyValues;
-		this.deferred = deferred;
 		this.collectionValues = collectionValues;
 	}
 
-	public UnresolvedCall getCall() {
+	public Call getCall() {
 		return call;
 	}
 
@@ -42,10 +39,6 @@ public class AnalysisReadWriteHFInfo {
 
 	public ArrayList<Set<Tarsis>> getKeyValues() {
 		return keyValues;
-	}
-	
-	public boolean isDeferred() {
-		return deferred;
 	}
 
 	public boolean hasCollection() {

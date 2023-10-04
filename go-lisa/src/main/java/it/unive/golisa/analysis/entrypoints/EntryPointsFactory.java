@@ -1,6 +1,7 @@
 package it.unive.golisa.analysis.entrypoints;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -9,6 +10,7 @@ import it.unive.golisa.checker.readwrite.ReadWriteHFUtils;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 
 /**
@@ -62,7 +64,14 @@ public class EntryPointsFactory {
 		Set<String> collectedEntryPoints = new HashSet<>();
 		
 		for(CFG cfg : program.getAllCFGs()) {
-			Function<Statement, Boolean > func = n -> n instanceof UnresolvedCall && ReadWriteHFUtils.isWriteCall((UnresolvedCall) n);
+			Function<Statement, Boolean > func = n -> {
+				List<Call> calls = CFGUtils.extractCallsFromStatement(n);
+				for(Call c : calls)
+					if(ReadWriteHFUtils.isReadOrWriteCall(c))
+						return true;
+				return false;
+			};
+			
 			if(CFGUtils.anyMatchInCFGNodes(cfg, func))
 				collectedEntryPoints.add(cfg.getDescriptor().getName());
 				

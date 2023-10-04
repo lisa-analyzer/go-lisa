@@ -1,18 +1,22 @@
 package it.unive.golisa.cfg;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.Call;
 
 public class CFGUtils {
 
@@ -58,11 +62,40 @@ public class CFGUtils {
 		return false;
 	}
 	
-	public static Statement extractTargetNodeFromGraph(CFG graph, Statement source) {
+	public static Statement extractTargetNodeFromGraph(CFG graph, Statement node) {
 		for(Statement n : graph.getNodes()) 
-			if(equalsOrContains(n,source))
+			if(equalsOrContains(n,node))
 				return n;
 		return null;
+	}
+	
+	public static List<Call> extractCallsFromStatement(Statement n) {
+		Set<Statement> seen = new HashSet<>();
+		List<Call> res = new ArrayList<Call>();
+		extractCallsFromStatementRecursive(n, res, seen);
+		return res;
+	}
+	
+	private static void extractCallsFromStatementRecursive(Statement n, List<Call> list, Set<Statement> seen) {
+		if(seen.contains(n))
+			return;
+		seen.add(n);
+		
+		if(n instanceof Call) {
+			Call c = (Call) n;
+			for(Expression subExp : c.getSubExpressions()) {
+				extractCallsFromStatementRecursive(subExp, list, seen);
+			}
+			list.add((Call) n);
+		} else if(n instanceof NaryExpression) {
+			NaryExpression nExpr = (NaryExpression) n;
+			for(Expression subExp : nExpr.getSubExpressions()) {
+				extractCallsFromStatementRecursive(subExp, list, seen);
+			}
+		} else if(n instanceof GoMultiAssignment ) {
+			GoMultiAssignment multiAssign = (GoMultiAssignment) n;
+			extractCallsFromStatementRecursive(multiAssign.getExpressionToAssign(),list, seen);
+		}
 	}
 
 	public static boolean equalsOrContains(Statement n1, Statement n2) {
@@ -80,12 +113,12 @@ public class CFGUtils {
 		} else if(n1 instanceof NaryExpression) {
 			NaryExpression nExpr = (NaryExpression) n1;
 			for(Expression subExp : nExpr.getSubExpressions()) {
-				if(equalsOrContains(subExp, n2))
+				if(equalsOrContainsRecursive(subExp, n2, seen))
 					return true;
 			}
 		} else if(n1 instanceof GoMultiAssignment ) {
 			GoMultiAssignment multiAssign = (GoMultiAssignment) n1;
-			if(equalsOrContains(multiAssign.getExpressionToAssign(),n2))
+			if(equalsOrContainsRecursive(multiAssign.getExpressionToAssign(),n2, seen))
 				return true;
 		}
 	

@@ -21,11 +21,11 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 	// function, args := APIstub.GetFunctionAndParameters()
 
+  defer APIstub.GetState("samekey")
 
-
-  defer s.Write() 
+  defer s.Write() // UNSAFE (LIFO order)
  
-  defer APIstub.GetState("samekey") // SAFE (LIFO order)
+  
 
 
  return shim.Success(nil)

@@ -3,7 +3,6 @@ plugins {
     id 'application'
    	id 'antlr'
    	id 'eclipse'
-    id 'com.diffplug.spotless' version '6.18.0'
     id 'checkstyle' 
 }
 
@@ -76,10 +75,7 @@ checkstyleMain {
     exclude 'it/unive/golisa/antlr/*.java'
     exclude 'it/unive/golisa/golang/util/*.java'
     exclude 'it/unive/golisa/golang/api/signature/*.java'
-    reports {
-        xml.required = false
-        html.required = false
-    }
+
 }
 
 task checkstyleErrorMessage {
@@ -89,57 +85,6 @@ task checkstyleErrorMessage {
     doLast {
         logger.error('Checkstyle plugin thrown an error. This means that the javadoc is not correctly setup. Inspect console output to find problematic javadocs.')
         logger.error('To reproduce locally, execute \'./gradlew checkstyleMain\'')
-    }
-}
-
-spotless {
-    enforceCheck = false
-    encoding 'UTF-8'
-    lineEndings 'UNIX'
-    java {
-        // tabs, no spaces
-        indentWithTabs()
-    
-        // keep imports clean 
-        importOrder() 
-        removeUnusedImports()
-    
-        // use the eclipse formatting with the one provided with the project
-        eclipse().configFile(new File(rootProject.projectDir, 'spotless-formatting.xml'))
-    
-        target 'src/**/*.java'    
-        // ignore generated code
-        targetExclude '**/build/generated/**/*.java'
-        targetExclude '**/build/generated-src/**/*.java'
-        targetExclude '**/target/generated-sources/**/*.java'
-    }
-    antlr4 {
-        target 'src/*/antlr/**/*.g4'
-        antlr4Formatter() 
-    }
-}
-
-spotlessJava {
-	// declaring explicit dependencies
-	dependsOn 'compileJava', 'compileTestJava', 'processTestResources', 'spotlessAntlr4'
-}
-
-spotlessJavaCheck { 
-    finalizedBy 'spotlessErrorMessage'
-}
-
-spotlessAntlr4Check { 
-    finalizedBy 'spotlessErrorMessage'
-}
-
-task spotlessErrorMessage {
-    onlyIf {
-        spotlessJavaCheck.state.failure != null || spotlessAntlr4Check.state.failure != null
-    }
-    doLast {
-        logger.error('Spotless plugin thrown an error. This means that the code is not correctly formatted.')
-        logger.error('To reproduce locally, execute \'./gradlew spotlessCheck\'')
-        logger.error('To automatically fix all the problems, execute \'./gradlew spotlessApply\'')
     }
 }
 

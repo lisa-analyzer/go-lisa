@@ -21,7 +21,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 	// function, args := APIstub.GetFunctionAndParameters()
 
-	 defer s.Read()
+   defer s.Read()
 	 
    APIstub.PutState("samekey", []byte("myvalue")); // UNSAFE
 

@@ -9,7 +9,6 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.cfg.CFGUtils;
-import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;

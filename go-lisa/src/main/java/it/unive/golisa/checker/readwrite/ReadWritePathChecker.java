@@ -129,13 +129,10 @@ public class ReadWritePathChecker implements
 		if(endNode != null) {
 			
 			boolean isEndDeferred =  endNode instanceof GoDefer;
+		
+			if(isMatching(graph, startNode, isStartDeferred, endNode, isEndDeferred))
+				return true;
 			
-			if((isStartDeferred && isEndDeferred) || (!isStartDeferred && !isEndDeferred)) {
-				if(CFGUtils.existPath(graph, startNode, endNode, Search.BFS))
-					return true;
-			} else if ((!isStartDeferred && isEndDeferred))
-				if(CFGUtils.existPath(graph, startNode, endNode, Search.BFS) || CFGUtils.existPath(graph, endNode, startNode, Search.BFS))
-					return true;
 		} 
 
 		if(checkCallees(tool, graph, startNode, end, seenCallees, isStartDeferred))
@@ -148,6 +145,62 @@ public class ReadWritePathChecker implements
 		return false;
 	}
 	
+	
+private boolean isMatching(CFG graph, Statement startNode, boolean isStartDeferred, Statement endNode, boolean isEndDeferred) {
+	/* 
+	 * #### LEGENDA
+	 * r = read
+	 * dr = defer read
+	 * w = write
+	 * df = defer write
+	 * 
+	 * ### EXECUTION CASES
+	 * 
+	 *  r	->	 w	| OK	write after read
+	 *  w	->	 r	| KO	read after write
+	 * dr	->	dw	| KO	defer write after defer read	(semantics of defer is LIFO (Last in First out))
+	 * dw	->	dr	| OK    defer read after defer write	(semantics of defer is LIFO (Last in First out))
+	 * dr	->	 w  | KO	write after defer read
+	 * dw	->	 r	| OK	read after defer write
+	 *  w	->  dr	| KO	defer read after write
+	 *  r	->  dw	| OK	defer write after read
+	 *  
+	 *### IMPLEMENTED CHECKS
+	 *  
+	 *  w	->	 r	| KO 	exist a path from w to r
+	 * dr	->	dw	| KO  	exist a path from dr to dw
+	 * dr	->	 w  | KO	exist a path from dr to w
+	 *  w	->  dr	| KO	exist a path from w to dr
+	 *  
+	 *### PROGRAMMATICALLY
+	 *
+	 * !isStartDeferred -> !isEndDeferred 	| CFGUtils.existPath(graph, startNode, endNode, Search.BFS)
+	 *  isEndDeferred   ->  isStartDeferred | CFGUtils.existPath(graph, endNode, startNode, Search.BFS)
+	 *  isEndDeferred   -> !isStartDeferred	| CFGUtils.existPath(graph, endNode, startNode, Search.BFS)
+	 * !isStartDeferred ->  isEndDeferred	| CFGUtils.existPath(graph, startNode, endNode, Search.BFS)
+	 * 
+	 */
+	
+	if(!isStartDeferred && !isEndDeferred) { 
+		if(CFGUtils.existPath(graph, startNode, endNode, Search.BFS))
+			return true;
+	}
+	
+	if (isEndDeferred && isStartDeferred)
+		if(CFGUtils.existPath(graph, endNode, startNode, Search.BFS))
+			return true;
+	
+	if (!isStartDeferred && isEndDeferred)
+		if(CFGUtils.existPath(graph, startNode, endNode, Search.BFS))
+			return true;
+	
+	if (isEndDeferred && !isStartDeferred)
+		if(CFGUtils.existPath(graph, endNode, startNode, Search.BFS))
+			return true;
+
+	return false;
+}
+
 private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seen, boolean isStartDeferred) {
 		
 		if(seen.contains(graph))
@@ -166,14 +219,8 @@ private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<Po
 					if(!calls.isEmpty()) {
 
 						boolean isEndDeferred = n instanceof GoDefer;
-						
-						boolean toCheck = false;
-						if((isStartDeferred && isEndDeferred) || (!isStartDeferred && !isEndDeferred)) {
-							toCheck = CFGUtils.existPath(graph, start, n, Search.BFS);
-						} else if ((!isStartDeferred && isEndDeferred))
-							toCheck = CFGUtils.existPath(graph, start, n, Search.BFS) || CFGUtils.existPath(graph, n, start, Search.BFS);
-						
-						if(toCheck) {
+		
+						if(isMatching(graph, start, isStartDeferred, n, isEndDeferred)) {
 							for(Call c : calls)
 								if(c instanceof UnresolvedCall) {
 									if(tool.getCallSites(cm).contains(c)){

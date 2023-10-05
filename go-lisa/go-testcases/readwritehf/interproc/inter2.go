@@ -20,7 +20,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 
 	// function, args := APIstub.GetFunctionAndParameters()
-  s.Write()
+  s.Write()  //UNSAFE
 
   s.Read()
 

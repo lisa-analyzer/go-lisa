@@ -46,8 +46,10 @@ public class EntryPointsFactory {
 		
 		if(analysis != null) {
 			if(analysis.equalsIgnoreCase("READ-WRITE")) {
-				analysisEntryPoints = computeEntryPointsForReadWriteAnalysis(program);
-			}
+				if(framework == null || !framework.equalsIgnoreCase("HYPERLEDGER-FABRIC"))
+					throw new IllegalArgumentException("Unable to compute entrypoints for read-write analysis. Must be specified the following framework: HYPERLEDGER-FABRIC");
+
+				analysisEntryPoints = computeEntryPointsForReadWriteAnalysis(program);					}
 		}
 		
 		return frameworkEntryPoints == null && analysisEntryPoints == null ? new EntryPointSet() {

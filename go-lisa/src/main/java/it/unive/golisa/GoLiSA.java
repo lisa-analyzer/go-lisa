@@ -94,6 +94,11 @@ public class GoLiSA {
 		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
 		dump_opt.setRequired(false);
 		options.addOption(dump_opt);
+		
+		Option dumpAdditionalAnalysisInfo = new Option("u", "dumpAdditionalAnalysisInfo", false,
+				"dump additional info to improve user experience if allowed by the analysis");
+		dumpAdditionalAnalysisInfo.setRequired(false);
+		options.addOption(dumpAdditionalAnalysisInfo);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -242,7 +247,7 @@ public class GoLiSA {
 			conf2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new Tarsis()),
 					new TypeEnvironment<>(new InferredTypes()));
-			conf2.semanticChecks.add(new ReadWritePathChecker(readWritePairChecker.getReadAfterWriteCandidates(), readWritePairChecker.getOverWriteCandidates()));
+			conf2.semanticChecks.add(new ReadWritePathChecker(readWritePairChecker.getReadAfterWriteCandidates(), readWritePairChecker.getOverWriteCandidates(), cmd.hasOption(dumpAdditionalAnalysisInfo)));
 
 			conf2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 

@@ -54,7 +54,7 @@ public class ReadWriteSetHFTest extends GoChaincodeTestExecutor {
 		conf2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf2.semanticChecks.add(new ReadWritePathChecker(readWritePairChecker.getReadAfterWriteCandidates(),
-				readWritePairChecker.getOverWriteCandidates()));
+				readWritePairChecker.getOverWriteCandidates(), false));
 
 		if(configuration instanceof CronConfiguration) {
 			CronConfiguration cronConf = (CronConfiguration) configuration;

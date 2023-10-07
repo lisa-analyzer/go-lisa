@@ -133,6 +133,7 @@ public class ReadWritePathChecker implements
 	
 	private ReadWriteGraph tmpGraph;
 	private ReadWriteNode destinationNode;
+	private boolean isDeferredCallee;
 
 	private void checkReadAfterWriteIssues(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
 		for(Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
@@ -201,7 +202,7 @@ public class ReadWritePathChecker implements
 				
 				tmpGraph.addNode(node);
 				
-				tmpGraph.addEdge(new StandardEdge(node, destinationNode));
+				tmpGraph.addEdge(isDeferredCallee ? new DeferEdge(node, destinationNode) : new StandardEdge(node, destinationNode));
 				destinationNode = node;
 			}
 			return true;
@@ -297,7 +298,7 @@ private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<Po
 					if(!calls.isEmpty()) {
 
 						boolean isEndDeferred = n instanceof GoDefer;
-		
+						isDeferredCallee = false;
 						if(isMatching(graph, start, isStartDeferred, n, isEndDeferred)) {
 							for(Call c : calls)
 								if(c instanceof UnresolvedCall) {
@@ -309,6 +310,7 @@ private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<Po
 													tmpGraph.addNode(node);
 													tmpGraph.addEdge(new CalleeEdge(node, destinationNode));
 													destinationNode = node;
+													isDeferredCallee = n instanceof GoDefer;
 												}
 												
 												return true;

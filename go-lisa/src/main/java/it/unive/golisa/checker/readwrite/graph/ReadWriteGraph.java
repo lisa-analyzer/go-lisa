@@ -240,11 +240,6 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 				StringBuilder builder = new StringBuilder();
 				builder.append("<");
 				builder.append("<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" cellborder=\"0\">");
-				builder.append("<tr><td align=\"right\">node border&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(NORMAL_NODE_COLOR);
-				builder.append("\">");
-				builder.append(NORMAL_NODE_COLOR);
-				builder.append("</font>, single</td></tr>");
 				builder.append("<tr><td align=\"right\">write instruction border&nbsp;</td><td align=\"left\"><font color=\"");
 				builder.append(SPECIAL_NODE_COLOR);
 				builder.append("\">");
@@ -255,6 +250,11 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 				builder.append("\">");
 				builder.append(SPECIAL_NODE_COLOR);
 				builder.append("</font>, double</td></tr>");
+				builder.append("<tr><td align=\"right\">other instructions border&nbsp;</td><td align=\"left\"><font color=\"");
+				builder.append(NORMAL_NODE_COLOR);
+				builder.append("\">");
+				builder.append(NORMAL_NODE_COLOR);
+				builder.append("</font>, single</td></tr>");
 				builder.append("<tr><td align=\"right\">sequential edge&nbsp;</td><td align=\"left\"><font color=\"");
 				builder.append(COLOR_BLACK);
 				builder.append("\">");

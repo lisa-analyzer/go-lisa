@@ -172,6 +172,8 @@ public class ReadWritePathChecker implements
 	private boolean interproceduralCheck(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Statement startNode = CFGUtils.extractTargetNodeFromGraph(graph, start);
+		startNode = startNode == null ? start : startNode;
+		
 		boolean isStartDeferred =  startNode instanceof GoDefer;
 		
 		Statement endNode = CFGUtils.extractTargetNodeFromGraph(graph, end);

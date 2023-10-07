@@ -147,7 +147,7 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 				e.setAttribute(COLOR, COLOR_GRAY);
 				e.setAttribute(LABEL, "CALLEE");
 				break;
-			case "StandardSEdge":
+			case "StandardEdge":
 			default:
 				e.setAttribute(COLOR, COLOR_BLACK);
 				break;

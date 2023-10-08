@@ -182,7 +182,9 @@ public class ReadWritePairChecker implements
 	}
 
 	private boolean possibleEqualsMatch(Tarsis state1, Tarsis state2) {
-		return state1.getAutomaton().isEqualTo(state2.getAutomaton());
+		return state1.getAutomaton().isEqualTo(state2.getAutomaton()) 
+				|| state1.getAutomaton().isContained(state2.getAutomaton()) 
+					|| state2.getAutomaton().isContained(state1.getAutomaton());
 	}
 
 	private boolean matchCollection(AnalysisReadWriteHFInfo st1, AnalysisReadWriteHFInfo st2) {

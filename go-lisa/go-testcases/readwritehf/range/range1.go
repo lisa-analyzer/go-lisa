@@ -23,7 +23,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 	startKey := "a"
 	endKey := "z"
 
-	resultsIterator, err := APIstub.GetPrivateDataByRange("mycollection", startKey, endKey)
+	resultsIterator, err := APIstub.GetPrivateDataByRange("mycollection", startKey, endKey) // UNSAFE
 
   return shim.Success(nil)
 }

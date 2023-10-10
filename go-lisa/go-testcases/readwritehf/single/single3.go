@@ -23,7 +23,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
   err := APIstub.PutState("samekey", []byte("myvalue"));
 
-  value, err := APIstub.GetState(args[1])
+  value, err := APIstub.GetState(args[1]) // UNSAFE
 
   if err != nil {
 	 return shim.Error("Error")

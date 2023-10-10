@@ -18,13 +18,8 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 
+  defer s.Write()
 
-	// function, args := APIstub.GetFunctionAndParameters()
-
-
-
-  defer s.Write() 
- 
   defer APIstub.GetState("samekey") // SAFE (LIFO order)
 
 
@@ -35,16 +30,5 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 func (s *SmartContract) Write() {
 
 	err := APIstub.PutState("samekey", []byte("myvalue"))
-
-}
-func (s *SmartContract) Read() {
-
-	value, err := APIstub.GetState("samekey")
-
-  if err != nil {
-	 return shim.Error("Error")
-  } else {
-    return shim.Success(nil)
-  }
 
 }

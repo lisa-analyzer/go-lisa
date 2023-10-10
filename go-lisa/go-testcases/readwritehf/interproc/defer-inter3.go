@@ -18,10 +18,7 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) sc.Response {
 
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response {
 
-
-	// function, args := APIstub.GetFunctionAndParameters()
-
-   APIstub.PutState("samekey", []byte("myvalue")); // UNSAFE
+   APIstub.PutState("samekey", []byte("myvalue"));
 
    defer s.Read()
 
@@ -30,7 +27,7 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 
 func (s *SmartContract) Read() {
 
-	value, err := APIstub.GetState("samekey")
+	value, err := APIstub.GetState("samekey")  // UNSAFE
 
   if err != nil {
 	 return shim.Error("Error")

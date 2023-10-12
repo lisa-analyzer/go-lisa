@@ -1,7 +1,6 @@
 package it.unive.golisa.checker;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -45,43 +44,42 @@ import it.unive.lisa.util.numeric.MathNumber;
  */
 public class NumericalOverflowChecker implements
 		SemanticCheck<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>,
-				PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> {
+				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> {
 
 	
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool) { }
+	public void beforeExecution(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool) { }
 
 	@Override
-	public void afterExecution(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool) { }
+	public void afterExecution(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool) { }
 
 	@Override
 	public boolean visitUnit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool,
 			Unit unit) {
 		return true;
 	}
 
 	@Override
-	public void visitGlobal(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool, Unit unit, Global global, boolean instance) { }
+	public void visitGlobal(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool, Unit unit, Global global, boolean instance) { }
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool,
+			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		Expression leftExpression = null;
 		Expression rightExpression = null;
@@ -236,13 +234,13 @@ public class NumericalOverflowChecker implements
 		return res.lt(new MathNumber(getMinValue(type)));
 	}
 
-	private Set<Interval> getPossibleIntervals(Expression expr, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement node) {
+	private Set<Interval> getPossibleIntervals(Expression expr, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool, CFG graph, Statement node) {
 		Set<Interval> res = new TreeSet<Interval>();
 		if (expr instanceof VariableRef) {
 			Variable id = new Variable(((VariableRef) expr).getStaticType(), ((VariableRef) expr).getName(), ((VariableRef) expr).getLocation());
 			
-			for (AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> an : tool.getResultOf(graph)) {
-				AnalysisState<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> analysisAtNode = an.getAnalysisStateAfter(node);
+			for (AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> an : tool.getResultOf(graph)) {
+				AnalysisState<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> analysisAtNode = an.getAnalysisStateAfter(node);
 				ValueEnvironment<Interval> intervalValueState = (ValueEnvironment<Interval>) analysisAtNode.getState().getValueState();				
 				
 				res.add(intervalValueState.getState(id));		
@@ -323,11 +321,11 @@ public class NumericalOverflowChecker implements
 
 			boolean mayBeNumeric = false;
 			
-			for (Type type : id.getRuntimeTypes(expr.getProgram().getTypes()))
-				if (type.isNumericType()) {
-					mayBeNumeric = true;
-					break;
-				}
+//			for (Type type : id.getRuntimeTypes(expr.getProgram().getTypes()))
+//				if (type.isNumericType()) {
+//					mayBeNumeric = true;
+//					break;
+//				}
 
 			if (mayBeNumeric)
 				return true;

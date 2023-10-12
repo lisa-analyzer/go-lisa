@@ -1,5 +1,9 @@
 package it.unive.golisa.interprocedural;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
@@ -9,14 +13,12 @@ import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.OpenCallPolicy;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
@@ -27,9 +29,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * OpenCall policy to be less conservative during taint and non-interference
@@ -46,53 +45,53 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> apply(
-					OpenCall call,
-					AnalysisState<A, H, V, T> entryState,
-					ExpressionSet<SymbolicExpression>[] params)
+	public <A extends AbstractState<A>> AnalysisState<A> apply(
+			OpenCall call,
+			AnalysisState<A> entryState,
+			ExpressionSet[] params)
 					throws SemanticException {
 
 		if (call.getStaticType().isVoidType())
 			return entryState.smallStepSemantics(new Skip(call.getLocation()), call);
 
-		if (entryState.getState().getValueState() instanceof ValueEnvironment<?>) {
-			ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) entryState.getState().getValueState();
-			for (SymbolicExpression stack : entryState.rewrite(entryState.getComputedExpressions(), call)) {
-				NonRelationalValueDomain<?> stackValue = valueEnv.eval((ValueExpression) stack, call);
-				if (stackValue instanceof TaintDomain) {
-					Identifier var = call.getMetaVariable();
-					if (((TaintDomain) stackValue).isTainted() || ((TaintDomain) stackValue).isTop()) {
-						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
-						return entryState.assign(var, pushany, call);
-					} else if (((TaintDomain) stackValue).isClean()) {
-						// && isRuntimeAPI(call)) {
-						return entryState.assign(var,
-								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
-					} else if (((TaintDomain) stackValue).isBottom()) {
-						return entryState;
+		if (entryState.getState() instanceof SimpleAbstractState<?, ?, ?>) {
+			SimpleAbstractState<?, ?, ?> state = (SimpleAbstractState<?, ?, ?>) entryState.getState();
+			if (state.getValueState() instanceof ValueEnvironment<?>) {
+				ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) state.getValueState();
+				for (SymbolicExpression stack : state.rewrite(entryState.getComputedExpressions(), call, state)) {
+					NonRelationalValueDomain<?> stackValue = valueEnv.eval((ValueExpression) stack, call, state);
+					if (stackValue instanceof TaintDomain) {
+						Identifier var = call.getMetaVariable();
+						if (((TaintDomain) stackValue).isTainted() || ((TaintDomain) stackValue).isTop()) {
+							PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+							return entryState.assign(var, pushany, call);
+						} else if (((TaintDomain) stackValue).isClean()) {
+							// && isRuntimeAPI(call)) {
+							return entryState.assign(var,
+									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+						} else if (((TaintDomain) stackValue).isBottom()) {
+							return entryState;
+						}
 					}
 				}
-			}
-		} else if (entryState.getState().getValueState() instanceof InferenceSystem<?>) {
-			Identifier var = call.getMetaVariable();
-			var infSys = ((InferenceSystem<?>) entryState.getState().getValueState());
-			for (SymbolicExpression stack : entryState.rewrite(entryState.getComputedExpressions(), call)) {
-				InferredValue<?> value = infSys.eval((ValueExpression) stack, call);
-				if (value != null && value instanceof IntegrityNIDomain) {
-					IntegrityNIDomain ni = (IntegrityNIDomain) value;
-					if (ni.isLowIntegrity() || ni.isTop()) {
-						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
-						return entryState.assign(var, pushany, call);
-					} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call))
-														// {
-						return entryState.assign(var,
-								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+			} else if (state.getValueState() instanceof InferenceSystem<?>) {
+				Identifier var = call.getMetaVariable();
+				var infSys = ((InferenceSystem<?>) state.getValueState());
+				for (SymbolicExpression stack : state.rewrite(entryState.getComputedExpressions(), call, state)) {
+					InferredValue<?> value = infSys.eval((ValueExpression) stack, call, state);
+					if (value != null && value instanceof IntegrityNIDomain) {
+						IntegrityNIDomain ni = (IntegrityNIDomain) value;
+						if (ni.isLowIntegrity() || ni.isTop()) {
+							PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+							return entryState.assign(var, pushany, call);
+						} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call))
+							// {
+							return entryState.assign(var,
+									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
 
-					} else if (ni.isBottom())
-						return entryState;
+						} else if (ni.isBottom())
+							return entryState;
+					}
 				}
 			}
 		}
@@ -131,7 +130,7 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 
 	private boolean checkRuntimeApiMethod(Call call, String qualifier) {
 		Map<String,
-				Set<MethodGoLangApiSignature>> mapMethod = GoLangAPISignatureMapper.getGoApiSignatures().getMapMethod();
+		Set<MethodGoLangApiSignature>> mapMethod = GoLangAPISignatureMapper.getGoApiSignatures().getMapMethod();
 		if (mapMethod.containsKey(call.getQualifier())) {
 			for (MethodGoLangApiSignature sign : mapMethod.get(qualifier))
 				if (matchSignature(sign, call))

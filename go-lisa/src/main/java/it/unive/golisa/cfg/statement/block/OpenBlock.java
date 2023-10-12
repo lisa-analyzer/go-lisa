@@ -5,10 +5,6 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
-import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -72,14 +68,11 @@ public class OpenBlock extends Statement {
 	 * variable re-declaration inside the block.
 	 */
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> semantics(
-					AnalysisState<A, H, V, T> entryState, InterproceduralAnalysis<A, H, V, T> interprocedural,
-					StatementStore<A, H, V, T> expressions) throws SemanticException {
+	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
+			it.unive.lisa.interprocedural.InterproceduralAnalysis<A> interprocedural,
+			StatementStore<A> expressions) throws SemanticException {
 		A scoped = entryState.getState().pushScope(new ScopeToken(this));
 		A state = scoped.lub(entryState.getState().forgetIdentifiersIf(OutOfScopeIdentifier.class::isInstance));
-		return new AnalysisState<A, H, V, T>(state, entryState.getComputedExpressions(), entryState.getAliasing());
+		return new AnalysisState<A>(state, entryState.getComputedExpressions(), entryState.getFixpointInformation());
 	}
 }

@@ -2,6 +2,7 @@ package it.unive.golisa.analysis.ni;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
@@ -9,10 +10,9 @@ import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
@@ -31,6 +31,8 @@ import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 
 /**
  * The type-system based implementation of the non interference analysis.
@@ -109,13 +111,12 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	public IntegrityNIDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
+	public IntegrityNIDomain fixedVariable(Identifier id, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
 
 			Statement condition = g.getCondition();
-			if (condition instanceof GoRange && isMapRange((GoRange) condition)
-					&& matchMapRangeIds((GoRange) condition, id))
+			if (condition instanceof GoRange && isMapRange((GoRange) condition) && matchMapRangeIds((GoRange) condition, id, pp, oracle))
 				return true;
 			return false;
 		});
@@ -125,7 +126,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
-			return BaseInferredValue.super.variable(id, pp);
+			return BaseInferredValue.super.fixedVariable(id, pp, oracle);
 
 		if (annots.contains(LOW_MATCHER))
 			return LOW;
@@ -133,15 +134,18 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 		if (annots.contains(HIGH_MATCHER))
 			return HIGH;
 
-		return BaseInferredValue.super.variable(id, pp);
+		return BaseInferredValue.super.fixedVariable(id, pp, oracle);
 	}
 
-	private boolean matchMapRangeIds(GoRange range, Identifier id) {
-
-		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
+	private boolean matchMapRangeIds(GoRange range, Identifier id, ProgramPoint pp, SemanticOracle oracle) {
+		try {
+			return matchMapRangeId(range.getIdxRange(), id, pp, oracle) || matchMapRangeId(range.getValRange(), id, pp, oracle);
+		} catch (SemanticException e) {
+			return false;
+		}
 	}
 
-	private boolean matchMapRangeId(Statement st, Identifier id) {
+	private boolean matchMapRangeId(Statement st, Identifier id, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 
 		if (st instanceof VariableRef) {
 			VariableRef vRef = (VariableRef) st;
@@ -150,7 +154,8 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 				if (pred != null) {
 					if (st.getEvaluationPredecessor() instanceof GoRangeGetNextIndex
 							|| st.getEvaluationPredecessor() instanceof GoRangeGetNextValue) {
-						for (Type t : id.getRuntimeTypes(null))
+						Set<Type> idTypes = oracle.getRuntimeTypesOf(id, pp, oracle);
+						for (Type t : idTypes)
 							if (t instanceof GoMapType)
 								return true;
 					}
@@ -172,7 +177,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		return this == BOTTOM ? Lattice.bottomRepresentation()
 				: this == HIGH ? new StringRepresentation("H")
 						: this == LOW ? new StringRepresentation("L") : Lattice.topRepresentation();
@@ -207,27 +212,27 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	public InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp)
+	public InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
 	@Override
 	public InferredPair<IntegrityNIDomain> evalNonNullConstant(Constant constant, IntegrityNIDomain state,
-			ProgramPoint pp) throws SemanticException {
+			ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
 	@Override
 	public InferredPair<IntegrityNIDomain> evalUnaryExpression(UnaryOperator operator, IntegrityNIDomain arg,
-			IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
+			IntegrityNIDomain state, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return new InferredPair<>(this, arg, state(state, pp));
 	}
 
 	@Override
 	public InferredPair<IntegrityNIDomain> evalBinaryExpression(BinaryOperator operator,
 			IntegrityNIDomain left,
-			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
+			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (left == LOW || right == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
 
@@ -240,7 +245,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	@Override
 	public InferredPair<IntegrityNIDomain> evalTernaryExpression(TernaryOperator operator,
 			IntegrityNIDomain left,
-			IntegrityNIDomain middle, IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp)
+			IntegrityNIDomain middle, IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp, SemanticOracle oracle)
 					throws SemanticException {
 		if (left == LOW || right == LOW || middle == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
@@ -253,8 +258,8 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public InferredPair<IntegrityNIDomain> evalIdentifier(Identifier id,
-			InferenceSystem<IntegrityNIDomain> environment, ProgramPoint pp) throws SemanticException {
-		IntegrityNIDomain variable = variable(id, pp);
+			InferenceSystem<IntegrityNIDomain> environment, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+		IntegrityNIDomain variable = fixedVariable(id, pp, oracle);
 		if (!variable.isBottom())
 			return new InferredPair<>(this, variable, state(environment.getExecutionState(), pp));
 		else
@@ -262,14 +267,14 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	}
 
 	@Override
-	public InferredPair<IntegrityNIDomain> evalPushAny(PushAny pushAny, IntegrityNIDomain state, ProgramPoint pp)
+	public InferredPair<IntegrityNIDomain> evalPushAny(PushAny pushAny, IntegrityNIDomain state, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		return new InferredPair<>(this, LOW, state(state, pp));
 	}
 
 	@Override
 	public InferredPair<IntegrityNIDomain> evalTypeConv(BinaryExpression conv, IntegrityNIDomain left,
-			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
+			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (left == LOW || right == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
 
@@ -281,7 +286,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public InferredPair<IntegrityNIDomain> evalTypeCast(BinaryExpression cast, IntegrityNIDomain left,
-			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
+			IntegrityNIDomain right, IntegrityNIDomain state, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (left == LOW || right == LOW)
 			return new InferredPair<>(this, LOW, state(state, pp));
 
@@ -291,18 +296,26 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
-	@Override
-	public boolean tracksIdentifiers(Identifier id) {
-		for (Type t : id.getRuntimeTypes(null))
-			if (!(t.isInMemoryType()))
-				return true;
-		return false;
-	}
+
+	//	@Override
+	//	public boolean tracksIdentifiers(Identifier id) {
+	//		for (Type t : id.getRuntimeTypes(null))
+	//			if (!(t.isInMemoryType()))
+	//				return true;
+	//		return false;
+	//	}
 
 	@Override
-	public boolean canProcess(SymbolicExpression expression) {
-		if (expression.hasRuntimeTypes())
-			return expression.getRuntimeTypes(null).stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
+	public boolean canProcess(SymbolicExpression expression, ProgramPoint pp, SemanticOracle oracle) {
+		Set<Type> types;
+		try {
+			types = oracle.getRuntimeTypesOf(expression, pp, oracle);
+		} catch (SemanticException e) {
+			return false;
+		}
+
+		if (!types.isEmpty())
+			return types.stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
 		return !expression.getStaticType().isPointerType() && !expression.getStaticType().isInMemoryType();
 	}
 
@@ -375,8 +388,8 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 
 	@Override
 	public InferenceSystem<IntegrityNIDomain> assume(InferenceSystem<IntegrityNIDomain> environment,
-			ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
-		InferredPair<IntegrityNIDomain> eval = eval(expression, environment, src);
+			ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle) throws SemanticException {
+		InferredPair<IntegrityNIDomain> eval = eval(expression, environment, src, oracle);
 		IntegrityNIDomain inf = eval.getInferred();
 		eval.getState().guards.forEach(inf.guards::put);
 		inf.guards.put(src, inf);

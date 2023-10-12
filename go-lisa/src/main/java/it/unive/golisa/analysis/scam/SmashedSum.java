@@ -1,12 +1,13 @@
 package it.unive.golisa.analysis.scam;
 
+import java.util.TreeSet;
+
 import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.string.CharInclusion;
 import it.unive.lisa.analysis.string.Prefix;
 import it.unive.lisa.analysis.string.Suffix;
@@ -31,7 +32,8 @@ import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.automaton.CyclicAutomatonException;
 import it.unive.lisa.util.numeric.IntInterval;
 import it.unive.lisa.util.numeric.MathNumber;
-import java.util.TreeSet;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 
 public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 		implements BaseNonRelationalValueDomain<SmashedSum<S>> {
@@ -53,11 +55,11 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 	}
 
 	@Override
-	public SmashedSum<S> evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
+	public SmashedSum<S> evalNonNullConstant(Constant constant, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (constant.getValue() instanceof Integer)
-			return new SmashedSum<S>(intValue.evalNonNullConstant(constant, pp), stringValue.bottom());
+			return new SmashedSum<S>(intValue.evalNonNullConstant(constant, pp, oracle), stringValue.bottom());
 		else if (constant.getValue() instanceof String)
-			return new SmashedSum<S>(intValue.bottom(), stringValue.evalNonNullConstant(constant, pp));
+			return new SmashedSum<S>(intValue.bottom(), stringValue.evalNonNullConstant(constant, pp, oracle));
 		return top();
 	}
 
@@ -98,28 +100,28 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 	}
 
 	@Override
-	public SmashedSum<S> evalUnaryExpression(UnaryOperator operator, SmashedSum<S> arg, ProgramPoint pp)
+	public SmashedSum<S> evalUnaryExpression(UnaryOperator operator, SmashedSum<S> arg, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		if (operator == StringLength.INSTANCE)
 			return mkSmashedValue(length(arg.stringValue));
 		else if (operator == NumericNegation.INSTANCE)
-			return new SmashedSum<S>(intValue.evalUnaryExpression(operator, arg.intValue, pp), stringValue.bottom());
+			return new SmashedSum<S>(intValue.evalUnaryExpression(operator, arg.intValue, pp, oracle), stringValue.bottom());
 
 		return top();
 	}
 
 	@Override
 	public SmashedSum<S> evalBinaryExpression(BinaryOperator operator, SmashedSum<S> left, SmashedSum<S> right,
-			ProgramPoint pp) throws SemanticException {
+			ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (operator == StringConcat.INSTANCE)
 			if (!left.stringValue.isBottom())
 				return mkSmashedValue(
-						stringValue.evalBinaryExpression(operator, left.stringValue, right.stringValue, pp));
+						stringValue.evalBinaryExpression(operator, left.stringValue, right.stringValue, pp, oracle));
 			else
 				return bottom();
 		else if (operator == NumericNonOverflowingAdd.INSTANCE)
 			if (!left.intValue.isBottom())
-				return mkSmashedValue(intValue.evalBinaryExpression(operator, left.intValue, right.intValue, pp));
+				return mkSmashedValue(intValue.evalBinaryExpression(operator, left.intValue, right.intValue, pp, oracle));
 			else
 				return bottom();
 		else if (operator == StringIndexOf.INSTANCE)
@@ -129,7 +131,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 
 	@Override
 	public SmashedSum<S> evalTernaryExpression(TernaryOperator operator, SmashedSum<S> left, SmashedSum<S> middle,
-			SmashedSum<S> right, ProgramPoint pp) throws SemanticException {
+			SmashedSum<S> right, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (operator == StringSubstring.INSTANCE) {
 			IntInterval begin = middle.intValue.interval;
 			IntInterval end = right.intValue.interval;
@@ -145,7 +147,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 						if (b < e)
 							temp = partial.lub(substring(left.stringValue, b, e));
 						else if (b == e)
-							temp = partial.lub(mkEmptyString(this.stringValue));
+							temp = partial.lub(mkEmptyString(this.stringValue, oracle));
 
 						if (temp.equals(partial))
 							break outer;
@@ -156,21 +158,21 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 			return mkSmashedValue(partial);
 		} else if (operator == StringReplace.INSTANCE)
 			return mkSmashedValue(stringValue.evalTernaryExpression(operator, left.stringValue, middle.stringValue,
-					right.stringValue, pp));
+					right.stringValue, pp, oracle));
 
 		return top();
 	}
 
 	@Override
 	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, SmashedSum<S> left, SmashedSum<S> right,
-			ProgramPoint pp) throws SemanticException {
+			ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (operator == StringContains.INSTANCE)
-			return stringValue.satisfiesBinaryExpression(operator, left.stringValue, right.stringValue, pp);
-		return intValue.satisfiesBinaryExpression(operator, left.intValue, right.intValue, pp);
+			return stringValue.satisfiesBinaryExpression(operator, left.stringValue, right.stringValue, pp, oracle);
+		return intValue.satisfiesBinaryExpression(operator, left.intValue, right.intValue, pp, oracle);
 	}
 
 	@SuppressWarnings("unchecked")
-	private S mkEmptyString(S str) throws SemanticException {
+	private S mkEmptyString(S str, SemanticOracle oracle) throws SemanticException {
 		if (str instanceof Prefix)
 			return (S) new Prefix("");
 		else if (str instanceof Suffix)
@@ -178,9 +180,9 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 		else if (str instanceof CharInclusion)
 			return (S) new CharInclusion(new TreeSet<>(), new TreeSet<>());
 		else if (str instanceof FSA || str instanceof Tarsis)
-			return (S) str.evalNonNullConstant(new Constant(Untyped.INSTANCE, "", SyntheticLocation.INSTANCE), null);
+			return (S) str.evalNonNullConstant(new Constant(Untyped.INSTANCE, "", SyntheticLocation.INSTANCE), null, oracle);
 		else if (str instanceof Bricks)
-			return (S) str.evalNonNullConstant(new Constant(Untyped.INSTANCE, "", SyntheticLocation.INSTANCE), null);
+			return (S) str.evalNonNullConstant(new Constant(Untyped.INSTANCE, "", SyntheticLocation.INSTANCE), null, oracle);
 
 		throw new RuntimeException("Unsupported string domain");
 	}
@@ -277,7 +279,7 @@ public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isBottom())
 			return Lattice.bottomRepresentation();
 		else if (isTop())

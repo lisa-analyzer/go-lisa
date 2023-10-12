@@ -1,3 +1,8 @@
+
+
+
+
+
 plugins {
     id 'java'
     id 'application'
@@ -29,30 +34,16 @@ mainClassName = 'it.unive.golisa.GoLiSA'
 dependencies {
     antlr 'org.antlr:antlr4:4.11.1'    
     testImplementation 'junit:junit:4.12'
-    /*implementation 'io.github.lisa-analyzer:lisa-program:0.1b8-SNAPSHOT'
-    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b8-SNAPSHOT'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b8-SNAPSHOT'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b8-SNAPSHOT'*/
-    implementation 'com.github.unive-ssv:tarsis:1.0'      
+    implementation 'io.github.lisa-analyzer:lisa-program:0.1b9'
+    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b9'
+    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b9'
+    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b9'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
-    
-    implementation 'javax.xml.bind:jaxb-api:2.2.4'
+
+  	implementation 'javax.xml.bind:jaxb-api:2.2.4'
 	implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'
 	implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'	
 	
-	// TODO to remove - lisa
-    api 'commons-io:commons-io:2.8.0'
-    api 'org.apache.commons:commons-lang3:3.9'
-    api 'org.apache.commons:commons-text:1.10.0'
-    api 'commons-io:commons-io:2.8.0'
-	api 'org.apache.commons:commons-collections4:4.4'
-	api 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
-	api 'org.graphstream:gs-core:2.0'
-	api 'org.apache.logging.log4j:log4j-api:2.17.1'
-	runtimeOnly 'org.apache.logging.log4j:log4j-core:2.17.1'
-	runtimeOnly 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.1'
-	api 'org.reflections:reflections:0.9.12'
-	api 'joda-time:joda-time:2.10.14'
 }
 
 jar {
@@ -91,10 +82,6 @@ checkstyleMain {
     exclude 'it/unive/golisa/antlr/*.java'
     exclude 'it/unive/golisa/golang/util/*.java'
     exclude 'it/unive/golisa/golang/api/signature/*.java'
-    reports {
-        xml.enabled false
-        html.enabled false
-    }
 }
 
 task checkstyleErrorMessage {

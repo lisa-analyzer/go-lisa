@@ -14,9 +14,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.annotations.Annotations;
@@ -105,12 +102,9 @@ public class Marshal extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>,
-		T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
 			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
@@ -120,7 +114,7 @@ public class Marshal extends NativeCFG {
 			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, expr.getCodeLocation());
 			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
-			AnalysisState<A, H, V, T> result = state.bottom();
+			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
@@ -128,7 +122,7 @@ public class Marshal extends NativeCFG {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
 				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
-				AnalysisState<A, H, V, T> asg = state.assign(deref, left, original);
+				AnalysisState<A> asg = state.assign(deref, left, original);
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
 						ref,
 						right

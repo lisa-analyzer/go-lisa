@@ -41,8 +41,7 @@ import java.util.Set;
  */
 public class IntegrityNIChecker implements
 SemanticCheck<
-SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> {
+SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>> {
 
 	/**
 	 * The sink annotation.
@@ -56,22 +55,19 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
+			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-			TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool) {
+			TypeEnvironment<InferredTypes>>> tool) {
 	}
 
 	@Override
 	public boolean visitUnit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>>> tool,
 			Unit unit) {
 		return true;
 	}
@@ -80,8 +76,7 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-			TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			TypeEnvironment<InferredTypes>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
@@ -89,8 +84,7 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-			TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			TypeEnvironment<InferredTypes>>> tool,
 			CFG graph) {
 		return true;
 	}
@@ -99,8 +93,7 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-			TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
@@ -109,9 +102,7 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 		try {
 			for (AnalyzedCFG<
 					SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-					TypeEnvironment<InferredTypes>>,
-					PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-					TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+					TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
 				Call resolved = (Call) tool.getResolvedVersion(call, result);
 
 				if (resolved instanceof NativeCall) {
@@ -136,13 +127,11 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 	private void process(
 			CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-			TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			TypeEnvironment<InferredTypes>>> tool,
 			UnresolvedCall call, Call resolved, CodeMemberDescriptor desc,
 			AnalyzedCFG<
 			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-			TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> res)
+			TypeEnvironment<InferredTypes>>> res)
 					throws SemanticException {
 		if (desc.getAnnotations().contains(SINK_MATCHER)) {
 			if (res.getAnalysisStateAfter(call).getState()
@@ -157,9 +146,7 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 			if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
 				AnalysisState<
 				SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-				TypeEnvironment<InferredTypes>>,
-				PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-				TypeEnvironment<InferredTypes>> state = res.getAnalysisStateAfter(call.getParameters()[i]);
+				TypeEnvironment<InferredTypes>>> state = res.getAnalysisStateAfter(call.getParameters()[i]);
 
 
 				Set<SymbolicExpression> reachableIds = new HashSet<>();								
@@ -167,7 +154,7 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 					reachableIds.addAll(HeapResolver.resolve(state, e, call));
 
 				for (SymbolicExpression stack : reachableIds)
-					if (state.getState().getValueState().eval((ValueExpression) stack, call).isLowIntegrity())
+					if (state.getState().getValueState().eval((ValueExpression) stack, call, state.getState()).isLowIntegrity())
 						tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 						+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 						+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
@@ -183,8 +170,7 @@ PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredType
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>,
-			TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvironment<InferredTypes>> tool,
+			TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}

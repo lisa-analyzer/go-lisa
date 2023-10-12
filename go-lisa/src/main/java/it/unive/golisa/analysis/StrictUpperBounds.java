@@ -1,11 +1,18 @@
 package it.unive.golisa.analysis;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.MapRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -26,13 +33,9 @@ import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import it.unive.lisa.util.representation.MapRepresentation;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 
 /**
  * The strict upper bound relational abstract domain.
@@ -62,7 +65,7 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	public StrictUpperBounds assign(Identifier id, ValueExpression expression, ProgramPoint pp)
+	public StrictUpperBounds assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle orale)
 			throws SemanticException {
 
 		if (expression instanceof BinaryExpression) {
@@ -150,15 +153,15 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	public StrictUpperBounds smallStepSemantics(ValueExpression expression, ProgramPoint pp)
+	public StrictUpperBounds smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 		return new StrictUpperBounds(lattice, function);
 	}
 
 	@Override
-	public StrictUpperBounds assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest)
+	public StrictUpperBounds assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
 			throws SemanticException {
-		Satisfiability isSat = satisfies(expression, src);
+		Satisfiability isSat = satisfies(expression, src, oracle);
 		if (isSat == Satisfiability.SATISFIED)
 			return this;
 		else if (isSat == Satisfiability.NOT_SATISFIED)
@@ -192,12 +195,12 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 			if (unary.getOperator() == LogicalNegation.INSTANCE)
-				return satisfies((ValueExpression) unary.getExpression(), pp).negate();
+				return satisfies((ValueExpression) unary.getExpression(), pp, oracle).negate();
 			else
 				return Satisfiability.UNKNOWN;
 		}
@@ -236,9 +239,9 @@ public class StrictUpperBounds
 					return Satisfiability.SATISFIED;
 				return Satisfiability.UNKNOWN;
 			} else if (op == LogicalAnd.INSTANCE)
-				return satisfies(left, pp).and(satisfies(right, pp));
+				return satisfies(left, pp, oracle).and(satisfies(right, pp, oracle));
 			else if (op == LogicalOr.INSTANCE)
-				return satisfies(left, pp).or(satisfies(right, pp));
+				return satisfies(left, pp, oracle).or(satisfies(right, pp, oracle));
 		}
 
 		return Satisfiability.UNKNOWN;
@@ -294,7 +297,7 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		return new MapRepresentation(function, StringRepresentation::new, StringRepresentation::new);
 	}
 
@@ -341,5 +344,15 @@ public class StrictUpperBounds
 	public StrictUpperBounds mk(ExpressionInverseSet<Identifier> lattice,
 			Map<Identifier, ExpressionInverseSet<Identifier>> function) {
 		return new StrictUpperBounds(lattice, function);
+	}
+
+	@Override
+	public boolean knowsIdentifier(Identifier id) {
+		return getKeys().contains(id);
+	}
+
+	@Override
+	public ExpressionInverseSet<Identifier> stateOfUnknown(Identifier key) {
+		return lattice.bottom();
 	}
 }

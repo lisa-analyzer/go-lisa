@@ -1,20 +1,23 @@
 package it.unive.golisa.analysis.composition;
 
+import java.util.function.Predicate;
+
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.analysis.rsubs.RelationalSubstringDomain;
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.ListRepresentation;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import java.util.function.Predicate;
+import it.unive.lisa.util.representation.ListRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 
 /**
  * The reduced product between Tarsis, string constant propagation and RSub.
@@ -43,22 +46,22 @@ public class RelTarsis implements BaseLattice<RelTarsis>, ValueDomain<RelTarsis>
 	}
 
 	@Override
-	public RelTarsis assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		RelationalSubstringDomain rsubsAssign = rsubs.assign(id, expression, pp);
-		ValueEnvironment<StringConstantPropagation> csAssign = constant.assign(id, expression, pp);
-		return new RelTarsis(tarsis.assign(id, expression, pp), rsubsAssign.propagateConstants(csAssign), csAssign);
+	public RelTarsis assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+		RelationalSubstringDomain rsubsAssign = rsubs.assign(id, expression, pp, oracle);
+		ValueEnvironment<StringConstantPropagation> csAssign = constant.assign(id, expression, pp, oracle);
+		return new RelTarsis(tarsis.assign(id, expression, pp, oracle), rsubsAssign.propagateConstants(csAssign), csAssign);
 	}
 
 	@Override
-	public RelTarsis smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		return new RelTarsis(tarsis.smallStepSemantics(expression, pp), rsubs.smallStepSemantics(expression, pp),
-				constant.smallStepSemantics(expression, pp));
+	public RelTarsis smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+		return new RelTarsis(tarsis.smallStepSemantics(expression, pp, oracle), rsubs.smallStepSemantics(expression, pp, oracle),
+				constant.smallStepSemantics(expression, pp, oracle));
 	}
 
 	@Override
-	public RelTarsis assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
-		return new RelTarsis(tarsis.assume(expression, src, dest), rsubs.assume(expression, src, dest),
-				constant.assume(expression, src, dest));
+	public RelTarsis assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle) throws SemanticException {
+		return new RelTarsis(tarsis.assume(expression, src, dest, oracle), rsubs.assume(expression, src, dest, oracle),
+				constant.assume(expression, src, dest, oracle));
 	}
 
 	@Override
@@ -78,22 +81,22 @@ public class RelTarsis implements BaseLattice<RelTarsis>, ValueDomain<RelTarsis>
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
-		if (tarsis.satisfies(expression, pp) == Satisfiability.SATISFIED
-				|| rsubs.satisfies(expression, pp) == Satisfiability.SATISFIED
-				|| constant.satisfies(expression, pp) == Satisfiability.SATISFIED)
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+		if (tarsis.satisfies(expression, pp, oracle) == Satisfiability.SATISFIED
+				|| rsubs.satisfies(expression, pp, oracle) == Satisfiability.SATISFIED
+				|| constant.satisfies(expression, pp, oracle) == Satisfiability.SATISFIED)
 			return Satisfiability.SATISFIED;
 
-		if (tarsis.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED
-				|| rsubs.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED
-				|| constant.satisfies(expression, pp) == Satisfiability.NOT_SATISFIED)
+		if (tarsis.satisfies(expression, pp, oracle) == Satisfiability.NOT_SATISFIED
+				|| rsubs.satisfies(expression, pp, oracle) == Satisfiability.NOT_SATISFIED
+				|| constant.satisfies(expression, pp, oracle) == Satisfiability.NOT_SATISFIED)
 			return Satisfiability.NOT_SATISFIED;
 
 		return Satisfiability.UNKNOWN;
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isTop())
 			return Lattice.topRepresentation();
 		if (isBottom())
@@ -191,5 +194,10 @@ public class RelTarsis implements BaseLattice<RelTarsis>, ValueDomain<RelTarsis>
 	@Override
 	public RelTarsis popScope(ScopeToken token) throws SemanticException {
 		return new RelTarsis(tarsis.popScope(token), rsubs.popScope(token), constant.popScope(token));
+	}
+
+	@Override
+	public boolean knowsIdentifier(Identifier id) {
+		return tarsis.knowsIdentifier(id) || constant.knowsIdentifier(id);
 	}
 }

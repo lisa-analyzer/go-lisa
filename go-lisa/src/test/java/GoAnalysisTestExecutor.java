@@ -17,6 +17,7 @@ import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.imp.ParsingException;
 import it.unive.lisa.outputs.compare.JsonReportComparer;
 import it.unive.lisa.outputs.compare.JsonReportComparer.BaseDiffAlgorithm;
 import it.unive.lisa.outputs.compare.JsonReportComparer.DiffAlgorithm;

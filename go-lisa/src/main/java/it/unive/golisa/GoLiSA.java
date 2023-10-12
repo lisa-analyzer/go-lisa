@@ -1,5 +1,21 @@
 package it.unive.golisa;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
+
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -24,8 +40,8 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.type.TypeDomain;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.analysis.value.TypeDomain;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
@@ -34,20 +50,6 @@ import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * The Go frontend for LiSA.
@@ -122,7 +124,7 @@ public class GoLiSA {
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new TaintDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
+					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new TaintChecker());
 			break;
 		case "non-interference":
@@ -130,7 +132,7 @@ public class GoLiSA {
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new InferenceSystem<>(new IntegrityNIDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
+					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new IntegrityNIChecker());
 			break;
 		case "numerical-overflow":

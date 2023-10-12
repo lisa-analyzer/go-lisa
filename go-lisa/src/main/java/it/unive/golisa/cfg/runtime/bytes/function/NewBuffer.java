@@ -11,9 +11,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.annotations.Annotations;
@@ -98,10 +95,10 @@ public class NewBuffer extends NativeCFG {
 			super(cfg, location, "NewBufferImpl", Buffer.getBufferType(null), expr);
 		}
 
+
 		@Override
-		public <A extends AbstractState<A, H, V, T>, H extends HeapDomain<H>, V extends ValueDomain<V>, T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> arg0,
+				AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> arg3) throws SemanticException {
 			Buffer bufferType = Buffer.getBufferType(getProgram());
 
 			// Allocates the new memory for a Buffer object
@@ -109,7 +106,7 @@ public class NewBuffer extends NativeCFG {
 			HeapReference ref = new HeapReference(new ReferenceType(bufferType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(bufferType, ref, getLocation());
 
-			AnalysisState<A, H, V, T> asg = state.bottom();
+			AnalysisState<A> asg = state.bottom();
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());

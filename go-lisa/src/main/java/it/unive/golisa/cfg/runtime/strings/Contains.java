@@ -1,14 +1,13 @@
 package it.unive.golisa.cfg.runtime.strings;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -23,7 +22,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * func Contains(s, substr string) bool.
@@ -90,17 +88,15 @@ public class Contains extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
+						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+						SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 						throws SemanticException {
-			TypeSystem types = getProgram().getTypes();
-			AnalysisState<A, H, V, T> result = state.bottom();
-			for (Type leftType : left.getRuntimeTypes(types))
-				for (Type rightType : right.getRuntimeTypes(types))
+			AnalysisState<A> result = state.bottom();
+			Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
+			Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
+			for (Type leftType : ltypes)
+				for (Type rightType : rtypes)
 					if (!leftType.isStringType() && !leftType.isUntyped())
 						continue;
 					else if (!rightType.isStringType() && !rightType.isUntyped())

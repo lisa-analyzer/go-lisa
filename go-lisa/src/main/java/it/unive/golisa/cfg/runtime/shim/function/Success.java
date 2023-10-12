@@ -10,9 +10,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.annotations.Annotations;
@@ -99,24 +96,21 @@ public class Success extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>,
-		H extends HeapDomain<H>,
-		V extends ValueDomain<V>,
-		T extends TypeDomain<T>> AnalysisState<A, H, V, T> unarySemantics(
-				InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-				SymbolicExpression expr, StatementStore<A, H, V, T> expressions) throws SemanticException {
+		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
 			Response responseType = Response.getResponseType(null);
 
 			// Allocates the new memory for a Time object
 			MemoryAllocation alloc = new MemoryAllocation(responseType, getLocation(), new Annotations(), true);
-			AnalysisState<A, H, V, T> allocState = state.smallStepSemantics(alloc, this);
+			AnalysisState<A> allocState = state.smallStepSemantics(alloc, this);
 
 			// Assigns an unknown object to each allocation identifier
 			HeapReference ref = new HeapReference(new ReferenceType(responseType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(responseType, ref, getLocation());
 			UnaryExpression un = new UnaryExpression(Untyped.INSTANCE, expr, SuccessOperator.INSTANCE, getLocation());
-			AnalysisState<A, H, V, T> asg = allocState.assign(deref, un, this);				
+			AnalysisState<A> asg = allocState.assign(deref, un, this);				
 			return asg.smallStepSemantics(ref, original);
 		}
 	}

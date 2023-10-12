@@ -11,11 +11,10 @@ import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.heap.MonolithicHeap;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -29,8 +28,6 @@ import it.unive.lisa.analysis.string.fsa.FSA;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.traces.TracePartitioning;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
@@ -55,52 +52,50 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		return st instanceof UnresolvedCall && ((UnresolvedCall) st).getTargetName().equals("assert");
 	}
 
-	private static class AssertionCheck<A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> implements SemanticCheck<A, H, V, T> {
+	private static class AssertionCheck<A extends AbstractState<A>> implements SemanticCheck<A> {
 
 		@Override
-		public void beforeExecution(CheckToolWithAnalysisResults<A, H, V, T> tool) {
+		public void beforeExecution(CheckToolWithAnalysisResults<A> tool) {
+		}
+
+
+		@Override
+		public void afterExecution(CheckToolWithAnalysisResults<A> tool) {
 		}
 
 		@Override
-		public void afterExecution(CheckToolWithAnalysisResults<A, H, V, T> tool) {
-		}
-
-		@Override
-		public boolean visitUnit(CheckToolWithAnalysisResults<A, H, V, T> tool, Unit unit) {
+		public boolean visitUnit(CheckToolWithAnalysisResults<A> tool, Unit unit) {
 			return true;
 		}
 
 		@Override
-		public void visitGlobal(CheckToolWithAnalysisResults<A, H, V, T> tool, Unit unit, Global global,
+		public void visitGlobal(CheckToolWithAnalysisResults<A> tool, Unit unit, Global global,
 				boolean instance) {
 		}
 
 		@Override
-		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph) {
+		public boolean visit(CheckToolWithAnalysisResults<A> tool, CFG graph) {
 			return true;
 		}
 
 		@Override
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Statement node) {
+		public boolean visit(CheckToolWithAnalysisResults<A> tool, CFG graph, Statement node) {
 			if (isAssert(node)) {
-				for (AnalyzedCFG<A, H, V, T> res : tool.getResultOf(graph)) {
-					AnalysisState<A, H, V, T> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
+				for (AnalyzedCFG<A> res : tool.getResultOf(graph)) {
+					AnalysisState<A> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
 					try {
-						SimpleAbstractState state = post.getDomainInstance(SimpleAbstractState.class);
-
+						SimpleAbstractState state = post.getState().getDomainInstance(SimpleAbstractState.class);
+						
 						if (((UnresolvedCall) node).getParameters()[0].toString()
 								.startsWith("main::containsChar")) {
 							Expression[] args = ((UnresolvedCall) ((UnresolvedCall) node).getParameters()[0])
 									.getParameters();
 							VariableRef variable = (VariableRef) args[0];
 							GoString ch = (GoString) args[1];
-							AnalysisState<A, H, V, T> target = res.getAnalysisStateAfter(variable);
+							AnalysisState<A> target = res.getAnalysisStateAfter(variable);
 							for (SymbolicExpression expr : target.getComputedExpressions()) {
-								ContainsCharProvider lattice = (ContainsCharProvider) ((SmashedSum) target
+								ContainsCharProvider lattice = (ContainsCharProvider) ((SmashedSum) target.getState()
 										.getDomainInstance(ValueEnvironment.class).getState(expr)).getStringValue();
 								Satisfiability sat = lattice.containsChar(ch.getValue().charAt(0));
 								if (sat == Satisfiability.UNKNOWN)
@@ -110,7 +105,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 							}
 						} else
 							for (SymbolicExpression expr : post.getComputedExpressions()) {
-								Satisfiability sat = state.satisfies(expr, node);
+								Satisfiability sat = state.satisfies(expr, node, state);
 								if (sat == Satisfiability.UNKNOWN)
 									tool.warnOn(node, "This assertion might fail");
 								else if (sat == Satisfiability.NOT_SATISFIED)
@@ -125,7 +120,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		}
 
 		@Override
-		public boolean visit(CheckToolWithAnalysisResults<A, H, V, T> tool, CFG graph, Edge edge) {
+		public boolean visit(CheckToolWithAnalysisResults<A> tool, CFG graph, Edge edge) {
 			return true;
 		}
 

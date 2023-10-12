@@ -1,14 +1,16 @@
 package it.unive.golisa.analysis.rsubs;
 
+import java.util.List;
+import java.util.function.Predicate;
+
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.ListRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -48,8 +50,9 @@ import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.symbolic.value.operator.unary.TypeOf;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import java.util.List;
-import java.util.function.Predicate;
+import it.unive.lisa.util.representation.ListRepresentation;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 
 /**
  * The reduced product between relational substring abstract domain and
@@ -91,12 +94,12 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	}
 
 	@Override
-	public RSubs assign(Identifier id, ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public RSubs assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (processableByStringDomain(expression))
-			return new RSubs(string.assign(id, expression, pp), num);
+			return new RSubs(string.assign(id, expression, pp, oracle), num);
 
 		if (processableByNumericalDomain(expression))
-			return new RSubs(string, num.assign(id, expression, pp));
+			return new RSubs(string, num.assign(id, expression, pp, oracle));
 
 		return new RSubs(string, num.top());
 	}
@@ -212,12 +215,12 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	}
 
 	@Override
-	public RSubs smallStepSemantics(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public RSubs smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
 	}
 
 	@Override
-	public RSubs assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest) throws SemanticException {
+	public RSubs assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle) throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
 	}
 
@@ -238,13 +241,13 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		// TODO satisfies
 		return Satisfiability.UNKNOWN;
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isTop())
 			return Lattice.topRepresentation();
 		if (isBottom())
@@ -333,5 +336,10 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	@Override
 	public RSubs popScope(ScopeToken token) throws SemanticException {
 		return new RSubs(string.popScope(token), num.popScope(token));
+	}
+
+	@Override
+	public boolean knowsIdentifier(Identifier id) {
+		return string.knowsIdentifier(id) || num.knowsIdentifier(id);
 	}
 }

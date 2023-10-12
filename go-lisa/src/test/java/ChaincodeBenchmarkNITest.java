@@ -1,22 +1,24 @@
 
+import java.io.IOException;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.AnalysisSetupException;
-import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
-import it.unive.lisa.analysis.value.TypeDomain;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
-import java.io.IOException;
-import org.junit.Ignore;
-import org.junit.Test;
 
 @Ignore
 public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
@@ -31,7 +33,7 @@ public class ChaincodeBenchmarkNITest extends GoChaincodeTestExecutor {
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
 		conf.compareWithOptimization = false;
 		return conf;

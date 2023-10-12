@@ -11,10 +11,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -46,16 +43,13 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> Pair<AnalysisState<A, H, V, T>, ExpressionSet<SymbolicExpression>[]> prepare(
+	public <A extends AbstractState<A>> Pair<AnalysisState<A>, ExpressionSet[]> prepare(
 					Call call,
-					AnalysisState<A, H, V, T> callState,
-					InterproceduralAnalysis<A, H, V, T> interprocedural,
-					StatementStore<A, H, V, T> expressions,
+					AnalysisState<A> callState,
+					InterproceduralAnalysis<A> interprocedural,
+					StatementStore<A> expressions,
 					Parameter[] formals,
-					ExpressionSet<SymbolicExpression>[] actuals)
+					ExpressionSet[] actuals)
 					throws SemanticException {
 		boolean hasVarargs = formals.length > 0 && formals[formals.length - 1] instanceof VarArgsParameter;
 		int i = 0;
@@ -64,12 +58,12 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 		// that corresponds to the callee of the instance call
 		if (call.getCallType() == CallType.INSTANCE) {
 			Parameter fCallee = formals[0];
-			ExpressionSet<SymbolicExpression> aCallee = actuals[0];
-			AnalysisState<A, H, V, T> prepared = callState.bottom();
+			ExpressionSet aCallee = actuals[0];
+			AnalysisState<A> prepared = callState.bottom();
 			for (SymbolicExpression exp : aCallee) {
 				HeapReference ref = new HeapReference(new ReferenceType(fCallee.getStaticType()), exp,
 						call.getLocation());
-				AnalysisState<A, H, V, T> refState = callState.smallStepSemantics(ref, call);
+				AnalysisState<A> refState = callState.smallStepSemantics(ref, call);
 				for (SymbolicExpression e : refState.getComputedExpressions()) {
 					Variable fId = new Variable(new ReferenceType(fCallee.getStaticType()), fCallee.getName(),
 							fCallee.getAnnotations(), fCallee.getLocation());
@@ -83,7 +77,7 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 
 		// prepare the state for the call: assign the value to each
 		// parameter
-		AnalysisState<A, H, V, T> prepared = callState;
+		AnalysisState<A> prepared = callState;
 		for (; i < formals.length; i++)
 			if (i == formals.length - 1 && hasVarargs)
 				if (i == actuals.length)
@@ -92,14 +86,14 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 							formals[i].toSymbolicVariable(),
 							new NullConstant(call.getLocation()),
 							call),
-							ArrayUtils.add(actuals, new ExpressionSet<>(formals[i].toSymbolicVariable())));
+							ArrayUtils.add(actuals, new ExpressionSet(formals[i].toSymbolicVariable())));
 				else
 					return Pair.of(
 							smash(prepared, i, actuals, (GoSliceType) formals[i].getStaticType(),
 									formals[i].toSymbolicVariable(), call),
-							ArrayUtils.add(actuals, new ExpressionSet<>(formals[i].toSymbolicVariable())));
+							ArrayUtils.add(actuals, new ExpressionSet(formals[i].toSymbolicVariable())));
 			else {
-				AnalysisState<A, H, V, T> temp = prepared.bottom();
+				AnalysisState<A> temp = prepared.bottom();
 				for (SymbolicExpression exp : actuals[i])
 					if (formals[i].getStaticType().isInMemoryType()) {
 						Variable fId = new Variable(new ReferenceType(formals[i].getStaticType()), formals[i].getName(),
@@ -113,24 +107,21 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 		return Pair.of(prepared, actuals);
 	}
 
-	private <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> smash(AnalysisState<A, H, V, T> state,
+	private <A extends AbstractState<A>> AnalysisState<A> smash(AnalysisState<A> state,
 					int i,
-					ExpressionSet<SymbolicExpression>[] actuals,
+					ExpressionSet[] actuals,
 					GoSliceType type,
 					Variable symbolicVariable,
 					ProgramPoint pp) throws SemanticException {
-		AnalysisState<A, H, V, T> result = state.bottom();
+		AnalysisState<A> result = state.bottom();
 		Type contentType = type.getContentType();
 		int sliceLenght = actuals.length - i;
 		CodeLocation location = pp.getLocation();
 
 		// allocate the slice
 		MemoryAllocation created = new MemoryAllocation(type, location, new Annotations(),false);
-		AnalysisState<A, H, V, T> createdSt = state.smallStepSemantics(created, pp);
-		ExpressionSet<SymbolicExpression> createdExps = createdSt.getComputedExpressions();
+		AnalysisState<A> createdSt = state.smallStepSemantics(created, pp);
+		ExpressionSet createdExps = createdSt.getComputedExpressions();
 
 		for (SymbolicExpression cr : createdExps) {
 			HeapReference reference = new HeapReference(new ReferenceType(type), cr, location);
@@ -139,9 +130,9 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 			// Assign the len property to this hid
 			Variable lenProperty = new Variable(Untyped.INSTANCE, "len", location);
 			AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, dereference, lenProperty, location);
-			AnalysisState<A, H, V, T> lenState = createdSt.smallStepSemantics(lenAccess, pp);
+			AnalysisState<A> lenState = createdSt.smallStepSemantics(lenAccess, pp);
 
-			AnalysisState<A, H, V, T> lenResult = state.bottom();
+			AnalysisState<A> lenResult = state.bottom();
 			for (SymbolicExpression lenId : lenState.getComputedExpressions())
 				lenResult = lenResult
 						.lub(lenState.assign(lenId, new Constant(GoIntType.INSTANCE, sliceLenght, location), pp));
@@ -151,23 +142,25 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 					location);
 			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 					capProperty, location);
-			AnalysisState<A, H, V, T> capState = lenResult.smallStepSemantics(capAccess, pp);
+			AnalysisState<A> capState = lenResult.smallStepSemantics(capAccess, pp);
 
-			AnalysisState<A, H, V, T> capResult = state.bottom();
+			AnalysisState<A> capResult = state.bottom();
 			for (SymbolicExpression lenId : capState.getComputedExpressions())
 				capResult = capResult.lub(
 						capState.assign(lenId, new Constant(GoIntType.INSTANCE, sliceLenght, location), pp));
 
 			// Allocate the heap location
-			AnalysisState<A, H, V, T> tmp = capResult;
+			AnalysisState<A> tmp = capResult;
 			for (; i < actuals.length; i++) {
 				AccessChild access = new AccessChild(contentType, dereference,
 						new Constant(GoIntType.INSTANCE, i, location), location);
-				AnalysisState<A, H, V, T> accessState = tmp.smallStepSemantics(access, pp);
+				AnalysisState<A> accessState = tmp.smallStepSemantics(access, pp);
 
 				for (SymbolicExpression index : accessState.getComputedExpressions())
-					for (SymbolicExpression v : actuals[i])
-						tmp = tmp.assign(index, NumericalTyper.type(v), pp);
+					for (SymbolicExpression v : actuals[i]) {
+						Type vtype = tmp.getState().getDynamicTypeOf(v, pp, tmp.getState());
+						tmp = tmp.assign(index, NumericalTyper.type(v, vtype), pp);
+					}
 			}
 
 			result = result.lub(tmp.smallStepSemantics(reference, pp));

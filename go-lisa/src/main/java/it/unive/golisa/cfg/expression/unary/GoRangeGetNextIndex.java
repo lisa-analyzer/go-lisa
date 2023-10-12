@@ -9,10 +9,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -57,16 +54,12 @@ public class GoRangeGetNextIndex extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-					throws SemanticException {
+	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(InterproceduralAnalysis<A> interprocedural,
+			AnalysisState<A> state, ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
 		if (state.getComputedExpressions().size() == 1) {
 			for (SymbolicExpression e : state.getComputedExpressions()) {
-				Type computed = computeType(e.getDynamicType());
+				Type etype = state.getState().getDynamicTypeOf(e, this, state.getState());
+				Type computed = computeType(etype);
 				if (!computed.equals(Untyped.INSTANCE))
 					return state.smallStepSemantics(
 							new PushAny(computed, this.getLocation()),
@@ -76,5 +69,4 @@ public class GoRangeGetNextIndex extends NaryExpression {
 
 		return state;
 	}
-
 }

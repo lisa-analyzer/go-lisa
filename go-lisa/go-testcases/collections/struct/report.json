@@ -3,17 +3,17 @@
   "files" : [ "report.json", "untyped_structs.allocs().json" ],
   "info" : {
     "cfgs" : "1",
-    "duration" : "8ms",
-    "end" : "2023-04-28T11:19:10.747+02:00",
+    "duration" : "338ms",
+    "end" : "2023-10-13T22:52:37.422+02:00",
     "expressions" : "8",
     "files" : "1",
     "globals" : "2",
     "members" : "3",
     "programs" : "1",
-    "start" : "2023-04-28T11:19:10.739+02:00",
+    "start" : "2023-10-13T22:52:37.084+02:00",
     "statements" : "3",
     "units" : "2",
-    "version" : "0.1b8",
+    "version" : "0.1b9",
     "warnings" : "0"
   },
   "configuration" : {
@@ -31,6 +31,7 @@
     "serializeInputs" : "false",
     "serializeResults" : "true",
     "syntacticChecks" : "",
+    "useWideningPoints" : "true",
     "wideningThreshold" : "5",
     "workdir" : "go-outputs/collections/struct"
   }

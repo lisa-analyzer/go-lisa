@@ -3,17 +3,17 @@
   "files" : [ "report.json", "untyped_maps.allocs().json", "untyped_maps.emptyAllocs().json", "untyped_maps.main().json" ],
   "info" : {
     "cfgs" : "3",
-    "duration" : "30ms",
-    "end" : "2023-04-28T11:19:10.472+02:00",
+    "duration" : "384ms",
+    "end" : "2023-10-13T22:58:18.277+02:00",
     "expressions" : "28",
     "files" : "3",
     "globals" : "0",
     "members" : "5",
     "programs" : "1",
-    "start" : "2023-04-28T11:19:10.442+02:00",
+    "start" : "2023-10-13T22:58:17.893+02:00",
     "statements" : "10",
     "units" : "1",
-    "version" : "0.1b8",
+    "version" : "0.1b9",
     "warnings" : "0"
   },
   "configuration" : {
@@ -31,6 +31,7 @@
     "serializeInputs" : "false",
     "serializeResults" : "true",
     "syntacticChecks" : "",
+    "useWideningPoints" : "true",
     "wideningThreshold" : "5",
     "workdir" : "go-outputs/collections/map/field-sensitive"
   }

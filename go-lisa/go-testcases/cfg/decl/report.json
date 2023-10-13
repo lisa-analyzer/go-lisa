@@ -31,6 +31,7 @@
     "serializeInputs" : "true",
     "serializeResults" : "false",
     "syntacticChecks" : "",
+    "useWideningPoints" : "true",    
     "wideningThreshold" : "5",
     "workdir" : "go-outputs/cfg/decl"
   }

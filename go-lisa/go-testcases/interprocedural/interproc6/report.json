@@ -3,17 +3,17 @@
   "files" : [ "_[int__,_int__]_main.f()_-1714443466.json", "_[int__,_int__]_main.f()_-1714443497.json", "report.json", "untyped_main.main().json" ],
   "info" : {
     "cfgs" : "2",
-    "duration" : "20ms",
-    "end" : "2023-04-28T10:53:09.278+02:00",
+    "duration" : "477ms",
+    "end" : "2023-10-16T10:56:07.464+02:00",
     "expressions" : "9",
     "files" : "3",
     "globals" : "0",
     "members" : "4",
     "programs" : "1",
-    "start" : "2023-04-28T10:53:09.258+02:00",
+    "start" : "2023-10-16T10:56:06.987+02:00",
     "statements" : "4",
     "units" : "1",
-    "version" : "0.1b8",
+    "version" : "0.1b9",
     "warnings" : "0"
   },
   "configuration" : {
@@ -31,6 +31,7 @@
     "serializeInputs" : "false",
     "serializeResults" : "true",
     "syntacticChecks" : "",
+    "useWideningPoints" : "true",
     "wideningThreshold" : "5",
     "workdir" : "go-outputs/interprocedural/interproc6"
   }

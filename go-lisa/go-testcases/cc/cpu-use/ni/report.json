@@ -36,6 +36,7 @@
     "serializeResults" : "false",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
     "workdir" : "go-outputs/cc/cpu-use/ni"
   }
 }

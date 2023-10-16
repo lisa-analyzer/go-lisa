@@ -32,6 +32,7 @@
     "serializeResults" : "true",
     "syntacticChecks" : "",
     "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
     "workdir" : "go-outputs/typing"
   }
 }

@@ -8,6 +8,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -173,7 +175,7 @@ public class GoChannelType implements GoType {
 
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
-		return all();
+		return Collections.singleton(this);
 	}
 
 	/**

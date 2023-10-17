@@ -14,9 +14,9 @@ import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
@@ -49,12 +49,12 @@ public class GoNonKeyedLiteral extends NaryExpression {
 	 * @param values     the expressions of the non-keyed literal
 	 * @param staticType the static type of this non-keyed literal
 	 */
-	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] values, Type staticType) {
+	public GoNonKeyedLiteral(CFG cfg, CodeLocation location, Expression[] values, Type staticType) {
 		this(cfg, location, values, staticType, true);
 
 	}
 
-	public GoNonKeyedLiteral(CFG cfg, SourceCodeLocation location, Expression[] values, Type staticType,
+	public GoNonKeyedLiteral(CFG cfg, CodeLocation location, Expression[] values, Type staticType,
 			boolean isStackAllocated) {
 		super(cfg, location, "nonKeyedLit(" + staticType + ")", staticType, values);
 		this.isStackAllocated = isStackAllocated;

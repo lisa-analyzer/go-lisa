@@ -5,8 +5,8 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -27,7 +27,7 @@ public class GoDeref extends UnaryExpression {
 	 * @param location the location where this expression is defined
 	 * @param exp      the expression to dereference
 	 */
-	public GoDeref(CFG cfg, SourceCodeLocation location, Expression exp) {
+	public GoDeref(CFG cfg, CodeLocation location, Expression exp) {
 		super(cfg, location, "&", exp);
 	}
 

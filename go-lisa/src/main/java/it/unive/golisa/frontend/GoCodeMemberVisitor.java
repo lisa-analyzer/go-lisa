@@ -305,7 +305,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	private final Map<String, Set<IdInfo>> visibleIds;
 
 	protected final Unit pkgUnit;
-	
+
 	/**
 	 * Builds the code member visitor.
 	 * 
@@ -1496,6 +1496,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return new NoOp(cfg, locationOf(ctx));
 	}
 
+	private Parameter[] computeTupleType(Expression[] exps, Type returnType) {
+		Parameter[] types = new Parameter[exps.length];
+		for (int i = 0; i < types.length; i++) 
+			if ((returnType.isPointerType() && returnType.asPointerType().getInnerType() instanceof GoTupleType)) {
+				GoTupleType tupleType = (GoTupleType) returnType.asPointerType().getInnerType();
+				types[i] = new Parameter(exps[i].getLocation(), "_", exps[i].getStaticType().commonSupertype(tupleType.getTypeAt(i)));
+			} else
+				types[i] = new Parameter(exps[i].getLocation(), "_", exps[i].getStaticType());
+	
+		return types;
+	}
+
 	@Override
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitReturnStmt(ReturnStmtContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
@@ -1508,8 +1520,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (expressionList.expression().size() == 1)
 				ret = new GoReturn(cfg, location, visitExpression(expressionList.expression(0)));
 			else {
-				GoTupleExpression tupleExp = new GoTupleExpression(cfg, location,
-						visitExpressionList(expressionList));
+				Expression[] exps = visitExpressionList(expressionList);
+				Parameter[] types = computeTupleType(exps, this.cfg.getDescriptor().getReturnType());
+				GoTupleExpression tupleExp = new GoTupleExpression(cfg, types, location, exps);
 				ret = new GoReturn(cfg, location, tupleExp);
 			}
 			block.addNode(ret);
@@ -1518,14 +1531,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		} else {
 			Type returnType = cfg.getDescriptor().getReturnType();
 			if (returnType.isPointerType() && returnType.asPointerType().getInnerType() instanceof GoTupleType) {
-				GoTupleType tuple = (GoTupleType) returnType.asPointerType().getInnerType();
+				GoTupleType tupleType = (GoTupleType) returnType.asPointerType().getInnerType();
 
-				if (tuple.isNamedValues()) {
-					Expression[] result = new Expression[tuple.size()];
-					for (int i = 0; i < tuple.size(); i++)
-						result[i] = new VariableRef(cfg, location, tuple.get(i).getName(), Untyped.INSTANCE);
+				if (tupleType.isNamedValues()) {
+					Expression[] result = new Expression[tupleType.size()];
+					for (int i = 0; i < tupleType.size(); i++)
+						result[i] = new VariableRef(cfg, location, tupleType.get(i).getName(), Untyped.INSTANCE);
 
-					GoReturn ret = new GoReturn(cfg, location, new GoTupleExpression(cfg, location, result));
+					GoReturn ret = new GoReturn(cfg, location, new GoTupleExpression(cfg, tupleType, location, result));
 					block.addNode(ret);
 					storeIds(ret);
 					return Triple.of(ret, block, ret);

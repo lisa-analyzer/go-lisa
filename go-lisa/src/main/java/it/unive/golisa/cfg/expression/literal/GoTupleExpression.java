@@ -41,14 +41,13 @@ public class GoTupleExpression extends NaryExpression {
 	 * @param location    the location where this expression is defined
 	 * @param expressions the expressions composing the tuple
 	 */
-	public GoTupleExpression(CFG cfg, CodeLocation location, Expression... expressions) {
+	public GoTupleExpression(CFG cfg, Parameter[] types, CodeLocation location, Expression... expressions) {
+		this(cfg, GoTupleType.lookup(types), location, expressions);
+	}
+	
+	public GoTupleExpression(CFG cfg, GoTupleType type, CodeLocation location, Expression... expressions) {
 		super(cfg, location, "(tuple)", expressions);
-
-		Parameter[] types = new Parameter[expressions.length];
-		for (int i = 0; i < types.length; i++) 
-			types[i] = new Parameter(expressions[i].getLocation(), "_", expressions[i].getStaticType());
-
-		this.tupleType = GoTupleType.lookup(types);
+		this.tupleType = type;
 	}
 
 	@SafeVarargs

@@ -106,11 +106,14 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	@Override
 	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
 		Expression[] exps = new Expression[size()];
-
-		for (int i = 0; i < size(); i++)
+		Parameter[] types = new Parameter[size()];
+		
+		for (int i = 0; i < size(); i++) {
 			exps[i] = ((GoType) get(i).getStaticType()).defaultValue(cfg, location);
-
-		return new GoTupleExpression(cfg, location, exps);
+			types[i] = new Parameter(location, "_", get(i).getStaticType());
+		}
+		
+		return new GoTupleExpression(cfg, types, location, exps);
 	}
 
 	/**

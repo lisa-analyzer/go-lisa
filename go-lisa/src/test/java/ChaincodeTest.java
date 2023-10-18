@@ -42,6 +42,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.testSubDir = "taint";
 		conf.programFile = "boleto.go";
 		conf.annSet = annSet;
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		perform(conf);
 	}
 

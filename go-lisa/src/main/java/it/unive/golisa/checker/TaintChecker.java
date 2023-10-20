@@ -11,7 +11,6 @@ import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
@@ -32,8 +31,7 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.HeapLocation;
-import it.unive.lisa.symbolic.value.MemoryPointer;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.StringUtilities;
 
@@ -112,12 +110,14 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 								for (SymbolicExpression e : state.getComputedExpressions())
 									reachableIds.addAll(HeapResolver.resolve(state, e, node));
 
-								for (SymbolicExpression s : reachableIds)
-									if (state.getState().getValueState().eval((ValueExpression) s, node, state.getState())
+								for (SymbolicExpression s : reachableIds) {
+									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
+									if (s instanceof Identifier && valueState.knowsIdentifier((Identifier) s) && valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+								}
 							}
 
 					}
@@ -135,12 +135,14 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 								for (SymbolicExpression e : state.getComputedExpressions())
 									reachableIds.addAll(HeapResolver.resolve(state, e, node));
 
-								for (SymbolicExpression s : reachableIds)
-									if (state.getState().getValueState().eval((ValueExpression) s, node, state.getState())
+								for (SymbolicExpression s : reachableIds) {
+									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
+									if (s instanceof Identifier && valueState.knowsIdentifier((Identifier) s) && valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+								}
 							}
 
 					}
@@ -180,32 +182,7 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 				AnalysisState<A> entryState,
 				SymbolicExpression e,
 				Statement pp) throws SemanticException {
-			Set<SymbolicExpression> ws = new HashSet<>();
-			ws.add(e);
-
-			Set<SymbolicExpression> result = new HashSet<>();
-			Set<SymbolicExpression> prev = new HashSet<>();
-			Set<SymbolicExpression> locs = new HashSet<>();
-			entryState.getState().rewrite(e, pp, entryState.getState()).elements().stream().forEach(result::add);
-
-			do {
-				ws.addAll(locs);
-				prev = new HashSet<>(result);
-				for (SymbolicExpression id : ws) {
-					ExpressionSet rewritten = entryState.getState().rewrite(id, pp, entryState.getState());
-					locs = new HashSet<>();
-					for (SymbolicExpression r : rewritten) {
-						if (r instanceof MemoryPointer) {
-							HeapLocation l = ((MemoryPointer) r).getReferencedLocation();
-							locs.add(l);
-							result.add(l);
-						} else
-							locs.add(r);
-					}
-				}
-			} while (!prev.equals(result));
-
-			return result;
+			return entryState.getState().reachableFrom(e, pp, entryState.getState()).elements;
 		}
 	}
 }

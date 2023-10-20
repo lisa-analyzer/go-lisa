@@ -1,5 +1,9 @@
 package it.unive.golisa.checker;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AnalysisState;
@@ -28,11 +32,9 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.util.StringUtilities;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A non-interference integrity checker.
@@ -153,11 +155,14 @@ SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvi
 				for (SymbolicExpression e : state.getComputedExpressions())
 					reachableIds.addAll(HeapResolver.resolve(state, e, call));
 
-				for (SymbolicExpression stack : reachableIds)
-					if (state.getState().getValueState().eval((ValueExpression) stack, call, state.getState()).isLowIntegrity())
+				for (SymbolicExpression stack : reachableIds) {
+					InferenceSystem<IntegrityNIDomain> valueState = state.getState().getValueState();
+					if (stack instanceof Identifier && valueState.knowsIdentifier((Identifier) stack) &&valueState.eval((ValueExpression) stack, call, state.getState()).isLowIntegrity())
 						tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 						+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 						+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+				}
+				
 				if (res.getAnalysisStateAfter(call.getParameters()[call.getParameters().length - 1]).getState()
 						.getValueState().getExecutionState()
 						.isLowIntegrity())

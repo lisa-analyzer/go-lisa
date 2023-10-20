@@ -120,7 +120,7 @@ public class Marshal extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
+				UnaryExpression left = new UnaryExpression(GoSliceType.getSliceOfBytes(), derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
 				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
 				AnalysisState<A> asg = state.assign(deref, left, original);
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
@@ -155,7 +155,7 @@ public class Marshal extends NativeCFG {
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(GoSliceType.getSliceOfBytes());
 		}
 	}
 

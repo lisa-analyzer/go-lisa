@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -11,11 +10,11 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
-import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.annotations.Annotations;
@@ -120,14 +119,12 @@ public class GetState extends NativeCFG {
 			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
+			ExpressionSet reachableIds = state.getState().reachableFrom(left, this, state.getState());
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-				BinaryExpression lExp = new BinaryExpression(Untyped.INSTANCE, derefId, right, GetStateFirstParameter.INSTANCE, getLocation());
+				BinaryExpression lExp = new BinaryExpression(GoSliceType.getSliceOfBytes(), derefId, right, GetStateFirstParameter.INSTANCE, getLocation());
 				BinaryExpression  rExp = new BinaryExpression(GoErrorType.INSTANCE, derefId, right, GetStateSecondParameter.INSTANCE, getLocation());
-			
 				AnalysisState<A> asg = state.assign(deref, lExp, original);
-
 				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
 						ref,
 						rExp
@@ -162,7 +159,7 @@ public class GetState extends NativeCFG {
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(GoSliceType.getSliceOfBytes());
 		}
 	}
 

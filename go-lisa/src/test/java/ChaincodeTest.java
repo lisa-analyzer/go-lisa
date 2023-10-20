@@ -17,7 +17,6 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
@@ -42,7 +41,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.testSubDir = "taint";
 		conf.programFile = "boleto.go";
 		conf.annSet = annSet;
-		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		perform(conf);
 	}
 
@@ -98,7 +96,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/high-throughput";
 		conf.programFile = "high-throughput.go";
-		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		conf.annSet = annSet;
 		perform(conf);
 	}

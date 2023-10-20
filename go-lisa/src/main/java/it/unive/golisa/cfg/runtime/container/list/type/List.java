@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.container.list.type;
 
+import it.unive.golisa.cfg.runtime.container.list.function.Front;
 import it.unive.golisa.cfg.runtime.container.list.function.New;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -49,7 +50,7 @@ public class List extends GoStructType {
 	 */
 	public static List getListType(Program program) {
 		if (INSTANCE == null) {
-			ClassUnit listUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "list",
+			ClassUnit listUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "List",
 					false);
 			INSTANCE = new List("List", listUnit);
 			return INSTANCE;
@@ -64,5 +65,6 @@ public class List extends GoStructType {
 	public static void registerMethods() {
 		CompilationUnit listUnit = INSTANCE.getUnit();
 		listUnit.addInstanceCodeMember(new New(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, listUnit));
+		listUnit.addInstanceCodeMember(new Front(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, listUnit));
 	}
 }

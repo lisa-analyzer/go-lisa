@@ -10,6 +10,7 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
@@ -33,7 +34,6 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		conf.testDir = "non-det/map-iter";
 		conf.programFile = "MapIteration.go";
 		conf.annSet = annSet;
-
 		perform(conf);
 	}
 
@@ -71,6 +71,7 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 		conf.testDir = "non-det/goroutines";
 		conf.programFile = "GoRoutines.go";
 		conf.annSet = annSet;
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		perform(conf);
 	}
 }

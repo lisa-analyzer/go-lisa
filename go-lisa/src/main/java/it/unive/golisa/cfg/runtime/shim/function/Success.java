@@ -30,7 +30,6 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import it.unive.lisa.type.Untyped;
 
 /**
  * Success response chaincodes. func Success(payload []byte) pb.Response
@@ -109,7 +108,7 @@ public class Success extends NativeCFG {
 			// Assigns an unknown object to each allocation identifier
 			HeapReference ref = new HeapReference(new ReferenceType(responseType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(responseType, ref, getLocation());
-			UnaryExpression un = new UnaryExpression(Untyped.INSTANCE, expr, SuccessOperator.INSTANCE, getLocation());
+			UnaryExpression un = new UnaryExpression(GoSliceType.getSliceOfBytes(), expr, SuccessOperator.INSTANCE, getLocation());
 			AnalysisState<A> asg = allocState.assign(deref, un, this);				
 			return asg.smallStepSemantics(ref, original);
 		}
@@ -137,7 +136,7 @@ public class Success extends NativeCFG {
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(GoSliceType.getSliceOfBytes());
 		}
 	}
 }

@@ -296,15 +296,6 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 		return new InferredPair<>(this, HIGH, state(state, pp));
 	}
 
-
-	//	@Override
-	//	public boolean tracksIdentifiers(Identifier id) {
-	//		for (Type t : id.getRuntimeTypes(null))
-	//			if (!(t.isInMemoryType()))
-	//				return true;
-	//		return false;
-	//	}
-
 	@Override
 	public boolean canProcess(SymbolicExpression expression, ProgramPoint pp, SemanticOracle oracle) {
 		Set<Type> types;

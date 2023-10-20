@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
+import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -8,6 +10,7 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -23,6 +26,8 @@ import it.unive.lisa.symbolic.value.PushAny;
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Int extends NativeCFG {
+	
+	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION, IntegrityNIDomain.LOW_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -31,7 +36,7 @@ public class Int extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Int(CodeLocation location, CodeUnit randUnit) {
-		super(new CodeMemberDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE),
+		super(new CodeMemberDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE, anns),
 				IntImpl.class);
 	}
 

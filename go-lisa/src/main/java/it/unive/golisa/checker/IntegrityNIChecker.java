@@ -32,8 +32,8 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.util.StringUtilities;
 
 /**
@@ -157,7 +157,13 @@ SimpleAbstractState<PointBasedHeap, InferenceSystem<IntegrityNIDomain>, TypeEnvi
 
 				for (SymbolicExpression stack : reachableIds) {
 					InferenceSystem<IntegrityNIDomain> valueState = state.getState().getValueState();
-					if (stack instanceof Identifier && valueState.knowsIdentifier((Identifier) stack) &&valueState.eval((ValueExpression) stack, call, state.getState()).isLowIntegrity())
+					
+					Set<Type> types = state.getState().getRuntimeTypesOf(stack, call, state.getState());
+
+					if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+						continue;
+					
+					if (valueState.eval((ValueExpression) stack, call, state.getState()).isLowIntegrity())
 						tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 						+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 						+ parameters[i].getName() + "' of " + resolved.getFullTargetName());

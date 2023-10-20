@@ -26,9 +26,9 @@ type SampleChaincode struct {
 func (t *SampleChaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	args := stub.GetArgs()
 	if rand.Int() % 2 == 0 {
-		stub.PutState(args[0], []byte(0))
+		stub.PutState(args[0], []byte{0})
 	} else {
-		stub.PutState(args[0], []byte(1))
+		stub.PutState(args[0], []byte{1})
 	}
     return shim.Success(nil)
 }

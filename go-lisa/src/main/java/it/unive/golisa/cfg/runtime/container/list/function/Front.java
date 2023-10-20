@@ -24,15 +24,16 @@ import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.ReferenceType;
+import it.unive.lisa.type.Untyped;
 
 /**
- * func New() *List
+ * func Front() *List
  * 
  * @link https://pkg.go.dev/container/list#New
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class New extends NativeCFG {
+public class Front extends NativeCFG {
 
 	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION, IntegrityNIDomain.HIGH_ANNOTATION);
 
@@ -42,17 +43,17 @@ public class New extends NativeCFG {
 	 * @param location the location where this native cfg is defined
 	 * @param listUnit the unit to which this native cfg belongs to
 	 */
-	public New(CodeLocation location, ProgramUnit listUnit) {
-		super(new CodeMemberDescriptor(location, listUnit, false, "New", List.INSTANCE),
-				NewImpl.class);
+	public Front(CodeLocation location, ProgramUnit listUnit) {
+		super(new CodeMemberDescriptor(location, listUnit, false, "Front", List.INSTANCE),
+				FrontImpl.class);
 	}
 
 	/**
-	 * The {@link New} implementation.
+	 * The {@link Front} implementation.
 	 * 
 	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
 	 */
-	public static class NewImpl extends NaryExpression
+	public static class FrontImpl extends NaryExpression
 	implements PluggableStatement {
 
 		private Statement original;
@@ -72,8 +73,8 @@ public class New extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static NewImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new NewImpl(cfg, location);
+		public static FrontImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			return new FrontImpl(cfg, location);
 		}
 
 		/**
@@ -83,7 +84,7 @@ public class New extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 */
-		public NewImpl(CFG cfg, CodeLocation location) {
+		public FrontImpl(CFG cfg, CodeLocation location) {
 			super(cfg, location, "ListImpl", List.INSTANCE);
 		}
 
@@ -98,8 +99,9 @@ public class New extends NativeCFG {
 			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), anns, true);
 			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(listType, ref, getLocation());
-			AnalysisState<A> asg = state.assign(deref, new PushAny(listType, getLocation()), this);				
+			AnalysisState<A> asg = state.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);				
 			return asg.smallStepSemantics(ref, original);
 		}
 	}
+
 }

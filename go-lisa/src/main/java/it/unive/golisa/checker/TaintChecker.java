@@ -31,8 +31,8 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.util.StringUtilities;
 
 /**
@@ -111,8 +111,13 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 									reachableIds.addAll(HeapResolver.resolve(state, e, node));
 
 								for (SymbolicExpression s : reachableIds) {
+									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
+
+									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+										continue;
+									
 									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
-									if (s instanceof Identifier && valueState.knowsIdentifier((Identifier) s) && valueState.eval((ValueExpression) s, node, state.getState())
+									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
@@ -137,7 +142,13 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 
 								for (SymbolicExpression s : reachableIds) {
 									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
-									if (s instanceof Identifier && valueState.knowsIdentifier((Identifier) s) && valueState.eval((ValueExpression) s, node, state.getState())
+									
+									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
+
+									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+										continue;
+									
+									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"

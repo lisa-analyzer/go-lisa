@@ -2,6 +2,7 @@ package it.unive.golisa.frontend;
 
 import it.unive.golisa.cfg.runtime.bytes.function.NewBuffer;
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
+import it.unive.golisa.cfg.runtime.container.list.function.New;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
 import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
 import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
@@ -305,9 +306,11 @@ public interface GoRuntimeLoader {
 
 	private void loadList(Program program) {
 
-		CodeUnit listUnit = new CodeUnit(runtimeLocation, program, "container/list");
-
+		CodeUnit listUnit = new CodeUnit(runtimeLocation, program, "list");
 		List list = List.getListType(program);
+
+		listUnit.addCodeMember(new New(runtimeLocation, listUnit));
+		
 
 		// adding types
 		program.getTypes().registerType(list);

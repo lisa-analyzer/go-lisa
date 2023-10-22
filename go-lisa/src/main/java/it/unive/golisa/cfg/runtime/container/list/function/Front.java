@@ -15,6 +15,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
+import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
@@ -27,9 +28,7 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func Front() *List
- * 
- * @link https://pkg.go.dev/container/list#New
+ * func (*List) Front  
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -44,7 +43,8 @@ public class Front extends NativeCFG {
 	 * @param listUnit the unit to which this native cfg belongs to
 	 */
 	public Front(CodeLocation location, ProgramUnit listUnit) {
-		super(new CodeMemberDescriptor(location, listUnit, false, "Front", List.INSTANCE),
+		super(new CodeMemberDescriptor(location, listUnit, true, "Front", List.INSTANCE, 
+				new Parameter(location, "l", List.getListType(listUnit.getProgram()))),
 				FrontImpl.class);
 	}
 
@@ -94,8 +94,6 @@ public class Front extends NativeCFG {
 				StatementStore<A> expressions) throws SemanticException {
 
 			List listType = List.getListType(getProgram());
-
-			// Allocates the new memory for a Time object
 			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), anns, true);
 			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(listType, ref, getLocation());

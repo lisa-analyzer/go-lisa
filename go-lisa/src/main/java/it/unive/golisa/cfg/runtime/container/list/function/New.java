@@ -19,10 +19,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
-import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.ReferenceType;
 
 /**
@@ -97,9 +95,7 @@ public class New extends NativeCFG {
 			// Allocates the new memory for a Time object
 			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), anns, true);
 			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
-			HeapDereference deref = new HeapDereference(listType, ref, getLocation());
-			AnalysisState<A> asg = state.assign(deref, new PushAny(listType, getLocation()), this);				
-			return asg.smallStepSemantics(ref, original);
+			return state.smallStepSemantics(ref, original);
 		}
 	}
 }

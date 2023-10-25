@@ -182,6 +182,11 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 				: this == HIGH ? new StringRepresentation("H")
 						: this == LOW ? new StringRepresentation("L") : Lattice.topRepresentation();
 	}
+	
+	@Override
+	public String toString() {
+		return representation().toString();
+	}
 
 	@Override
 	public IntegrityNIDomain top() {

@@ -2180,7 +2180,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 								args);
 
 				else if (primary instanceof GoCollectionAccess) {
-					Expression receiver = ((GoCollectionAccess) primary).getReceiver();
+					// parse the receiver again
+					Expression receiver = visitPrimaryExpr(ctx.primaryExpr().primaryExpr());
 					String methodName = ((GoCollectionAccess) primary).getTarget().toString();
 
 					if (program.getUnit(receiver.toString()) != null)

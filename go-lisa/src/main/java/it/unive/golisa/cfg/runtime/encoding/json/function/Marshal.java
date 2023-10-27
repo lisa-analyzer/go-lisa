@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -35,6 +31,9 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func Marshal(v interface{}) ([]byte, error).
@@ -58,7 +57,7 @@ public class Marshal extends NativeCFG {
 	}
 
 	/**
-	 * The Marshal implementation.
+	 * The {@link Marshal} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -122,9 +121,9 @@ public class Marshal extends NativeCFG {
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(GoSliceType.getSliceOfBytes(), derefId,
-						JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
+						MarshalOperatorFirstParameter.INSTANCE, getLocation());
 				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId,
-						JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
+						MarshalOperatorSecondParameter.INSTANCE, getLocation());
 				AnalysisState<A> asg = state.assign(deref, left, original);
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
 						getLocation(), tupleType,
@@ -136,24 +135,30 @@ public class Marshal extends NativeCFG {
 		}
 	}
 
-	public static class JSONMarshalOperatorFirstParameter implements UnaryOperator {
+	/**
+	 * The Marshal operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class MarshalOperatorFirstParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final JSONMarshalOperatorFirstParameter INSTANCE = new JSONMarshalOperatorFirstParameter();
+		public static final MarshalOperatorFirstParameter INSTANCE = new MarshalOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected JSONMarshalOperatorFirstParameter() {
+		protected MarshalOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "marshal_first";
+			return "Marshal_1";
 		}
 
 		@Override
@@ -162,24 +167,30 @@ public class Marshal extends NativeCFG {
 		}
 	}
 
-	public static class JSONMarshalOperatorSecondParameter implements UnaryOperator {
+	/**
+	 * The Marshal operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class MarshalOperatorSecondParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final JSONMarshalOperatorSecondParameter INSTANCE = new JSONMarshalOperatorSecondParameter();
+		public static final MarshalOperatorSecondParameter INSTANCE = new MarshalOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected JSONMarshalOperatorSecondParameter() {
+		protected MarshalOperatorSecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "marshal_second";
+			return "Marshal_2";
 		}
 
 		@Override

@@ -1,8 +1,5 @@
 package it.unive.golisa.analysis.rsubs;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -53,6 +50,8 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.ListRepresentation;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * The reduced product between relational substring abstract domain and

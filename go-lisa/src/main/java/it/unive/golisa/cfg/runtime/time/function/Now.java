@@ -53,7 +53,7 @@ public class Now extends NativeCFG {
 	}
 
 	/**
-	 * The Now implementation.
+	 * The {@link Now} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */

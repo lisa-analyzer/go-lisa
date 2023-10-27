@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,6 +12,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go bit-wise and expression (e.g., x & y).

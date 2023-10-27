@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
@@ -35,9 +31,12 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * func (iter *StateQueryIterator) Next() (*queryresult.KV, error)
+ * func (iter *StateQueryIterator) Next() (*queryresult.KV, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -92,8 +91,7 @@ public class Next extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param left     the left-hand side of this expression
-		 * @param right    the right-hand side of this expression
+		 * @param e        the expression argument
 		 */
 		public NextImpl(CFG cfg, CodeLocation location, Expression e) {
 			super(cfg, location, "NextImpl",
@@ -120,12 +118,12 @@ public class Next extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(responseType, derefId, NextFirstParameter.INSTANCE,
+				UnaryExpression left = new UnaryExpression(responseType, derefId, NextOperatorFirstParameter.INSTANCE,
 						getLocation());
 				asg = asg.lub(state.assign(deref, left, original));
 			}
 
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, NextSecondParameter.INSTANCE,
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, NextOperatorSecondParameter.INSTANCE,
 					getLocation());
 
 			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
@@ -134,24 +132,30 @@ public class Next extends NativeCFG {
 		}
 	}
 
-	public static class NextFirstParameter implements UnaryOperator {
+	/**
+	 * The Next operator returning the first parameter of the tuple expression
+	 * result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class NextOperatorFirstParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final NextFirstParameter INSTANCE = new NextFirstParameter();
+		public static final NextOperatorFirstParameter INSTANCE = new NextOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected NextFirstParameter() {
+		protected NextOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "Next_first";
+			return "Next_1";
 		}
 
 		@Override
@@ -160,19 +164,25 @@ public class Next extends NativeCFG {
 		}
 	}
 
-	public static class NextSecondParameter implements UnaryOperator {
+	/**
+	 * The Next operator returning the second parameter of the tuple expression
+	 * result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class NextOperatorSecondParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final NextSecondParameter INSTANCE = new NextSecondParameter();
+		public static final NextOperatorSecondParameter INSTANCE = new NextOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected NextSecondParameter() {
+		protected NextOperatorSecondParameter() {
 		}
 
 		@Override

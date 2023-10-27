@@ -1,11 +1,10 @@
 package it.unive.golisa.cfg;
 
-import java.util.Collection;
-import java.util.Objects;
-
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * A switch-case control flow structure.
@@ -29,10 +28,20 @@ public class SwitchCase {
 		this.body = body;
 	}
 
+	/**
+	 * Yields the body of this switch case.
+	 * 
+	 * @return the body of this switch case
+	 */
 	protected Collection<Statement> getBody() {
 		return body;
 	}
 
+	/**
+	 * Yields the condition associated with this switch case.
+	 * 
+	 * @return the condition associated with this switch case
+	 */
 	public Expression getCondition() {
 		return condition;
 	}

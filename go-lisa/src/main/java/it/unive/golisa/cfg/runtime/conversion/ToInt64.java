@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.conversion;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -26,6 +23,8 @@ import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * int64 casting.

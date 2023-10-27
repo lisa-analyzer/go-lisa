@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -35,8 +31,13 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
+ * func Policy() ([]byte, error).
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Policy extends NativeCFG {
@@ -119,7 +120,7 @@ public class Policy extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId,
+				UnaryExpression left = new UnaryExpression(sliceOfBytes, derefId,
 						PolicyOperatorFirstParameter.INSTANCE, getLocation());
 				asg = asg.lub(state.assign(deref, left, original));
 			}
@@ -133,6 +134,12 @@ public class Policy extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The Policy operator returning the first parameter of the tuple expression
+	 * result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PolicyOperatorFirstParameter implements UnaryOperator {
 
 		/**
@@ -150,15 +157,21 @@ public class Policy extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "Policy_first";
+			return "PolicyOperator_1";
 		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(GoSliceType.getSliceOfBytes());
 		}
 	}
 
+	/**
+	 * The Policy operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PolicyOperatorSecondParameter implements UnaryOperator {
 
 		/**
@@ -176,7 +189,7 @@ public class Policy extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "Policy_second";
+			return "PolicyOperator_2";
 		}
 
 		@Override

@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -36,11 +32,12 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error).
- * 
- * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/pkg/statebased#NewStateEP
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -127,14 +124,15 @@ public class NewStateEP extends NativeCFG {
 				// Retrieves all the identifiers reachable from expr
 				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
 				for (SymbolicExpression id : reachableIds) {
-					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					it.unive.lisa.symbolic.value.UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId,
-							KeyEndorsementPolicyFirstParameter.INSTANCE, getLocation());
+					HeapDereference derefId = new HeapDereference(
+							KeyEndorsementPolicy.getKeyEndorsementPolicyType(null), id, expr.getCodeLocation());
+					UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId,
+							KeyEndorsementPolicyOperatorFirstParameter.INSTANCE, getLocation());
 					asg = asg.lub(allocState.assign(deref, left, original));
 				}
 
 				UnaryExpression rightRes = new UnaryExpression(GoErrorType.INSTANCE, expr,
-						KeyEndorsementPolicySecondParameter.INSTANCE, getLocation());
+						KeyEndorsementPolicyOperatorSecondParameter.INSTANCE, getLocation());
 
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
 						getLocation(), tupleType,
@@ -146,50 +144,62 @@ public class NewStateEP extends NativeCFG {
 		}
 	}
 
-	public static class KeyEndorsementPolicyFirstParameter implements UnaryOperator {
+	/**
+	 * The KeyEndorsementPolicy operator returning the first parameter of the
+	 * tuple expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class KeyEndorsementPolicyOperatorFirstParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final KeyEndorsementPolicyFirstParameter INSTANCE = new KeyEndorsementPolicyFirstParameter();
+		public static final KeyEndorsementPolicyOperatorFirstParameter INSTANCE = new KeyEndorsementPolicyOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected KeyEndorsementPolicyFirstParameter() {
+		protected KeyEndorsementPolicyOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "KeyEndorsementPolicy_first";
+			return "KeyEndorsementPolicy_1";
 		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(KeyEndorsementPolicy.getKeyEndorsementPolicyType(null));
 		}
 	}
 
-	public static class KeyEndorsementPolicySecondParameter implements UnaryOperator {
+	/**
+	 * The KeyEndorsementPolicy operator returning the second parameter of the
+	 * tuple expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class KeyEndorsementPolicyOperatorSecondParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final KeyEndorsementPolicySecondParameter INSTANCE = new KeyEndorsementPolicySecondParameter();
+		public static final KeyEndorsementPolicyOperatorSecondParameter INSTANCE = new KeyEndorsementPolicyOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected KeyEndorsementPolicySecondParameter() {
+		protected KeyEndorsementPolicyOperatorSecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "CreateCompositeKey_second";
+			return "KeyEndorsementPolicy_2";
 		}
 
 		@Override

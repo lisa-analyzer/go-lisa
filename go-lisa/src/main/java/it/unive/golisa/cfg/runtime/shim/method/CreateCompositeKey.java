@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -34,6 +30,9 @@ import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes
@@ -126,11 +125,11 @@ public class CreateCompositeKey extends NativeCFG {
 						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE,
 								new Constant(getStaticType(), 1, getLocation()), middle,
 								new Constant(getStaticType(), 1, getLocation()),
-								CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
+								CreateCompositeKeyOperatorFirstParameter.INSTANCE, getLocation());
 						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE,
 								new Constant(getStaticType(), 1, getLocation()), middle,
 								new Constant(getStaticType(), 1, getLocation()),
-								CreateCompositeKeySecondParameter.INSTANCE, getLocation());
+								CreateCompositeKeyOperatorSecondParameter.INSTANCE, getLocation());
 						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state,
 								new Annotations(), original, getLocation(), tupleType,
 								leftExp,
@@ -141,11 +140,11 @@ public class CreateCompositeKey extends NativeCFG {
 						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE,
 								new Constant(getStaticType(), 1, getLocation()), middle,
 								new Constant(getStaticType(), 1, getLocation()),
-								CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
+								CreateCompositeKeyOperatorFirstParameter.INSTANCE, getLocation());
 						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE,
 								new Constant(getStaticType(), 1, getLocation()), middle,
 								new Constant(getStaticType(), 1, getLocation()),
-								CreateCompositeKeySecondParameter.INSTANCE, getLocation());
+								CreateCompositeKeyOperatorSecondParameter.INSTANCE, getLocation());
 						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state,
 								new Annotations(), original, getLocation(), tupleType,
 								leftExp,
@@ -160,24 +159,30 @@ public class CreateCompositeKey extends NativeCFG {
 		}
 	}
 
-	public static class CreateCompositeKeyFirstParameter implements TernaryOperator {
+	/**
+	 * The CreateCompositeKey operator returning the first parameter of the
+	 * tuple expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class CreateCompositeKeyOperatorFirstParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final CreateCompositeKeyFirstParameter INSTANCE = new CreateCompositeKeyFirstParameter();
+		public static final CreateCompositeKeyOperatorFirstParameter INSTANCE = new CreateCompositeKeyOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected CreateCompositeKeyFirstParameter() {
+		protected CreateCompositeKeyOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "CreateCompositeKey_first";
+			return "CreateCompositeKeyOperator_1";
 		}
 
 		@Override
@@ -186,24 +191,30 @@ public class CreateCompositeKey extends NativeCFG {
 		}
 	}
 
-	public static class CreateCompositeKeySecondParameter implements TernaryOperator {
+	/**
+	 * The CreateCompositeKey operator returning the second parameter of the
+	 * tuple expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class CreateCompositeKeyOperatorSecondParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final CreateCompositeKeySecondParameter INSTANCE = new CreateCompositeKeySecondParameter();
+		public static final CreateCompositeKeyOperatorSecondParameter INSTANCE = new CreateCompositeKeyOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected CreateCompositeKeySecondParameter() {
+		protected CreateCompositeKeyOperatorSecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "CreateCompositeKey_second";
+			return "CreateCompositeKeyOperator_2";
 		}
 
 		@Override

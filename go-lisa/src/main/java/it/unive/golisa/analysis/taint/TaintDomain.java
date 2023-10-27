@@ -1,7 +1,5 @@
 package it.unive.golisa.analysis.taint;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
@@ -29,6 +27,7 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.Set;
 
 /**
  * The taint domain, used for the taint analysis.
@@ -235,14 +234,6 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 	public TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return TAINTED;
 	}
-
-//	@Override
-//	public boolean tracksIdentifiers(Identifier id) {
-//		for (Type t : id.getRuntimeTypes(null))
-//			if (!(t.isInMemoryType()))
-//				return true;
-//		return false;
-//	}
 
 	@Override
 	public boolean canProcess(SymbolicExpression expression, ProgramPoint pp, SemanticOracle oracle) {

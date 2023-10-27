@@ -25,8 +25,6 @@ import it.unive.lisa.type.Untyped;
 /**
  * func (*ChaincodeStub) PutState(key string, value []byte) error.
  * 
- * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.PutState
- * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class PutState extends NativeCFG {

@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
@@ -29,9 +25,12 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * func (t Time) Format(layout string) string
+ * func (t Time) Format(layout string) string.
  * 
  * @see https://pkg.go.dev/time#Time.Format
  * 
@@ -53,6 +52,11 @@ public class Format extends NativeCFG {
 				FormatImpl.class);
 	}
 
+	/**
+	 * The {@link Format} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class FormatImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
 
@@ -83,7 +87,8 @@ public class Format extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param expr     the expression
+		 * @param left     the left expression
+		 * @param right    the right expression
 		 */
 		public FormatImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "FormatImpl",
@@ -122,6 +127,11 @@ public class Format extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The Format operator returning the expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class FormatOperator implements BinaryOperator {
 
 		/**

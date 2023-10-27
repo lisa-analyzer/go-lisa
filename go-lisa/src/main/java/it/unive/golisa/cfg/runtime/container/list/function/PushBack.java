@@ -21,7 +21,7 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func (l *List) PushBack(v any) *Element
+ * func (l *List) PushBack(v any) *Element.
  *
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -40,6 +40,11 @@ public class PushBack extends NativeCFG {
 				PushBackImpl.class);
 	}
 
+	/**
+	 * The {@link PushBack} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class PushBackImpl extends BinaryExpression
 			implements PluggableStatement {
 
@@ -70,6 +75,8 @@ public class PushBack extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
+		 * @param left     the left argument
+		 * @param right    the right argument
 		 */
 		public PushBackImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "PushBackImpl", List.INSTANCE, left, right);

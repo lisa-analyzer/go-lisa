@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -33,11 +30,11 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func Parse(layout, value string) (Time, error).
- * 
- * @link https://pkg.go.dev/time#Parse
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -116,7 +113,7 @@ public class Parse extends NativeCFG {
 			HeapReference ref = new HeapReference(new ReferenceType(timeType), created, left.getCodeLocation());
 			HeapDereference deref = new HeapDereference(timeType, ref, left.getCodeLocation());
 
-			BinaryExpression rExp = new BinaryExpression(Untyped.INSTANCE, left, right,
+			BinaryExpression rExp = new BinaryExpression(timeType, left, right,
 					ParseOperatorFirstParameter.INSTANCE, getLocation());
 			BinaryExpression lExp = new BinaryExpression(GoErrorType.INSTANCE, left, right,
 					ParseOperatorFirstParameter.INSTANCE, getLocation());
@@ -128,6 +125,12 @@ public class Parse extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The Parse operator returning the second parameter of the tuple expression
+	 * result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ParseOperatorFirstParameter implements BinaryOperator {
 
 		/**
@@ -145,15 +148,21 @@ public class Parse extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "ParseOperator_first";
+			return "ParseOperator_1";
 		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(Time.getTimeType(null));
 		}
 	}
 
+	/**
+	 * The Parse operator returning the second parameter of the tuple expression
+	 * result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ParseOperatorSecondParameter implements BinaryOperator {
 
 		/**
@@ -171,7 +180,7 @@ public class Parse extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "ParseOperator_second";
+			return "ParseOperator_2";
 		}
 
 		@Override

@@ -38,6 +38,8 @@ public class GoTupleExpression extends NaryExpression {
 	 * Builds a Go tuple expression.
 	 * 
 	 * @param cfg         the {@link CFG} where this expression lies
+	 * @param types       the parameters containing the types of this
+	 *                        expressions
 	 * @param location    the location where this expression is defined
 	 * @param expressions the expressions composing the tuple
 	 */
@@ -45,12 +47,36 @@ public class GoTupleExpression extends NaryExpression {
 		this(cfg, GoTupleType.lookup(types), location, expressions);
 	}
 
+	/**
+	 * Builds a Go tuple expression.
+	 * 
+	 * @param cfg         the {@link CFG} where this expression lies
+	 * @param type        the type of this expressions
+	 * @param location    the location where this expression is defined
+	 * @param expressions the expressions composing the tuple
+	 */
 	public GoTupleExpression(CFG cfg, GoTupleType type, CodeLocation location, Expression... expressions) {
 		super(cfg, location, "(tuple)", expressions);
 		this.tupleType = type;
 	}
 
-	@SafeVarargs
+	/**
+	 * Yields an abstract state where the tuple expression passed as parameters
+	 * has been allocated.
+	 * 
+	 * @param <A>        abstract state type parameter
+	 * @param entryState the entry state
+	 * @param anns       the annotations of the tuple expression
+	 * @param pp         the program point where the allocation occurs
+	 * @param location   the location where the allocation occurs
+	 * @param tupleType  the type of the tuple expressions
+	 * @param exps       the expressions initializing the tuple
+	 * 
+	 * @return an abstract state where the tuple expression passed as parameters
+	 *             has been allocated
+	 * 
+	 * @throws SemanticException if an error occurs during the computation
+	 */
 	public static <A extends AbstractState<A>> AnalysisState<A> allocateTupleExpression(AnalysisState<A> entryState,
 			Annotations anns, ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps)
 			throws SemanticException {

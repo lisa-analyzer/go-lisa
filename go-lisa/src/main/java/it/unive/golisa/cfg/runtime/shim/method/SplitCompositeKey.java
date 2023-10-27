@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -31,18 +27,19 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) SplitCompositeKey(compositeKey string) (string,
- * []string, error) see
- * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.SplitCompositeKey
+ * []string, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -62,6 +59,11 @@ public class SplitCompositeKey extends NativeCFG {
 				SplitCompositeKeyImpl.class);
 	}
 
+	/**
+	 * The {@link SplitCompositeKey} implementation.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class SplitCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
 			implements PluggableStatement {
 
@@ -121,19 +123,17 @@ public class SplitCompositeKey extends NativeCFG {
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
 			for (SymbolicExpression id : reachableIds) {
-				// FIXME: first parameter is stub, but it is not tracked (put
-				// constant now)
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-				UnaryExpression unary = new UnaryExpression(Untyped.INSTANCE,
-						new Constant(Untyped.INSTANCE, 1, getLocation()), SplitCompositeKeySecondParameter.INSTANCE,
+				UnaryExpression unary = new UnaryExpression(sliceOfStrings, derefId,
+						SplitCompositeKeyOperatorSecondParameter.INSTANCE,
 						getLocation());
 				asg = asg.lub(state.assign(deref, unary, original));
 			}
 
 			UnaryExpression lExp = new UnaryExpression(GoFloat64Type.INSTANCE, right,
-					SplitCompositeKeyFirstParameter.INSTANCE, getLocation());
+					SplitCompositeKeyOperatorFirstParameter.INSTANCE, getLocation());
 			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, right,
-					SplitCompositeKeyThirdParameter.INSTANCE, getLocation());
+					SplitCompositeKeyOperatorThirdParameter.INSTANCE, getLocation());
 
 			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
 					lExp,
@@ -142,24 +142,30 @@ public class SplitCompositeKey extends NativeCFG {
 		}
 	}
 
-	private static class SplitCompositeKeyFirstParameter implements UnaryOperator {
+	/**
+	 * The SplitCompositeKey operator returning the first parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class SplitCompositeKeyOperatorFirstParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final SplitCompositeKeyFirstParameter INSTANCE = new SplitCompositeKeyFirstParameter();
+		public static final SplitCompositeKeyOperatorFirstParameter INSTANCE = new SplitCompositeKeyOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected SplitCompositeKeyFirstParameter() {
+		protected SplitCompositeKeyOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "SplitCompositeKeyFirstParameter_first";
+			return "SplitCompositeKeyOperator_1";
 		}
 
 		@Override
@@ -168,50 +174,62 @@ public class SplitCompositeKey extends NativeCFG {
 		}
 	}
 
-	private static class SplitCompositeKeySecondParameter implements UnaryOperator {
+	/**
+	 * The SplitCompositeKey operator returning the second parameter of the
+	 * tuple expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class SplitCompositeKeyOperatorSecondParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final SplitCompositeKeySecondParameter INSTANCE = new SplitCompositeKeySecondParameter();
+		public static final SplitCompositeKeyOperatorSecondParameter INSTANCE = new SplitCompositeKeyOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected SplitCompositeKeySecondParameter() {
+		protected SplitCompositeKeyOperatorSecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "SplitCompositeKeySecondParameter_second";
+			return "SplitCompositeKeyOperator_2";
 		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(GoSliceType.getSliceOfStrings());
 		}
 	}
 
-	private static class SplitCompositeKeyThirdParameter implements UnaryOperator {
+	/**
+	 * The SplitCompositeKey operator returning the third parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class SplitCompositeKeyOperatorThirdParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final SplitCompositeKeyThirdParameter INSTANCE = new SplitCompositeKeyThirdParameter();
+		public static final SplitCompositeKeyOperatorThirdParameter INSTANCE = new SplitCompositeKeyOperatorThirdParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected SplitCompositeKeyThirdParameter() {
+		protected SplitCompositeKeyOperatorThirdParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "SplitCompositeKeySecondParameter_third";
+			return "SplitCompositeKeyOperator_3";
 		}
 
 		@Override

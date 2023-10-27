@@ -1,9 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
@@ -23,6 +19,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Routune source checker.

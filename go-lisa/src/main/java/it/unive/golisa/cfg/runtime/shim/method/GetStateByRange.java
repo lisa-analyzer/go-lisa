@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
@@ -38,17 +34,24 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) GetStateByRange(startKey, endKey string)
- * (StateQueryIteratorInterface, error)
- * 
- * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStateByRange
+ * (StateQueryIteratorInterface, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GetStateByRange extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public GetStateByRange(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, shimUnit,
 				true,
@@ -124,12 +127,9 @@ public class GetStateByRange extends NativeCFG {
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
 			for (SymbolicExpression id : reachableIds) {
-				// FIXME: first parameter is stub, but it is not tracked (put
-				// constant now)
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE,
-						new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right,
-						GetStateByRangeFirstParameter.INSTANCE, getLocation());
+				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, derefId, middle, right,
+						GetStateByRangeOperatorFirstParameter.INSTANCE, getLocation());
 				asg = asg.lub(state.assign(deref, lExp, original));
 			}
 
@@ -143,24 +143,30 @@ public class GetStateByRange extends NativeCFG {
 		}
 	}
 
-	public static class GetStateByRangeFirstParameter implements TernaryOperator {
+	/**
+	 * The GetStateByRange operator returning the first parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class GetStateByRangeOperatorFirstParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final GetStateByRangeFirstParameter INSTANCE = new GetStateByRangeFirstParameter();
+		public static final GetStateByRangeOperatorFirstParameter INSTANCE = new GetStateByRangeOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected GetStateByRangeFirstParameter() {
+		protected GetStateByRangeOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "getstatebyrange_first";
+			return "GetStateByRangeOperator_1";
 		}
 
 		@Override
@@ -169,6 +175,12 @@ public class GetStateByRange extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The GetStateByRange operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class GetStateByRangeSecondParameter implements TernaryOperator {
 
 		/**
@@ -186,7 +198,7 @@ public class GetStateByRange extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "getstatebyrange_second";
+			return "GetStateByRangeOperator_2";
 		}
 
 		@Override

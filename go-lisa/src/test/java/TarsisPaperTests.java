@@ -1,5 +1,5 @@
 
-import it.unive.golisa.analysis.scam.SmashedSum;
+import it.unive.golisa.analysis.composition.SmashedSum;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.AbstractState;

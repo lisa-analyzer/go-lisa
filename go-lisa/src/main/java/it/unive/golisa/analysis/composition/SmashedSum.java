@@ -1,6 +1,4 @@
-package it.unive.golisa.analysis.scam;
-
-import java.util.TreeSet;
+package it.unive.golisa.analysis.composition;
 
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
@@ -34,6 +32,7 @@ import it.unive.lisa.util.numeric.IntInterval;
 import it.unive.lisa.util.numeric.MathNumber;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.TreeSet;
 
 public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 		implements BaseNonRelationalValueDomain<SmashedSum<S>> {

@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -15,6 +13,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonGe;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go greater or equal than expression (e.g., e1 < e2).

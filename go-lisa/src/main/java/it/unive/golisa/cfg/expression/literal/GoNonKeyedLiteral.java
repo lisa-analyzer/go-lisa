@@ -54,6 +54,15 @@ public class GoNonKeyedLiteral extends NaryExpression {
 
 	}
 
+	/**
+	 * Builds the non-keyed literal.
+	 * 
+	 * @param cfg              the {@link CFG} where this expression lies
+	 * @param location         the location where this expression is defined
+	 * @param values           the expressions of the non-keyed literal
+	 * @param staticType       the static type of this non-keyed literal
+	 * @param isStackAllocated whether this expression is allocated in the stack
+	 */
 	public GoNonKeyedLiteral(CFG cfg, CodeLocation location, Expression[] values, Type staticType,
 			boolean isStackAllocated) {
 		super(cfg, location, "nonKeyedLit(" + staticType + ")", staticType, values);

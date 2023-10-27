@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -36,6 +33,8 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) GetState(key string) ([]byte, error).
@@ -95,7 +94,8 @@ public class GetState extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param params   the parameters
+		 * @param left     the left argument
+		 * @param right    the right argument
 		 */
 		public GetStateImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "GetStateImpl", GoTupleType.getTupleTypeOf(location,

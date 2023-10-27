@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Collections;
-
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
@@ -23,6 +21,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
+import java.util.Collections;
 
 /**
  * A Go short variable declaration statement.

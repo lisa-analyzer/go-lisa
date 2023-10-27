@@ -21,9 +21,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (iter *CommonIterator) Close() error
- * 
- * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CommonIterator.Close
+ * func (iter *CommonIterator) Close() error.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -76,8 +74,7 @@ public class Close extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param left     the left-hand side of this expression
-		 * @param right    the right-hand side of this expression
+		 * @param e        the expression argument
 		 */
 		public CloseImpl(CFG cfg, CodeLocation location, Expression e) {
 			super(cfg, location, "CloseImpl", GoErrorType.INSTANCE, e);

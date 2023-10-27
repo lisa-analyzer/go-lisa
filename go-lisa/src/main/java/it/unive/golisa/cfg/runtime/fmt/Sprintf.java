@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -25,9 +23,10 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Set;
 
 /**
- * func Sprintf(format string, a ...any) string
+ * func Sprintf(format string, a ...any) string.
  * 
  * @see https://pkg.go.dev/fmt#Sprintf
  * 
@@ -82,7 +81,8 @@ public class Sprintf extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param arg      the expression
+		 * @param left     the left expression
+		 * @param right    the right expression
 		 */
 		public SprintfImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "Sprintf", GoStringType.INSTANCE, left, right);
@@ -97,18 +97,23 @@ public class Sprintf extends NativeCFG {
 				StatementStore<A> expressions) throws SemanticException {
 
 			return state.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), left,
-					right, GoSprintfOperator.INSTANCE, getLocation()), original);
+					right, SprintfOperator.INSTANCE, getLocation()), original);
 		}
 	}
 
-	private static class GoSprintfOperator implements BinaryOperator {
+	/**
+	 * The Sprintf operator.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class SprintfOperator implements BinaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final GoSprintfOperator INSTANCE = new GoSprintfOperator();
+		public static final SprintfOperator INSTANCE = new SprintfOperator();
 
-		private GoSprintfOperator() {
+		private SprintfOperator() {
 		}
 
 		@Override

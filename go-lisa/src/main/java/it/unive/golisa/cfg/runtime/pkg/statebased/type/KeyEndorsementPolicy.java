@@ -56,6 +56,9 @@ public class KeyEndorsementPolicy extends GoInterfaceType {
 		return System.identityHashCode(this);
 	}
 
+	/**
+	 * Registers the instance methods of this type.
+	 */
 	public static void registerMethods() {
 		CompilationUnit unit = INSTANCE.getUnit();
 		unit.addInstanceCodeMember(new Policy(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, unit));

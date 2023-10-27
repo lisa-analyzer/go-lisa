@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.bytes.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
@@ -32,6 +28,9 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func NewBuffer(buf []byte) *Buffer

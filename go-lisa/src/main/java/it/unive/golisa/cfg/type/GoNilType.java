@@ -43,7 +43,7 @@ public class GoNilType implements GoType {
 				|| other instanceof GoSliceType
 				|| other instanceof GoFunctionType
 				|| other instanceof GoNilType
-				|| other instanceof GoErrorType		
+				|| other instanceof GoErrorType
 				|| other instanceof GoTupleType
 				|| other instanceof Untyped;
 	}

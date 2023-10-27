@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.literal;
 
-import java.util.Collections;
-
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
@@ -79,7 +77,7 @@ public class GoKeyedLiteral extends NaryExpression {
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(InterproceduralAnalysis<A> interprocedural,
 			AnalysisState<A> state, ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
 		Type type = getStaticType();
-		MemoryAllocation created = new MemoryAllocation(type, getLocation(), new Annotations(), true);		
+		MemoryAllocation created = new MemoryAllocation(type, getLocation(), new Annotations(), true);
 		// Allocates the new heap allocation
 		AnalysisState<A> containerState = state.smallStepSemantics(created, this);
 		ExpressionSet containerExps = containerState.getComputedExpressions();
@@ -186,7 +184,8 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A> tmp = containerState;
 
 				for (int i = 0; i < keys.length; i++) {
-					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true).getStaticType();
+					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true)
+							.getStaticType();
 					Variable field = getVariable((VariableRef) keys[i]);
 					AccessChild access = new AccessChild(fieldType, dereference, field, getLocation());
 					AnalysisState<A> fieldState = tmp.smallStepSemantics(access, this);

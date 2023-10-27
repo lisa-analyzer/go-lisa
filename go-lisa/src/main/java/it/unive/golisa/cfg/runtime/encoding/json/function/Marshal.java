@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -35,6 +31,9 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func Marshal(v interface{}) ([]byte, error).
@@ -63,7 +62,7 @@ public class Marshal extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class MarshalImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -107,11 +106,12 @@ public class Marshal extends NativeCFG {
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
 			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(sliceOfBytes), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(),
+					true);
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, expr.getCodeLocation());
 			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
 			AnalysisState<A> result = state.bottom();
@@ -120,13 +120,15 @@ public class Marshal extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(GoSliceType.getSliceOfBytes(), derefId, JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
-				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId, JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
+				UnaryExpression left = new UnaryExpression(GoSliceType.getSliceOfBytes(), derefId,
+						JSONMarshalOperatorFirstParameter.INSTANCE, getLocation());
+				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId,
+						JSONMarshalOperatorSecondParameter.INSTANCE, getLocation());
 				AnalysisState<A> asg = state.assign(deref, left, original);
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+						getLocation(), tupleType,
 						ref,
-						right
-						));
+						right));
 			}
 
 			return result;
@@ -141,9 +143,9 @@ public class Marshal extends NativeCFG {
 		public static final JSONMarshalOperatorFirstParameter INSTANCE = new JSONMarshalOperatorFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected JSONMarshalOperatorFirstParameter() {
 		}
@@ -151,7 +153,7 @@ public class Marshal extends NativeCFG {
 		@Override
 		public String toString() {
 			return "marshal_first";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
@@ -167,9 +169,9 @@ public class Marshal extends NativeCFG {
 		public static final JSONMarshalOperatorSecondParameter INSTANCE = new JSONMarshalOperatorSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected JSONMarshalOperatorSecondParameter() {
 		}
@@ -177,7 +179,7 @@ public class Marshal extends NativeCFG {
 		@Override
 		public String toString() {
 			return "marshal_second";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {

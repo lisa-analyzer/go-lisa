@@ -80,8 +80,8 @@ public class CloseBlock extends Statement {
 	 */
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(
-					AnalysisState<A> entryState, InterproceduralAnalysis<A> interprocedural,
-					StatementStore<A> expressions) throws SemanticException {
+			AnalysisState<A> entryState, InterproceduralAnalysis<A> interprocedural,
+			StatementStore<A> expressions) throws SemanticException {
 		// The close block does not compute any symbolic expression, so it
 		// returns the empty set just popping the scope on the analysis state
 		return new AnalysisState<>(entryState.getState().popScope(new ScopeToken(open)),

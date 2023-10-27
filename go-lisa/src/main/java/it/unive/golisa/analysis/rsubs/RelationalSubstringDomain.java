@@ -1,17 +1,5 @@
 package it.unive.golisa.analysis.rsubs;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import it.unive.golisa.analysis.ExpressionInverseSet;
 import it.unive.golisa.analysis.StringConstantPropagation;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -42,6 +30,16 @@ import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * The relational string abstract domain, tracking definite information about
@@ -102,7 +100,8 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp,
+			SemanticOracle oracle)
 			throws SemanticException {
 		Map<Identifier, ExpressionInverseSet<ValueExpression>> func;
 		if (function == null)
@@ -154,13 +153,15 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp,
+			SemanticOracle oracle)
 			throws SemanticException {
 		return new RelationalSubstringDomain(lattice, function);
 	}
 
 	@Override
-	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
+	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
+			SemanticOracle oracle)
 			throws SemanticException {
 		// rsubs can assume contains, equals, and & or expressions (all binary
 		// expressions)
@@ -183,10 +184,10 @@ public class RelationalSubstringDomain
 			if (op == ComparisonEq.INSTANCE) {
 				ValueExpression left = (ValueExpression) binary.getLeft();
 				ValueExpression right = (ValueExpression) binary.getRight();
-				
+
 				Type ltypes = oracle.getDynamicTypeOf(left, src, oracle);
 				Type rtypes = oracle.getDynamicTypeOf(right, src, oracle);
-				
+
 				if (!ltypes.isStringType() || !rtypes.isStringType())
 					return new RelationalSubstringDomain(lattice, function);
 
@@ -273,7 +274,8 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// rsubs can satisfy contains, equals, and & or expressions (all binary
 		// expressions)
 

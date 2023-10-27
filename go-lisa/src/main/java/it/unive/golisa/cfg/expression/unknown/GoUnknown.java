@@ -48,8 +48,8 @@ public class GoUnknown extends Expression {
 
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(
-					AnalysisState<A> entryState, InterproceduralAnalysis<A> interprocedural,
-					StatementStore<A> expressions) throws SemanticException {
+			AnalysisState<A> entryState, InterproceduralAnalysis<A> interprocedural,
+			StatementStore<A> expressions) throws SemanticException {
 		return entryState.smallStepSemantics(new PushAny(Untyped.INSTANCE, getLocation()), getParentStatement());
 	}
 }

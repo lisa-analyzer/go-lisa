@@ -39,9 +39,9 @@ public class PushBack extends NativeCFG {
 				new Parameter(location, "v", Untyped.INSTANCE)),
 				PushBackImpl.class);
 	}
-	
+
 	public static class PushBackImpl extends BinaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -80,6 +80,6 @@ public class PushBack extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
 			return state.smallStepSemantics(new PushAny(Untyped.INSTANCE, getLocation()), original);
-		}		
+		}
 	}
 }

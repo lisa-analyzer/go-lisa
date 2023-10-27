@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.bytes.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
@@ -32,11 +28,15 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func NewBuffer(buf []byte) *Buffer
  * 
  * @see https://pkg.go.dev/bytes#NewBuffer
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class NewBuffer extends NativeCFG {
@@ -60,7 +60,7 @@ public class NewBuffer extends NativeCFG {
 	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
 	 */
 	public static class NewBufferImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -95,7 +95,6 @@ public class NewBuffer extends NativeCFG {
 			super(cfg, location, "NewBufferImpl", Buffer.getBufferType(null), expr);
 		}
 
-
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> arg0,
 				AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> arg3) throws SemanticException {
@@ -110,7 +109,8 @@ public class NewBuffer extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, NewBufferOperator.INSTANCE, getLocation());
+				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, NewBufferOperator.INSTANCE,
+						getLocation());
 				asg = asg.lub(state.assign(deref, left, original));
 			}
 
@@ -126,9 +126,9 @@ public class NewBuffer extends NativeCFG {
 		public static final NewBufferOperator INSTANCE = new NewBufferOperator();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected NewBufferOperator() {
 		}
@@ -136,7 +136,7 @@ public class NewBuffer extends NativeCFG {
 		@Override
 		public String toString() {
 			return "NewBufferOperator";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {

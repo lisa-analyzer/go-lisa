@@ -36,11 +36,13 @@ import it.unive.lisa.type.Untyped;
  * func (s *ChaincodeStub) GetArgs() [][]byte.
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetArgs
+ * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class GetArgs extends NativeCFG {
 
-	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION, IntegrityNIDomain.HIGH_ANNOTATION);
+	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION,
+			IntegrityNIDomain.HIGH_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -61,7 +63,7 @@ public class GetArgs extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class GetArgsImpl extends NaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -100,13 +102,13 @@ public class GetArgs extends NativeCFG {
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				ExpressionSet[] params, StatementStore<A> expressions)
-						throws SemanticException {
+				throws SemanticException {
 			Type sliceOfSliceOfBytes = GoSliceType.getSliceOfSliceOfBytes();
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfSliceOfBytes, getLocation(), anns, true);
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfSliceOfBytes), created, getLocation());
-			HeapDereference deref = new HeapDereference(sliceOfSliceOfBytes, ref,  getLocation());
+			HeapDereference deref = new HeapDereference(sliceOfSliceOfBytes, ref, getLocation());
 
 			// Assign the len property to this hid
 			Variable len = new Variable(Untyped.INSTANCE, "len",
@@ -120,7 +122,8 @@ public class GetArgs extends NativeCFG {
 					getLocation());
 			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
 					cap, getLocation());
-			AnalysisState<A> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			AnalysisState<
+					A> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
 			return capState.smallStepSemantics(ref, original);
 		}

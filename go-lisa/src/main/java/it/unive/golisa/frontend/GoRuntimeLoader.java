@@ -310,7 +310,6 @@ public interface GoRuntimeLoader {
 		List list = List.getListType(program);
 
 		listUnit.addCodeMember(new New(runtimeLocation, listUnit));
-		
 
 		// adding types
 		program.getTypes().registerType(list);
@@ -376,7 +375,7 @@ public interface GoRuntimeLoader {
 
 		// adding functions
 		bytes.addCodeMember(new NewBuffer(runtimeLocation, bytes));
-		
+
 		Buffer bufferType = Buffer.getBufferType(program);
 
 		// adding types
@@ -396,7 +395,6 @@ public interface GoRuntimeLoader {
 
 		KeyEndorsementPolicy.registerMethods();
 
-		
 		// adding functions
 		statebased.addCodeMember(new NewStateEP(runtimeLocation, statebased));
 
@@ -433,7 +431,7 @@ public interface GoRuntimeLoader {
 		ChaincodeServer.registerMethods();
 		CommonIterator.registerMethods();
 		StateQueryIterator.registerMethods();
-		
+
 		ChaincodeStub.getChaincodeStubType(program).getUnit()
 				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 

@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -15,6 +13,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go less or equal than expression (e.g., e1 < e2).
@@ -40,10 +39,10 @@ public class GoLessOrEqual extends it.unive.lisa.program.cfg.statement.BinaryExp
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> arg4)
 			throws SemanticException {
 		AnalysisState<A> result = state.bottom();
-		
+
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
-		
+
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type
 		// of the second operand, or vice versa.
@@ -54,10 +53,10 @@ public class GoLessOrEqual extends it.unive.lisa.program.cfg.statement.BinaryExp
 					// ordered
 					// but missing lexicographical string order in LiSA
 					AnalysisState<A> tmp = state
-									.smallStepSemantics(
-											new BinaryExpression(GoBoolType.INSTANCE,
-													left, right, ComparisonLe.INSTANCE, getLocation()),
-											this);
+							.smallStepSemantics(
+									new BinaryExpression(GoBoolType.INSTANCE,
+											left, right, ComparisonLe.INSTANCE, getLocation()),
+									this);
 					result = result.lub(tmp);
 				}
 			}

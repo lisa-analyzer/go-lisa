@@ -1,13 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
@@ -36,6 +28,13 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.util.representation.MapRepresentation;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The strict upper bound relational abstract domain.
@@ -159,7 +158,8 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	public StrictUpperBounds assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
+	public StrictUpperBounds assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
+			SemanticOracle oracle)
 			throws SemanticException {
 		Satisfiability isSat = satisfies(expression, src, oracle);
 		if (isSat == Satisfiability.SATISFIED)
@@ -195,7 +195,8 @@ public class StrictUpperBounds
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;

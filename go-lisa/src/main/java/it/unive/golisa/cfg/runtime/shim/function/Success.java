@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
@@ -30,6 +27,8 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Success response chaincodes. func Success(payload []byte) pb.Response
@@ -59,7 +58,7 @@ public class Success extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class SuccessImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -108,8 +107,9 @@ public class Success extends NativeCFG {
 			// Assigns an unknown object to each allocation identifier
 			HeapReference ref = new HeapReference(new ReferenceType(responseType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(responseType, ref, getLocation());
-			UnaryExpression un = new UnaryExpression(GoSliceType.getSliceOfBytes(), expr, SuccessOperator.INSTANCE, getLocation());
-			AnalysisState<A> asg = allocState.assign(deref, un, this);				
+			UnaryExpression un = new UnaryExpression(GoSliceType.getSliceOfBytes(), expr, SuccessOperator.INSTANCE,
+					getLocation());
+			AnalysisState<A> asg = allocState.assign(deref, un, this);
 			return asg.smallStepSemantics(ref, original);
 		}
 	}
@@ -122,9 +122,9 @@ public class Success extends NativeCFG {
 		public static final SuccessOperator INSTANCE = new SuccessOperator();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected SuccessOperator() {
 		}
@@ -132,7 +132,7 @@ public class Success extends NativeCFG {
 		@Override
 		public String toString() {
 			return "SuccessOperator";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {

@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -15,6 +13,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go equal expression (e.g., x == y).
@@ -39,26 +38,26 @@ public class GoNotEqual extends it.unive.lisa.program.cfg.statement.BinaryExpres
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> arg0,
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> arg4)
 			throws SemanticException {
-		if (right.getStaticType().canBeAssignedTo(left.getStaticType()) 
-				|| left.getStaticType().canBeAssignedTo(right.getStaticType())) 
+		if (right.getStaticType().canBeAssignedTo(left.getStaticType())
+				|| left.getStaticType().canBeAssignedTo(right.getStaticType()))
 			return state
 					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 							left, right,
 							ComparisonNe.INSTANCE, getLocation()), this);
-		
+
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
-		
+
 		// TODO: composite types are not covered yey
 		AnalysisState<A> result = state.bottom();
 		for (Type lType : ltypes)
-			for (Type rType : rtypes) 
-				if (rType.canBeAssignedTo(lType) || lType.canBeAssignedTo(rType)) 
+			for (Type rType : rtypes)
+				if (rType.canBeAssignedTo(lType) || lType.canBeAssignedTo(rType))
 					result = result.lub(state
 							.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 									left, right,
 									ComparisonNe.INSTANCE, getLocation()), this));
 		return result;
-	
+
 	}
 }

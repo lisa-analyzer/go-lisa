@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.io.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -36,6 +32,9 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func ReadAll(r Reader) ([]byte, error).
@@ -64,7 +63,7 @@ public class ReadAll extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class ReadAllImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -107,11 +106,12 @@ public class ReadAll extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(sliceOfBytes), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(),
+					true);
 			AnalysisState<A> allocState = state.smallStepSemantics(created, this);
 
 			AnalysisState<A> result = state.bottom();
@@ -124,16 +124,18 @@ public class ReadAll extends NativeCFG {
 				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, ReadAllFirstParameter.INSTANCE, getLocation());
+					UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId,
+							ReadAllFirstParameter.INSTANCE, getLocation());
 					asg = asg.lub(allocState.assign(deref, left, original));
 				}
 
-				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, ReadAllSecondParameter.INSTANCE, getLocation());
+				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, ReadAllSecondParameter.INSTANCE,
+						getLocation());
 
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+						getLocation(), tupleType,
 						ref,
-						rExp
-						));
+						rExp));
 			}
 
 			return result;
@@ -148,9 +150,9 @@ public class ReadAll extends NativeCFG {
 		public static final ReadAllFirstParameter INSTANCE = new ReadAllFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected ReadAllFirstParameter() {
 		}
@@ -158,7 +160,7 @@ public class ReadAll extends NativeCFG {
 		@Override
 		public String toString() {
 			return "ReadAll_first";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
@@ -174,9 +176,9 @@ public class ReadAll extends NativeCFG {
 		public static final ReadAllSecondParameter INSTANCE = new ReadAllSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected ReadAllSecondParameter() {
 		}
@@ -184,7 +186,7 @@ public class ReadAll extends NativeCFG {
 		@Override
 		public String toString() {
 			return "ReadAll_second";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {

@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -34,9 +30,13 @@ import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes []string) (string, error)
+ * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes
+ * []string) (string, error)
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CreateCompositeKey
  * 
@@ -66,7 +66,7 @@ public class CreateCompositeKey extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class CreateCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.TernaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -104,7 +104,6 @@ public class CreateCompositeKey extends NativeCFG {
 					params[0], params[1], params[2]);
 		}
 
-
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdTernarySemantics(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
@@ -121,18 +120,33 @@ public class CreateCompositeKey extends NativeCFG {
 				Set<Type> idTypes = state.getState().getRuntimeTypesOf(id, this, state.getState());
 				for (Type t : idTypes) {
 					if (t.isPointerType()) {
-						HeapDereference derefId = new HeapDereference(t.asPointerType().getInnerType(), id, getLocation());
-						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
-						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeySecondParameter.INSTANCE, getLocation());
-						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state, new Annotations(), original, getLocation(), tupleType, 
+						HeapDereference derefId = new HeapDereference(t.asPointerType().getInnerType(), id,
+								getLocation());
+						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE,
+								new Constant(getStaticType(), 1, getLocation()), middle,
+								new Constant(getStaticType(), 1, getLocation()),
+								CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
+						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE,
+								new Constant(getStaticType(), 1, getLocation()), middle,
+								new Constant(getStaticType(), 1, getLocation()),
+								CreateCompositeKeySecondParameter.INSTANCE, getLocation());
+						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state,
+								new Annotations(), original, getLocation(), tupleType,
 								leftExp,
 								rightExp);
 
 						result = result.lub(tupleState);
 					} else {
-						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
-						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(getStaticType(), 1, getLocation()), middle, new Constant(getStaticType(), 1, getLocation()), CreateCompositeKeySecondParameter.INSTANCE, getLocation());
-						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state, new Annotations(), original, getLocation(), tupleType, 
+						TernaryExpression leftExp = new TernaryExpression(GoStringType.INSTANCE,
+								new Constant(getStaticType(), 1, getLocation()), middle,
+								new Constant(getStaticType(), 1, getLocation()),
+								CreateCompositeKeyFirstParameter.INSTANCE, getLocation());
+						TernaryExpression rightExp = new TernaryExpression(GoErrorType.INSTANCE,
+								new Constant(getStaticType(), 1, getLocation()), middle,
+								new Constant(getStaticType(), 1, getLocation()),
+								CreateCompositeKeySecondParameter.INSTANCE, getLocation());
+						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state,
+								new Annotations(), original, getLocation(), tupleType,
 								leftExp,
 								rightExp);
 
@@ -153,9 +167,9 @@ public class CreateCompositeKey extends NativeCFG {
 		public static final CreateCompositeKeyFirstParameter INSTANCE = new CreateCompositeKeyFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected CreateCompositeKeyFirstParameter() {
 		}
@@ -179,9 +193,9 @@ public class CreateCompositeKey extends NativeCFG {
 		public static final CreateCompositeKeySecondParameter INSTANCE = new CreateCompositeKeySecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected CreateCompositeKeySecondParameter() {
 		}

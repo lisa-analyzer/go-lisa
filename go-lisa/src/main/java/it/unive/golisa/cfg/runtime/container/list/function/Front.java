@@ -28,13 +28,14 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func (*List) Front  
+ * func (*List) Front
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Front extends NativeCFG {
 
-	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION, IntegrityNIDomain.HIGH_ANNOTATION);
+	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION,
+			IntegrityNIDomain.HIGH_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -43,7 +44,7 @@ public class Front extends NativeCFG {
 	 * @param listUnit the unit to which this native cfg belongs to
 	 */
 	public Front(CodeLocation location, ProgramUnit listUnit) {
-		super(new CodeMemberDescriptor(location, listUnit, true, "Front", List.INSTANCE, 
+		super(new CodeMemberDescriptor(location, listUnit, true, "Front", List.INSTANCE,
 				new Parameter(location, "l", List.getListType(listUnit.getProgram()))),
 				FrontImpl.class);
 	}
@@ -54,7 +55,7 @@ public class Front extends NativeCFG {
 	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
 	 */
 	public static class FrontImpl extends NaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -97,7 +98,7 @@ public class Front extends NativeCFG {
 			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), anns, true);
 			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(listType, ref, getLocation());
-			AnalysisState<A> asg = state.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);				
+			AnalysisState<A> asg = state.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);
 			return asg.smallStepSemantics(ref, original);
 		}
 	}

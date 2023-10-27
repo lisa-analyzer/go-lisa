@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Collections;
-
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
@@ -23,6 +21,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
+import java.util.Collections;
 
 /**
  * A Go short variable declaration statement.
@@ -60,7 +59,7 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		 * Types an expression (if it is untyped (int or float), this method
 		 * returns it as typed).
 		 * 
-		 * @param exp the expression to type	
+		 * @param exp  the expression to type
 		 * @param type the dynamic type of the expression
 		 * 
 		 * @return the typed expression
@@ -86,9 +85,9 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-					InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-					throws SemanticException {
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
 		// e.g., _ := f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;

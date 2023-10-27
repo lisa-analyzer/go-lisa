@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -15,6 +13,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go greater than expression (e.g., x > y).
@@ -41,7 +40,7 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 			throws SemanticException {
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
-		
+
 		AnalysisState<A> result = state.bottom();
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type
@@ -53,11 +52,11 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 					// ordered
 					// but missing lexicographical string order in LiSA
 					AnalysisState<A> tmp = state
-									.smallStepSemantics(
-											new BinaryExpression(GoBoolType.INSTANCE,
-													left, right, ComparisonGt.INSTANCE, getLocation()),
+							.smallStepSemantics(
+									new BinaryExpression(GoBoolType.INSTANCE,
+											left, right, ComparisonGt.INSTANCE, getLocation()),
 
-											this);
+									this);
 					result = result.lub(tmp);
 				}
 			}

@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
@@ -29,11 +25,15 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (t Time) Format(layout string) string
  * 
  * @see https://pkg.go.dev/time#Time.Format
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Format extends NativeCFG {
@@ -53,7 +53,7 @@ public class Format extends NativeCFG {
 	}
 
 	public static class FormatImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -94,22 +94,24 @@ public class Format extends NativeCFG {
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
+				throws SemanticException {
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
 			AnalysisState<A> result = state.bottom();
 			for (SymbolicExpression id : reachableIds) {
 				if (id instanceof MemoryPointer)
 					continue;
-				
+
 				Set<Type> idTypes = state.getState().getRuntimeTypesOf(id, this, state.getState());
-				for (Type t : idTypes) 
+				for (Type t : idTypes)
 					if (t.isPointerType()) {
 						HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-						BinaryExpression lExp = new BinaryExpression(GoStringType.INSTANCE, derefId, right, FormatOperator.INSTANCE, getLocation());
+						BinaryExpression lExp = new BinaryExpression(GoStringType.INSTANCE, derefId, right,
+								FormatOperator.INSTANCE, getLocation());
 						result = result.lub(state.smallStepSemantics(lExp, original));
 					} else {
-						BinaryExpression lExp = new BinaryExpression(GoStringType.INSTANCE, id, right, FormatOperator.INSTANCE, getLocation());
+						BinaryExpression lExp = new BinaryExpression(GoStringType.INSTANCE, id, right,
+								FormatOperator.INSTANCE, getLocation());
 						result = result.lub(state.smallStepSemantics(lExp, original));
 					}
 			}
@@ -127,9 +129,9 @@ public class Format extends NativeCFG {
 		public static final FormatOperator INSTANCE = new FormatOperator();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected FormatOperator() {
 		}
@@ -137,7 +139,7 @@ public class Format extends NativeCFG {
 		@Override
 		public String toString() {
 			return "FormatOperator";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {

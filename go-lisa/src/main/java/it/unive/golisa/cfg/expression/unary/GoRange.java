@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.unary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -16,6 +14,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
+import java.util.Set;
 
 /**
  * A Go range expression, tracking the beginning of a range statement.
@@ -39,7 +38,7 @@ public class GoRange extends UnaryExpression {
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "range", GoBoolType.INSTANCE, exp);
 	}
-	
+
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> interprocedural,
 			AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {

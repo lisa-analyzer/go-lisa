@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -36,6 +32,9 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error).
@@ -107,11 +106,11 @@ public class NewStateEP extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+
 			Type kepType = KeyEndorsementPolicy.getKeyEndorsementPolicyType(getProgram());
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(kepType), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
@@ -128,22 +127,24 @@ public class NewStateEP extends NativeCFG {
 				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					it.unive.lisa.symbolic.value.UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, KeyEndorsementPolicyFirstParameter.INSTANCE, getLocation());
+					it.unive.lisa.symbolic.value.UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId,
+							KeyEndorsementPolicyFirstParameter.INSTANCE, getLocation());
 					asg = asg.lub(allocState.assign(deref, left, original));
 				}
 
-				UnaryExpression rightRes = new UnaryExpression(GoErrorType.INSTANCE, expr, KeyEndorsementPolicySecondParameter.INSTANCE, getLocation());
+				UnaryExpression rightRes = new UnaryExpression(GoErrorType.INSTANCE, expr,
+						KeyEndorsementPolicySecondParameter.INSTANCE, getLocation());
 
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+						getLocation(), tupleType,
 						ref,
-						rightRes
-						));
+						rightRes));
 			}
 
 			return result;
 		}
 	}
-	
+
 	public static class KeyEndorsementPolicyFirstParameter implements UnaryOperator {
 
 		/**
@@ -152,9 +153,9 @@ public class NewStateEP extends NativeCFG {
 		public static final KeyEndorsementPolicyFirstParameter INSTANCE = new KeyEndorsementPolicyFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected KeyEndorsementPolicyFirstParameter() {
 		}
@@ -178,9 +179,9 @@ public class NewStateEP extends NativeCFG {
 		public static final KeyEndorsementPolicySecondParameter INSTANCE = new KeyEndorsementPolicySecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected KeyEndorsementPolicySecondParameter() {
 		}

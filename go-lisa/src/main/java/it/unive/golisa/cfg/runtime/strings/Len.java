@@ -82,8 +82,8 @@ public class Len extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 			return state.smallStepSemantics(
 					new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), original);
 		}

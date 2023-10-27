@@ -33,7 +33,7 @@ public class GoChannelSend extends BinaryExpression {
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> arg0,
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> arg4)
-					throws SemanticException {
+			throws SemanticException {
 		// TODO: go channel send semantics
 		return state.top();
 	}

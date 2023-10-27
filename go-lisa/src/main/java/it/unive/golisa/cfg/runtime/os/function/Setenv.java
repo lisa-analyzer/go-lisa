@@ -90,12 +90,14 @@ public class Setenv extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
-			AnalysisState<A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
+			AnalysisState<
+					A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
 							original);
-			AnalysisState<A> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			AnalysisState<A> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()),
+					original);
 			return readerValue.lub(nilValue);
 		}
 	}

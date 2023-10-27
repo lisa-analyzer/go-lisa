@@ -75,7 +75,6 @@ public class ExpFloat64 extends NativeCFG {
 			super(cfg, location, "ExpFloat64Impl", GoFloat64Type.INSTANCE);
 		}
 
-
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,

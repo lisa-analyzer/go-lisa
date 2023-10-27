@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -33,6 +30,8 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func Parse(layout, value string) (Time, error).
@@ -103,12 +102,12 @@ public class Parse extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
-			
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
+
 			Type timeType = Time.getTimeType(getProgram());
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(timeType), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
@@ -116,17 +115,18 @@ public class Parse extends NativeCFG {
 			HeapReference ref = new HeapReference(new ReferenceType(timeType), created, left.getCodeLocation());
 			HeapDereference deref = new HeapDereference(timeType, ref, left.getCodeLocation());
 
-			BinaryExpression rExp = new BinaryExpression(Untyped.INSTANCE, left, right, ParseOperatorFirstParameter.INSTANCE, getLocation());
-			BinaryExpression lExp = new BinaryExpression(GoErrorType.INSTANCE, left, right, ParseOperatorFirstParameter.INSTANCE, getLocation());
+			BinaryExpression rExp = new BinaryExpression(Untyped.INSTANCE, left, right,
+					ParseOperatorFirstParameter.INSTANCE, getLocation());
+			BinaryExpression lExp = new BinaryExpression(GoErrorType.INSTANCE, left, right,
+					ParseOperatorFirstParameter.INSTANCE, getLocation());
 			state = state.assign(deref, rExp, original);
-			
-			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType, 
+
+			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType,
 					ref,
-					lExp
-					);
+					lExp);
 		}
 	}
-	
+
 	public static class ParseOperatorFirstParameter implements BinaryOperator {
 
 		/**
@@ -135,9 +135,9 @@ public class Parse extends NativeCFG {
 		public static final ParseOperatorFirstParameter INSTANCE = new ParseOperatorFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected ParseOperatorFirstParameter() {
 		}
@@ -145,14 +145,14 @@ public class Parse extends NativeCFG {
 		@Override
 		public String toString() {
 			return "ParseOperator_first";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
 			return Collections.singleton(Untyped.INSTANCE);
 		}
 	}
-	
+
 	public static class ParseOperatorSecondParameter implements BinaryOperator {
 
 		/**
@@ -161,9 +161,9 @@ public class Parse extends NativeCFG {
 		public static final ParseOperatorSecondParameter INSTANCE = new ParseOperatorSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected ParseOperatorSecondParameter() {
 		}
@@ -171,7 +171,7 @@ public class Parse extends NativeCFG {
 		@Override
 		public String toString() {
 			return "ParseOperator_second";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {

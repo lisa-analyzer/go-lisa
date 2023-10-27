@@ -86,8 +86,8 @@ public class Getenv extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 			AnalysisState<A> stringValue = state
 					.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
 			AnalysisState<A> nilValue = state

@@ -30,6 +30,7 @@ import it.unive.lisa.type.ReferenceType;
  * func Now() Time.
  * 
  * @see https://pkg.go.dev/time#Now
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Now extends NativeCFG {
@@ -37,7 +38,8 @@ public class Now extends NativeCFG {
 	/**
 	 * Annotations of this CFG. The output of this CFG is non-deterministic.
 	 */
-	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION, IntegrityNIDomain.LOW_ANNOTATION);
+	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION,
+			IntegrityNIDomain.LOW_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -56,7 +58,7 @@ public class Now extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class NowImpl extends it.unive.lisa.program.cfg.statement.NaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -94,7 +96,7 @@ public class Now extends NativeCFG {
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				ExpressionSet[] params, StatementStore<A> expressions)
-						throws SemanticException {
+				throws SemanticException {
 
 			Time timeType = Time.getTimeType(getProgram());
 
@@ -105,8 +107,8 @@ public class Now extends NativeCFG {
 			// Assigns an unknown object to each allocation identifier
 			HeapReference ref = new HeapReference(new ReferenceType(timeType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(timeType, ref, getLocation());
-			AnalysisState<A> asg = allocState.assign(deref, new PushAny(timeType, getLocation()), this);				
-			asg = asg.assign(deref, new PushAny(GoIntType.INSTANCE, getLocation()), this);	 
+			AnalysisState<A> asg = allocState.assign(deref, new PushAny(timeType, getLocation()), this);
+			asg = asg.assign(deref, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 			return asg.smallStepSemantics(ref, original);
 		}
 	}

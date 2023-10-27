@@ -1,9 +1,5 @@
 package it.unive.golisa.interprocedural;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
@@ -29,6 +25,9 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * OpenCall policy to be less conservative during taint and non-interference
@@ -49,7 +48,7 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 			OpenCall call,
 			AnalysisState<A> entryState,
 			ExpressionSet[] params)
-					throws SemanticException {
+			throws SemanticException {
 
 		if (call.getStaticType().isVoidType())
 			return entryState.smallStepSemantics(new Skip(call.getLocation()), call);
@@ -68,7 +67,8 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 						} else if (((TaintDomain) stackValue).isClean()) {
 							// && isRuntimeAPI(call)) {
 							return entryState.assign(var,
-									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()),
+									call);
 						} else if (((TaintDomain) stackValue).isBottom()) {
 							return entryState;
 						}
@@ -84,10 +84,12 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 						if (ni.isLowIntegrity() || ni.isTop()) {
 							PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
 							return entryState.assign(var, pushany, call);
-						} else if (ni.isHighIntegrity()) {// && isRuntimeAPI(call))
+						} else if (ni.isHighIntegrity()) {// &&
+															// isRuntimeAPI(call))
 							// {
 							return entryState.assign(var,
-									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()),
+									call);
 
 						} else if (ni.isBottom())
 							return entryState;
@@ -130,7 +132,7 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 
 	private boolean checkRuntimeApiMethod(Call call, String qualifier) {
 		Map<String,
-		Set<MethodGoLangApiSignature>> mapMethod = GoLangAPISignatureMapper.getGoApiSignatures().getMapMethod();
+				Set<MethodGoLangApiSignature>> mapMethod = GoLangAPISignatureMapper.getGoApiSignatures().getMapMethod();
 		if (mapMethod.containsKey(call.getQualifier())) {
 			for (MethodGoLangApiSignature sign : mapMethod.get(qualifier))
 				if (matchSignature(sign, call))

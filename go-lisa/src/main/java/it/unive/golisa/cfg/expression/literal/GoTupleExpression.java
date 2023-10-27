@@ -44,14 +44,16 @@ public class GoTupleExpression extends NaryExpression {
 	public GoTupleExpression(CFG cfg, Parameter[] types, CodeLocation location, Expression... expressions) {
 		this(cfg, GoTupleType.lookup(types), location, expressions);
 	}
-	
+
 	public GoTupleExpression(CFG cfg, GoTupleType type, CodeLocation location, Expression... expressions) {
 		super(cfg, location, "(tuple)", expressions);
 		this.tupleType = type;
 	}
 
 	@SafeVarargs
-	public static <A extends AbstractState<A>> AnalysisState<A> allocateTupleExpression(AnalysisState<A> entryState, Annotations anns, ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps) throws SemanticException {
+	public static <A extends AbstractState<A>> AnalysisState<A> allocateTupleExpression(AnalysisState<A> entryState,
+			Annotations anns, ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps)
+			throws SemanticException {
 		// Allocates the new heap allocation
 		MemoryAllocation created = new MemoryAllocation(tupleType, location, anns, true);
 		entryState = entryState.smallStepSemantics(created, pp);

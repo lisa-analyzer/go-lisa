@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.strings;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
@@ -22,6 +20,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * func Contains(s, substr string) bool.
@@ -89,9 +88,9 @@ public class Contains extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
 			AnalysisState<A> result = state.bottom();
 			Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 			Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());

@@ -89,7 +89,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	private final List<Global> globals;
 
 	private final Unit pkgUnit;
-	
+
 	/**
 	 * Builds a type visitor.
 	 * 
@@ -99,7 +99,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * @param constants the constant mapping
 	 * @param globals   the global variables
 	 */
-	public GoTypeVisitor(String file, CompilationUnit unit, Unit pkgUnit, Program program, Map<String, ExpressionContext> constants,
+	public GoTypeVisitor(String file, CompilationUnit unit, Unit pkgUnit, Program program,
+			Map<String, ExpressionContext> constants,
 			List<Global> globals) {
 		this.file = file;
 		this.unit = unit;

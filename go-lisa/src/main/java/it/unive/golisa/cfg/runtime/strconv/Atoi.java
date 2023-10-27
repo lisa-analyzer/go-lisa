@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -28,6 +25,8 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func Atoi(s string) (int, error)
@@ -43,7 +42,7 @@ public class Atoi extends NativeCFG {
 	 * @param strconvUnit the unit to which this native cfg belongs to
 	 */
 	public Atoi(CodeLocation location, CodeUnit strconvUnit) {
-		super(new CodeMemberDescriptor(location, strconvUnit, false, "Atoi", 
+		super(new CodeMemberDescriptor(location, strconvUnit, false, "Atoi",
 				GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "this", GoStringType.INSTANCE)),
 				AtoiImpl.class);
@@ -54,7 +53,8 @@ public class Atoi extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class AtoiImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression implements PluggableStatement {
+	public static class AtoiImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -86,7 +86,8 @@ public class Atoi extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public AtoiImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "Atoi", GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), expr);
+			super(cfg, location, "Atoi", GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
+					expr);
 		}
 
 		@Override
@@ -94,18 +95,19 @@ public class Atoi extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
-			UnaryExpression lExp = new UnaryExpression(GoIntType.INSTANCE, expr, AtoiFirstParameter.INSTANCE, getLocation());
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, AtoiSecondParameter.INSTANCE, getLocation());
+			UnaryExpression lExp = new UnaryExpression(GoIntType.INSTANCE, expr, AtoiFirstParameter.INSTANCE,
+					getLocation());
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, AtoiSecondParameter.INSTANCE,
+					getLocation());
 
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
-			
-			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType, 
+
+			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType,
 					lExp,
-					rExp
-					);
+					rExp);
 		}
 	}
-	
+
 	public static class AtoiFirstParameter implements UnaryOperator {
 
 		/**
@@ -114,9 +116,9 @@ public class Atoi extends NativeCFG {
 		public static final AtoiFirstParameter INSTANCE = new AtoiFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected AtoiFirstParameter() {
 		}
@@ -124,14 +126,14 @@ public class Atoi extends NativeCFG {
 		@Override
 		public String toString() {
 			return "Atoi_first";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
 			return Collections.singleton(GoIntType.INSTANCE);
 		}
 	}
-	
+
 	public static class AtoiSecondParameter implements UnaryOperator {
 
 		/**
@@ -140,9 +142,9 @@ public class Atoi extends NativeCFG {
 		public static final AtoiSecondParameter INSTANCE = new AtoiSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected AtoiSecondParameter() {
 		}
@@ -150,7 +152,7 @@ public class Atoi extends NativeCFG {
 		@Override
 		public String toString() {
 			return "Atoi_secon";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {

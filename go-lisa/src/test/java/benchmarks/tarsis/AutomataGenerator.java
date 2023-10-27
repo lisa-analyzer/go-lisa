@@ -2,11 +2,6 @@ package benchmarks.tarsis;
 
 import static benchmarks.tarsis.TarsisJournalEvaluation.GEN;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.util.datastructures.automaton.Automaton;
@@ -15,6 +10,10 @@ import it.unive.lisa.util.datastructures.automaton.Transition;
 import it.unive.lisa.util.datastructures.regex.Atom;
 import it.unive.lisa.util.datastructures.regex.RegularExpression;
 import it.unive.lisa.util.datastructures.regex.TopAtom;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class AutomataGenerator {
 	private static final State qinit = new State(0, true, false);

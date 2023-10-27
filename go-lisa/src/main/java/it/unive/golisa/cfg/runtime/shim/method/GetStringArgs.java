@@ -35,6 +35,7 @@ import it.unive.lisa.type.Untyped;
  * func (s *ChaincodeStub) GetStringArgs() []string.
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStringArgs
+ * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class GetStringArgs extends NativeCFG {
@@ -60,7 +61,7 @@ public class GetStringArgs extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class GetStringArgsImpl extends NaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -99,13 +100,13 @@ public class GetStringArgs extends NativeCFG {
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				ExpressionSet[] params, StatementStore<A> expressions)
-						throws SemanticException {
+				throws SemanticException {
 			Type sliceOfString = GoSliceType.getSliceOfStrings();
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfString, getLocation(), anns, true);
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfString), created, getLocation());
-			HeapDereference deref = new HeapDereference(sliceOfString, ref,  getLocation());
+			HeapDereference deref = new HeapDereference(sliceOfString, ref, getLocation());
 
 			// Assign the len property to this hid
 			Variable len = new Variable(Untyped.INSTANCE, "len",
@@ -119,7 +120,8 @@ public class GetStringArgs extends NativeCFG {
 					getLocation());
 			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
 					cap, getLocation());
-			AnalysisState<A> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			AnalysisState<
+					A> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
 			return capState.smallStepSemantics(ref, original);
 

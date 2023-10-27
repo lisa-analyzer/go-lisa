@@ -26,8 +26,9 @@ import it.unive.lisa.symbolic.value.PushAny;
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Int extends NativeCFG {
-	
-	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION, IntegrityNIDomain.LOW_ANNOTATION);
+
+	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION,
+			IntegrityNIDomain.LOW_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -82,9 +83,9 @@ public class Int extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						ExpressionSet[] params, StatementStore<A> expressions)
-						throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				ExpressionSet[] params, StatementStore<A> expressions)
+				throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
 		}
 	}

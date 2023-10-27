@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
@@ -38,11 +34,16 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * func (s *ChaincodeStub) GetStateByRange(startKey, endKey string) (StateQueryIteratorInterface, error)
+ * func (s *ChaincodeStub) GetStateByRange(startKey, endKey string)
+ * (StateQueryIteratorInterface, error)
  * 
  * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStateByRange
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GetStateByRange extends NativeCFG {
@@ -51,7 +52,9 @@ public class GetStateByRange extends NativeCFG {
 		super(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, shimUnit,
 				true,
 				"GetStateByRange",
-				GoTupleType.getTupleTypeOf(location, StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(shimUnit.getProgram()) ,GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location,
+						StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(shimUnit.getProgram()),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "startKey", GoStringType.INSTANCE),
 				new Parameter(location, "endKey", GoStringType.INSTANCE)), GetStateByRangeImpl.class);
@@ -63,7 +66,7 @@ public class GetStateByRange extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class GetStateByRangeImpl extends it.unive.lisa.program.cfg.statement.TernaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -95,8 +98,11 @@ public class GetStateByRange extends NativeCFG {
 		 * @param left     the left-hand side of this expression
 		 * @param right    the right-hand side of this expression
 		 */
-		public GetStateByRangeImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
-			super(cfg, location, "GetStateByRangeImpl", GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, Untyped.INSTANCE ,GoErrorType.INSTANCE), left, middle, right);
+		public GetStateByRangeImpl(CFG cfg, CodeLocation location, Expression left, Expression middle,
+				Expression right) {
+			super(cfg, location, "GetStateByRangeImpl", GoTupleType
+					.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, Untyped.INSTANCE, GoErrorType.INSTANCE),
+					left, middle, right);
 		}
 
 		@Override
@@ -105,7 +111,7 @@ public class GetStateByRange extends NativeCFG {
 				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
 				StatementStore<A> expressions) throws SemanticException {
 			Type allocType = StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(getProgram());
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(allocType), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
@@ -117,15 +123,20 @@ public class GetStateByRange extends NativeCFG {
 			// Retrieves all the identifiers reachable from expr
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
 			for (SymbolicExpression id : reachableIds) {
-				// FIXME: first parameter is stub, but it is not tracked (put constant now)
+				// FIXME: first parameter is stub, but it is not tracked (put
+				// constant now)
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeFirstParameter.INSTANCE, getLocation());
+				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE,
+						new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right,
+						GetStateByRangeFirstParameter.INSTANCE, getLocation());
 				asg = asg.lub(state.assign(deref, lExp, original));
 			}
 
-			TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right, GetStateByRangeSecondParameter.INSTANCE, getLocation());
+			TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE,
+					new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right,
+					GetStateByRangeSecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
 					ref,
 					rExp);
 		}
@@ -139,9 +150,9 @@ public class GetStateByRange extends NativeCFG {
 		public static final GetStateByRangeFirstParameter INSTANCE = new GetStateByRangeFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected GetStateByRangeFirstParameter() {
 		}
@@ -165,9 +176,9 @@ public class GetStateByRange extends NativeCFG {
 		public static final GetStateByRangeSecondParameter INSTANCE = new GetStateByRangeSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected GetStateByRangeSecondParameter() {
 		}

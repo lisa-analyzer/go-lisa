@@ -2,6 +2,15 @@ package benchmarks.tarsis;
 
 import static org.junit.Assert.assertEquals;
 
+import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.Satisfiability;
+import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.string.fsa.FSA;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.logging.TimeFormat;
+import it.unive.lisa.util.numeric.IntInterval;
+import it.unive.lisa.util.numeric.MathNumber;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -30,16 +38,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.Satisfiability;
-import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.analysis.string.fsa.FSA;
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.logging.TimeFormat;
-import it.unive.lisa.util.numeric.IntInterval;
-import it.unive.lisa.util.numeric.MathNumber;
 
 @Ignore("This test should only be manually executed for the benchmark as it takes few hours")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -77,27 +75,27 @@ public class TarsisJournalEvaluation {
 
 		LOG.info("Class 1: Generating automata for top");
 		generateSingle(AutomataGenerator::top);
-		
+
 		LOG.info("Class 2: Generating automata for atoms");
 		for (int k = 0; k < 5; k++)
 			generateSingle(AutomataGenerator::atom);
-		
+
 		LOG.info("Class 3: Generating automata for concatenated constants and tops");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::concatConstantsAndTop);
-		
+
 		LOG.info("Class 4: Generating automata for single paths with top");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::singlePathWithTop);
-		
+
 		LOG.info("Class 5: Generating automata for joined constants with tops");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::joinConstantsAndTop);
-			
+
 		LOG.info("Class 6: Generating automata for loops with constants and tops");
 		for (int k = 0; k < ROUNDS_PER_CLASS; k++)
 			generateSingle(AutomataGenerator::loopingConstantsAndTop);
-		
+
 		LOG.info("Class 7: Generating random automata");
 		// 1 is to account for the top automaton
 		for (int k = 0; k < ROUNDS - (ROUNDS_PER_CLASS * 4) - 6; k++)
@@ -123,7 +121,7 @@ public class TarsisJournalEvaluation {
 		int j = i + GEN.nextInt(20 - i);
 		SUBSTRING_INDEXES.add(Pair.of(i, j));
 	}
-	
+
 	@After
 	public void runGC() {
 		System.gc();
@@ -211,7 +209,8 @@ public class TarsisJournalEvaluation {
 		LOG.info("Benchmarking length");
 		Map<Integer, RunResult<Interval>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
 				triple -> new Interval(triple.getLeft().length()));
-		Map<Integer, RunResult<Interval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY, triple -> new Interval(triple.getLeft().length()));
+		Map<Integer, RunResult<Interval>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
+				triple -> new Interval(triple.getLeft().length()));
 		speedup(tarsis, fsa);
 //		compareIntervals(tarsis, fsa);
 	}
@@ -242,7 +241,7 @@ public class TarsisJournalEvaluation {
 		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
-	
+
 	@Test
 	public void bench10trim() throws SemanticException {
 		LOG.info("Benchmarking trim");
@@ -252,7 +251,7 @@ public class TarsisJournalEvaluation {
 		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
-	
+
 	@Test
 	public void bench11repeat() throws SemanticException {
 		LOG.info("Benchmarking repeat");
@@ -260,13 +259,13 @@ public class TarsisJournalEvaluation {
 		MathNumber l = new MathNumber(SUBSTRING_INDEXES.get(idx.get()).getLeft());
 		MathNumber h = new MathNumber(SUBSTRING_INDEXES.get(idx.get()).getRight());
 		Interval i = new Interval(new IntInterval(l.min(h), l.max(h)));
-		
+
 		Map<Integer, RunResult<Tarsis>> tarsis = benchmark(TARSIS_TRIPLES, TARSIS_KEY,
 				triple -> triple.getLeft().repeat(i));
 
 		Map<Integer, RunResult<FSA>> fsa = benchmark(FSA_TRIPLES, FSA_KEY,
 				triple -> triple.getLeft().repeat(i));
-	
+
 		speedup(tarsis, fsa);
 //		compare(tarsis, fsa);
 	}
@@ -288,7 +287,7 @@ public class TarsisJournalEvaluation {
 		int timeouts = 0, failures = 0, successes = 0;
 		int tops = 0;
 		int bottoms = 0;
-		
+
 		long max = -1L, min = Long.MAX_VALUE, total = 0;
 		double average = 0;
 		for (Entry<Integer, RunResult<O>> entry : results.entrySet()) {
@@ -303,7 +302,7 @@ public class TarsisJournalEvaluation {
 				if (entry.getValue().result.isTop())
 					tops++;
 				long elapsed = entry.getValue().elapsed;
-				
+
 				total += elapsed;
 				min = Math.min(min, elapsed);
 				max = Math.max(max, elapsed);
@@ -349,7 +348,7 @@ public class TarsisJournalEvaluation {
 		LOG.info("  Rate: " + (totalFSA / (double) totalTarsis) + "x");
 
 	}
-	
+
 	private static <I, O> RunResult<O> benchmarkSingle(I input, FailableFunction<I, O, Exception> action) {
 		RunResult<O> res;
 		final ExecutorService EXECUTORS = Executors.newSingleThreadExecutor();
@@ -365,10 +364,10 @@ public class TarsisJournalEvaluation {
 		}
 
 		EXECUTORS.shutdownNow();
-		
+
 		return res;
 	}
-	
+
 	private static class SingleRun<I, O> implements Callable<RunResult<O>> {
 		private final FailableFunction<I, O, Exception> action;
 		private final I input;

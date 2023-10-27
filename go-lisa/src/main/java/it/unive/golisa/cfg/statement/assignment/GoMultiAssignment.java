@@ -1,12 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -36,6 +29,11 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi-assignment.
@@ -119,10 +117,10 @@ public class GoMultiAssignment extends Expression {
 	}
 
 	private <A extends AbstractState<A>,
-	H extends HeapDomain<H>,
-	V extends ValueDomain<V>,
-	T extends TypeDomain<T>> AnalysisState<A> assignScopedId(AnalysisState<A> rightState,
-			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
+			H extends HeapDomain<H>,
+			V extends ValueDomain<V>,
+			T extends TypeDomain<T>> AnalysisState<A> assignScopedId(AnalysisState<A> rightState,
+					SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
 					throws SemanticException {
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
@@ -209,12 +207,13 @@ public class GoMultiAssignment extends Expression {
 
 			AnalysisState<A> partialResult = entryState.bottom();
 
-			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {		
+			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
 				HeapDereference dereference = new HeapDereference(getStaticType(),
 						retExp, getLocation());
 				AccessChild access;
-				Type rightExpType = retExp.getStaticType();				
-				if (rightExpType instanceof ReferenceType && ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
+				Type rightExpType = retExp.getStaticType();
+				if (rightExpType instanceof ReferenceType
+						&& ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
 					Type typeAtPos = ((GoTupleType) ((ReferenceType) rightExpType).getInnerType()).getTypeAt(i);
 					access = new AccessChild(typeAtPos, dereference,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
@@ -223,15 +222,16 @@ public class GoMultiAssignment extends Expression {
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 					AnalysisState<A> assign;
-					if (rightExpType instanceof ReferenceType && ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
+					if (rightExpType instanceof ReferenceType
+							&& ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
 						Type typeAtPos = ((GoTupleType) ((ReferenceType) rightExpType).getInnerType()).getTypeAt(i);
 
 						if (typeAtPos instanceof ReferenceType) {
 							HeapReference ref = new HeapReference(new ReferenceType(typeAtPos), access, getLocation());
 							assign = finalResult.assign(idExp, ref, this);
-						} else 
+						} else
 							assign = finalResult.assign(idExp, access, this);
-					} else 
+					} else
 						assign = finalResult.assign(idExp, access, this);
 
 					partialResult = partialResult.lub(assign);

@@ -1,13 +1,12 @@
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.lisa.program.Program;
+import java.io.IOException;
+import java.nio.file.Path;
 
 public abstract class GoChaincodeTestExecutor extends GoAnalysisTestExecutor {
 

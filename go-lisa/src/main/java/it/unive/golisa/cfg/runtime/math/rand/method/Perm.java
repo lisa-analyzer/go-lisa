@@ -84,9 +84,9 @@ public class Perm extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoSliceType.lookup(GoIntType.INSTANCE), getLocation()),
 					original);
 		}

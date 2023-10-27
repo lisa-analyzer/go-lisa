@@ -55,7 +55,7 @@ public class PutPrivateData extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class PutPrivateDataImpl extends NaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -94,8 +94,9 @@ public class PutPrivateData extends NativeCFG {
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
-			AnalysisState<A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
-					original);
+			AnalysisState<
+					A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
+							original);
 			AnalysisState<A> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);

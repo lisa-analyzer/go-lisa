@@ -9,7 +9,7 @@ import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 
 public class CommonIterator extends GoStructType {
-	
+
 	/**
 	 * Unique instance of the {@link CommonIterator} type.
 	 */
@@ -53,13 +53,15 @@ public class CommonIterator extends GoStructType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
+
 	/**
 	 * Registers the instance methods of this type.
 	 */
 	public static void registerMethods() {
 		CompilationUnit commonIteratorUnit = INSTANCE.getUnit();
-		commonIteratorUnit.addInstanceCodeMember(new Close(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorUnit));
-		commonIteratorUnit.addInstanceCodeMember(new HasNext(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorUnit));
+		commonIteratorUnit
+				.addInstanceCodeMember(new Close(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorUnit));
+		commonIteratorUnit
+				.addInstanceCodeMember(new HasNext(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorUnit));
 	}
 }

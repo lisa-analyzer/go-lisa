@@ -90,13 +90,13 @@ public class ChaincodeStub extends GoStructType {
 		chaincodeStubUnit
 				.addInstanceCodeMember(new GetState(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(
-				new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				.addInstanceCodeMember(
+						new CreateCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit
-		.addInstanceCodeMember(
-				new SplitCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));	
+				.addInstanceCodeMember(
+						new SplitCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit.addInstanceCodeMember(
-						new GetStateByRange(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+				new GetStateByRange(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit.addInstanceCodeMember(
 				new GetStateByPartialCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 

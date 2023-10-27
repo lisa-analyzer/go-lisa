@@ -1,7 +1,5 @@
 package it.unive.golisa.analysis.taint;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
@@ -29,6 +27,7 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.Set;
 
 /**
  * The taint domain, used for the taint analysis.
@@ -191,12 +190,14 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	public TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		return CLEAN;
 	}
 
 	@Override
-	public TaintDomain evalUnaryExpression(UnaryOperator operator, TaintDomain arg, ProgramPoint pp, SemanticOracle oracle)
+	public TaintDomain evalUnaryExpression(UnaryOperator operator, TaintDomain arg, ProgramPoint pp,
+			SemanticOracle oracle)
 			throws SemanticException {
 		return arg;
 	}
@@ -250,12 +251,11 @@ public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 		} catch (SemanticException e) {
 			return false;
 		}
-		
+
 		if (!types.isEmpty())
 			return types.stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
 		return !expression.getStaticType().isPointerType() && !expression.getStaticType().isInMemoryType();
 	}
-
 
 	@Override
 	public TaintDomain lubAux(TaintDomain other) throws SemanticException {

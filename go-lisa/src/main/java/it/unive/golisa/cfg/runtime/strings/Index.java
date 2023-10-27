@@ -87,18 +87,17 @@ public class Index extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
 			Type ltype = state.getState().getDynamicTypeOf(left, this, state.getState());
 			Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
-			
+
 			if (!ltype.isStringType() && !ltype.isUntyped())
 				return state.bottom();
 
 			if (!rtype.isStringType() && !rtype.isUntyped())
 				return state.bottom();
-
 
 			return state.smallStepSemantics(new BinaryExpression(GoIntType.INSTANCE,
 					left, right, StringIndexOf.INSTANCE, getLocation()), original);

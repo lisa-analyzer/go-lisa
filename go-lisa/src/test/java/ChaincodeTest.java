@@ -1,9 +1,4 @@
 
-import java.io.IOException;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -21,6 +16,9 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
+import java.io.IOException;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 
@@ -138,7 +136,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.annSet = annSet;
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testTommyStark() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
@@ -249,7 +247,7 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.annSet = annSet;
 		perform(conf);
 	}
-	
+
 	@Ignore
 	public void testCpuUse() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();

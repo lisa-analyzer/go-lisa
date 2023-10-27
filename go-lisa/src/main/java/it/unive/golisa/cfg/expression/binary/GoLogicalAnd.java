@@ -39,7 +39,7 @@ public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpr
 			throws SemanticException {
 		Type ltype = state.getState().getDynamicTypeOf(left, this, state.getState());
 		Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
-		
+
 		if (!ltype.isBooleanType() && !ltype.isUntyped())
 			return state.bottom();
 		if (!rtype.isBooleanType() && !rtype.isUntyped())

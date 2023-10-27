@@ -6,9 +6,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.type.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -90,18 +87,17 @@ public class HasSuffix extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
 			Type ltype = state.getState().getDynamicTypeOf(left, this, state.getState());
 			Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
-			
+
 			if (!ltype.isStringType() && !ltype.isUntyped())
 				return state.bottom();
 
 			if (!rtype.isStringType() && !rtype.isUntyped())
 				return state.bottom();
-
 
 			return state
 					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,

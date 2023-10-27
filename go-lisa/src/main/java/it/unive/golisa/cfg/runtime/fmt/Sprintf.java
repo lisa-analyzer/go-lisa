@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -25,10 +23,13 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Set;
 
 /**
  * func Sprintf(format string, a ...any) string
+ * 
  * @see https://pkg.go.dev/fmt#Sprintf
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Sprintf extends NativeCFG {
@@ -88,16 +89,17 @@ public class Sprintf extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-						InterproceduralAnalysis<A> interprocedural,
-						AnalysisState<A> state,
-						SymbolicExpression left,
-						SymbolicExpression right,
-						StatementStore<A> expressions) throws SemanticException {
-			
-			return state.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), left, right, GoSprintfOperator.INSTANCE, getLocation()), original);
+				InterproceduralAnalysis<A> interprocedural,
+				AnalysisState<A> state,
+				SymbolicExpression left,
+				SymbolicExpression right,
+				StatementStore<A> expressions) throws SemanticException {
+
+			return state.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), left,
+					right, GoSprintfOperator.INSTANCE, getLocation()), original);
 		}
 	}
-	
+
 	private static class GoSprintfOperator implements BinaryOperator {
 
 		/**
@@ -112,7 +114,6 @@ public class Sprintf extends NativeCFG {
 		public String toString() {
 			return "SprintfOperator";
 		}
-
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {

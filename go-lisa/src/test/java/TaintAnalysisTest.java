@@ -1,9 +1,4 @@
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.Test;
-
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.loader.annotation.AnnotationSet;
@@ -19,6 +14,9 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import java.util.HashSet;
+import java.util.Set;
+import org.junit.Test;
 
 public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 

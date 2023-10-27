@@ -10,7 +10,7 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.type.Untyped;
 
-public class StateQueryIteratorInterface  extends GoInterfaceType {
+public class StateQueryIteratorInterface extends GoInterfaceType {
 
 	/**
 	 * Unique instance of {@link StateQueryIteratorInterface} type.
@@ -30,20 +30,24 @@ public class StateQueryIteratorInterface  extends GoInterfaceType {
 	 */
 	public static StateQueryIteratorInterface getStateQueryIteratorInterfaceType(Program program) {
 		if (INSTANCE == null) {
-			InterfaceUnit stateQueryIteratorInterfaceUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+			InterfaceUnit stateQueryIteratorInterfaceUnit = new InterfaceUnit(
+					GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
 					program, "StateQueryIteratorInterface",
 					false);
 			// add superclasses and implemented interfaces
-			stateQueryIteratorInterfaceUnit.addAncestor(CommonIteratorInterface.getCommonIteratorInterfaceType(program).getUnit());
-			StateQueryIteratorInterface stateQueryIteratorInterfaceeType = new StateQueryIteratorInterface(stateQueryIteratorInterfaceUnit);
-			
+			stateQueryIteratorInterfaceUnit
+					.addAncestor(CommonIteratorInterface.getCommonIteratorInterfaceType(program).getUnit());
+			StateQueryIteratorInterface stateQueryIteratorInterfaceeType = new StateQueryIteratorInterface(
+					stateQueryIteratorInterfaceUnit);
+
 			CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
 					stateQueryIteratorInterfaceUnit, true, "Next",
 					Untyped.INSTANCE,
-					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", stateQueryIteratorInterfaceeType));
-			
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this",
+							stateQueryIteratorInterfaceeType));
+
 			stateQueryIteratorInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
-			
+
 			INSTANCE = stateQueryIteratorInterfaceeType;
 		}
 

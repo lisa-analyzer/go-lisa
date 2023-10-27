@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -29,11 +26,14 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func ParseFloat(s string, bitSize int) (float64, error)
  *
  * @link https://pkg.go.dev/strconv#ParseFloat
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class ParseFloat extends NativeCFG {
@@ -41,11 +41,11 @@ public class ParseFloat extends NativeCFG {
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location the location where this native cfg is defined
-	 * @param strconvUnit  the unit to which this native cfg belongs to
+	 * @param location    the location where this native cfg is defined
+	 * @param strconvUnit the unit to which this native cfg belongs to
 	 */
 	public ParseFloat(CodeLocation location, CodeUnit strconvUnit) {
-		super(new CodeMemberDescriptor(location, strconvUnit, false, "ParseFloat", 
+		super(new CodeMemberDescriptor(location, strconvUnit, false, "ParseFloat",
 				GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE),
 				new Parameter(location, "s", GoStringType.INSTANCE),
 				new Parameter(location, "bitSize", GoIntType.INSTANCE)),
@@ -57,7 +57,8 @@ public class ParseFloat extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class ParseFloatImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression implements PluggableStatement {
+	public static class ParseFloatImpl extends it.unive.lisa.program.cfg.statement.BinaryExpression
+			implements PluggableStatement {
 
 		@SuppressWarnings("unused")
 		private Statement original;
@@ -90,17 +91,21 @@ public class ParseFloat extends NativeCFG {
 		 * @param arg      the expression
 		 */
 		public ParseFloatImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "ParseFloat", GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE), left, right);
+			super(cfg, location, "ParseFloat",
+					GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE), left, right);
 		}
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-						throws SemanticException {
-			BinaryExpression lExp = new BinaryExpression(GoFloat64Type.INSTANCE, left, right, ParseFloatOperatorFirstParameter.INSTANCE, getLocation());
-			BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, left, right, ParseFloatOperatorSecondParameter.INSTANCE, getLocation());
-			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), GoTupleType.getTupleTypeOf(getLocation(), GoFloat64Type.INSTANCE, GoErrorType.INSTANCE), 
+				throws SemanticException {
+			BinaryExpression lExp = new BinaryExpression(GoFloat64Type.INSTANCE, left, right,
+					ParseFloatOperatorFirstParameter.INSTANCE, getLocation());
+			BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, left, right,
+					ParseFloatOperatorSecondParameter.INSTANCE, getLocation());
+			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(),
+					GoTupleType.getTupleTypeOf(getLocation(), GoFloat64Type.INSTANCE, GoErrorType.INSTANCE),
 					lExp,
 					rExp);
 		}
@@ -114,9 +119,9 @@ public class ParseFloat extends NativeCFG {
 		public static final ParseFloatOperatorFirstParameter INSTANCE = new ParseFloatOperatorFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected ParseFloatOperatorFirstParameter() {
 		}
@@ -140,9 +145,9 @@ public class ParseFloat extends NativeCFG {
 		public static final ParseFloatOperatorSecondParameter INSTANCE = new ParseFloatOperatorSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected ParseFloatOperatorSecondParameter() {
 		}

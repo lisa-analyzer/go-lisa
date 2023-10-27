@@ -1,9 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -34,6 +30,9 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.StringUtilities;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Go taint checker.
@@ -41,8 +40,8 @@ import it.unive.lisa.util.StringUtilities;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class TaintChecker implements
-SemanticCheck<
-SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> {
+		SemanticCheck<
+				SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> {
 
 	/**
 	 * Sink annotation.
@@ -62,26 +61,30 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+							TypeEnvironment<InferredTypes>>> tool) {
 	}
 
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+							TypeEnvironment<InferredTypes>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool, CFG graph) {
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+							TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
@@ -89,7 +92,8 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 		UnresolvedCall call = (UnresolvedCall) node;
 		try {
 			for (AnalyzedCFG<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+							TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
 				Call resolved = tool.getResolvedVersion(call, result);
 				if (resolved == null)
 					System.err.println("Error");
@@ -102,11 +106,11 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 						for (int i = 0; i < parameters.length; i++)
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
 								AnalysisState<
-								SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-								TypeEnvironment<InferredTypes>>> state = result
-								.getAnalysisStateAfter(call.getParameters()[i]);
+										SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+												TypeEnvironment<InferredTypes>>> state = result
+														.getAnalysisStateAfter(call.getParameters()[i]);
 
-								Set<SymbolicExpression> reachableIds = new HashSet<>();								
+								Set<SymbolicExpression> reachableIds = new HashSet<>();
 								for (SymbolicExpression e : state.getComputedExpressions())
 									reachableIds.addAll(HeapResolver.resolve(state, e, node));
 
@@ -115,13 +119,13 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 
 									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 										continue;
-									
+
 									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
-										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+												+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+												+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
 								}
 							}
 
@@ -133,26 +137,26 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 						for (int i = 0; i < parameters.length; i++)
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
 								AnalysisState<
-								SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-								TypeEnvironment<InferredTypes>>> state = result
-								.getAnalysisStateAfter(call.getParameters()[i]);
-								Set<SymbolicExpression> reachableIds = new HashSet<>();								
+										SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+												TypeEnvironment<InferredTypes>>> state = result
+														.getAnalysisStateAfter(call.getParameters()[i]);
+								Set<SymbolicExpression> reachableIds = new HashSet<>();
 								for (SymbolicExpression e : state.getComputedExpressions())
 									reachableIds.addAll(HeapResolver.resolve(state, e, node));
 
 								for (SymbolicExpression s : reachableIds) {
 									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
-									
+
 									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
 
 									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 										continue;
-									
+
 									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
-										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+												+ " parameter of this call is tainted, and it reaches the sink at parameter '"
+												+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
 								}
 							}
 
@@ -168,13 +172,11 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 
 	}
 
-
-
-
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+							TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
@@ -182,7 +184,8 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironme
 	@Override
 	public boolean visitUnit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+							TypeEnvironment<InferredTypes>>> tool,
 			Unit unit) {
 		return true;
 	}

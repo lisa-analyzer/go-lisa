@@ -92,9 +92,9 @@ public class MarshalIndent extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						ExpressionSet[] params, StatementStore<A> expressions)
-						throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				ExpressionSet[] params, StatementStore<A> expressions)
+				throws SemanticException {
 			return state.top();
 		}
 	}

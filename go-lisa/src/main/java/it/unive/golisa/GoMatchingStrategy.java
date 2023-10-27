@@ -1,7 +1,5 @@
 package it.unive.golisa;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -9,6 +7,7 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 public class GoMatchingStrategy implements ParameterMatchingStrategy {
 

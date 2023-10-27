@@ -1,15 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -35,6 +25,15 @@ import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The equality domain, tracking definite information about which variables are
@@ -64,7 +63,8 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
-	public EqualityDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public EqualityDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		if (expression instanceof Identifier) {
 			Map<Identifier, ExpressionInverseSet<Identifier>> func;
 			if (function == null)
@@ -80,7 +80,8 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
-	public EqualityDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public EqualityDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		return new EqualityDomain(lattice, function);
 	}
 
@@ -121,7 +122,8 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
 
@@ -150,7 +152,8 @@ public class EqualityDomain extends FunctionalLattice<EqualityDomain, Identifier
 					return Satisfiability.NOT_SATISFIED;
 				return Satisfiability.UNKNOWN;
 			} else if (op == LogicalAnd.INSTANCE)
-				return satisfies((ValueExpression) left, pp, oracle).and(satisfies((ValueExpression) right, pp, oracle));
+				return satisfies((ValueExpression) left, pp, oracle)
+						.and(satisfies((ValueExpression) right, pp, oracle));
 			else if (op == LogicalOr.INSTANCE)
 				return satisfies((ValueExpression) left, pp, oracle).or(satisfies((ValueExpression) right, pp, oracle));
 			else

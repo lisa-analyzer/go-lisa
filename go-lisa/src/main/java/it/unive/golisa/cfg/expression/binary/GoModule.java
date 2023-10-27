@@ -34,9 +34,9 @@ public class GoModule extends it.unive.lisa.program.cfg.statement.BinaryExpressi
 
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-					InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-					throws SemanticException {
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
 		Type leftType = state.getState().getDynamicTypeOf(left, this, state.getState());
 		if (!(leftType.isNumericType() && leftType.asNumericType().isIntegral()) && !leftType.isUntyped())
 			return state.bottom();

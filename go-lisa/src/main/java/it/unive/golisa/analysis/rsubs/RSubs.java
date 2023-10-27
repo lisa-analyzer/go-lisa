@@ -1,8 +1,5 @@
 package it.unive.golisa.analysis.rsubs;
 
-import java.util.List;
-import java.util.function.Predicate;
-
 import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
@@ -53,6 +50,8 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.util.representation.ListRepresentation;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * The reduced product between relational substring abstract domain and
@@ -94,7 +93,8 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	}
 
 	@Override
-	public RSubs assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public RSubs assign(Identifier id, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		if (processableByStringDomain(expression))
 			return new RSubs(string.assign(id, expression, pp, oracle), num);
 
@@ -215,12 +215,14 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	}
 
 	@Override
-	public RSubs smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public RSubs smallStepSemantics(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
 	}
 
 	@Override
-	public RSubs assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle) throws SemanticException {
+	public RSubs assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
+			throws SemanticException {
 		return new RSubs(string, num, isTop, isBottom);
 	}
 
@@ -241,7 +243,8 @@ public class RSubs implements BaseLattice<RSubs>, ValueDomain<RSubs> {
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// TODO satisfies
 		return Satisfiability.UNKNOWN;
 	}

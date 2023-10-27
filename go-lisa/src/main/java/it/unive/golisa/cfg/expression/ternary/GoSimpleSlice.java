@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.ternary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -15,6 +13,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go slice expression (e.g., s[1:5]).
@@ -42,7 +41,7 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		Set<Type> mtypes = state.getState().getRuntimeTypesOf(middle, this, state.getState());
 		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
-		
+
 		AnalysisState<A> result = state.bottom();
 		for (Type leftType : ltypes)
 			for (Type middleType : mtypes)
@@ -51,9 +50,9 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 							&& (middleType.isNumericType() || middleType.isUntyped())
 							&& (rightType.isNumericType() || rightType.isUntyped())) {
 						AnalysisState<A> tmp = state.smallStepSemantics(
-										new TernaryExpression(GoStringType.INSTANCE,
-												left, middle, right, StringSubstring.INSTANCE, getLocation()),
-										this);
+								new TernaryExpression(GoStringType.INSTANCE,
+										left, middle, right, StringSubstring.INSTANCE, getLocation()),
+								this);
 						result = result.lub(tmp);
 					}
 		return result;

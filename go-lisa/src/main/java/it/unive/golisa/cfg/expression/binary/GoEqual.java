@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -15,6 +13,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonEq;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go equal expression (e.g., x == y).
@@ -38,9 +37,10 @@ public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpressio
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> interprocedural,
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-					throws SemanticException {
+			throws SemanticException {
 		// FIXME: this should be removed eventually
-		if (left.getStaticType().canBeAssignedTo(right.getStaticType()) || right.getStaticType().canBeAssignedTo(left.getStaticType()))
+		if (left.getStaticType().canBeAssignedTo(right.getStaticType())
+				|| right.getStaticType().canBeAssignedTo(left.getStaticType()))
 			return state
 					.smallStepSemantics(
 							new BinaryExpression(GoBoolType.INSTANCE,
@@ -49,7 +49,7 @@ public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpressio
 		AnalysisState<A> result = state.bottom();
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
-		
+
 		for (Type leftType : ltypes)
 			for (Type rightType : rtypes)
 

@@ -35,6 +35,7 @@ public class GoDeref extends UnaryExpression {
 	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> interprocedural,
 			AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 		// TODO: check if the semantics is correct
-		return state.smallStepSemantics(new HeapReference(new ReferenceType(getStaticType()), expr, getLocation()), this);
+		return state.smallStepSemantics(new HeapReference(new ReferenceType(getStaticType()), expr, getLocation()),
+				this);
 	}
 }

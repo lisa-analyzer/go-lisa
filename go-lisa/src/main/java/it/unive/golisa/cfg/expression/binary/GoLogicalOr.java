@@ -36,18 +36,18 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-					InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-					throws SemanticException {
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
 		// FIXME: need to check which state needs to be returned (left/right)
 		Type ltype = state.getState().getDynamicTypeOf(left, this, state.getState());
 		Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
-		
+
 		if (!ltype.isBooleanType() && !ltype.isUntyped())
 			return state.bottom();
 		if (!rtype.isBooleanType() && !rtype.isUntyped())
 			return state.bottom();
-		
+
 		if (state.satisfies(left, this) == Satisfiability.SATISFIED)
 			return state;
 		else if (state.satisfies(left, this) == Satisfiability.NOT_SATISFIED)

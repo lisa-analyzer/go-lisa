@@ -28,11 +28,13 @@ public class StateQueryIterator extends GoStructType {
 	 */
 	public static StateQueryIterator getStateQueryIterator(Program program) {
 		if (INSTANCE == null) {
-			ClassUnit stateQueryIteratorUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "StateQueryIterator",
+			ClassUnit stateQueryIteratorUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program,
+					"StateQueryIterator",
 					false);
 
 			// add superclasses and implemented interfaces
-			stateQueryIteratorUnit.addAncestor(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program).getUnit());
+			stateQueryIteratorUnit
+					.addAncestor(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program).getUnit());
 
 			INSTANCE = new StateQueryIterator(stateQueryIteratorUnit);
 		}
@@ -51,12 +53,12 @@ public class StateQueryIterator extends GoStructType {
 		stateQueryIteratorUnit
 				.addInstanceCodeMember(
 						new HasNext(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, stateQueryIteratorUnit));
-		
+
 		stateQueryIteratorUnit
-		.addInstanceCodeMember(
-				new Next(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, stateQueryIteratorUnit));
+				.addInstanceCodeMember(
+						new Next(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, stateQueryIteratorUnit));
 	}
-	
+
 	@Override
 	public String toString() {
 		return "shim.StateQueryIterator";

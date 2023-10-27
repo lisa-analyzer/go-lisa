@@ -49,11 +49,11 @@ public class GoMake extends NaryExpression {
 	public GoMake(CFG cfg, CodeLocation location, Type type, Expression[] parameters) {
 		super(cfg, location, "make " + type, parameters);
 		this.type = type;
-		
+
 		if (type instanceof GoSliceType) {
 			// register the types
 			Type contentType = ((GoSliceType) type).getContentType();
-			
+
 			// FIXME: currently, we handle just slice allocation where the
 			// length is integer
 			if (!(getSubExpressions()[0] instanceof GoInteger))
@@ -68,9 +68,9 @@ public class GoMake extends NaryExpression {
 
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-					InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-					ExpressionSet[] params, StatementStore<A> expressions)
-					throws SemanticException {
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			ExpressionSet[] params, StatementStore<A> expressions)
+			throws SemanticException {
 		// No type information is provided and just a single type
 		// is passed as argument and it should be allocated
 		if (type == null)

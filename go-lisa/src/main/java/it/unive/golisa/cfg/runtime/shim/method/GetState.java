@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -36,6 +33,8 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) GetState(key string) ([]byte, error).
@@ -111,9 +110,10 @@ public class GetState extends NativeCFG {
 
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), new ReferenceType(sliceOfBytes),
 					GoErrorType.INSTANCE);
-			
+
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, left.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, left.getCodeLocation(), new Annotations(),
+					true);
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, left.getCodeLocation());
 			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, left.getCodeLocation());
 			AnalysisState<A> result = state.bottom();
@@ -122,21 +122,23 @@ public class GetState extends NativeCFG {
 			ExpressionSet reachableIds = state.getState().reachableFrom(left, this, state.getState());
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-				BinaryExpression lExp = new BinaryExpression(GoSliceType.getSliceOfBytes(), derefId, right, GetStateFirstParameter.INSTANCE, getLocation());
-				BinaryExpression  rExp = new BinaryExpression(GoErrorType.INSTANCE, derefId, right, GetStateSecondParameter.INSTANCE, getLocation());
+				BinaryExpression lExp = new BinaryExpression(GoSliceType.getSliceOfBytes(), derefId, right,
+						GetStateFirstParameter.INSTANCE, getLocation());
+				BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, derefId, right,
+						GetStateSecondParameter.INSTANCE, getLocation());
 				AnalysisState<A> asg = state.assign(deref, lExp, original);
-				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+						getLocation(), tupleType,
 						ref,
-						rExp
-						);				
+						rExp);
 
 				result = result.lub(tupleExp);
 			}
-			
-			return result;			
+
+			return result;
 		}
 	}
-	
+
 	public static class GetStateFirstParameter implements BinaryOperator {
 
 		/**
@@ -145,9 +147,9 @@ public class GetState extends NativeCFG {
 		public static final GetStateFirstParameter INSTANCE = new GetStateFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected GetStateFirstParameter() {
 		}
@@ -155,7 +157,7 @@ public class GetState extends NativeCFG {
 		@Override
 		public String toString() {
 			return "GetState_first";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
@@ -171,9 +173,9 @@ public class GetState extends NativeCFG {
 		public static final GetStateSecondParameter INSTANCE = new GetStateSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected GetStateSecondParameter() {
 		}
@@ -181,7 +183,7 @@ public class GetState extends NativeCFG {
 		@Override
 		public String toString() {
 			return "GetState_second";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {

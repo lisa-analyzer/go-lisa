@@ -87,7 +87,7 @@ public class ReadAtLeast extends NativeCFG {
 			super(cfg, location, "ReadAtLeastImpl",
 					GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE), params);
 		}
-		
+
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,

@@ -231,7 +231,8 @@ public class StringConstantPropagation implements BaseNonRelationalValueDomain<S
 	@Override
 	public ValueEnvironment<StringConstantPropagation> assumeBinaryExpression(
 			ValueEnvironment<StringConstantPropagation> environment, BinaryOperator operator, ValueExpression left,
-			ValueExpression right, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle) throws SemanticException {
+			ValueExpression right, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
+			throws SemanticException {
 		if (operator == StringEquals.INSTANCE || operator == ComparisonEq.INSTANCE) {
 			if (left instanceof Identifier)
 				environment = environment.assign((Identifier) left, right, src, oracle);

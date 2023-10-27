@@ -41,7 +41,7 @@ public class GoRangeGetNextIndex extends NaryExpression {
 
 	private static Type computeType(Type type) {
 		if (!type.equals(Untyped.INSTANCE)) {
-			if (type instanceof GoStringType 
+			if (type instanceof GoStringType
 					|| type instanceof GoArrayType
 					|| type instanceof GoSliceType)
 				return GoUIntType.INSTANCE;
@@ -49,7 +49,7 @@ public class GoRangeGetNextIndex extends NaryExpression {
 				return ((GoMapType) type).getKeyType();
 			else if (type instanceof ReferenceType)
 				return computeType(((ReferenceType) type).getInnerType());
-		} 
+		}
 		return Untyped.INSTANCE;
 	}
 

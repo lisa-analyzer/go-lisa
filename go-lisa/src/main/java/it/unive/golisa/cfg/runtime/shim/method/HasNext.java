@@ -24,6 +24,7 @@ import it.unive.lisa.symbolic.value.PushAny;
  * func (iter *CommonIterator) HasNext() bool
  * 
  * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CommonIterator.HasNext
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class HasNext extends NativeCFG {
@@ -46,7 +47,7 @@ public class HasNext extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class HasNextImpl extends UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -54,7 +55,7 @@ public class HasNext extends NativeCFG {
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -87,6 +88,6 @@ public class HasNext extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoBoolType.INSTANCE, getLocation()), original);
-		}		
+		}
 	}
 }

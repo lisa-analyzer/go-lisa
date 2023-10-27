@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.strings;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -21,6 +19,7 @@ import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * The Replace function from string package.
@@ -87,15 +86,15 @@ public class Replace extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdTernarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
-						StatementStore<A> expressions) throws SemanticException {
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
+				StatementStore<A> expressions) throws SemanticException {
 			AnalysisState<A> result = state.bottom();
-			
+
 			Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 			Set<Type> mtypes = state.getState().getRuntimeTypesOf(middle, this, state.getState());
 			Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
-			
+
 //			if (!ltype.isStringType() && !ltype.isUntyped())
 //				return state.bottom();
 //

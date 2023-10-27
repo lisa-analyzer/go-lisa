@@ -24,10 +24,10 @@ import it.unive.lisa.symbolic.value.PushAny;
  * func (iter *CommonIterator) Close() error
  * 
  * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CommonIterator.Close
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Close extends NativeCFG {
-
 
 	/**
 	 * Builds the native cfg.
@@ -47,7 +47,7 @@ public class Close extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class CloseImpl extends UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -55,7 +55,7 @@ public class Close extends NativeCFG {
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -88,6 +88,6 @@ public class Close extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
-		}		
+		}
 	}
 }

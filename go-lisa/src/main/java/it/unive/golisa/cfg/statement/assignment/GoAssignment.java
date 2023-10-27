@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.List;
-
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.frontend.GoSyntaxException;
@@ -19,6 +17,7 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import java.util.List;
 
 /**
  * A Go assignment.
@@ -93,9 +92,9 @@ public class GoAssignment extends BinaryExpression {
 
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-					InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-					throws SemanticException {
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
 		// TODO: this check should be moved in the front-end
 		if (!blocksToDeclaration.isEmpty()
 				&& blocksToDeclaration.get(blocksToDeclaration.size() - 1).isConstantDeclaration(getLeft()))

@@ -81,9 +81,9 @@ public class Itoa extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			 Type etype = state.getState().getDynamicTypeOf(expr, this, state.getState());
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+			Type etype = state.getState().getDynamicTypeOf(expr, this, state.getState());
 			if (!etype.isNumericType() && !etype.isUntyped())
 				return state.bottom();
 			return state.smallStepSemantics(expr, original);

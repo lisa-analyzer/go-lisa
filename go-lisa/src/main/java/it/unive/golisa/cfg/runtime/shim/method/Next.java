@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
@@ -35,16 +31,17 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (iter *StateQueryIterator) Next() (*queryresult.KV, error)
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
- *
  */
 public class Next extends NativeCFG {
-	
-	
+
 	/**
 	 * Builds the native cfg.
 	 * 
@@ -52,19 +49,20 @@ public class Next extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public Next(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, true, "Next", 
-				GoTupleType.getTupleTypeOf(location, Response.getResponseType(shimUnit.getProgram()), GoErrorType.INSTANCE),
+		super(new CodeMemberDescriptor(location, shimUnit, true, "Next",
+				GoTupleType.getTupleTypeOf(location, Response.getResponseType(shimUnit.getProgram()),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "this", StateQueryIterator.getStateQueryIterator(shimUnit.getProgram()))),
 				NextImpl.class);
 	}
-	
+
 	/**
 	 * The {@link HasNext} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class NextImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -72,7 +70,7 @@ public class Next extends NativeCFG {
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
-		
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -97,7 +95,8 @@ public class Next extends NativeCFG {
 		 * @param right    the right-hand side of this expression
 		 */
 		public NextImpl(CFG cfg, CodeLocation location, Expression e) {
-			super(cfg, location, "NextImpl", GoTupleType.getTupleTypeOf(location, Response.getResponseType(null), GoErrorType.INSTANCE), e);
+			super(cfg, location, "NextImpl",
+					GoTupleType.getTupleTypeOf(location, Response.getResponseType(null), GoErrorType.INSTANCE), e);
 		}
 
 		@Override
@@ -106,11 +105,12 @@ public class Next extends NativeCFG {
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
 			Response responseType = Response.getResponseType(getProgram());
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(responseType), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(responseType, expr.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(responseType, expr.getCodeLocation(), new Annotations(),
+					true);
 			HeapReference ref = new HeapReference(new ReferenceType(responseType), created, expr.getCodeLocation());
 			HeapDereference deref = new HeapDereference(responseType, ref, expr.getCodeLocation());
 			AnalysisState<A> asg = state.bottom();
@@ -119,19 +119,20 @@ public class Next extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(responseType, derefId, NextFirstParameter.INSTANCE, getLocation());
+				UnaryExpression left = new UnaryExpression(responseType, derefId, NextFirstParameter.INSTANCE,
+						getLocation());
 				asg = asg.lub(state.assign(deref, left, original));
 			}
 
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, NextSecondParameter.INSTANCE, getLocation());
-			
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, NextSecondParameter.INSTANCE,
+					getLocation());
+
+			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
 					ref,
-					rExp
-					);
-		}		
+					rExp);
+		}
 	}
-	
+
 	public static class NextFirstParameter implements UnaryOperator {
 
 		/**
@@ -140,9 +141,9 @@ public class Next extends NativeCFG {
 		public static final NextFirstParameter INSTANCE = new NextFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected NextFirstParameter() {
 		}
@@ -150,14 +151,14 @@ public class Next extends NativeCFG {
 		@Override
 		public String toString() {
 			return "Next_first";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
 			return Collections.singleton(Response.getResponseType(null));
 		}
 	}
-	
+
 	public static class NextSecondParameter implements UnaryOperator {
 
 		/**
@@ -166,9 +167,9 @@ public class Next extends NativeCFG {
 		public static final NextSecondParameter INSTANCE = new NextSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected NextSecondParameter() {
 		}
@@ -176,12 +177,12 @@ public class Next extends NativeCFG {
 		@Override
 		public String toString() {
 			return "Next_second";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
 			return Collections.singleton(GoErrorType.INSTANCE);
 		}
 	}
-	
+
 }

@@ -1,9 +1,3 @@
-import java.io.IOException;
-
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import it.unive.golisa.analysis.scam.SmashedSum;
 import it.unive.golisa.cfg.expression.literal.GoString;
@@ -43,6 +37,11 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import java.io.IOException;
+import org.junit.FixMethodOrder;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 @Ignore("This test should only be manually executed for the benchmark as it takes few hours")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -57,7 +56,6 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 		@Override
 		public void beforeExecution(CheckToolWithAnalysisResults<A> tool) {
 		}
-
 
 		@Override
 		public void afterExecution(CheckToolWithAnalysisResults<A> tool) {
@@ -86,7 +84,7 @@ public class TarsisPaperTests extends GoAnalysisTestExecutor {
 					AnalysisState<A> post = res.getAnalysisStateAfter(node.getEvaluationPredecessor());
 					try {
 						SimpleAbstractState state = post.getState().getDomainInstance(SimpleAbstractState.class);
-						
+
 						if (((UnresolvedCall) node).getParameters()[0].toString()
 								.startsWith("main::containsChar")) {
 							Expression[] args = ((UnresolvedCall) ((UnresolvedCall) node).getParameters()[0])

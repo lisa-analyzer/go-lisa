@@ -1,8 +1,5 @@
 package it.unive.golisa;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -31,6 +28,8 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class GoAssigningStrategy implements ParameterAssigningStrategy {
 
@@ -44,13 +43,13 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 
 	@Override
 	public <A extends AbstractState<A>> Pair<AnalysisState<A>, ExpressionSet[]> prepare(
-					Call call,
-					AnalysisState<A> callState,
-					InterproceduralAnalysis<A> interprocedural,
-					StatementStore<A> expressions,
-					Parameter[] formals,
-					ExpressionSet[] actuals)
-					throws SemanticException {
+			Call call,
+			AnalysisState<A> callState,
+			InterproceduralAnalysis<A> interprocedural,
+			StatementStore<A> expressions,
+			Parameter[] formals,
+			ExpressionSet[] actuals)
+			throws SemanticException {
 		boolean hasVarargs = formals.length > 0 && formals[formals.length - 1] instanceof VarArgsParameter;
 		int i = 0;
 
@@ -108,18 +107,18 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 	}
 
 	private <A extends AbstractState<A>> AnalysisState<A> smash(AnalysisState<A> state,
-					int i,
-					ExpressionSet[] actuals,
-					GoSliceType type,
-					Variable symbolicVariable,
-					ProgramPoint pp) throws SemanticException {
+			int i,
+			ExpressionSet[] actuals,
+			GoSliceType type,
+			Variable symbolicVariable,
+			ProgramPoint pp) throws SemanticException {
 		AnalysisState<A> result = state.bottom();
 		Type contentType = type.getContentType();
 		int sliceLenght = actuals.length - i;
 		CodeLocation location = pp.getLocation();
 
 		// allocate the slice
-		MemoryAllocation created = new MemoryAllocation(type, location, new Annotations(),false);
+		MemoryAllocation created = new MemoryAllocation(type, location, new Annotations(), false);
 		AnalysisState<A> createdSt = state.smallStepSemantics(created, pp);
 		ExpressionSet createdExps = createdSt.getComputedExpressions();
 

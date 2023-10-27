@@ -83,9 +83,10 @@ public class NopCloser extends NativeCFG {
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-						InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-						SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			AnalysisState<A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+			AnalysisState<
+					A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
 							original);
 			AnalysisState<A> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);

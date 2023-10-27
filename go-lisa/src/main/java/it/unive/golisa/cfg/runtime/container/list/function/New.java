@@ -32,7 +32,8 @@ import it.unive.lisa.type.ReferenceType;
  */
 public class New extends NativeCFG {
 
-	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION, IntegrityNIDomain.HIGH_ANNOTATION);
+	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION,
+			IntegrityNIDomain.HIGH_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -51,7 +52,7 @@ public class New extends NativeCFG {
 	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
 	 */
 	public static class NewImpl extends NaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 

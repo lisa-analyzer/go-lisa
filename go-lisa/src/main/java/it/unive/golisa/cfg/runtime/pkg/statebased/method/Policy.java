@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -35,11 +31,12 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
- *
  */
 public class Policy extends NativeCFG {
 
@@ -47,7 +44,7 @@ public class Policy extends NativeCFG {
 	 * Builds the native cfg.
 	 * 
 	 * @param location the location where this native cfg is defined
-	 * @param unit the unit to which this native cfg belongs to
+	 * @param unit     the unit to which this native cfg belongs to
 	 */
 	public Policy(CodeLocation location, CompilationUnit unit) {
 		super(new CodeMemberDescriptor(location, unit, true, "Policy",
@@ -56,14 +53,14 @@ public class Policy extends NativeCFG {
 				new Parameter(location, "this", KeyEndorsementPolicy.getKeyEndorsementPolicyType(unit.getProgram()))),
 				PolicyImpl.class);
 	}
-	
+
 	/**
 	 * The {@link Policy} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class PolicyImpl extends it.unive.lisa.program.cfg.statement.UnaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -107,11 +104,12 @@ public class Policy extends NativeCFG {
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
 			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(sliceOfBytes), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(),
+					true);
 			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, expr.getCodeLocation());
 			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
 			AnalysisState<A> asg = state.bottom();
@@ -120,19 +118,20 @@ public class Policy extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, PolicyOperatorFirstParameter.INSTANCE, getLocation());
+				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId,
+						PolicyOperatorFirstParameter.INSTANCE, getLocation());
 				asg = asg.lub(state.assign(deref, left, original));
 			}
 
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, PolicyOperatorSecondParameter.INSTANCE, getLocation());
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr,
+					PolicyOperatorSecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
 					ref,
-					rExp
-					);
+					rExp);
 		}
 	}
-	
+
 	public static class PolicyOperatorFirstParameter implements UnaryOperator {
 
 		/**
@@ -141,9 +140,9 @@ public class Policy extends NativeCFG {
 		public static final PolicyOperatorFirstParameter INSTANCE = new PolicyOperatorFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected PolicyOperatorFirstParameter() {
 		}
@@ -151,14 +150,14 @@ public class Policy extends NativeCFG {
 		@Override
 		public String toString() {
 			return "Policy_first";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
 			return Collections.singleton(Untyped.INSTANCE);
 		}
 	}
-	
+
 	public static class PolicyOperatorSecondParameter implements UnaryOperator {
 
 		/**
@@ -167,9 +166,9 @@ public class Policy extends NativeCFG {
 		public static final PolicyOperatorSecondParameter INSTANCE = new PolicyOperatorSecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected PolicyOperatorSecondParameter() {
 		}
@@ -177,7 +176,7 @@ public class Policy extends NativeCFG {
 		@Override
 		public String toString() {
 			return "Policy_second";
-		}	
+		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {

@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
@@ -38,11 +34,16 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * func (s *ChaincodeStub) GetStateByPartialCompositeKey(objectType string, attributes []string) (StateQueryIteratorInterface, error)
+ * func (s *ChaincodeStub) GetStateByPartialCompositeKey(objectType string,
+ * attributes []string) (StateQueryIteratorInterface, error)
  * 
  * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStateByPartialCompositeKey
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GetStateByPartialCompositeKey extends NativeCFG {
@@ -51,10 +52,12 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		super(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, shimUnit,
 				true,
 				"GetStateByPartialCompositeKey",
-				GoTupleType.getTupleTypeOf(location, StateQueryIterator.getStateQueryIterator(shimUnit.getProgram()), GoErrorType.INSTANCE),
+				GoTupleType.getTupleTypeOf(location, StateQueryIterator.getStateQueryIterator(shimUnit.getProgram()),
+						GoErrorType.INSTANCE),
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "objectType", GoStringType.INSTANCE),
-				new Parameter(location, "attributes", GoSliceType.getSliceOfStrings())), GetStateByPartialCompositeKeyImpl.class);
+				new Parameter(location, "attributes", GoSliceType.getSliceOfStrings())),
+				GetStateByPartialCompositeKeyImpl.class);
 	}
 
 	/**
@@ -63,7 +66,7 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
 	public static class GetStateByPartialCompositeKeyImpl extends it.unive.lisa.program.cfg.statement.TernaryExpression
-	implements PluggableStatement {
+			implements PluggableStatement {
 
 		private Statement original;
 
@@ -95,8 +98,11 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		 * @param left     the left-hand side of this expression
 		 * @param right    the right-hand side of this expression
 		 */
-		public GetStateByPartialCompositeKeyImpl(CFG cfg, CodeLocation location, Expression left, Expression middle, Expression right) {
-			super(cfg, location, "GetStateByPartialCompositeKeyImpl", GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, Untyped.INSTANCE ,GoErrorType.INSTANCE), left, middle, right);
+		public GetStateByPartialCompositeKeyImpl(CFG cfg, CodeLocation location, Expression left, Expression middle,
+				Expression right) {
+			super(cfg, location, "GetStateByPartialCompositeKeyImpl", GoTupleType
+					.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, Untyped.INSTANCE, GoErrorType.INSTANCE),
+					left, middle, right);
 		}
 
 		@Override
@@ -105,7 +111,7 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 				SymbolicExpression middle, SymbolicExpression right, StatementStore<A> expressions)
 				throws SemanticException {
 			Type allocType = StateQueryIterator.getStateQueryIterator(getProgram());
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), 
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(allocType), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
@@ -120,11 +126,14 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 			for (SymbolicExpression id : reachableIds) {
 				for (SymbolicExpression r : reachableIdsRight) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-					TernaryExpression lExp = new TernaryExpression(new ReferenceType(allocType), derefId, middle, r, GetStateByPartialCompositeKeyFirstParameter.INSTANCE, getLocation());
+					TernaryExpression lExp = new TernaryExpression(new ReferenceType(allocType), derefId, middle, r,
+							GetStateByPartialCompositeKeyFirstParameter.INSTANCE, getLocation());
 					AnalysisState<A> asg = state.assign(deref, lExp, original);
-					TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, derefId, middle, r, GetStateByPartialCompositeKeySecondParameter.INSTANCE, getLocation());
-					
-					result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType, 
+					TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, derefId, middle, r,
+							GetStateByPartialCompositeKeySecondParameter.INSTANCE, getLocation());
+
+					result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+							getLocation(), tupleType,
 							ref,
 							rExp));
 				}
@@ -142,9 +151,9 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		public static final GetStateByPartialCompositeKeyFirstParameter INSTANCE = new GetStateByPartialCompositeKeyFirstParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected GetStateByPartialCompositeKeyFirstParameter() {
 		}
@@ -168,9 +177,9 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		public static final GetStateByPartialCompositeKeySecondParameter INSTANCE = new GetStateByPartialCompositeKeySecondParameter();
 
 		/**
-		 * Builds the operator. This constructor is visible to allow subclassing:
-		 * instances of this class should be unique, and the singleton can be
-		 * retrieved through field {@link #INSTANCE}.
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
 		protected GetStateByPartialCompositeKeySecondParameter() {
 		}

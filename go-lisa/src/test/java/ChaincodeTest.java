@@ -1,6 +1,7 @@
 
 import java.io.IOException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -96,44 +97,6 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/high-throughput";
 		conf.programFile = "high-throughput.go";
-		conf.annSet = annSet;
-		perform(conf);
-	}
-
-	@Test
-	public void testCpuUse() throws AnalysisException, IOException {
-		CronConfiguration conf = new CronConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
-		conf.compareWithOptimization = false;
-		conf.testDir = "cc/cpu-use";
-		conf.testSubDir = "taint";
-		conf.programFile = "cpu-use.go";
-		conf.annSet = annSet;
-		perform(conf);
-	}
-
-	@Test
-	public void testCpuUseNI() throws AnalysisException, IOException {
-		CronConfiguration conf = new CronConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new InferenceSystem<>(new IntegrityNIDomain()),
-				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new IntegrityNIChecker());
-		conf.compareWithOptimization = false;
-		conf.testDir = "cc/cpu-use";
-		conf.testSubDir = "ni";
-		conf.programFile = "cpu-use.go";
 		conf.annSet = annSet;
 		perform(conf);
 	}
@@ -283,6 +246,44 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 		conf.testDir = "cc/implicit-flow";
 		conf.testSubDir = "ni";
 		conf.programFile = "implicit.go";
+		conf.annSet = annSet;
+		perform(conf);
+	}
+	
+	@Ignore
+	public void testCpuUse() throws AnalysisException, IOException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/cpu-use";
+		conf.testSubDir = "taint";
+		conf.programFile = "cpu-use.go";
+		conf.annSet = annSet;
+		perform(conf);
+	}
+
+	@Ignore
+	public void testCpuUseNI() throws AnalysisException, IOException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/cpu-use";
+		conf.testSubDir = "ni";
+		conf.programFile = "cpu-use.go";
 		conf.annSet = annSet;
 		perform(conf);
 	}

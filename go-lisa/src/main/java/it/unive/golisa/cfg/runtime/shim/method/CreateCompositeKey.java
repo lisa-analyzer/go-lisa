@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -30,9 +34,6 @@ import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes

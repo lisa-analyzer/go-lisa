@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.strings;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
@@ -20,7 +22,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.type.Type;
-import java.util.Set;
 
 /**
  * func Contains(s, substr string) bool.

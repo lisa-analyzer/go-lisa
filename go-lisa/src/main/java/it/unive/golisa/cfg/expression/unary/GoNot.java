@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.expression.unary;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -13,7 +15,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 import it.unive.lisa.type.Type;
-import java.util.Set;
 
 /**
  * Go unary not Boolean expression (e.g., !(x > y)).

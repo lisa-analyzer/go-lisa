@@ -1,5 +1,9 @@
 package it.unive.golisa.checker;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AnalysisState;
@@ -31,9 +35,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.StringUtilities;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A non-interference integrity checker.

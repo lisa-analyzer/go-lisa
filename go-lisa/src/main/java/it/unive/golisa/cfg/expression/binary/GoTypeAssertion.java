@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.expression.binary;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -13,7 +15,6 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Set;
 
 /**
  * A Go type assertion (e.g., x.(string)).

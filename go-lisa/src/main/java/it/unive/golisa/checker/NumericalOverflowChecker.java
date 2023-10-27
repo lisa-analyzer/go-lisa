@@ -1,5 +1,9 @@
 package it.unive.golisa.checker;
 
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.TreeSet;
+
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoMul;
 import it.unive.golisa.cfg.expression.binary.GoSubtraction;
@@ -34,9 +38,6 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.numeric.MathNumber;
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
 *

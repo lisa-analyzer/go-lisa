@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.expression;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -16,7 +18,6 @@ import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Set;
 
 /**
  * A Go access expression (e.g., x.y).

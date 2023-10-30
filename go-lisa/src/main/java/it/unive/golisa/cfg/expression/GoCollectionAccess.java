@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -13,7 +12,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.Set;
@@ -38,9 +36,9 @@ public class GoCollectionAccess extends BinaryExpression {
 	}
 
 	/**
-	 * Yields the recevier of this access expression.
+	 * Yields the receiver of this access expression.
 	 * 
-	 * @return the recevier of this access expression.
+	 * @return the receiver of this access expression.
 	 */
 	public Expression getReceiver() {
 		return getLeft();
@@ -62,41 +60,13 @@ public class GoCollectionAccess extends BinaryExpression {
 		AnalysisState<A> result = state.bottom();
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		for (Type type : ltypes) {
-//			if (type.isArrayType() || type instanceof GoSliceType) {
-//				// FIXME we get here when left is a parameter of an entrypoint,
-//				// and nothing is defined in the heap for its elements..
-//				Type inner;
-//				if (type.isArrayType())
-//					inner = type.asArrayType().getInnerType();
-//				else
-//					inner = ((GoSliceType) type).getContentType();
-//				return state.smallStepSemantics(new PushAny(inner, getLocation()), this);
-//			} else {
-
 			if (type.isPointerType()) {
-				PointerType pointer = type.asPointerType();
-				Type inner = pointer.getInnerType();
-				if (inner.isArrayType() || inner instanceof GoSliceType) {
-					HeapDereference container = new HeapDereference(inner, left, getLocation());
-					Type elemType;
-					if (type.asPointerType().getInnerType().isArrayType())
-						elemType = type.asPointerType().getInnerType().asArrayType().getInnerType();
-					else
-						elemType = ((GoSliceType) type.asPointerType().getInnerType()).getContentType();
-
-					AccessChild access = new AccessChild(elemType, container, right, getLocation());
-					result = result.lub(state.smallStepSemantics(access,
-							this));
-				} else
-					result = result.lub(state.smallStepSemantics(
-							new AccessChild(Untyped.INSTANCE,
-									new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
-							this));
-
+				result = result.lub(state.smallStepSemantics(
+						new AccessChild(Untyped.INSTANCE,
+								new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
+						this));
 			}
 		}
-
-//		}
 
 		return result;
 	}

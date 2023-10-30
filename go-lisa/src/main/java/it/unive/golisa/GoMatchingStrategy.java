@@ -9,6 +9,11 @@ import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
 import it.unive.lisa.type.Type;
 import java.util.Set;
 
+/**
+ * The Go parameter matching strategy.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class GoMatchingStrategy implements ParameterMatchingStrategy {
 
 	/**

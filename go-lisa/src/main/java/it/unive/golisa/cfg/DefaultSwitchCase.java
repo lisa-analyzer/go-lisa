@@ -35,10 +35,20 @@ public class DefaultSwitchCase {
 		return body;
 	}
 
+	/**
+	 * Yields the entry of the default switch case, i.e., the first node of its
+	 * body.
+	 * 
+	 * @return the entry of the default switch case, i.e., the first node of its
+	 *             body
+	 */
 	public Statement getEntry() {
 		return entry;
 	}
 
+	/**
+	 * Simplifies the switch case.
+	 */
 	public void simplify() {
 		body.removeIf(NoOp.class::isInstance);
 	}

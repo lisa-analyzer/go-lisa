@@ -27,6 +27,7 @@ public class TypeSwitch extends ControlFlowStructure {
 	 * @param firstFollower the first follower of this control flow structure
 	 * @param cases         the cases associated with this control flow
 	 *                          structure
+	 * @param defaultCase   the default case
 	 */
 	public TypeSwitch(NodeList<CFG, Statement, Edge> cfgMatrix, Statement condition, Statement firstFollower,
 			TypeSwitchCase[] cases, DefaultSwitchCase defaultCase) {

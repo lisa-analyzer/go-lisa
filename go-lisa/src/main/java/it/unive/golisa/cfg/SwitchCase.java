@@ -46,6 +46,9 @@ public class SwitchCase {
 		return condition;
 	}
 
+	/**
+	 * Simplifies the switch case.
+	 */
 	public void simplify() {
 		body.removeIf(NoOp.class::isInstance);
 	}

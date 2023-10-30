@@ -296,18 +296,22 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	private NodeList<CFG, Statement, Edge> matrix;
 
-	protected final LinkedList<BlockInfo> blockList = new LinkedList<>();
+	private final LinkedList<BlockInfo> blockList = new LinkedList<>();
 
 	private final Collection<ControlFlowStructure> cfs;
 
 	private final Map<String, Set<IdInfo>> visibleIds;
 
+	/**
+	 * The package unit.
+	 */
 	protected final Unit pkgUnit;
 
 	/**
 	 * Builds the code member visitor.
 	 * 
 	 * @param unit      the current unit
+	 * @param pkgUnit   the package unit
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
@@ -334,6 +338,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	 * Builds the code member visitor.
 	 * 
 	 * @param unit      the current unit
+	 * @param pkgUnit   the package unit
 	 * @param ctx       the method declaration context to visit
 	 * @param file      the file path
 	 * @param program   the program

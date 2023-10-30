@@ -95,6 +95,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * 
 	 * @param file      the file path
 	 * @param unit      the current unit
+	 * @param pkgUnit   the package unit
 	 * @param program   the current program
 	 * @param constants the constant mapping
 	 * @param globals   the global variables

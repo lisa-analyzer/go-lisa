@@ -103,7 +103,7 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 		return entryState.assign(var, pushany, call);
 	}
 
-	boolean isRuntimeAPI(OpenCall call) {
+	private boolean isRuntimeAPI(OpenCall call) {
 
 		if (call.getCallType().equals(CallType.STATIC)) {
 			if (call.getQualifier() != null)

@@ -10,6 +10,11 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * The StateQueryIteratorInterface type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class StateQueryIteratorInterface extends GoInterfaceType {
 
 	/**

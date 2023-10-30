@@ -6,7 +6,6 @@ import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
-import it.unive.golisa.checker.NumericalOverflowChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
@@ -22,7 +21,6 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
@@ -111,7 +109,6 @@ public class GoLiSA {
 		conf.workdir = outputDir;
 		conf.jsonOutput = true;
 		conf.optimize = false;
-		// conf.hotspots
 
 		switch (analysis) {
 
@@ -130,13 +127,6 @@ public class GoLiSA {
 					new InferenceSystem<>(new IntegrityNIDomain()),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new IntegrityNIChecker());
-			break;
-		case "numerical-overflow":
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new Interval()),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new NumericalOverflowChecker());
 			break;
 		default:
 

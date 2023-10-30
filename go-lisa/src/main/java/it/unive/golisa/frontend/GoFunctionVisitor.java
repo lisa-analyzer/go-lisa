@@ -93,14 +93,15 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * Builds the function visitor.
 	 * 
 	 * @param unit      the current unit
+	 * @param pkgUnit   the package unit
 	 * @param file      the current file path
 	 * @param program   the current program
 	 * @param constants the constant mapping
 	 * @param globals   the global variables
 	 */
-	public GoFunctionVisitor(CompilationUnit unit, Unit pkgunit, String file, Program program,
+	public GoFunctionVisitor(CompilationUnit unit, Unit pkgUnit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
-		super(unit, pkgunit, file, program, constants, globals);
+		super(unit, pkgUnit, file, program, constants, globals);
 	}
 
 	@Override

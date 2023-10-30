@@ -16,14 +16,20 @@ public class TypeSwitchCase extends SwitchCase {
 	/**
 	 * Builds the switch-case control flow structure.
 	 * 
-	 * @param condition the switch-case condition
-	 * @param body      the body associated with this switch-case
+	 * @param initialization the initialization expression
+	 * @param condition      the switch-case condition
+	 * @param body           the body associated with this switch-case
 	 */
 	public TypeSwitchCase(Expression initialization, Expression condition, Collection<Statement> body) {
 		super(condition, body);
 		this.initialization = initialization;
 	}
 
+	/**
+	 * Yields the initialization expression.
+	 * 
+	 * @return the initialization expression
+	 */
 	public Expression getInitialization() {
 		return initialization;
 	}

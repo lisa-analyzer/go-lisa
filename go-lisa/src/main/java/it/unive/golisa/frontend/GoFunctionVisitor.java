@@ -8,9 +8,7 @@ import it.unive.golisa.antlr.GoParser.ParametersContext;
 import it.unive.golisa.antlr.GoParser.SignatureContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -146,12 +144,8 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 				for (Parameter par : tuple) {
 					VariableRef var = new VariableRef(cfg, par.getLocation(), par.getName());
 					Type parType = par.getStaticType();
-					Expression decl;
-					if (parType instanceof GoType)
-						decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var,
-								((GoType) parType).defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
-					else
-						decl = new GoUnknown(cfg, (SourceCodeLocation) par.getLocation());
+					Expression decl = new GoShortVariableDeclaration(cfg, par.getLocation(), var,
+							parType.defaultValue(cfg, (SourceCodeLocation) par.getLocation()));
 
 					cfg.addNode(decl);
 
@@ -263,7 +257,7 @@ class GoFunctionVisitor extends GoCodeMemberVisitor {
 	 * 
 	 * @return the return type
 	 */
-	public GoType visitFunctionType(FunctionTypeContext ctx) {
+	public Type visitFunctionType(FunctionTypeContext ctx) {
 		SignatureContext sign = ctx.signature();
 		Type returnType = getGoReturnType(sign);
 		if (returnType.isInMemoryType())

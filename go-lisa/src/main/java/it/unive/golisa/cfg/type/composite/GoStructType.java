@@ -2,16 +2,16 @@ package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
@@ -27,7 +27,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoStructType implements GoType, UnitType, InMemoryType {
+public class GoStructType implements Type, UnitType, InMemoryType {
 
 	private static final Map<String, GoStructType> structTypes = new HashMap<>();
 
@@ -199,16 +199,16 @@ public class GoStructType implements GoType, UnitType, InMemoryType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		Collection<Global> fields = getUnit().getInstanceGlobals(true);
 		Expression[] values = new Expression[fields.size()];
 
 		int i = 0;
 		for (Global key : fields)
-			if (key.getStaticType() instanceof GoType)
-				values[i++] = ((GoType) key.getStaticType()).defaultValue(cfg, location);
-			else
+			if (key.getStaticType() instanceof ReferenceType)
 				values[i++] = new GoUnknown(cfg, location);
+			else
+				values[i++] = key.getStaticType().defaultValue(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, values, this);
 	}

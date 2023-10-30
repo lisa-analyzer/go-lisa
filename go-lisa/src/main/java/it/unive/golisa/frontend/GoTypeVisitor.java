@@ -25,7 +25,6 @@ import it.unive.golisa.antlr.GoParser.Type_Context;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
@@ -118,7 +117,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * 
 	 * @return the Go type corresponding to {@code ctx}
 	 */
-	private Type getGoType(TypeNameContext ctx) {
+	private Type getType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
 
@@ -214,7 +213,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			return visitChannelType(ctx.channelType());
 
 		Object result = visitChildren(ctx);
-		if (!(result instanceof GoType) && !(result instanceof Untyped))
+		if (!(result instanceof Type) && !(result instanceof Untyped))
 			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
 		else
 			return (Type) result;
@@ -223,13 +222,13 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Type visitTypeName(TypeNameContext ctx) {
 		if (ctx.IDENTIFIER() != null)
-			return getGoType(ctx);
+			return getType(ctx);
 		else
 			return visitQualifiedIdent(ctx.qualifiedIdent());
 	}
 
 	@Override
-	public GoType visitFunctionType(FunctionTypeContext ctx) {
+	public Type visitFunctionType(FunctionTypeContext ctx) {
 		return new GoFunctionVisitor(unit, pkgUnit, file, program, constants, globals).visitFunctionType(ctx);
 	}
 
@@ -237,7 +236,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public Type visitQualifiedIdent(QualifiedIdentContext ctx) {
 		for (Type type : program.getTypes().getTypes())
 			if (type.toString().equals(ctx.getText()))
-				return (GoType) type;
+				return type;
 
 		return Untyped.INSTANCE;
 	}
@@ -310,14 +309,14 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitSliceType(SliceTypeContext ctx) {
+	public Type visitSliceType(SliceTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
 		contentType = contentType == null ? Untyped.INSTANCE : contentType;
 		return GoSliceType.lookup(contentType);
 	}
 
 	@Override
-	public GoType visitMapType(MapTypeContext ctx) {
+	public Type visitMapType(MapTypeContext ctx) {
 		Type keyType = visitType_(ctx.type_());
 		keyType = keyType == null ? Untyped.INSTANCE : keyType;
 
@@ -328,7 +327,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitChannelType(ChannelTypeContext ctx) {
+	public Type visitChannelType(ChannelTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
 		contentType = contentType == null ? Untyped.INSTANCE : contentType;
 
@@ -410,7 +409,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
+	public Type visitInterfaceType(InterfaceTypeContext ctx) {
 		// The interface is empty
 		if (ctx.methodSpec().size() == 0)
 			return GoInterfaceType.getEmptyInterface();

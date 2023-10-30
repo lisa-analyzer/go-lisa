@@ -1,10 +1,9 @@
 package it.unive.golisa.cfg.type.untyped;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
@@ -18,7 +17,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoUntypedInt implements GoType, NumericType {
+public class GoUntypedInt implements Type, NumericType {
 
 	/**
 	 * Unique instance of GoUntypedInt type.
@@ -45,17 +44,17 @@ public class GoUntypedInt implements GoType, NumericType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return other instanceof GoType && other.isNumericType() || other.isUntyped()
+		return other.isNumericType() || other.isUntyped()
 				|| (other instanceof GoSliceType && canBeAssignedTo(((GoSliceType) other).getContentType()));
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoType && other.isNumericType() ? other : Untyped.INSTANCE;
+		return other.isNumericType() ? other : Untyped.INSTANCE;
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoInteger(cfg, location, 0);
 	}
 

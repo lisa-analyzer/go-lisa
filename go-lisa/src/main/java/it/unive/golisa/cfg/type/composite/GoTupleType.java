@@ -1,8 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
@@ -22,7 +20,7 @@ import java.util.Set;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 @SuppressWarnings("serial")
-public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemoryType {
+public class GoTupleType extends ArrayList<Parameter> implements Type, InMemoryType {
 
 	private static final Set<GoTupleType> tupleTypes = new HashSet<>();
 
@@ -103,12 +101,12 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		Expression[] exps = new Expression[size()];
 		Parameter[] types = new Parameter[size()];
 
 		for (int i = 0; i < size(); i++) {
-			exps[i] = ((GoType) get(i).getStaticType()).defaultValue(cfg, location);
+			exps[i] = get(i).getStaticType().defaultValue(cfg, location);
 			types[i] = new Parameter(location, "_", get(i).getStaticType());
 		}
 

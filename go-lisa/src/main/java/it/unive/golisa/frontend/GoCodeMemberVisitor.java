@@ -152,7 +152,6 @@ import it.unive.golisa.cfg.statement.block.BlockInfo.DeclarationType;
 import it.unive.golisa.cfg.statement.block.CloseBlock;
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
@@ -978,7 +977,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else {
 
 					if ((exps == null || exps.expression(i) == null) && !type.isUntyped()) {
-						exp = ((GoType) type).defaultValue(cfg, locationOf(ctx));
+						exp = type.defaultValue(cfg, locationOf(ctx));
 					} else
 						exp = visitExpression(exps.expression(i));
 				}
@@ -2554,11 +2553,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	private GoType getContentType(Type type) {
+	private Type getContentType(Type type) {
 		if (type instanceof GoArrayType)
-			return (GoType) ((GoArrayType) type).getContenType();
+			return ((GoArrayType) type).getContenType();
 		if (type instanceof GoSliceType)
-			return (GoType) ((GoSliceType) type).getContentType();
+			return ((GoSliceType) type).getContentType();
 
 		throw new IllegalStateException(type + " has no content type");
 	}

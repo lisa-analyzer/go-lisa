@@ -1,9 +1,8 @@
 package it.unive.golisa.cfg.runtime.time.type;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
@@ -20,7 +19,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class Duration implements GoType {
+public class Duration implements Type {
 
 	/**
 	 * Unique instance of GoInt64 type.
@@ -48,7 +47,7 @@ public class Duration implements GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoInteger(cfg, location, 0);
 	}
 

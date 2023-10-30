@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.type;
 
 import it.unive.golisa.cfg.expression.literal.GoBoolean;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.BooleanType;
 import it.unive.lisa.type.Type;
@@ -19,7 +19,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoBoolType implements BooleanType, GoType {
+public class GoBoolType implements BooleanType {
 
 	/**
 	 * Unique instance of GoBoolean type.
@@ -55,7 +55,7 @@ public class GoBoolType implements BooleanType, GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoBoolean(cfg, location, false);
 	}
 

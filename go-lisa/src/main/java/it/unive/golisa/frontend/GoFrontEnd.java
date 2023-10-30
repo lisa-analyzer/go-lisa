@@ -184,7 +184,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		stream.close();
 
 		// Register all the types
-		registerGoTypes(program);
+		registerTypes(program);
 
 		return result;
 	}
@@ -202,7 +202,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoInterfaceType.clearAll();
 	}
 
-	private void registerGoTypes(Program program) {
+	private void registerTypes(Program program) {
 		program.getTypes().registerType(GoBoolType.INSTANCE);
 		program.getTypes().registerType(GoFloat32Type.INSTANCE);
 		program.getTypes().registerType(GoFloat64Type.INSTANCE);

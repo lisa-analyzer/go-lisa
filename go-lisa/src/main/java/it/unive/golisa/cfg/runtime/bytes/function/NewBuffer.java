@@ -2,7 +2,6 @@ package it.unive.golisa.cfg.runtime.bytes.function;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -104,7 +103,8 @@ public class NewBuffer extends NativeCFG {
 			HeapDereference deref = new HeapDereference(bufferType, ref, getLocation());
 
 			AnalysisState<A> asg = state.bottom();
-			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
+			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(expr, this,
+					state.getState()).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(bufferType, derefId, NewBufferOperator.INSTANCE,

@@ -2,7 +2,6 @@ package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -100,7 +99,8 @@ public class Format extends NativeCFG {
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 				throws SemanticException {
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
+			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(left, this,
+					state.getState()).elements;
 			AnalysisState<A> result = state.bottom();
 			for (SymbolicExpression id : reachableIds) {
 				if (id instanceof MemoryPointer)

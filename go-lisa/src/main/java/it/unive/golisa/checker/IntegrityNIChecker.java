@@ -1,7 +1,6 @@
 package it.unive.golisa.checker;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -155,7 +154,7 @@ public class IntegrityNIChecker implements
 
 				Set<SymbolicExpression> reachableIds = new HashSet<>();
 				for (SymbolicExpression e : state.getComputedExpressions())
-					reachableIds.addAll(HeapResolver.resolve(state, e, call));
+					reachableIds.addAll(state.getState().reachableFrom(e, call, state.getState()).elements);
 
 				for (SymbolicExpression stack : reachableIds) {
 					InferenceSystem<IntegrityNIDomain> valueState = state.getState().getValueState();

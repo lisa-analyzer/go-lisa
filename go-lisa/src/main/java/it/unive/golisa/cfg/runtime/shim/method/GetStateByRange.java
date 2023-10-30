@@ -6,7 +6,6 @@ import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.golisa.checker.TaintChecker.HeapResolver;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -126,7 +125,8 @@ public class GetStateByRange extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, left, this);
+			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(left, this,
+					state.getState()).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, derefId, middle, right,

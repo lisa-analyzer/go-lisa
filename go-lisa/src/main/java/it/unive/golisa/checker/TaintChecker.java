@@ -1,7 +1,6 @@
 package it.unive.golisa.checker;
 
 import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -112,7 +111,8 @@ public class TaintChecker implements
 
 								Set<SymbolicExpression> reachableIds = new HashSet<>();
 								for (SymbolicExpression e : state.getComputedExpressions())
-									reachableIds.addAll(HeapResolver.resolve(state, e, node));
+									reachableIds
+											.addAll(state.getState().reachableFrom(e, node, state.getState()).elements);
 
 								for (SymbolicExpression s : reachableIds) {
 									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
@@ -142,7 +142,8 @@ public class TaintChecker implements
 														.getAnalysisStateAfter(call.getParameters()[i]);
 								Set<SymbolicExpression> reachableIds = new HashSet<>();
 								for (SymbolicExpression e : state.getComputedExpressions())
-									reachableIds.addAll(HeapResolver.resolve(state, e, node));
+									reachableIds
+											.addAll(state.getState().reachableFrom(e, node, state.getState()).elements);
 
 								for (SymbolicExpression s : reachableIds) {
 									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
@@ -188,15 +189,5 @@ public class TaintChecker implements
 							TypeEnvironment<InferredTypes>>> tool,
 			Unit unit) {
 		return true;
-	}
-
-	public static class HeapResolver {
-
-		public static <A extends AbstractState<A>> Collection<SymbolicExpression> resolve(
-				AnalysisState<A> entryState,
-				SymbolicExpression e,
-				Statement pp) throws SemanticException {
-			return entryState.getState().reachableFrom(e, pp, entryState.getState()).elements;
-		}
 	}
 }

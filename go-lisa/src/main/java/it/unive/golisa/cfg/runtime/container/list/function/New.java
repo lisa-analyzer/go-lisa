@@ -24,9 +24,7 @@ import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.type.ReferenceType;
 
 /**
- * func New() *List
- * 
- * @link https://pkg.go.dev/container/list#New
+ * func New() *List.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */

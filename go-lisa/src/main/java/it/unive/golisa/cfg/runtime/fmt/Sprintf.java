@@ -28,8 +28,6 @@ import java.util.Set;
 /**
  * func Sprintf(format string, a ...any) string.
  * 
- * @see https://pkg.go.dev/fmt#Sprintf
- * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Sprintf extends NativeCFG {

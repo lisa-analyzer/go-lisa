@@ -94,7 +94,8 @@ public class SplitCompositeKey extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param expr     the expression
+		 * @param left     the left expression
+		 * @param right    the right expression
 		 */
 		public SplitCompositeKeyImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "SplitCompositeKeyImpl",

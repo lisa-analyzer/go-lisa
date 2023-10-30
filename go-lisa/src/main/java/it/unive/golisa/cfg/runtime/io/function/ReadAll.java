@@ -124,12 +124,13 @@ public class ReadAll extends NativeCFG {
 				Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(allocState, expr, this);
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-					UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId,
-							ReadAllFirstParameter.INSTANCE, getLocation());
+					UnaryExpression left = new UnaryExpression(sliceOfBytes, derefId,
+							ReadAllOperatorFirstParameter.INSTANCE, getLocation());
 					asg = asg.lub(allocState.assign(deref, left, original));
 				}
 
-				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, ReadAllSecondParameter.INSTANCE,
+				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr,
+						ReadAllOperatorSecondParameter.INSTANCE,
 						getLocation());
 
 				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
@@ -142,50 +143,62 @@ public class ReadAll extends NativeCFG {
 		}
 	}
 
-	public static class ReadAllFirstParameter implements UnaryOperator {
+	/**
+	 * The ReadAll operator returning the first parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class ReadAllOperatorFirstParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final ReadAllFirstParameter INSTANCE = new ReadAllFirstParameter();
+		public static final ReadAllOperatorFirstParameter INSTANCE = new ReadAllOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected ReadAllFirstParameter() {
+		protected ReadAllOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "ReadAll_first";
+			return "ReadAllOperator_1";
 		}
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(GoSliceType.getSliceOfBytes());
 		}
 	}
 
-	public static class ReadAllSecondParameter implements UnaryOperator {
+	/**
+	 * The ReadAll operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class ReadAllOperatorSecondParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final ReadAllSecondParameter INSTANCE = new ReadAllSecondParameter();
+		public static final ReadAllOperatorSecondParameter INSTANCE = new ReadAllOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected ReadAllSecondParameter() {
+		protected ReadAllOperatorSecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "ReadAll_second";
+			return "ReadAllOperator_2";
 		}
 
 		@Override

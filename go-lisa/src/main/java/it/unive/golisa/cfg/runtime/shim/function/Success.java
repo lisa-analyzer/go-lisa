@@ -31,9 +31,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Success response chaincodes. func Success(payload []byte) pb.Response
- *
- * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#Success
+ * Success response chaincodes. func Success(payload []byte) pb.Response.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -114,6 +112,11 @@ public class Success extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The Success operator.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class SuccessOperator implements UnaryOperator {
 
 		/**

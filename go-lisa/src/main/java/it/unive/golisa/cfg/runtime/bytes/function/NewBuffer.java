@@ -33,9 +33,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * func NewBuffer(buf []byte) *Buffer
- * 
- * @see https://pkg.go.dev/bytes#NewBuffer
+ * func NewBuffer(buf []byte) *Buffer.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -44,8 +42,8 @@ public class NewBuffer extends NativeCFG {
 	/**
 	 * Builds the native cfg.
 	 * 
-	 * @param location the location where this native cfg is defined
-	 * @param unit     the unit to which this native cfg belongs to
+	 * @param location  the location where this native cfg is defined
+	 * @param bytesUnit the unit to which this native cfg belongs to
 	 */
 	public NewBuffer(CodeLocation location, CodeUnit bytesUnit) {
 		super(new CodeMemberDescriptor(location, bytesUnit, false, "NewBuffer",
@@ -109,7 +107,7 @@ public class NewBuffer extends NativeCFG {
 			Collection<SymbolicExpression> reachableIds = HeapResolver.resolve(state, expr, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(Untyped.INSTANCE, derefId, NewBufferOperator.INSTANCE,
+				UnaryExpression left = new UnaryExpression(bufferType, derefId, NewBufferOperator.INSTANCE,
 						getLocation());
 				asg = asg.lub(state.assign(deref, left, original));
 			}
@@ -118,6 +116,11 @@ public class NewBuffer extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The NewBuffer operator.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class NewBufferOperator implements UnaryOperator {
 
 		/**
@@ -140,8 +143,7 @@ public class NewBuffer extends NativeCFG {
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(Buffer.getBufferType(null));
 		}
 	}
-
 }

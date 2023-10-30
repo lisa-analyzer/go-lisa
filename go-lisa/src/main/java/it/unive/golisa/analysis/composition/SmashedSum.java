@@ -34,21 +34,45 @@ import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.TreeSet;
 
+/**
+ * The smashed-sum abstract domain between interval and a non-relational string
+ * abstract domain.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ *
+ * @param <S> the non-relational string abstract domain
+ */
 public class SmashedSum<S extends BaseNonRelationalValueDomain<S>>
 		implements BaseNonRelationalValueDomain<SmashedSum<S>> {
 
 	private final Interval intValue;
 	private final S stringValue;
 
+	/**
+	 * Builds an abstract element of this domain.
+	 * 
+	 * @param intValue    the abstract value for intergers
+	 * @param stringValue the abstract value for strings
+	 */
 	public SmashedSum(Interval intValue, S stringValue) {
 		this.intValue = intValue;
 		this.stringValue = stringValue;
 	}
 
+	/**
+	 * Yields the integer abstract value.
+	 * 
+	 * @return the integer abstract value
+	 */
 	public Interval getIntValue() {
 		return intValue;
 	}
 
+	/**
+	 * Yields the string abstract value.
+	 * 
+	 * @return the string abstract value
+	 */
 	public S getStringValue() {
 		return stringValue;
 	}

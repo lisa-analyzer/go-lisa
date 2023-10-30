@@ -9,7 +9,13 @@ import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 
+/**
+ * THe StateQueryIterator type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class StateQueryIterator extends GoStructType {
+
 	/**
 	 * Unique instance of the {@link Handler} type.
 	 */

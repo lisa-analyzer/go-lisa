@@ -100,6 +100,7 @@ public class GetStateByRange extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param left     the left-hand side of this expression
+		 * @param middle   the middle-hand side of this expression
 		 * @param right    the right-hand side of this expression
 		 */
 		public GetStateByRangeImpl(CFG cfg, CodeLocation location, Expression left, Expression middle,

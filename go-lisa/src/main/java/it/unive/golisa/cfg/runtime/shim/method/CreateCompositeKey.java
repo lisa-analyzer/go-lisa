@@ -36,9 +36,7 @@ import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) CreateCompositeKey(objectType string, attributes
- * []string) (string, error)
- * 
- * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#CreateCompositeKey
+ * []string) (string, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */

@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * func Atoi(s string) (int, error)
+ * func Atoi(s string) (int, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -95,37 +95,44 @@ public class Atoi extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
-			UnaryExpression lExp = new UnaryExpression(GoIntType.INSTANCE, expr, AtoiFirstParameter.INSTANCE,
+			UnaryExpression lExp = new UnaryExpression(GoIntType.INSTANCE, expr, AtoiOperatorFirstParameter.INSTANCE,
 					getLocation());
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, AtoiSecondParameter.INSTANCE,
+			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, AtoiOperatorSecondParameter.INSTANCE,
 					getLocation());
 
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
 
-			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), original, getLocation(),
+					tupleType,
 					lExp,
 					rExp);
 		}
 	}
 
-	public static class AtoiFirstParameter implements UnaryOperator {
+	/**
+	 * The Atoi operator returning the first parameter of the tuple expression
+	 * result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class AtoiOperatorFirstParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final AtoiFirstParameter INSTANCE = new AtoiFirstParameter();
+		public static final AtoiOperatorFirstParameter INSTANCE = new AtoiOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected AtoiFirstParameter() {
+		protected AtoiOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "Atoi_first";
+			return "AtoiOperator_1";
 		}
 
 		@Override
@@ -134,24 +141,30 @@ public class Atoi extends NativeCFG {
 		}
 	}
 
-	public static class AtoiSecondParameter implements UnaryOperator {
+	/**
+	 * The Atoi operator returning the second parameter of the tuple expression
+	 * result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class AtoiOperatorSecondParameter implements UnaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final AtoiSecondParameter INSTANCE = new AtoiSecondParameter();
+		public static final AtoiOperatorSecondParameter INSTANCE = new AtoiOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected AtoiSecondParameter() {
+		protected AtoiOperatorSecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "Atoi_secon";
+			return "AtoiOperator_2";
 		}
 
 		@Override

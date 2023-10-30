@@ -28,7 +28,7 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Untyped;
 
 /**
- * func (*List) Front
+ * func (*List) Front.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */

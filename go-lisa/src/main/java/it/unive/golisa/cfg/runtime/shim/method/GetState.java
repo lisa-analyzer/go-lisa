@@ -124,7 +124,7 @@ public class GetState extends NativeCFG {
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				BinaryExpression lExp = new BinaryExpression(GoSliceType.getSliceOfBytes(), derefId, right,
-						GetStateFirstParameter.INSTANCE, getLocation());
+						GetStateOperatorFirstParameter.INSTANCE, getLocation());
 				BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, derefId, right,
 						GetStateSecondParameter.INSTANCE, getLocation());
 				AnalysisState<A> asg = state.assign(deref, lExp, original);
@@ -140,24 +140,30 @@ public class GetState extends NativeCFG {
 		}
 	}
 
-	public static class GetStateFirstParameter implements BinaryOperator {
+	/**
+	 * The GetState operator returning the first parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class GetStateOperatorFirstParameter implements BinaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final GetStateFirstParameter INSTANCE = new GetStateFirstParameter();
+		public static final GetStateOperatorFirstParameter INSTANCE = new GetStateOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected GetStateFirstParameter() {
+		protected GetStateOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "GetState_first";
+			return "GetStateOperator_1";
 		}
 
 		@Override
@@ -166,6 +172,12 @@ public class GetState extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The GetState operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class GetStateSecondParameter implements BinaryOperator {
 
 		/**
@@ -183,7 +195,7 @@ public class GetState extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "GetState_second";
+			return "GetStateOperator_2";
 		}
 
 		@Override

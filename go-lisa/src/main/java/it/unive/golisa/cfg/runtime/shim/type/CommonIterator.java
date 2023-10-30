@@ -8,6 +8,11 @@ import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
 
+/**
+ * The CommonIterator type.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class CommonIterator extends GoStructType {
 
 	/**

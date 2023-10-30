@@ -30,9 +30,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * func ParseFloat(s string, bitSize int) (float64, error)
- *
- * @link https://pkg.go.dev/strconv#ParseFloat
+ * func ParseFloat(s string, bitSize int) (float64, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -88,7 +86,8 @@ public class ParseFloat extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param arg      the expression
+		 * @param left     the left expression
+		 * @param right    the right expression
 		 */
 		public ParseFloatImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
 			super(cfg, location, "ParseFloat",
@@ -111,6 +110,12 @@ public class ParseFloat extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The ParseFloat operator returning the first parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ParseFloatOperatorFirstParameter implements BinaryOperator {
 
 		/**
@@ -128,7 +133,7 @@ public class ParseFloat extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "ParseFloat_first";
+			return "ParseFloatOperator_1";
 		}
 
 		@Override
@@ -137,6 +142,12 @@ public class ParseFloat extends NativeCFG {
 		}
 	}
 
+	/**
+	 * The ParseFloat operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
 	public static class ParseFloatOperatorSecondParameter implements BinaryOperator {
 
 		/**
@@ -154,7 +165,7 @@ public class ParseFloat extends NativeCFG {
 
 		@Override
 		public String toString() {
-			return "ParseFloat_second";
+			return "ParseFloatOperator_2";
 		}
 
 		@Override

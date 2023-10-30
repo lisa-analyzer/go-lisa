@@ -29,8 +29,6 @@ import it.unive.lisa.type.ReferenceType;
 /**
  * func Now() Time.
  * 
- * @see https://pkg.go.dev/time#Now
- * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Now extends NativeCFG {

@@ -21,9 +21,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
- * func (b *Buffer) Bytes() []byte
- * 
- * @see https://pkg.go.dev/bytes#Buffer.Bytes.
+ * func (b *Buffer) Bytes() []byte.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
@@ -88,6 +86,5 @@ public class Bytes extends NativeCFG {
 				AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> arg3) throws SemanticException {
 			return state.smallStepSemantics(expr, original);
 		}
-
 	}
 }

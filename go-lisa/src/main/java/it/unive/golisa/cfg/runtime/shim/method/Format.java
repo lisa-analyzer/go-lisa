@@ -32,8 +32,6 @@ import java.util.Set;
 /**
  * func (t Time) Format(layout string) string.
  * 
- * @see https://pkg.go.dev/time#Time.Format
- * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class Format extends NativeCFG {

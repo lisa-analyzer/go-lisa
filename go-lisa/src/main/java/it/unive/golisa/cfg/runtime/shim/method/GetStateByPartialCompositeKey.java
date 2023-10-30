@@ -40,14 +40,18 @@ import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) GetStateByPartialCompositeKey(objectType string,
- * attributes []string) (StateQueryIteratorInterface, error)
- * 
- * @see https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetStateByPartialCompositeKey
+ * attributes []string) (StateQueryIteratorInterface, error).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GetStateByPartialCompositeKey extends NativeCFG {
 
+	/**
+	 * Builds the native cfg.
+	 * 
+	 * @param location the location where this native cfg is defined
+	 * @param shimUnit the unit to which this native cfg belongs to
+	 */
 	public GetStateByPartialCompositeKey(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, shimUnit,
 				true,
@@ -61,7 +65,7 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 	}
 
 	/**
-	 * The {@link GetStateByRange} implementation.
+	 * The {@link GetStateByPartialCompositeKey} implementation.
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
@@ -96,6 +100,7 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		 * @param location the location where this pluggable statement is
 		 *                     defined
 		 * @param left     the left-hand side of this expression
+		 * @param middle   the middle-hand side of this expression
 		 * @param right    the right-hand side of this expression
 		 */
 		public GetStateByPartialCompositeKeyImpl(CFG cfg, CodeLocation location, Expression left, Expression middle,
@@ -127,10 +132,10 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 				for (SymbolicExpression r : reachableIdsRight) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 					TernaryExpression lExp = new TernaryExpression(new ReferenceType(allocType), derefId, middle, r,
-							GetStateByPartialCompositeKeyFirstParameter.INSTANCE, getLocation());
+							GetStateByPartialCompositeKeyOperatorFirstParameter.INSTANCE, getLocation());
 					AnalysisState<A> asg = state.assign(deref, lExp, original);
 					TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, derefId, middle, r,
-							GetStateByPartialCompositeKeySecondParameter.INSTANCE, getLocation());
+							GetStateByPartialCompositeKeyOperatorSecondParameter.INSTANCE, getLocation());
 
 					result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
 							getLocation(), tupleType,
@@ -143,24 +148,30 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		}
 	}
 
-	public static class GetStateByPartialCompositeKeyFirstParameter implements TernaryOperator {
+	/**
+	 * The GetStateByParitalCompositeKey operator returning the first parameter
+	 * of the tuple expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class GetStateByPartialCompositeKeyOperatorFirstParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final GetStateByPartialCompositeKeyFirstParameter INSTANCE = new GetStateByPartialCompositeKeyFirstParameter();
+		public static final GetStateByPartialCompositeKeyOperatorFirstParameter INSTANCE = new GetStateByPartialCompositeKeyOperatorFirstParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected GetStateByPartialCompositeKeyFirstParameter() {
+		protected GetStateByPartialCompositeKeyOperatorFirstParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "GetStateByPartialCompositeKey_first";
+			return "GetStateByPartialCompositeKeyOperator_1";
 		}
 
 		@Override
@@ -169,24 +180,30 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 		}
 	}
 
-	public static class GetStateByPartialCompositeKeySecondParameter implements TernaryOperator {
+	/**
+	 * The GetStateByParitalCompositeKey operator returning the second parameter
+	 * of the tuple expression result.
+	 * 
+	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+	 */
+	public static class GetStateByPartialCompositeKeyOperatorSecondParameter implements TernaryOperator {
 
 		/**
 		 * The singleton instance of this class.
 		 */
-		public static final GetStateByPartialCompositeKeySecondParameter INSTANCE = new GetStateByPartialCompositeKeySecondParameter();
+		public static final GetStateByPartialCompositeKeyOperatorSecondParameter INSTANCE = new GetStateByPartialCompositeKeyOperatorSecondParameter();
 
 		/**
 		 * Builds the operator. This constructor is visible to allow
 		 * subclassing: instances of this class should be unique, and the
 		 * singleton can be retrieved through field {@link #INSTANCE}.
 		 */
-		protected GetStateByPartialCompositeKeySecondParameter() {
+		protected GetStateByPartialCompositeKeyOperatorSecondParameter() {
 		}
 
 		@Override
 		public String toString() {
-			return "GetStateByPartialCompositeKey_second";
+			return "GetStateByPartialCompositeKeyOperator_2";
 		}
 
 		@Override

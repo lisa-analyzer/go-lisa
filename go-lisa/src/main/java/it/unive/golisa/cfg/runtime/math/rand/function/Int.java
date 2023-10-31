@@ -1,16 +1,16 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
+import it.unive.golisa.analysis.ni.IntegrityNIDomain;
+import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -18,7 +18,6 @@ import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
@@ -28,6 +27,9 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Int extends NativeCFG {
 
+	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION,
+			IntegrityNIDomain.LOW_ANNOTATION);
+
 	/**
 	 * Builds the native cfg.
 	 * 
@@ -35,7 +37,7 @@ public class Int extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Int(CodeLocation location, CodeUnit randUnit) {
-		super(new CodeMemberDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE),
+		super(new CodeMemberDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE, anns),
 				IntImpl.class);
 	}
 
@@ -80,13 +82,10 @@ public class Int extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A, H, V, T>,
-				H extends HeapDomain<H>,
-				V extends ValueDomain<V>,
-				T extends TypeDomain<T>> AnalysisState<A, H, V, T> expressionSemantics(
-						InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-						ExpressionSet<SymbolicExpression>[] params, StatementStore<A, H, V, T> expressions)
-						throws SemanticException {
+		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+				ExpressionSet[] params, StatementStore<A> expressions)
+				throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
 		}
 	}

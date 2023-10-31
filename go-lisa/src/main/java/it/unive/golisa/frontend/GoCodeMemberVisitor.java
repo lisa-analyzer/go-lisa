@@ -80,8 +80,12 @@ import it.unive.golisa.antlr.GoParser.UnaryExprContext;
 import it.unive.golisa.antlr.GoParser.VarDeclContext;
 import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
+import it.unive.golisa.cfg.DefaultSwitchCase;
 import it.unive.golisa.cfg.Switch;
 import it.unive.golisa.cfg.SwitchCase;
+import it.unive.golisa.cfg.TypeSwitch;
+import it.unive.golisa.cfg.TypeSwitchCase;
+import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoForRange;
@@ -148,13 +152,11 @@ import it.unive.golisa.cfg.statement.block.BlockInfo.DeclarationType;
 import it.unive.golisa.cfg.statement.block.CloseBlock;
 import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
@@ -162,6 +164,7 @@ import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.SyntheticLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
@@ -299,15 +302,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	private final Map<String, Set<IdInfo>> visibleIds;
 
 	/**
+	 * The package unit.
+	 */
+	protected final Unit pkgUnit;
+
+	/**
 	 * Builds the code member visitor.
 	 * 
 	 * @param unit      the current unit
+	 * @param pkgUnit   the package unit
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
 	 * @param globals   global variables
 	 */
-	public GoCodeMemberVisitor(CompilationUnit unit, String file, Program program,
+	public GoCodeMemberVisitor(CompilationUnit unit, Unit pkgUnit, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
@@ -321,19 +330,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		this.labeledStmt = new HashMap<>();
 		this.currentUnit = unit;
 		this.globals = globals;
+		this.pkgUnit = pkgUnit;
 	}
 
 	/**
 	 * Builds the code member visitor.
 	 * 
 	 * @param unit      the current unit
+	 * @param pkgUnit   the package unit
 	 * @param ctx       the method declaration context to visit
 	 * @param file      the file path
 	 * @param program   the program
 	 * @param constants constant mapping
 	 * @param globals   the global variables
 	 */
-	public GoCodeMemberVisitor(CompilationUnit unit, MethodDeclContext ctx, String file, Program program,
+	public GoCodeMemberVisitor(CompilationUnit unit, Unit pkgUnit, MethodDeclContext ctx, String file, Program program,
 			Map<String, ExpressionContext> constants, List<Global> globals) {
 		this.file = file;
 		this.program = program;
@@ -349,7 +360,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		visibleIds = new HashMap<>();
 		this.blockDeep = 0;
 		this.globals = globals;
-
+		this.pkgUnit = pkgUnit;
 		initializeVisibleIds();
 	}
 
@@ -403,7 +414,16 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		String methodName = ctx.IDENTIFIER().getText();
 		Parameter[] params = visitParameters(ctx.signature().parameters());
 		params = ArrayUtils.insert(0, params, receiver);
-		Type returnType = ctx.signature().result() == null ? Untyped.INSTANCE : visitResult(ctx.signature().result());
+		Type returnType;
+		if (ctx.signature().result() == null)
+			returnType = Untyped.INSTANCE;
+		else {
+			Type t = visitResult(ctx.signature().result());
+			if (t.isInMemoryType())
+				returnType = GoPointerType.lookup(t);
+			else
+				returnType = t;
+		}
 
 		if (returnType == null)
 			returnType = Untyped.INSTANCE;
@@ -549,6 +569,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		OpenBlock open = new OpenBlock(cfg, locationOf(ctx.L_CURLY()));
 		blockList.addLast(new BlockInfo(open));
 
+		// in the open block of the method, we register that the parameters has
+		// been declarared
+		Parameter[] formals = this.cfg.getDescriptor().getFormals();
+		for (int i = 0; i < formals.length; i++) {
+			VariableRef v = new VariableRef(cfg, formals[i].getLocation(), formals[i].getName(),
+					formals[i].getStaticType());
+			blockList.getLast().addVarDeclaration(v, DeclarationType.VARIABLE);
+		}
+
 		Triple<Statement, NodeList<CFG, Statement, Edge>,
 				Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
@@ -648,13 +677,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Parameter[] result = new Parameter[] {};
 		Type type = visitType_(ctx.type_());
 		type = type == null ? Untyped.INSTANCE : type;
+		boolean variadic = ctx.ELLIPSIS() != null;
 
 		// the parameter's type is variadic (e.g., ...string)
-		if (ctx.ELLIPSIS() != null)
-			type = GoVariadicType.lookup(type);
+		if (variadic)
+			type = GoSliceType.lookup(type);
 
 		if (ctx.identifierList() == null)
-			result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
+			if (variadic)
+				result = ArrayUtils.add(result, new VarArgsParameter(locationOf(ctx), "_", type));
+			else
+				result = ArrayUtils.add(result, new Parameter(locationOf(ctx), "_", type));
 		else
 			for (int i = 0; i < ctx.identifierList().IDENTIFIER().size(); i++) {
 				TerminalNode par = ctx.identifierList().IDENTIFIER(i);
@@ -707,8 +740,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		Statement last = res.getRight();
 		updateVisileIds(backup, last);
-		if (isReturnStmt(last))
+		if (isReturnStmt(last)) {
+			blockDeep--;
+			blockList.removeLast();
 			return Triple.of(open, block, last);
+		}
 		if (isGoTo(last)) {
 			// we still decrement as the actual closing
 			// blocks will be added in the post processing
@@ -941,7 +977,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				else {
 
 					if ((exps == null || exps.expression(i) == null) && !type.isUntyped()) {
-						exp = ((GoType) type).defaultValue(cfg, locationOf(ctx));
+						exp = type.defaultValue(cfg, locationOf(ctx));
 					} else
 						exp = visitExpression(exps.expression(i));
 				}
@@ -951,7 +987,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						: getCol(exps.expression(i));
 
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
-						type);
+						Untyped.INSTANCE);
 				GoVariableDeclaration asg = new GoVariableDeclaration(cfg, new SourceCodeLocation(file, line, col),
 						type, target, exp);
 				block.addNode(asg);
@@ -1108,7 +1144,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			ClassUnit unit = new ClassUnit(
 					new SourceCodeLocation(file, getLine(typeSpec), getCol(typeSpec)), program, unitName, false);
 			units.add(unit);
-			new GoTypeVisitor(file, unit, program, constants, globals).visitTypeSpec(typeSpec);
+			new GoTypeVisitor(file, unit, pkgUnit, program, constants, globals).visitTypeSpec(typeSpec);
 		}
 		return units;
 	}
@@ -1416,9 +1452,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 				// The type of the variable is implicit and it is retrieved from
 				// the type of exp
-				Type type = exp.getStaticType();
 				VariableRef target = new VariableRef(cfg, locationOf(ids.IDENTIFIER(i)), ids.IDENTIFIER(i).getText(),
-						type);
+						Untyped.INSTANCE);
 
 				// if (visibleIds.containsKey(target.getName()))
 				// throw new GoSyntaxException(
@@ -1463,6 +1498,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return new NoOp(cfg, locationOf(ctx));
 	}
 
+	private Parameter[] computeTupleType(Expression[] exps, Type returnType) {
+		Parameter[] types = new Parameter[exps.length];
+		for (int i = 0; i < types.length; i++)
+			if ((returnType.isPointerType() && returnType.asPointerType().getInnerType() instanceof GoTupleType)) {
+				GoTupleType tupleType = (GoTupleType) returnType.asPointerType().getInnerType();
+				types[i] = new Parameter(exps[i].getLocation(), "_",
+						exps[i].getStaticType().commonSupertype(tupleType.getTypeAt(i)));
+			} else
+				types[i] = new Parameter(exps[i].getLocation(), "_", exps[i].getStaticType());
+
+		return types;
+	}
+
 	@Override
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitReturnStmt(ReturnStmtContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
@@ -1475,8 +1523,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (expressionList.expression().size() == 1)
 				ret = new GoReturn(cfg, location, visitExpression(expressionList.expression(0)));
 			else {
-				GoTupleExpression tupleExp = new GoTupleExpression(cfg, location,
-						visitExpressionList(expressionList));
+				Expression[] exps = visitExpressionList(expressionList);
+				Parameter[] types = computeTupleType(exps, this.cfg.getDescriptor().getReturnType());
+				GoTupleExpression tupleExp = new GoTupleExpression(cfg, types, location, exps);
 				ret = new GoReturn(cfg, location, tupleExp);
 			}
 			block.addNode(ret);
@@ -1484,15 +1533,15 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return Triple.of(ret, block, ret);
 		} else {
 			Type returnType = cfg.getDescriptor().getReturnType();
-			if (returnType instanceof GoTupleType) {
-				GoTupleType tuple = (GoTupleType) returnType;
+			if (returnType.isPointerType() && returnType.asPointerType().getInnerType() instanceof GoTupleType) {
+				GoTupleType tupleType = (GoTupleType) returnType.asPointerType().getInnerType();
 
-				if (tuple.isNamedValues()) {
-					Expression[] result = new Expression[tuple.size()];
-					for (int i = 0; i < tuple.size(); i++)
-						result[i] = new VariableRef(cfg, location, tuple.get(i).getName(), Untyped.INSTANCE);
+				if (tupleType.isNamedValues()) {
+					Expression[] result = new Expression[tupleType.size()];
+					for (int i = 0; i < tupleType.size(); i++)
+						result[i] = new VariableRef(cfg, location, tupleType.get(i).getName(), Untyped.INSTANCE);
 
-					GoReturn ret = new GoReturn(cfg, location, new GoTupleExpression(cfg, location, result));
+					GoReturn ret = new GoReturn(cfg, location, new GoTupleExpression(cfg, tupleType, location, result));
 					block.addNode(ret);
 					storeIds(ret);
 					return Triple.of(ret, block, ret);
@@ -1694,17 +1743,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		storeIds(exitNode);
 
 		int ncases = ctx.exprCaseClause().size();
-		@SuppressWarnings("unchecked")
-		NodeList<CFG, Statement, Edge>[] cases = new NodeList[ncases];
-		Statement[] conditions = new Statement[ncases];
+		List<SwitchCase> scases = new ArrayList<>(ncases);
+		DefaultSwitchCase def = null;
 
 		for (int i = 0; i < ncases; i++) {
-			NodeList<CFG, Statement, Edge> case_ = new NodeList<>(SEQUENTIAL_SINGLETON);
-
 			ExprCaseClauseContext switchCase = ctx.exprCaseClause(i);
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> caseBlock = visitStatementListOfSwitchCase(switchCase.statementList());
-			case_.mergeWith(caseBlock.getMiddle());
 			body.mergeWith(caseBlock.getMiddle());
 
 			Expression caseBooleanGuard = null;
@@ -1738,19 +1783,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					addEdge(new FalseEdge(previousGuard, caseBooleanGuard), block);
 				}
 				previousGuard = caseBooleanGuard;
-				conditions[i] = caseBooleanGuard;
+				scases.add(new SwitchCase(caseBooleanGuard, caseBlock.getMiddle().getNodes()));
 			} else {
 				defaultBlock = caseBlock;
-				conditions[i] = null;
 				block.mergeWith(body);
+				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
 
 			if (caseBlock.getRight() instanceof GoFallThrough)
 				lastCaseBlock = caseBlock;
 			else
 				lastCaseBlock = null;
-
-			cases[i] = case_;
 		}
 
 		if (lastCaseBlock != null)
@@ -1771,15 +1814,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
-		// TODO: the switch itself does not use any guard and it's just a way to
-		// shorten each case's condition. The only benefit would be to keep
-		// track of the whole construct (default branch included), do we
-		// need/want to do it?
-		// cfs.add(new Switch(matrix, entryNode, exitNode, body.getNodes()));
-		for (int i = 0; i < ncases; i++)
-			if (conditions[i] != null)
-				// null is the default case
-				cfs.add(new SwitchCase(matrix, conditions[i], exitNode, cases[i].getNodes()));
+		cfs.add(new Switch(matrix, entryNode, exitNode, scases.toArray(SwitchCase[]::new), def));
 
 		return Triple.of(entryNode, block, exitNode);
 	}
@@ -2068,12 +2103,19 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public CodeMemberDescriptor visitMethodSpec(MethodSpecContext ctx) {
 		if (ctx.typeName() == null) {
-			Type returnType = ctx.result() == null ? Untyped.INSTANCE : visitResult(ctx.result());
+			Type returnType;
+			if (ctx.result() == null)
+				returnType = Untyped.INSTANCE;
+			else {
+				Type t = visitResult(ctx.result());
+				if (t.isInMemoryType())
+					returnType = GoPointerType.lookup(t);
+				else
+					returnType = t;
+			}
 			String name = ctx.IDENTIFIER().getText();
 
 			Parameter[] params = visitParameters(ctx.parameters());
-			// return new GoMethodSpecification(name, returnType, params);
-
 			return new CodeMemberDescriptor(locationOf(ctx), currentUnit, false, name, returnType, params);
 		}
 
@@ -2128,13 +2170,21 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call
 					// the callee's name is concatenated to the function name
-					return new UnresolvedCall(cfg, locationOf(ctx),
-							CallType.STATIC,
-							currentUnit.getName(), primary.toString(),
-							visitArguments(ctx.arguments()));
+
+					if (isTypeConversion(funcName))
+						return new UnresolvedCall(cfg, locationOf(ctx),
+								CallType.STATIC,
+								program.getName(), primary.toString(),
+								args);
+					else
+						return new UnresolvedCall(cfg, locationOf(ctx),
+								CallType.STATIC,
+								pkgUnit.getName(), primary.toString(),
+								args);
 
 				else if (primary instanceof GoCollectionAccess) {
-					Expression receiver = ((GoCollectionAccess) primary).getReceiver();
+					// parse the receiver again
+					Expression receiver = visitPrimaryExpr(ctx.primaryExpr().primaryExpr());
 					String methodName = ((GoCollectionAccess) primary).getTarget().toString();
 
 					if (program.getUnit(receiver.toString()) != null)
@@ -2201,6 +2251,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 
 		throw new IllegalStateException("Illegal state: primaryExpr rule has no other productions.");
+	}
+
+	private boolean isTypeConversion(String name) {
+		// TODO: we should cover all the types
+		// (it exists a smarted solution...)
+		return name.equals("string");
 	}
 
 	@Override
@@ -2344,7 +2400,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Expression visitCompositeLit(CompositeLitContext ctx) {
-		Type type = new GoTypeVisitor(file, currentUnit, program, constants, globals)
+		Type type = new GoTypeVisitor(file, currentUnit, pkgUnit, program, constants, globals)
 				.visitLiteralType(ctx.literalType());
 		Object raw = visitLiteralValue(ctx.literalValue(), type);
 		if (raw instanceof LinkedHashMap<?, ?>) {
@@ -2497,11 +2553,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		}
 	}
 
-	private GoType getContentType(Type type) {
+	private Type getContentType(Type type) {
 		if (type instanceof GoArrayType)
-			return (GoType) ((GoArrayType) type).getContenType();
+			return ((GoArrayType) type).getContenType();
 		if (type instanceof GoSliceType)
-			return (GoType) ((GoSliceType) type).getContentType();
+			return ((GoSliceType) type).getContentType();
 
 		throw new IllegalStateException(type + " has no content type");
 	}
@@ -2593,14 +2649,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 	@Override
 	public Type visitType_(Type_Context ctx) {
-		return new GoTypeVisitor(file, currentUnit, program, constants, globals).visitType_(ctx);
+		return new GoTypeVisitor(file, currentUnit, pkgUnit, program, constants, globals).visitType_(ctx);
 	}
 
 	@Override
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitTypeSwitchStmt(
 			TypeSwitchStmtContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
-		NodeList<CFG, Statement, Edge> body = new NodeList<>(SEQUENTIAL_SINGLETON);
 
 		SourceCodeLocation location = locationOf(ctx);
 		Expression typeSwitchExp = visitPrimaryExpr(ctx.typeSwitchGuard().primaryExpr());
@@ -2614,18 +2669,14 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> defaultBlock = null;
 
 		int ncases = ctx.typeCaseClause().size();
-		@SuppressWarnings("unchecked")
-		NodeList<CFG, Statement, Edge>[] cases = new NodeList[ncases];
-		Statement[] conditions = new Statement[ncases];
+		List<TypeSwitchCase> scases = new ArrayList<>(ncases);
+		DefaultSwitchCase def = null;
 
 		for (int i = 0; i < ncases; i++) {
-			NodeList<CFG, Statement, Edge> case_ = new NodeList<>(SEQUENTIAL_SINGLETON);
-
 			TypeCaseClauseContext typeSwitchCase = ctx.typeCaseClause(i);
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> caseBlock = visitStatementList(typeSwitchCase.statementList());
-			case_.mergeWith(caseBlock.getMiddle());
-			body.mergeWith(caseBlock.getMiddle());
+			block.mergeWith(caseBlock.getMiddle());
 
 			Expression caseBooleanGuard = null;
 
@@ -2660,13 +2711,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 							new VariableRef(cfg, typeLoc, "ok"),
 							new GoBoolean(cfg, typeLoc, true));
 
-					body.addNode(shortDecl);
+					block.addNode(shortDecl);
 					storeIds(shortDecl);
-					body.addNode(caseBooleanGuard);
+					block.addNode(caseBooleanGuard);
 					storeIds(caseBooleanGuard);
-					addEdge(new SequentialEdge(shortDecl, caseBooleanGuard), body);
+					addEdge(new SequentialEdge(shortDecl, caseBooleanGuard), block);
 
-					block.mergeWith(body);
 					addEdge(new TrueEdge(caseBooleanGuard, caseBlock.getLeft()), block);
 					addEdge(new SequentialEdge(caseBlock.getRight(), exitNode), block);
 
@@ -2676,16 +2726,13 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 						addEdge(new FalseEdge(previousGuard, shortDecl), block);
 
 					previousGuard = caseBooleanGuard;
-					conditions[i] = caseBooleanGuard;
+					scases.add(new TypeSwitchCase(shortDecl, caseBooleanGuard, caseBlock.getMiddle().getNodes()));
 				}
 
 			} else {
 				defaultBlock = caseBlock;
-				conditions[i] = null;
-				block.mergeWith(body);
+				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
-
-			cases[i] = case_;
 		}
 
 		if (defaultBlock != null) {
@@ -2702,12 +2749,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
-		cfs.add(new Switch(matrix, entryNode, exitNode, body.getNodes()));
-		for (int i = 0; i < ncases; i++)
-			if (conditions[i] != null)
-				// null is the default case
-				cfs.add(new SwitchCase(matrix, conditions[i], exitNode, cases[i].getNodes()));
-
+		cfs.add(new TypeSwitch(matrix, entryNode, exitNode, scases.toArray(TypeSwitchCase[]::new), def));
 		return Triple.of(entryNode, block, exitNode);
 	}
 

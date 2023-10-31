@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.main().json", "untyped_main.sum(int_a,_int_b)_1412154867.json", "untyped_morestrings.anotherSum(int_x,_int_y)_-2137217571.json", "untyped_morestrings.sum(int_a,_int_b)_1411232369.json" ]
+  "files" : [ "report.json", "untyped_main.main().json", "untyped_main.sum(int_a,_int_b)_1514461509.json", "untyped_morestrings.anotherSum(int_x,_int_y)_1578761579.json", "untyped_morestrings.sum(int_a,_int_b)_1514473010.json" ],
+  "info" : {
+    "cfgs" : "4",
+    "duration" : "55ms",
+    "end" : "2023-05-08T17:35:22.828+02:00",
+    "expressions" : "19",
+    "files" : "4",
+    "globals" : "0",
+    "members" : "12",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:22.773+02:00",
+    "statements" : "6",
+    "units" : "3",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/go-projects"
+  }
 }

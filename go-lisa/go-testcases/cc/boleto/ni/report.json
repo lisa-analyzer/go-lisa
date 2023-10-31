@@ -1,8 +1,40 @@
 {
-	"warnings": [
-		{
-			"message": "['go-testcases/cc/boleto/boleto.go':140:40] on 'untyped SmartContract::registrarBoleto(*SmartContract s, shim.ChaincodeStubInterface APIstub, []string args)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
-		}
-	],
-	"files": []
+  "warnings" : [ {
+    "message" : "['go-testcases/cc/boleto/boleto.go':140:40] on 'untyped SmartContract::registrarBoleto(*SmartContract s, shim.ChaincodeStubInterface APIstub, []string args)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "12",
+    "duration" : "1s 34ms",
+    "end" : "2023-05-08T17:30:40.043+02:00",
+    "expressions" : "631",
+    "files" : "0",
+    "globals" : "23",
+    "members" : "80",
+    "programs" : "1",
+    "start" : "2023-05-08T17:30:39.009+02:00",
+    "statements" : "161",
+    "units" : "20",
+    "version" : "0.1b8",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "IntegrityNIChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/cc/boleto/ni"
+  }
 }

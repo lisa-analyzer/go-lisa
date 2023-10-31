@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.mixed(int_tag)_cfg.json", "untyped_main.multiExps(int_tag)_cfg.json", "untyped_main.noGuard(int_x,_int_y)_cfg.json", "untyped_main.noGuardWithAsg()_cfg.json", "untyped_main.simpleSwitch(int_x)_cfg.json", "untyped_main.simpleSwitchWithDefault(int_x)_cfg.json", "untyped_main.simpleSwitchWithDefault2(int_x)_cfg.json", "untyped_main.simpleSwitchWithFt(int_x)_cfg.json" ]
+  "files" : [ "report.json", "untyped_main.mixed(int_tag)_cfg.json", "untyped_main.multiExps(int_tag)_cfg.json", "untyped_main.noGuard(int_x,_int_y)_cfg.json", "untyped_main.noGuardWithAsg()_cfg.json", "untyped_main.simpleSwitch(int_x)_cfg.json", "untyped_main.simpleSwitchWithDefault(int_x)_cfg.json", "untyped_main.simpleSwitchWithDefault2(int_x)_cfg.json", "untyped_main.simpleSwitchWithFt(int_x)_cfg.json" ],
+  "info" : {
+    "cfgs" : "8",
+    "duration" : "10ms",
+    "end" : "2023-05-08T17:35:37.664+02:00",
+    "expressions" : "125",
+    "files" : "8",
+    "globals" : "0",
+    "members" : "16",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:37.654+02:00",
+    "statements" : "64",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/cfg/switch/expr"
+  }
 }

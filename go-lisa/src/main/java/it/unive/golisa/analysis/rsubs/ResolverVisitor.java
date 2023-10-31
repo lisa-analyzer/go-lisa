@@ -5,13 +5,14 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.symbolic.ExpressionVisitor;
 import it.unive.lisa.symbolic.heap.AccessChild;
-import it.unive.lisa.symbolic.heap.HeapAllocation;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.PushInv;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
@@ -35,7 +36,7 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	}
 
 	@Override
-	public String visit(HeapAllocation expression, Object... params) throws SemanticException {
+	public String visit(MemoryAllocation expression, Object... params) throws SemanticException {
 		throw new SemanticException(CANNOT_PROCESS_ERROR);
 	}
 
@@ -105,6 +106,11 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 		if (cs.getKeys().contains(expression))
 			return cs.getState(expression).getString();
 
+		return null;
+	}
+
+	@Override
+	public String visit(PushInv expression, Object... params) throws SemanticException {
 		return null;
 	}
 }

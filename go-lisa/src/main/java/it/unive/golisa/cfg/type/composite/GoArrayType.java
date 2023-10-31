@@ -2,14 +2,15 @@ package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoArrayType implements GoType, InMemoryType {
+public class GoArrayType implements Type, InMemoryType {
 
 	private Type contentType;
 	private Integer length;
@@ -126,13 +127,13 @@ public class GoArrayType implements GoType, InMemoryType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		Expression[] result = new Expression[length];
 		for (int i = 0; i < length; i++)
-			if (contentType instanceof GoType)
-				result[i] = ((GoType) contentType).defaultValue(cfg, location);
-			else
+			if (contentType instanceof ReferenceType)
 				result[i] = new GoUnknown(cfg, location);
+			else
+				result[i] = contentType.defaultValue(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, result, this);
 	}
@@ -151,7 +152,7 @@ public class GoArrayType implements GoType, InMemoryType {
 
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
-		return all();
+		return Collections.singleton(this);
 	}
 
 	/**

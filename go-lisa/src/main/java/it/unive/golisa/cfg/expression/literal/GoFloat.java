@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
@@ -19,7 +19,7 @@ public class GoFloat extends Literal<Double> {
 	 * @param location the location where this expression is defined
 	 * @param value    the float value
 	 */
-	public GoFloat(CFG cfg, SourceCodeLocation location, Double value) {
+	public GoFloat(CFG cfg, CodeLocation location, Double value) {
 		super(cfg, location, value, GoUntypedFloat.INSTANCE);
 	}
 }

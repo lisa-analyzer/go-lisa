@@ -1,13 +1,12 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.InterfaceUnit;
 import it.unive.lisa.program.Program;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
@@ -25,7 +24,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoInterfaceType implements GoType, UnitType, InMemoryType {
+public class GoInterfaceType implements Type, UnitType, InMemoryType {
 
 	private static final Map<String, GoInterfaceType> interfaces = new HashMap<>();
 
@@ -148,7 +147,7 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoNil(cfg, location);
 	}
 
@@ -176,9 +175,9 @@ public class GoInterfaceType implements GoType, UnitType, InMemoryType {
 		Set<Type> instances = new HashSet<>();
 		for (Unit un : unit.getInstances())
 			if (un instanceof InterfaceUnit)
-				instances.add(GoInterfaceType.lookup(un.getName(), null, null));
+				instances.add(interfaces.get(un.getName()));
 			else
-				instances.add(GoStructType.lookup(un.getName(), null));
+				instances.add(GoStructType.get(un.getName()));
 		return instances;
 	}
 

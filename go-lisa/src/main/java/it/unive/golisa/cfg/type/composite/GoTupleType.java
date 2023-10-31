@@ -1,8 +1,6 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.Parameter;
@@ -12,6 +10,7 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +20,7 @@ import java.util.Set;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 @SuppressWarnings("serial")
-public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemoryType {
+public class GoTupleType extends ArrayList<Parameter> implements Type, InMemoryType {
 
 	private static final Set<GoTupleType> tupleTypes = new HashSet<>();
 
@@ -102,13 +101,16 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		Expression[] exps = new Expression[size()];
+		Parameter[] types = new Parameter[size()];
 
-		for (int i = 0; i < size(); i++)
-			exps[i] = ((GoType) get(i).getStaticType()).defaultValue(cfg, location);
+		for (int i = 0; i < size(); i++) {
+			exps[i] = get(i).getStaticType().defaultValue(cfg, location);
+			types[i] = new Parameter(location, "_", get(i).getStaticType());
+		}
 
-		return new GoTupleExpression(cfg, location, exps);
+		return new GoTupleExpression(cfg, types, location, exps);
 	}
 
 	/**
@@ -125,7 +127,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
-		return all();
+		return Collections.singleton(this);
 	}
 
 	@Override
@@ -146,7 +148,7 @@ public class GoTupleType extends ArrayList<Parameter> implements GoType, InMemor
 		for (int i = 0; i < types.length; i++)
 			pars[i] = new Parameter(location, "_", types[i]);
 
-		return GoTupleType.lookup(pars);
+		return lookup(pars);
 	}
 
 	/**

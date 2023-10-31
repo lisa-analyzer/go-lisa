@@ -25,7 +25,6 @@ import it.unive.golisa.antlr.GoParser.Type_Context;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
@@ -59,6 +58,7 @@ import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.ArrayList;
@@ -87,22 +87,27 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 	private final List<Global> globals;
 
+	private final Unit pkgUnit;
+
 	/**
 	 * Builds a type visitor.
 	 * 
 	 * @param file      the file path
 	 * @param unit      the current unit
+	 * @param pkgUnit   the package unit
 	 * @param program   the current program
 	 * @param constants the constant mapping
 	 * @param globals   the global variables
 	 */
-	public GoTypeVisitor(String file, CompilationUnit unit, Program program, Map<String, ExpressionContext> constants,
+	public GoTypeVisitor(String file, CompilationUnit unit, Unit pkgUnit, Program program,
+			Map<String, ExpressionContext> constants,
 			List<Global> globals) {
 		this.file = file;
 		this.unit = unit;
 		this.program = program;
 		this.constants = constants;
 		this.globals = globals;
+		this.pkgUnit = pkgUnit;
 	}
 
 	/**
@@ -112,7 +117,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	 * 
 	 * @return the Go type corresponding to {@code ctx}
 	 */
-	private Type getGoType(TypeNameContext ctx) {
+	private Type getType(TypeNameContext ctx) {
 
 		if (ctx.IDENTIFIER() != null) {
 
@@ -208,7 +213,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 			return visitChannelType(ctx.channelType());
 
 		Object result = visitChildren(ctx);
-		if (!(result instanceof GoType) && !(result instanceof Untyped))
+		if (!(result instanceof Type) && !(result instanceof Untyped))
 			throw new IllegalStateException("Type expected: " + result + " " + ctx.getText());
 		else
 			return (Type) result;
@@ -217,21 +222,21 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	@Override
 	public Type visitTypeName(TypeNameContext ctx) {
 		if (ctx.IDENTIFIER() != null)
-			return getGoType(ctx);
+			return getType(ctx);
 		else
 			return visitQualifiedIdent(ctx.qualifiedIdent());
 	}
 
 	@Override
-	public GoType visitFunctionType(FunctionTypeContext ctx) {
-		return new GoFunctionVisitor(unit, file, program, constants, globals).visitFunctionType(ctx);
+	public Type visitFunctionType(FunctionTypeContext ctx) {
+		return new GoFunctionVisitor(unit, pkgUnit, file, program, constants, globals).visitFunctionType(ctx);
 	}
 
 	@Override
 	public Type visitQualifiedIdent(QualifiedIdentContext ctx) {
 		for (Type type : program.getTypes().getTypes())
 			if (type.toString().equals(ctx.getText()))
-				return (GoType) type;
+				return type;
 
 		return Untyped.INSTANCE;
 	}
@@ -304,14 +309,14 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitSliceType(SliceTypeContext ctx) {
+	public Type visitSliceType(SliceTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
 		contentType = contentType == null ? Untyped.INSTANCE : contentType;
 		return GoSliceType.lookup(contentType);
 	}
 
 	@Override
-	public GoType visitMapType(MapTypeContext ctx) {
+	public Type visitMapType(MapTypeContext ctx) {
 		Type keyType = visitType_(ctx.type_());
 		keyType = keyType == null ? Untyped.INSTANCE : keyType;
 
@@ -322,7 +327,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public GoType visitChannelType(ChannelTypeContext ctx) {
+	public Type visitChannelType(ChannelTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
 		contentType = contentType == null ? Untyped.INSTANCE : contentType;
 
@@ -393,17 +398,18 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public GoStructType visitStructType(StructTypeContext ctx) {
 		for (FieldDeclContext field : ctx.fieldDecl())
 			for (Pair<String, Type> fd : visitFieldDecl(field)) {
-				SourceCodeLocation sourceCodeLocation = new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
+				SourceCodeLocation loc = new SourceCodeLocation(file, GoCodeMemberVisitor.getLine(field),
 						GoCodeMemberVisitor.getCol(field));
+				Type globalType = fd.getRight().isInMemoryType() ? new ReferenceType(fd.getRight()) : fd.getRight();
 				unit.addInstanceGlobal(new Global(
-						sourceCodeLocation, unit, fd.getLeft(), true,
-						fd.getRight() == null ? Untyped.INSTANCE : fd.getRight()));
+						loc, unit, fd.getLeft(), true,
+						fd.getRight() == null ? Untyped.INSTANCE : globalType));
 			}
 		return GoStructType.lookup(unit.getName(), unit);
 	}
 
 	@Override
-	public GoType visitInterfaceType(InterfaceTypeContext ctx) {
+	public Type visitInterfaceType(InterfaceTypeContext ctx) {
 		// The interface is empty
 		if (ctx.methodSpec().size() == 0)
 			return GoInterfaceType.getEmptyInterface();
@@ -430,7 +436,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 			for (int i = 0; i < formalPars.parameterDecl().size(); i++)
 				cfgArgs = (Parameter[]) ArrayUtils.addAll(cfgArgs,
-						new GoCodeMemberVisitor(unit, file, program, constants, globals)
+						new GoCodeMemberVisitor(unit, pkgUnit, file, program, constants, globals)
 								.visitParameterDecl(formalPars.parameterDecl(i)));
 
 			descs.add(new CodeMemberDescriptor(new SourceCodeLocation(file, line, col), unit, true, funcName,
@@ -456,7 +462,7 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 		// The return type is not specified
 		if (result == null)
 			return Untyped.INSTANCE;
-		return new GoCodeMemberVisitor(unit, file, program, constants, globals).visitResult(result);
+		return new GoCodeMemberVisitor(unit, pkgUnit, file, program, constants, globals).visitResult(result);
 	}
 
 	@Override

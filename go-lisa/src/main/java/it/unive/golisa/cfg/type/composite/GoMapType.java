@@ -1,14 +1,14 @@
 package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +17,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoMapType implements GoType, InMemoryType {
+public class GoMapType implements Type, InMemoryType {
 
 	private Type keyType;
 	private Type elementType;
@@ -129,7 +129,7 @@ public class GoMapType implements GoType, InMemoryType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoNil(cfg, location);
 	}
 
@@ -147,7 +147,7 @@ public class GoMapType implements GoType, InMemoryType {
 
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
-		return all();
+		return Collections.singleton(this);
 	}
 
 	/**

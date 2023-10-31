@@ -17,7 +17,7 @@ func Invoke( stub shim.ChaincodeStubInterface ) {
 		returnValue = returnValue * ii
 	}
 	
-	shim.Success([]byte("value: " + string(returnValue)))
+	shim.Success([]byte{"value: " + string(returnValue)})
 }
 
 func main() {

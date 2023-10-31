@@ -9,6 +9,7 @@ import it.unive.lisa.program.InterfaceUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.AbstractCodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
+import it.unive.lisa.program.cfg.Parameter;
 
 /**
  * A CommonIteratorInterface type.
@@ -39,14 +40,19 @@ public class CommonIteratorInterface extends GoInterfaceType {
 					program, "CommonIteratorInterface",
 					false);
 
+			CommonIteratorInterface commonIteratorInterfaceType = new CommonIteratorInterface(
+					commonIteratorInterfeceUnit);
+
 			CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
 					commonIteratorInterfeceUnit, true, "HasNext",
-					GoBoolType.INSTANCE);
+					GoBoolType.INSTANCE,
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", commonIteratorInterfaceType));
 			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
 			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, commonIteratorInterfeceUnit,
 					true,
-					"Close", GoErrorType.INSTANCE);
+					"Close", GoErrorType.INSTANCE,
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", commonIteratorInterfaceType));
 			commonIteratorInterfeceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 			INSTANCE = new CommonIteratorInterface(commonIteratorInterfeceUnit);
 		}

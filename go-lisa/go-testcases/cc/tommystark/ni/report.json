@@ -1,0 +1,38 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "9",
+    "duration" : "409ms",
+    "end" : "2023-09-19T13:55:21.440+02:00",
+    "expressions" : "737",
+    "files" : "0",
+    "globals" : "17",
+    "members" : "64",
+    "programs" : "1",
+    "start" : "2023-09-19T13:55:21.031+02:00",
+    "statements" : "193",
+    "units" : "18",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "IntegrityNIChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/cc/tommystark/ni"
+  }
+}

@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.aliasing().json", "untyped_main.alloc().json", "untyped_main.forAlloc().json", "untyped_main.ifAlloc(int_a,_int_b).json", "untyped_main.main().json" ]
+  "files" : [ "report.json", "untyped_main.aliasing().json", "untyped_main.alloc().json", "untyped_main.forAlloc().json", "untyped_main.ifAlloc(int_a,_int_b).json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "5",
+    "duration" : "151ms",
+    "end" : "2023-10-13T23:18:07.645+02:00",
+    "expressions" : "70",
+    "files" : "5",
+    "globals" : "2",
+    "members" : "13",
+    "programs" : "1",
+    "start" : "2023-10-13T23:18:07.494+02:00",
+    "statements" : "24",
+    "units" : "4",
+    "version" : "0.1b9",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/heap/field-sensitive"
+  }
 }

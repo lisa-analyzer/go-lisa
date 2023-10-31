@@ -1,33 +1,42 @@
 
-import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoFieldSensitivePointBasedHeap;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.lisa.AnalysisSetupException;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.analysis.value.TypeDomain;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.interprocedural.ModularWorstCaseAnalysis;
+import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import org.junit.Test;
 
 public class HeapTest extends GoAnalysisTestExecutor {
 
 	@Test
 	public void fieldInsensitivePointBasedTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(), new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		perform("heap/field-insensitive", "go-structs.go", conf);
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Interval()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.testDir = "heap/field-insensitive";
+		conf.programFile = "go-structs.go";
+		perform(conf);
 	}
 
 	@Test
 	public void fieldSensitivepointBasedTest() throws AnalysisSetupException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.serializeResults = true;
-		conf.abstractState = new GoAbstractState<>(new GoFieldSensitivePointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
 				new ValueEnvironment<>(new Interval()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		perform("heap/field-sensitive", "go-structs.go", conf);
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ModularWorstCaseAnalysis<>();
+		conf.testDir = "heap/field-sensitive";
+		conf.programFile = "go-structs.go";
+		perform(conf);
 	}
 }

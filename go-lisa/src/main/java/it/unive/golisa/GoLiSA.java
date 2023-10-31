@@ -2,8 +2,6 @@ package it.unive.golisa;
 
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
-import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
@@ -18,16 +16,17 @@ import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFac
 import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAConfiguration.GraphType;
-import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.interprocedural.ContextBasedAnalysis;
-import it.unive.lisa.interprocedural.RecursionFreeToken;
+import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.conf.LiSAConfiguration;
+import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -109,30 +108,27 @@ public class GoLiSA {
 		LiSAConfiguration conf = new LiSAConfiguration();
 		conf.workdir = outputDir;
 		conf.jsonOutput = true;
-		conf.syntacticChecks.add(new GoRoutineSourcesChecker());
+		conf.optimize = false;
 
 		switch (analysis) {
 
 		case "taint":
+			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new TaintDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
+					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new TaintChecker());
 			break;
 		case "non-interference":
+			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new InferenceSystem<>(new IntegrityNIDomain()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
+					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new IntegrityNIChecker());
 			break;
 		default:
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-					new ValueEnvironment<>(new Interval()),
-					LiSAFactory.getDefaultFor(TypeDomain.class));
-			break;
 
 		}
 
@@ -171,7 +167,7 @@ public class GoLiSA {
 			}
 
 			if (!program.getEntryPoints().isEmpty()) {
-				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 				conf.callGraph = new RTACallGraph();
 			} else
 				LOG.info("Entry points not found!");

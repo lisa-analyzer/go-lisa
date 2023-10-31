@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.arrayTyping().json", "untyped_main.comparisonTyping(int_x,_int_y).json", "untyped_main.relTyping().json", "untyped_main.simpleTyping().json", "untyped_main.typeError1(int_x,_int_y).json" ]
+  "files" : [ "report.json", "untyped_main.arrayTyping().json", "untyped_main.comparisonTyping(int_x,_int_y).json", "untyped_main.relTyping().json", "untyped_main.simpleTyping().json", "untyped_main.typeError1(int_x,_int_y).json" ],
+  "info" : {
+    "cfgs" : "5",
+    "duration" : "41ms",
+    "end" : "2023-05-08T17:35:34.456+02:00",
+    "expressions" : "92",
+    "files" : "5",
+    "globals" : "0",
+    "members" : "22",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:34.415+02:00",
+    "statements" : "28",
+    "units" : "3",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/typing"
+  }
 }

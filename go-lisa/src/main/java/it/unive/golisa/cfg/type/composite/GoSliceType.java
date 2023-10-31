@@ -2,15 +2,15 @@ package it.unive.golisa.cfg.type.composite;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.GoType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,8 +19,11 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoSliceType implements GoType, InMemoryType {
+public class GoSliceType implements Type, InMemoryType {
 
+	/**
+	 * The content type of the slice type.
+	 */
 	private Type contentType;
 
 	private static final Set<GoSliceType> sliceTypes = new HashSet<>();
@@ -102,13 +105,13 @@ public class GoSliceType implements GoType, InMemoryType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoNil(cfg, location);
 	}
 
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
-		return all();
+		return Collections.singleton(this);
 	}
 
 	/**
@@ -136,7 +139,7 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * @return the slice type []byte
 	 */
 	public static GoSliceType getSliceOfBytes() {
-		return GoSliceType.lookup(new GoSliceType(GoUInt8Type.INSTANCE));
+		return GoSliceType.lookup(GoUInt8Type.INSTANCE);
 	}
 
 	/**
@@ -145,7 +148,7 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * @return the slice type [][]byte
 	 */
 	public static GoSliceType getSliceOfSliceOfBytes() {
-		return GoSliceType.lookup(new GoSliceType(new GoSliceType(GoUInt8Type.INSTANCE)));
+		return GoSliceType.lookup(GoSliceType.getSliceOfBytes());
 	}
 
 	/**
@@ -154,7 +157,6 @@ public class GoSliceType implements GoType, InMemoryType {
 	 * @return the slice type []string
 	 */
 	public static GoSliceType getSliceOfStrings() {
-		return GoSliceType.lookup(new GoSliceType(GoStringType.INSTANCE));
+		return GoSliceType.lookup(GoStringType.INSTANCE);
 	}
-
 }

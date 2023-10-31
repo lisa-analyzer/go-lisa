@@ -2,5 +2,39 @@
   "warnings" : [ {
     "message" : "['go-testcases/taint/t8/t8.go':23:7] on 'untyped main::main()': [EXPRESSION] The value passed for the 1st parameter of this call is tainted, and it reaches the sink at parameter 'v' of main::sink"
   } ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "3ms",
+    "end" : "2023-05-08T17:37:16.329+02:00",
+    "expressions" : "11",
+    "files" : "0",
+    "globals" : "0",
+    "members" : "11",
+    "programs" : "1",
+    "start" : "2023-05-08T17:37:16.326+02:00",
+    "statements" : "10",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/taint/t8"
+  }
 }

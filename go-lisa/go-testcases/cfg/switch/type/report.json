@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.typeSwitch1()_cfg.json", "untyped_main.typeSwitch2()_cfg.json", "untyped_main.typeSwitch3()_cfg.json" ]
+  "files" : [ "report.json", "untyped_main.typeSwitch1()_cfg.json", "untyped_main.typeSwitch2()_cfg.json", "untyped_main.typeSwitch3()_cfg.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "8ms",
+    "end" : "2023-05-08T17:35:36.519+02:00",
+    "expressions" : "67",
+    "files" : "3",
+    "globals" : "0",
+    "members" : "11",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:36.511+02:00",
+    "statements" : "29",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/cfg/switch/type"
+  }
 }

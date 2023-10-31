@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.returnInIfStmt1(int_i)_cfg.json", "int_main.returnInIfStmt2(int_i)_cfg.json", "int_main.returnInLoop()_cfg.json" ]
+  "files" : [ "int_main.returnInIfStmt1(int_i)_cfg.json", "int_main.returnInIfStmt2(int_i)_cfg.json", "int_main.returnInLoop()_cfg.json", "report.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "4ms",
+    "end" : "2023-05-08T17:35:37.895+02:00",
+    "expressions" : "29",
+    "files" : "3",
+    "globals" : "0",
+    "members" : "11",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:37.891+02:00",
+    "statements" : "13",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/cfg/return"
+  }
 }

@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.type;
 
+import it.unive.golisa.cfg.runtime.pkg.statebased.method.Policy;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
@@ -53,5 +54,13 @@ public class KeyEndorsementPolicy extends GoInterfaceType {
 	@Override
 	public int hashCode() {
 		return System.identityHashCode(this);
+	}
+
+	/**
+	 * Registers the instance methods of this type.
+	 */
+	public static void registerMethods() {
+		CompilationUnit unit = INSTANCE.getUnit();
+		unit.addInstanceCodeMember(new Policy(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, unit));
 	}
 }

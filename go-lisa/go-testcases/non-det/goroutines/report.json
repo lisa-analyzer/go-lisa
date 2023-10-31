@@ -2,5 +2,39 @@
   "warnings" : [ {
     "message" : "['go-testcases/non-det/goroutines/GoRoutines.go':40:31] on 'untyped main::Invoke(shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
   } ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "4",
+    "duration" : "116ms",
+    "end" : "2023-05-08T17:35:22.371+02:00",
+    "expressions" : "54",
+    "files" : "0",
+    "globals" : "7",
+    "members" : "44",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:22.255+02:00",
+    "statements" : "26",
+    "units" : "12",
+    "version" : "0.1b8",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/non-det/goroutines"
+  }
 }

@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
@@ -19,7 +19,7 @@ public class GoBoolean extends Literal<Boolean> {
 	 * @param location the location where this expression is defined
 	 * @param value    the Boolean value
 	 */
-	public GoBoolean(CFG cfg, SourceCodeLocation location, Boolean value) {
+	public GoBoolean(CFG cfg, CodeLocation location, Boolean value) {
 		super(cfg, location, value, GoBoolType.INSTANCE);
 	}
 }

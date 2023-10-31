@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_Emp.GetSalary(Emp_e,_int_basic,_int_tax)_961665227.json", "string_Emp.GetFullName(Emp_e,_string_name)_331854657.json", "untyped_main.main().json" ]
+  "files" : [ "int_Emp.GetSalary(Emp_e,_int_basic,_int_tax)_420365064.json", "report.json", "string_Emp.GetFullName(Emp_e,_string_name)_420375604.json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "5",
+    "duration" : "433ms",
+    "end" : "2023-10-16T13:28:19.972+02:00",
+    "expressions" : "22",
+    "files" : "3",
+    "globals" : "1",
+    "members" : "13",
+    "programs" : "1",
+    "start" : "2023-10-16T13:28:19.539+02:00",
+    "statements" : "7",
+    "units" : "4",
+    "version" : "0.1b9",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/collections/interface/3"
+  }
 }

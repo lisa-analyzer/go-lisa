@@ -6,10 +6,10 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.lattices.FunctionalLattice;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.program.SyntheticLocation;
 import it.unive.lisa.program.cfg.ProgramPoint;
@@ -27,6 +27,9 @@ import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.symbolic.value.operator.binary.StringContains;
 import it.unive.lisa.symbolic.value.operator.binary.StringEndsWith;
 import it.unive.lisa.symbolic.value.operator.binary.StringEquals;
+import it.unive.lisa.type.Type;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -91,12 +94,14 @@ public class RelationalSubstringDomain
 		return new RelationalSubstringDomain(lattice, func);
 	}
 
-	private RelationalSubstringDomain glb(RelationalSubstringDomain other) throws SemanticException {
+	@Override
+	public RelationalSubstringDomain glb(RelationalSubstringDomain other) throws SemanticException {
 		return super.lub(other);
 	}
 
 	@Override
-	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp)
+	public RelationalSubstringDomain assign(Identifier id, ValueExpression expression, ProgramPoint pp,
+			SemanticOracle oracle)
 			throws SemanticException {
 		Map<Identifier, ExpressionInverseSet<ValueExpression>> func;
 		if (function == null)
@@ -148,13 +153,16 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp)
+	public RelationalSubstringDomain smallStepSemantics(ValueExpression expression, ProgramPoint pp,
+			SemanticOracle oracle)
 			throws SemanticException {
 		return new RelationalSubstringDomain(lattice, function);
 	}
 
 	@Override
-	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public RelationalSubstringDomain assume(ValueExpression expression, ProgramPoint src, ProgramPoint dest,
+			SemanticOracle oracle)
+			throws SemanticException {
 		// rsubs can assume contains, equals, and & or expressions (all binary
 		// expressions)
 
@@ -169,15 +177,18 @@ public class RelationalSubstringDomain
 
 		if (expression instanceof BinaryExpression) {
 			BinaryExpression binary = (BinaryExpression) expression;
-			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft(), pp);
-			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight(), pp);
+			RelationalSubstringDomain leftState = smallStepSemantics((ValueExpression) binary.getLeft(), src, oracle);
+			RelationalSubstringDomain rightState = smallStepSemantics((ValueExpression) binary.getRight(), src, oracle);
 
 			it.unive.lisa.symbolic.value.operator.binary.BinaryOperator op = binary.getOperator();
 			if (op == ComparisonEq.INSTANCE) {
 				ValueExpression left = (ValueExpression) binary.getLeft();
 				ValueExpression right = (ValueExpression) binary.getRight();
 
-				if (!left.getDynamicType().isStringType() || !right.getDynamicType().isStringType())
+				Type ltypes = oracle.getDynamicTypeOf(left, src, oracle);
+				Type rtypes = oracle.getDynamicTypeOf(right, src, oracle);
+
+				if (!ltypes.isStringType() || !rtypes.isStringType())
 					return new RelationalSubstringDomain(lattice, function);
 
 				if (left instanceof Identifier && right instanceof Identifier) {
@@ -263,7 +274,8 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp) throws SemanticException {
+	public Satisfiability satisfies(ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		// rsubs can satisfy contains, equals, and & or expressions (all binary
 		// expressions)
 
@@ -277,12 +289,12 @@ public class RelationalSubstringDomain
 
 			BinaryOperator op = binary.getOperator();
 			if (op == LogicalAnd.INSTANCE)
-				return satisfies((ValueExpression) binary.getLeft(), pp)
-						.and(satisfies((ValueExpression) binary.getRight(), pp));
+				return satisfies((ValueExpression) binary.getLeft(), pp, oracle)
+						.and(satisfies((ValueExpression) binary.getRight(), pp, oracle));
 			else if (op == LogicalOr.INSTANCE)
 
-				return satisfies((ValueExpression) binary.getLeft(), pp)
-						.or(satisfies((ValueExpression) binary.getRight(), pp));
+				return satisfies((ValueExpression) binary.getLeft(), pp, oracle)
+						.or(satisfies((ValueExpression) binary.getRight(), pp, oracle));
 			else if (op == StringContains.INSTANCE) {
 				if (binary.getLeft() instanceof Identifier) {
 					Identifier x = (Identifier) binary.getLeft();
@@ -303,7 +315,7 @@ public class RelationalSubstringDomain
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isTop())
 			return Lattice.topRepresentation();
 
@@ -460,7 +472,7 @@ public class RelationalSubstringDomain
 					constants.add(string);
 					for (String str : constants)
 						previousRelations = previousRelations
-								.addExpression(new Constant(exp.getDynamicType(), str, exp.getCodeLocation()));
+								.addExpression(new Constant(exp.getStaticType(), str, exp.getCodeLocation()));
 				}
 			}
 
@@ -479,5 +491,15 @@ public class RelationalSubstringDomain
 	public RelationalSubstringDomain mk(ExpressionInverseSet<ValueExpression> lattice,
 			Map<Identifier, ExpressionInverseSet<ValueExpression>> function) {
 		return new RelationalSubstringDomain(lattice, function);
+	}
+
+	@Override
+	public boolean knowsIdentifier(Identifier id) {
+		return getKeys().contains(id);
+	}
+
+	@Override
+	public ExpressionInverseSet<ValueExpression> stateOfUnknown(Identifier key) {
+		return lattice.bottom();
 	}
 }

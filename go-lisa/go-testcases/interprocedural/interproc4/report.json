@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_Vertex.f1(Vertex_v)_151257236.json", "int_main.f2(Vertex_v)_179885426.json", "untyped_main.main().json" ]
+  "files" : [ "int_Vertex.f1(Vertex_v)_-896794551.json", "int_main.f2(Vertex_v)_-896795481.json", "report.json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "462ms",
+    "end" : "2023-10-16T10:49:40.022+02:00",
+    "expressions" : "40",
+    "files" : "3",
+    "globals" : "2",
+    "members" : "5",
+    "programs" : "1",
+    "start" : "2023-10-16T10:49:39.560+02:00",
+    "statements" : "6",
+    "units" : "2",
+    "version" : "0.1b9",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/interprocedural/interproc4"
+  }
 }

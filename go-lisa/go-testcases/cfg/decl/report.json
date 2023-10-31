@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.multDecl()_cfg.json", "untyped_main.multDecls()_cfg.json", "untyped_main.simpleDecl(int_x,_int_y)_cfg.json" ]
+  "files" : [ "report.json", "untyped_main.multDecl()_cfg.json", "untyped_main.multDecls()_cfg.json", "untyped_main.simpleDecl(int_x,_int_y)_cfg.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "5ms",
+    "end" : "2023-05-08T17:35:37.820+02:00",
+    "expressions" : "18",
+    "files" : "3",
+    "globals" : "0",
+    "members" : "11",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:37.815+02:00",
+    "statements" : "12",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",    
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cfg/decl"
+  }
 }

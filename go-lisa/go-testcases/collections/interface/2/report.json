@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "string_T.M(T_t)_-1113382112.json", "untyped_main.main().json" ]
+  "files" : [ "report.json", "string_T.M(T_t)_925906143.json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "388ms",
+    "end" : "2023-10-16T13:27:45.671+02:00",
+    "expressions" : "9",
+    "files" : "2",
+    "globals" : "1",
+    "members" : "11",
+    "programs" : "1",
+    "start" : "2023-10-16T13:27:45.283+02:00",
+    "statements" : "4",
+    "units" : "4",
+    "version" : "0.1b9",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/collections/interface/2"
+  }
 }

@@ -1,0 +1,43 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/tarsis/loop/loop.go':10:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/loop/loop.go':11:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/loop/loop.go':12:31] on 'untyped main::main(string value, bool nondet)': [EXPRESSION] This assertion might fail"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "112ms",
+    "end" : "2023-05-05T18:19:23.016+02:00",
+    "expressions" : "17",
+    "files" : "0",
+    "globals" : "0",
+    "members" : "12",
+    "programs" : "1",
+    "start" : "2023-05-05T18:19:22.904+02:00",
+    "statements" : "7",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "3"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "set",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "optimize" : "true",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "AssertionCheck",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/tarsis/loop/suffix"
+  }
+}

@@ -1,8 +1,9 @@
 package icalp
+import "strings"
 
 // From: https://github.com/apache/commons-lang/blob/master/src/main/java/org/apache/commons/lang3/StringUtils.java
 func appendIfMissing(str, suffix string) string {
-	if strings.HasSuffix(str, suffix) {
+	if HasSuffix(str, suffix) {
 		return str
 	} 
     return str + suffix; 
@@ -19,7 +20,7 @@ func mid(str string, pos, len int) string {
 }
 
 func prependIfMissing(str, prefix string) string {
-	if strings.HasPrefix(str, prefix) {
+	if HasPrefix(str, prefix) {
 		return str
       }  
 	return prefix + str 
@@ -28,7 +29,7 @@ func prependIfMissing(str, prefix string) string {
 func removeEnd(str, remove string) string {
 	if str == "" || remove == "" {
 		return str
-	} else if string.HasSuffix(str, remove) {
+	} else if HasSuffix(str, remove) {
         return str[:len(str) - len(remove)]
     }
         return str
@@ -37,7 +38,7 @@ func removeEnd(str, remove string) string {
 func removeStart(str, remove string) string {
 	if str == "" || remove == "" {
 		return str
-	} else if string.HasPrefix(str, remove) {
+	} else if HasPrefix(str, remove) {
         return str[:len(remove)]
     } 
 	

@@ -4,9 +4,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -15,7 +12,9 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Set;
 
 /**
  * A Go access expression (e.g., x.y).
@@ -36,35 +35,10 @@ public class GoCollectionAccess extends BinaryExpression {
 		super(cfg, location, container + "::" + child, container, child);
 	}
 
-	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-					throws SemanticException {
-		if (getLeft().toString().startsWith("args"))
-			return state.smallStepSemantics(left, this);
-
-		AnalysisState<A, H, V, T> result = state.bottom();
-
-		AnalysisState<A, H, V, T> rec = state.smallStepSemantics(left, this);
-		for (SymbolicExpression expr : rec.getComputedExpressions()) {
-			AnalysisState<A, H, V, T> tmp = rec.smallStepSemantics(
-					new AccessChild(Untyped.INSTANCE,
-							new HeapDereference(getStaticType(), expr, getLocation()), right, getLocation()),
-					this);
-			result = result.lub(tmp);
-		}
-
-		return result;
-	}
-
 	/**
-	 * Yields the recevier of this access expression.
+	 * Yields the receiver of this access expression.
 	 * 
-	 * @return the recevier of this access expression.
+	 * @return the receiver of this access expression.
 	 */
 	public Expression getReceiver() {
 		return getLeft();
@@ -77,5 +51,23 @@ public class GoCollectionAccess extends BinaryExpression {
 	 */
 	public Expression getTarget() {
 		return getRight();
+	}
+
+	@Override
+	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> interprocedural,
+			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
+		AnalysisState<A> result = state.bottom();
+		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
+		for (Type type : ltypes) {
+			if (type.isPointerType()) {
+				result = result.lub(state.smallStepSemantics(
+						new AccessChild(Untyped.INSTANCE,
+								new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
+						this));
+			}
+		}
+
+		return result;
 	}
 }

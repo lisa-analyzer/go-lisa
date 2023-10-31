@@ -3,12 +3,9 @@ package it.unive.golisa.cfg.expression.binary;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -16,6 +13,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
+import it.unive.lisa.type.Type;
 
 /**
  * A Go Boolean logical oe expression (e.g., x && y).
@@ -37,17 +35,17 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-					throws SemanticException {
+	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
 		// FIXME: need to check which state needs to be returned (left/right)
-		if (!left.getDynamicType().isBooleanType() && !left.getDynamicType().isUntyped())
+		Type ltype = state.getState().getDynamicTypeOf(left, this, state.getState());
+		Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
+
+		if (!ltype.isBooleanType() && !ltype.isUntyped())
 			return state.bottom();
-		if (!right.getDynamicType().isBooleanType() && !right.getDynamicType().isUntyped())
+		if (!rtype.isBooleanType() && !rtype.isUntyped())
 			return state.bottom();
 
 		if (state.satisfies(left, this) == Satisfiability.SATISFIED)

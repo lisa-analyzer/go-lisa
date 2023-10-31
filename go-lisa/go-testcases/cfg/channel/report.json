@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_main.anonymousFunction0()_cfg.json", "untyped_main.bufferedChannels()_cfg.json", "untyped_main.channels()_cfg.json", "untyped_main.main()_cfg.json" ]
+  "files" : [ "report.json", "untyped_main.anonymousFunction0()_cfg.json", "untyped_main.bufferedChannels()_cfg.json", "untyped_main.channels()_cfg.json", "untyped_main.main()_cfg.json" ],
+  "info" : {
+    "cfgs" : "4",
+    "duration" : "6ms",
+    "end" : "2023-05-08T17:35:37.333+02:00",
+    "expressions" : "43",
+    "files" : "4",
+    "globals" : "0",
+    "members" : "12",
+    "programs" : "1",
+    "start" : "2023-05-08T17:35:37.327+02:00",
+    "statements" : "21",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "true",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/cfg/channel"
+  }
 }

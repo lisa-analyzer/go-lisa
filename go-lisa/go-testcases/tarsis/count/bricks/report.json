@@ -1,0 +1,43 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/tarsis/count/count.go':32:18] on 'untyped main::main(boolean nondet)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/count/count.go':33:19] on 'untyped main::main(boolean nondet)': [EXPRESSION] This assertion might fail"
+  }, {
+    "message" : "['go-testcases/tarsis/count/count.go':34:19] on 'untyped main::main(boolean nondet)': [EXPRESSION] This assertion might fail"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "2",
+    "duration" : "948ms",
+    "end" : "2023-05-05T18:19:18.726+02:00",
+    "expressions" : "49",
+    "files" : "0",
+    "globals" : "0",
+    "members" : "13",
+    "programs" : "1",
+    "start" : "2023-05-05T18:19:17.778+02:00",
+    "statements" : "19",
+    "units" : "2",
+    "version" : "0.1b8",
+    "warnings" : "3"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "set",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "ReturnTopPolicy",
+    "optimize" : "true",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "AssertionCheck",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/tarsis/count/bricks"
+  }
+}

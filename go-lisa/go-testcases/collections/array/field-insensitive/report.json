@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "untyped_array.alias().json", "untyped_array.allocs().json", "untyped_array.defaultArray().json", "untyped_array.emptyAllocs().json" ]
+  "files" : [ "report.json", "untyped_array.alias().json", "untyped_array.allocs().json", "untyped_array.defaultArray().json", "untyped_array.emptyAllocs().json" ],
+  "info" : {
+    "cfgs" : "4",
+    "duration" : "441ms",
+    "end" : "2023-10-13T22:54:11.148+02:00",
+    "expressions" : "43",
+    "files" : "4",
+    "globals" : "0",
+    "members" : "6",
+    "programs" : "1",
+    "start" : "2023-10-13T22:54:10.707+02:00",
+    "statements" : "14",
+    "units" : "1",
+    "version" : "0.1b9",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/collections/array/field-insensitive"
+  }
 }

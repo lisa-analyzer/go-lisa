@@ -1,6 +1,8 @@
 package it.unive.golisa.frontend;
 
+import it.unive.golisa.cfg.runtime.bytes.function.NewBuffer;
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
+import it.unive.golisa.cfg.runtime.container.list.function.New;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
 import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
 import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
@@ -11,8 +13,12 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Marshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
+import it.unive.golisa.cfg.runtime.fmt.Print;
+import it.unive.golisa.cfg.runtime.fmt.Printf;
 import it.unive.golisa.cfg.runtime.fmt.Println;
 import it.unive.golisa.cfg.runtime.fmt.Sprint;
+import it.unive.golisa.cfg.runtime.fmt.Sprintf;
+import it.unive.golisa.cfg.runtime.fmt.Sprintln;
 import it.unive.golisa.cfg.runtime.io.fs.type.FileInfo;
 import it.unive.golisa.cfg.runtime.io.function.Copy;
 import it.unive.golisa.cfg.runtime.io.function.CopyBuffer;
@@ -74,11 +80,15 @@ import it.unive.golisa.cfg.runtime.shim.type.Chaincode;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeServer;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
+import it.unive.golisa.cfg.runtime.shim.type.CommonIterator;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.Handler;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
 import it.unive.golisa.cfg.runtime.strconv.Atoi;
 import it.unive.golisa.cfg.runtime.strconv.Itoa;
+import it.unive.golisa.cfg.runtime.strconv.ParseFloat;
 import it.unive.golisa.cfg.runtime.strings.Contains;
 import it.unive.golisa.cfg.runtime.strings.HasPrefix;
 import it.unive.golisa.cfg.runtime.strings.HasSuffix;
@@ -296,9 +306,10 @@ public interface GoRuntimeLoader {
 
 	private void loadList(Program program) {
 
-		CodeUnit listUnit = new CodeUnit(runtimeLocation, program, "container/list");
+		CodeUnit listUnit = new CodeUnit(runtimeLocation, program, "list");
+		List list = List.getListType(program);
 
-		List list = it.unive.golisa.cfg.runtime.container.list.type.List.getListType(program);
+		listUnit.addCodeMember(new New(runtimeLocation, listUnit));
 
 		// adding types
 		program.getTypes().registerType(list);
@@ -362,6 +373,9 @@ public interface GoRuntimeLoader {
 	private void loadBytes(Program program) {
 		CodeUnit bytes = new CodeUnit(runtimeLocation, program, "bytes");
 
+		// adding functions
+		bytes.addCodeMember(new NewBuffer(runtimeLocation, bytes));
+
 		Buffer bufferType = Buffer.getBufferType(program);
 
 		// adding types
@@ -378,6 +392,8 @@ public interface GoRuntimeLoader {
 	private void loadStateBased(Program program) {
 		CodeUnit statebased = new CodeUnit(runtimeLocation, program, "statebased");
 		GoInterfaceType.registerType(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program));
+
+		KeyEndorsementPolicy.registerMethods();
 
 		// adding functions
 		statebased.addCodeMember(new NewStateEP(runtimeLocation, statebased));
@@ -396,11 +412,14 @@ public interface GoRuntimeLoader {
 		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
+		GoInterfaceType.registerType(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program));
 		GoStructType.registerType(Handler.getHandlerType(program));
 		GoStructType.registerType(TLSProperties.getTLSPropertiesType(program));
 		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
 		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
 		GoStructType.registerType(Response.getResponseType(program));
+		GoStructType.registerType(CommonIterator.getCommonIteratorType(program));
+		GoStructType.registerType(StateQueryIterator.getStateQueryIterator(program));
 
 		// adding functions
 		shim.addCodeMember(new Start(runtimeLocation, shim));
@@ -410,6 +429,8 @@ public interface GoRuntimeLoader {
 		// register methods
 		ChaincodeStub.registerMethods();
 		ChaincodeServer.registerMethods();
+		CommonIterator.registerMethods();
+		StateQueryIterator.registerMethods();
 
 		ChaincodeStub.getChaincodeStubType(program).getUnit()
 				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
@@ -422,10 +443,10 @@ public interface GoRuntimeLoader {
 		program.addUnit(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 		program.addUnit(Chaincode.getChaincodeType(program).getUnit());
 		program.addUnit(CommonIteratorInterface.getCommonIteratorInterfaceType(program).getUnit());
+		program.addUnit(CommonIterator.getCommonIteratorType(program).getUnit());
 
 		program.addUnit(ChaincodeStub.getChaincodeStubType(program).getUnit());
 		program.addUnit(TLSProperties.getTLSPropertiesType(program).getUnit());
-
 	}
 
 	private void loadUrl(Program program) {
@@ -455,14 +476,19 @@ public interface GoRuntimeLoader {
 		CodeUnit strconv = new CodeUnit(runtimeLocation, program, "strconv");
 		strconv.addCodeMember(new Atoi(runtimeLocation, strconv));
 		strconv.addCodeMember(new Itoa(runtimeLocation, strconv));
+		strconv.addCodeMember(new ParseFloat(runtimeLocation, strconv));
 
 		program.addUnit(strconv);
 	}
 
 	private void loadFmt(Program program) {
 		CodeUnit fmt = new CodeUnit(runtimeLocation, program, "fmt");
+		fmt.addCodeMember(new Print(runtimeLocation, fmt));
+		fmt.addCodeMember(new Printf(runtimeLocation, fmt));
 		fmt.addCodeMember(new Println(runtimeLocation, fmt));
 		fmt.addCodeMember(new Sprint(runtimeLocation, fmt));
+		fmt.addCodeMember(new Sprintf(runtimeLocation, fmt));
+		fmt.addCodeMember(new Sprintln(runtimeLocation, fmt));
 
 		program.addUnit(fmt);
 	}

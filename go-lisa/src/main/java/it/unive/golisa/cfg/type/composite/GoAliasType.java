@@ -1,8 +1,7 @@
 package it.unive.golisa.cfg.type.composite;
 
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
@@ -17,7 +16,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoAliasType implements GoType {
+public class GoAliasType implements Type {
 
 	/**
 	 * Aliases map.
@@ -64,7 +63,7 @@ public class GoAliasType implements GoType {
 	}
 
 	private final String alias;
-	private final GoType baseType;
+	private final Type baseType;
 
 	/**
 	 * Builds an alias type.
@@ -72,7 +71,7 @@ public class GoAliasType implements GoType {
 	 * @param alias    the name of the alias
 	 * @param baseType the type
 	 */
-	public GoAliasType(String alias, GoType baseType) {
+	public GoAliasType(String alias, Type baseType) {
 		this.alias = alias;
 		this.baseType = baseType;
 	}
@@ -92,7 +91,7 @@ public class GoAliasType implements GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return baseType.defaultValue(cfg, location);
 	}
 

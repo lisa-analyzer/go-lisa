@@ -1,8 +1,8 @@
 package it.unive.golisa.cfg.expression.literal;
 
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.literal.Literal;
 
 /**
@@ -19,7 +19,7 @@ public class GoString extends Literal<String> {
 	 * @param location the location where this expression is defined
 	 * @param value    the string value
 	 */
-	public GoString(CFG cfg, SourceCodeLocation location, String value) {
+	public GoString(CFG cfg, CodeLocation location, String value) {
 		super(cfg, location, value, GoStringType.INSTANCE);
 	}
 

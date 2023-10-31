@@ -1,12 +1,11 @@
 package it.unive.golisa.analysis;
 
 import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticDomain.Satisfiability;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -22,13 +21,15 @@ import it.unive.lisa.symbolic.value.operator.binary.StringStartsWith;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
 
 /**
  * The string constant propagation abstract domain.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class StringConstantPropagation extends BaseNonRelationalValueDomain<StringConstantPropagation> {
+public class StringConstantPropagation implements BaseNonRelationalValueDomain<StringConstantPropagation> {
 
 	private static final StringConstantPropagation TOP = new StringConstantPropagation(true, false);
 	private static final StringConstantPropagation BOTTOM = new StringConstantPropagation(false, true);
@@ -89,7 +90,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		if (isBottom())
 			return Lattice.bottomRepresentation();
 		if (isTop())
@@ -99,12 +100,12 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	}
 
 	@Override
-	public StringConstantPropagation evalNullConstant(ProgramPoint pp) {
+	public StringConstantPropagation evalNullConstant(ProgramPoint pp, SemanticOracle oracle) {
 		return top();
 	}
 
 	@Override
-	public StringConstantPropagation evalNonNullConstant(Constant constant, ProgramPoint pp) {
+	public StringConstantPropagation evalNonNullConstant(Constant constant, ProgramPoint pp, SemanticOracle oracle) {
 		if (constant.getValue() instanceof String)
 			return new StringConstantPropagation((String) constant.getValue());
 		return top();
@@ -112,13 +113,13 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 
 	@Override
 	public StringConstantPropagation evalUnaryExpression(UnaryOperator operator, StringConstantPropagation arg,
-			ProgramPoint pp) {
+			ProgramPoint pp, SemanticOracle oracle) {
 		return top();
 	}
 
 	@Override
 	public StringConstantPropagation evalBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
-			StringConstantPropagation right, ProgramPoint pp) {
+			StringConstantPropagation right, ProgramPoint pp, SemanticOracle oracle) {
 
 		if (left.isTop() || right.isTop())
 			return top();
@@ -132,7 +133,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	@Override
 	public StringConstantPropagation evalTernaryExpression(TernaryOperator operator,
 			StringConstantPropagation left,
-			StringConstantPropagation middle, StringConstantPropagation right, ProgramPoint pp) {
+			StringConstantPropagation middle, StringConstantPropagation right, ProgramPoint pp, SemanticOracle oracle) {
 
 		if (left.isTop() || middle.isTop || right.isTop())
 			return top();
@@ -191,7 +192,7 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 
 	@Override
 	public Satisfiability satisfiesBinaryExpression(BinaryOperator operator, StringConstantPropagation left,
-			StringConstantPropagation right, ProgramPoint pp) {
+			StringConstantPropagation right, ProgramPoint pp, SemanticOracle oracle) {
 
 		if (left.isTop() || right.isTop())
 			return Satisfiability.UNKNOWN;
@@ -230,12 +231,13 @@ public class StringConstantPropagation extends BaseNonRelationalValueDomain<Stri
 	@Override
 	public ValueEnvironment<StringConstantPropagation> assumeBinaryExpression(
 			ValueEnvironment<StringConstantPropagation> environment, BinaryOperator operator, ValueExpression left,
-			ValueExpression right, ProgramPoint pp) throws SemanticException {
+			ValueExpression right, ProgramPoint src, ProgramPoint dest, SemanticOracle oracle)
+			throws SemanticException {
 		if (operator == StringEquals.INSTANCE || operator == ComparisonEq.INSTANCE) {
 			if (left instanceof Identifier)
-				environment = environment.assign((Identifier) left, right, pp);
+				environment = environment.assign((Identifier) left, right, src, oracle);
 			else if (right instanceof Identifier)
-				environment = environment.assign((Identifier) right, left, pp);
+				environment = environment.assign((Identifier) right, left, src, oracle);
 			return environment;
 		} else
 			return environment;

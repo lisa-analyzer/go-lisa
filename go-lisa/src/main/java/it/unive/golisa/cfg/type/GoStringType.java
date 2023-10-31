@@ -2,8 +2,8 @@ package it.unive.golisa.cfg.type;
 
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.StringType;
 import it.unive.lisa.type.Type;
@@ -20,7 +20,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoStringType implements StringType, GoType {
+public class GoStringType implements StringType, Type {
 
 	/**
 	 * Unique instance of GoString type.
@@ -58,7 +58,7 @@ public class GoStringType implements StringType, GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoString(cfg, location, "");
 	}
 

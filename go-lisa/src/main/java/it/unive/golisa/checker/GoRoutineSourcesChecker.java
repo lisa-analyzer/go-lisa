@@ -43,7 +43,7 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 
 		if (node instanceof GoRoutine) {
 			GoRoutine routine = (GoRoutine) node;
-			CFGCall cfg = (CFGCall) routine.getExpression();
+			CFGCall cfg = (CFGCall) routine.getSubExpression();
 			Map<String, Set<IdInfo>> visibleIds = ((VariableScopingCFG) graph).getVisibleIds(routine);
 			checkGoRoutine((VariableScopingCFG) graph, visibleIds, cfg);
 		}

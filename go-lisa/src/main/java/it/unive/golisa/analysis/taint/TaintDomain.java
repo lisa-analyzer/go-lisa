@@ -7,9 +7,8 @@ import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
-import it.unive.lisa.analysis.representation.DomainRepresentation;
-import it.unive.lisa.analysis.representation.StringRepresentation;
 import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
@@ -26,11 +25,14 @@ import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.representation.StringRepresentation;
+import it.unive.lisa.util.representation.StructuredRepresentation;
+import java.util.Set;
 
 /**
  * The taint domain, used for the taint analysis.
  */
-public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
+public class TaintDomain implements BaseNonRelationalValueDomain<TaintDomain> {
 
 	/**
 	 * The annotation Tainted.
@@ -87,7 +89,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	public TaintDomain variable(Identifier id, ProgramPoint pp) throws SemanticException {
+	public TaintDomain fixedVariable(Identifier id, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 
 		boolean isAssignedFromMapIteration = pp.getCFG().getControlFlowStructures().stream().anyMatch(g -> {
 
@@ -103,7 +105,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
-			return super.variable(id, pp);
+			return BaseNonRelationalValueDomain.super.fixedVariable(id, pp, oracle);
 
 		if (annots.contains(TAINTED_MATCHER))
 			return TAINTED;
@@ -111,11 +113,10 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 		if (annots.contains(CLEAN_MATCHER))
 			return CLEAN;
 
-		return super.variable(id, pp);
+		return BaseNonRelationalValueDomain.super.fixedVariable(id, pp, oracle);
 	}
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {
-
 		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);
 	}
 
@@ -149,7 +150,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	public DomainRepresentation representation() {
+	public StructuredRepresentation representation() {
 		return this == BOTTOM ? Lattice.bottomRepresentation()
 				: this == CLEAN ? new StringRepresentation("_")
 						: this == TAINTED ? new StringRepresentation("#") : Lattice.topRepresentation();
@@ -184,26 +185,26 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	public TaintDomain evalNullConstant(ProgramPoint pp) throws SemanticException {
+	public TaintDomain evalNullConstant(ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return CLEAN;
 	}
 
 	@Override
-	public TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp) throws SemanticException {
-		if (constant instanceof Tainted)
-			return TAINTED;
+	public TaintDomain evalNonNullConstant(Constant constant, ProgramPoint pp, SemanticOracle oracle)
+			throws SemanticException {
 		return CLEAN;
 	}
 
 	@Override
-	public TaintDomain evalUnaryExpression(UnaryOperator operator, TaintDomain arg, ProgramPoint pp)
+	public TaintDomain evalUnaryExpression(UnaryOperator operator, TaintDomain arg, ProgramPoint pp,
+			SemanticOracle oracle)
 			throws SemanticException {
 		return arg;
 	}
 
 	@Override
 	public TaintDomain evalBinaryExpression(BinaryOperator operator, TaintDomain left, TaintDomain right,
-			ProgramPoint pp) throws SemanticException {
+			ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 
 		if (operator == GoConv.INSTANCE)
 			return left;
@@ -219,7 +220,7 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 
 	@Override
 	public TaintDomain evalTernaryExpression(TernaryOperator operator, TaintDomain left, TaintDomain middle,
-			TaintDomain right, ProgramPoint pp) throws SemanticException {
+			TaintDomain right, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (left == TAINTED || right == TAINTED || middle == TAINTED)
 			return TAINTED;
 
@@ -230,21 +231,22 @@ public class TaintDomain extends BaseNonRelationalValueDomain<TaintDomain> {
 	}
 
 	@Override
-	public TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp) throws SemanticException {
+	public TaintDomain evalPushAny(PushAny pushAny, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		return TAINTED;
 	}
 
 	@Override
-	public boolean tracksIdentifiers(Identifier id) {
-		for (Type t : id.getRuntimeTypes(null))
-			if (!(t.isInMemoryType()))
-				return true;
-		return false;
-	}
+	public boolean canProcess(SymbolicExpression expression, ProgramPoint pp, SemanticOracle oracle) {
+		Set<Type> types;
+		try {
+			types = oracle.getRuntimeTypesOf(expression, pp, oracle);
+		} catch (SemanticException e) {
+			return false;
+		}
 
-	@Override
-	public boolean canProcess(SymbolicExpression expression) {
-		return true;
+		if (!types.isEmpty())
+			return types.stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
+		return !expression.getStaticType().isPointerType() && !expression.getStaticType().isInMemoryType();
 	}
 
 	@Override

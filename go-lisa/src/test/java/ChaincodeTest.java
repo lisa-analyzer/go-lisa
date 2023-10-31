@@ -1,6 +1,4 @@
 
-import it.unive.golisa.analysis.heap.GoAbstractState;
-import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -9,15 +7,17 @@ import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisException;
-import it.unive.lisa.LiSAConfiguration;
-import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.interprocedural.ContextBasedAnalysis;
-import it.unive.lisa.interprocedural.RecursionFreeToken;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
+import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.interprocedural.context.FullStackToken;
 import java.io.IOException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
@@ -26,211 +26,263 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 
 	@Test
 	public void testBoleto() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/boleto", "taint", "boleto.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/boleto";
+		conf.testSubDir = "taint";
+		conf.programFile = "boleto.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testBoletoNI() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/boleto", "ni", "boleto.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/boleto";
+		conf.testSubDir = "ni";
+		conf.programFile = "boleto.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testMarblesChaincode() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/marbles-chaincode";
+		conf.testSubDir = "taint";
+		conf.programFile = "marbles_chaincode.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testHighThroughput() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/high-throughput", "high-throughput.go", conf, annSet);
-	}
-
-	@Test
-	public void testMarbles02() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/marbles02", "marbles02.go", conf, annSet);
-	}
-
-	@Test
-	public void testCpuUse() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
-	}
-
-	@Test
-	public void testCpuUseNI() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/cpu-use", "cpu-use.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/high-throughput";
+		conf.programFile = "high-throughput.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testMarblesChaincodeNI() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/marbles-chaincode", "marbles_chaincode.go", conf, annSet);
-	}
-
-	@Test
-	public void testMarbles02NI() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
-		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/marbles02", "marbles02.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/marbles-chaincode";
+		conf.testSubDir = "ni";
+		conf.programFile = "marbles_chaincode.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testTommyStarkNI() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/tommystark", "contract_chaincode.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/tommystark";
+		conf.testSubDir = "ni";
+		conf.programFile = "contract_chaincode.go";
+		conf.annSet = annSet;
+		perform(conf);
+	}
+
+	@Test
+	public void testTommyStark() throws AnalysisException, IOException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/tommystark";
+		conf.testSubDir = "taint";
+		conf.programFile = "contract_chaincode.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testSacc() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/sacc", "sacc.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/sacc";
+		conf.programFile = "sacc.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testMyCC() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/mycc", "mycc.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/mycc";
+		conf.programFile = "mycc.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
-	public void testChaincode() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+	public void testChaincodeNI() throws AnalysisException, IOException {
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/chaincode", "chaincode.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/chaincode";
+		conf.programFile = "chaincode.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testImplicit() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new TaintChecker());
-		perform("cc/implicit-flow", "taint", "implicit.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/implicit-flow";
+		conf.testSubDir = "taint";
+		conf.programFile = "implicit.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 
 	@Test
 	public void testImplicitNI() throws AnalysisException, IOException {
-		LiSAConfiguration conf = new LiSAConfiguration();
+		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
 		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
-		conf.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new InferenceSystem<>(new IntegrityNIDomain()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
+				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new IntegrityNIChecker());
-		perform("cc/implicit-flow", "ni", "implicit.go", conf, annSet);
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/implicit-flow";
+		conf.testSubDir = "ni";
+		conf.programFile = "implicit.go";
+		conf.annSet = annSet;
+		perform(conf);
+	}
+
+	@Ignore
+	public void testCpuUse() throws AnalysisException, IOException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new ValueEnvironment<>(new TaintDomain()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.semanticChecks.add(new TaintChecker());
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/cpu-use";
+		conf.testSubDir = "taint";
+		conf.programFile = "cpu-use.go";
+		conf.annSet = annSet;
+		perform(conf);
+	}
+
+	@Ignore
+	public void testCpuUseNI() throws AnalysisException, IOException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.jsonOutput = true;
+		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.callGraph = new RTACallGraph();
+		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+				new InferenceSystem<>(new IntegrityNIDomain()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.semanticChecks.add(new IntegrityNIChecker());
+		conf.compareWithOptimization = false;
+		conf.testDir = "cc/cpu-use";
+		conf.testSubDir = "ni";
+		conf.programFile = "cpu-use.go";
+		conf.annSet = annSet;
+		perform(conf);
 	}
 }

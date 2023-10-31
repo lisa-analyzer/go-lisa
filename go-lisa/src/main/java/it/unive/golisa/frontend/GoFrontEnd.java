@@ -39,7 +39,6 @@ import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.golisa.cfg.type.composite.GoVariadicType;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
@@ -169,7 +168,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 		InputStream stream = new FileInputStream(getFilePath());
 
-		log.info("LOCS: " + Files.lines(Paths.get(getFilePath())).count());
+		log.info("Lines of code: " + Files.lines(Paths.get(getFilePath())).count());
 
 		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
 		GoParser parser = new GoParser(new CommonTokenStream(lexer));
@@ -185,7 +184,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		stream.close();
 
 		// Register all the types
-		registerGoTypes(program);
+		registerTypes(program);
 
 		return result;
 	}
@@ -199,12 +198,11 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoTupleType.clearAll();
 		GoChannelType.clearAll();
 		GoFunctionType.clearAll();
-		GoVariadicType.clearAll();
 		GoAliasType.clearAll();
 		GoInterfaceType.clearAll();
 	}
 
-	private void registerGoTypes(Program program) {
+	private void registerTypes(Program program) {
 		program.getTypes().registerType(GoBoolType.INSTANCE);
 		program.getTypes().registerType(GoFloat32Type.INSTANCE);
 		program.getTypes().registerType(GoFloat64Type.INSTANCE);
@@ -225,13 +223,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		program.getTypes().registerType(GoErrorType.INSTANCE);
 		program.getTypes().registerType(GoNilType.INSTANCE);
 
-		// FIXME: these types should be removed
-		// program.registerType(BoolType.INSTANCE);
-		program.getTypes().registerType(Untyped.INSTANCE);
-		// program.getTypes().registerType(Float32Type.INSTANCE);
-		// program.registerType(StringType.INSTANCE);
-		// program.registerType(Int32.INSTANCE);
-
 		GoArrayType.all().forEach(program.getTypes()::registerType);
 		GoStructType.all().forEach(program.getTypes()::registerType);
 		GoSliceType.all().forEach(program.getTypes()::registerType);
@@ -240,7 +231,6 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		GoTupleType.all().forEach(program.getTypes()::registerType);
 		GoChannelType.all().forEach(program.getTypes()::registerType);
 		GoFunctionType.all().forEach(program.getTypes()::registerType);
-		GoVariadicType.all().forEach(program.getTypes()::registerType);
 		GoAliasType.all().forEach(program.getTypes()::registerType);
 		GoInterfaceType.all().forEach(program.getTypes()::registerType);
 
@@ -315,7 +305,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 			IdentifierListContext ids = spec.identifierList();
 			for (int i = 0; i < ids.IDENTIFIER().size(); i++) {
 				Type type = spec.type_() == null ? Untyped.INSTANCE
-						: new GoTypeVisitor(filePath, packageUnit, program, constants, globals)
+						: new GoTypeVisitor(filePath, packageUnit, packageUnit, program, constants, globals)
 								.visitType_(spec.type_());
 				globals.add(new Global(
 						new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(ids.IDENTIFIER(i)),
@@ -353,7 +343,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 						program,
 						unitName, false);
 				units.add(unit);
-				new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
+				new GoTypeVisitor(filePath, unit, packageUnit, program, constants, globals).visitTypeSpec(typeSpec);
 			} else {
 				InterfaceUnit unit = new InterfaceUnit(
 
@@ -362,7 +352,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 						program,
 						unitName, false);
 				units.add(unit);
-				new GoTypeVisitor(filePath, unit, program, constants, globals).visitTypeSpec(typeSpec);
+				new GoTypeVisitor(filePath, unit, packageUnit, program, constants, globals).visitTypeSpec(typeSpec);
 			}
 		}
 		return units;
@@ -416,8 +406,8 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	private void loadCore() {
 		SourceCodeLocation unknownLocation = new SourceCodeLocation(GoLangUtils.GO_RUNTIME_SOURCE, 0, 0);
-		packageUnit.addCodeMember(new GoToString(unknownLocation, packageUnit));
-		packageUnit.addCodeMember(new ToInt64(unknownLocation, packageUnit));
+		program.addCodeMember(new GoToString(unknownLocation, program));
+		program.addCodeMember(new ToInt64(unknownLocation, program));
 	}
 
 	@Override
@@ -427,6 +417,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 	@Override
 	public CFG visitMethodDecl(MethodDeclContext ctx) {
-		return new GoCodeMemberVisitor(packageUnit, ctx, filePath, program, constants, globals).visitCodeMember(ctx);
+		return new GoCodeMemberVisitor(packageUnit, packageUnit, ctx, filePath, program, constants, globals)
+				.visitCodeMember(ctx);
 	}
 }

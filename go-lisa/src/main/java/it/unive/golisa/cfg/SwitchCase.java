@@ -1,78 +1,77 @@
 package it.unive.golisa.cfg;
 
-import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.controlFlow.ControlFlowStructure;
-import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NoOp;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.util.datastructures.graph.code.NodeList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * A switch-case control flow structure.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class SwitchCase extends ControlFlowStructure {
+public class SwitchCase {
+
+	private final Expression condition;
 
 	private final Collection<Statement> body;
 
 	/**
 	 * Builds the switch-case control flow structure.
 	 * 
-	 * @param cfgMatrix     the matrix behind this control flow structure
-	 * @param condition     the switch-case condition
-	 * @param firstFollower the first follower of this switch-case
-	 * @param body          the body associated with this switch-case
+	 * @param condition the switch-case condition
+	 * @param body      the body associated with this switch-case
 	 */
-	public SwitchCase(NodeList<CFG, Statement, Edge> cfgMatrix, Statement condition, Statement firstFollower,
-			Collection<Statement> body) {
-		super(cfgMatrix, condition, firstFollower);
+	public SwitchCase(Expression condition, Collection<Statement> body) {
+		this.condition = condition;
 		this.body = body;
 	}
 
-	@Override
-	protected Collection<Statement> bodyStatements() {
+	/**
+	 * Yields the body of this switch case.
+	 * 
+	 * @return the body of this switch case
+	 */
+	protected Collection<Statement> getBody() {
 		return body;
 	}
 
-	@Override
-	public boolean contains(Statement st) {
-		return body.contains(st);
+	/**
+	 * Yields the condition associated with this switch case.
+	 * 
+	 * @return the condition associated with this switch case
+	 */
+	public Expression getCondition() {
+		return condition;
 	}
 
-	@Override
+	/**
+	 * Simplifies the switch case.
+	 */
 	public void simplify() {
 		body.removeIf(NoOp.class::isInstance);
 	}
 
 	@Override
 	public String toString() {
-		return "case[" + getCondition() + "]";
+		return "case[" + condition + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((body == null) ? 0 : body.hashCode());
-		return result;
+		return Objects.hash(body, condition);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		SwitchCase other = (SwitchCase) obj;
-		if (body == null) {
-			if (other.body != null)
-				return false;
-		} else if (!body.equals(other.body))
-			return false;
-		return true;
+		return Objects.equals(body, other.body) && Objects.equals(condition, other.condition);
 	}
 }

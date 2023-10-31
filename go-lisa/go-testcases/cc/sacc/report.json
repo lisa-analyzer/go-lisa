@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ ]
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "5",
+    "duration" : "192ms",
+    "end" : "2023-09-11T12:48:57.024+02:00",
+    "expressions" : "131",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "42",
+    "programs" : "1",
+    "start" : "2023-09-11T12:48:56.832+02:00",
+    "statements" : "34",
+    "units" : "10",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "wideningThreshold" : "5",
+    "useWideningPoints" : "true",
+    "workdir" : "go-outputs/cc/sacc"
+  }
 }

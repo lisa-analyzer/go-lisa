@@ -9,9 +9,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -22,6 +19,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import java.util.Collections;
 
@@ -61,18 +59,19 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		 * Types an expression (if it is untyped (int or float), this method
 		 * returns it as typed).
 		 * 
-		 * @param exp the expression to type
+		 * @param exp  the expression to type
+		 * @param type the dynamic type of the expression
 		 * 
 		 * @return the typed expression
 		 */
-		public static SymbolicExpression type(SymbolicExpression exp) {
-			if (exp.getDynamicType() instanceof GoUntypedInt) {
+		public static SymbolicExpression type(SymbolicExpression exp, Type type) {
+			if (type instanceof GoUntypedInt) {
 				Constant typeCast = new Constant(new TypeTokenType(Collections.singleton(GoIntType.INSTANCE)),
 						GoIntType.INSTANCE, exp.getCodeLocation());
 				return new BinaryExpression(GoIntType.INSTANCE, exp, typeCast, TypeConv.INSTANCE,
 						exp.getCodeLocation());
 
-			} else if (exp.getDynamicType() instanceof GoUntypedFloat) {
+			} else if (type instanceof GoUntypedFloat) {
 				Constant typeCast = new Constant(
 						new TypeTokenType(Collections.singleton(GoFloat32Type.INSTANCE)),
 						GoFloat32Type.INSTANCE,
@@ -85,18 +84,15 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
-					throws SemanticException {
+	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
 		// e.g., _ := f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
-
-		AnalysisState<A, H, V, T> result = state.assign(left, NumericalTyper.type(right), this);
+		Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
+		AnalysisState<A> result = state.assign(left, NumericalTyper.type(right, rtype), this);
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getRight().getMetaVariables());
 		if (!getLeft().getMetaVariables().isEmpty())

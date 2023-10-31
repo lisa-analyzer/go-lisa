@@ -1,4 +1,38 @@
 {
   "warnings" : [ ],
-  "files" : [ "int_main.measure(geometry_g)_1936850494.json", "int_rect.perim(rect_r)_2048006874.json", "untyped_main.main().json" ]
+  "files" : [ "int_main.measure(geometry_g)_1431474378.json", "int_rect.perim(rect_r)_-1437461307.json", "report.json", "untyped_main.main().json" ],
+  "info" : {
+    "cfgs" : "4",
+    "duration" : "476ms",
+    "end" : "2023-10-19T11:33:46.522+02:00",
+    "expressions" : "20",
+    "files" : "3",
+    "globals" : "2",
+    "members" : "6",
+    "programs" : "1",
+    "start" : "2023-10-19T11:33:46.046+02:00",
+    "statements" : "5",
+    "units" : "3",
+    "version" : "0.1b8",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "true",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/collections/interface/1"
+  }
 }

@@ -27,17 +27,17 @@ version = '0.1'
 mainClassName = 'it.unive.golisa.GoLiSA'
 
 dependencies {
-    antlr 'org.antlr:antlr4:4.8-1'    
+    antlr 'org.antlr:antlr4:4.11.1'    
     testImplementation 'junit:junit:4.12'
-    implementation 'io.github.lisa-analyzer:lisa-core:0.1b7'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b7'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b7'
-    implementation 'com.github.unive-ssv:tarsis:1.0'      
+    implementation 'io.github.lisa-analyzer:lisa-program:0.1b10-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b10-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b10-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b10-SNAPSHOT'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
-    
-    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.4'
-	compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
-	compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0.1'
+
+  	implementation 'javax.xml.bind:jaxb-api:2.2.4'
+	implementation 'com.sun.xml.bind:jaxb-impl:2.3.2'
+	implementation 'com.sun.xml.bind:jaxb-core:2.3.0.1'
 }
 
 jar {
@@ -76,10 +76,6 @@ checkstyleMain {
     exclude 'it/unive/golisa/antlr/*.java'
     exclude 'it/unive/golisa/golang/util/*.java'
     exclude 'it/unive/golisa/golang/api/signature/*.java'
-    reports {
-        xml.enabled false
-        html.enabled false
-    }
 }
 
 task checkstyleErrorMessage {

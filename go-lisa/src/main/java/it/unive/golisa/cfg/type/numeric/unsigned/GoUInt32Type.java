@@ -1,9 +1,8 @@
 package it.unive.golisa.cfg.type.numeric.unsigned;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
@@ -19,7 +18,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoUInt32Type implements NumericType, GoType {
+public class GoUInt32Type implements NumericType, Type {
 
 	/**
 	 * Unique instance of GoInt32 type.
@@ -80,7 +79,7 @@ public class GoUInt32Type implements NumericType, GoType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoInteger(cfg, location, 0);
 	}
 

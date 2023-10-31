@@ -8,9 +8,6 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.heap.HeapDomain;
-import it.unive.lisa.analysis.value.TypeDomain;
-import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -23,6 +20,7 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.TypeTokenType;
@@ -71,21 +69,18 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	}
 
 	@Override
-	public <A extends AbstractState<A, H, V, T>,
-			H extends HeapDomain<H>,
-			V extends ValueDomain<V>,
-			T extends TypeDomain<T>> AnalysisState<A, H, V, T> binarySemantics(
-					InterproceduralAnalysis<A, H, V, T> interprocedural, AnalysisState<A, H, V, T> state,
-					SymbolicExpression left, SymbolicExpression right, StatementStore<A, H, V, T> expressions)
+	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
+			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 
-					throws SemanticException {
+			throws SemanticException {
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
 
 		TypeSystem types = getProgram().getTypes();
-
-		Set<Type> idType = Collections.singleton(type);
+		Type idType = type.isInMemoryType() ? new ReferenceType(type) : type;
+		Set<Type> setIdType = Collections.singleton(idType);
 
 		VariableTableEntry varTableEntry = ((VariableScopingCFG) getCFG())
 				.getVariableTableEntryIfExist(((VariableRef) getLeft()).getName(), getLeft().getLocation());
@@ -93,16 +88,17 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 		Variable id;
 
 		if (varTableEntry == null)
-			id = new Variable(type, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
+			id = new Variable(idType, ((VariableRef) getLeft()).getName(), getLeft().getLocation());
 		else
-			id = new Variable(type, ((VariableRef) getLeft()).getName(), varTableEntry.getAnnotations(),
+			id = new Variable(idType, ((VariableRef) getLeft()).getName(), varTableEntry.getAnnotations(),
 					getLeft().getLocation());
 
-		AnalysisState<A, H, V, T> result = state.bottom();
-		for (Type rightType : right.getRuntimeTypes(types)) {
-			AnalysisState<A, H, V, T> tmp = state.bottom();
+		AnalysisState<A> result = state.bottom();
+		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
+		for (Type rightType : rtypes) {
+			AnalysisState<A> tmp = state.bottom();
 			if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat) {
-				Constant typeCast = new Constant(new TypeTokenType(idType), type, getRight().getLocation());
+				Constant typeCast = new Constant(new TypeTokenType(setIdType), idType, getRight().getLocation());
 				tmp = state.assign(id, new BinaryExpression(type, right, typeCast, TypeConv.INSTANCE,
 						getRight().getLocation()), this);
 			} else

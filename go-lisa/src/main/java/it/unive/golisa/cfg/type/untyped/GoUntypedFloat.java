@@ -1,9 +1,10 @@
 package it.unive.golisa.cfg.type.untyped;
 
 import it.unive.golisa.cfg.expression.literal.GoFloat;
-import it.unive.golisa.cfg.type.GoType;
-import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat32Type;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
@@ -17,7 +18,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoUntypedFloat implements GoType, NumericType {
+public class GoUntypedFloat implements Type, NumericType {
 
 	/**
 	 * Unique instance of GoUntypedInt type.
@@ -44,12 +45,16 @@ public class GoUntypedFloat implements GoType, NumericType {
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
-		return (other instanceof GoType && ((GoType) other).isGoFloat()) || other.isUntyped() ? true : false;
+		return other instanceof GoFloat32Type
+				|| other instanceof GoFloat64Type
+				|| other instanceof GoUntypedFloat
+				|| other.isUntyped();
 	}
 
 	@Override
 	public Type commonSupertype(Type other) {
-		return other instanceof GoType && ((GoType) other).isGoFloat() || other instanceof GoUntypedFloat ? other
+		return other instanceof GoFloat32Type || other instanceof GoFloat64Type || other instanceof GoUntypedFloat
+				? other
 				: Untyped.INSTANCE;
 	}
 
@@ -79,7 +84,7 @@ public class GoUntypedFloat implements GoType, NumericType {
 	}
 
 	@Override
-	public Expression defaultValue(CFG cfg, SourceCodeLocation location) {
+	public Expression defaultValue(CFG cfg, CodeLocation location) {
 		return new GoFloat(cfg, location, 0.0);
 	}
 

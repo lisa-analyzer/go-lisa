@@ -17,7 +17,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
+public class GoNonDeterminismAnnotationSet extends TaintAnnotationSet {
 
 	/**
 	 * Builds an instance of an annotation set for non-determinism related to

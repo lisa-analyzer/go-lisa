@@ -16,11 +16,11 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * The class represents the set of annotations for the non-determinism analysis.
+ * The class represents the set of annotations for the taint analysis.
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class NonDeterminismAnnotationSet extends FrameworkAnnotationSet {
+public class TaintAnnotationSet extends FrameworkAnnotationSet {
 
 	/**
 	 * Builds an instance of annotation set for non-determinism related to a
@@ -28,7 +28,7 @@ public class NonDeterminismAnnotationSet extends FrameworkAnnotationSet {
 	 * 
 	 * @param framework the target framework
 	 */
-	public NonDeterminismAnnotationSet(String framework) {
+	public TaintAnnotationSet(String framework) {
 		super(framework);
 	}
 

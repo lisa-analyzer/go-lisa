@@ -1,7 +1,7 @@
 package it.unive.golisa.analysis.entrypoints;
 
 import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.TaintAnnotationSet;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
@@ -36,11 +36,11 @@ public class EntryPointsUtils {
 	 */
 	public static boolean containsPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			TaintAnnotationSet... annotationSets) {
 
 		boolean atLeastOneSource = false;
 		boolean atLeastOneDestination = false;
-		for (NonDeterminismAnnotationSet as : annotationSets) {
+		for (TaintAnnotationSet as : annotationSets) {
 			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
 			Set<? extends CodeAnnotation> destinations = as.getAnnotationForDestinations();
 
@@ -67,10 +67,10 @@ public class EntryPointsUtils {
 	 */
 	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			TaintAnnotationSet... annotationSets) {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
-		for (NonDeterminismAnnotationSet as : annotationSets) {
+		for (TaintAnnotationSet as : annotationSets) {
 			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
 			appliedAnnotations.stream()
 					.forEach(e -> {
@@ -94,7 +94,7 @@ public class EntryPointsUtils {
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			TaintAnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
 

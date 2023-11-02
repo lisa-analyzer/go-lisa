@@ -27,7 +27,7 @@ Finally, to run GoLiSA:
 ./build/distributions/go-lisa-0.1/bin/go-lisa
 ```
 
-## Building GoLiSA with snapshots
+### Building GoLiSA with snapshots
 
 It is possible that GoLiSA refers to a snapshot release of LiSA to exploit unreleased features, and, when building, you get the following error message:
 
@@ -47,6 +47,10 @@ gpr.key=github-access-token
 
 Finally, re-execute the build to have the snapshot dependencies downloaded.
 
+### Development with Eclipse
+GoLiSA comes as a Gradle 6.0 project. For development with Eclipse, please install the [Gradle IDE Pack](https://marketplace.eclipse.org/content/gradle-ide-pack) plugin from the Eclipse marketplace, and make sure to import the project into the Eclipse workspace as a Gradle project.
+
+
 ## Running GoLiSA
 The entry point is the [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) class, expecting four parameters:
 - `-i <path>`: the Go input file to be analyzed
@@ -62,6 +66,3 @@ The entry point is the [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.jav
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Fabio Tagliaferro, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Information Flow Analysis for Detecting Non-Determinism in Blockchain</i>. ECOOP 2023: 23:1-23:25 ([link](https://drops.dagstuhl.de/opus/volltexte/2023/18216/))
 - Luca Olivieri, Fabio Tagliaferro, Vincenzo Arceri, Marco Ruaro, Luca Negrini, Agostino Cortesi, Pietro Ferrara, Fausto Spoto, Enrico Talin:
 <i>Ensuring determinism in blockchain software with GoLiSA: an industrial experience report</i>. SOAP@PLDI 2022: 23-29 ([link](https://dl.acm.org/doi/10.1145/3520313.3534658))
-
-## How to build the project ##
-GoLiSA comes as a Gradle 6.0 project. For development with Eclipse, please install the [Gradle IDE Pack](https://marketplace.eclipse.org/content/gradle-ide-pack) plugin from the Eclipse marketplace, and make sure to import the project into the workspace as a Gradle project.

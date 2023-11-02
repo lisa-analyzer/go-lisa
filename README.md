@@ -27,16 +27,36 @@ Finally, to run GoLiSA:
 ./build/distributions/go-lisa-0.1/bin/go-lisa
 ```
 
-## Usage
-The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) and it expects four parameters:
-- `-i path`: the Go file to be analyzed
-- `-o path`: the output directory
-- `-f framework`: the blockchain framework used in the input file (hyperledger-fabric, cosmos-sdk, tendermint-core)
-- `-a analysis`: the analysis to perform to detect issues of non-determinism (taint, non-interference)
+## Building GoLiSA with snapshots
 
-### Example of command line
+It is possible that GoLiSA refers to a snapshot release of LiSA to exploit unreleased features, and, when building, you get the following error message:
 
-`-i C:\Users\MyAccount\mycontract.go -o C:\Users\MyAccount\output -f hyperledger-fabric -a taint`
+```
+> Could not resolve io.github.lisa-analyzer:lisa-project:ver-SNAPSHOT.
+  > Could not get resource 'https://maven.pkg.github.com/lisa-analyzer/lisa/io/github/lisa-analyzer/lisa-project/ver-SNAPSHOT/maven-metadata.xml'.
+    > Could not GET 'https://maven.pkg.github.com/lisa-analyzer/lisa/io/github/lisa-analyzer/lisa-project/ver-SNAPSHOT/maven-metadata.xml'. Received status code 401 from server: Unauthorized
+```
+
+In this case, you need to perform the following steps:
+- create a GitHub Personal Access Token following [this guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) and grant `read:packages` permission
+- create a `gradle.properties` file at `go-lisa/go-lisa` (where the `gradlew` scripts are located) with the following content:
+```
+gpr.user=your-github-username
+gpr.key=github-access-token
+```
+
+Finally, re-execute the build to have the snapshot dependencies downloaded.
+
+## Running GoLiSA
+The entry point is the [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) class, expecting four parameters:
+- `-i <path>`: the Go input file to be analyzed
+- `-o <path>`: the output directory
+- `-f <framework>`: the blockchain framework used in the Go input file (`hyperledger-fabric`, `cosmos-sdk`, `tendermint-core`)
+- `-a <analysis>`: the analysis to perform to detect issues of non-determinism (`taint`, `non-interference`)
+
+### Example
+
+`go-lisa -i mycontract.go -o output_dir -f hyperledger-fabric -a taint`
 
 ## Publications
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Fabio Tagliaferro, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Information Flow Analysis for Detecting Non-Determinism in Blockchain</i>. ECOOP 2023: 23:1-23:25 ([link](https://drops.dagstuhl.de/opus/volltexte/2023/18216/))

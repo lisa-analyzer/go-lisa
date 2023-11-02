@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.golisa.analysis.tarsis.utils.TarsisUtils;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -126,7 +127,7 @@ public class ReadWritePairChecker implements
 								break;
 							for(Tarsis rkvState : rkeyValues) {
 								if(wkvState.isTop() || rkvState.isTop()
-									|| possibleEqualsMatch(rkvState,wkvState)) {
+									|| TarsisUtils.possibleEqualsMatch(rkvState,wkvState)) {
 									res.add(Pair.of(w,r));
 									found = true;
 									break;
@@ -183,8 +184,8 @@ public class ReadWritePairChecker implements
 	 * @return @code{true}, if there is a possible match. Otherwise, @code{false}.
 	 */
 	private boolean possibleCompositeMatch(Tarsis rkvState, Tarsis wkvState) {
-		String prefixValue = extractValueStringFromTarsisStates(rkvState);
-		String value = extractValueStringFromTarsisStates(wkvState);
+		String prefixValue = TarsisUtils.extractValueStringFromTarsisStates(rkvState);
+		String value = TarsisUtils.extractValueStringFromTarsisStates(wkvState);
 		if(prefixValue != null && value != null)
 			return value.contains(prefixValue);
 		return true;
@@ -199,19 +200,19 @@ public class ReadWritePairChecker implements
 	 */
 	private boolean possibleRangeMatch(Tarsis wkvState, Tarsis rstartKeyValueState, Tarsis rendKeyValueState) {
 		if(! rendKeyValueState.getAutomaton().isEqualTo(RegexAutomaton.emptyStr())) {
-			String value = extractValueStringFromTarsisStates(wkvState);
+			String value = TarsisUtils.extractValueStringFromTarsisStates(wkvState);
 			if(value != null) {
 				boolean l = true;
 				boolean u = true;
 				
 				if(!rstartKeyValueState.isTop()) {
-					String lBoundValue = extractValueStringFromTarsisStates(rstartKeyValueState);
+					String lBoundValue = TarsisUtils.extractValueStringFromTarsisStates(rstartKeyValueState);
 					
 					if(lBoundValue != null)
 						l = lBoundValue.compareTo(value) <= 0; 
 				}
 				
-				String uBoundValue = extractValueStringFromTarsisStates(rendKeyValueState);
+				String uBoundValue = TarsisUtils.extractValueStringFromTarsisStates(rendKeyValueState);
 				if(uBoundValue != null)
 					u = value.compareTo(uBoundValue) < 0;
 				
@@ -221,17 +222,6 @@ public class ReadWritePairChecker implements
 		return true; 
 	}
 
-	/**
-	 * Compute if there is a possible equal match between two key values.
-	 * @param state1, the state of the first key parameter to check.
-	 * @param state2, the state of the second key parameter to check.
-	 * @return @code{true}, if there is a possible match. Otherwise, @code{false}.
-	 */
-	private boolean possibleEqualsMatch(Tarsis state1, Tarsis state2) {
-		return state1.getAutomaton().isEqualTo(state2.getAutomaton()) 
-				|| state1.getAutomaton().isContained(state2.getAutomaton()) 
-					|| state2.getAutomaton().isContained(state1.getAutomaton());
-	}
 
 	private boolean matchCollection(AnalysisReadWriteHFInfo st1, AnalysisReadWriteHFInfo st2) {
 
@@ -248,7 +238,7 @@ public class ReadWritePairChecker implements
 			for(Tarsis c1ValueState : c1Values) {
 				for(Tarsis c2ValuesState : c2Values) {
 					if(c1ValueState.isTop() || c2ValuesState.isTop()
-						|| possibleEqualsMatch(c2ValuesState, c1ValueState)) {
+						|| TarsisUtils.possibleEqualsMatch(c2ValuesState, c1ValueState)) {
 						return true;
 					}
 				}
@@ -282,7 +272,7 @@ public class ReadWritePairChecker implements
 							break;
 						for(Tarsis w2kvState : w2keyValues) {
 							if(w1kvState.isTop() || w2kvState.isTop()
-								|| possibleEqualsMatch(w1kvState, w2kvState)) {
+								|| TarsisUtils.possibleEqualsMatch(w1kvState, w2kvState)) {
 								res.add(Pair.of(w1,w2));
 								found = true;
 								break;
@@ -400,18 +390,6 @@ public class ReadWritePairChecker implements
 		return res;
 	}
 
-	/**
-	 * Compute if possible the exact string value from Tarsis state.
-	 * @return the string value, if it is possible exactly compute the value. Otherwise, @code{null}.
-	 */
-	private String extractValueStringFromTarsisStates(Tarsis state) {
-		if(state.getAutomaton().emptyString().equals(state.getAutomaton()))
-			return "";
-		else if(!state.getAutomaton().acceptsTopEventually())
-			return state.getAutomaton().toString();
-		
-		return null;
-	}
 	
 	/**
 	 * Extract the possible states of key values from a target call.

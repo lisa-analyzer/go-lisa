@@ -1,11 +1,9 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-
-import java.util.Arrays;
-import java.util.Objects;
-
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.KeyType;
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.TypeInstruction;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class ReadWriteInfo {
 
@@ -14,7 +12,7 @@ public class ReadWriteInfo {
 	private final KeyType keyType;
 	private final int[] keyParameters;
 	private final Integer collectionParam;
-	
+
 	public ReadWriteInfo(TypeInstruction instructionType, String signature, KeyType keyType, int[] keyParameters) {
 		this.instructionType = instructionType;
 		this.signature = signature;
@@ -22,8 +20,9 @@ public class ReadWriteInfo {
 		this.keyParameters = keyParameters;
 		this.collectionParam = null;
 	}
-	
-	public ReadWriteInfo(TypeInstruction instructionType, String signature, KeyType keyType, int[] keyParameters, int collectionParam) {
+
+	public ReadWriteInfo(TypeInstruction instructionType, String signature, KeyType keyType, int[] keyParameters,
+			int collectionParam) {
 		this.instructionType = instructionType;
 		this.signature = signature;
 		this.keyType = keyType;
@@ -46,7 +45,7 @@ public class ReadWriteInfo {
 	public int[] getKeyParameters() {
 		return keyParameters;
 	}
-	
+
 	public Integer getCollectionParam() {
 		return collectionParam;
 	}
@@ -77,6 +76,5 @@ public class ReadWriteInfo {
 				&& Arrays.equals(keyParameters, other.keyParameters) && keyType == other.keyType
 				&& Objects.equals(signature, other.signature);
 	}
-	
-}
 
+}

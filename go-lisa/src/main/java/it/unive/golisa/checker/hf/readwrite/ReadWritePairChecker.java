@@ -1,13 +1,5 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.analysis.tarsis.utils.TarsisUtils;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.lisa.analysis.AnalysisState;
@@ -36,40 +28,46 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.
- * Note that Read-Write Set Issues analysis is split in two checkers/phases.
- * This is the 1st phase.
+ * A Go Checker for Read-Write Set Issues of Hyperledger Fabric. Note that
+ * Read-Write Set Issues analysis is split in two checkers/phases. This is the
+ * 1st phase.
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class ReadWritePairChecker implements
 		SemanticCheck<
-		SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
-	
+				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
+
 	/**
-	 * Set of information related statements that write values into the blockchain.
+	 * Set of information related statements that write values into the
+	 * blockchain.
 	 */
 	private Set<AnalysisReadWriteHFInfo> writers;
-	
+
 	/**
-	 * Set of information related statements that read values from the blockchain.
+	 * Set of information related statements that read values from the
+	 * blockchain.
 	 */
 	private Set<AnalysisReadWriteHFInfo> readers;
-	
+
 	/**
 	 * Set of candidates to check for read after write issues.
 	 */
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates;
-	
+
 	/**
 	 * Set of candidates to check for over-write issues.
 	 */
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates;
-	
+
 	/**
 	 * Yields a set of candidates to check for read after write issues.
 	 *
@@ -78,7 +76,7 @@ public class ReadWritePairChecker implements
 	public Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> getReadAfterWriteCandidates() {
 		return readAfterWriteCandidates;
 	}
-	
+
 	/**
 	 * Yields a set of candidates to check for over-write issues.
 	 *
@@ -87,7 +85,7 @@ public class ReadWritePairChecker implements
 	public Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> getOverWriteCandidates() {
 		return overWriteCandidates;
 	}
-	
+
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
@@ -98,7 +96,8 @@ public class ReadWritePairChecker implements
 	@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+							TypeEnvironment<InferredTypes>>> tool) {
 
 		readAfterWriteCandidates = computeReadAfterWriteCandidates();
 		overWriteCandidates = computeOverWriteCandidates();
@@ -106,174 +105,185 @@ public class ReadWritePairChecker implements
 
 	/**
 	 * Compute the candidates to check for read after write issues
+	 * 
 	 * @return the set of candidates
 	 */
-	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> computeReadAfterWriteCandidates(){
-		
+	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> computeReadAfterWriteCandidates() {
+
 		Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> res = new HashSet<>();
-		
-		for(AnalysisReadWriteHFInfo w : writers) {
+
+		for (AnalysisReadWriteHFInfo w : writers) {
 			Set<Tarsis> wkeyValues = w.getKeyValues().get(0);
-			for(AnalysisReadWriteHFInfo r : readers) {
-				if(!matchCollection(r,w))
+			for (AnalysisReadWriteHFInfo r : readers) {
+				if (!matchCollection(r, w))
 					continue;
-				
+
 				boolean found = false;
-				switch(r.getInfo().getKeyType()) {
-					case SINGLE:
-						Set<Tarsis> rkeyValues = r.getKeyValues().get(0);
-						for(Tarsis wkvState : wkeyValues) {
-							if(found)
+				switch (r.getInfo().getKeyType()) {
+				case SINGLE:
+					Set<Tarsis> rkeyValues = r.getKeyValues().get(0);
+					for (Tarsis wkvState : wkeyValues) {
+						if (found)
+							break;
+						for (Tarsis rkvState : rkeyValues) {
+							if (wkvState.isTop() || rkvState.isTop()
+									|| TarsisUtils.possibleEqualsMatch(rkvState, wkvState)) {
+								res.add(Pair.of(w, r));
+								found = true;
 								break;
-							for(Tarsis rkvState : rkeyValues) {
-								if(wkvState.isTop() || rkvState.isTop()
-									|| TarsisUtils.possibleEqualsMatch(rkvState,wkvState)) {
-									res.add(Pair.of(w,r));
-									found = true;
-									break;
-								}
 							}
 						}
-						break;
-					case RANGE:
-						Set<Tarsis> startKeyValue = r.getKeyValues().get(0);
-						Set<Tarsis> endKeyValue = r.getKeyValues().get(1);
-						for(Tarsis wkvState : wkeyValues) {
-							if(found)
-								break;
-							for(Tarsis rstartKeyValueState : startKeyValue) {
-								for(Tarsis rendKeyValueState : endKeyValue) {
-									if(wkvState.isTop() || rendKeyValueState.isTop() 
+					}
+					break;
+				case RANGE:
+					Set<Tarsis> startKeyValue = r.getKeyValues().get(0);
+					Set<Tarsis> endKeyValue = r.getKeyValues().get(1);
+					for (Tarsis wkvState : wkeyValues) {
+						if (found)
+							break;
+						for (Tarsis rstartKeyValueState : startKeyValue) {
+							for (Tarsis rendKeyValueState : endKeyValue) {
+								if (wkvState.isTop() || rendKeyValueState.isTop()
 										|| possibleRangeMatch(wkvState, rstartKeyValueState, rendKeyValueState)) {
-										res.add(Pair.of(w,r));
-										found = true;
-										break;
-									}
-								}
-							}
-						}
-						break;
-					case COMPOSITE:
-						Set<Tarsis> rcompositeKeyValues = r.getKeyValues().get(0);
-						for(Tarsis wkvState : wkeyValues) {
-							if(found)
-								break;
-							for(Tarsis rkvState : rcompositeKeyValues) {
-								if(wkvState.isTop() || rkvState.isTop()
-									|| possibleCompositeMatch(rkvState, wkvState)) {
-									res.add(Pair.of(w,r));
+									res.add(Pair.of(w, r));
 									found = true;
 									break;
 								}
 							}
 						}
-						break;
-					default:
-						throw new IllegalArgumentException("The following key type is not handled: " + r.getInfo().getKeyType());
+					}
+					break;
+				case COMPOSITE:
+					Set<Tarsis> rcompositeKeyValues = r.getKeyValues().get(0);
+					for (Tarsis wkvState : wkeyValues) {
+						if (found)
+							break;
+						for (Tarsis rkvState : rcompositeKeyValues) {
+							if (wkvState.isTop() || rkvState.isTop()
+									|| possibleCompositeMatch(rkvState, wkvState)) {
+								res.add(Pair.of(w, r));
+								found = true;
+								break;
+							}
+						}
+					}
+					break;
+				default:
+					throw new IllegalArgumentException(
+							"The following key type is not handled: " + r.getInfo().getKeyType());
 				}
 			}
 		}
-		
+
 		return res;
 	}
 
 	/**
 	 * Compute if there is a possible match of composite between two key values.
+	 * 
 	 * @param rkvState, the state of the key parameter of read instruction.
 	 * @param wkvState, the state of the key parameter of write instruction.
-	 * @return @code{true}, if there is a possible match. Otherwise, @code{false}.
+	 * 
+	 * @return @code{true}, if there is a possible match.
+	 *             Otherwise, @code{false}.
 	 */
 	private boolean possibleCompositeMatch(Tarsis rkvState, Tarsis wkvState) {
 		String prefixValue = TarsisUtils.extractValueStringFromTarsisStates(rkvState);
 		String value = TarsisUtils.extractValueStringFromTarsisStates(wkvState);
-		if(prefixValue != null && value != null)
+		if (prefixValue != null && value != null)
 			return value.contains(prefixValue);
 		return true;
 	}
-	
+
 	/**
 	 * Compute if there is a possible match of range between two key values.
-	 * @param wkvState,  the state of the key parameter of write instruction.
-	 * @param rstartKeyValueState,  the state of the start key parameter of range instruction.
-	 * @param rendKeyValueState,  the state of the end key parameter of range instruction.
-	 * @return @code{true}, if there is a possible match. Otherwise, @code{false}.
+	 * 
+	 * @param wkvState,            the state of the key parameter of write
+	 *                                 instruction.
+	 * @param rstartKeyValueState, the state of the start key parameter of range
+	 *                                 instruction.
+	 * @param rendKeyValueState,   the state of the end key parameter of range
+	 *                                 instruction.
+	 * 
+	 * @return @code{true}, if there is a possible match.
+	 *             Otherwise, @code{false}.
 	 */
 	private boolean possibleRangeMatch(Tarsis wkvState, Tarsis rstartKeyValueState, Tarsis rendKeyValueState) {
-		if(! rendKeyValueState.getAutomaton().isEqualTo(RegexAutomaton.emptyStr())) {
+		if (!rendKeyValueState.getAutomaton().isEqualTo(RegexAutomaton.emptyStr())) {
 			String value = TarsisUtils.extractValueStringFromTarsisStates(wkvState);
-			if(value != null) {
+			if (value != null) {
 				boolean l = true;
 				boolean u = true;
-				
-				if(!rstartKeyValueState.isTop()) {
+
+				if (!rstartKeyValueState.isTop()) {
 					String lBoundValue = TarsisUtils.extractValueStringFromTarsisStates(rstartKeyValueState);
-					
-					if(lBoundValue != null)
-						l = lBoundValue.compareTo(value) <= 0; 
+
+					if (lBoundValue != null)
+						l = lBoundValue.compareTo(value) <= 0;
 				}
-				
+
 				String uBoundValue = TarsisUtils.extractValueStringFromTarsisStates(rendKeyValueState);
-				if(uBoundValue != null)
+				if (uBoundValue != null)
 					u = value.compareTo(uBoundValue) < 0;
-				
+
 				return l && u;
 			}
 		}
-		return true; 
+		return true;
 	}
-
 
 	private boolean matchCollection(AnalysisReadWriteHFInfo st1, AnalysisReadWriteHFInfo st2) {
 
 		ReadWriteInfo st1Info = st1.getInfo();
 		ReadWriteInfo st2Info = st2.getInfo();
-		
-		if((st1Info.hasCollection() && !st2Info.hasCollection())
-			|| (!st1Info.hasCollection() && st2Info.hasCollection()))
+
+		if ((st1Info.hasCollection() && !st2Info.hasCollection())
+				|| (!st1Info.hasCollection() && st2Info.hasCollection()))
 			return false;
-			
-		if(st1.getInfo().hasCollection() && st2.getInfo().hasCollection()) {
+
+		if (st1.getInfo().hasCollection() && st2.getInfo().hasCollection()) {
 			Set<Tarsis> c1Values = st1.getCollectionValues();
 			Set<Tarsis> c2Values = st2.getCollectionValues();
-			for(Tarsis c1ValueState : c1Values) {
-				for(Tarsis c2ValuesState : c2Values) {
-					if(c1ValueState.isTop() || c2ValuesState.isTop()
-						|| TarsisUtils.possibleEqualsMatch(c2ValuesState, c1ValueState)) {
+			for (Tarsis c1ValueState : c1Values) {
+				for (Tarsis c2ValuesState : c2Values) {
+					if (c1ValueState.isTop() || c2ValuesState.isTop()
+							|| TarsisUtils.possibleEqualsMatch(c2ValuesState, c1ValueState)) {
 						return true;
 					}
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 		return true;
 	}
 
 	/**
 	 * Compute the candidates to check for over-write issues
+	 * 
 	 * @return the set of candidates
 	 */
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> computeOverWriteCandidates() {
-		
+
 		Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> res = new HashSet<>();
-		
-		for(AnalysisReadWriteHFInfo w1 : writers)
-			for(AnalysisReadWriteHFInfo w2 : writers) {
-				if(!matchCollection(w1,w2))
+
+		for (AnalysisReadWriteHFInfo w1 : writers)
+			for (AnalysisReadWriteHFInfo w2 : writers) {
+				if (!matchCollection(w1, w2))
 					continue;
-				
-				if(!w1.equals(w2)) {
+
+				if (!w1.equals(w2)) {
 					Set<Tarsis> w1keyValues = w1.getKeyValues().get(0);
 					Set<Tarsis> w2keyValues = w2.getKeyValues().get(0);
 					boolean found = false;
-					for(Tarsis w1kvState : w1keyValues) {
-						if(found)
+					for (Tarsis w1kvState : w1keyValues) {
+						if (found)
 							break;
-						for(Tarsis w2kvState : w2keyValues) {
-							if(w1kvState.isTop() || w2kvState.isTop()
-								|| TarsisUtils.possibleEqualsMatch(w1kvState, w2kvState)) {
-								res.add(Pair.of(w1,w2));
+						for (Tarsis w2kvState : w2keyValues) {
+							if (w1kvState.isTop() || w2kvState.isTop()
+									|| TarsisUtils.possibleEqualsMatch(w1kvState, w2kvState)) {
+								res.add(Pair.of(w1, w2));
 								found = true;
 								break;
 							}
@@ -281,44 +291,48 @@ public class ReadWritePairChecker implements
 					}
 				}
 			}
-		
+
 		return res;
 	}
-	
+
 	@Override
 	public void visitGlobal(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool, CFG graph) {
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
-		
+
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
-		if(calls.isEmpty())
+		if (calls.isEmpty())
 			return true;
-		
-		for(Call call : calls) {
-			if(ReadWriteHFUtils.isReadOrWriteCall(call)) {
+
+		for (Call call : calls) {
+			if (ReadWriteHFUtils.isReadOrWriteCall(call)) {
 				try {
 					ReadWriteInfo info = ReadWriteHFUtils.getReadWriteInfo(call);
 					int[] keyParams = info.getKeyParameters();
-					
+
 					for (AnalyzedCFG<
-							SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
-						Call resolved = call instanceof UnresolvedCall ? (Call) tool.getResolvedVersion((UnresolvedCall) call, result) : call;
+							SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+									TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
+						Call resolved = call instanceof UnresolvedCall
+								? (Call) tool.getResolvedVersion((UnresolvedCall) call, result)
+								: call;
 						ArrayList<Set<Tarsis>> keyValues = new ArrayList<>();
-						
+
 						if (resolved instanceof NativeCall) {
 							NativeCall nativeCfg = (NativeCall) resolved;
 							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
@@ -328,7 +342,7 @@ public class ReadWritePairChecker implements
 							}
 						} else if (resolved instanceof CFGCall) {
 							CFGCall cfg = (CFGCall) resolved;
-							
+
 							for (CodeMember n : cfg.getTargets()) {
 								Parameter[] parameters = n.getDescriptor().getFormals();
 								keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
@@ -336,96 +350,110 @@ public class ReadWritePairChecker implements
 						} else {
 							keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
 						}
-						
+
 						AnalysisReadWriteHFInfo infoForAnalysis;
-						if(!info.hasCollection())
+						if (!info.hasCollection())
 							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
 						else {
-							Set<Tarsis> collectionValues = extractCollectionValues(call, info.getCollectionParam().intValue(), node, result);
+							Set<Tarsis> collectionValues = extractCollectionValues(call,
+									info.getCollectionParam().intValue(), node, result);
 							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, collectionValues);
 						}
-						
-						if(ReadWriteHFUtils.isReadCall(call))
+
+						if (ReadWriteHFUtils.isReadCall(call))
 							readers.add(infoForAnalysis);
-						else if(ReadWriteHFUtils.isWriteCall(call))
+						else if (ReadWriteHFUtils.isWriteCall(call))
 							writers.add(infoForAnalysis);
 					}
-					
-					
+
 				} catch (SemanticException e) {
 					System.err.println("Cannot check " + node);
 					e.printStackTrace(System.err);
 				}
 			}
-		}		
+		}
 		return true;
 	}
 
 	/**
 	 * Extract the possible states of collection values from a target call.
-	 * @param call, the target call.
-	 * @param keyParams, the array containing the position of key parameters.
+	 * 
+	 * @param call,             the target call.
+	 * @param keyParams,        the array containing the position of key
+	 *                              parameters.
 	 * @param parametersLength, the length of parameters.
-	 * @param node, the statement containing the call.
-	 * @param result, the string analysis result.
+	 * @param node,             the statement containing the call.
+	 * @param result,           the string analysis result.
+	 * 
 	 * @return the set of states.
 	 */
 	private Set<Tarsis> extractCollectionValues(Call call, int collectionParam, Statement node,
-			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result) throws SemanticException {
+			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+					TypeEnvironment<InferredTypes>>> result)
+			throws SemanticException {
 
-	
-		int par = call.getCallType().equals(CallType.STATIC) ? collectionParam : collectionParam+1;
+		int par = call.getCallType().equals(CallType.STATIC) ? collectionParam : collectionParam + 1;
 		Set<Tarsis> res = new HashSet<>();
-			
-		if(par < call.getParameters().length) {
-				
+
+		if (par < call.getParameters().length) {
+
 			AnalysisState<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> state = result
-					.getAnalysisStateAfter(call.getParameters()[par]);
-			for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node, state.getState()))
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+							TypeEnvironment<InferredTypes>>> state = result
+									.getAnalysisStateAfter(call.getParameters()[par]);
+			for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
+					state.getState()))
 				res.add(state.getState().getValueState().eval((ValueExpression) stack, node, state.getState()));
-		
+
 		}
-		
+
 		return res;
 	}
 
-	
 	/**
 	 * Extract the possible states of key values from a target call.
-	 * @param call, the target call.
-	 * @param keyParams, the array containing the position of key parameters.
+	 * 
+	 * @param call,             the target call.
+	 * @param keyParams,        the array containing the position of key
+	 *                              parameters.
 	 * @param parametersLength, the length of parameters.
-	 * @param node, the statement containing the call.
-	 * @param result, the string analysis result.
+	 * @param node,             the statement containing the call.
+	 * @param result,           the string analysis result.
+	 * 
 	 * @return the set of states.
 	 */
-	private ArrayList<Set<Tarsis>> extractKeyValues(Call call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result) throws SemanticException {
-		
+	private ArrayList<Set<Tarsis>> extractKeyValues(
+			Call call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<
+					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result)
+			throws SemanticException {
+
 		ArrayList<Set<Tarsis>> valStringDomain = new ArrayList<>(keyParams.length);
-		
-		for(int i=0; i < keyParams.length; i++) {
-			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i]+1;
+
+		for (int i = 0; i < keyParams.length; i++) {
+			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i] + 1;
 			valStringDomain.add(new HashSet<>());
-			if(par < parametersLength) {
-				
+			if (par < parametersLength) {
+
 				AnalysisState<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> state = result
-						.getAnalysisStateAfter(call.getParameters()[par]);
-				for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node, state.getState())) {
-					valStringDomain.get(i).add(state.getState().getValueState().eval((ValueExpression) stack, node,  state.getState()));
+						SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+								TypeEnvironment<InferredTypes>>> state = result
+										.getAnalysisStateAfter(call.getParameters()[par]);
+				for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
+						state.getState())) {
+					valStringDomain.get(i).add(
+							state.getState().getValueState().eval((ValueExpression) stack, node, state.getState()));
 				}
 			}
 		}
-		
+
 		return valStringDomain;
-		
+
 	}
 
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
@@ -433,7 +461,7 @@ public class ReadWritePairChecker implements
 	@Override
 	public boolean visitUnit(
 			CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			Unit unit) {
 		return true;
 	}

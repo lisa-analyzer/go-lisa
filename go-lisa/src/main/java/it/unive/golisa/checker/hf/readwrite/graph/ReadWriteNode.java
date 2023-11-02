@@ -5,11 +5,12 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeNode;
 
-public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, ReadWriteEdge>{
+public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
 
 	private final ReadWriteGraph graph;
 	private final Statement st;
 	private int offset;
+
 	/**
 	 * Builds the node.
 	 * 
@@ -21,12 +22,12 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 		this.st = st;
 		offset = st.getOffset();
 	}
-	
+
 	@Override
 	public <V> boolean accept(GraphVisitor<ReadWriteGraph, ReadWriteNode, ReadWriteEdge, V> visitor, V tool) {
 		return visitor.visit(tool, graph, this);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -51,7 +52,7 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 			return false;
 		return true;
 	}
-	
+
 	public ReadWriteGraph getGraph() {
 		return graph;
 	}
@@ -76,13 +77,13 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 	}
 
 	private int compareToSameClassAndLocation(ReadWriteNode o) {
-		
+
 		return 0;
 	}
 
 	@Override
 	public int setOffset(int offset) {
-		
+
 		return this.offset = offset;
 	}
 

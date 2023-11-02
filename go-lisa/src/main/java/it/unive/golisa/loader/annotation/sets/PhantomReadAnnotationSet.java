@@ -5,10 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
-import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.FrameworkAnnotationSet;
-import it.unive.golisa.loader.annotation.AnnotationSet.Kind;
-
 /**
  * The class represents the set of annotations for the phantom reads analysis
  * related to Hyperledger Fabric.
@@ -22,7 +18,7 @@ public class PhantomReadAnnotationSet extends TaintAnnotationSet {
 	}
 
 	static {
-		
+
 		Map<String, Set<String>> map1 = new HashMap<>();
 
 		map1.put("ChaincodeStub", Set.of("GetQueryResult", "GetHistoryForKey", "GetPrivateDataQueryResult"));
@@ -31,7 +27,7 @@ public class PhantomReadAnnotationSet extends TaintAnnotationSet {
 				Set.of("GetQueryResult", "GetHistoryForKey", "GetPrivateDataQueryResult"));
 
 		SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map1);
-		
+
 		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();
 
 		map2.put("ChaincodeStub", Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
@@ -43,5 +39,5 @@ public class PhantomReadAnnotationSet extends TaintAnnotationSet {
 
 		SINK_CONSTRUCTOR_PARAMETER_ANNOTATIONS.put(Kind.PARAM, map2);
 	}
-	
+
 }

@@ -1,28 +1,15 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import it.unive.golisa.cfg.VariableScopingCFG;
+import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.cfg.utils.CFGUtils.Search;
-import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteGraph;
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteNode;
 import it.unive.golisa.checker.hf.readwrite.graph.edges.CalleeEdge;
 import it.unive.golisa.checker.hf.readwrite.graph.edges.CallerEdge;
 import it.unive.golisa.checker.hf.readwrite.graph.edges.DeferEdge;
 import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
@@ -43,11 +30,22 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
 import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 import it.unive.lisa.util.file.FileManager;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.
- * Note that Read-Write Set Issues analysis is split in two checkers/phases.
- * This is the 2nd phase.
+ * A Go Checker for Read-Write Set Issues of Hyperledger Fabric. Note that
+ * Read-Write Set Issues analysis is split in two checkers/phases. This is the
+ * 2nd phase.
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
@@ -60,7 +58,7 @@ public class ReadWritePathChecker implements
 	 * Set of candidates to check for read after write issues.
 	 */
 	private final Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates;
-	
+
 	/**
 	 * Set of candidates to check for over-write issues.
 	 */
@@ -69,7 +67,6 @@ public class ReadWritePathChecker implements
 	private final boolean computeGraph;
 	private final Map<String, ReadWriteGraph> reconstructedGraphs;
 
-	
 	public ReadWritePathChecker(Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates,
 			Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates, boolean computeGraph) {
 		this.readAfterWriteCandidates = readAfterWriteCandidates;
@@ -80,12 +77,14 @@ public class ReadWritePathChecker implements
 
 	@Override
 	public void beforeExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+					TypeEnvironment<InferredTypes>>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
+			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+					TypeEnvironment<InferredTypes>>> tool) {
 
 		if (computeGraph) {
 			for (Entry<String, ReadWriteGraph> entry : reconstructedGraphs.entrySet()) {
@@ -108,20 +107,23 @@ public class ReadWritePathChecker implements
 
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
@@ -140,10 +142,12 @@ public class ReadWritePathChecker implements
 	private boolean isDeferredCallee;
 
 	/**
-	 * Checks the read after write candidates and triggers a warning in case of issue detection.
+	 * Checks the read after write candidates and triggers a warning in case of
+	 * issue detection.
 	 */
 	private void checkReadAfterWriteIssues(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		for (Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
 			if (CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
@@ -165,10 +169,12 @@ public class ReadWritePathChecker implements
 	}
 
 	/**
-	 * Checks the over-write candidates and triggers a warning in case of issue detection.
+	 * Checks the over-write candidates and triggers a warning in case of issue
+	 * detection.
 	 */
 	private void checkOverWriteIssue(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		for (Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : overWriteCandidates) {
 			if (CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
@@ -187,7 +193,8 @@ public class ReadWritePathChecker implements
 	}
 
 	private boolean interproceduralCheck(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Statement startNode = CFGUtils.extractTargetNodeFromGraph(graph, start);
@@ -247,30 +254,22 @@ public class ReadWritePathChecker implements
 	private boolean isMatching(CFG graph, Statement startNode, boolean isStartDeferred, Statement endNode,
 			boolean isEndDeferred) {
 		/*
-		 * #### LEGENDA r = read dr = defer read w = write df = defer write
-		 * 
-		 * ### EXECUTION CASES
-		 * 
-		 * r -> w | OK write after read w -> r | KO read after write dr -> dw | KO defer
-		 * write after defer read (semantics of defer is LIFO (Last in First out)) dw ->
-		 * dr | OK defer read after defer write (semantics of defer is LIFO (Last in
-		 * First out)) dr -> w | KO write after defer read dw -> r | OK read after defer
-		 * write w -> dr | KO defer read after write r -> dw | OK defer write after read
-		 * 
-		 * ### IMPLEMENTED CHECKS
-		 * 
-		 * w -> r | KO exist a path from w to r dr -> dw | KO exist a path from dr to dw
-		 * dr -> w | KO exist a path from dr to w w -> dr | KO exist a path from w to dr
-		 * 
-		 * ### PROGRAMMATICALLY
-		 *
-		 * !isStartDeferred -> !isEndDeferred | CFGUtils.existPath(graph, startNode,
-		 * endNode, Search.BFS) isEndDeferred -> isStartDeferred |
-		 * CFGUtils.existPath(graph, endNode, startNode, Search.BFS) isEndDeferred ->
-		 * !isStartDeferred | CFGUtils.existPath(graph, endNode, startNode, Search.BFS)
-		 * !isStartDeferred -> isEndDeferred | CFGUtils.existPath(graph, startNode,
-		 * endNode, Search.BFS)
-		 * 
+		 * #### LEGENDA r = read dr = defer read w = write df = defer write ###
+		 * EXECUTION CASES r -> w | OK write after read w -> r | KO read after
+		 * write dr -> dw | KO defer write after defer read (semantics of defer
+		 * is LIFO (Last in First out)) dw -> dr | OK defer read after defer
+		 * write (semantics of defer is LIFO (Last in First out)) dr -> w | KO
+		 * write after defer read dw -> r | OK read after defer write w -> dr |
+		 * KO defer read after write r -> dw | OK defer write after read ###
+		 * IMPLEMENTED CHECKS w -> r | KO exist a path from w to r dr -> dw | KO
+		 * exist a path from dr to dw dr -> w | KO exist a path from dr to w w
+		 * -> dr | KO exist a path from w to dr ### PROGRAMMATICALLY
+		 * !isStartDeferred -> !isEndDeferred | CFGUtils.existPath(graph,
+		 * startNode, endNode, Search.BFS) isEndDeferred -> isStartDeferred |
+		 * CFGUtils.existPath(graph, endNode, startNode, Search.BFS)
+		 * isEndDeferred -> !isStartDeferred | CFGUtils.existPath(graph,
+		 * endNode, startNode, Search.BFS) !isStartDeferred -> isEndDeferred |
+		 * CFGUtils.existPath(graph, startNode, endNode, Search.BFS)
 		 */
 
 		if (!isStartDeferred && !isEndDeferred) {
@@ -292,9 +291,10 @@ public class ReadWritePathChecker implements
 
 		return false;
 	}
-	
+
 	private boolean checkCallees(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seen, boolean isStartDeferred) {
 
 		if (seen.contains(graph))
@@ -342,7 +342,8 @@ public class ReadWritePathChecker implements
 	}
 
 	private boolean checkCalleesRecursive(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seen) {
 
 		if (seen.contains(graph))
@@ -390,9 +391,10 @@ public class ReadWritePathChecker implements
 		}
 		return false;
 	}
-	
+
 	private boolean checkCallers(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Collection<CodeMember> callers = tool.getCallers(graph);
@@ -409,10 +411,11 @@ public class ReadWritePathChecker implements
 					if (sTarget != null)
 						if (interproceduralCheck(tool, callerCFG, sTarget, end, seenCallees, seenCallers)) {
 							/*
-							 * 
-							 * if(computeGraph){ ReadWriteNode node = new ReadWriteNode(tmpGraph, sTarget);
-							 * tmpGraph.addNode(node); //tmpGraph.addEdge(new ReadWriteEdge(node,
-							 * destinationNode, InfoEdgeType.CALLER)); destinationNode = node; }
+							 * if(computeGraph){ ReadWriteNode node = new
+							 * ReadWriteNode(tmpGraph, sTarget);
+							 * tmpGraph.addNode(node); //tmpGraph.addEdge(new
+							 * ReadWriteEdge(node, destinationNode,
+							 * InfoEdgeType.CALLER)); destinationNode = node; }
 							 */
 							return true;
 						}
@@ -423,7 +426,8 @@ public class ReadWritePathChecker implements
 	}
 
 	public Collection<CodeMember> getCalleesTransitively(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CodeMember cm) {
 		VisitOnceWorkingSet<CodeMember> ws = VisitOnceFIFOWorkingSet.mk();
 		tool.getCallees(cm).stream().forEach(ws::push);
@@ -434,14 +438,16 @@ public class ReadWritePathChecker implements
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
 	public boolean visitUnit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
 			Unit unit) {
 		return true;
 	}

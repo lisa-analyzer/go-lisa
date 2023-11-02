@@ -164,39 +164,36 @@ public class GoMultiAssignment extends Expression {
 		AnalysisState<A> result = rightState;
 
 		for (int i = 0; i < ids.length; i++) {
-
 			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
 				continue;
 
 			List<BlockInfo> blockInfo = blocksToDeclaration.get(ids[i]);
 			AnalysisState<A> idState = ids[i].forwardSemantics(rightState, interprocedural, expressions);
-			AnalysisState<A> tmp2 = rightState.bottom();
+			AnalysisState<A> tmp = rightState.bottom();
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference dereference = new HeapDereference(getStaticType(),
+				HeapDereference deref = new HeapDereference(getStaticType(),
 						retExp, getLocation());
 				AccessChild access;
 				if (retExp.getStaticType() instanceof GoTupleType)
-					access = new AccessChild(((GoTupleType) retExp.getStaticType()).getTypeAt(i), dereference,
+					access = new AccessChild(((GoTupleType) retExp.getStaticType()).getTypeAt(i), deref,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				else
-					access = new AccessChild(Untyped.INSTANCE, dereference,
+					access = new AccessChild(Untyped.INSTANCE, deref,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 
-				AnalysisState<A> tmp = rightState.bottom();
 				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 					AnalysisState<A> assign = assignScopedId(rightState, idExp,
 							access, blockInfo, ids[i]);
 					tmp = tmp.lub(assign);
 				}
-				tmp2 = tmp.lub(tmp2);
 			}
 
-			result = tmp2;
+			result = tmp;
 		}
 
 		AnalysisState<A> finalResult = result;
 		for (int i = 0; i < ids.length; i++) {
-			if (ids[i] instanceof VariableRef && GoLangUtils.refersToBlankIdentifier((VariableRef) ids[i]))
+			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
 				continue;
 
 			AnalysisState<A> idState = ids[i].forwardSemantics(result, interprocedural, expressions);
@@ -208,17 +205,17 @@ public class GoMultiAssignment extends Expression {
 			AnalysisState<A> partialResult = entryState.bottom();
 
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference dereference = new HeapDereference(getStaticType(),
+				HeapDereference deref = new HeapDereference(getStaticType(),
 						retExp, getLocation());
 				AccessChild access;
 				Type rightExpType = retExp.getStaticType();
 				if (rightExpType instanceof ReferenceType
 						&& ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
 					Type typeAtPos = ((GoTupleType) ((ReferenceType) rightExpType).getInnerType()).getTypeAt(i);
-					access = new AccessChild(typeAtPos, dereference,
+					access = new AccessChild(typeAtPos, deref,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				} else
-					access = new AccessChild(Untyped.INSTANCE, dereference,
+					access = new AccessChild(Untyped.INSTANCE, deref,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 					AnalysisState<A> assign;
@@ -252,7 +249,7 @@ public class GoMultiAssignment extends Expression {
 	public Expression[] getIds() {
 		return ids;
 	}
-	
+
 	/**
 	 * Yields the expression to assign.
 	 * 

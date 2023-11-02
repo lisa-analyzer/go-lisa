@@ -6,6 +6,27 @@
 
 GoLiSA is a static analyzer based on abstract interpretation for smart contracts and decentralized applications written in Go. At the moment, GoLiSA provides static analyses based on information flow analyses for detecting critical non-deterministic behaviors in blockchain software written in Go, supporting Hyperledger Fabric, Cosmos SDK, and Tendermint frameworks.
 
+## Building GoLiSA
+Compiling GoLiSA requires:
+- JDK >= 11
+- [Gradle](https://gradle.org/install/) >= 6.0 
+
+```
+git clone https://github.com/lisa-analyzer/go-lisa
+cd go-lisa/go-lisa
+./gradlew build
+```
+In order to bundle GoLiSA as a distribution:
+```
+./gradlew distZip`
+unzip build/distributions/go-lisa-0.1 
+```
+Finally, to run GoLiSA:
+
+```
+./build/distributions/go-lisa-0.1/bin/go-lisa
+```
+
 ## Usage
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) and it expects four parameters:
 - `-i path`: the Go file to be analyzed

@@ -252,4 +252,13 @@ public class GoMultiAssignment extends Expression {
 	public Expression[] getIds() {
 		return ids;
 	}
+	
+	/**
+	 * Yields the expression to assign.
+	 * 
+	 * @return the expression to assign
+	 */
+	public Expression getExpressionToAssign() {
+		return e;
+	}
 }

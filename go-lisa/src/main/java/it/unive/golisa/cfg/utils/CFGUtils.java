@@ -180,7 +180,7 @@ public class CFGUtils {
 		return cfg.getNodes().stream().allMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
 
-	private static boolean matchNodeOrSubExpressions(Statement st, Function<Statement, Boolean> condition) {
+	public static boolean matchNodeOrSubExpressions(Statement st, Function<Statement, Boolean> condition) {
 		Set<Statement> seen = new HashSet<>();
 		return matchNodeOrSubExpressionsRecursive(st, condition, seen);
 	}

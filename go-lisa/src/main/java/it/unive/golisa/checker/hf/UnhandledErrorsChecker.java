@@ -50,8 +50,6 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 												+ (ReadWriteHFUtils.isReadCall((Call) expr) ? "read" : "write")
 												+ " operation. It is discarded during the assignment.");
 							else {
-								// TODO: check if the err variable is used in a
-								// conditional statement
 								boolean found = false;
 								for (ControlFlowStructure cfs : graph.getControlFlowStructures()) {
 									if (cfs instanceof IfThenElse) {
@@ -59,8 +57,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 										// TODO: add condition to avoid
 										// overwrite of err
 										) {
-											if (isVariableRefUsedInCondition(multiAssign.getIds()[1],
-													cfs.getCondition())) {
+											if (isVariableRefUsedInCondition(ref, cfs.getCondition())) {
 												found = true;
 												break;
 											}
@@ -70,10 +67,9 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 								}
 
 								if (!found)
-									tool.warnOn(node,
-											"Unhandled error of a blockchain "
-													+ (ReadWriteHFUtils.isReadCall((Call) expr) ? "read" : "write")
-													+ " operation. It seems not checked.");
+									tool.warnOn(node, "Unhandled error of a blockchain "
+											+ (ReadWriteHFUtils.isReadCall((Call) expr) ? "read" : "write")
+											+ " operation. It seems not checked in any condition statements in the method");
 							}
 						}
 
@@ -83,9 +79,13 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		return true;
 	}
 
-	private boolean isVariableRefUsedInCondition(Expression expression, Statement condition) {
-		// TODO
-		return false;
+	private boolean isVariableRefUsedInCondition(VariableRef ref, Statement condition) {
+		return CFGUtils.matchNodeOrSubExpressions(condition, e -> {
+			if (e instanceof VariableRef) {
+				return ((VariableRef) e).getVariable().getName().equals(ref.getVariable().getName());
+			}
+			return false;
+		});
 	}
 
 	@Override

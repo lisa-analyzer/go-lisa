@@ -7,6 +7,7 @@ import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
@@ -15,6 +16,7 @@ import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
 import it.unive.golisa.loader.annotation.sets.TaintAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
+import it.unive.lisa.DefaultConfiguration;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
@@ -128,6 +130,8 @@ public class GoLiSA {
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new IntegrityNIChecker());
 			break;
+		case "unhandled-errors":
+			conf.syntacticChecks.add(new UnhandledErrorsChecker());
 		default:
 
 		}

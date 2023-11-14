@@ -3,10 +3,13 @@ package it.unive.golisa.cfg.utils;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -60,7 +63,7 @@ public class CFGUtils {
 		return false;
 	}
 
-	public static Statement extractTargetNodeFromGraph(CFG graph, Statement node) {
+	public static Statement extractTargetNodeFromGraph(CodeGraph<CFG, Statement, Edge> graph, Statement node) {
 		for (Statement n : graph.getNodes())
 			if (equalsOrContains(n, node))
 				return n;
@@ -207,5 +210,49 @@ public class CFGUtils {
 
 		return false;
 	}
+
+	public static CodeGraph<CFG, Statement, Edge> getPath(CFG graph, Statement source, Statement destination) {
+		if (containsNode(graph, source) && containsNode(graph, destination))
+			return getSearchGraphDFS(graph, source, destination);
+		
+		return null;
+	}
+
+	private static CodeGraph<CFG, Statement, Edge> getSearchGraphDFS(CFG graph, Statement source,
+			Statement destination) {
+		
+		if (containsNode(graph, source) && containsNode(graph, destination)) {
+			Set<Statement> seen = new HashSet<>();
+			CFG res = new CFG(graph.getDescriptor());
+			getSearchGraphRecursiveDFS(graph, extractTargetNodeFromGraph(graph, source), destination, seen, res);
+			return res;
+		}
+		return null;
+	}
+
+	private static Statement getSearchGraphRecursiveDFS(CFG graph, Statement source, Statement destination, Set<Statement> seen, CodeGraph<CFG, Statement, Edge> res) {
+		if (!seen.contains(source)) {
+			seen.add(source);
+
+			if (equalsOrContains(source, destination)) {
+				res.addNode(source);
+				return source;
+			}
+			
+			Collection<Edge> edges = graph.getOutgoingEdges(source);
+			Iterator<Edge> iter = edges.iterator();
+			while (iter.hasNext()) {
+				Edge e = iter.next();
+				Statement st = getSearchGraphRecursiveDFS(graph, e.getDestination(), destination, seen, res);
+				if (st != null) {
+					res.addNode(e.getDestination());
+					res.addEdge(new SequentialEdge(e.getDestination(), st));
+					return e.getDestination();
+				}
+			}
+		}
+		return null;
+	}
+	
 
 }

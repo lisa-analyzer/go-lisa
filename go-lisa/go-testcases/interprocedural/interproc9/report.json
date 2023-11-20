@@ -1,16 +1,16 @@
 {
   "warnings" : [ ],
-  "files" : [ "_[int__,_int__]_main.f()_-1465131600.json", "_[int__,_int__]_main.f()_-1465131631.json", "report.json", "untyped_main.blankAssig()_-1465133398.json", "untyped_main.main().json" ],
+  "files" : [ "_[int__,_int__]_main.f()_379913160.json", "_[int__,_int__]_main.f()_379913191.json", "report.json", "untyped_main.blankAssig()_1354049512.json", "untyped_main.main().json" ],
   "info" : {
     "cfgs" : "3",
-    "duration" : "482ms",
-    "end" : "2023-10-18T12:38:55.661+02:00",
+    "duration" : "531ms",
+    "end" : "2023-11-20T11:44:57.487+01:00",
     "expressions" : "9",
     "files" : "4",
     "globals" : "0",
     "members" : "5",
     "programs" : "1",
-    "start" : "2023-10-18T12:38:55.179+02:00",
+    "start" : "2023-11-20T11:44:56.956+01:00",
     "statements" : "6",
     "units" : "1",
     "version" : "0.1b9",
@@ -33,6 +33,6 @@
     "syntacticChecks" : "",
     "useWideningPoints" : "true",
     "wideningThreshold" : "5",
-    "workdir" : "go-outputs/blankidentifier"
+    "workdir" : "go-outputs/interprocedural/interproc9"
   }
 }

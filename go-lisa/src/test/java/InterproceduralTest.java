@@ -134,4 +134,19 @@ public class InterproceduralTest extends GoAnalysisTestExecutor {
 		conf.programFile = "interprocedural.go";
 		perform(conf);
 	}
+
+	@Test
+	public void testInteproc9() throws IOException, AnalysisSetupException {
+		CronConfiguration conf = new CronConfiguration();
+		conf.jsonOutput = true;
+		conf.callGraph = new RTACallGraph();
+		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+		conf.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(),
+				new ValueEnvironment<>(new Interval()),
+				new TypeEnvironment<>(new InferredTypes()));
+		conf.serializeResults = true;
+		conf.testDir = "interprocedural/interproc9";
+		conf.programFile = "interprocedural.go";
+		perform(conf);
+	}
 }

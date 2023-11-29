@@ -57,10 +57,10 @@ public class DifferentCrossChannelInvocationsChecker implements
 					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
 							TypeEnvironment<InferredTypes>>> tool) {
 
-		Statement[] invocations = (Statement[]) crossChannelInvocations.keySet().toArray();
+		Statement[] invocations = crossChannelInvocations.keySet().toArray(new Statement[]{});
 		boolean isDiff = false;
 		for (int i = 0; i < invocations.length - 1; i++) {
-			for (int j = i + 1; j < invocations.length; i++) {
+			for (int j = i + 1; j < invocations.length; j++) {
 				Set<Tarsis> t1Set = crossChannelInvocations.get(invocations[i]);
 				Set<Tarsis> t2Set = crossChannelInvocations.get(invocations[j]);
 				for (Tarsis t1 : t1Set) {

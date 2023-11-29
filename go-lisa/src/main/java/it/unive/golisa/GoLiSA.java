@@ -7,6 +7,7 @@ import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.hf.DifferentCrossChannelInvocationsChecker;
 import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
@@ -23,6 +24,7 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.conf.LiSAConfiguration.GraphType;
@@ -129,6 +131,14 @@ public class GoLiSA {
 					new InferenceSystem<>(new IntegrityNIDomain()),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new IntegrityNIChecker());
+			break;
+		case "dcci":
+			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+					new ValueEnvironment<>(new Tarsis()),
+					new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new DifferentCrossChannelInvocationsChecker());
 			break;
 		case "unhandled-errors":
 			conf.syntacticChecks.add(new UnhandledErrorsChecker());

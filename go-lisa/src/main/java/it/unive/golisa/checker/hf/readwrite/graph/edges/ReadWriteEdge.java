@@ -1,15 +1,21 @@
 package it.unive.golisa.checker.hf.readwrite.graph.edges;
 
+
+import java.util.Objects;
+
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteGraph;
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteNode;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeEdge;
-import java.util.Objects;
 
 public abstract class ReadWriteEdge implements CodeEdge<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
-
+	
+	
+	
 	private final ReadWriteNode source;
 	private final ReadWriteNode destination;
+	
+	
 
 	public ReadWriteEdge(ReadWriteNode source, ReadWriteNode destination) {
 		this.source = source;
@@ -26,11 +32,12 @@ public abstract class ReadWriteEdge implements CodeEdge<ReadWriteGraph, ReadWrit
 		return destination;
 	}
 
+
 	@Override
 	public <V> boolean accept(GraphVisitor<ReadWriteGraph, ReadWriteNode, ReadWriteEdge, V> visitor, V tool) {
 		return visitor.visit(tool, source.getGraph(), this);
 	}
-
+	
 	@Override
 	public String toString() {
 		return source + " " + getEdgeSymbol() + " " + destination;
@@ -68,6 +75,7 @@ public abstract class ReadWriteEdge implements CodeEdge<ReadWriteGraph, ReadWrit
 		return false;
 	}
 
+	
 	public abstract String getEdgeSymbol();
 
 }

@@ -1,14 +1,5 @@
 package it.unive.golisa.checker.hf.readwrite.graph;
 
-import it.unive.golisa.checker.hf.readwrite.graph.edges.ReadWriteEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
-import it.unive.lisa.outputs.DotGraph;
-import it.unive.lisa.outputs.serializableGraph.SerializableEdge;
-import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
-import it.unive.lisa.outputs.serializableGraph.SerializableNode;
-import it.unive.lisa.outputs.serializableGraph.SerializableNodeDescription;
-import it.unive.lisa.outputs.serializableGraph.SerializableValue;
-import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,15 +13,26 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
+
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
 
+import it.unive.golisa.checker.hf.readwrite.graph.edges.ReadWriteEdge;
+import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
+import it.unive.lisa.outputs.DotGraph;
+import it.unive.lisa.outputs.serializableGraph.SerializableEdge;
+import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
+import it.unive.lisa.outputs.serializableGraph.SerializableNode;
+import it.unive.lisa.outputs.serializableGraph.SerializableNodeDescription;
+import it.unive.lisa.outputs.serializableGraph.SerializableValue;
+import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
+
 public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
 
 	private final String name;
-
+	
 	public ReadWriteGraph(String name) {
 		super(new StandardEdge(null, null));
 		this.name = name;
@@ -48,7 +50,7 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 		Map<ReadWriteNode, Integer> nodeIds = new HashMap<>();
 		SortedSet<SerializableNodeDescription> descrs = new TreeSet<>();
 		SortedSet<SerializableEdge> edges = new TreeSet<>();
-
+		
 		int counter = 0;
 		for (ReadWriteNode node : getNodes()) {
 			addNode(counter, nodes, descrs, node, descriptionGenerator);
@@ -59,11 +61,12 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 		for (ReadWriteNode src : getNodes())
 			for (ReadWriteNode dest : followersOf(src))
 				for (ReadWriteEdge edge : list.getEdgesConnecting(src, dest))
-					edges.add(new SerializableEdge(nodeIds.get(src), nodeIds.get(dest),
-							edge.getClass().getSimpleName()));
+						edges.add(new SerializableEdge(nodeIds.get(src), nodeIds.get(dest),
+								edge.getClass().getSimpleName()));
 
 		return new CustomSerializableGraph(name, null, nodes, edges, descrs);
 	}
+
 
 	private void addNode(
 			int id,
@@ -71,8 +74,7 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 			SortedSet<SerializableNodeDescription> descrs,
 			ReadWriteNode node,
 			BiFunction<ReadWriteGraph, ReadWriteNode, SerializableValue> descriptionGenerator) {
-		SerializableNode n = new SerializableNode(id, Collections.emptyList(),
-				node.toString() + "\n\n" + "Location: " + node.getStatement().getLocation());
+		SerializableNode n = new SerializableNode(id, Collections.emptyList(), node.toString() +"\n\n"+ "Location: " + node.getStatement().getLocation());
 		nodes.add(n);
 		if (descriptionGenerator != null) {
 			SerializableValue value = descriptionGenerator.apply(this, node);
@@ -81,6 +83,7 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 		}
 	}
 
+	
 	static class CustomSerializableGraph extends SerializableGraph {
 
 		public CustomSerializableGraph(String name, String description, SortedSet<SerializableNode> nodes,
@@ -237,20 +240,17 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 				StringBuilder builder = new StringBuilder();
 				builder.append("<");
 				builder.append("<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" cellborder=\"0\">");
-				builder.append(
-						"<tr><td align=\"right\">write instruction border&nbsp;</td><td align=\"left\"><font color=\"");
+				builder.append("<tr><td align=\"right\">write instruction border&nbsp;</td><td align=\"left\"><font color=\"");
 				builder.append(SPECIAL_NODE_COLOR);
 				builder.append("\">");
 				builder.append(SPECIAL_NODE_COLOR);
 				builder.append("</font>, single</td></tr>");
-				builder.append(
-						"<tr><td align=\"right\">read instruction border&nbsp;</td><td align=\"left\"><font color=\"");
+				builder.append("<tr><td align=\"right\">read instruction border&nbsp;</td><td align=\"left\"><font color=\"");
 				builder.append(SPECIAL_NODE_COLOR);
 				builder.append("\">");
 				builder.append(SPECIAL_NODE_COLOR);
 				builder.append("</font>, double</td></tr>");
-				builder.append(
-						"<tr><td align=\"right\">other instructions border&nbsp;</td><td align=\"left\"><font color=\"");
+				builder.append("<tr><td align=\"right\">other instructions border&nbsp;</td><td align=\"left\"><font color=\"");
 				builder.append(NORMAL_NODE_COLOR);
 				builder.append("\">");
 				builder.append(NORMAL_NODE_COLOR);

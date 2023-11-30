@@ -13,11 +13,11 @@ import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
+import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
-import it.unive.golisa.loader.annotation.sets.TaintAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.PhantomReadAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
-import it.unive.lisa.DefaultConfiguration;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
@@ -114,35 +114,57 @@ public class GoLiSA {
 		conf.jsonOutput = true;
 		conf.optimize = false;
 
+		AnnotationSet[] annotationSet = new AnnotationSet[] {};
+		
 		switch (analysis) {
 
-		case "taint":
-			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new TaintDomain()),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new TaintChecker());
-			break;
-		case "non-interference":
-			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new InferenceSystem<>(new IntegrityNIDomain()),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new IntegrityNIChecker());
-			break;
-		case "dcci":
-			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new Tarsis()),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new DifferentCrossChannelInvocationsChecker());
-			break;
-		case "unhandled-errors":
-			conf.syntacticChecks.add(new UnhandledErrorsChecker());
-		default:
+			case "non-determinism":
+				annotationSet = FrameworkNonDeterminismAnnotationSetFactory
+				.getAnnotationSets(cmd.getOptionValue("framework"));
+				conf.syntacticChecks.add(new GoRoutineSourcesChecker());
+				conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+				conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+						new ValueEnvironment<>(new TaintDomain()),
+						new TypeEnvironment<>(new InferredTypes()));
+				conf.semanticChecks.add(new TaintChecker());
+				break;
+			case "non-determinism-ni":
+				annotationSet = FrameworkNonDeterminismAnnotationSetFactory
+				.getAnnotationSets(cmd.getOptionValue("framework"));
+				conf.syntacticChecks.add(new GoRoutineSourcesChecker());
+				conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+				conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+						new InferenceSystem<>(new IntegrityNIDomain()),
+						new TypeEnvironment<>(new InferredTypes()));
+				conf.semanticChecks.add(new IntegrityNIChecker());
+				break;
+			case "phantom-read":
+				annotationSet = new AnnotationSet[] {new PhantomReadAnnotationSet()};
+				conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+				conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+						new ValueEnvironment<>(new TaintDomain()),
+						new TypeEnvironment<>(new InferredTypes()));
+				conf.semanticChecks.add(new TaintChecker());
+				break;
+			case "ucci":
+				//TODO: add configuration for UCCI analysis
+				//break;
+				throw new IllegalArgumentException("The UCCI analysis is currently not supported");
+			case "dcci":
+				conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+				conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+						new ValueEnvironment<>(new Tarsis()),
+						new TypeEnvironment<>(new InferredTypes()));
+				conf.semanticChecks.add(new DifferentCrossChannelInvocationsChecker());
+				break;
+			case "read-write":
+				//TODO: add configuration for read-write analysis
+				//break;	
+				throw new IllegalArgumentException("The read-write analysis is currently not supported");
+			case "unhandled-errors":
+				conf.syntacticChecks.add(new UnhandledErrorsChecker());
+				
+			default:
 
 		}
 
@@ -156,8 +178,6 @@ public class GoLiSA {
 
 		try {
 
-			TaintAnnotationSet[] annotationSet = FrameworkNonDeterminismAnnotationSetFactory
-					.getAnnotationSets(cmd.getOptionValue("framework"));
 			program = GoFrontEnd.processFile(filePath);
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annotationSet);

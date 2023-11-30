@@ -1,5 +1,6 @@
 package it.unive.golisa.analysis.entrypoints;
 
+import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.sets.TaintAnnotationSet;
 import it.unive.lisa.program.Program;
@@ -67,16 +68,18 @@ public class EntryPointsUtils {
 	 */
 	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			TaintAnnotationSet... annotationSets) {
+			AnnotationSet... annotationSets) {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
-		for (TaintAnnotationSet as : annotationSets) {
-			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
-			appliedAnnotations.stream()
-					.forEach(e -> {
-						if (sources.contains(e.getLeft()))
-							descriptors.add(e.getRight());
-					});
+		for (AnnotationSet as : annotationSets) {
+			if(as instanceof TaintAnnotationSet) {
+				Set<? extends CodeAnnotation> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
+				appliedAnnotations.stream()
+						.forEach(e -> {
+							if (sources.contains(e.getLeft()))
+								descriptors.add(e.getRight());
+						});
+			}
 		}
 
 		return descriptors;
@@ -94,7 +97,7 @@ public class EntryPointsUtils {
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			TaintAnnotationSet... annotationSets) {
+			AnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
 

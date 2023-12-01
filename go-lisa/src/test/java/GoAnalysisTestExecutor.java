@@ -29,8 +29,9 @@ import java.util.Objects;
 public abstract class GoAnalysisTestExecutor {
 
 	protected static final String EXPECTED_RESULTS_DIR = "go-testcases";
-	protected static final String ACTUAL_RESULTS_DIR = "go-outputs";
 
+	protected static final String ACTUAL_RESULTS_DIR = "go-outputs";
+	
 	/**
 	 * Performs a test, running an analysis. The test will fail if:
 	 * <ul>
@@ -51,6 +52,16 @@ public abstract class GoAnalysisTestExecutor {
 	 *                 will be overwritten by the computed workdir)
 	 */
 	public void perform(CronConfiguration conf) {
+		perform(conf, Phase.None);
+	}
+	
+	protected enum Phase {
+		None,
+		Phase1,
+		Phase2
+	}
+	
+	protected void perform(CronConfiguration conf, Phase phase) {
 		String testMethod = getCaller();
 		System.out.println("### Testing " + testMethod);
 		Objects.requireNonNull(conf);
@@ -67,7 +78,7 @@ public abstract class GoAnalysisTestExecutor {
 
 		Program program = readProgram(target, conf);
 
-		setupWorkdir(conf, actualPath);
+		setupWorkdir(conf, actualPath, phase);
 
 		conf.jsonOutput = true;
 
@@ -76,8 +87,8 @@ public abstract class GoAnalysisTestExecutor {
 
 		run(conf, program);
 
-		File expFile = Paths.get(expectedPath.toString(), LiSA.REPORT_NAME).toFile();
-		File actFile = Paths.get(actualPath.toString(), LiSA.REPORT_NAME).toFile();
+		File expFile = Paths.get(expectedPath.toString() + File.separatorChar + phase, LiSA.REPORT_NAME).toFile();
+		File actFile = Paths.get(actualPath.toString() + File.separatorChar + phase, LiSA.REPORT_NAME).toFile();
 
 		if (!expFile.exists()) {
 			boolean update = "true".equals(System.getProperty("lisa.cron.update")) || conf.forceUpdate;
@@ -238,8 +249,8 @@ public abstract class GoAnalysisTestExecutor {
 		}
 	}
 
-	private void setupWorkdir(LiSAConfiguration configuration, Path actualPath) {
-		File workdir = actualPath.toFile();
+	private void setupWorkdir(LiSAConfiguration configuration, Path actualPath, Phase phase) {
+		File workdir = phase == Phase.None ? actualPath.toFile() : new File(actualPath.toString()+ File.separatorChar + phase);
 		try {
 			FileManager.forceDeleteFolder(workdir.toString());
 		} catch (IOException e) {
@@ -346,4 +357,19 @@ public abstract class GoAnalysisTestExecutor {
 		// 4: caller
 		return trace[4].getClassName() + "::" + trace[4].getMethodName();
 	}
+	
+	protected void prePhase2(CronConfiguration confPhase1, CronConfiguration confPhase2) {
+		
+	}
+	
+	public void performAnalysisIn2Phases(CronConfiguration confPhase1, CronConfiguration confPhase2) {
+		System.out.println("### Testing in 2 Phases ");
+		System.out.println("### Running Phase 1");
+		perform(confPhase1, Phase.Phase1);
+		prePhase2(confPhase1, confPhase2);
+		System.out.println("### Running Phase 2");
+		perform(confPhase2, Phase.Phase2);
+		
+	}
+	
 }

@@ -1,0 +1,42 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/unhandled-errors/unhandled-errors.go':17:35] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Unhandled error of a blockchain read operation. It is discarded during the assignment."
+  }, {
+    "message" : "['go-testcases/unhandled-errors/unhandled-errors.go':19:37] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Unhandled error of a blockchain read operation. It seems not checked in any condition statements in the method"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "65ms",
+    "end" : "2023-12-01T20:37:05.996+01:00",
+    "expressions" : "21",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "38",
+    "programs" : "1",
+    "start" : "2023-12-01T20:37:05.931+01:00",
+    "statements" : "4",
+    "units" : "10",
+    "version" : "0.1b9",
+    "warnings" : "2"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "UnhandledErrorsChecker",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/unhandled-errors"
+  }
+}

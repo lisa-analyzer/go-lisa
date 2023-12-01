@@ -129,7 +129,7 @@ public class GoLiSA {
 		boolean require2Phase = false;
 
 		ReadWritePairChecker readwritePhase1 = null;
-
+		File dirPhase1 = null;
 		switch (analysis) {
 
 		case "non-determinism":
@@ -160,7 +160,14 @@ public class GoLiSA {
 		case "ucci":
 			// TODO: add configuration for UCCI analysis
 			require2Phase = true;
-			// break;
+		/*
+			dirPhase1 = new File(outputDir, "Phase1");
+			if (!dirPhase1.exists())
+				dirPhase1.mkdirs();
+
+			conf.workdir = dirPhase1.getAbsolutePath();
+			break;
+		*/
 			throw new IllegalArgumentException("The UCCI analysis is currently not supported");
 		case "dcci":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
@@ -178,11 +185,11 @@ public class GoLiSA {
 			readwritePhase1 = new ReadWritePairChecker();
 			conf.semanticChecks.add(readwritePhase1);
 
-			File theDirP1 = new File(outputDir, "Phase1");
-			if (!theDirP1.exists())
-				theDirP1.mkdirs();
+			dirPhase1 = new File(outputDir, "Phase1");
+			if (!dirPhase1.exists())
+				dirPhase1.mkdirs();
 
-			conf.workdir = theDirP1.getAbsolutePath();
+			conf.workdir = dirPhase1.getAbsolutePath();
 			break;
 		case "unhandled-errors":
 			conf.syntacticChecks.add(new UnhandledErrorsChecker());
@@ -197,6 +204,9 @@ public class GoLiSA {
 
 		lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), conf);
 
+		
+		File dirPhase2 = new File(outputDir, "Phase2"); 
+		
 		if (require2Phase) {
 
 			conf = new LiSAConfiguration();
@@ -204,10 +214,11 @@ public class GoLiSA {
 			conf.jsonOutput = true;
 			conf.optimize = false;
 			
-			File theDirP2 = new File(outputDir, "Phase2"); if (!theDirP2.exists())
-			theDirP2.mkdirs();
+			dirPhase2 = new File(outputDir, "Phase2"); 
+			if (!dirPhase2.exists())
+				dirPhase2.mkdirs();
 			
-			conf.workdir = theDirP2.getAbsolutePath();
+			conf.workdir = dirPhase2.getAbsolutePath();
 			conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 
 			switch (analysis) {

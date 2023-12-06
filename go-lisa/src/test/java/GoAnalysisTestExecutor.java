@@ -87,8 +87,8 @@ public abstract class GoAnalysisTestExecutor {
 
 		run(conf, program);
 
-		File expFile = Paths.get(expectedPath.toString() + File.separatorChar + phase, LiSA.REPORT_NAME).toFile();
-		File actFile = Paths.get(actualPath.toString() + File.separatorChar + phase, LiSA.REPORT_NAME).toFile();
+		File expFile = Paths.get(expectedPath.toString(), phase.toString(), LiSA.REPORT_NAME).toFile();
+		File actFile = Paths.get(actualPath.toString(), phase.toString(), LiSA.REPORT_NAME).toFile();
 
 		if (!expFile.exists()) {
 			boolean update = "true".equals(System.getProperty("lisa.cron.update")) || conf.forceUpdate;
@@ -101,7 +101,8 @@ public abstract class GoAnalysisTestExecutor {
 			}
 		}
 
-		compare(conf, expectedPath, actualPath, expFile, actFile, false);
+		compare(conf, phase == Phase.None ? expectedPath : Paths.get(expectedPath.toString(), phase.toString()), 
+					  phase == Phase.None ? actualPath : Paths.get(actualPath.toString(), phase.toString()), expFile, actFile, false);
 
 		if (conf.compareWithOptimization && !conf.optimize) {
 			System.out.println("### Testing " + testMethod + " with optimization enabled");
@@ -250,7 +251,7 @@ public abstract class GoAnalysisTestExecutor {
 	}
 
 	private void setupWorkdir(LiSAConfiguration configuration, Path actualPath, Phase phase) {
-		File workdir = phase == Phase.None ? actualPath.toFile() : new File(actualPath.toString()+ File.separatorChar + phase);
+		File workdir = phase == Phase.None ? actualPath.toFile() : new File(actualPath.toString(), phase.toString());
 		try {
 			FileManager.forceDeleteFolder(workdir.toString());
 		} catch (IOException e) {

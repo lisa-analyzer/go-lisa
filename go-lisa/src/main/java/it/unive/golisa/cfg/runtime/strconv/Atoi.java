@@ -89,6 +89,11 @@ public class Atoi extends NativeCFG {
 			super(cfg, location, "Atoi", GoTupleType.getTupleTypeOf(location, GoIntType.INSTANCE, GoErrorType.INSTANCE),
 					expr);
 		}
+		
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(

@@ -57,6 +57,11 @@ public class HtmlEscape extends NativeCFG {
 		public void setOriginatingStatement(Statement st) {
 			original = st;
 		}
+		
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
 
 		/**
 		 * Builds the pluggable statement.

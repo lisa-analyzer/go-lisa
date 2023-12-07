@@ -10,6 +10,7 @@ import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.type.ReferenceType;
@@ -44,5 +45,10 @@ public class GoNew extends NaryExpression {
 		MemoryAllocation created = new MemoryAllocation(getStaticType(), getLocation(), new Annotations(), false);
 		HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), created, getLocation());
 		return state.smallStepSemantics(ref, this);
+	}
+	
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 }

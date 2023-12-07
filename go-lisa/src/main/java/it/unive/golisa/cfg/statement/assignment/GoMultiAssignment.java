@@ -89,15 +89,8 @@ public class GoMultiAssignment extends Expression {
 		for (Expression id : ids)
 			id.setParentStatement(this);
 	}
-
-	@Override
-	public int setOffset(int offset) {
-		this.offset = offset;
-		ids[0].setOffset(offset + 1);
-		for (int i = 1; i < ids.length; i++)
-			ids[i].setOffset(ids[i - 1].getOffset() + 1);
-		return e.setOffset(ids[ids.length - 1].getOffset() + 1);
-	}
+	
+	
 
 	@Override
 	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
@@ -257,5 +250,10 @@ public class GoMultiAssignment extends Expression {
 	 */
 	public Expression getExpressionToAssign() {
 		return e;
+	}
+
+	@Override
+	protected int compareSameClass(Statement o) {
+		return 0; // nothing else to compare
 	}
 }

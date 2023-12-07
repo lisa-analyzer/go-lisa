@@ -9,6 +9,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
@@ -28,6 +29,11 @@ public class GoChannelSend extends BinaryExpression {
 	 */
 	public GoChannelSend(CFG cfg, CodeLocation location, Expression left, Expression right) {
 		super(cfg, location, "<-", left, right);
+	}
+	
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	@Override

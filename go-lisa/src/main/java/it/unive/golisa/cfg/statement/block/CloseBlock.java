@@ -35,15 +35,15 @@ public class CloseBlock extends Statement {
 	}
 
 	@Override
-	public int setOffset(int offset) {
-		return this.offset = offset;
+	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
+		return visitor.visit(tool, getCFG(), this);
 	}
 
 	@Override
-	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		return true;
+	protected int compareSameClass(Statement o) {
+		return 0; // nothing else to compare
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Close block: " + open.getLocation();

@@ -15,6 +15,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.ReferenceType;
@@ -37,6 +38,11 @@ public class GoRangeGetNextIndex extends NaryExpression {
 	 */
 	public GoRangeGetNextIndex(CFG cfg, CodeLocation location, Expression rangeItem) {
 		super(cfg, location, "GoRangeGetNextIndex", computeType(rangeItem.getStaticType()));
+	}
+	
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	private static Type computeType(Type type) {

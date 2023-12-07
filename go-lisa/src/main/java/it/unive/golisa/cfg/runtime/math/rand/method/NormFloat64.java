@@ -79,6 +79,11 @@ public class NormFloat64 extends NativeCFG {
 		public NormFloat64Impl(CFG cfg, CodeLocation location, Expression expr) {
 			super(cfg, location, "NormFloat64Impl", GoFloat64Type.INSTANCE, expr);
 		}
+		
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(

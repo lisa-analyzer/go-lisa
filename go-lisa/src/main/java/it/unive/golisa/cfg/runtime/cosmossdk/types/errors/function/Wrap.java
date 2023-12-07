@@ -91,6 +91,10 @@ public class Wrap extends NativeCFG {
 				throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
 		}
-
+		
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
 	}
 }

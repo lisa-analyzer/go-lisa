@@ -9,7 +9,7 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 
 	private final ReadWriteGraph graph;
 	private final Statement st;
-	private int offset;
+
 	/**
 	 * Builds the node.
 	 * 
@@ -19,7 +19,6 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 	public ReadWriteNode(ReadWriteGraph graph, Statement st) {
 		this.graph = graph;
 		this.st = st;
-		offset = st.getOffset();
 	}
 	
 	@Override
@@ -79,16 +78,4 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 		
 		return 0;
 	}
-
-	@Override
-	public int setOffset(int offset) {
-		
-		return this.offset = offset;
-	}
-
-	@Override
-	public int getOffset() {
-		return offset;
-	}
-
 }

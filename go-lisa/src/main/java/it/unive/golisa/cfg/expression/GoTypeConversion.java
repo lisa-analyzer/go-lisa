@@ -9,6 +9,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -48,5 +49,10 @@ public class GoTypeConversion extends UnaryExpression {
 		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
 		return state.smallStepSemantics(
 				new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
+	}
+
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 }

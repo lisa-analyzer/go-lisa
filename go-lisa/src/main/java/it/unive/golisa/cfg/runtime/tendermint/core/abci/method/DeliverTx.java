@@ -94,5 +94,10 @@ public class DeliverTx extends NativeCFG {
 					new PushAny(ResponseDeliverTx.getResponseDeliverTxType(null), getLocation()),
 					original);
 		}
+		
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
 	}
 }

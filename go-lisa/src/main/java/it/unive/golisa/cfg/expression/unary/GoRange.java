@@ -126,4 +126,9 @@ public class GoRange extends UnaryExpression {
 			return false;
 		return true;
 	}
+	
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
+	}
 }

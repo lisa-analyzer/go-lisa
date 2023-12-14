@@ -1,0 +1,40 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/hf/phantom-read/interproc/inter1/inter1.go':38:34] on 'untyped main::foo(shim.ChaincodeStubInterface stub, int n, stub.StateQueryIteratorInterface iter)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "2",
+    "duration" : "15ms",
+    "end" : "2023-12-14T17:21:39.797+01:00",
+    "expressions" : "43",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "43",
+    "programs" : "1",
+    "start" : "2023-12-14T17:21:39.782+01:00",
+    "statements" : "19",
+    "units" : "10",
+    "version" : "0.1b9",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/hf/phantom-read/interproc/inter1"
+  }
+}

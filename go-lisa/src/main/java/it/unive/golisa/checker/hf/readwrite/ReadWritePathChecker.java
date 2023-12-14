@@ -65,7 +65,7 @@ public class ReadWritePathChecker implements
 	public ReadWritePathChecker(Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates, Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates, boolean computeGraph) {
 		this.readAfterWriteCandidates = readAfterWriteCandidates;
 		this.overWriteCandidates = overWriteCandidates;
-		this.computeGraph = true;
+		this.computeGraph = computeGraph;
 		this.reconstructedGraphs = new HashMap<>();
 	}
 	
@@ -137,8 +137,9 @@ public class ReadWritePathChecker implements
 				 if(computeGraph)
 					tmpGraph = new ReadWriteGraph("ReadAfterWrite - Write location: " + write.getCall().getLocation() +" - Read Location -" + read.getCall().getLocation());
 				 if(interproceduralCheck(tool, graph, write.getCall(), read.getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
-					 	reconstructedGraphs.put(tmpGraph.getName(), tmpGraph);
-						tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
+					 if(computeGraph)	
+						 reconstructedGraphs.put(tmpGraph.getName(), tmpGraph);
+					 tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
 				 }
 			}
 
@@ -153,7 +154,8 @@ public class ReadWritePathChecker implements
 				if(computeGraph)
 					tmpGraph = new ReadWriteGraph("OverWrite - Write1 location: " + p.getRight().getCall().getLocation() +" - Write2 Location -" + p.getLeft().getCall().getLocation());
 				if(interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
-				 	reconstructedGraphs.put(tmpGraph.getName(), tmpGraph);
+					if(computeGraph)
+						reconstructedGraphs.put(tmpGraph.getName(), tmpGraph);
 					tool.warnOn(node, "Detected a possible over-write issue. Over-write location: " + p.getRight().getCall().getLocation());
 				}
 			}

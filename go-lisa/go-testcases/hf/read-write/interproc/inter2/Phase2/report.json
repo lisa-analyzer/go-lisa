@@ -2,17 +2,17 @@
   "warnings" : [ {
     "message" : "['go-testcases/hf/read-write/interproc/inter2/inter2.go':29:53] on 'untyped SmartContract::Write(*SmartContract s)': [EXPRESSION] Detected a possible read after write issue. Read location: 'go-testcases/hf/read-write/interproc/inter2/inter2.go':34:41"
   } ],
-  "files" : [ "ReadAfterWrite_-_Write_location__'go-testcases_hf_read-write_interproc_inter2_inter2.go'_29_53_-_Read_Location_-'go-testcases_hf_read-write_interproc_inter2_inter2.go'_34_41.dot", "report.json" ],
+  "files" : [ "report.json" ],
   "info" : {
     "cfgs" : "4",
-    "duration" : "11ms",
-    "end" : "2023-12-13T16:24:45.743+01:00",
+    "duration" : "9ms",
+    "end" : "2023-12-14T18:14:08.655+01:00",
     "expressions" : "21",
-    "files" : "1",
+    "files" : "0",
     "globals" : "6",
-    "members" : "37",
+    "members" : "41",
     "programs" : "1",
-    "start" : "2023-12-13T16:24:45.732+01:00",
+    "start" : "2023-12-14T18:14:08.646+01:00",
     "statements" : "12",
     "units" : "11",
     "version" : "0.1b9",

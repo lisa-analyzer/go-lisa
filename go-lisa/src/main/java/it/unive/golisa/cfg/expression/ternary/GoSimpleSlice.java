@@ -34,7 +34,7 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 	public GoSimpleSlice(CFG cfg, SourceCodeLocation location, Expression left, Expression middle, Expression right) {
 		super(cfg, location, "slice", left, middle, right);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

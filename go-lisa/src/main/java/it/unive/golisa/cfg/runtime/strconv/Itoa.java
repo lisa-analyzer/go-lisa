@@ -88,7 +88,7 @@ public class Itoa extends NativeCFG {
 				return state.bottom();
 			return state.smallStepSemantics(expr, original);
 		}
-		
+
 		@Override
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare

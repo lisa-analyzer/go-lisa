@@ -1,3 +1,4 @@
+
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
@@ -11,7 +12,6 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
-
 import org.junit.Test;
 
 public class PhantomReadsTest extends GoChaincodeTestExecutor {
@@ -31,30 +31,30 @@ public class PhantomReadsTest extends GoChaincodeTestExecutor {
 		conf.testDir = testDir;
 		conf.programFile = programFile;
 		conf.annSet = annSet;
-		
+
 		perform(conf);
 	}
-	
+
 	@Test
 	public void testSingle1() throws AnalysisSetupException {
 		run("hf/phantom-read/single/single1", "single1.go");
 	}
-	
+
 	@Test
 	public void testSingle2() throws AnalysisSetupException {
 		run("hf/phantom-read/single/single2", "single2.go");
 	}
-	
+
 	@Test
 	public void testSingle3() throws AnalysisSetupException {
 		run("hf/phantom-read/single/single3", "single3.go");
 	}
-	
+
 	@Test
 	public void testSingle4() throws AnalysisSetupException {
 		run("hf/phantom-read/single/single4", "single4.go");
 	}
-	
+
 	@Test
 	public void testInterproc1() throws AnalysisSetupException {
 		run("hf/phantom-read/interproc/inter1", "inter1.go");

@@ -1,3 +1,4 @@
+
 import it.unive.golisa.checker.hf.DifferentCrossChannelInvocationsChecker;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.lisa.AnalysisSetupException;
@@ -26,7 +27,7 @@ public class DifferentCrossChannelInvocationsTest extends GoChaincodeTestExecuto
 		conf.compareWithOptimization = false;
 		conf.testDir = "hf/dcci";
 		conf.programFile = "dcci.go";
-		
+
 		perform(conf);
 	}
 }

@@ -57,7 +57,7 @@ public class GoKeyedLiteral extends NaryExpression {
 		super(cfg, location, "keyedLiteral(" + staticType + ")", staticType, values);
 		this.keys = keys;
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

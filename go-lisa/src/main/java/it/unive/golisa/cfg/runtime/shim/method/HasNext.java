@@ -67,7 +67,7 @@ public class HasNext extends NativeCFG {
 		public static HasNextImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			return new HasNextImpl(cfg, location, params[0]);
 		}
-		
+
 		@Override
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare

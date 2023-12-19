@@ -34,7 +34,7 @@ public class GoRoutine extends UnaryStatement {
 	public String toString() {
 		return "go " + getSubExpression().toString();
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

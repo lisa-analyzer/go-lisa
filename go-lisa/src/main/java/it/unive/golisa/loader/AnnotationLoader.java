@@ -69,14 +69,14 @@ public class AnnotationLoader implements Loader {
 
 		for (CodeMember cm : codeMembers)
 			for (AnnotationSet set : annotationSets)
-				if(set != null)
+				if (set != null)
 					for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 						checkAndAddAnnotation(cm.getDescriptor(), ca);
 
 		for (Unit unit : program.getUnits()) {
 			for (CodeMember cm : unit.getCodeMembers()) {
 				for (AnnotationSet set : annotationSets) {
-					if(set != null) {
+					if (set != null) {
 						for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 							checkAndAddAnnotation(cm.getDescriptor(), ca);
 						for (CodeAnnotation ca : set.getAnnotationsForConstructors())
@@ -90,7 +90,7 @@ public class AnnotationLoader implements Loader {
 
 				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {
 					for (AnnotationSet set : annotationSets) {
-						if(set != null) {
+						if (set != null) {
 							for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 								checkAndAddAnnotation(cm.getDescriptor(), ca);
 							for (CodeAnnotation ca : set.getAnnotationsForConstructors())

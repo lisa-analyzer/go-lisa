@@ -39,7 +39,7 @@ public class GoRangeGetNextValue extends NaryExpression {
 	public GoRangeGetNextValue(CFG cfg, CodeLocation location, Expression rangeItem) {
 		super(cfg, location, "GoRangeGetNextValue", computeType(rangeItem.getStaticType()));
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

@@ -63,7 +63,7 @@ public class Copy extends NativeCFG {
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare
 		}
-		
+
 		/**
 		 * Builds the pluggable statement.
 		 * 

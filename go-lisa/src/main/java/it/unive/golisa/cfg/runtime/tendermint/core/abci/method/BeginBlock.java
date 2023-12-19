@@ -95,7 +95,7 @@ public class BeginBlock extends NativeCFG {
 					new PushAny(ResponseBeginBlock.getRequestBeginBlockType(null), getLocation()),
 					original);
 		}
-		
+
 		@Override
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare

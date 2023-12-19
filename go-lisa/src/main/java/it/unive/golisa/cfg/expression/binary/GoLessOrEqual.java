@@ -34,7 +34,7 @@ public class GoLessOrEqual extends it.unive.lisa.program.cfg.statement.BinaryExp
 	public GoLessOrEqual(CFG cfg, SourceCodeLocation location, Expression right, Expression left) {
 		super(cfg, location, "<=", GoBoolType.INSTANCE, right, left);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

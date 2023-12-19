@@ -115,7 +115,7 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 
 		return result;
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

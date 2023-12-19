@@ -56,7 +56,7 @@ public class GoAssignment extends BinaryExpression {
 		this.blocksToDeclaration = BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, getLeft());
 		this.containingBlock = containingBlock;
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

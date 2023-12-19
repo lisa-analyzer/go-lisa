@@ -47,7 +47,7 @@ public class GoTupleExpression extends NaryExpression {
 	public GoTupleExpression(CFG cfg, Parameter[] types, CodeLocation location, Expression... expressions) {
 		this(cfg, GoTupleType.lookup(types), location, expressions);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

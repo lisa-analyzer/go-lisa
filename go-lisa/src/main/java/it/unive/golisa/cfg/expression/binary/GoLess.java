@@ -34,7 +34,7 @@ public class GoLess extends it.unive.lisa.program.cfg.statement.BinaryExpression
 	public GoLess(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
 		super(cfg, location, "<", GoBoolType.INSTANCE, left, right);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

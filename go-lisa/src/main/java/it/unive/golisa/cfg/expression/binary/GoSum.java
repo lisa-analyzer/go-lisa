@@ -36,7 +36,7 @@ public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 	public GoSum(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
 		super(cfg, location, "+", left, right);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

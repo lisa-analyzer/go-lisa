@@ -93,7 +93,7 @@ public class EndBlock extends NativeCFG {
 			return state.smallStepSemantics(new PushAny(RequestEndBlock.getRequestEndBlockType(null), getLocation()),
 					original);
 		}
-		
+
 		@Override
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare

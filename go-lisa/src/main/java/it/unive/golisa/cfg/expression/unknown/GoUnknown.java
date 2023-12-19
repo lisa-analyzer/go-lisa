@@ -40,7 +40,7 @@ public class GoUnknown extends Expression {
 	public String toString() {
 		return "<UNKNOWN>";
 	}
-	
+
 	@Override
 	protected int compareSameClass(Statement o) {
 		return 0; // nothing else to compare

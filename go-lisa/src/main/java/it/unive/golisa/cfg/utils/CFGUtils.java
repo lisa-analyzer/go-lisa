@@ -9,7 +9,6 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -214,13 +213,13 @@ public class CFGUtils {
 	public static CodeGraph<CFG, Statement, Edge> getPath(CFG graph, Statement source, Statement destination) {
 		if (containsNode(graph, source) && containsNode(graph, destination))
 			return getSearchGraphDFS(graph, source, destination);
-		
+
 		return null;
 	}
 
 	private static CodeGraph<CFG, Statement, Edge> getSearchGraphDFS(CFG graph, Statement source,
 			Statement destination) {
-		
+
 		if (containsNode(graph, source) && containsNode(graph, destination)) {
 			Set<Statement> seen = new HashSet<>();
 			CFG res = new CFG(graph.getDescriptor());
@@ -230,7 +229,8 @@ public class CFGUtils {
 		return null;
 	}
 
-	private static Statement getSearchGraphRecursiveDFS(CFG graph, Statement source, Statement destination, Set<Statement> seen, CodeGraph<CFG, Statement, Edge> res) {
+	private static Statement getSearchGraphRecursiveDFS(CFG graph, Statement source, Statement destination,
+			Set<Statement> seen, CodeGraph<CFG, Statement, Edge> res) {
 		if (!seen.contains(source)) {
 			seen.add(source);
 
@@ -238,7 +238,7 @@ public class CFGUtils {
 				res.addNode(source);
 				return source;
 			}
-			
+
 			Collection<Edge> edges = graph.getOutgoingEdges(source);
 			Iterator<Edge> iter = edges.iterator();
 			while (iter.hasNext()) {
@@ -253,6 +253,5 @@ public class CFGUtils {
 		}
 		return null;
 	}
-	
 
 }

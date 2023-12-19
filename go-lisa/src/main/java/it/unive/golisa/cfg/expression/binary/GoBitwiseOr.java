@@ -33,7 +33,7 @@ public class GoBitwiseOr extends BinaryExpression implements GoBinaryNumericalOp
 	public GoBitwiseOr(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
 		super(cfg, location, "|", left, right);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

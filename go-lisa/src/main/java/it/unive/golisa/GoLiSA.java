@@ -55,7 +55,7 @@ import org.apache.logging.log4j.Logger;
  * The Go frontend for LiSA.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a> and
- *         <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+ *             <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class GoLiSA {
 
@@ -92,12 +92,11 @@ public class GoLiSA {
 		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
 		dump_opt.setRequired(false);
 		options.addOption(dump_opt);
-		
+
 		Option dumpAdditionalAnalysisInfo = new Option("u", "dumpAdditionalAnalysisInfo", false,
 				"dump additional info to improve user experience if allowed by the analysis");
 		dumpAdditionalAnalysisInfo.setRequired(false);
 		options.addOption(dumpAdditionalAnalysisInfo);
-
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -122,7 +121,7 @@ public class GoLiSA {
 		conf.workdir = outputDir;
 		conf.jsonOutput = true;
 		conf.optimize = false;
-		
+
 		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 
 		AnnotationSet[] annotationSet = new AnnotationSet[] {};
@@ -160,14 +159,11 @@ public class GoLiSA {
 		case "ucci":
 			// TODO: add configuration for UCCI analysis
 			require2Phase = true;
-		/*
-			dirPhase1 = new File(outputDir, "Phase1");
-			if (!dirPhase1.exists())
-				dirPhase1.mkdirs();
-
-			conf.workdir = dirPhase1.getAbsolutePath();
-			break;
-		*/
+			/*
+			 * dirPhase1 = new File(outputDir, "Phase1"); if
+			 * (!dirPhase1.exists()) dirPhase1.mkdirs(); conf.workdir =
+			 * dirPhase1.getAbsolutePath(); break;
+			 */
 			throw new IllegalArgumentException("The UCCI analysis is currently not supported");
 		case "dcci":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
@@ -204,20 +200,19 @@ public class GoLiSA {
 
 		lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), conf);
 
-		
-		File dirPhase2 = new File(outputDir, "Phase2"); 
-		
+		File dirPhase2 = new File(outputDir, "Phase2");
+
 		if (require2Phase) {
 
 			conf = new LiSAConfiguration();
 			conf.workdir = outputDir;
 			conf.jsonOutput = true;
 			conf.optimize = false;
-			
-			dirPhase2 = new File(outputDir, "Phase2"); 
+
+			dirPhase2 = new File(outputDir, "Phase2");
 			if (!dirPhase2.exists())
 				dirPhase2.mkdirs();
-			
+
 			conf.workdir = dirPhase2.getAbsolutePath();
 			conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 
@@ -231,7 +226,8 @@ public class GoLiSA {
 				conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 						new ValueEnvironment<>(new Tarsis()),
 						new TypeEnvironment<>(new InferredTypes()));
-				conf.semanticChecks.add(new ReadWritePathChecker(readwritePhase1.getReadAfterWriteCandidates(), readwritePhase1.getOverWriteCandidates(), cmd.hasOption(dumpAdditionalAnalysisInfo)));		
+				conf.semanticChecks.add(new ReadWritePathChecker(readwritePhase1.getReadAfterWriteCandidates(),
+						readwritePhase1.getOverWriteCandidates(), cmd.hasOption(dumpAdditionalAnalysisInfo)));
 				break;
 			default:
 

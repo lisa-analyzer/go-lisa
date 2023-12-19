@@ -43,7 +43,7 @@ public class CloseBlock extends Statement {
 	protected int compareSameClass(Statement o) {
 		return 0; // nothing else to compare
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Close block: " + open.getLocation();

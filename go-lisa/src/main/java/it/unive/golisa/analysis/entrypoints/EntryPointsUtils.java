@@ -72,7 +72,7 @@ public class EntryPointsUtils {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
 		for (AnnotationSet as : annotationSets) {
-			if(as instanceof TaintAnnotationSet) {
+			if (as instanceof TaintAnnotationSet) {
 				Set<? extends CodeAnnotation> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
 				appliedAnnotations.stream()
 						.forEach(e -> {

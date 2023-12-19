@@ -40,7 +40,7 @@ public class GoCollectionAccess extends BinaryExpression {
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare
 	}
-	
+
 	/**
 	 * Yields the receiver of this access expression.
 	 * 

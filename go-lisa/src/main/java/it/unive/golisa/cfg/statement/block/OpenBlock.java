@@ -45,8 +45,7 @@ public class OpenBlock extends Statement {
 	protected int compareSameClass(Statement o) {
 		return 0; // nothing else to compare
 	}
-	
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();

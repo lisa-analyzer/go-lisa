@@ -89,8 +89,6 @@ public class GoMultiAssignment extends Expression {
 		for (Expression id : ids)
 			id.setParentStatement(this);
 	}
-	
-	
 
 	@Override
 	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {

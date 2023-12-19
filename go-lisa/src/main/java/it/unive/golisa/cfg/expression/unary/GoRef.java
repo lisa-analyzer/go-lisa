@@ -29,7 +29,7 @@ public class GoRef extends UnaryExpression {
 	public GoRef(CFG cfg, CodeLocation location, Expression exp) {
 		super(cfg, location, "*", exp);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

@@ -168,7 +168,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "attributes",
 							GoSliceType.getSliceOfStrings()));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
-			
+
 			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
 					true,
 					"GetQueryResult",
@@ -178,7 +178,7 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "query", GoStringType.INSTANCE));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
-			
+
 			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
 					true,
 					"GetHistoryForKey",

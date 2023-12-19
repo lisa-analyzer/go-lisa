@@ -40,7 +40,7 @@ public class GoPlus extends UnaryExpression {
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare
 	}
-	
+
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> interprocedural,
 			AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {

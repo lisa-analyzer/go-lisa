@@ -32,7 +32,7 @@ public class GoModule extends it.unive.lisa.program.cfg.statement.BinaryExpressi
 	public GoModule(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
 		super(cfg, location, "%", left, right);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

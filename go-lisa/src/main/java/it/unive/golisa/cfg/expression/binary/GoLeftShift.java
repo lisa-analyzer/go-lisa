@@ -30,7 +30,7 @@ public class GoLeftShift extends BinaryExpression {
 	public GoLeftShift(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
 		super(cfg, location, "<<", left, right);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

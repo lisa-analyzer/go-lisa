@@ -31,7 +31,7 @@ public abstract class GoAnalysisTestExecutor {
 	protected static final String EXPECTED_RESULTS_DIR = "go-testcases";
 
 	protected static final String ACTUAL_RESULTS_DIR = "go-outputs";
-	
+
 	/**
 	 * Performs a test, running an analysis. The test will fail if:
 	 * <ul>
@@ -54,13 +54,13 @@ public abstract class GoAnalysisTestExecutor {
 	public void perform(CronConfiguration conf) {
 		perform(conf, Phase.None);
 	}
-	
+
 	protected enum Phase {
 		None,
 		Phase1,
 		Phase2
 	}
-	
+
 	protected void perform(CronConfiguration conf, Phase phase) {
 		String testMethod = getCaller();
 		System.out.println("### Testing " + testMethod);
@@ -101,8 +101,9 @@ public abstract class GoAnalysisTestExecutor {
 			}
 		}
 
-		compare(conf, phase == Phase.None ? expectedPath : Paths.get(expectedPath.toString(), phase.toString()), 
-					  phase == Phase.None ? actualPath : Paths.get(actualPath.toString(), phase.toString()), expFile, actFile, false);
+		compare(conf, phase == Phase.None ? expectedPath : Paths.get(expectedPath.toString(), phase.toString()),
+				phase == Phase.None ? actualPath : Paths.get(actualPath.toString(), phase.toString()), expFile, actFile,
+				false);
 
 		if (conf.compareWithOptimization && !conf.optimize) {
 			System.out.println("### Testing " + testMethod + " with optimization enabled");
@@ -358,11 +359,11 @@ public abstract class GoAnalysisTestExecutor {
 		// 4: caller
 		return trace[4].getClassName() + "::" + trace[4].getMethodName();
 	}
-	
+
 	protected void prePhase2(CronConfiguration confPhase1, CronConfiguration confPhase2) {
-		
+
 	}
-	
+
 	public void performAnalysisIn2Phases(CronConfiguration confPhase1, CronConfiguration confPhase2) {
 		System.out.println("### Testing in 2 Phases ");
 		System.out.println("### Running Phase 1");
@@ -370,7 +371,7 @@ public abstract class GoAnalysisTestExecutor {
 		prePhase2(confPhase1, confPhase2);
 		System.out.println("### Running Phase 2");
 		perform(confPhase2, Phase.Phase2);
-		
+
 	}
-	
+
 }

@@ -46,7 +46,7 @@ public class GoNew extends NaryExpression {
 		HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), created, getLocation());
 		return state.smallStepSemantics(ref, this);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

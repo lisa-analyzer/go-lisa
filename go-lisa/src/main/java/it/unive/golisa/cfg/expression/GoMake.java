@@ -177,7 +177,7 @@ public class GoMake extends NaryExpression {
 		return state.top().smallStepSemantics(new PushAny(type, getLocation()),
 				this);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

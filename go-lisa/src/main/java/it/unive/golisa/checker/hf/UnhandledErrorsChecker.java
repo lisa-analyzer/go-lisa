@@ -3,7 +3,6 @@ package it.unive.golisa.checker.hf;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.utils.CFGUtils;
-import it.unive.golisa.cfg.utils.CFGUtils.Search;
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.checks.syntactic.CheckTool;
@@ -55,12 +54,13 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 								boolean found = false;
 								for (ControlFlowStructure cfs : graph.getControlFlowStructures()) {
 									if (cfs instanceof IfThenElse) {
-										CodeGraph<CFG, Statement, Edge> path = CFGUtils.getPath(graph, node, cfs.getCondition());
-										if ( path != null 
-												&& !existVariableOverwriteInPath(path, node, ref) 
+										CodeGraph<CFG, Statement,
+												Edge> path = CFGUtils.getPath(graph, node, cfs.getCondition());
+										if (path != null
+												&& !existVariableOverwriteInPath(path, node, ref)
 												&& isVariableRefUsedInCondition(ref, cfs.getCondition())) {
-												found = true;
-												break;
+											found = true;
+											break;
 										}
 									}
 								}
@@ -78,21 +78,21 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		return true;
 	}
 
-
-	private boolean existVariableOverwriteInPath(CodeGraph<CFG, Statement, Edge> path, Statement node, VariableRef ref) {
-		for(Statement n : path.getNodeList()) {
-			if(n instanceof GoMultiAssignment) {
-				if(!n.equals(node)) {
-					for( Expression id : ((GoMultiAssignment) n).getIds()) {
-						if(id instanceof VariableRef 
+	private boolean existVariableOverwriteInPath(CodeGraph<CFG, Statement, Edge> path, Statement node,
+			VariableRef ref) {
+		for (Statement n : path.getNodeList()) {
+			if (n instanceof GoMultiAssignment) {
+				if (!n.equals(node)) {
+					for (Expression id : ((GoMultiAssignment) n).getIds()) {
+						if (id instanceof VariableRef
 								&& ((VariableRef) id).getVariable().getName().equals(ref.getVariable().getName()))
 							return true;
 					}
-				}	
-			} else if(n instanceof GoAssignment){
-				 Expression target = ((GoAssignment) n).getLeft();
-				if( target instanceof VariableRef
-						&& ((VariableRef) target).getVariable().getName().equals(ref.getVariable().getName())) 
+				}
+			} else if (n instanceof GoAssignment) {
+				Expression target = ((GoAssignment) n).getLeft();
+				if (target instanceof VariableRef
+						&& ((VariableRef) target).getVariable().getName().equals(ref.getVariable().getName()))
 					return true;
 			}
 		}

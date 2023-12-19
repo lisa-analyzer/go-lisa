@@ -89,7 +89,7 @@ public class HasSuffix extends NativeCFG {
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare
 		}
-		
+
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,

@@ -33,7 +33,7 @@ public class GoLogicalAnd extends it.unive.lisa.program.cfg.statement.BinaryExpr
 	public GoLogicalAnd(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
 		super(cfg, location, "&&", GoBoolType.INSTANCE, left, right);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

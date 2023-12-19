@@ -5,7 +5,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeNode;
 
-public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, ReadWriteEdge>{
+public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
 
 	private final ReadWriteGraph graph;
 	private final Statement st;
@@ -20,12 +20,12 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 		this.graph = graph;
 		this.st = st;
 	}
-	
+
 	@Override
 	public <V> boolean accept(GraphVisitor<ReadWriteGraph, ReadWriteNode, ReadWriteEdge, V> visitor, V tool) {
 		return visitor.visit(tool, graph, this);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -50,7 +50,7 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 			return false;
 		return true;
 	}
-	
+
 	public ReadWriteGraph getGraph() {
 		return graph;
 	}
@@ -75,7 +75,7 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 	}
 
 	private int compareToSameClassAndLocation(ReadWriteNode o) {
-		
+
 		return 0;
 	}
 }

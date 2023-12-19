@@ -33,7 +33,7 @@ public class GoNot extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 	public GoNot(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "!", GoBoolType.INSTANCE, exp);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

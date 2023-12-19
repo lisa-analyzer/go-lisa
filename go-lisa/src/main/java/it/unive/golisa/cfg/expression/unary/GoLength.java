@@ -39,7 +39,7 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 	public GoLength(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "len", exp);
 	}
-	
+
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare

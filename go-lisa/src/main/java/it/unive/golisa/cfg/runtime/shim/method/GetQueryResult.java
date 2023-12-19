@@ -5,7 +5,6 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AbstractState;
@@ -27,20 +26,20 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
 /**
- * func (s *ChaincodeStub) GetQueryResult(query string) (StateQueryIteratorInterface, error).
+ * func (s *ChaincodeStub) GetQueryResult(query string)
+ * (StateQueryIteratorInterface, error).
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetQueryResult
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
@@ -82,7 +81,7 @@ public class GetQueryResult extends NativeCFG {
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare
 		}
-		
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -171,7 +170,7 @@ public class GetQueryResult extends NativeCFG {
 		public String toString() {
 			return "GetQueryResultOperator_1";
 		}
-		
+
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
 			return Collections.singleton(Untyped.INSTANCE);

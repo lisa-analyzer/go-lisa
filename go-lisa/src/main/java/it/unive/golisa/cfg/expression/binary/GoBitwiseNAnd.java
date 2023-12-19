@@ -38,7 +38,7 @@ public class GoBitwiseNAnd extends BinaryExpression implements GoBinaryNumerical
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare
 	}
-	
+
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> arg0,
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> arg4)

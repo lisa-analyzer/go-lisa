@@ -1,6 +1,6 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import it.unive.golisa.cfg.CFGUtils;
+import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;

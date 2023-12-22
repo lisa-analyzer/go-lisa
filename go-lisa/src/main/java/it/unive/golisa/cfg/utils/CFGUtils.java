@@ -26,11 +26,19 @@ import java.util.function.Function;
 public class CFGUtils {
 
 	/**
-	 * Type of search in a graph. * @author
-	 * <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+	 * Type of search in a graph.
+	 * 
+	 * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
 	 */
 	public enum Search {
+		/**
+		 * BFS.
+		 */
 		BFS,
+
+		/**
+		 * DFS.
+		 */
 		DFS
 	}
 
@@ -45,6 +53,8 @@ public class CFGUtils {
 	 * 
 	 * @return whether there exists a path in {@code cfg} between {@code source}
 	 *             and {@code destination}
+	 * 
+	 * @throws IllegalArgumentException if the search algorithm is not supported
 	 */
 	public static boolean existPath(CFG cfg, Statement source, Statement destination, Search search) {
 		if (search.equals(Search.BFS))
@@ -83,9 +93,17 @@ public class CFGUtils {
 		return false;
 	}
 
-	public static Statement extractTargetNodeFromGraph(CodeGraph<CFG, Statement, Edge> graph, Statement node) {
-		for (Statement n : graph.getNodes())
-			if (equalsOrContains(n, node))
+	/**
+	 * Extracts a target statement from cfg.
+	 * 
+	 * @param cfg  the cfg
+	 * @param stmt the statement
+	 * 
+	 * @return the target statement from cfg
+	 */
+	public static Statement extractTargetNodeFromGraph(CodeGraph<CFG, Statement, Edge> cfg, Statement stmt) {
+		for (Statement n : cfg.getNodes())
+			if (equalsOrContains(n, stmt))
 				return n;
 		return null;
 	}
@@ -126,6 +144,15 @@ public class CFGUtils {
 		}
 	}
 
+	/**
+	 * Checks if the two statements are equals or {code n1} contains {@code n2}.
+	 * 
+	 * @param n1 the first statement
+	 * @param n2 the second statement
+	 * 
+	 * @return {@code true} if the two statements are equals or {code n1}
+	 *             contains {@code n2}, {@code false} otherwise.
+	 */
 	public static boolean equalsOrContains(Statement n1, Statement n2) {
 		Set<Statement> seen = new HashSet<>();
 		return equalsOrContainsRecursive(n1, n2, seen);
@@ -210,6 +237,16 @@ public class CFGUtils {
 		return cfg.getNodes().stream().allMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
 
+	/**
+	 * Checks whether the statement of one of its sub expression matches the
+	 * condition.
+	 * 
+	 * @param st        the statement
+	 * @param condition the condition to be matched
+	 * 
+	 * @return {@code true} if the statement of one of its sub expression
+	 *             matches the condition, {@code false} otherwise.
+	 */
 	public static boolean matchNodeOrSubExpressions(Statement st, Function<Statement, Boolean> condition) {
 		Set<Statement> seen = new HashSet<>();
 		return matchNodeOrSubExpressionsRecursive(st, condition, seen);

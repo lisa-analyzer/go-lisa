@@ -35,9 +35,9 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
- * A Go Checker for Read-Write Set Issues of Hyperledger Fabric. Note that
- * Read-Write Set Issues analysis is split in two checkers/phases. This is the
- * 1st phase.
+ * A Go checker for read-write set issues of Hyperledger Fabric. Note that
+ * read-write set issues analysis is split in two checkers/phases. This is the
+ * first phase.
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */

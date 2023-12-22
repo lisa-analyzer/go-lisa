@@ -18,23 +18,44 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+/**
+ * Class containing some utils methods to deal with CFGs.
+ * 
+ * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+ */
 public class CFGUtils {
 
+	/**
+	 * Type of search in a graph. * @author
+	 * <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+	 */
 	public enum Search {
 		BFS,
 		DFS
 	}
 
-	public static boolean existPath(CFG graph, Statement source, Statement destination, Search search) {
+	/**
+	 * Checks whether there exists a path in {@code cfg} between {@code source}
+	 * and {@code destination}.
+	 * 
+	 * @param cfg         the cfg
+	 * @param source      the source statement
+	 * @param destination the destination statement
+	 * @param search      the type of search
+	 * 
+	 * @return whether there exists a path in {@code cfg} between {@code source}
+	 *             and {@code destination}
+	 */
+	public static boolean existPath(CFG cfg, Statement source, Statement destination, Search search) {
 		if (search.equals(Search.BFS))
-			return searchBFS(graph, source, destination);
+			return searchBFS(cfg, source, destination);
 		else if (search.equals(Search.DFS))
-			return searchDFS(graph, source, destination);
+			return searchDFS(cfg, source, destination);
 		else
 			throw new IllegalArgumentException("The following search algorithm \"" + search + "\" is not supported");
 	}
 
-	public static boolean searchBFS(CFG graph, Statement source, Statement destination) {
+	private static boolean searchBFS(CFG graph, Statement source, Statement destination) {
 
 		if (containsNode(graph, source) && containsNode(graph, destination)) {
 			Set<Statement> seen = new HashSet<>();
@@ -69,10 +90,17 @@ public class CFGUtils {
 		return null;
 	}
 
-	public static List<Call> extractCallsFromStatement(Statement n) {
+	/**
+	 * Extracts call nodes from a statement.
+	 * 
+	 * @param stmt the statement
+	 * 
+	 * @return yields the call nodes from a statement
+	 */
+	public static List<Call> extractCallsFromStatement(Statement stmt) {
 		Set<Statement> seen = new HashSet<>();
 		List<Call> res = new ArrayList<Call>();
-		extractCallsFromStatementRecursive(n, res, seen);
+		extractCallsFromStatementRecursive(stmt, res, seen);
 		return res;
 	}
 
@@ -134,7 +162,7 @@ public class CFGUtils {
 		return false;
 	}
 
-	public static boolean searchDFS(CFG graph, Statement source, Statement destination) {
+	private static boolean searchDFS(CFG graph, Statement source, Statement destination) {
 
 		if (containsNode(graph, source) && containsNode(graph, destination)) {
 			Set<Statement> seen = new HashSet<>();
@@ -144,7 +172,7 @@ public class CFGUtils {
 		return false;
 	}
 
-	public static boolean containsAllNodes(CFG graph, Statement... nodes) {
+	private static boolean containsAllNodes(CFG graph, Statement... nodes) {
 		boolean[] res = new boolean[nodes.length];
 		for (Statement cfgNode : graph.getNodes())
 			for (int i = 0; i < nodes.length; i++)
@@ -174,11 +202,11 @@ public class CFGUtils {
 		return false;
 	}
 
-	public static boolean anyMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
+	private static boolean anyMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		return cfg.getNodes().stream().anyMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
 
-	public static boolean allMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
+	private static boolean allMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		return cfg.getNodes().stream().allMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
 
@@ -210,9 +238,20 @@ public class CFGUtils {
 		return false;
 	}
 
-	public static CodeGraph<CFG, Statement, Edge> getPath(CFG graph, Statement source, Statement destination) {
-		if (containsNode(graph, source) && containsNode(graph, destination))
-			return getSearchGraphDFS(graph, source, destination);
+	/**
+	 * Yields the path in {@code cfg} between {@code source} and
+	 * {@code destination}.
+	 * 
+	 * @param cfg         the cfg
+	 * @param source      the source node
+	 * @param destination the destination node
+	 * 
+	 * @return the path in {@code cfg} between {@code source} and
+	 *             {@code destination}
+	 */
+	public static CodeGraph<CFG, Statement, Edge> getPath(CFG cfg, Statement source, Statement destination) {
+		if (containsNode(cfg, source) && containsNode(cfg, destination))
+			return getSearchGraphDFS(cfg, source, destination);
 
 		return null;
 	}
@@ -253,5 +292,4 @@ public class CFGUtils {
 		}
 		return null;
 	}
-
 }

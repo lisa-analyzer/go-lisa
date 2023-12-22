@@ -1,9 +1,9 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import it.unive.golisa.cfg.utils.CFGUtils;
-import it.unive.golisa.cfg.utils.CFGUtils.Search;
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.GoDefer;
+import it.unive.golisa.cfg.utils.CFGUtils;
+import it.unive.golisa.cfg.utils.CFGUtils.Search;
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteGraph;
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteNode;
 import it.unive.golisa.checker.hf.readwrite.graph.edges.CalleeEdge;

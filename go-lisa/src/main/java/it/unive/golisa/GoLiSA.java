@@ -1,11 +1,13 @@
 package it.unive.golisa;
 
+import it.unive.golisa.analysis.GoIntervalDomain;
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
+import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.checker.hf.DifferentCrossChannelInvocationsChecker;
 import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
@@ -190,6 +192,11 @@ public class GoLiSA {
 		case "unhandled-errors":
 			conf.syntacticChecks.add(new UnhandledErrorsChecker());
 			break;
+		case "numerical-issues":
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
+					new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new NumericalOverflowOfVariablesChecker());
 		default:
 
 		}

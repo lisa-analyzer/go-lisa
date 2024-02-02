@@ -21,6 +21,7 @@ import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
 import it.unive.golisa.loader.annotation.sets.PhantomReadAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UCCIPhase1AnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -131,6 +132,7 @@ public class GoLiSA {
 
 		ReadWritePairChecker readwritePhase1 = null;
 		File dirPhase1 = null;
+		
 		switch (analysis) {
 
 		case "non-determinism":
@@ -140,7 +142,7 @@ public class GoLiSA {
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new TaintChecker());
+			conf.semanticChecks.add(new TaintChecker("Possible issue of non-determinism."));
 			break;
 		case "non-determinism-ni":
 			annotationSet = FrameworkNonDeterminismAnnotationSetFactory
@@ -156,17 +158,23 @@ public class GoLiSA {
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new TaintChecker());
+			conf.semanticChecks.add(new TaintChecker("Possible phantom read."));
 			break;
 		case "ucci":
 			// TODO: add configuration for UCCI analysis
-			require2Phase = true;
+			// TODO: support 2nd phase
+			// require2Phase = true;
 			/*
 			 * dirPhase1 = new File(outputDir, "Phase1"); if
 			 * (!dirPhase1.exists()) dirPhase1.mkdirs(); conf.workdir =
 			 * dirPhase1.getAbsolutePath(); break;
 			 */
-			throw new IllegalArgumentException("The UCCI analysis is currently not supported");
+			annotationSet = new AnnotationSet[] { new UCCIPhase1AnnotationSet() };
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new TaintChecker("Possible untrusted cross-contract invocation."));
+			break;
 		case "dcci":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
@@ -227,7 +235,7 @@ public class GoLiSA {
 			case "ucci":
 				// TODO: add configuration for UCCI analysis
 				// break;
-				throw new IllegalArgumentException("The UCCI analysis is currently not supported");
+				throw new IllegalArgumentException("The 2nd phase of UCCI analysis is currently not supported");
 			case "read-write":
 				conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 				conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),

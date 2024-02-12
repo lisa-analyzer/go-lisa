@@ -1,5 +1,6 @@
 package it.unive.golisa.interprocedural;
 
+import it.unive.golisa.analysis.GoIntervalDomain;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.lisa.analysis.AbstractState;
@@ -11,6 +12,7 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.interprocedural.OpenCallPolicy;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -62,6 +64,10 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 						} else if (((TaintDomain) stackValue).isBottom()) {
 							return entryState;
 						}
+					}else if (stackValue instanceof GoIntervalDomain) {
+						Identifier var = call.getMetaVariable();
+						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
+						return entryState.assign(var, pushany, call);
 					}
 				}
 			} else if (state.getValueState() instanceof InferenceSystem<?>) {

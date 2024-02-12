@@ -5,6 +5,11 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import it.unive.golisa.cfg.expression.GoCollectionAccess;
+import it.unive.golisa.cfg.expression.binary.GoDiv;
+import it.unive.golisa.cfg.expression.binary.GoMul;
+import it.unive.golisa.cfg.expression.binary.GoSubtraction;
+import it.unive.golisa.cfg.expression.binary.GoSum;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
@@ -17,7 +22,8 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt16Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
-import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker.IssueInfo.NumericalIssue;
+import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker.NumericalIssueEnum.NumericalIssue;
+import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -96,68 +102,98 @@ public class NumericalOverflowOfVariablesChecker implements
 		if (node instanceof GoAssignment) {
 			GoAssignment assignment = (GoAssignment) node;
 			leftExpression = assignment.getLeft();
+			if(!containsMathematicalOperation(assignment.getRight()))
+					return true;
 		} else if (node instanceof GoVariableDeclaration) {
 			GoVariableDeclaration assignment = (GoVariableDeclaration) node;
 			leftExpression = assignment.getLeft();
 			vType = assignment.getDeclaredType();
+			if(!containsMathematicalOperation(assignment.getRight()))
+				return true;
 		} else if (node instanceof GoShortVariableDeclaration) {
 			GoShortVariableDeclaration assignment = (GoShortVariableDeclaration) node;
 			leftExpression = assignment.getLeft();
+			if(!containsMathematicalOperation(assignment.getRight()))
+				return true;
 		}
 
+		// Checking if each field reference is over/under-flowing
+		if (leftExpression instanceof GoCollectionAccess) {
+			GoCollectionAccess collectionAccess = (GoCollectionAccess) leftExpression;
+			Expression rightExpression = collectionAccess.getRight();
+			if(rightExpression instanceof VariableRef)
+				checkVariableRef(tool, (VariableRef) rightExpression, vType, numericalTypes, graph, node);
+		}
 
 		// Checking if each variable reference is over/under-flowing
 		if (leftExpression instanceof VariableRef) {
-			Variable id = new Variable(((VariableRef) leftExpression).getStaticType(), ((VariableRef) leftExpression).getName(), ((VariableRef) leftExpression).getLocation());
+			checkVariableRef(tool, (VariableRef) leftExpression, vType, numericalTypes, graph, node);
+		}
+		
+		return true;
+	}
 
-			vType = vType == null ? id.getStaticType() : vType;
-			
-			boolean mayBeNumeric = false;
-			if (vType.isNumericType()) {
-					numericalTypes.add(vType);
-					mayBeNumeric = true;
-			} else  {
-				for (AnalyzedCFG<
-						SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>,
-								TypeEnvironment<InferredTypes>>> result : tool.getResultOf(graph)) {
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> state = result.getAnalysisStateAfter(leftExpression).getState();
-					try {
-						Type dynamicTypes = state.getDynamicTypeOf(id, leftExpression, state);
-						if(dynamicTypes.isNumericType()) {
-								numericalTypes.add(vType);
-						} else {
-							Set<Type> runtimeTypes = state.getRuntimeTypesOf(id, leftExpression, state);
+	private boolean containsMathematicalOperation(Expression right) {
+		return right instanceof GoSum || right instanceof GoSubtraction 
+				|| right instanceof GoDiv ||  right instanceof GoMul;
+	}
 
-							if(runtimeTypes.stream().allMatch(t -> t.isNumericType() || t == Untyped.INSTANCE))
-								for( Type t : runtimeTypes)
-									if(t.isNumericType())
-										numericalTypes.add(t);
-						}
-					} catch (SemanticException e) {
-						System.err.println("Cannot check " + node);
-						e.printStackTrace(System.err);
+	private void checkVariableRef(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool, VariableRef varRef, Type vType, Set<Type> numericalTypes,  CFG graph, Statement node ) {
+		Variable id = new Variable(((VariableRef) varRef).getStaticType(), ((VariableRef) varRef).getName(), ((VariableRef) varRef).getLocation());
+		
+		if(GoLangUtils.isBlankIdentifier(id))
+			return;
+		
+		vType = vType == null ? id.getStaticType() : vType;
+		
+		boolean mayBeNumeric = false;
+		if (vType.isNumericType()) {
+				numericalTypes.add(vType);
+				mayBeNumeric = true;
+		} else if(vType.isUntyped()){
+			for (AnalyzedCFG<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>,
+							TypeEnvironment<InferredTypes>>> result : tool.getResultOf(graph)) {
+				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> state = result.getAnalysisStateAfter(varRef).getState();
+				try {
+					Type dynamicTypes = state.getDynamicTypeOf(id, varRef, state);
+					if(dynamicTypes.isNumericType()) {
+							numericalTypes.add(vType);
+					} else if(dynamicTypes.isUntyped()){
+						Set<Type> runtimeTypes = state.getRuntimeTypesOf(id, varRef, state);
+
+						if(runtimeTypes.stream().anyMatch(t -> t.isNumericType() || t == Untyped.INSTANCE))
+							for( Type t : runtimeTypes)
+								if(t.isNumericType())
+									numericalTypes.add(t);
 					}
- 
+				} catch (SemanticException e) {
+					System.err.println("Cannot check " + node);
+					e.printStackTrace(System.err);
 				}
-				mayBeNumeric = !numericalTypes.isEmpty();
-					
-			}
-			
-			if (!mayBeNumeric)
-				return true;
-			
 
-			for (AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>,
-								TypeEnvironment<InferredTypes>>> result : tool.getResultOf(graph)) {
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> state = result.getAnalysisStateAfter(node).getState();
-					Interval intervalAbstractValue = state.getValueState().getState(id);	
+			}
+			mayBeNumeric = !numericalTypes.isEmpty();
+				
+		}
+		
+		if (!mayBeNumeric)
+			return;
+		
+
+		for (AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>,
+							TypeEnvironment<InferredTypes>>> result : tool.getResultOf(graph)) {
+				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>> state = result.getAnalysisStateAfter(node).getState();
+				Interval intervalAbstractValue = state.getValueState().getState(id);	
+				if(!intervalAbstractValue.isBottom()) {
 					IntInterval interval = intervalAbstractValue.interval;
 					
 					checkOverflow(tool, node, interval, numericalTypes);					
 					checkUnderflow(tool,node, interval, numericalTypes);
-			}
+				}
 		}
-		return true;
+		
+		
 	}
 
 	private void checkOverflow(
@@ -167,10 +203,10 @@ public class NumericalOverflowOfVariablesChecker implements
 		if(!numericalTypes.isEmpty())
 			if(numericalTypes.size() == 1) {
 				if(isOverflow(interval, arrayTypes[0]))
-					detectedIssues.add(new IssueInfo(node, IssueInfo.NumericalIssue.OVERFLOW));
+					detectedIssues.add(new IssueInfo(node, NumericalIssue.OVERFLOW));
 			} else {
 				if(isOverflow(interval, getWorstCaseTypeForOverflow(numericalTypes)))
-					detectedIssues.add(new IssueInfo(node, IssueInfo.NumericalIssue.MAY_OVERFLOW));
+					detectedIssues.add(new IssueInfo(node, NumericalIssue.MAY_OVERFLOW));
 			}
 		
 	}
@@ -202,10 +238,10 @@ public class NumericalOverflowOfVariablesChecker implements
 		if(!numericalTypes.isEmpty())
 			if(numericalTypes.size() == 1) {
 				if(isUnderflow(interval, arrayTypes[0]))
-					detectedIssues.add(new IssueInfo(node, IssueInfo.NumericalIssue.UNDERFLOW));
+					detectedIssues.add(new IssueInfo(node, NumericalIssue.UNDERFLOW));
 			} else {
 				if(isUnderflow(interval, getWorstCaseTypeForUnderflow(numericalTypes)))
-					detectedIssues.add(new IssueInfo(node, IssueInfo.NumericalIssue.MAY_UNDERFLOW));
+					detectedIssues.add(new IssueInfo(node, NumericalIssue.MAY_UNDERFLOW));
 			}
 	}
 	
@@ -294,24 +330,7 @@ public class NumericalOverflowOfVariablesChecker implements
 		return new MathNumber(-9223372036854775808L);
 	}
 	
-	class IssueInfo {
-		
-		private final Statement statement;
-		private final NumericalIssue issue;
-		
-		public IssueInfo(Statement statement, NumericalIssue issue) {
-			this.statement = statement;
-			this.issue = issue;
-		}
-
-		public Statement getStatement() {
-			return statement;
-		}
-
-		public NumericalIssue getIssue() {
-			return issue;
-		}
-
+	public static class NumericalIssueEnum {
 		public enum NumericalIssue {
 			OVERFLOW(false),
 			MAY_OVERFLOW(true),
@@ -327,6 +346,28 @@ public class NumericalOverflowOfVariablesChecker implements
 			boolean isMay() {
 				return may;
 			}
+		}
+	}
+	
+
+	class IssueInfo {
+		
+
+		
+		private final Statement statement;
+		private final NumericalIssue issue;
+		
+		public IssueInfo(Statement statement, NumericalIssue issue) {
+			this.statement = statement;
+			this.issue = issue;
+		}
+
+		public Statement getStatement() {
+			return statement;
+		}
+
+		public NumericalIssue getIssue() {
+			return issue;
 		}
 
 		@Override

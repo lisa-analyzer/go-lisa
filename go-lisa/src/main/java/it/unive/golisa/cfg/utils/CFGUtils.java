@@ -229,11 +229,20 @@ public class CFGUtils {
 		return false;
 	}
 
-	private static boolean anyMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
+	public static int countMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
+		int res = 0;
+		for( Statement node : cfg.getNodes()) {
+			 if(matchNodeOrSubExpressions(node, condition))
+				 res++;
+		}
+		return res;
+	}
+	
+	public static boolean anyMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		return cfg.getNodes().stream().anyMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
 
-	private static boolean allMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
+	public static boolean allMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		return cfg.getNodes().stream().allMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
 

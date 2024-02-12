@@ -5,6 +5,8 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.utils.AnalysisPreRequirementsUtils;
+import it.unive.golisa.checker.DivByZeroChecker;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
@@ -200,11 +202,16 @@ public class GoLiSA {
 		case "unhandled-errors":
 			conf.syntacticChecks.add(new UnhandledErrorsChecker());
 			break;
-		case "numerical-issues":
+		case "var-numerical-overflow":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new NumericalOverflowOfVariablesChecker());
+		case "div-by-zero":
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
+					new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new DivByZeroChecker());
 		default:
 
 		}
@@ -213,7 +220,7 @@ public class GoLiSA {
 		if (!theDir.exists())
 			theDir.mkdirs();
 
-		lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), conf);
+		lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), analysis, conf);
 
 		File dirPhase2 = new File(outputDir, "Phase2");
 
@@ -247,17 +254,18 @@ public class GoLiSA {
 			default:
 
 			}
-			lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), conf);
+			lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), analysis, conf);
 		}
 	}
 
-	private static void lisaExecution(String filePath, AnnotationSet[] annotationSet, String framework,
+	private static void lisaExecution(String filePath, AnnotationSet[] annotationSet, String framework, String analysis,
 			LiSAConfiguration conf) {
 		Program program = null;
 
 		try {
 
 			program = GoFrontEnd.processFile(filePath);
+			
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annotationSet);
 			annotationLoader.load(program);
@@ -277,7 +285,12 @@ public class GoLiSA {
 				for (CFG c : cfgs)
 					program.addEntryPoint(c);
 				// }
+		
 			}
+			
+			if(analysis.equals("numerical-issues") || analysis.equals("div-by-zero"))
+				for (CFG c : program.getAllCFGs())
+					program.addEntryPoint(c);
 
 			if (!program.getEntryPoints().isEmpty()) {
 				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
@@ -304,19 +317,21 @@ public class GoLiSA {
 			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());
 			return;
 		}
-
+		
 		if (program != null) {
-			LiSA lisa = new LiSA(conf);
-
-			try {
-				lisa.run(program);
-			} catch (Exception e) {
-				// an error occurred during the analysis
-				e.printStackTrace();
-				return;
+			if(AnalysisPreRequirementsUtils.satisfyPrerequirements(program, analysis)) {
+				LiSA lisa = new LiSA(conf);
+				try {
+					lisa.run(program);
+				} catch (Exception e) {
+					// an error occurred during the analysis
+					e.printStackTrace();
+					return;
+				}
+			} else {
+				System.out.println("Pre-requirements for the analysis not found!");
 			}
 		}
-
 	}
 
 }

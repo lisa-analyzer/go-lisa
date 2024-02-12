@@ -20,6 +20,7 @@ import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.numeric.IntInterval;
 import it.unive.lisa.util.numeric.MathNumber;
 
@@ -69,7 +70,7 @@ public class GoIntervalDomain extends Interval {
 		if (type == GoUInt32Type.INSTANCE)
 			return new Interval(new IntInterval(new MathNumber(0), new MathNumber(4294967295L)));
 
-		if (type == GoUInt64Type.INSTANCE)
+		if (type == GoUInt64Type.INSTANCE || type == Untyped.INSTANCE)
 			return new Interval(new IntInterval(new MathNumber(0), new MathNumber(new BigDecimal("18446744073709551615"))));
 		
 		return super.evalPushAny(pushAny, pp, oracle);

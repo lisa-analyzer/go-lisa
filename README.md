@@ -15,10 +15,13 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 	- `non-determinism`  performs an analysis to detect explicit flows that lead to issues related to __non-determinism__ in blockchain software
 	- `non-determinism-ni`  performs an analysis to detect explicit and implicit flows that lead to issues related to __non-determinism__ in blockchain software
 	- `phantom-read` performs an analysis to detect __phantom__ __reads__ in blockchain software for Hyperledger Fabric 
-	- `ucci`  performs an analysis to detect __untrusted__ cross-contract invocations in blockchain software for Hyperledger Fabric 
+	- `ucci`  performs an analysis to detect __untrusted__ __cross-contract__ __invocations__ in blockchain software for Hyperledger Fabric 
 	- `dcci` performs an analysis to detect different cross-channel invocations in blockchain software for Hyperledger Fabric
 	- `read-write` performs an analysis to detect __read-after-write__ and __over-write__ issues in blockchain software for Hyperledger Fabric 
-	- `unhandled-errors` performs an analysis to detect unhandled errors in blockchain software for Hyperledger Fabric 
+	- `unhandled-errors` performs an analysis to detect __unhandled__ __errors__ in blockchain software for Hyperledger Fabric 
+	- `phantom-read` performs an analysis to detect __phantom__ __reads__ in blockchain software for Hyperledger Fabric 
+	- `var-numerical-overflow` performs an analysis to detect the __integer __overflow/underflow__ of program variables in Go software
+	- `div-by-zero` performs an analysis to detect __divison__ __by__ __zero__ in Go software
 	
 ### Example of command line
 

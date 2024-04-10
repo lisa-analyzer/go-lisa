@@ -72,6 +72,11 @@ public class ReadFile extends NativeCFG {
 			return new ReadFileImpl(cfg, location, params[0]);
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 

@@ -1,0 +1,40 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/hf/read-write/interproc/defer-inter8/defer-inter8.go':34:53] on 'untyped SmartContract::Write(*SmartContract s)': [EXPRESSION] Detected a possible read after write issue. Read location: 'go-testcases/hf/read-write/interproc/defer-inter8/defer-inter8.go':22:33"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "7ms",
+    "end" : "2023-12-14T18:14:06.449+01:00",
+    "expressions" : "14",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "40",
+    "programs" : "1",
+    "start" : "2023-12-14T18:14:06.442+01:00",
+    "statements" : "6",
+    "units" : "11",
+    "version" : "0.1b9",
+    "warnings" : "2"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "ReadWritePathChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/hf/read-write/interproc/defer-inter8/Phase2"
+  }
+}

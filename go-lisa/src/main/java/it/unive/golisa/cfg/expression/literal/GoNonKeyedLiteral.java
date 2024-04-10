@@ -20,6 +20,7 @@ import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.VariableTableEntry;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -52,6 +53,11 @@ public class GoNonKeyedLiteral extends NaryExpression {
 	public GoNonKeyedLiteral(CFG cfg, CodeLocation location, Expression[] values, Type staticType) {
 		this(cfg, location, values, staticType, true);
 
+	}
+
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	/**

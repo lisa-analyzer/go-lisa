@@ -32,18 +32,18 @@ public class OpenBlock extends Statement {
 	}
 
 	@Override
-	public int setOffset(int offset) {
-		return this.offset = offset;
-	}
-
-	@Override
 	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		return true;
+		return visitor.visit(tool, getCFG(), this);
 	}
 
 	@Override
 	public String toString() {
 		return "Open block: " + getLocation();
+	}
+
+	@Override
+	protected int compareSameClass(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	@Override

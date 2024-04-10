@@ -1,0 +1,40 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/hf/dcci/dcci.go':17:66] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Detected cross-channel invocations on different channels. The other invocation: 'go-testcases/hf/dcci/dcci.go':15:66"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "124ms",
+    "end" : "2023-12-01T20:44:22.276+01:00",
+    "expressions" : "17",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "38",
+    "programs" : "1",
+    "start" : "2023-12-01T20:44:22.152+01:00",
+    "statements" : "3",
+    "units" : "10",
+    "version" : "0.1b9",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "DifferentCrossChannelInvocationsChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/hf/dcci"
+  }
+}

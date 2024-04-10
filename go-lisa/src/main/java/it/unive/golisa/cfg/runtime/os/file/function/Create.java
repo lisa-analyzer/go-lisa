@@ -95,5 +95,10 @@ public class Create extends NativeCFG {
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 			return state.top();
 		}
+
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
 	}
 }

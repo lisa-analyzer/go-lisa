@@ -1,0 +1,38 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "3",
+    "duration" : "27ms",
+    "end" : "2023-12-14T18:14:05.877+01:00",
+    "expressions" : "21",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "40",
+    "programs" : "1",
+    "start" : "2023-12-14T18:14:05.850+01:00",
+    "statements" : "10",
+    "units" : "11",
+    "version" : "0.1b9",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "ReadWritePairChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/hf/read-write/interproc/defer-inter5/Phase1"
+  }
+}

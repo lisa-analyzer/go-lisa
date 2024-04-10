@@ -16,6 +16,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -45,6 +46,11 @@ public class GoTupleExpression extends NaryExpression {
 	 */
 	public GoTupleExpression(CFG cfg, Parameter[] types, CodeLocation location, Expression... expressions) {
 		this(cfg, GoTupleType.lookup(types), location, expressions);
+	}
+
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	/**

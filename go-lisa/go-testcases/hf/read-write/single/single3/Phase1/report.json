@@ -1,0 +1,38 @@
+{
+  "warnings" : [ ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "2",
+    "duration" : "9ms",
+    "end" : "2023-12-14T18:14:07.545+01:00",
+    "expressions" : "25",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "39",
+    "programs" : "1",
+    "start" : "2023-12-14T18:14:07.536+01:00",
+    "statements" : "9",
+    "units" : "11",
+    "version" : "0.1b9",
+    "warnings" : "0"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "ReadWritePairChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/hf/read-write/single/single3/Phase1"
+  }
+}

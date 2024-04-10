@@ -13,6 +13,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.evaluation.RightToLeftEvaluation;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -98,5 +99,10 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		if (!getLeft().getMetaVariables().isEmpty())
 			result = result.forgetIdentifiers(getLeft().getMetaVariables());
 		return result;
+	}
+
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 }

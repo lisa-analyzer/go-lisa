@@ -32,11 +32,6 @@ public class GoUnknown extends Expression {
 	}
 
 	@Override
-	public int setOffset(int offset) {
-		return this.offset = offset;
-	}
-
-	@Override
 	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
 		return visitor.visit(tool, getCFG(), this);
 	}
@@ -44,6 +39,11 @@ public class GoUnknown extends Expression {
 	@Override
 	public String toString() {
 		return "<UNKNOWN>";
+	}
+
+	@Override
+	protected int compareSameClass(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	@Override

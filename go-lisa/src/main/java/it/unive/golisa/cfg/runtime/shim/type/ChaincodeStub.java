@@ -5,10 +5,13 @@ import it.unive.golisa.cfg.runtime.shim.method.DelPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.DelState;
 import it.unive.golisa.cfg.runtime.shim.method.GetArgs;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
+import it.unive.golisa.cfg.runtime.shim.method.GetHistoryForKey;
+import it.unive.golisa.cfg.runtime.shim.method.GetQueryResult;
 import it.unive.golisa.cfg.runtime.shim.method.GetState;
 import it.unive.golisa.cfg.runtime.shim.method.GetStateByPartialCompositeKey;
 import it.unive.golisa.cfg.runtime.shim.method.GetStateByRange;
 import it.unive.golisa.cfg.runtime.shim.method.GetStringArgs;
+import it.unive.golisa.cfg.runtime.shim.method.InvokeChaincode;
 import it.unive.golisa.cfg.runtime.shim.method.PutPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.PutState;
 import it.unive.golisa.cfg.runtime.shim.method.SplitCompositeKey;
@@ -99,6 +102,12 @@ public class ChaincodeStub extends GoStructType {
 				new GetStateByRange(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit.addInstanceCodeMember(
 				new GetStateByPartialCompositeKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new GetHistoryForKey(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new GetQueryResult(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new InvokeChaincode(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 
 	}
 

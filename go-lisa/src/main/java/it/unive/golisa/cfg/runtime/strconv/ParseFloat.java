@@ -80,6 +80,11 @@ public class ParseFloat extends NativeCFG {
 			return new ParseFloatImpl(cfg, location, params[0], params[1]);
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 

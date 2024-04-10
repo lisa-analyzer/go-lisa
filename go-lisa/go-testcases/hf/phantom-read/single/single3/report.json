@@ -1,0 +1,40 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/hf/phantom-read/single/single3/single3.go':31:27] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] The value passed for the 3rd parameter of this call is tainted, and it reaches the sink at parameter 'value' of PutState"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "17ms",
+    "end" : "2023-12-14T18:35:22.426+01:00",
+    "expressions" : "42",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "45",
+    "programs" : "1",
+    "start" : "2023-12-14T18:35:22.409+01:00",
+    "statements" : "18",
+    "units" : "10",
+    "version" : "0.1b9",
+    "warnings" : "1"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "TaintChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/hf/phantom-read/single/single3"
+  }
+}

@@ -9,6 +9,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonLe;
@@ -32,6 +33,11 @@ public class GoLessOrEqual extends it.unive.lisa.program.cfg.statement.BinaryExp
 	 */
 	public GoLessOrEqual(CFG cfg, SourceCodeLocation location, Expression right, Expression left) {
 		super(cfg, location, "<=", GoBoolType.INSTANCE, right, left);
+	}
+
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	@Override

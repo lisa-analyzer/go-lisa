@@ -1,18 +1,15 @@
 package it.unive.golisa;
 
 import it.unive.golisa.analysis.GoIntervalDomain;
+import it.unive.golisa.analysis.entrypoints.EntryPointSet;
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
-import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
-import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -31,12 +28,20 @@ import it.unive.lisa.conf.LiSAConfiguration.GraphType;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
+import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
+import it.unive.lisa.program.cfg.Parameter;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
+
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -45,7 +50,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,20 +88,20 @@ public class GoLiSA {
 		options.addOption(analysis_opt);
 		
 
-		Option entrypointss_opt = new Option("e", "entrypoints", true, "the list of entrypoints (method names) ");
-		entrypointss_opt.setRequired(true);
+		Option entrypointss_opt = new Option("e", "entrypoints", true, "path of file containg the list of entrypoints (method names) ");
+		entrypointss_opt.setRequired(false);
 		options.addOption(entrypointss_opt);
 		
-		Option sinks_opt = new Option("sinks", "sinks", true, "the list of sinks (method names) for taint analysis");
-		sinks_opt.setRequired(true);
+		Option sinks_opt = new Option("sinks", "sinks", true, "path of file containg the list of sinks (method names) for taint analysis");
+		sinks_opt.setRequired(false);
 		options.addOption(sinks_opt);
 		
-		Option sources_opt = new Option("sources", "sources", true, "the list of sources (method names) for taint analysis");
-		sources_opt.setRequired(true);
+		Option sources_opt = new Option("sources", "sources", true, "path of file containg the list of sources (method names) for taint analysis");
+		sources_opt.setRequired(false);
 		options.addOption(sources_opt);
 		
-		Option sanitizers_opt = new Option("sanitizers", "sanitizers", true, "the list of sanitizers (method names) for taint analysis");
-		sanitizers_opt.setRequired(true);
+		Option sanitizers_opt = new Option("sanitizers", "sanitizers", true, "path of file containg the list of sanitizers (method names) for taint analysis");
+		sanitizers_opt.setRequired(false);
 		options.addOption(sanitizers_opt);
 
 
@@ -128,7 +133,7 @@ public class GoLiSA {
 		
 		switch (analysis) {
 		case "sign":
-			
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Sign()),
 					new TypeEnvironment<>(new InferredTypes()));
 		case "parity":
@@ -162,7 +167,7 @@ public class GoLiSA {
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new TaintChecker(""));
+			conf.semanticChecks.add(new TaintChecker());
 			break;
 			
 		default:
@@ -173,23 +178,25 @@ public class GoLiSA {
 		if (!theDir.exists())
 			theDir.mkdirs();
 
-		lisaExecution(filePath, analysis, conf);
-	}
-
-	private static void lisaExecution(String filePath, String analysis,
-			LiSAConfiguration conf) {
 		Program program = null;
 
 		try {
 
 			program = GoFrontEnd.processFile(filePath);
 			
-			// AnnotationLoader annotationLoader = new AnnotationLoader();
-			// annotationLoader.addAnnotationSet(annotationSet);
-			// annotationLoader.load(program);
+			if(analysis.equals("taint")) {
+				applyAnnotationForTaint(program, entrypointss_opt, entrypointss_opt, entrypointss_opt);
+			}
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(null));
+			
+			EntryPointSet entrypoints = EntryPointsFactory.getEntryPoints(null); // Considers main method
+			
+			if(entrypointss_opt.hasOptionalArg()) {
+				// Considers provided user entrypoints
+				entrypoints = getEntryPointsFromList(entrypointss_opt.getValue());
+			}
+			entryLoader.addEntryPoints(entrypoints);
 			entryLoader.load(program);
 
 			if (!entryLoader.isEntryFound()) {
@@ -237,5 +244,74 @@ public class GoLiSA {
 				}
 		}
 	}
+
+	private static void applyAnnotationForTaint(Program program, Option sources_opt, Option sinks_opt,
+			Option sanitizers_opt) {
+		
+		Collection<CodeMember> codeMembers = program.getCodeMembers();
+		Set<String> sources = Set.of();
+		Set<String> sinks = Set.of();
+		Set<String> sanitizers = Set.of();
+		try {
+			if(sources_opt.hasOptionalArg())
+				sources.addAll(FileUtils.readLines(new File(sources_opt.getValue())));
+			if(sinks_opt.hasOptionalArg())
+				sinks.addAll(FileUtils.readLines(new File(sinks_opt.getValue())));
+			if(sanitizers_opt.hasOptionalArg())
+				sanitizers.addAll(FileUtils.readLines(new File(sanitizers_opt.getValue())));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		for (CodeMember cm : codeMembers)
+				checkAndAddAnnotation(cm.getDescriptor(), sources,sinks, sanitizers);
+
+		for (Unit unit : program.getUnits()) {
+			for (CodeMember cm : unit.getCodeMembers()) {
+				checkAndAddAnnotation(cm.getDescriptor(), sources,sinks, sanitizers);
+			}
+
+			if (unit instanceof CompilationUnit) {
+				CompilationUnit cUnit = (CompilationUnit) unit;
+
+				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {
+					checkAndAddAnnotation(cm.getDescriptor(), sources,sinks, sanitizers);
+				}
+			}
+		}
+		
+	}
+
+	private static void checkAndAddAnnotation(CodeMemberDescriptor descriptor, Set<String> sources, Set<String> sinks,
+			Set<String> sanitizers) {
+		String name = descriptor.getName();
+		if(sources.contains(name))
+			descriptor.getAnnotations().addAnnotation(TaintDomain.TAINTED_ANNOTATION);
+		if(sanitizers.contains(name))
+			descriptor.getAnnotations().addAnnotation(TaintDomain.CLEAN_ANNOTATION);
+		if(sinks.contains(name))
+			for(Parameter param : descriptor.getFormals())
+				param.addAnnotation(TaintChecker.SINK_ANNOTATION);
+		
+	}
+
+	private static EntryPointSet getEntryPointsFromList(String path) {
+		
+		return new EntryPointSet() {
+
+			@Override
+			protected void build(Set<String> entryPoints) {
+				try {
+					List<String> names = FileUtils.readLines(new File(path));
+					entryPoints.addAll(names);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		};
+	}
+
+
 
 }

@@ -3,18 +3,9 @@ package it.unive.golisa;
 import it.unive.golisa.analysis.GoIntervalDomain;
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
-import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.golisa.analysis.utils.AnalysisPreRequirementsUtils;
-import it.unive.golisa.checker.DivByZeroChecker;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
-import it.unive.golisa.checker.IntegrityNIChecker;
-import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
-import it.unive.golisa.checker.hf.DifferentCrossChannelInvocationsChecker;
-import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
-import it.unive.golisa.checker.hf.readwrite.ReadWritePairChecker;
-import it.unive.golisa.checker.hf.readwrite.ReadWritePathChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
@@ -22,15 +13,17 @@ import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.FrameworkNonDeterminismAnnotationSetFactory;
-import it.unive.golisa.loader.annotation.sets.PhantomReadAnnotationSet;
-import it.unive.golisa.loader.annotation.sets.UCCIPhase1AnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.numeric.Parity;
+import it.unive.lisa.analysis.numeric.Pentagon;
+import it.unive.lisa.analysis.numeric.Sign;
+import it.unive.lisa.analysis.string.Prefix;
+import it.unive.lisa.analysis.string.Suffix;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
@@ -85,23 +78,27 @@ public class GoLiSA {
 		output.setRequired(true);
 		options.addOption(output);
 
-		Option framework = new Option("f", "framework", true,
-				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
-		framework.setRequired(false);
-		options.addOption(framework);
-
 		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
 		analysis_opt.setRequired(true);
 		options.addOption(analysis_opt);
+		
 
-		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
-		dump_opt.setRequired(false);
-		options.addOption(dump_opt);
+		Option entrypointss_opt = new Option("e", "entrypoints", true, "the list of entrypoints (method names) ");
+		entrypointss_opt.setRequired(true);
+		options.addOption(entrypointss_opt);
+		
+		Option sinks_opt = new Option("sinks", "sinks", true, "the list of sinks (method names) for taint analysis");
+		sinks_opt.setRequired(true);
+		options.addOption(sinks_opt);
+		
+		Option sources_opt = new Option("sources", "sources", true, "the list of sources (method names) for taint analysis");
+		sources_opt.setRequired(true);
+		options.addOption(sources_opt);
+		
+		Option sanitizers_opt = new Option("sanitizers", "sanitizers", true, "the list of sanitizers (method names) for taint analysis");
+		sanitizers_opt.setRequired(true);
+		options.addOption(sanitizers_opt);
 
-		Option dumpAdditionalAnalysisInfo = new Option("u", "dumpAdditionalAnalysisInfo", false,
-				"dump additional info to improve user experience if allowed by the analysis");
-		dumpAdditionalAnalysisInfo.setRequired(false);
-		options.addOption(dumpAdditionalAnalysisInfo);
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -127,91 +124,47 @@ public class GoLiSA {
 		conf.jsonOutput = true;
 		conf.optimize = false;
 
-		conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
-
-		AnnotationSet[] annotationSet = new AnnotationSet[] {};
-		boolean require2Phase = false;
-
-		ReadWritePairChecker readwritePhase1 = null;
-		File dirPhase1 = null;
+		conf.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
 		
 		switch (analysis) {
-
-		case "non-determinism":
-			annotationSet = FrameworkNonDeterminismAnnotationSetFactory
-					.getAnnotationSets(cmd.getOptionValue("framework"));
-			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new TaintChecker("Possible issue of non-determinism."));
-			break;
-		case "non-determinism-ni":
-			annotationSet = FrameworkNonDeterminismAnnotationSetFactory
-					.getAnnotationSets(cmd.getOptionValue("framework"));
-			conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new InferenceSystem<>(new IntegrityNIDomain()), new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new IntegrityNIChecker());
-			break;
-		case "phantom-read":
-			annotationSet = new AnnotationSet[] { new PhantomReadAnnotationSet() };
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new TaintChecker("Possible phantom read."));
-			break;
-		case "ucci":
-			// TODO: add configuration for UCCI analysis
-			// TODO: support 2nd phase
-			// require2Phase = true;
-			/*
-			 * dirPhase1 = new File(outputDir, "Phase1"); if
-			 * (!dirPhase1.exists()) dirPhase1.mkdirs(); conf.workdir =
-			 * dirPhase1.getAbsolutePath(); break;
-			 */
-			annotationSet = new AnnotationSet[] { new UCCIPhase1AnnotationSet() };
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new TaintChecker("Possible untrusted cross-contract invocation."));
-			break;
-		case "dcci":
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
+		case "sign":
+			
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Sign()),
 					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new DifferentCrossChannelInvocationsChecker());
-			break;
-		case "read-write":
-
-			require2Phase = true;
-
+		case "parity":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Parity()),
 					new TypeEnvironment<>(new InferredTypes()));
-			readwritePhase1 = new ReadWritePairChecker();
-			conf.semanticChecks.add(readwritePhase1);
-
-			dirPhase1 = new File(outputDir, "Phase1");
-			if (!dirPhase1.exists())
-				dirPhase1.mkdirs();
-
-			conf.workdir = dirPhase1.getAbsolutePath();
-			break;
-		case "unhandled-errors":
-			conf.syntacticChecks.add(new UnhandledErrorsChecker());
-			break;
-		case "var-numerical-overflow":
+		case "intervals":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
 					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new NumericalOverflowOfVariablesChecker());
-		case "div-by-zero":
+		case "pentagons":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new Pentagon(),
 					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new DivByZeroChecker());
+		case "prefix":
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Prefix()),
+					new TypeEnvironment<>(new InferredTypes()));
+			break;
+		case "suffix":
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Suffix()),
+					new TypeEnvironment<>(new InferredTypes()));
+			break;
+		case "tarsis":
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
+					new TypeEnvironment<>(new InferredTypes()));
+			break;
+		case "taint":
+			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
+					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
+			conf.semanticChecks.add(new TaintChecker(""));
+			break;
+			
 		default:
 
 		}
@@ -220,45 +173,10 @@ public class GoLiSA {
 		if (!theDir.exists())
 			theDir.mkdirs();
 
-		lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), analysis, conf);
-
-		File dirPhase2 = new File(outputDir, "Phase2");
-
-		if (require2Phase) {
-
-			conf = new LiSAConfiguration();
-			conf.workdir = outputDir;
-			conf.jsonOutput = true;
-			conf.optimize = false;
-
-			dirPhase2 = new File(outputDir, "Phase2");
-			if (!dirPhase2.exists())
-				dirPhase2.mkdirs();
-
-			conf.workdir = dirPhase2.getAbsolutePath();
-			conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
-
-			switch (analysis) {
-			case "ucci":
-				// TODO: add configuration for UCCI analysis
-				// break;
-				throw new IllegalArgumentException("The 2nd phase of UCCI analysis is currently not supported");
-			case "read-write":
-				conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-				conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-						new ValueEnvironment<>(new Tarsis()),
-						new TypeEnvironment<>(new InferredTypes()));
-				conf.semanticChecks.add(new ReadWritePathChecker(readwritePhase1.getReadAfterWriteCandidates(),
-						readwritePhase1.getOverWriteCandidates(), cmd.hasOption(dumpAdditionalAnalysisInfo)));
-				break;
-			default:
-
-			}
-			lisaExecution(filePath, annotationSet, cmd.getOptionValue("framework"), analysis, conf);
-		}
+		lisaExecution(filePath, analysis, conf);
 	}
 
-	private static void lisaExecution(String filePath, AnnotationSet[] annotationSet, String framework, String analysis,
+	private static void lisaExecution(String filePath, String analysis,
 			LiSAConfiguration conf) {
 		Program program = null;
 
@@ -266,32 +184,22 @@ public class GoLiSA {
 
 			program = GoFrontEnd.processFile(filePath);
 			
-			AnnotationLoader annotationLoader = new AnnotationLoader();
-			annotationLoader.addAnnotationSet(annotationSet);
-			annotationLoader.load(program);
+			// AnnotationLoader annotationLoader = new AnnotationLoader();
+			// annotationLoader.addAnnotationSet(annotationSet);
+			// annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(framework));
+			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints(null));
 			entryLoader.load(program);
 
 			if (!entryLoader.isEntryFound()) {
-				Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
-						.getAppliedAnnotations();
-
-				// if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations,
-				// annotationSet)) {
-				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
-						appliedAnnotations, annotationSet);
-				for (CFG c : cfgs)
+			
+				// Considers all methods
+				for (CFG c : program.getAllCFGs())
 					program.addEntryPoint(c);
-				// }
 		
 			}
 			
-			if(analysis.equals("numerical-issues") || analysis.equals("div-by-zero"))
-				for (CFG c : program.getAllCFGs())
-					program.addEntryPoint(c);
-
 			if (!program.getEntryPoints().isEmpty()) {
 				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 				conf.callGraph = new RTACallGraph();
@@ -319,7 +227,6 @@ public class GoLiSA {
 		}
 		
 		if (program != null) {
-			if(AnalysisPreRequirementsUtils.satisfyPrerequirements(program, analysis)) {
 				LiSA lisa = new LiSA(conf);
 				try {
 					lisa.run(program);
@@ -328,9 +235,6 @@ public class GoLiSA {
 					e.printStackTrace();
 					return;
 				}
-			} else {
-				System.out.println("Pre-requirements for the analysis not found!");
-			}
 		}
 	}
 

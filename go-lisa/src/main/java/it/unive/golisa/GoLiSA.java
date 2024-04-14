@@ -8,8 +8,6 @@ import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.EntryPointLoader;
-import it.unive.golisa.loader.annotation.AnnotationSet;
-import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.SimpleAbstractState;
@@ -39,6 +37,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -136,18 +135,22 @@ public class GoLiSA {
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Sign()),
 					new TypeEnvironment<>(new InferredTypes()));
+			break;
 		case "parity":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Parity()),
 					new TypeEnvironment<>(new InferredTypes()));
+			break;
 		case "intervals":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
 					new TypeEnvironment<>(new InferredTypes()));
+			break;
 		case "pentagons":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new Pentagon(),
 					new TypeEnvironment<>(new InferredTypes()));
+			break;
 		case "prefix":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Prefix()),
@@ -185,16 +188,16 @@ public class GoLiSA {
 			program = GoFrontEnd.processFile(filePath);
 			
 			if(analysis.equals("taint")) {
-				applyAnnotationForTaint(program, entrypointss_opt, entrypointss_opt, entrypointss_opt);
+				applyAnnotationForTaint(program, cmd.getOptionValue("sources"), cmd.getOptionValue("sinks"), cmd.getOptionValue("sanitizers"));
 			}
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
 			
 			EntryPointSet entrypoints = EntryPointsFactory.getEntryPoints(null); // Considers main method
 			
-			if(entrypointss_opt.hasOptionalArg()) {
+			if(cmd.getOptionValue("entrypoints") != null) {
 				// Considers provided user entrypoints
-				entrypoints = getEntryPointsFromList(entrypointss_opt.getValue());
+				entrypoints = getEntryPointsFromList(cmd.getOptionValue("entrypoints"));
 			}
 			entryLoader.addEntryPoints(entrypoints);
 			entryLoader.load(program);
@@ -245,20 +248,20 @@ public class GoLiSA {
 		}
 	}
 
-	private static void applyAnnotationForTaint(Program program, Option sources_opt, Option sinks_opt,
-			Option sanitizers_opt) {
+	private static void applyAnnotationForTaint(Program program, String sourcesPath, String sinksPath,
+			String sanitizersPath) {
 		
 		Collection<CodeMember> codeMembers = program.getCodeMembers();
-		Set<String> sources = Set.of();
-		Set<String> sinks = Set.of();
-		Set<String> sanitizers = Set.of();
+		Set<String> sources = new HashSet<String>();
+		Set<String> sinks = new HashSet<String>();
+		Set<String> sanitizers = new HashSet<String>();
 		try {
-			if(sources_opt.hasOptionalArg())
-				sources.addAll(FileUtils.readLines(new File(sources_opt.getValue())));
-			if(sinks_opt.hasOptionalArg())
-				sinks.addAll(FileUtils.readLines(new File(sinks_opt.getValue())));
-			if(sanitizers_opt.hasOptionalArg())
-				sanitizers.addAll(FileUtils.readLines(new File(sanitizers_opt.getValue())));
+			if(sourcesPath != null)
+				sources.addAll(FileUtils.readLines(new File(sourcesPath)));
+			if(sinksPath != null)
+				sinks.addAll(FileUtils.readLines(new File(sinksPath)));
+			if(sanitizersPath != null)
+				sanitizers.addAll(FileUtils.readLines(new File(sanitizersPath)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -41,6 +41,7 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 				return matchCallee(formals[i], types[i]);
 			else if (!matches(formals[i].getStaticType(), types[i]))
 				return false;
+		
 
 		return true;
 	}
@@ -53,10 +54,12 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 	}
 
 	private boolean matches(Type type, Set<Type> types) {
-		if (types.stream()
+		/*if (types.stream()
 				.anyMatch(rt -> rt.isPointerType() && rt.asPointerType().getInnerType().canBeAssignedTo(type)))
 			return true;
 		return types.stream().anyMatch(rt -> rt.canBeAssignedTo(type));
+		*/ 
+		return true; // removed type checks
 
 	}
 

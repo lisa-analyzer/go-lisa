@@ -28,7 +28,7 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 
 ### Example of command line
 
-`-i C:\Users\MyAccount\mycontract.go -o C:\Users\MyAccount\output -a taint -e myentries.txt -sources mysources.txt -sinks mysinks.txt`
+`-i C:\Users\MyAccount\myprogram.go -o C:\Users\MyAccount\output -a taint -e myentries.txt -sources mysources.txt -sinks mysinks.txt`
 
 ### Analysis Entry Points
 

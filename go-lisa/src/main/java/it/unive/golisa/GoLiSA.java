@@ -2,7 +2,12 @@ package it.unive.golisa;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.cli.CommandLine;
@@ -12,7 +17,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +27,7 @@ import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.checker.UCCICheckerPhase1;
 import it.unive.golisa.checker.UCCICheckerPhase2;
 import it.unive.golisa.frontend.GoFrontEnd;
@@ -30,9 +35,10 @@ import it.unive.golisa.interprocedural.GoContextBasedAnalysis;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
+import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.sets.HyperledgerFabricUCCIAnnotationSet;
-import it.unive.golisa.loader.annotation.sets.UCCIAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UCCIPhase1AnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UCCIPhase2AnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -44,8 +50,15 @@ import it.unive.lisa.checks.warnings.Warning;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
+import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
  * The Go frontend for LiSA.
@@ -104,7 +117,8 @@ public class GoLiSA {
 		confPhase1.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomainForPhase1()),
 				LiSAFactory.getDefaultFor(TypeDomain.class));
-		confPhase1.semanticChecks.add(new UCCICheckerPhase1());
+		UCCICheckerPhase1 checkerPhase1 = new UCCICheckerPhase1();
+		confPhase1.semanticChecks.add(checkerPhase1);
 
 		confPhase1.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 
@@ -118,7 +132,7 @@ public class GoLiSA {
 		
 		try {
 
-			UCCIAnnotationSet[] annotationSet = new UCCIAnnotationSet[] {new HyperledgerFabricUCCIAnnotationSet()};
+			AnnotationSet[] annotationSet = new AnnotationSet[] {new UCCIPhase1AnnotationSet()};
 			program = GoFrontEnd.processFile(filePath);
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annotationSet);
@@ -167,6 +181,12 @@ public class GoLiSA {
 			return;
 		}
 
+		
+		if(!requirementsPhase1(program)) {
+			LOG.info("Program does not contains at least a source and sink!");
+			return;
+		} 
+		
 		LiSA lisaP1 = new LiSA(confPhase1);
 
 		try {
@@ -183,7 +203,9 @@ public class GoLiSA {
 				System.out.println(warn);
 		}
 		
-		if(lisaP1.getWarnings().isEmpty())
+		
+		
+		if(!requirementsPhase2(program, lisaP1))
 			return;
 		
 		LiSAConfiguration confPhase2 = new LiSAConfiguration();
@@ -206,11 +228,14 @@ public class GoLiSA {
 		
 		try {
 
-			UCCIAnnotationSet[] annotationSet = new UCCIAnnotationSet[] {new HyperledgerFabricUCCIAnnotationSet()};
+			AnnotationSet[] annotationSet = new AnnotationSet[] {new UCCIPhase2AnnotationSet()};
 			
 			program = GoFrontEnd.processFile(filePath);
 			AnnotationLoader annotationLoader = new AnnotationLoader();
 			annotationLoader.addAnnotationSet(annotationSet);
+			
+			annotationLoader.addSpecificCodeMemberAnnotations(checkerPhase1.sourcesForPhase2);
+			
 			annotationLoader.load(program);
 
 			EntryPointLoader entryLoader = new EntryPointLoader();
@@ -272,5 +297,133 @@ public class GoLiSA {
 				System.out.println(warn);
 		}
 	}
+
+	private static boolean requirementsPhase1(Program program) {
+				
+		Map<String, Set<String>> untrustedInputs = new HashMap<>();
+		untrustedInputs.put("ChaincodeStub", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
+		untrustedInputs.put("ChaincodeStubInterface", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
+		
+		Map<String, Set<String>> CCIs = new HashMap<>();
+		CCIs.put("ChaincodeStub", Set.of("InvokeChaincode"));
+		CCIs.put("ChaincodeStubInterface", Set.of("InvokeChaincode"));
+		
+		if(countCallsMatchingSignatures(program, untrustedInputs) > 0 && countCallsMatchingSignatures(program, CCIs) > 0 )
+			return true;
+		return false;
+	}
+	
+
+	private static boolean requirementsPhase2(Program program, LiSA lisaP1) {
+		if(!lisaP1.getWarnings().isEmpty()) {
+			Map<String, Set<String>> writeStateAndResponses = new HashMap<>();
+			writeStateAndResponses.put("ChaincodeStub", Set.of("PutState", "DelState", "SetStateValidationParameter", "PutPrivateData", "DelPrivateData", "PurgePrivateData",  "SetPrivateDataValidationParameter"));
+			writeStateAndResponses.put("ChaincodeStubInterface", Set.of("PutState", "DelState", "SetStateValidationParameter", "PutPrivateData", "DelPrivateData", "PurgePrivateData",  "SetPrivateDataValidationParameter"));
+			writeStateAndResponses.put("shim", Set.of("Success", "Error"));
+			
+			if(countCallsMatchingSignatures(program, writeStateAndResponses) > 0)
+				return true;
+		}
+		return false;
+	}
+
+	private static int countCallsMatchingSignatures(Program program, Map<String, Set<String>> signatures) {
+
+		int res = 0;
+
+		SignatureDescriptorMatcher matcher;
+		
+		for (CFG cfg : program.getAllCFGs()) {
+			LinkedList<Statement> possibleEntries = new LinkedList<>();
+			matcher = new SignatureDescriptorMatcher(signatures);
+			cfg.accept(matcher, possibleEntries);
+			if (matcher.isMatched())
+				res += matcher.matches;
+		}
+
+		for (Unit unit : program.getUnits())
+			for (CodeMember cfg : unit.getCodeMembers()) {
+				if (cfg instanceof CFG) {
+					LinkedList<Statement> possibleEntries = new LinkedList<>();
+					matcher = new SignatureDescriptorMatcher(signatures);
+					((CFG) cfg).accept(matcher, possibleEntries);
+					
+					if (matcher.isMatched())
+						res += matcher.matches;
+				}
+			}
+		return res;
+
+	}
+
+	private static class SignatureDescriptorMatcher
+			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
+
+		final Map<String, Set<String>> signatures;
+		
+		private int matches;
+		
+		public boolean isMatched() {
+			return matches > 0;
+		}
+
+		public SignatureDescriptorMatcher(Map<String, Set<String>> signatures) {
+			this.signatures = signatures;
+		}
+
+		@Override
+		public boolean visit(Collection<Statement> tool, CFG graph) {
+			
+			Function<Statement, Boolean> condition = new Function<Statement, Boolean>() {
+				
+				@Override
+				public Boolean apply(Statement t) {
+					if (t instanceof Call) {
+						Call c = (Call) t;
+						if(c.getCallType() == CallType.STATIC) {
+							if(signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
+											.anyMatch(s -> 
+											(c.getFullTargetName()).equals(set.getKey()+"::"+s) //qualifier::targetName
+														))) {
+								return true;
+							}
+						} else if(c.getCallType() == CallType.INSTANCE) {
+							if(signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
+									.anyMatch(s -> 
+									(c.getTargetName()).equals(s) //targetName
+												))) {
+								return true;
+							}
+						} if (c.getCallType() == CallType.UNKNOWN) {
+							if(signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
+									.anyMatch(s -> 
+									(c.getFullTargetName()).equals(set.getKey()+"::"+s) || c.getTargetName().equals(s)))) {
+								return true;
+							}
+						}
+					
+					}
+					return false;
+				}
+				
+			};
+			
+			matches += CFGUtils.countMatchInCFGNodes(graph, condition);
+			
+			return true;
+		}
+
+		@Override
+		public boolean visit(Collection<Statement> tool, CFG graph, Statement node) {
+			return true;
+		}
+
+		@Override
+		public boolean visit(Collection<Statement> tool, CFG graph, Edge edge) {
+			return true;
+		}
+		
+	}
+	
 
 }

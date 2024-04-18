@@ -1,11 +1,16 @@
 package it.unive.golisa.checker;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
 import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.lisa.analysis.CFGWithAnalysisResults;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -19,6 +24,7 @@ import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMember;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -36,6 +42,7 @@ public class UCCICheckerPhase1 implements
 		SemanticCheck<GoAbstractState<ValueEnvironment<TaintDomainForPhase1>, TypeEnvironment<InferredTypes>>,
 				GoPointBasedHeap, ValueEnvironment<TaintDomainForPhase1>, TypeEnvironment<InferredTypes>> {
 
+	
 	/**
 	 * Sink annotation.
 	 */
@@ -45,6 +52,9 @@ public class UCCICheckerPhase1 implements
 	 * Sink matcher.
 	 */
 	public static final AnnotationMatcher SINK_MATCHER_PHASE1 = new BasicAnnotationMatcher(SINK_ANNOTATION_PHASE1);
+	
+	public Set<Pair<CodeAnnotation, CodeMemberDescriptor>> sourcesForPhase2 = new HashSet<Pair<CodeAnnotation,CodeMemberDescriptor>>();
+	
 
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
@@ -106,40 +116,43 @@ public class UCCICheckerPhase1 implements
 			Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
 			for (CodeMember n : nativeCfgs) {
 				Parameter[] parameters = n.getDescriptor().getFormals();
-				for (int i = 0; i < parameters.length; i++)
+				boolean[] resultsParam = new boolean[parameters.length];
+				for (int i = 0; i < parameters.length; i++) {
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER_PHASE1))
 						for (CFGWithAnalysisResults<
 								GoAbstractState<ValueEnvironment<TaintDomainForPhase1>, TypeEnvironment<InferredTypes>>,
 								GoPointBasedHeap, ValueEnvironment<TaintDomainForPhase1>,
-								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-									.getValueOnStack().isTainted()) {
-								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-										+ " parameter of this cross-contract invocation is tainted, and it reaches the sink at parameter '"
-										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-								if(!n.getDescriptor().getAnnotations().contains(TaintDomainForPhase2.TAINTED_MATCHER_PHASE2))
-									n.getDescriptor().addAnnotation(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2);
+								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+							TaintDomainForPhase1 valueOnStack = result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
+							.getValueOnStack();
+							if (valueOnStack.isTainted() || valueOnStack.maybeTainted()) {
+								resultsParam[i] = true;
 							}
+						}
+				}
+				buildWarning(tool, call, parameters, resultsParam);
+				addAnnotationForPhase2(n, resultsParam);
 			}
 		} else if (resolved instanceof CFGCall) {
 			CFGCall cfg = (CFGCall) resolved;
 			for (CodeMember n : cfg.getTargets()) {
 				Parameter[] parameters = n.getDescriptor().getFormals();
-				for (int i = 0; i < parameters.length; i++)
+				boolean[] resultsParam = new boolean[parameters.length];
+				for (int i = 0; i < parameters.length; i++) {
 					if (parameters[i].getAnnotations().contains(SINK_MATCHER_PHASE1))
 						for (CFGWithAnalysisResults<
 								GoAbstractState<ValueEnvironment<TaintDomainForPhase1>, TypeEnvironment<InferredTypes>>,
 								GoPointBasedHeap, ValueEnvironment<TaintDomainForPhase1>,
-								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-							if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-									.getValueOnStack().isTainted()) {
-								tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-										+ " parameter of this cross-contract invocation is tainted, and it reaches the sink at parameter '"
-										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-								if(!n.getDescriptor().getAnnotations().contains(TaintDomainForPhase2.TAINTED_MATCHER_PHASE2))
-									n.getDescriptor().addAnnotation(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2);
+								TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+							TaintDomainForPhase1 valueOnStack = result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
+							.getValueOnStack();
+							if (valueOnStack.isTainted() || valueOnStack.maybeTainted()) {
+								resultsParam[i] = true;
 							}
-
+						}
+				}
+				buildWarning(tool, call, parameters, resultsParam);
+				addAnnotationForPhase2(n, resultsParam);
 			}
 		} else {
 			checkSignature(call, tool);
@@ -159,17 +172,53 @@ public class UCCICheckerPhase1 implements
 				for (CFGWithAnalysisResults<
 						GoAbstractState<ValueEnvironment<TaintDomainForPhase1>, TypeEnvironment<InferredTypes>>,
 						GoPointBasedHeap, ValueEnvironment<TaintDomainForPhase1>,
-						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-					for (int i = 1; i < call.getParameters().length; i++)
-						if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-								.getValueOnStack().isTainted()) {
-							tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-									+ " parameter of parameter of this cross-contract invocation " + targetName + " is tainted");
-							//TODO: how I can annote it as source for Phase 2? 
+						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+					boolean[] resultsParam = new boolean[call.getParameters().length];
+					for (int i = 1; i < call.getParameters().length; i++) {
+						TaintDomainForPhase1 valueOnStack = result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
+						.getValueOnStack();
+						if (valueOnStack.isTainted() || valueOnStack.maybeTainted()) {
+							resultsParam[i] = true;							
 						}
+					}
+					buildWarning(tool, call, null, resultsParam);				
+				}
 			}
 		}
 
+	}
+	
+	
+	private void addAnnotationForPhase2(CodeMember n, boolean[] resultsParam) {
+		boolean found = false;
+		for (boolean rp : resultsParam)
+			found = found || rp;
+			
+		if(found && !n.getDescriptor().getAnnotations().contains(TaintDomainForPhase2.TAINTED_MATCHER_PHASE2))
+			sourcesForPhase2.add(Pair.of(new CodeAnnotation(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2), n.getDescriptor()));		
+	}
+
+	private void buildWarning(
+			CheckToolWithAnalysisResults<
+			GoAbstractState<ValueEnvironment<TaintDomainForPhase1>, TypeEnvironment<InferredTypes>>,
+			GoPointBasedHeap, ValueEnvironment<TaintDomainForPhase1>, TypeEnvironment<InferredTypes>> tool,
+			UnresolvedCall call, Parameter[] parameters, boolean[] results) {
+			
+		int matches = 0;
+		String res = "";
+		for (int i=0; i < results.length; i++) {
+			if(results[i]) {
+				if(matches > 0)
+					res += ", ";
+				
+				res += parameters != null ? parameters[i].getName() +"("+ordinal(i + 1)+")" : (i + 1) +" param";
+				matches++;
+			}
+			
+		}
+		if(matches > 0)
+			tool.warnOn(call, "The sink "+ call.getFullTargetName() +" has the following parameter that may be tainted"+ (matches > 1 ? "s": "") + ": " + res); 
+			
 	}
 
 	@Override

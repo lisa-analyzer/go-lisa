@@ -37,6 +37,10 @@ public class AnnotationLoader implements Loader {
 	 * loader.
 	 */
 	protected final Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations;
+	
+	
+	protected final Set<Pair<CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations;
+	
 
 	/**
 	 * Builds an instance of annotation loader.
@@ -44,6 +48,7 @@ public class AnnotationLoader implements Loader {
 	public AnnotationLoader() {
 		annotationSets = new ArrayList<>();
 		appliedAnnotations = new HashSet<>();
+		specificCodeMemberAnnotations = new HashSet<>();
 	}
 
 	/**
@@ -70,11 +75,12 @@ public class AnnotationLoader implements Loader {
 	public void load(Program program) {
 		Collection<CodeMember> codeMembers = program.getCodeMembers();
 
-		for (CodeMember cm : codeMembers)
+		for (CodeMember cm : codeMembers) {
 			for (AnnotationSet set : annotationSets)
 				for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
 					checkAndAddAnnotation(cm.getDescriptor(), ca);
-
+			checkAndAddSpecificAnnotations(cm);
+		}
 		for (Unit unit : program.getUnits()) {
 			for (CodeMember cm : unit.getCodeMembers()) {
 				for (AnnotationSet set : annotationSets) {
@@ -83,6 +89,7 @@ public class AnnotationLoader implements Loader {
 					for (CodeAnnotation ca : set.getAnnotationsForConstructors())
 						checkAndAddAnnotation(cm.getDescriptor(), ca);
 				}
+				checkAndAddSpecificAnnotations(cm);
 			}
 
 			if (unit instanceof CompilationUnit) {
@@ -95,6 +102,7 @@ public class AnnotationLoader implements Loader {
 						for (CodeAnnotation ca : set.getAnnotationsForConstructors())
 							checkAndAddAnnotation(cm.getDescriptor(), ca);
 					}
+					checkAndAddSpecificAnnotations(cm);
 				}
 			}
 		}
@@ -104,6 +112,18 @@ public class AnnotationLoader implements Loader {
 			// TODO
 		}
 	}
+	
+	
+	private void checkAndAddSpecificAnnotations(CodeMember cm) {
+		for(Pair<CodeAnnotation, CodeMemberDescriptor> e : specificCodeMemberAnnotations) {
+			if(e.getRight().equals(cm.getDescriptor())) {
+				cm.getDescriptor().addAnnotation(e.getLeft().getAnnotation());
+				appliedAnnotations.add(Pair.of(e.getLeft(), cm.getDescriptor()));
+			}
+		}
+		
+	}
+	
 
 	/**
 	 * Yields the annotations applied after a load.
@@ -139,5 +159,10 @@ public class AnnotationLoader implements Loader {
 		return (ma.getUnit().equals(descriptor.getUnit().getName()))
 				|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(descriptor.getUnit().getName()));
 
+	}
+
+	public void addSpecificCodeMemberAnnotations(Set<Pair<CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations) {
+		this.specificCodeMemberAnnotations.addAll(specificCodeMemberAnnotations);
+		
 	}
 }

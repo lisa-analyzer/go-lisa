@@ -147,6 +147,15 @@ public class TaintDomainForPhase2 extends BaseNonRelationalValueDomain<TaintDoma
 	}
 
 	/**
+	 * Yields if the state may be tainted.
+	 * 
+	 * @return {@code true} if may be tainted, otherwise {@code false}
+	 */
+	public boolean maybeTainted() {
+		return this == TOP;
+	}
+	
+	/**
 	 * Yields if the state is tainted.
 	 * 
 	 * @return {@code true} if is tainted, otherwise {@code false}

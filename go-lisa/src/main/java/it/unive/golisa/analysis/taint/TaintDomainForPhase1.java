@@ -14,9 +14,6 @@ import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.program.cfg.statement.call.Call;
-import it.unive.lisa.program.cfg.statement.call.NativeCall;
-import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.Constant;
@@ -136,6 +133,15 @@ public class TaintDomainForPhase1 extends BaseNonRelationalValueDomain<TaintDoma
 	@Override
 	public TaintDomainForPhase1 bottom() {
 		return BOTTOM;
+	}
+	
+	/**
+	 * Yields if the state may be tainted.
+	 * 
+	 * @return {@code true} if may be tainted, otherwise {@code false}
+	 */
+	public boolean maybeTainted() {
+		return this == TOP;
 	}
 
 	/**

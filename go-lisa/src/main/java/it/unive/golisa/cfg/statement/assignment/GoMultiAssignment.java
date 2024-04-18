@@ -291,4 +291,13 @@ public class GoMultiAssignment extends NaryExpression {
 		// Never invoked as we redefined the semantics
 		return null;
 	}
+	
+	/**
+	 * Yields the expression to assign.
+	 * 
+	 * @return the expression to assign
+	 */
+	public Expression getExpressionToAssign() {
+		return e;
+	}
 }

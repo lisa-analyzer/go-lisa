@@ -1,15 +1,10 @@
 package it.unive.golisa.analysis.entrypoints;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
+import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
-import it.unive.golisa.loader.annotation.sets.UCCIAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.TaintAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.UCCIPhase2AnnotationSet;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
@@ -18,7 +13,13 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class contains utility methods to handle sets of entry points.
@@ -39,11 +40,11 @@ public class EntryPointsUtils {
 	 */
 	public static boolean containsPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			NonDeterminismAnnotationSet... annotationSets) {
+			TaintAnnotationSet... annotationSets) {
 
 		boolean atLeastOneSource = false;
 		boolean atLeastOneDestination = false;
-		for (NonDeterminismAnnotationSet as : annotationSets) {
+		for (TaintAnnotationSet as : annotationSets) {
 			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
 			Set<? extends CodeAnnotation> destinations = as.getAnnotationForDestinations();
 
@@ -70,17 +71,28 @@ public class EntryPointsUtils {
 	 */
 	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			UCCIAnnotationSet... annotationSets) {
+			AnnotationSet... annotationSets) {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
-		for (UCCIAnnotationSet as : annotationSets) {
-			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
-			appliedAnnotations.stream()
-					.forEach(e -> {
-						if (sources.contains(e.getLeft()))
-							descriptors.add(e.getRight());
-					});
+		for (AnnotationSet as : annotationSets) {
+			
+			
+			if(as instanceof UCCIPhase2AnnotationSet) {
+				for(Pair<CodeAnnotation, CodeMemberDescriptor> aa : appliedAnnotations) {
+					if (aa.getLeft().getAnnotation().equals(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2))
+						descriptors.add(aa.getRight());
+				}
+			} else if (as instanceof TaintAnnotationSet) {
+				Set<? extends CodeAnnotation> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
+				appliedAnnotations.stream()
+						.forEach(e -> {
+							if (sources.contains(e.getLeft()))
+								descriptors.add(e.getRight());
+						});
+			}
 		}
+		
+		
 
 		return descriptors;
 	}
@@ -97,7 +109,7 @@ public class EntryPointsUtils {
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
-			UCCIAnnotationSet... annotationSets) {
+			AnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
 
@@ -166,10 +178,28 @@ public class EntryPointsUtils {
 		 *             {@code false}
 		 */
 		private boolean matchSignatureDescriptor(Statement node, Collection<Statement> tool) {
-			if (node instanceof Call)
-				if (descriptors.stream().anyMatch(d -> d.getFullName().equals(((Call) node).getFullTargetName())
-						&& d.getFormals().length == ((Call) node).getParameters().length))
-					return true;
+			
+			if (node instanceof Call) {
+				Call c = (Call) node;
+				if(c.getCallType() == CallType.STATIC) {
+					if (descriptors.stream().anyMatch(d -> d.getFullName().equals(((Call) node).getFullTargetName())
+							&& d.getFormals().length == ((Call) node).getParameters().length))
+						return true;
+				} else if(c.getCallType() == CallType.INSTANCE) {
+					if (descriptors.stream().anyMatch(d -> 
+					d.getName().equals(((Call) node).getTargetName())
+							&& d.getFormals().length == ((Call) node).getParameters().length))
+						return true;
+				} if (c.getCallType() == CallType.UNKNOWN) {
+					if(descriptors.stream().anyMatch(d -> d.getFullName().equals(((Call) node).getFullTargetName())
+							&& d.getFormals().length == ((Call) node).getParameters().length)
+							|| descriptors.stream().anyMatch(d -> d.getName().equals(((Call) node).getTargetName())
+									&& d.getFormals().length == ((Call) node).getParameters().length)) {
+						return true;
+					}
+				}
+			
+			}
 			return false;
 		}
 

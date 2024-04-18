@@ -111,7 +111,7 @@ public class Sprintf extends NativeCFG {
 					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), original);
 				}
 				if (linst.getValueOnStack() instanceof TaintDomainForPhase2) {
-					if (((TaintDomainForPhase1)linst.getValueOnStack()).isTainted()
+					if (((TaintDomainForPhase2)linst.getValueOnStack()).isTainted()
 							|| ((TaintDomainForPhase2)minst.getValueOnStack()).isTainted()
 							|| ((TaintDomainForPhase2)rinst.getValueOnStack()).isTainted())
 						return state.smallStepSemantics(new TaintedP1(getLocation()), original);

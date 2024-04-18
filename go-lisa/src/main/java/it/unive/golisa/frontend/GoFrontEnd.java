@@ -350,7 +350,7 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 		Set<CompilationUnit> units = new HashSet<>();
 		for (TypeSpecContext typeSpec : ctx.typeSpec()) {
 			String unitName = typeSpec.IDENTIFIER().getText();
-			if (typeSpec.type_().typeLit().interfaceType() == null) {
+			if (typeSpec.type_().typeLit() == null || typeSpec.type_().typeLit().interfaceType() == null) {
 				ClassUnit unit = new ClassUnit(
 
 						new SourceCodeLocation(filePath, GoCodeMemberVisitor.getLine(typeSpec),

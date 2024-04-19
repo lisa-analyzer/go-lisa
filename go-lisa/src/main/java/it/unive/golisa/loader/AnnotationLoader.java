@@ -124,6 +124,15 @@ public class AnnotationLoader implements Loader {
 		
 	}
 	
+	private void checkAndRemoveSpecificAnnotations(CodeMember cm) {
+		for(Pair<CodeAnnotation, CodeMemberDescriptor> e : specificCodeMemberAnnotations) {
+			if(e.getRight().equals(cm.getDescriptor())) {
+				cm.getDescriptor().getAnnotations().getAnnotations().remove(e.getLeft().getAnnotation());
+				appliedAnnotations.remove(Pair.of(e.getLeft(), cm.getDescriptor()));
+			}
+		}
+		
+	}
 
 	/**
 	 * Yields the annotations applied after a load.
@@ -154,6 +163,21 @@ public class AnnotationLoader implements Loader {
 			}
 		}
 	}
+	
+	private void checkAndRemoveAnnotation(CodeMemberDescriptor descriptor, CodeAnnotation ca) {
+		if (ca instanceof MethodAnnotation) {
+			MethodAnnotation ma = (MethodAnnotation) ca;
+			if (matchUnit(ma, descriptor) && descriptor.getName().equals(ma.getName())) {
+				if (ca instanceof MethodParameterAnnotation) {
+					MethodParameterAnnotation mpa = (MethodParameterAnnotation) ca;
+					descriptor.getFormals()[mpa.getParam()].getAnnotations().getAnnotations().remove(mpa.getAnnotation());
+				} else
+					descriptor.getAnnotations().getAnnotations().remove(ma.getAnnotation());
+
+				appliedAnnotations.remove(Pair.of(ca, descriptor));
+			}
+		}
+	}
 
 	private boolean matchUnit(MethodAnnotation ma, CodeMemberDescriptor descriptor) {
 		return (ma.getUnit().equals(descriptor.getUnit().getName()))
@@ -165,9 +189,47 @@ public class AnnotationLoader implements Loader {
 		this.specificCodeMemberAnnotations.addAll(specificCodeMemberAnnotations);
 		
 	}
-
+	
+	@Override
 	public void unload(Program program) {
-		// TODO Auto-generated method stub
+		Collection<CodeMember> codeMembers = program.getCodeMembers();
+
+		for (CodeMember cm : codeMembers) {
+			for (AnnotationSet set : annotationSets)
+				for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
+					checkAndRemoveAnnotation(cm.getDescriptor(), ca);
+			checkAndRemoveSpecificAnnotations(cm);
+		}
+		for (Unit unit : program.getUnits()) {
+			for (CodeMember cm : unit.getCodeMembers()) {
+				for (AnnotationSet set : annotationSets) {
+					for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
+						checkAndRemoveAnnotation(cm.getDescriptor(), ca);
+					for (CodeAnnotation ca : set.getAnnotationsForConstructors())
+						checkAndRemoveAnnotation(cm.getDescriptor(), ca);
+				}
+				checkAndRemoveSpecificAnnotations(cm);
+			}
+
+			if (unit instanceof CompilationUnit) {
+				CompilationUnit cUnit = (CompilationUnit) unit;
+
+				for (CodeMember cm : cUnit.getInstanceCodeMembers(true)) {					
+					for (AnnotationSet set : annotationSets) {
+						for (CodeAnnotation ca : set.getAnnotationsForCodeMembers())
+							checkAndRemoveAnnotation(cm.getDescriptor(), ca);
+						for (CodeAnnotation ca : set.getAnnotationsForConstructors())
+							checkAndRemoveAnnotation(cm.getDescriptor(), ca);
+					}
+					checkAndRemoveSpecificAnnotations(cm);
+				}
+			}
+		}
+
+		Collection<Global> globals = program.getGlobals();
+		for (Global g : globals) {
+			// TODO
+		}
 		
 	}
 }

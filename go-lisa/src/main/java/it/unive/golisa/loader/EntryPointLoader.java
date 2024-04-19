@@ -64,4 +64,15 @@ public class EntryPointLoader implements Loader {
 		return !noEntry;
 	}
 
+	@Override
+	public void unload(Program program) {
+		Collection<CFG> cfgs = program.getAllCFGs();
+
+		for (CFG c : cfgs)
+			if (entrypointSets.stream().anyMatch(set -> set.getEntryPoints().contains(c.getDescriptor().getName()))) {
+				program.getEntryPoints().remove(c);
+			}
+		
+	}
+
 }

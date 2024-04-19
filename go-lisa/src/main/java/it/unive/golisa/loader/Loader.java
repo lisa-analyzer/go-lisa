@@ -16,4 +16,11 @@ public interface Loader {
 	 * @param program to load the information
 	 */
 	void load(Program program);
+	
+	/**
+	 * The method unloads the information into a program.
+	 * 
+	 * @param program to load the information
+	 */
+	void unload(Program program);
 }

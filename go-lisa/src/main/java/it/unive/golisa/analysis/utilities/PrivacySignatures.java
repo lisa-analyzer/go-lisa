@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 public class PrivacySignatures {
 	
 	public static final Map<String, Set<String>> publicInputs;
@@ -12,6 +14,9 @@ public class PrivacySignatures {
 	public static final Map<String, Set<String>> publicWriteStatesAndResponses;
 	public static final Map<String, Set<String>> privateReadStates;
 	public static final Map<String, Set<String>> privateWriteStates;
+	
+	public static final Map<String, Set<Pair<String, Integer>>> publicWriteStatesAndResponsesWithCriticalParams;
+	public static final Map<String, Set<Pair<String, Integer>>> privateWriteStatesWithCriticalParams;
 	
 	static {
 		publicInputs = new HashMap<>();
@@ -39,6 +44,27 @@ public class PrivacySignatures {
 		privateWriteStates = new HashMap<>();
 		privateWriteStates.put("ChaincodeStub", Set.of("PutPrivateData", "DelPrivateData", "PurgePrivateData",  "SetPrivateDataValidationParameter"));
 		privateWriteStates.put("ChaincodeStubInterface", Set.of("PutPrivateData", "DelPrivateData", "PurgePrivateData",  "SetPrivateDataValidationParameter"));
-	}
+		
+		
+		publicWriteStatesAndResponsesWithCriticalParams = new HashMap<>();
+		publicWriteStatesAndResponsesWithCriticalParams.put("ChaincodeStub", Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
+				Pair.of("SetStateValidationParameter", 1), Pair.of("SetStateValidationParameter", 2), Pair.of("SetStateValidationParameter", 3)));
+		publicWriteStatesAndResponsesWithCriticalParams.put("ChaincodeStubInterface", Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
+				Pair.of("SetStateValidationParameter", 1), Pair.of("SetStateValidationParameter", 2), Pair.of("SetStateValidationParameter", 3)));
+		publicWriteStatesAndResponsesWithCriticalParams.put("shim", Set.of(Pair.of("Success", 0), Pair.of("Error", 0)));
 
+		
+		privateWriteStatesWithCriticalParams = new HashMap<>();
+		
+		privateWriteStatesWithCriticalParams.put("ChaincodeStub", Set.of(Pair.of("PutPrivateData", 1), Pair.of("PutPrivateData", 2), Pair.of("PutPrivateData", 3),
+				Pair.of("DelPrivateData", 1), Pair.of("DelPrivateData", 2),
+				Pair.of("PurgePrivateData", 1), Pair.of("PurgePrivateData", 2),
+				Pair.of("SetPrivateDataValidationParameter", 1), Pair.of("SetPrivateDataValidationParameter", 2), Pair.of("SetPrivateDataValidationParameter", 3)));
+
+		privateWriteStatesWithCriticalParams.put("ChaincodeStubInterface", Set.of(Pair.of("PutPrivateData", 1), Pair.of("PutPrivateData", 2), Pair.of("PutPrivateData", 3),
+				Pair.of("DelPrivateData", 1), Pair.of("DelPrivateData", 2),
+				Pair.of("PurgePrivateData", 1), Pair.of("PurgePrivateData", 2),
+				Pair.of("SetPrivateDataValidationParameter", 1), Pair.of("SetPrivateDataValidationParameter", 2), Pair.of("SetPrivateDataValidationParameter", 3)));
+		}
+	
 }

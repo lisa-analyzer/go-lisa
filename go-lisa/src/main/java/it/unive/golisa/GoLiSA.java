@@ -36,6 +36,7 @@ import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
+import it.unive.golisa.loader.annotation.sets.CustomTaintAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -154,23 +155,23 @@ public class GoLiSA {
 		}
 
 		if(satisfyPhaseRequirements(program, PRIVATE_INPUT_IN_PUBLIC_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES);
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 		else 
 			LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_INPUT_IN_PUBLIC_STATES);
 		
 	
 		if(satisfyPhaseRequirements(program, PUBLIC_INPUT_IN_PRIVATE_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES);
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES, PrivacySignatures.publicInputs, PrivacySignatures.privateWriteStatesWithCriticalParams);
 		else 
 			LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_INPUT_IN_PRIVATE_STATES);
 	
 		if(satisfyPhaseRequirements(program, PUBLIC_STATES_IN_PRIVATE_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_STATES_IN_PRIVATE_STATES);
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_STATES_IN_PRIVATE_STATES, PrivacySignatures.publicReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
 		else 
 			LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_STATES_IN_PRIVATE_STATES);
 		
 		if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES);
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 		else 
 			LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_STATES_IN_PUBLIC_STATES);
 		
@@ -179,7 +180,7 @@ public class GoLiSA {
 
 	}
 
-	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir, GraphType dumpOpt, String target) {
+	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir, GraphType dumpOpt, String target, Map<String, Set<String>> sources, Map<String, Set<Pair<String, Integer>>> sinks) {
 		LiSAConfiguration confPhase = new LiSAConfiguration();
 
 		confPhase.jsonOutput = true;
@@ -206,8 +207,7 @@ public class GoLiSA {
 
 		confPhase.workdir = outputdir.getAbsolutePath();
 		
-		//TODO: create annotation set for each target
-		AnnotationSet annotationSet = null;
+		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", sources, sinks);
 		
 		AnnotationLoader annotationLoader = new AnnotationLoader();
 		annotationLoader.addAnnotationSet(annotationSet);

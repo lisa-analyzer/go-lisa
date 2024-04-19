@@ -165,4 +165,9 @@ public class AnnotationLoader implements Loader {
 		this.specificCodeMemberAnnotations.addAll(specificCodeMemberAnnotations);
 		
 	}
+
+	public void unload(Program program) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -3,7 +3,7 @@ package it.unive.golisa;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +25,10 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
-import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
-import it.unive.golisa.analysis.taint.TaintDomainForPhase2;
+import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.utilities.PrivacySignatures;
 import it.unive.golisa.cfg.utils.CFGUtils;
-import it.unive.golisa.checker.UCCICheckerPhase1;
-import it.unive.golisa.checker.UCCICheckerPhase2;
+import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.GoContextBasedAnalysis;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
@@ -37,8 +36,6 @@ import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
-import it.unive.golisa.loader.annotation.sets.UCCIPhase1AnnotationSet;
-import it.unive.golisa.loader.annotation.sets.UCCIPhase2AnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
@@ -68,6 +65,13 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 public class GoLiSA {
 
 	private static final Logger LOG = LogManager.getLogger(GoLiSA.class);
+	
+	
+	 private static final String PRIVATE_INPUT_IN_PUBLIC_STATES  = "PrivateInput-PublicStates";
+	 private static final String PUBLIC_INPUT_IN_PRIVATE_STATES  = "PublicInput-PrivateStates";
+	 private static final String PUBLIC_STATES_IN_PRIVATE_STATES = "PublicStates-PrivateStates";
+	 private static final String PRIVATE_STATES_IN_PUBLIC_STATES  = "PrivateStates-PublicStates";
+	 private static final String PRIVATE_STATES_IN_OTHER_PRIVATE_STATES  = "PrivateStates-OtherPrivateStates";
 
 	/**
 	 * Entry point of {@link GoLiSA}.
@@ -91,6 +95,13 @@ public class GoLiSA {
 		Option dump_opt = new Option("d", "dumpAnalysis", false, "dump the analysis");
 		dump_opt.setRequired(false);
 		options.addOption(dump_opt);
+		
+		
+		Option policy_opt = new Option("p", "policy", false, "dump the analysis");
+		policy_opt.setRequired(true);
+		options.addOption(policy_opt);
+		
+		
 
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
@@ -108,58 +119,19 @@ public class GoLiSA {
 		String filePath = cmd.getOptionValue("input");
 		
 		String outputDir = cmd.getOptionValue("output");
+		
+		GraphType dumpOpt = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
+		
+		String policyPath = cmd.getOptionValue("policy");
 
-		LiSAConfiguration confPhase1 = new LiSAConfiguration();
-
-		confPhase1.jsonOutput = true;
-
-		confPhase1.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		confPhase1.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomainForPhase1()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		UCCICheckerPhase1 checkerPhase1 = new UCCICheckerPhase1();
-		confPhase1.semanticChecks.add(checkerPhase1);
-
-		confPhase1.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 
 		Program program = null;
-
-		File theDirP1 = new File(outputDir, "Phase1");
-		if (!theDirP1.exists())
-			theDirP1.mkdirs();
-
-		confPhase1.workdir = theDirP1.getAbsolutePath();
-		
-		try {
-
-			AnnotationSet[] annotationSet = new AnnotationSet[] {new UCCIPhase1AnnotationSet()};
+		EntryPointLoader entryLoader = new EntryPointLoader();
+		try {		
 			program = GoFrontEnd.processFile(filePath);
-			AnnotationLoader annotationLoader = new AnnotationLoader();
-			annotationLoader.addAnnotationSet(annotationSet);
-			annotationLoader.load(program);
-
-			EntryPointLoader entryLoader = new EntryPointLoader();
+		
 			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("hyperledger-fabric"));
 			entryLoader.load(program);
-
-			if (!entryLoader.isEntryFound()) {
-				Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
-						.getAppliedAnnotations();
-
-				// if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations,
-				// annotationSet)) {
-				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
-						appliedAnnotations, annotationSet);
-				for (CFG c : cfgs)
-					program.addEntryPoint(c);
-				// }
-			}
-
-			if (!program.getEntryPoints().isEmpty()) {
-				confPhase1.interproceduralAnalysis = new GoContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-				confPhase1.callGraph = new RTACallGraph();
-			} else
-				LOG.info("Entry points not found in Phase 1!");
 
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
@@ -181,148 +153,155 @@ public class GoLiSA {
 			return;
 		}
 
+		if(satisfyPhaseRequirements(program, PRIVATE_INPUT_IN_PUBLIC_STATES))
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES);
+		else 
+			LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_INPUT_IN_PUBLIC_STATES);
 		
-		if(!requirementsPhase1(program)) {
-			LOG.info("Program does not contains at least a source and sink!");
-			return;
-		} 
+	
+		if(satisfyPhaseRequirements(program, PUBLIC_INPUT_IN_PRIVATE_STATES))
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES);
+		else 
+			LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_INPUT_IN_PRIVATE_STATES);
+	
+		if(satisfyPhaseRequirements(program, PUBLIC_STATES_IN_PRIVATE_STATES))
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_STATES_IN_PRIVATE_STATES);
+		else 
+			LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_STATES_IN_PRIVATE_STATES);
 		
-		LiSA lisaP1 = new LiSA(confPhase1);
-
-		try {
-			lisaP1.run(program);
-		} catch (Exception e) {
-			// an error occurred during the analysis
-			e.printStackTrace();
-			return;
-		}
+		if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES))
+			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES);
+		else 
+			LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_STATES_IN_PUBLIC_STATES);
 		
-		if (!lisaP1.getWarnings().isEmpty()) {
-			System.out.println("The analysis in the Phase 1 has generated the following warnings:");
-			for (Warning warn : lisaP1.getWarnings())
-				System.out.println(warn);
-		}
-		
-		
-		
-		if(!requirementsPhase2(program, lisaP1))
-			return;
-		
-		LiSAConfiguration confPhase2 = new LiSAConfiguration();
-		
-		confPhase2.jsonOutput = true;
+		if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES))
+			runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
 
-		confPhase2.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-		confPhase2.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomainForPhase2()),
-				LiSAFactory.getDefaultFor(TypeDomain.class));
-		confPhase2.semanticChecks.add(new UCCICheckerPhase2());
-
-		confPhase2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
-
-		File theDirP2 = new File(outputDir, "Phase2");
-		if (!theDirP2.exists())
-			theDirP2.mkdirs();
-
-		confPhase2.workdir = theDirP2.getAbsolutePath();
-		
-		try {
-
-			AnnotationSet[] annotationSet = new AnnotationSet[] {new UCCIPhase2AnnotationSet()};
-			
-			program = GoFrontEnd.processFile(filePath);
-			AnnotationLoader annotationLoader = new AnnotationLoader();
-			annotationLoader.addAnnotationSet(annotationSet);
-			
-			annotationLoader.addSpecificCodeMemberAnnotations(checkerPhase1.sourcesForPhase2);
-			
-			annotationLoader.load(program);
-
-			EntryPointLoader entryLoader = new EntryPointLoader();
-			entryLoader.addEntryPoints(EntryPointsFactory.getEntryPoints("hyperledger-fabric"));
-			entryLoader.load(program);
-
-			if (!entryLoader.isEntryFound()) {
-				Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
-						.getAppliedAnnotations();
-
-				// if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations,
-				// annotationSet)) {
-				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
-						appliedAnnotations, annotationSet);
-				for (CFG c : cfgs)
-					program.addEntryPoint(c);
-				// }
-			}
-
-			if (!program.getEntryPoints().isEmpty()) {
-				confPhase2.interproceduralAnalysis = new GoContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
-				confPhase2.callGraph = new RTACallGraph();
-			} else
-				LOG.info("Entry points not found in Phase 1!");
-
-		} catch (ParseCancellationException e) {
-			// a parsing error occurred
-			System.err.println("Parsing error.");
-			return;
-		} catch (IOException e) {
-			// the file does not exists
-			System.err.println("File " + filePath + " does not exist.");
-			return;
-		} catch (UnsupportedOperationException e1) {
-			// an unsupported operations has been encountered
-			System.err.println(e1 + " " + e1.getStackTrace()[0].toString());
-			e1.printStackTrace();
-			return;
-		} catch (Exception e2) {
-			// other exception
-			e2.printStackTrace();
-			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());
-			return;
-		}
-
-		LiSA lisaP2 = new LiSA(confPhase2);
-
-		try {
-			lisaP2.run(program);
-		} catch (Exception e) {
-			// an error occurred during the analysis
-			e.printStackTrace();
-			return;
-		}
-		
-		if (!lisaP2.getWarnings().isEmpty()) {
-			System.out.println("The analysis in the Phase 2 has generated the following warnings:");
-			for (Warning warn : lisaP2.getWarnings())
-				System.out.println(warn);
-		}
 	}
 
-	private static boolean requirementsPhase1(Program program) {
-				
-		Map<String, Set<String>> untrustedInputs = new HashMap<>();
-		untrustedInputs.put("ChaincodeStub", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
-		untrustedInputs.put("ChaincodeStubInterface", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
+	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir, GraphType dumpOpt, String target) {
+		LiSAConfiguration confPhase = new LiSAConfiguration();
+
+		confPhase.jsonOutput = true;
+
+		confPhase.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+			try {
+				confPhase.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+						new ValueEnvironment<>(new TaintDomain()),
+						LiSAFactory.getDefaultFor(TypeDomain.class));
+				confPhase.semanticChecks.add( new TaintChecker());
+			} catch (AnalysisSetupException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
+
+		confPhase.analysisGraphs = dumpOpt;
 		
-		Map<String, Set<String>> CCIs = new HashMap<>();
-		CCIs.put("ChaincodeStub", Set.of("InvokeChaincode"));
-		CCIs.put("ChaincodeStubInterface", Set.of("InvokeChaincode"));
+
+		File outputdir = new File(outputDir, target);
+		if (!outputdir.exists())
+			outputdir.mkdirs();
+
+		confPhase.workdir = outputdir.getAbsolutePath();
 		
-		if(countCallsMatchingSignatures(program, untrustedInputs) > 0 && countCallsMatchingSignatures(program, CCIs) > 0 )
-			return true;
-		return false;
+		//TODO: create annotation set for each target
+		AnnotationSet annotationSet = null;
+		
+		AnnotationLoader annotationLoader = new AnnotationLoader();
+		annotationLoader.addAnnotationSet(annotationSet);
+		annotationLoader.load(program);
+		
+		Set<CFG> cfgEntryPoints = new HashSet<>();
+
+		if (!entryLoader.isEntryFound()) {
+			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
+					.getAppliedAnnotations();
+
+			 EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
+					appliedAnnotations, annotationSet);
+			for (CFG c : cfgEntryPoints)
+				program.addEntryPoint(c);
+
+		}
+		
+		
+		if (!program.getEntryPoints().isEmpty()) {
+			confPhase.interproceduralAnalysis = new GoContextBasedAnalysis<>(RecursionFreeToken.getSingleton());
+			confPhase.callGraph = new RTACallGraph();
+		} else
+			LOG.info("Entry points not found in for this phase " + target);
+		
+		
+		LiSA lisa = new LiSA(confPhase);
+
+		try {
+			lisa.run(program);
+		} catch (Exception e) {
+			// an error occurred during the analysis
+			e.printStackTrace();
+			return;
+		}
+		
+		if (!lisa.getWarnings().isEmpty()) {
+			System.out.println("The analysis in the phase " + target + " has generated the following warnings:");
+			for (Warning warn : lisa.getWarnings())
+				System.out.println(warn);
+		}
+
+		 
+		annotationLoader.unload(program);
+		 
+		removeSpecificAnalysisEntrypoints(program, cfgEntryPoints);
+
+		
 	}
 	
 
-	private static boolean requirementsPhase2(Program program, LiSA lisaP1) {
-		if(!lisaP1.getWarnings().isEmpty()) {
-			Map<String, Set<String>> writeStateAndResponses = new HashMap<>();
-			writeStateAndResponses.put("ChaincodeStub", Set.of("PutState", "DelState", "SetStateValidationParameter", "PutPrivateData", "DelPrivateData", "PurgePrivateData",  "SetPrivateDataValidationParameter"));
-			writeStateAndResponses.put("ChaincodeStubInterface", Set.of("PutState", "DelState", "SetStateValidationParameter", "PutPrivateData", "DelPrivateData", "PurgePrivateData",  "SetPrivateDataValidationParameter"));
-			writeStateAndResponses.put("shim", Set.of("Success", "Error"));
+	private static void removeSpecificAnalysisEntrypoints(Program program, Set<CFG> cfgEntryPoints) {
+		for(CFG cfg : cfgEntryPoints) {
+			program.getEntryPoints().remove(cfg);
+		}
+		
+	}
+
+	private static void runAnalysesForPrivateInOtherPrivateStates(Program program, EntryPointLoader entryLoader, String outputDir,
+			GraphType dumpOpt, String policyPath) {
+		// TODO: handle policies
+		
+		// TODO: perform string analysis
+		
+		// TODO: perform information flow analysis
+		
+	}
+
+
+	private static boolean satisfyPhaseRequirements(Program program, String phase) {
 			
-			if(countCallsMatchingSignatures(program, writeStateAndResponses) > 0)
+		switch(phase) {
+		case PRIVATE_INPUT_IN_PUBLIC_STATES:
+			if(countCallsMatchingSignatures(program, PrivacySignatures.privateInputs) > 0 && countCallsMatchingSignatures(program, PrivacySignatures.publicWriteStatesAndResponses) > 0 )
 				return true;
+			break;
+		case PUBLIC_INPUT_IN_PRIVATE_STATES:
+			if(countCallsMatchingSignatures(program, PrivacySignatures.publicInputs) > 0 && countCallsMatchingSignatures(program, PrivacySignatures.privateWriteStates) > 0 )
+				return true;
+			break;
+		case PUBLIC_STATES_IN_PRIVATE_STATES:
+			if(countCallsMatchingSignatures(program, PrivacySignatures.publicReadStates) > 0 && countCallsMatchingSignatures(program, PrivacySignatures.privateWriteStates) > 0 )
+				return true;
+			break;
+		case PRIVATE_STATES_IN_PUBLIC_STATES:
+			if(countCallsMatchingSignatures(program, PrivacySignatures.privateReadStates) > 0 && countCallsMatchingSignatures(program, PrivacySignatures.publicWriteStatesAndResponses) > 0 )
+				return true;
+			break;
+		case PRIVATE_STATES_IN_OTHER_PRIVATE_STATES:
+			if(countCallsMatchingSignatures(program, PrivacySignatures.privateReadStates) > 0 && countCallsMatchingSignatures(program, PrivacySignatures.privateWriteStates) > 0 )
+				return true;
+			break;
+		default:
+			throw new IllegalArgumentException(phase + " is currently a not supported phase");
 		}
 		return false;
 	}

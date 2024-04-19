@@ -77,8 +77,8 @@ public class GoLiSA {
 	 private static final String PUBLIC_STATES_IN_PRIVATE_STATES = "PublicStates-PrivateStates";
 	 private static final String PRIVATE_STATES_IN_PUBLIC_STATES  = "PrivateStates-PublicStates";
 	 private static final String PRIVATE_STATES_IN_OTHER_PRIVATE_STATES  = "PrivateStates-OtherPrivateStates";
-
-	/**
+	 
+	 /**
 	 * Entry point of {@link GoLiSA}.
 	 * 
 	 * @param args the arguments
@@ -158,33 +158,63 @@ public class GoLiSA {
 			return;
 		}
 
-		if(satisfyPhaseRequirements(program, PRIVATE_INPUT_IN_PUBLIC_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
-		else 
-			LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_INPUT_IN_PUBLIC_STATES);
+		if(program != null) {
+			if(satisfyPhaseRequirements(program, PRIVATE_INPUT_IN_PUBLIC_STATES))
+				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
+			else 
+				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_INPUT_IN_PUBLIC_STATES);
+			
 		
+			if(satisfyPhaseRequirements(program, PUBLIC_INPUT_IN_PRIVATE_STATES))
+				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES, PrivacySignatures.publicInputs, PrivacySignatures.privateWriteStatesWithCriticalParams);
+			else 
+				LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_INPUT_IN_PRIVATE_STATES);
+		
+			if(satisfyPhaseRequirements(program, PUBLIC_STATES_IN_PRIVATE_STATES))
+				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_STATES_IN_PRIVATE_STATES, PrivacySignatures.publicReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
+			else 
+				LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_STATES_IN_PRIVATE_STATES);
+			
+			if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES))
+				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
+			else 
+				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_STATES_IN_PUBLIC_STATES);
+			
+			if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES))
+				runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
+		}
+	}
 	
-		if(satisfyPhaseRequirements(program, PUBLIC_INPUT_IN_PRIVATE_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES, PrivacySignatures.publicInputs, PrivacySignatures.privateWriteStatesWithCriticalParams);
-		else 
-			LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_INPUT_IN_PRIVATE_STATES);
 	
-		if(satisfyPhaseRequirements(program, PUBLIC_STATES_IN_PRIVATE_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_STATES_IN_PRIVATE_STATES, PrivacySignatures.publicReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
-		else 
-			LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_STATES_IN_PRIVATE_STATES);
-		
-		if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES))
-			runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
-		else 
-			LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_STATES_IN_PUBLIC_STATES);
-		
-		if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES))
-			runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
 
+	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir,
+			GraphType dumpOpt, String target, Map<String, Set<String>> sources,
+			Map<String, Set<Pair<String, Integer>>> sinks) {
+		
+		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", sources, sinks);
+		
+		AnnotationLoader annotationLoader = new AnnotationLoader();
+		annotationLoader.addAnnotationSet(annotationSet);
+		
+		runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, target, annotationLoader, annotationSet);
+		
+	}
+	
+	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir, GraphType dumpOpt, 
+			String target, Set<Pair<CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations) {
+		
+		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", new HashMap<>(), new HashMap<>());
+		
+		AnnotationLoader annotationLoader = new AnnotationLoader();
+		annotationLoader.addSpecificCodeMemberAnnotations(specificCodeMemberAnnotations);
+		
+		runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, target, annotationLoader, annotationSet);
+		
 	}
 
-	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir, GraphType dumpOpt, String target, Map<String, Set<String>> sources, Map<String, Set<Pair<String, Integer>>> sinks) {
+
+
+	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir, GraphType dumpOpt, String target, AnnotationLoader annotationLoader, AnnotationSet annotationSet) {
 		LiSAConfiguration confPhase = new LiSAConfiguration();
 
 		confPhase.jsonOutput = true;
@@ -211,10 +241,6 @@ public class GoLiSA {
 
 		confPhase.workdir = outputdir.getAbsolutePath();
 		
-		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", sources, sinks);
-		
-		AnnotationLoader annotationLoader = new AnnotationLoader();
-		annotationLoader.addAnnotationSet(annotationSet);
 		annotationLoader.load(program);
 		
 		Set<CFG> cfgEntryPoints = new HashSet<>();
@@ -261,7 +287,7 @@ public class GoLiSA {
 
 		
 	}
-	
+
 
 	private static void removeSpecificAnalysisEntrypoints(Program program, Set<CFG> cfgEntryPoints) {
 		for(CFG cfg : cfgEntryPoints) {
@@ -273,7 +299,6 @@ public class GoLiSA {
 	private static void runAnalysesForPrivateInOtherPrivateStates(Program program, EntryPointLoader entryLoader, String outputDir,
 			GraphType dumpOpt, String policyPath) {
 		
-		// TODO: handle policies
 
 		
 		// STRING ANALYSIS
@@ -282,10 +307,40 @@ public class GoLiSA {
 		Map<Call, Set<Tarsis>> collectionsReadPrivateState = res.getLeft();
 		Map<Call, Set<Tarsis>> collectionsWritePrivateState = res.getRight();
 		
+		// TODO: to handle policies
+		Object policies = computePolicies(policyPath);
+		Collection<Object> conflicts = extractPossiblePrivateCollectionConflicts(collectionsReadPrivateState,collectionsWritePrivateState, policies);
+		
+		int couter=0;
+		for(Object c : conflicts) {
+			 Set<Pair<CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations = buildSourcesAndSinks(c);
+			 runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES+"_conflict_"+couter, specificCodeMemberAnnotations);
+			 couter++;
+		}
 		// TODO: perform information flow analysis
 		
 	}
 
+
+	private static Object computePolicies(String policyPath) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	private static Set<Pair<CodeAnnotation, CodeMemberDescriptor>> buildSourcesAndSinks(Object c) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	private static Collection<Object> extractPossiblePrivateCollectionConflicts(Map<Call, Set<Tarsis>>  collectionsReadPrivateState,
+			Map<Call, Set<Tarsis>> collectionsWritePrivateState, Object policies) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	private static Pair<Map<Call, Set<Tarsis>>, Map<Call, Set<Tarsis>>> runStringAnalysis(Program program, EntryPointLoader entryLoader, String outputDir,
 			GraphType dumpOpt) {

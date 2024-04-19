@@ -6,6 +6,9 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+
 public class PrivacySignatures {
 	
 	public static final Map<String, Set<String>> publicInputs;
@@ -66,5 +69,23 @@ public class PrivacySignatures {
 				Pair.of("PurgePrivateData", 1), Pair.of("PurgePrivateData", 2),
 				Pair.of("SetPrivateDataValidationParameter", 1), Pair.of("SetPrivateDataValidationParameter", 2), Pair.of("SetPrivateDataValidationParameter", 3)));
 		}
+
+
+
+	public static boolean isReadPrivateState(Call call) {
+		if(call.getCallType().equals(CallType.INSTANCE)) {
+			if(privateReadStates.entrySet().stream().anyMatch(e -> e.getValue().stream().anyMatch( e2 -> e2.equals(call.getTargetName()))))
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean isWritePrivateState(Call call) {
+		if(call.getCallType().equals(CallType.INSTANCE)) {
+			if(privateWriteStates.entrySet().stream().anyMatch(e -> e.getValue().stream().anyMatch( e2 -> e2.equals(call.getTargetName()))))
+				return true;
+		}
+		return false;
+	}
 	
 }

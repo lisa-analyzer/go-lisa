@@ -3,6 +3,7 @@ package it.unive.golisa;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -26,8 +27,10 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.golisa.analysis.utilities.PrivacySignatures;
 import it.unive.golisa.cfg.utils.CFGUtils;
+import it.unive.golisa.checker.ComputePrivateCollectionFromStatementsChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.GoContextBasedAnalysis;
@@ -62,6 +65,7 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
  * The Go frontend for LiSA.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class GoLiSA {
 
@@ -268,14 +272,73 @@ public class GoLiSA {
 
 	private static void runAnalysesForPrivateInOtherPrivateStates(Program program, EntryPointLoader entryLoader, String outputDir,
 			GraphType dumpOpt, String policyPath) {
-		// TODO: handle policies
 		
-		// TODO: perform string analysis
+		// TODO: handle policies
+
+		
+		// STRING ANALYSIS
+		Pair<Map<Call, Set<Tarsis>>, Map<Call, Set<Tarsis>>> res = runStringAnalysis(program, entryLoader, outputDir, dumpOpt);
+		
+		Map<Call, Set<Tarsis>> collectionsReadPrivateState = res.getLeft();
+		Map<Call, Set<Tarsis>> collectionsWritePrivateState = res.getRight();
 		
 		// TODO: perform information flow analysis
 		
 	}
 
+
+	private static Pair<Map<Call, Set<Tarsis>>, Map<Call, Set<Tarsis>>> runStringAnalysis(Program program, EntryPointLoader entryLoader, String outputDir,
+			GraphType dumpOpt) {
+		LiSAConfiguration confStringAnalysis = new LiSAConfiguration();
+
+		confStringAnalysis.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		
+		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", PrivacySignatures.privateReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
+		
+		AnnotationLoader annotationLoader = new AnnotationLoader();
+		annotationLoader.addAnnotationSet(annotationSet);
+		annotationLoader.load(program);
+		
+		Set<CFG> cfgEntryPoints = new HashSet<>();
+
+		if (!entryLoader.isEntryFound()) {
+			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
+					.getAppliedAnnotations();
+
+			 EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
+					appliedAnnotations, annotationSet); // the idea is to add entry points where there are private read states and private write states
+			for (CFG c : cfgEntryPoints)
+				program.addEntryPoint(c);
+
+		}
+		
+		ComputePrivateCollectionFromStatementsChecker stringAnalysis = new ComputePrivateCollectionFromStatementsChecker();
+		try {
+			confStringAnalysis.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
+					new ValueEnvironment<>(new Tarsis()),
+						LiSAFactory.getDefaultFor(TypeDomain.class));
+			confStringAnalysis.semanticChecks.add(stringAnalysis);
+		} catch (AnalysisSetupException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+
+		LiSA lisa = new LiSA(confStringAnalysis);
+
+		try {
+			lisa.run(program);
+		} catch (Exception e) {
+			// an error occurred during the analysis
+			e.printStackTrace();
+			return Pair.of(new HashMap<>(), new HashMap<>());
+		}
+		
+		annotationLoader.unload(program);
+		removeSpecificAnalysisEntrypoints(program, cfgEntryPoints);
+		
+		return Pair.of(stringAnalysis.getReadPrivateStatesInstructions(), stringAnalysis.getWritePrivateStatesInstructions());
+		
+	}
 
 	private static boolean satisfyPhaseRequirements(Program program, String phase) {
 			

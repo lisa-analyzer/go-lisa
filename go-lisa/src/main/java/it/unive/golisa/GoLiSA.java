@@ -47,8 +47,12 @@ import it.unive.lisa.LiSA;
 import it.unive.lisa.LiSAConfiguration;
 import it.unive.lisa.LiSAConfiguration.GraphType;
 import it.unive.lisa.LiSAFactory;
+import it.unive.lisa.analysis.CFGWithAnalysisResults;
+import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.analysis.value.TypeDomain;
+import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.warnings.Warning;
 import it.unive.lisa.interprocedural.RecursionFreeToken;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
@@ -62,6 +66,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
@@ -233,7 +238,37 @@ public class GoLiSA {
 				confPhase.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 						new ValueEnvironment<>(new TaintDomain()),
 						LiSAFactory.getDefaultFor(TypeDomain.class));
-				confPhase.semanticChecks.add( new TaintChecker());
+				confPhase.semanticChecks.add( new TaintChecker() {
+
+					@Override
+					protected void checkSignature(UnresolvedCall call,
+							CheckToolWithAnalysisResults<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>, GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
+						if (call != null) {
+							String targetName = call.getTargetName();
+							
+							Map<Pair<String, CallType>, Set<Pair<String, Integer>>> sinksPhase = GetPhaseSinksSignatures(target);
+							 
+							for(Pair<String, CallType> key : sinksPhase.keySet()){
+								for(Pair<String, Integer> sink : sinksPhase.get(key) ) {
+									if(sink.getLeft().equals(call.getTargetName())
+											&& call.getParameters().length > sink.getRight() &&
+											(!key.getRight().equals(CallType.STATIC) || (key.getRight().equals(CallType.STATIC) && call.getQualifier().equals(key.getLeft())))) {
+										for (CFGWithAnalysisResults<
+												GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
+												GoPointBasedHeap, ValueEnvironment<TaintDomain>,
+												TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
+														if (result.getAnalysisStateAfter(call.getParameters()[sink.getRight()]).getState().getValueState()
+														.getValueOnStack().isTainted())
+													tool.warnOn(call, "The value passed for the " + ordinal(sink.getRight() + 1)
+															+ " parameter of " + targetName + " call is tainted");
+									}
+								}
+							}
+						}
+						
+					}
+					
+				});
 			} catch (AnalysisSetupException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -563,6 +598,21 @@ public class GoLiSA {
 				return PrivacySignatures.privateReadStates;
 		case PRIVATE_STATES_IN_OTHER_PRIVATE_STATES:
 				return PrivacySignatures.privateReadStates;
+		default:
+			throw new IllegalArgumentException(phase + " is currently a not supported phase");
+		}
+	}
+	
+private static Map<Pair<String, CallType>, Set<Pair<String, Integer>>> GetPhaseSinksSignatures(String phase) {
+		
+		switch(phase) {
+		case PRIVATE_INPUT_IN_PUBLIC_STATES:
+		case PRIVATE_STATES_IN_PUBLIC_STATES:
+				return PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams;
+		case PUBLIC_INPUT_IN_PRIVATE_STATES:
+		case PUBLIC_STATES_IN_PRIVATE_STATES:
+		case PRIVATE_STATES_IN_OTHER_PRIVATE_STATES:
+				return PrivacySignatures.privateWriteStatesWithCriticalParams;
 		default:
 			throw new IllegalArgumentException(phase + " is currently a not supported phase");
 		}

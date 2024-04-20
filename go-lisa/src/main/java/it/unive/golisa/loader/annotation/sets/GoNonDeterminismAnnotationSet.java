@@ -44,8 +44,8 @@ public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
 
 			for (Entry<String, ? extends Set<FuncGoLangApiSignature>> e : loader.getFunctionAPIs().entrySet())
 				for (FuncGoLangApiSignature sig : e.getValue()) {
-					map.putIfAbsent(e.getKey(), new HashSet<>());
-					map.get(e.getKey()).add(sig.getName());
+					map.putIfAbsent(Pair.of(e.getKey(), CallType.STATIC), new HashSet<>());
+					map.get(Pair.of(e.getKey(), CallType.STATIC)).add(sig.getName());
 				}
 
 			SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map);
@@ -54,8 +54,8 @@ public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
 
 			for (Entry<String, ? extends Set<MethodGoLangApiSignature>> e : loader.getMethodAPIs().entrySet())
 				for (MethodGoLangApiSignature sig : e.getValue()) {
-					map.putIfAbsent(sig.getReceiver().replace("*", ""), new HashSet<>());
-					map.get(sig.getReceiver().replace("*", "")).add(sig.getName());
+					map.putIfAbsent(Pair.of(sig.getReceiver().replace("*", ""), CallType.INSTANCE), new HashSet<>());
+					map.get(Pair.of(sig.getReceiver().replace("*", ""), CallType.INSTANCE)).add(sig.getName());
 				}
 
 			SOURCE_CONSTRUCTORS_ANNOTATIONS.put(Kind.METHOD, map);

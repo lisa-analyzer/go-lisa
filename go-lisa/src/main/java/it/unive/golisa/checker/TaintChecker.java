@@ -31,7 +31,7 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class TaintChecker implements
+public abstract class TaintChecker implements
 		SemanticCheck<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
 				GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> {
 
@@ -69,7 +69,7 @@ public class TaintChecker implements
 	private static final String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th",
 			"th" };
 
-	private static String ordinal(int i) {
+	protected static String ordinal(int i) {
 		switch (i % 100) {
 		case 11:
 		case 12:
@@ -143,28 +143,9 @@ public class TaintChecker implements
 
 	}
 
-	private void checkSignature(UnresolvedCall call,
+	protected abstract void checkSignature(UnresolvedCall call,
 			CheckToolWithAnalysisResults<GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
-					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool) {
-		if (call != null) {
-			String targetName = call.getTargetName();
-			if (((targetName.equals("PutState") || targetName.equals("PutPrivateData"))
-					&& call.getParameters().length == 3)
-					|| ((targetName.equals("DelState") || targetName.equals("DelPrivateData"))
-							&& call.getParameters().length == 2)) {
-				for (CFGWithAnalysisResults<
-						GoAbstractState<ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>,
-						GoPointBasedHeap, ValueEnvironment<TaintDomain>,
-						TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
-					for (int i = 1; i < call.getParameters().length; i++)
-						if (result.getAnalysisStateAfter(call.getParameters()[i]).getState().getValueState()
-								.getValueOnStack().isTainted())
-							tool.warnOn(call, "The value passed for the " + ordinal(i + 1)
-									+ " parameter of " + targetName + "call is tainted");
-			}
-		}
-
-	}
+					GoPointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>> tool);
 
 	@Override
 	public boolean visit(

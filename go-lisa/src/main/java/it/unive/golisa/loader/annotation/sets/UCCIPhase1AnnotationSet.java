@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.analysis.taint.TaintDomainForPhase1;
 import it.unive.golisa.checker.UCCICheckerPhase1;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 
 
 /**
@@ -21,19 +22,19 @@ public class UCCIPhase1AnnotationSet extends TaintAnnotationSet {
 
 	static {
 
-		Map<String, Set<String>> map1 = new HashMap<>();
+		Map<Pair<String, CallType>, Set<String>> map1 = new HashMap<>();
 
-		map1.put("ChaincodeStub", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
+		map1.put(Pair.of("ChaincodeStub", CallType.INSTANCE), Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
 
-		map1.put("ChaincodeStubInterface", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
+		map1.put(Pair.of("ChaincodeStubInterface", CallType.INSTANCE), Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice", "GetTransient"));
 		
 		SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map1);
 
-		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();
+		Map<Pair<String, CallType>, Set<Pair<String, Integer>>> map2 = new HashMap<>();
 
-		map2.put("ChaincodeStub", Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2), Pair.of("InvokeChaincode", 3)));
+		map2.put(Pair.of("ChaincodeStub", CallType.INSTANCE), Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2), Pair.of("InvokeChaincode", 3)));
 
-		map2.put("ChaincodeStubInterface", Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2), Pair.of("InvokeChaincode", 3)));
+		map2.put(Pair.of("ChaincodeStubInterface", CallType.INSTANCE), Set.of(Pair.of("InvokeChaincode", 1), Pair.of("InvokeChaincode", 2), Pair.of("InvokeChaincode", 3)));
 
 		SINK_CONSTRUCTOR_PARAMETER_ANNOTATIONS.put(Kind.PARAM, map2);
 	}

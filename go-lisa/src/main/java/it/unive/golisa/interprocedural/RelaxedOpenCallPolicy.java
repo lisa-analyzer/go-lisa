@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.Clean;
 import it.unive.golisa.analysis.taint.TaintDomain;
@@ -44,14 +46,10 @@ import it.unive.lisa.symbolic.value.Variable;
  * OpenCall policy to be less conservative during taint and non-interference
  * analysis.
  */
-public class RelaxedOpenCallPolicy implements OpenCallPolicy {
+public abstract class RelaxedOpenCallPolicy implements OpenCallPolicy {
 
-	/**
-	 * The singleton instance of this class.
-	 */
-	public static final RelaxedOpenCallPolicy INSTANCE = new RelaxedOpenCallPolicy();
 
-	private RelaxedOpenCallPolicy() {
+	public RelaxedOpenCallPolicy() {
 	}
 
 	@Override
@@ -79,12 +77,11 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 				} else if (((TaintDomain) stackValue).isClean()) { // &&
 																	// isRuntimeAPI(call))
 																	// {
-					if (!isSourceForNonDeterminism(call))
-						return entryState.assign(var,
-								new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+					if (!isSourceForTaint(call))
+						return entryState.assign(var, new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
 					else
 						return entryState.assign(var, new Tainted(call.getLocation()), call);
-
+				
 				} else if (((TaintDomain) stackValue).isBottom()) {
 					return entryState;
 				}
@@ -148,6 +145,8 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 		Variable var = new Variable(call.getStaticType(), RETURNED_VARIABLE_NAME, call.getLocation());
 		return entryState.assign(var, pushany, call);
 	}
+
+	public abstract boolean isSourceForTaint(OpenCall call);
 
 	private boolean isRuntimeAPI(OpenCall call) {
 
@@ -214,9 +213,9 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 
 	private boolean isSourceForNonDeterminism(Call call) {
 		GoNonDeterminismAnnotationSet sources = new GoNonDeterminismAnnotationSet();
-		for (CodeAnnotation ca : sources.getAnnotationForSources()) {
-			if (ca instanceof MethodAnnotation) {
-				MethodAnnotation ma = (MethodAnnotation) ca;
+		for (Pair<CallType, ? extends CodeAnnotation> ca : sources.getAnnotationForSources()) {
+			if (ca.getRight() instanceof MethodAnnotation) {
+				MethodAnnotation ma = (MethodAnnotation) ca.getRight();
 				if (call.getTargetName().equals(ma.getName()))
 					if (call.getQualifier() != null && (ma.getUnit().equals(call.getQualifier())
 							|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(call.getQualifier()))))

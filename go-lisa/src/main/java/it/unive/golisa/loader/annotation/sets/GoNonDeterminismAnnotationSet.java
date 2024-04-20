@@ -6,11 +6,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.Set;
 
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.golisa.golang.util.GoLangAPISignatureLoader;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 
 /**
  * The class represents the set of annotations for the non-determinism analysis
@@ -34,7 +38,7 @@ public class GoNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
 			InputStream input = GoNonDeterminismAnnotationSet.class
 					.getResourceAsStream("/for-analysis/nondeterm_sources.txt");
 
-			Map<String, Set<String>> map = new HashMap<>();
+			Map<Pair<String, CallType>, Set<String>> map = new HashMap<>();
 
 			GoLangAPISignatureLoader loader = new GoLangAPISignatureLoader(input);
 

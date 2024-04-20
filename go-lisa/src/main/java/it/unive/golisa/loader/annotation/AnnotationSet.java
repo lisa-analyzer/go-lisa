@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+
 /**
  * The class represents a set of annotations.
  *
@@ -49,19 +51,19 @@ public abstract class AnnotationSet {
 	 * 
 	 * @return the annotations for code members
 	 */
-	public abstract Set<? extends CodeAnnotation> getAnnotationsForCodeMembers();
+	public abstract Set<Pair<CallType,? extends CodeAnnotation>> getAnnotationsForCodeMembers();
 
 	/**
 	 * Yields the annotations for constructors.
 	 * 
 	 * @return the annotations for constructors
 	 */
-	public abstract Set<? extends CodeAnnotation> getAnnotationsForConstructors();
+	public abstract Set<Pair<CallType,? extends CodeAnnotation>> getAnnotationsForConstructors();
 
 	/**
 	 * Yields the annotations for globals.
 	 * 
 	 * @return the annotations for globals
 	 */
-	public abstract Set<? extends CodeAnnotation> getAnnotationsForGlobals();
+	public abstract Set<Pair<CallType,? extends CodeAnnotation>> getAnnotationsForGlobals();
 }

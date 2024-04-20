@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+
 /**
  * The class represents the set of annotations for the non-determinism analysis
  * related to Hyperledger Fabric.
@@ -23,17 +25,17 @@ public class HyperledgerFabricNonDeterminismAnnotationSet extends NonDeterminism
 	}
 
 	static {
-		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();
+		Map<Pair<String, CallType>, Set<Pair<String, Integer>>> map2 = new HashMap<>();
 
 		// Hyperledger Fabric API
-		map2.put("ChaincodeStub", Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
+		map2.put(Pair.of("ChaincodeStub", CallType.INSTANCE), Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
 				Pair.of("PutPrivateData", 1), Pair.of("PutPrivateData", 2), Pair.of("DelPrivateData", 1)));
 
-		map2.put("ChaincodeStubInterface",
+		map2.put(Pair.of("ChaincodeStubInterface", CallType.INSTANCE),
 				Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
 						Pair.of("PutPrivateData", 1), Pair.of("PutPrivateData", 2), Pair.of("DelPrivateData", 1)));
 
-		map2.put("shim", Set.of(Pair.of("Success", 0), Pair.of("Error", 0)));
+		map2.put(Pair.of("shim", CallType.STATIC), Set.of(Pair.of("Success", 0), Pair.of("Error", 0)));
 
 		SINK_CONSTRUCTOR_PARAMETER_ANNOTATIONS.put(Kind.PARAM, map2);
 	}

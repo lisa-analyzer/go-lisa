@@ -19,6 +19,7 @@ import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.FrameworkAnnotationSet;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
 import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 
 /**
  * The class represents the set of annotations for the UCCI analysis.
@@ -62,8 +63,8 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 
 
 	@Override
-	public Set<? extends CodeAnnotation> getAnnotationsForCodeMembers() {
-		Set<CodeAnnotation> set = new HashSet<>();
+	public Set<Pair<CallType,? extends CodeAnnotation>> getAnnotationsForCodeMembers() {
+		Set<Pair<CallType,? extends CodeAnnotation>>  set = new HashSet<>();
 
 		// sources
 		for (Entry<Kind, Map<String, Set<String>>> entry : SOURCE_ANNOTATIONS_PHASE_1.entrySet())
@@ -148,12 +149,12 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 	}
 
 	@Override
-	public Set<? extends CodeAnnotation> getAnnotationsForConstructors() {
+	public Set<Pair<CallType,? extends CodeAnnotation>>  getAnnotationsForConstructors() {
 		return Set.of();
 	}
 
 	@Override
-	public Set<? extends CodeAnnotation> getAnnotationsForGlobals() {
+	public Set<Pair<CallType,? extends CodeAnnotation>>  getAnnotationsForGlobals() {
 		return Set.of();
 	}
 }

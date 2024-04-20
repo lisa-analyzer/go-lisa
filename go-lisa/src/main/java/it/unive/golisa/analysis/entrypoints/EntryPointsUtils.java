@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * The class contains utility methods to handle sets of entry points.
@@ -45,12 +46,14 @@ public class EntryPointsUtils {
 		boolean atLeastOneSource = false;
 		boolean atLeastOneDestination = false;
 		for (TaintAnnotationSet as : annotationSets) {
-			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
-			Set<? extends CodeAnnotation> destinations = as.getAnnotationForDestinations();
+			Set<Pair<CallType,? extends CodeAnnotation>> sources = as.getAnnotationForSources();
+			Set<Pair<CallType,? extends CodeAnnotation>> destinations = as.getAnnotationForDestinations();
 
-			if (!atLeastOneSource && appliedAnnotations.stream().anyMatch(e -> sources.contains(e.getLeft())))
+			if (!atLeastOneSource && appliedAnnotations.stream().anyMatch(e -> sources.contains(
+					Pair.of(e.getRight().isInstance() ? CallType.INSTANCE : CallType.STATIC,e.getLeft()))))
 				atLeastOneSource = true;
-			if (!atLeastOneDestination && appliedAnnotations.stream().anyMatch(e -> destinations.contains(e.getLeft())))
+			if (!atLeastOneDestination && appliedAnnotations.stream().anyMatch(e -> destinations.contains(
+					Pair.of(e.getRight().isInstance() ? CallType.INSTANCE : CallType.STATIC,e.getLeft()))))
 				atLeastOneDestination = true;
 
 			if (atLeastOneSource && atLeastOneDestination)
@@ -70,23 +73,21 @@ public class EntryPointsUtils {
 	 * @return the set of descriptors
 	 */
 	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
-			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			AnnotationSet... annotationSets) {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
 		for (AnnotationSet as : annotationSets) {
-			
-			
 			if(as instanceof UCCIPhase2AnnotationSet) {
-				for(Pair<CodeAnnotation, CodeMemberDescriptor> aa : appliedAnnotations) {
-					if (aa.getLeft().getAnnotation().equals(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2))
+				for(Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor> aa : appliedAnnotations) {
+					if (aa.getMiddle().getAnnotation().equals(TaintDomainForPhase2.TAINTED_ANNOTATION_PHASE2))
 						descriptors.add(aa.getRight());
 				}
 			} else if (as instanceof TaintAnnotationSet) {
-				Set<? extends CodeAnnotation> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
+				Set<Pair<CallType,? extends CodeAnnotation>> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
 				appliedAnnotations.stream()
 						.forEach(e -> {
-							if (sources.contains(e.getLeft()))
+							if (sources.contains(Pair.of(e.getRight().isInstance() ? CallType.INSTANCE : CallType.STATIC,e.getLeft())))
 								descriptors.add(e.getRight());
 						});
 			}
@@ -108,7 +109,7 @@ public class EntryPointsUtils {
 	 * @return the set of entry points
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
-			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			AnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();

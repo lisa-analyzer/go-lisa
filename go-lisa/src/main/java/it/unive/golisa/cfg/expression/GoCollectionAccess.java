@@ -92,6 +92,28 @@ public class GoCollectionAccess extends BinaryExpression {
 		if (state.getDomainInstance(ValueEnvironment.class) != null) {
 			ValueEnvironment<?> linst = state.smallStepSemantics(left, getReceiver()).getDomainInstance(ValueEnvironment.class);
 			ValueEnvironment<?> rinst = state.smallStepSemantics(right, getReceiver()).getDomainInstance(ValueEnvironment.class);
+			
+			if (linst.getValueOnStack() instanceof TaintDomain) {
+				if(rec instanceof GoCollectionAccess) {
+					rec = getGoCollectionReceiver((GoCollectionAccess) rec);
+
+				}	
+				if (((TaintDomain)linst.getValueOnStack()).isTainted()
+						|| ((TaintDomain)rinst.getValueOnStack()).isTainted()) {
+					if(rec instanceof VariableRef) {
+						VariableRef var = (VariableRef) rec;
+						return state.assign(var.getVariable(),new Tainted(getLocation()), getReceiver());
+					}else
+						return state.smallStepSemantics(new Tainted(getLocation()), getReceiver());
+				}
+				if( rec instanceof VariableRef) {
+					VariableRef var = (VariableRef) rec;
+					return state.assign(var.getVariable(),new Clean(Untyped.INSTANCE, getLocation()),  getReceiver());
+				} else
+					return state.smallStepSemantics(new Clean(Untyped.INSTANCE, getLocation()), getReceiver());
+			}
+		
+			
 			if (linst.getValueOnStack() instanceof TaintDomainForPhase1) {
 				if(rec instanceof GoCollectionAccess) {
 					rec = getGoCollectionReceiver((GoCollectionAccess) rec);

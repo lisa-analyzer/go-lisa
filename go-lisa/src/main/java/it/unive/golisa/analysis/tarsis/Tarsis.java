@@ -510,4 +510,10 @@ public class Tarsis extends BaseLattice<Tarsis> implements NonRelationalValueDom
 	protected Tarsis evalTypeCast(BinaryExpression cast, Tarsis left, Tarsis right, ProgramPoint pp) {
 		return cast.getRuntimeTypes(null).isEmpty() ? bottom() : left;
 	}
+	
+	
+	public AutomatonString getAutomatonString() {
+		return stringValue;
+	}
+
 }

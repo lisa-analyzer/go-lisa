@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -19,6 +20,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,6 +61,7 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+import it.unive.lisa.program.cfg.statement.call.OpenCall;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
@@ -103,7 +106,7 @@ public class GoLiSA {
 		
 		
 		Option policy_opt = new Option("p", "policy", false, "dump the analysis");
-		policy_opt.setRequired(true);
+		policy_opt.setRequired(false);
 		options.addOption(policy_opt);
 		
 		
@@ -188,8 +191,8 @@ public class GoLiSA {
 	
 
 	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir,
-			GraphType dumpOpt, String target, Map<String, Set<String>> sources,
-			Map<String, Set<Pair<String, Integer>>> sinks) {
+			GraphType dumpOpt, String target, Map<Pair<String, CallType>, Set<String>> sources,
+			 Map<Pair<String, CallType>, Set<Pair<String, Integer>>> sinks) {
 		
 		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", sources, sinks);
 		
@@ -201,7 +204,7 @@ public class GoLiSA {
 	}
 	
 	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir, GraphType dumpOpt, 
-			String target, Set<Pair<CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations) {
+			String target, Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations) {
 		
 		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", new HashMap<>(), new HashMap<>());
 		
@@ -219,7 +222,13 @@ public class GoLiSA {
 
 		confPhase.jsonOutput = true;
 
-		confPhase.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		confPhase.openCallPolicy = new RelaxedOpenCallPolicy() {
+
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return GetPhaseSourcesSignatures(target).values().stream().anyMatch(set -> set.stream().anyMatch(source ->  call.getTargetName().equals(source)));
+			}};
+			
 			try {
 				confPhase.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 						new ValueEnvironment<>(new TaintDomain()),
@@ -246,7 +255,7 @@ public class GoLiSA {
 		Set<CFG> cfgEntryPoints = new HashSet<>();
 
 		if (!entryLoader.isEntryFound()) {
-			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
 					.getAppliedAnnotations();
 
 			 EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
@@ -313,11 +322,10 @@ public class GoLiSA {
 		
 		int couter=0;
 		for(Object c : conflicts) {
-			 Set<Pair<CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations = buildSourcesAndSinks(c);
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations = buildSourcesAndSinks(c);
 			 runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES+"_conflict_"+couter, specificCodeMemberAnnotations);
 			 couter++;
 		}
-		// TODO: perform information flow analysis
 		
 	}
 
@@ -329,7 +337,7 @@ public class GoLiSA {
 
 
 
-	private static Set<Pair<CodeAnnotation, CodeMemberDescriptor>> buildSourcesAndSinks(Object c) {
+	private static Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> buildSourcesAndSinks(Object c) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -338,7 +346,20 @@ public class GoLiSA {
 
 	private static Collection<Object> extractPossiblePrivateCollectionConflicts(Map<Call, Set<Tarsis>>  collectionsReadPrivateState,
 			Map<Call, Set<Tarsis>> collectionsWritePrivateState, Object policies) {
-		// TODO Auto-generated method stub
+		
+		for(Entry<Call, Set<Tarsis>> e :collectionsReadPrivateState.entrySet()) {
+			for(Tarsis t : e.getValue()) {
+				System.out.println();
+			}
+			
+		}
+		
+		for(Entry<Call, Set<Tarsis>> e :collectionsWritePrivateState.entrySet()) {
+			for(Tarsis t : e.getValue()) {
+				System.out.println();
+			}
+			
+		}
 		return null;
 	}
 
@@ -346,7 +367,14 @@ public class GoLiSA {
 			GraphType dumpOpt) {
 		LiSAConfiguration confStringAnalysis = new LiSAConfiguration();
 
-		confStringAnalysis.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		confStringAnalysis.openCallPolicy = new RelaxedOpenCallPolicy() {
+
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+			
+		};
 		
 		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", PrivacySignatures.privateReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
 		
@@ -357,7 +385,7 @@ public class GoLiSA {
 		Set<CFG> cfgEntryPoints = new HashSet<>();
 
 		if (!entryLoader.isEntryFound()) {
-			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
 					.getAppliedAnnotations();
 
 			 EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
@@ -424,7 +452,7 @@ public class GoLiSA {
 		return false;
 	}
 
-	private static int countCallsMatchingSignatures(Program program, Map<String, Set<String>> signatures) {
+	private static int countCallsMatchingSignatures(Program program, Map<Pair<String, CallType>, Set<String>> signatures) {
 
 		int res = 0;
 
@@ -456,7 +484,7 @@ public class GoLiSA {
 	private static class SignatureDescriptorMatcher
 			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
 
-		final Map<String, Set<String>> signatures;
+		final Map<Pair<String, CallType>, Set<String>> signatures;
 		
 		private int matches;
 		
@@ -464,7 +492,7 @@ public class GoLiSA {
 			return matches > 0;
 		}
 
-		public SignatureDescriptorMatcher(Map<String, Set<String>> signatures) {
+		public SignatureDescriptorMatcher(Map<Pair<String, CallType>, Set<String>> signatures) {
 			this.signatures = signatures;
 		}
 
@@ -522,5 +550,22 @@ public class GoLiSA {
 		
 	}
 	
+	private static Map<Pair<String, CallType>, Set<String>> GetPhaseSourcesSignatures(String phase) {
+		
+		switch(phase) {
+		case PRIVATE_INPUT_IN_PUBLIC_STATES:
+				return PrivacySignatures.privateInputs;
+		case PUBLIC_INPUT_IN_PRIVATE_STATES:
+				return PrivacySignatures.publicInputs;
+		case PUBLIC_STATES_IN_PRIVATE_STATES:
+				return PrivacySignatures.publicReadStates;
+		case PRIVATE_STATES_IN_PUBLIC_STATES:
+				return PrivacySignatures.privateReadStates;
+		case PRIVATE_STATES_IN_OTHER_PRIVATE_STATES:
+				return PrivacySignatures.privateReadStates;
+		default:
+			throw new IllegalArgumentException(phase + " is currently a not supported phase");
+		}
+	}
 
 }

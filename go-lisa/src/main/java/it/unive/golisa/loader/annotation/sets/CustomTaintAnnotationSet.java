@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 
 
 /**
@@ -15,7 +16,7 @@ import it.unive.golisa.checker.TaintChecker;
  */
 public class CustomTaintAnnotationSet extends TaintAnnotationSet {
 
-	public CustomTaintAnnotationSet(String framework, Map<String, Set<String>> sources, Map<String, Set<Pair<String, Integer>>> sinks) {
+	public CustomTaintAnnotationSet(String framework, Map<Pair<String, CallType>, Set<String>> sources, Map<Pair<String, CallType>, Set<Pair<String, Integer>>> sinks) {
 		super(framework, Set.of(TaintDomain.TAINTED_ANNOTATION), Set.of(TaintChecker.SINK_ANNOTATION),Set.of(TaintDomain.CLEAN_ANNOTATION));
 		
 		SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD,sources);

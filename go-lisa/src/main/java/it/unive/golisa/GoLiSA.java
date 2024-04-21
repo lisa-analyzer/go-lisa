@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -28,6 +29,8 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
+import it.unive.golisa.analysis.hf.privacy.JSONPrivateDataCollectionPolicyParser;
+import it.unive.golisa.analysis.hf.privacy.JSONPrivateDataCollectionPolicyParser.PrivateDataPolicy;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.golisa.analysis.utilities.PrivacySignatures;
@@ -351,8 +354,7 @@ public class GoLiSA {
 		Map<Call, Set<Tarsis>> collectionsReadPrivateState = res.getLeft();
 		Map<Call, Set<Tarsis>> collectionsWritePrivateState = res.getRight();
 		
-		// TODO: to handle policies
-		Object policies = computePolicies(policyPath);
+		List<PrivateDataPolicy> policies = JSONPrivateDataCollectionPolicyParser.parsePolicies(policyPath);
 		Collection<Object> conflicts = extractPossiblePrivateCollectionConflicts(collectionsReadPrivateState,collectionsWritePrivateState, policies);
 		
 		int couter=0;
@@ -365,13 +367,6 @@ public class GoLiSA {
 	}
 
 
-	private static Object computePolicies(String policyPath) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
 	private static Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> buildSourcesAndSinks(Object c) {
 		// TODO Auto-generated method stub
 		return null;
@@ -380,7 +375,7 @@ public class GoLiSA {
 
 
 	private static Collection<Object> extractPossiblePrivateCollectionConflicts(Map<Call, Set<Tarsis>>  collectionsReadPrivateState,
-			Map<Call, Set<Tarsis>> collectionsWritePrivateState, Object policies) {
+			Map<Call, Set<Tarsis>> collectionsWritePrivateState, List<PrivateDataPolicy> policies) {
 		
 		for(Entry<Call, Set<Tarsis>> e :collectionsReadPrivateState.entrySet()) {
 			for(Tarsis t : e.getValue()) {

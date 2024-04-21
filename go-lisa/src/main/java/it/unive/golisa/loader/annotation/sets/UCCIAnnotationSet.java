@@ -41,7 +41,7 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 	/**
 	 * The source code member annotations.
 	 */
-	protected static final Map<Kind, Map<String, Set<String>>> SOURCE_ANNOTATIONS_PHASE_1 = new HashMap<>();
+	protected static final Map<Kind, Map<Pair<String, CallType>, Set<String>>> SOURCE_ANNOTATIONS_PHASE_1 = new HashMap<>();
 
 	/**
 	 * The sink code member annotations.
@@ -50,7 +50,7 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 	 * The sink code constructor parameter annotations.
 	 */
 	protected static final Map<Kind,
-			Map<String, Set<Pair<String, Integer>>>> SINK_ANNOTATIONS_PHASE_1 = new HashMap<>();
+			Map<Pair<String, CallType>, Set<Pair<String, Integer>>>> SINK_ANNOTATIONS_PHASE_1 = new HashMap<>();
 
 	/**
 	 * The source code constructor annotations.
@@ -59,7 +59,7 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 	 * The sink code constructor parameter annotations.
 	 */
 	protected static final Map<Kind,
-			Map<String, Set<Pair<String, Integer>>>> SINK_ANNOTATIONS_PHASE_2 = new HashMap<>();
+			Map<Pair<String, CallType>, Set<Pair<String, Integer>>>> SINK_ANNOTATIONS_PHASE_2 = new HashMap<>();
 
 
 	@Override
@@ -67,31 +67,31 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 		Set<Pair<CallType,? extends CodeAnnotation>>  set = new HashSet<>();
 
 		// sources
-		for (Entry<Kind, Map<String, Set<String>>> entry : SOURCE_ANNOTATIONS_PHASE_1.entrySet())
+		for (Entry<Kind, Map<Pair<String, CallType>, Set<String>>> entry : SOURCE_ANNOTATIONS_PHASE_1.entrySet())
 			if (entry.getKey() == Kind.METHOD)
-				for (Entry<String, Set<String>> target : entry.getValue().entrySet())
+				for (Entry<Pair<String, CallType>, Set<String>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomainForPhase1.TAINTED_ANNOTATION_PHASE1, target.getKey(), mtd));
+						set.add(Pair.of(target.getKey().getRight(), new MethodAnnotation(TaintDomainForPhase1.TAINTED_ANNOTATION_PHASE1, target.getKey().getLeft(), mtd)));
 					});
 
 		// sinks
-		for (Entry<Kind, Map<String, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_1
+		for (Entry<Kind, Map<Pair<String, CallType>, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_1
 				.entrySet())
 			if (entry.getKey() == Kind.PARAM)
-				for (Entry<String, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
+				for (Entry<Pair<String, CallType>, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodParameterAnnotation(UCCICheckerPhase1.SINK_ANNOTATION_PHASE1, target.getKey(),
-								mtd.getLeft(), mtd.getRight()));
+						set.add(Pair.of(target.getKey().getRight(), new MethodParameterAnnotation(UCCICheckerPhase1.SINK_ANNOTATION_PHASE1, target.getKey().getLeft(),
+								mtd.getLeft(), mtd.getRight())));
 					});
 
 
-		for (Entry<Kind, Map<String, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_2
+		for (Entry<Kind, Map<Pair<String, CallType>, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_2
 				.entrySet())
 			if (entry.getKey() == Kind.PARAM)
-				for (Entry<String, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
+				for (Entry<Pair<String, CallType>, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodParameterAnnotation(UCCICheckerPhase2.SINK_ANNOTATION_PHASE2, target.getKey(),
-								mtd.getLeft(), mtd.getRight()));
+						set.add(Pair.of(target.getKey().getRight(),new MethodParameterAnnotation(UCCICheckerPhase2.SINK_ANNOTATION_PHASE2, target.getKey().getLeft(),
+								mtd.getLeft(), mtd.getRight())));
 					});
 
 		
@@ -103,14 +103,14 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 	 * 
 	 * @return the annotation set of sources
 	 */
-	public Set<? extends CodeAnnotation> getAnnotationForSources() {
-		Set<CodeAnnotation> set = new HashSet<>();
+	public Set<Pair<CallType,? extends CodeAnnotation>> getAnnotationForSources() {
+		Set<Pair<CallType,? extends CodeAnnotation>> set = new HashSet<>();
 
-		for (Entry<Kind, Map<String, Set<String>>> entry : SOURCE_ANNOTATIONS_PHASE_1.entrySet())
+		for (Entry<Kind, Map<Pair<String, CallType>, Set<String>>> entry : SOURCE_ANNOTATIONS_PHASE_1.entrySet())
 			if (entry.getKey() == Kind.METHOD)
-				for (Entry<String, Set<String>> target : entry.getValue().entrySet())
+				for (Entry<Pair<String, CallType>, Set<String>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomainForPhase1.TAINTED_ANNOTATION_PHASE1, target.getKey(), mtd));
+						set.add(Pair.of(target.getKey().getRight(), new MethodAnnotation(TaintDomainForPhase1.TAINTED_ANNOTATION_PHASE1, target.getKey().getLeft(), mtd)));
 					});
 		return set;
 	}
@@ -120,29 +120,29 @@ public class UCCIAnnotationSet extends FrameworkAnnotationSet {
 	 * 
 	 * @return the annotation set of destinations (sinks).
 	 */
-	public Set<? extends CodeAnnotation> getAnnotationForDestinations() {
-		Set<CodeAnnotation> set = new HashSet<>();
+	public Set<Pair<CallType,? extends CodeAnnotation>> getAnnotationForDestinations() {
+		Set<Pair<CallType,? extends CodeAnnotation>> set = new HashSet<>();
 
-		for (Entry<Kind, Map<String, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_1
+		for (Entry<Kind, Map<Pair<String, CallType>, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_1
 				.entrySet())
 			if (entry.getKey() == Kind.PARAM)
-				for (Entry<String, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
+				for (Entry<Pair<String, CallType>, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, target.getKey(),
-								mtd.getLeft(), mtd.getRight()));
-						set.add(new MethodParameterAnnotation(IntegrityNIChecker.SINK_ANNOTATION, target.getKey(),
-								mtd.getLeft(), mtd.getRight()));
+						set.add(Pair.of(target.getKey().getRight(),new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, target.getKey().getLeft(),
+								mtd.getLeft(), mtd.getRight())));
+						set.add(Pair.of(target.getKey().getRight(),new MethodParameterAnnotation(IntegrityNIChecker.SINK_ANNOTATION, target.getKey().getLeft(),
+								mtd.getLeft(), mtd.getRight())));
 					});
 
-		for (Entry<Kind, Map<String, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_2
+		for (Entry<Kind, Map<Pair<String, CallType>, Set<Pair<String, Integer>>>> entry : SINK_ANNOTATIONS_PHASE_2
 				.entrySet())
 			if (entry.getKey() == Kind.PARAM)
-				for (Entry<String, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
+				for (Entry<Pair<String, CallType>, Set<Pair<String, Integer>>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, target.getKey(),
-								mtd.getLeft(), mtd.getRight()));
-						set.add(new MethodParameterAnnotation(IntegrityNIChecker.SINK_ANNOTATION, target.getKey(),
-								mtd.getLeft(), mtd.getRight()));
+						set.add(Pair.of(target.getKey().getRight(), new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, target.getKey().getLeft(),
+								mtd.getLeft(), mtd.getRight())));
+						set.add(Pair.of(target.getKey().getRight(), new MethodParameterAnnotation(IntegrityNIChecker.SINK_ANNOTATION, target.getKey().getLeft(),
+								mtd.getLeft(), mtd.getRight())));
 					});
 		
 		return set;

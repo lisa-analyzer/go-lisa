@@ -229,14 +229,14 @@ public abstract class RelaxedOpenCallPolicy implements OpenCallPolicy {
 	
 	private boolean isSourceForUCCIP1(Call call) {
 		UCCIAnnotationSet sources = new HyperledgerFabricUCCIAnnotationSet();
-		for (CodeAnnotation ca : sources.getAnnotationForSources()) {
-			if (ca instanceof MethodAnnotation) {
-				MethodAnnotation ma = (MethodAnnotation) ca;
-				if (call.getTargetName().equals(ma.getName()))
-					if (call.getQualifier() != null && (ma.getUnit().equals(call.getQualifier())
-							|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(call.getQualifier()))))
-						return true;
-			}
+		for (Pair<CallType, ? extends CodeAnnotation> ca : sources.getAnnotationForSources()) {
+				if (ca.getRight() instanceof MethodAnnotation) {
+					MethodAnnotation ma = (MethodAnnotation) ca.getRight();
+					if (call.getTargetName().equals(ma.getName()))
+						if (call.getQualifier() != null && (ma.getUnit().equals(call.getQualifier())
+								|| (ma.getUnit().contains("/") && ma.getUnit().endsWith(call.getQualifier()))))
+							return true;
+				}
 		}
 
 		return false;

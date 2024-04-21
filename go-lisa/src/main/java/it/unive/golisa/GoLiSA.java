@@ -36,6 +36,7 @@ import it.unive.golisa.analysis.tarsis.Tarsis;
 import it.unive.golisa.analysis.utilities.PrivacySignatures;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.checker.ComputePrivateCollectionFromStatementsChecker;
+import it.unive.golisa.checker.PrivacyHFChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.golisa.interprocedural.GoContextBasedAnalysis;
@@ -241,7 +242,7 @@ public class GoLiSA {
 				confPhase.abstractState = new GoAbstractState<>(new GoPointBasedHeap(),
 						new ValueEnvironment<>(new TaintDomain()),
 						LiSAFactory.getDefaultFor(TypeDomain.class));
-				confPhase.semanticChecks.add( new TaintChecker() {
+				confPhase.semanticChecks.add( new PrivacyHFChecker() {
 
 					@Override
 					protected void checkSignature(UnresolvedCall call,
@@ -250,9 +251,11 @@ public class GoLiSA {
 							String targetName = call.getTargetName();
 							
 							Map<Pair<String, CallType>, Set<Pair<String, Integer>>> sinksPhase = GetPhaseSinksSignatures(target);
+										
 							 
 							for(Pair<String, CallType> key : sinksPhase.keySet()){
 								for(Pair<String, Integer> sink : sinksPhase.get(key) ) {
+									boolean[] resultsParam = new boolean[call.getParameters().length];
 									if(sink.getLeft().equals(call.getTargetName())
 											&& call.getParameters().length > sink.getRight() &&
 											(!key.getRight().equals(CallType.STATIC) || (key.getRight().equals(CallType.STATIC) && call.getQualifier().equals(key.getLeft())))) {
@@ -261,10 +264,12 @@ public class GoLiSA {
 												GoPointBasedHeap, ValueEnvironment<TaintDomain>,
 												TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG()))
 														if (result.getAnalysisStateAfter(call.getParameters()[sink.getRight()]).getState().getValueState()
-														.getValueOnStack().isTainted())
-													tool.warnOn(call, "The value passed for the " + ordinal(sink.getRight() + 1)
-															+ " parameter of " + targetName + " call is tainted");
+														.getValueOnStack().isTainted() || result.getAnalysisStateAfter(call.getParameters()[sink.getRight()]).getState().getValueState()
+														.getValueOnStack().maybeTainted())
+															resultsParam[sink.getRight()] = true;		
 									}
+									
+									buildWarning(tool, call, null, resultsParam);
 								}
 							}
 						}

@@ -1,10 +1,8 @@
 package it.unive.golisa.checker;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import it.unive.golisa.analysis.heap.GoAbstractState;
 import it.unive.golisa.analysis.heap.GoPointBasedHeap;
@@ -36,15 +34,15 @@ public class ComputePrivateCollectionFromStatementsChecker implements
 	SemanticCheck<GoAbstractState<ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
 	GoPointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> {
 	
-	private Map<Call, Set<Tarsis>> writers;
-	private Map<Call, Set<Tarsis>>  readers;
+	private Map<Call, Tarsis> writers;
+	private Map<Call, Tarsis>  readers;
 	
 	
-	public Map<Call, Set<Tarsis>> getWritePrivateStatesInstructions() {
+	public Map<Call, Tarsis> getWritePrivateStatesInstructions() {
 		return writers;
 	}
 	
-	public Map<Call, Set<Tarsis>> getReadPrivateStatesInstructions() {
+	public Map<Call, Tarsis> getReadPrivateStatesInstructions() {
 		return readers;
 	}
 
@@ -95,21 +93,19 @@ public class ComputePrivateCollectionFromStatementsChecker implements
 		for(Call call : calls) {
 			if(PrivacySignatures.isReadPrivateState(call) || PrivacySignatures.isWritePrivateState(call)) {
 				try {
-					Set<Tarsis> collectionValues = new HashSet<>();
+					Tarsis collectionValue = null;
 					
 					for (CFGWithAnalysisResults<GoAbstractState<ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, 
 							GoPointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
 						Tarsis valueState = extractCollectionValues(call, node, result);
 						if(valueState != null)
-							collectionValues.add(valueState);
+							collectionValue = valueState;
 					}
 					
 					if(PrivacySignatures.isReadPrivateState(call)) {
-						readers.computeIfAbsent(call, s -> new HashSet<>());
-						readers.get(call).addAll(collectionValues);
+						readers.put(call,collectionValue);
 					} else {
-						writers.computeIfAbsent(call, s -> new HashSet<>());
-						writers.get(call).addAll(collectionValues);
+						writers.put(call,collectionValue);
 					}
 					
 				} catch (SemanticException e) {

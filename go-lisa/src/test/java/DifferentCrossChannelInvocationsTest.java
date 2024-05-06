@@ -10,6 +10,8 @@ import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.program.cfg.statement.call.OpenCall;
+
 import org.junit.Test;
 
 public class DifferentCrossChannelInvocationsTest extends GoChaincodeTestExecutor {
@@ -17,7 +19,13 @@ public class DifferentCrossChannelInvocationsTest extends GoChaincodeTestExecuto
 	@Test
 	public void testDCCIs() throws AnalysisSetupException {
 		CronConfiguration conf = new CronConfiguration();
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf.semanticChecks.add(new DifferentCrossChannelInvocationsChecker());

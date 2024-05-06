@@ -11,11 +11,17 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 public class TaintAnalysisTest extends GoChaincodeTestExecutor {
@@ -28,7 +34,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -46,7 +60,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -64,7 +86,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -82,7 +112,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -100,7 +138,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -118,7 +164,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -136,7 +190,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -154,7 +216,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -172,7 +242,15 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new TaintDomain()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -191,24 +269,24 @@ public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 		}
 
 		@Override
-		public Set<? extends CodeAnnotation> getAnnotationsForCodeMembers() {
-			Set<CodeAnnotation> set = new HashSet<>();
-			set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "main", "source"));
-			set.add(new MethodAnnotation(TaintChecker.SINK_ANNOTATION, "main", "sink"));
-			set.add(new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "main", "sink", 0));
-
+		public Set<Pair<CallType, ? extends CodeAnnotation>> getAnnotationsForCodeMembers() {
+			Set<Pair<CallType, ? extends CodeAnnotation>> set = new HashSet<>();
+			set.add(Pair.of(CallType.INSTANCE, new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, "main", "source")));
+			set.add(Pair.of(CallType.INSTANCE, new MethodAnnotation(TaintChecker.SINK_ANNOTATION, "main", "sink")));
+			set.add(Pair.of(CallType.INSTANCE, new MethodParameterAnnotation(TaintChecker.SINK_ANNOTATION, "main", "sink", 0)));
 			return set;
 		}
 
 		@Override
-		public Set<? extends CodeAnnotation> getAnnotationsForConstructors() {
+		public Set<Pair<CallType, ? extends CodeAnnotation>> getAnnotationsForConstructors() {
 			return new HashSet<>();
 		}
 
 		@Override
-		public Set<? extends CodeAnnotation> getAnnotationsForGlobals() {
+		public Set<Pair<CallType, ? extends CodeAnnotation>> getAnnotationsForGlobals() {
 			return new HashSet<>();
 		}
+		
 
 	}
 }

@@ -1,5 +1,6 @@
 
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForNonDeterminism;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
@@ -8,9 +9,12 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+
 import org.junit.Test;
 
 public class NonDeterminismTest extends GoChaincodeTestExecutor {
@@ -21,9 +25,17 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	public void testMapIteration() throws AnalysisSetupException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -39,9 +51,17 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	public void testChannel() throws AnalysisSetupException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();
@@ -58,9 +78,17 @@ public class NonDeterminismTest extends GoChaincodeTestExecutor {
 	public void testGoRoutine() throws AnalysisSetupException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		conf.jsonOutput = true;
 		conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
 		conf.callGraph = new RTACallGraph();

@@ -1,6 +1,7 @@
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForNonDeterminism;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
@@ -13,9 +14,13 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
+import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
+import it.unive.lisa.program.cfg.statement.call.OpenCall;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
+
 import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,13 +33,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testBoleto() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/boleto";
 		conf.testSubDir = "taint";
@@ -47,7 +64,13 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testBoletoNI() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
@@ -66,13 +89,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testMarblesChaincode() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/marbles-chaincode";
 		conf.testSubDir = "taint";
@@ -85,13 +120,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testHighThroughput() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/high-throughput";
 		conf.programFile = "high-throughput.go";
@@ -103,7 +150,13 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testMarblesChaincodeNI() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
@@ -122,7 +175,13 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testTommyStarkNI() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
@@ -141,13 +200,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testTommyStark() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/tommystark";
 		conf.testSubDir = "taint";
@@ -160,13 +231,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testSacc() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/sacc";
 		conf.programFile = "sacc.go";
@@ -178,13 +261,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testMyCC() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/mycc";
 		conf.programFile = "mycc.go";
@@ -196,7 +291,13 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testChaincodeNI() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
@@ -214,13 +315,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testImplicit() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/implicit-flow";
 		conf.testSubDir = "taint";
@@ -233,7 +346,13 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testImplicitNI() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
@@ -252,13 +371,25 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testCpuUse() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-				new ValueEnvironment<>(new TaintDomain()),
+				new ValueEnvironment<>(new TaintDomainForNonDeterminism()),
 				new TypeEnvironment<>(new InferredTypes()));
-		conf.semanticChecks.add(new TaintChecker());
+		conf.semanticChecks.add(new TaintChecker() {
+			
+			@Override
+			protected void checkSignature(UnresolvedCall call,
+					CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {			
+			}
+		});
 		conf.compareWithOptimization = false;
 		conf.testDir = "cc/cpu-use";
 		conf.testSubDir = "taint";
@@ -271,7 +402,13 @@ public class ChaincodeTest extends GoChaincodeTestExecutor {
 	public void testCpuUseNI() throws AnalysisException, IOException {
 		CronConfiguration conf = new CronConfiguration();
 		conf.jsonOutput = true;
-		conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
 		conf.callGraph = new RTACallGraph();
 		conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),

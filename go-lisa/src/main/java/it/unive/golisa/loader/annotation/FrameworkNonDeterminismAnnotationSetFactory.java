@@ -3,7 +3,7 @@ package it.unive.golisa.loader.annotation;
 import it.unive.golisa.loader.annotation.sets.CosmosSDKNonDeterminismAnnotationSet;
 import it.unive.golisa.loader.annotation.sets.GoNonDeterminismAnnotationSet;
 import it.unive.golisa.loader.annotation.sets.HyperledgerFabricNonDeterminismAnnotationSet;
-import it.unive.golisa.loader.annotation.sets.TaintAnnotationSet;
+import it.unive.golisa.loader.annotation.sets.NonDeterminismAnnotationSet;
 import it.unive.golisa.loader.annotation.sets.TendermintCoreNonDeterminismAnnotationSet;
 
 /**
@@ -20,10 +20,10 @@ public class FrameworkNonDeterminismAnnotationSetFactory {
 	 * 
 	 * @return the set of annotationq
 	 */
-	public static TaintAnnotationSet[] getAnnotationSets(String framework) {
+	public static NonDeterminismAnnotationSet[] getAnnotationSets(String framework) {
 
 		if (framework != null) {
-			TaintAnnotationSet specificFrameworkAnnotationSet = null;
+			NonDeterminismAnnotationSet specificFrameworkAnnotationSet = null;
 
 			if (framework.equalsIgnoreCase("HYPERLEDGER-FABRIC")) {
 				specificFrameworkAnnotationSet = new HyperledgerFabricNonDeterminismAnnotationSet();
@@ -36,10 +36,10 @@ public class FrameworkNonDeterminismAnnotationSetFactory {
 			}
 
 			if (specificFrameworkAnnotationSet != null)
-				return new TaintAnnotationSet[] { new GoNonDeterminismAnnotationSet(),
+				return new NonDeterminismAnnotationSet[] { new GoNonDeterminismAnnotationSet(),
 						specificFrameworkAnnotationSet };
 		}
 
-		return new TaintAnnotationSet[] { new GoNonDeterminismAnnotationSet() };
+		return new NonDeterminismAnnotationSet[] { new GoNonDeterminismAnnotationSet() };
 	}
 }

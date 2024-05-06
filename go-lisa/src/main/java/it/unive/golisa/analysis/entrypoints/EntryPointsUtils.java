@@ -11,12 +11,14 @@ import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * The class contains utility methods to handle sets of entry points.
@@ -42,12 +44,14 @@ public class EntryPointsUtils {
 		boolean atLeastOneSource = false;
 		boolean atLeastOneDestination = false;
 		for (TaintAnnotationSet as : annotationSets) {
-			Set<? extends CodeAnnotation> sources = as.getAnnotationForSources();
-			Set<? extends CodeAnnotation> destinations = as.getAnnotationForDestinations();
+			Set<Pair<CallType,? extends CodeAnnotation>> sources = as.getAnnotationForSources();
+			Set<Pair<CallType,? extends CodeAnnotation>> destinations = as.getAnnotationForDestinations();
 
-			if (!atLeastOneSource && appliedAnnotations.stream().anyMatch(e -> sources.contains(e.getLeft())))
+			if (!atLeastOneSource && appliedAnnotations.stream().anyMatch(e -> sources.contains(
+					Pair.of(e.getRight().isInstance() ? CallType.INSTANCE : CallType.STATIC,e.getLeft()))))
 				atLeastOneSource = true;
-			if (!atLeastOneDestination && appliedAnnotations.stream().anyMatch(e -> destinations.contains(e.getLeft())))
+			if (!atLeastOneDestination && appliedAnnotations.stream().anyMatch(e -> destinations.contains(
+					Pair.of(e.getRight().isInstance() ? CallType.INSTANCE : CallType.STATIC,e.getLeft()))))
 				atLeastOneDestination = true;
 
 			if (atLeastOneSource && atLeastOneDestination)
@@ -67,20 +71,22 @@ public class EntryPointsUtils {
 	 * @return the set of descriptors
 	 */
 	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
-			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			AnnotationSet... annotationSets) {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
 		for (AnnotationSet as : annotationSets) {
-			if (as instanceof TaintAnnotationSet) {
-				Set<? extends CodeAnnotation> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
+			 if (as instanceof TaintAnnotationSet) {
+				Set<Pair<CallType,? extends CodeAnnotation>> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
 				appliedAnnotations.stream()
 						.forEach(e -> {
-							if (sources.contains(e.getLeft()))
+							if (sources.contains(Pair.of(e.getRight().isInstance() ? CallType.INSTANCE : CallType.STATIC,e.getLeft())))
 								descriptors.add(e.getRight());
 						});
 			}
 		}
+		
+		
 
 		return descriptors;
 	}
@@ -96,7 +102,7 @@ public class EntryPointsUtils {
 	 * @return the set of entry points
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
-			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			AnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
@@ -166,10 +172,28 @@ public class EntryPointsUtils {
 		 *             {@code false}
 		 */
 		private boolean matchSignatureDescriptor(Statement node, Collection<Statement> tool) {
-			if (node instanceof Call)
-				if (descriptors.stream().anyMatch(d -> d.getFullName().equals(((Call) node).getFullTargetName())
-						&& d.getFormals().length == ((Call) node).getParameters().length))
-					return true;
+			
+			if (node instanceof Call) {
+				Call c = (Call) node;
+				if(c.getCallType() == CallType.STATIC) {
+					if (descriptors.stream().anyMatch(d -> d.getFullName().equals(((Call) node).getFullTargetName())
+							&& d.getFormals().length == ((Call) node).getParameters().length))
+						return true;
+				} else if(c.getCallType() == CallType.INSTANCE) {
+					if (descriptors.stream().anyMatch(d -> 
+					d.getName().equals(((Call) node).getTargetName())
+							&& d.getFormals().length == ((Call) node).getParameters().length))
+						return true;
+				} if (c.getCallType() == CallType.UNKNOWN) {
+					if(descriptors.stream().anyMatch(d -> d.getFullName().equals(((Call) node).getFullTargetName())
+							&& d.getFormals().length == ((Call) node).getParameters().length)
+							|| descriptors.stream().anyMatch(d -> d.getName().equals(((Call) node).getTargetName())
+									&& d.getFormals().length == ((Call) node).getParameters().length)) {
+						return true;
+					}
+				}
+			
+			}
 			return false;
 		}
 

@@ -11,13 +11,21 @@ import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
+import it.unive.lisa.program.cfg.statement.call.OpenCall;
+
 import org.junit.Test;
 
 public class ReadWriteTest extends GoChaincodeTestExecutor {
 
 	protected void run(String testDir, String programFile) {
 		CronConfiguration conf1 = new CronConfiguration();
-		conf1.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf1.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf1.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
 				new TypeEnvironment<>(new InferredTypes()));
 		conf1.semanticChecks.add(new ReadWritePairChecker());
@@ -29,7 +37,13 @@ public class ReadWriteTest extends GoChaincodeTestExecutor {
 		conf1.programFile = programFile;
 
 		CronConfiguration conf2 = new CronConfiguration();
-		conf2.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+		conf2.openCallPolicy = new RelaxedOpenCallPolicy() {
+			
+			@Override
+			public boolean isSourceForTaint(OpenCall call) {
+				return false;
+			}
+		};
 		conf2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 				new ValueEnvironment<>(new Tarsis()),
 				new TypeEnvironment<>(new InferredTypes()));

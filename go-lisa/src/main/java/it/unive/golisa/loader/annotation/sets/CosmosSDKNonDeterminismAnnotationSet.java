@@ -3,7 +3,10 @@ package it.unive.golisa.loader.annotation.sets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Pair;
+
+import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 
 /**
  * The class represents the set of annotations for the non-determinism analysis
@@ -11,7 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class CosmosSDKNonDeterminismAnnotationSet extends TaintAnnotationSet {
+public class CosmosSDKNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
 
 	/**
 	 * Builds an instance of an annotation set for non-determinism related to
@@ -23,13 +26,13 @@ public class CosmosSDKNonDeterminismAnnotationSet extends TaintAnnotationSet {
 
 	static {
 
-		Map<String, Set<String>> map = new HashMap<>();
+		Map<Pair<String, CallType>, Set<String>> map = new HashMap<>();
 
-		map.put("errors", Set.of("SuccessABCICode", "Register", "ABCIInfo", "Redact",
+		map.put(Pair.of("errors", CallType.STATIC), Set.of("SuccessABCICode", "Register", "ABCIInfo", "Redact",
 				"UndefinedCodespace", "ABCIError", "New", "Wrap",
 				"Wrapf", "Recover", "WithType"));
 
-		map.put("sdkerrors", Set.of("SuccessABCICode", "Register", "ABCIInfo", "Redact",
+		map.put(Pair.of("sdkerrors", CallType.STATIC), Set.of("SuccessABCICode", "Register", "ABCIInfo", "Redact",
 				"UndefinedCodespace", "ABCIError", "New", "Wrap",
 				"Wrapf", "Recover", "WithType"));
 
@@ -37,15 +40,15 @@ public class CosmosSDKNonDeterminismAnnotationSet extends TaintAnnotationSet {
 
 		map = new HashMap<>();
 
-		map.put("Error", Set.of("SuccessABCICode", "Register", "ABCIInfo", "Redact",
+		map.put(Pair.of("Error", CallType.INSTANCE), Set.of("SuccessABCICode", "Register", "ABCIInfo", "Redact",
 				"UndefinedCodespace", "ABCIError", "New", "Wrap",
 				"Wrapf", "Recover", "WithType"));
 
 		SINK_CONSTRUCTORS_ANNOTATIONS.put(Kind.METHOD, map);
 
-		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();
+		Map<Pair<String, CallType>, Set<Pair<String, Integer>>> map2 = new HashMap<>();
 
-		map2.put("Store", Set.of(Pair.of("Set", 1), Pair.of("Set", 2), Pair.of("Delete", 1)));
+		map2.put(Pair.of("Store", CallType.INSTANCE), Set.of(Pair.of("Set", 1), Pair.of("Set", 2), Pair.of("Delete", 1)));
 
 		SINK_CONSTRUCTOR_PARAMETER_ANNOTATIONS.put(Kind.PARAM, map2);
 	}

@@ -3,6 +3,7 @@ package it.unive.golisa.interprocedural;
 import it.unive.golisa.analysis.GoIntervalDomain;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -26,15 +27,8 @@ import it.unive.lisa.symbolic.value.ValueExpression;
  * OpenCall policy to be less conservative during taint and non-interference
  * analysis.
  */
-public class RelaxedOpenCallPolicy implements OpenCallPolicy {
+public abstract class RelaxedOpenCallPolicy implements OpenCallPolicy {
 
-	/**
-	 * The singleton instance of this class.
-	 */
-	public static final RelaxedOpenCallPolicy INSTANCE = new RelaxedOpenCallPolicy();
-
-	private RelaxedOpenCallPolicy() {
-	}
 
 	@Override
 	public <A extends AbstractState<A>> AnalysisState<A> apply(
@@ -55,15 +49,19 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 					if (stackValue instanceof TaintDomain) {
 						Identifier var = call.getMetaVariable();
 						if (((TaintDomain) stackValue).isTainted() || ((TaintDomain) stackValue).isTop()) {
-							PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
-							return entryState.assign(var, pushany, call);
+							return entryState.assign(var, new Tainted(call.getLocation()), call);
 						} else if (((TaintDomain) stackValue).isClean()) {
-							return entryState.assign(var,
-									new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()),
-									call);
+							
+							if (!isSourceForTaint(call))
+								return entryState.assign(var, new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+							else
+								return entryState.assign(var, new Tainted(call.getLocation()), call);
 						} else if (((TaintDomain) stackValue).isBottom()) {
 							return entryState;
 						}
+						
+					
+							
 					}else if (stackValue instanceof GoIntervalDomain) {
 						Identifier var = call.getMetaVariable();
 						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
@@ -96,4 +94,6 @@ public class RelaxedOpenCallPolicy implements OpenCallPolicy {
 		Identifier var = call.getMetaVariable();
 		return entryState.assign(var, pushany, call);
 	}
+	
+	public abstract boolean isSourceForTaint(OpenCall call);
 }

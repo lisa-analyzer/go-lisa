@@ -16,4 +16,6 @@ public interface Loader {
 	 * @param program to load the information
 	 */
 	void load(Program program);
+
+	void unload(Program program);
 }

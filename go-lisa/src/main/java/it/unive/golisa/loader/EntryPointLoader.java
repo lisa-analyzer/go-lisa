@@ -1,11 +1,12 @@
 package it.unive.golisa.loader;
 
-import it.unive.golisa.analysis.entrypoints.EntryPointSet;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.cfg.CFG;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import it.unive.golisa.analysis.entrypoints.EntryPointSet;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.CFG;
 
 /**
  * The loader of entry points in programs.
@@ -61,6 +62,17 @@ public class EntryPointLoader implements Loader {
 	 */
 	public boolean isEntryFound() {
 		return !noEntry;
+	}
+
+	@Override
+	public void unload(Program program) {
+		Collection<CFG> cfgs = program.getAllCFGs();
+
+		for (CFG c : cfgs)
+			if (entrypointSets.stream().anyMatch(set -> set.getEntryPoints().contains(c.getDescriptor().getName()))) {
+				program.getEntryPoints().remove(c);
+			}
+		
 	}
 
 }

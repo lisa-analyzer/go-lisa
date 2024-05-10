@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -40,7 +41,7 @@ import it.unive.lisa.util.StringUtilities;
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
-public abstract class PrivacyHFChecker extends TaintChecker {
+public abstract class PrivacyHFChecker implements SemanticCheck<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>>  {
 
 
 	/**
@@ -56,7 +57,7 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 
 
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
@@ -64,7 +65,7 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 		UnresolvedCall call = (UnresolvedCall) node;
 		try {
 			for (AnalyzedCFG<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
 							TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
 				Call resolved = (Call) tool.getResolvedVersion(call, result);
 		
@@ -78,7 +79,7 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
 
 								AnalysisState<
-								SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+								SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
 										TypeEnvironment<InferredTypes>>> state = result
 												.getAnalysisStateAfter(call.getParameters()[i]);
 
@@ -93,7 +94,7 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 										continue;
 		
-									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
+									ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										resultsParam[i] = true;
@@ -110,7 +111,7 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 						for (int i = 0; i < parameters.length; i++)
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
 								AnalysisState<
-								SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+								SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
 										TypeEnvironment<InferredTypes>>> state = result
 												.getAnalysisStateAfter(call.getParameters()[i]);
 
@@ -125,7 +126,7 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 										continue;
 		
-									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
+									ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
 										resultsParam[i] = true;
@@ -147,7 +148,7 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 	}
 
 
-	protected void buildWarning(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+	protected void buildWarning(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool,
 			UnresolvedCall call, Parameter[] parameters, boolean[] results) {
 			
 		int matches = 0;
@@ -168,14 +169,63 @@ public abstract class PrivacyHFChecker extends TaintChecker {
 	}
 	
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
-	public boolean visitUnit(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+	public boolean visitUnit(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool,
 			Unit unit) {
 		return true;
 	}
+	
+	
+
+	
+	private final String message;
+	
+	public PrivacyHFChecker(String message) {
+		this.message = message;
+	}
+	
+	public PrivacyHFChecker() {
+		this.message = "";
+	}
+
+
+
+	@Override
+	public void beforeExecution(CheckToolWithAnalysisResults<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool) {
+	}
+
+	@Override
+	public void afterExecution(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
+							TypeEnvironment<InferredTypes>>> tool) {
+	}
+
+	@Override
+	public void visitGlobal(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
+							TypeEnvironment<InferredTypes>>> tool,
+			Unit unit, Global global, boolean instance) {
+	}
+
+	@Override
+	public boolean visit(CheckToolWithAnalysisResults<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool,
+			CFG graph) {
+		return true;
+	}
+
+	
+
+	protected abstract void checkSignature(UnresolvedCall call,
+			CheckToolWithAnalysisResults<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
+					TypeEnvironment<InferredTypes>>> tool);
 }

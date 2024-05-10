@@ -31,6 +31,7 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.hf.privacy.JSONPrivateDataCollectionPolicyParser;
 import it.unive.golisa.analysis.hf.privacy.JSONPrivateDataCollectionPolicyParser.PrivateDataPolicy;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
 import it.unive.golisa.analysis.utilities.PrivacySignatures;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.checker.ComputePrivateCollectionFromStatementsChecker;
@@ -46,7 +47,6 @@ import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.golisa.loader.annotation.sets.CustomTaintAnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.LiSAFactory;
 import it.unive.lisa.LiSAReport;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -248,12 +248,12 @@ public class GoLiSA {
 			}};
 			
 			try {
-				confPhase.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new TaintDomain()),
+				confPhase.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new TaintDomainForPrivacyHF()),
 						new TypeEnvironment<>(new InferredTypes()));
 				confPhase.semanticChecks.add( new PrivacyHFChecker() {
 
 					@Override
-					protected void checkSignature(UnresolvedCall call, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+					protected void checkSignature(UnresolvedCall call, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool) {
 						if (call != null) {
 								
 							Map<Pair<String, CallType>, Set<Pair<String, Integer>>> sinksPhase = GetPhaseSinksSignatures(target);
@@ -266,11 +266,11 @@ public class GoLiSA {
 											&& call.getParameters().length > sink.getRight() &&
 											(!key.getRight().equals(CallType.STATIC) || (key.getRight().equals(CallType.STATIC) && call.getQualifier().equals(key.getLeft())))) {
 										for (AnalyzedCFG<
-												SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+												SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
 														TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
 											
 												AnalysisState<
-												SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+												SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
 														TypeEnvironment<InferredTypes>>> state = result
 																.getAnalysisStateAfter(call.getParameters()[sink.getRight()]);
 	
@@ -285,7 +285,7 @@ public class GoLiSA {
 															if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 																continue;
 								
-															ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
+															ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 															if (valueState.eval((ValueExpression) s, call, state.getState())
 																	.isTainted())
 																resultsParam[sink.getRight()] = true;
@@ -314,11 +314,11 @@ public class GoLiSA {
 											if(call.getTargetName().equals(sink.getLeft()) 
 													&& call.getParameters().length > sink.getValue())
 												for (AnalyzedCFG<
-														SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+														SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
 																TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
 													
 														AnalysisState<
-														SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
+														SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>,
 																TypeEnvironment<InferredTypes>>> state = result
 																		.getAnalysisStateAfter(call.getParameters()[sink.getRight()]);
 			
@@ -334,7 +334,7 @@ public class GoLiSA {
 																if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 																	continue;
 									
-																ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
+																ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 																if (valueState.eval((ValueExpression) s, call, state.getState())
 																		.isTainted())
 																	resultsParam[sink.getRight()] = true;
@@ -466,7 +466,7 @@ public class GoLiSA {
 				sourcesTocheckRawData.add(source);
 			else
 				for(CodeMemberDescriptor d : descriptors) {
-					specificCodeMemberAnnotations.add(Triple.of(source.getCallType(), new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, d.getUnit().getName(), d.getName()), d));
+					specificCodeMemberAnnotations.add(Triple.of(source.getCallType(), new MethodAnnotation(TaintDomainForPrivacyHF.TAINTED_ANNOTATION, d.getUnit().getName(), d.getName()), d));
 				}
 		}
 		

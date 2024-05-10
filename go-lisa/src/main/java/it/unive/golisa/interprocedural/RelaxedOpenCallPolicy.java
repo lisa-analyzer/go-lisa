@@ -3,6 +3,7 @@ package it.unive.golisa.interprocedural;
 import it.unive.golisa.analysis.GoIntervalDomain;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -62,7 +63,23 @@ public abstract class RelaxedOpenCallPolicy implements OpenCallPolicy {
 						
 					
 							
-					}else if (stackValue instanceof GoIntervalDomain) {
+					} else if (stackValue instanceof TaintDomainForPrivacyHF) {
+						Identifier var = call.getMetaVariable();
+						if (((TaintDomainForPrivacyHF) stackValue).isTainted() || ((TaintDomainForPrivacyHF) stackValue).isTop()) {
+							return entryState.assign(var, new Tainted(call.getLocation()), call);
+						} else if (((TaintDomainForPrivacyHF) stackValue).isClean()) {
+							
+							if (!isSourceForTaint(call))
+								return entryState.assign(var, new Constant(call.getStaticType(), "SAFE_RETURNED_VALUE", call.getLocation()), call);
+							else
+								return entryState.assign(var, new Tainted(call.getLocation()), call);
+						} else if (((TaintDomainForPrivacyHF) stackValue).isBottom()) {
+							return entryState;
+						}
+						
+					
+							
+					} else if (stackValue instanceof GoIntervalDomain) {
 						Identifier var = call.getMetaVariable();
 						PushAny pushany = new PushAny(call.getStaticType(), call.getLocation());
 						return entryState.assign(var, pushany, call);

@@ -1,7 +1,10 @@
 package it.unive.golisa.analysis.entrypoints;
 
+import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.loader.annotation.AnnotationSet;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
+import it.unive.golisa.loader.annotation.MethodAnnotation;
+import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.golisa.loader.annotation.sets.TaintAnnotationSet;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.Unit;
@@ -37,7 +40,7 @@ public class EntryPointsUtils {
 	 * @return {@code true} if exist at least a source and a sink annotation,
 	 *             otherwise {@code false}.
 	 */
-	public static boolean containsPossibleEntryPointsForAnalysis(
+	public static boolean containsPossibleEntryPointsForAnalysis(Program program, 
 			Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			TaintAnnotationSet... annotationSets) {
 
@@ -58,11 +61,44 @@ public class EntryPointsUtils {
 				break;
 		}
 
+		if(atLeastOneSource && atLeastOneDestination)
+			return true;
+		
+		for (TaintAnnotationSet as : annotationSets) {
+			Set<Pair<CallType,? extends CodeAnnotation>> sources = as.getAnnotationForSources();
+			Set<Pair<CallType,? extends CodeAnnotation>> destinations = as.getAnnotationForDestinations();
+			
+			for (CFG cfg : program.getAllCFGs()) {
+
+				if (!atLeastOneSource) {
+					atLeastOneSource = CFGUtils.anyMatchInCFGNodes(cfg, e ->  e instanceof Call && sources.stream().anyMatch(src -> src.getLeft().equals(((Call)e).getCallType()) &&
+							( src.getRight()instanceof MethodAnnotation && ((MethodAnnotation) src.getRight()).getName().equals(((Call)e).getTargetName()))
+							|| 	(src.getRight()instanceof MethodParameterAnnotation && ((MethodParameterAnnotation) src.getRight()).getName().equals(((Call)e).getTargetName()))
+							));
+				}
+				
+				if (!atLeastOneDestination)
+					atLeastOneDestination = CFGUtils.anyMatchInCFGNodes(cfg, e ->  e instanceof Call && destinations.stream().anyMatch(dst -> dst.getLeft().equals(((Call)e).getCallType()) &&
+							( dst.getRight()instanceof MethodAnnotation && ((MethodAnnotation) dst.getRight()).getName().equals(((Call)e).getTargetName()))
+							|| 	(dst.getRight()instanceof MethodParameterAnnotation && ((MethodParameterAnnotation) dst.getRight()).getName().equals(((Call)e).getTargetName()))
+							));
+	
+				if (atLeastOneSource && atLeastOneDestination)
+					break;
+			}
+			
+			if (atLeastOneSource && atLeastOneDestination)
+				break;
+		}
+		
 		return atLeastOneSource && atLeastOneDestination;
+		
 	}
+
 
 	/**
 	 * Yields the descriptor set of possible entry points for the analysis.
+	 * @param program 
 	 * 
 	 * @param appliedAnnotations the applied annotations
 	 * @param annotationSets     the set of annotation related to the analysis
@@ -71,12 +107,13 @@ public class EntryPointsUtils {
 	 * @return the set of descriptors
 	 */
 	private static Set<CodeMemberDescriptor> getDescriptorOfPossibleEntryPointsForAnalysis(
-			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
+			Program program, Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
 			AnnotationSet... annotationSets) {
 
 		Set<CodeMemberDescriptor> descriptors = new HashSet<>();
+		
 		for (AnnotationSet as : annotationSets) {
-			 if (as instanceof TaintAnnotationSet) {
+			if (as instanceof TaintAnnotationSet) {
 				Set<Pair<CallType,? extends CodeAnnotation>> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
 				appliedAnnotations.stream()
 						.forEach(e -> {
@@ -85,10 +122,26 @@ public class EntryPointsUtils {
 						});
 			}
 		}
-		
-		
+			
+		for (AnnotationSet as : annotationSets) {
+			if (as instanceof TaintAnnotationSet) {
+				Set<Pair<CallType,? extends CodeAnnotation>> sources = ((TaintAnnotationSet) as).getAnnotationForSources();
+				for (CFG cfg : program.getAllCFGs()) {
 
+						boolean atLeastOneSource = CFGUtils.anyMatchInCFGNodes(cfg, e ->  e instanceof Call && sources.stream().anyMatch(src -> src.getLeft().equals(((Call)e).getCallType()) &&
+								( src.getRight()instanceof MethodAnnotation && ((MethodAnnotation) src.getRight()).getName().equals(((Call)e).getTargetName()))
+								|| 	(src.getRight()instanceof MethodParameterAnnotation && ((MethodParameterAnnotation) src.getRight()).getName().equals(((Call)e).getTargetName()))
+								));
+					
+						if(atLeastOneSource)
+							descriptors.add(cfg.getDescriptor());
+				}
+			}
+		}
+		
 		return descriptors;
+
+		
 	}
 
 	/**
@@ -102,18 +155,18 @@ public class EntryPointsUtils {
 	 * @return the set of entry points
 	 */
 	public static Set<CFG> computeEntryPointSetFromPossibleEntryPointsForAnalysis(Program program,
-			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations,
+			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations, Set<Call> sourcesRaw,
 			AnnotationSet... annotationSets) {
 
 		Set<CFG> set = new HashSet<>();
 
-		Set<CodeMemberDescriptor> descriptors = getDescriptorOfPossibleEntryPointsForAnalysis(appliedAnnotations,
+		Set<CodeMemberDescriptor> descriptors = getDescriptorOfPossibleEntryPointsForAnalysis(program, appliedAnnotations,
 				annotationSets);
 
 		for (CFG cfg : program.getAllCFGs()) {
 			LinkedList<Statement> possibleEntries = new LinkedList<>();
 			cfg.accept(new PossibleEntryPointExtractor(descriptors), possibleEntries);
-			if (!possibleEntries.isEmpty())
+			if (!possibleEntries.isEmpty() || descriptors.contains(cfg.getDescriptor()) )
 				set.add(cfg);
 		}
 
@@ -122,10 +175,15 @@ public class EntryPointsUtils {
 				if (cfg instanceof CFG) {
 					LinkedList<Statement> possibleEntries = new LinkedList<>();
 					((CFG) cfg).accept(new PossibleEntryPointExtractor(descriptors), possibleEntries);
-					if (!possibleEntries.isEmpty())
+					if (!possibleEntries.isEmpty() || descriptors.contains(cfg.getDescriptor()))
 						set.add((CFG) cfg);
 				}
 			}
+		
+		if(sourcesRaw != null)
+			for(Call call : sourcesRaw)
+				set.add(call.getCFG()); 
+		
 		return set;
 
 	}
@@ -202,4 +260,5 @@ public class EntryPointsUtils {
 			return true;
 		}
 	}
+
 }

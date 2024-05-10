@@ -6,12 +6,18 @@ import it.unive.golisa.cfg.runtime.shim.method.DelState;
 import it.unive.golisa.cfg.runtime.shim.method.GetArgs;
 import it.unive.golisa.cfg.runtime.shim.method.GetFunctionAndParameters;
 import it.unive.golisa.cfg.runtime.shim.method.GetHistoryForKey;
+import it.unive.golisa.cfg.runtime.shim.method.GetPrivateData;
+import it.unive.golisa.cfg.runtime.shim.method.GetPrivateDataHash;
+import it.unive.golisa.cfg.runtime.shim.method.GetPrivateDataValidationParameter;
 import it.unive.golisa.cfg.runtime.shim.method.GetQueryResult;
 import it.unive.golisa.cfg.runtime.shim.method.GetState;
 import it.unive.golisa.cfg.runtime.shim.method.GetStateByPartialCompositeKey;
 import it.unive.golisa.cfg.runtime.shim.method.GetStateByRange;
+import it.unive.golisa.cfg.runtime.shim.method.GetStateValidationParameter;
 import it.unive.golisa.cfg.runtime.shim.method.GetStringArgs;
+import it.unive.golisa.cfg.runtime.shim.method.GetTransient;
 import it.unive.golisa.cfg.runtime.shim.method.InvokeChaincode;
+import it.unive.golisa.cfg.runtime.shim.method.PurgePrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.PutPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.PutState;
 import it.unive.golisa.cfg.runtime.shim.method.SplitCompositeKey;
@@ -108,7 +114,18 @@ public class ChaincodeStub extends GoStructType {
 				new GetQueryResult(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 		chaincodeStubUnit.addInstanceCodeMember(
 				new InvokeChaincode(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
-
+		chaincodeStubUnit.addInstanceCodeMember(
+				new GetPrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new GetPrivateDataHash(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new GetPrivateDataValidationParameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new GetStateValidationParameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new GetTransient(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
+		chaincodeStubUnit.addInstanceCodeMember(
+				new PurgePrivateData(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chaincodeStubUnit));
 	}
 
 	@Override

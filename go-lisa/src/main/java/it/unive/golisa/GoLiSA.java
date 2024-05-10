@@ -380,8 +380,8 @@ public class GoLiSA {
 			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
 					.getAppliedAnnotations();
 
-			 EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
-					appliedAnnotations, annotationSet);
+			cfgEntryPoints.addAll(EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
+					appliedAnnotations,sourcesRaw, annotationSet));
 			for (CFG c : cfgEntryPoints)
 				program.addEntryPoint(c);
 
@@ -526,7 +526,7 @@ public class GoLiSA {
 		
 		Map<Tarsis, Set<Call>> readerSetsMapping = new HashMap<>();
 		
-		for(Call key1 :collectionsReadPrivateState.keySet()) {
+		for(Call key1 : collectionsReadPrivateState.keySet()) {
 			Set<Call> similarCollections = new HashSet<>();
 			similarCollections.add(key1);
 			Tarsis stringValue1 = collectionsReadPrivateState.get(key1);
@@ -605,14 +605,14 @@ public class GoLiSA {
 			
 		};
 		
-		/*
+		
 		File outputdir = new File(outputDir, "Tarsis");
 		if (!outputdir.exists())
 			outputdir.mkdirs();
 
 		confStringAnalysis.workdir = outputdir.getAbsolutePath();
 		confStringAnalysis.analysisGraphs = GraphType.HTML_WITH_SUBNODES;
-		*/
+		
 		
 		AnnotationSet annotationSet = new CustomTaintAnnotationSet("hyperledger-fabric", PrivacySignatures.privateReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
 		
@@ -626,12 +626,20 @@ public class GoLiSA {
 			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
 					.getAppliedAnnotations();
 
-			 EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
-					appliedAnnotations, annotationSet); // the idea is to add entry points where there are private read states and private write states
+			cfgEntryPoints.addAll(EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
+					appliedAnnotations, null ,annotationSet)); // the idea is to add entry points where there are private read states and private write states
 			for (CFG c : cfgEntryPoints)
 				program.addEntryPoint(c);
 
 		}
+		
+		
+		if (!program.getEntryPoints().isEmpty()) {
+			confStringAnalysis.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+			confStringAnalysis.callGraph = new RTACallGraph();
+		} else
+			LOG.info("Entry points not found in for this phase String Analysis" );
+		
 		
 		ComputePrivateCollectionFromStatementsChecker stringAnalysis = new ComputePrivateCollectionFromStatementsChecker();
 		try {

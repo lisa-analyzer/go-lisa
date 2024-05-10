@@ -39,8 +39,8 @@ import it.unive.lisa.type.Type;
 public class ComputePrivateCollectionFromStatementsChecker implements
 SemanticCheck<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
 	
-	private Map<Call, Tarsis> writers;
-	private Map<Call, Tarsis>  readers;
+	private Map<Call, Tarsis> writers = new HashMap<>();
+	private Map<Call, Tarsis>  readers  = new HashMap<>();
 	
 	
 	public Map<Call, Tarsis> getWritePrivateStatesInstructions() {
@@ -49,14 +49,6 @@ SemanticCheck<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, Type
 	
 	public Map<Call, Tarsis> getReadPrivateStatesInstructions() {
 		return readers;
-	}
-
-
-	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
-		writers = new HashMap<>();
-		readers = new HashMap<>();
-		
 	}
 
 	@Override

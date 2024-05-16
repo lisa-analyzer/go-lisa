@@ -13,6 +13,7 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.Marshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
+import it.unive.golisa.cfg.runtime.fabriccontractapigo.type.TransactionContext;
 import it.unive.golisa.cfg.runtime.fmt.Print;
 import it.unive.golisa.cfg.runtime.fmt.Printf;
 import it.unive.golisa.cfg.runtime.fmt.Println;
@@ -169,6 +170,8 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 			if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
+			if (module.endsWith("/contractapi"))
+				loadHFContractApi(program);
 		} else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
 			loadCosmosTypes(program);
 			if (module.endsWith("/errors"))
@@ -391,6 +394,16 @@ public interface GoRuntimeLoader {
 		program.addUnit(bufferType.getUnit());
 	}
 
+	private void loadHFContractApi(Program program) {
+		CodeUnit contractapi = new CodeUnit(runtimeLocation, program, "contractapi");
+		GoInterfaceType.registerType(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program));
+
+		TransactionContext.registerMethods();
+
+		// adding compilation unit to program
+		program.addUnit(contractapi);
+	}
+	
 	private void loadStateBased(Program program) {
 		CodeUnit statebased = new CodeUnit(runtimeLocation, program, "statebased");
 		GoInterfaceType.registerType(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program));

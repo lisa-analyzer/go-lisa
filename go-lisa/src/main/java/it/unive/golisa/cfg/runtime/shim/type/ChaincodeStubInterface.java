@@ -1,10 +1,13 @@
 package it.unive.golisa.cfg.runtime.shim.type;
 
+
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
+import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
+import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.InterfaceUnit;
@@ -12,6 +15,7 @@ import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.AbstractCodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -191,12 +195,9 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 
 			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
 					true,
-					"GetTransient",
-					GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-							HistoryQueryIteratorInterface.getHistoryQueryIteratorInterfaceType(program),
+					"GetTransient",GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, GoMapType.lookup(GoStringType.INSTANCE, GoUInt8Type.INSTANCE),
 							GoErrorType.INSTANCE),
-					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
-					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "s", chaincodeStubInterfaceType));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 			
 //			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,

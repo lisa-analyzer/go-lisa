@@ -170,8 +170,10 @@ public interface GoRuntimeLoader {
 				loadShim(program);
 			if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
-			if (module.endsWith("/contractapi"))
+			if (module.endsWith("/contractapi")) {
 				loadHFContractApi(program);
+				loadShim(program);
+			}
 		} else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
 			loadCosmosTypes(program);
 			if (module.endsWith("/errors"))

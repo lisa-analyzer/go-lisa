@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.fabriccontractapigo.method;
 
 import it.unive.golisa.cfg.runtime.fabriccontractapigo.type.TransactionContext;
+import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
@@ -102,6 +103,7 @@ public class GetStub extends NativeCFG {
 				@Override
 				public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
 					Set<Type> res = new HashSet<>();
+					res.add(ChaincodeStub.getChaincodeStubType(getProgram()));
 					res.add(ChaincodeStubInterface.getChainCodeStubInterfaceType(getProgram()));
 					return res;
 				}

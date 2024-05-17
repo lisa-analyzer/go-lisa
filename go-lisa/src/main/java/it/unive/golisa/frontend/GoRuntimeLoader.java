@@ -396,7 +396,7 @@ public interface GoRuntimeLoader {
 
 	private void loadHFContractApi(Program program) {
 		CodeUnit contractapi = new CodeUnit(runtimeLocation, program, "contractapi");
-		GoInterfaceType.registerType(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program));
+		GoInterfaceType.registerType(TransactionContext.getTransactionContextType(program));
 
 		TransactionContext.registerMethods();
 

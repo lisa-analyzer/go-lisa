@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.runtime.fabriccontractapigo.type;
 
 import it.unive.golisa.cfg.runtime.fabriccontractapigo.method.GetStub;
+import it.unive.golisa.cfg.runtime.math.rand.type.Rand;
 import it.unive.golisa.cfg.runtime.shim.method.CreateCompositeKey;
 import it.unive.golisa.cfg.runtime.shim.method.DelPrivateData;
 import it.unive.golisa.cfg.runtime.shim.method.DelState;
@@ -26,6 +27,7 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.InterfaceUnit;
 import it.unive.lisa.program.Program;
@@ -58,22 +60,8 @@ public class TransactionContext extends GoInterfaceType {
 	 */
 	public static TransactionContext getTransactionContextType(Program program) {
 		if (INSTANCE == null) {
-			InterfaceUnit transactionContextUnit = new InterfaceUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-					program, "TransactionContext",
-					false);
-			
-			TransactionContext transactionContextType = new TransactionContext(transactionContextUnit);
-
-			// GetStub
-			CodeMemberDescriptor desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-					transactionContextUnit, true, "GetStub",
-					ChaincodeStubInterface.getChainCodeStubInterfaceType(transactionContextUnit.getProgram()),
-					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", transactionContextType));
-			transactionContextUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
-
-			
-			INSTANCE = transactionContextType;
-			return INSTANCE;
+			ClassUnit randUnit = new ClassUnit(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, program, "TransactionContext", false);
+			INSTANCE = new TransactionContext(randUnit);
 		}
 
 		return INSTANCE;
@@ -88,7 +76,7 @@ public class TransactionContext extends GoInterfaceType {
 		unit.addInstanceCodeMember(
 						new GetStub(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, unit));
 		
-}
+	}
 
 	@Override
 	public String toString() {

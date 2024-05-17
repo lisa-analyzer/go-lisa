@@ -7,6 +7,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -16,6 +17,7 @@ import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -39,7 +41,7 @@ public class Printf extends NativeCFG {
 		super(new CodeMemberDescriptor(location, fmtUnit, false, "Printf", GoStringType.INSTANCE,
 				new Parameter(location, "format", GoStringType.INSTANCE),
 				new VarArgsParameter(location, "a", GoSliceType.lookup(Untyped.INSTANCE))),
-				SprintfImpl.class);
+				PrintfImpl.class);
 	}
 
 	/**
@@ -47,7 +49,7 @@ public class Printf extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class SprintfImpl extends BinaryExpression implements PluggableStatement {
+	public static class PrintfImpl extends NaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -71,8 +73,11 @@ public class Printf extends NativeCFG {
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static SprintfImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new SprintfImpl(cfg, location, params[0], params[1]);
+		public static PrintfImpl build(CFG cfg, CodeLocation location, Expression... params) {
+			if(params.length > 1)
+				return new	PrintfImpl(cfg, location, params[0], params[1]);
+			else 
+				return new PrintfImpl(cfg, location, params[0]);
 		}
 
 		/**
@@ -81,21 +86,18 @@ public class Printf extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param left     the left expression
-		 * @param right    the right expression
+		 * @param params     the param expressions
 		 */
-		public SprintfImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
-			super(cfg, location, "Printf", GoStringType.INSTANCE, left, right);
+		public PrintfImpl(CFG cfg, CodeLocation location, Expression... params) {
+			super(cfg, location, "Printf", GoStringType.INSTANCE, params);
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural,
-				AnalysisState<A> state,
-				SymbolicExpression left,
-				SymbolicExpression right,
+		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
 			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+
 		}
 	}
 }

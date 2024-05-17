@@ -152,8 +152,7 @@ public class AnnotationLoader implements Loader {
 	 * @param ca         the code annotation
 	 */
 	private void checkAndAddAnnotation(CodeMemberDescriptor descriptor, Pair<CallType, ? extends CodeAnnotation> ca) {
-		if(descriptor.getName().equals("GetState"))
-			System.out.println();
+
 		if (ca.getRight() instanceof MethodAnnotation) {
 			MethodAnnotation ma = (MethodAnnotation) ca.getRight();
 			if (matchUnit(ma, descriptor) && descriptor.getName().equals(ma.getName())

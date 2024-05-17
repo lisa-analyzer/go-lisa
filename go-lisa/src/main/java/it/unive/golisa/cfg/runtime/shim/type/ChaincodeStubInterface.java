@@ -189,6 +189,16 @@ public class ChaincodeStubInterface extends GoInterfaceType {
 					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
 			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
 
+			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit,
+					true,
+					"GetTransient",
+					GoTupleType.getTupleTypeOf(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+							HistoryQueryIteratorInterface.getHistoryQueryIteratorInterfaceType(program),
+							GoErrorType.INSTANCE),
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this", chaincodeStubInterfaceType),
+					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "key", GoStringType.INSTANCE));
+			chainCodeStubInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(desc));
+			
 //			desc = new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, chainCodeStubInterfaceUnit, true,
 //					"SetStateValidationParameter",
 //					GoErrorType.INSTANCE,

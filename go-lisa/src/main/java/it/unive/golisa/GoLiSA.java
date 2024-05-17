@@ -531,21 +531,23 @@ public class GoLiSA {
 			similarCollections.add(key1);
 			Tarsis stringValue1 = collectionsReadPrivateState.get(key1);
 			
-			for(Call key2 :collectionsReadPrivateState.keySet()) {
-				Tarsis stringValue2 = collectionsReadPrivateState.get(key2);
-				if(!readerSetsMapping.values().stream().anyMatch(s -> s.contains(key1)) 
-					&& !key1.equals(key2)
-					&& !stringValue1.isTop() && !stringValue2.isTop() 
-					 && stringValue1.getAutomaton().isEqualTo(stringValue2.getAutomaton())) {
-					similarCollections.add(key2);
+			if(stringValue1 != null) {
+				for(Call key2 :collectionsReadPrivateState.keySet()) {
+					Tarsis stringValue2 = collectionsReadPrivateState.get(key2);
+					if(stringValue2 != null && !readerSetsMapping.values().stream().anyMatch(s -> s.contains(key1)) 
+						&& !key1.equals(key2)
+						&& !stringValue1.isTop() && !stringValue2.isTop() 
+						 && stringValue1.getAutomaton().isEqualTo(stringValue2.getAutomaton())) {
+						similarCollections.add(key2);
+					}
 				}
+				
+				if(stringValue1.isTop()) {
+					readerSetsMapping.putIfAbsent(new Tarsis(), new HashSet<Call>());
+					readerSetsMapping.get(new Tarsis()).add(key1);
+				} else 			
+					readerSetsMapping.put(stringValue1, similarCollections);
 			}
-			
-			if(stringValue1.isTop()) {
-				readerSetsMapping.putIfAbsent(new Tarsis(), new HashSet<Call>());
-				readerSetsMapping.get(new Tarsis()).add(key1);
-			} else 			
-				readerSetsMapping.put(stringValue1, similarCollections);
 		}
 		
 		Map<Tarsis, Set<Call>> writerSetsMapping = new HashMap<>();
@@ -554,22 +556,23 @@ public class GoLiSA {
 			Set<Call> similarCollections = new HashSet<>();
 			similarCollections.add(key1);
 			Tarsis stringValue1 = collectionsWritePrivateState.get(key1);
-			
-			for(Call key2 :collectionsWritePrivateState.keySet()) {
-				Tarsis stringValue2 = collectionsWritePrivateState.get(key2);
-				if(!writerSetsMapping.values().stream().anyMatch(s -> s.contains(key1)) 
-					&& !key1.equals(key2)
-					&& !stringValue1.isTop() && !stringValue2.isTop() 
-					&& stringValue1.getAutomaton().isEqualTo(stringValue2.getAutomaton())) {
-					similarCollections.add(key2);
+			if(stringValue1 != null) {
+				for(Call key2 :collectionsWritePrivateState.keySet()) {
+					Tarsis stringValue2 = collectionsWritePrivateState.get(key2);
+					if(stringValue2 != null && !writerSetsMapping.values().stream().anyMatch(s -> s.contains(key1)) 
+						&& !key1.equals(key2)
+						&& !stringValue1.isTop() && !stringValue2.isTop() 
+						&& stringValue1.getAutomaton().isEqualTo(stringValue2.getAutomaton())) {
+						similarCollections.add(key2);
+					}
 				}
+				
+				if(stringValue1.isTop()) {
+					writerSetsMapping.putIfAbsent(new Tarsis(), new HashSet<Call>());
+					writerSetsMapping.get(new Tarsis()).add(key1);
+				} else
+					writerSetsMapping.put(stringValue1, similarCollections);
 			}
-			
-			if(stringValue1.isTop()) {
-				writerSetsMapping.putIfAbsent(new Tarsis(), new HashSet<Call>());
-				writerSetsMapping.get(new Tarsis()).add(key1);
-			} else
-				writerSetsMapping.put(stringValue1, similarCollections);
 		}
 		
 		for(Tarsis stringValueReaders : readerSetsMapping.keySet()) {

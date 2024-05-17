@@ -1,7 +1,11 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -27,14 +31,20 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.UnaryExpression;
+import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
+import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
 
 /**
@@ -69,8 +79,7 @@ public class GetTransient extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
 	 */
-	public static class GetTransientImpl extends NaryExpression
-			implements PluggableStatement {
+	public static class GetTransientImpl extends UnaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -108,40 +117,110 @@ public class GetTransient extends NativeCFG {
 		 */
 		public GetTransientImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "GetTransientImpl", GoTupleType.getTupleTypeOf(location, GoMapType.lookup(GoStringType.INSTANCE, GoUInt8Type.INSTANCE),
-					GoErrorType.INSTANCE), params);
+					GoErrorType.INSTANCE), params[0]);
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				ExpressionSet[] params, StatementStore<A> expressions)
-				throws SemanticException {
+		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
 			
 			Type sliceOfSliceOfBytes = GoSliceType.getSliceOfSliceOfBytes();
 			Type mapsType = GoMapType.lookup(GoStringType.INSTANCE, sliceOfSliceOfBytes);
-			Type tupleType = GoTupleType.getTupleTypeOf(original.getLocation(), mapsType,	GoErrorType.INSTANCE);
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(original.getLocation(), mapsType,	GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(tupleType, getLocation(), anns, true);
 			HeapReference ref = new HeapReference(new ReferenceType(tupleType), created, getLocation());
 			HeapDereference deref = new HeapDereference(tupleType, ref, getLocation());
+			AnalysisState<A> result = state.bottom();
+			
+			// Retrieves all the identifiers reachable from expr
+			ExpressionSet reachableIds = state.getState().reachableFrom(expr, this, state.getState());
+			for (SymbolicExpression id : reachableIds) {
+				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
+				it.unive.lisa.symbolic.value.UnaryExpression lExp = new it.unive.lisa.symbolic.value.UnaryExpression(GoSliceType.getSliceOfBytes(), derefId,
+						GetTransientOperatorFirstParameter.INSTANCE, getLocation());
+				it.unive.lisa.symbolic.value.UnaryExpression rExp = new it.unive.lisa.symbolic.value.UnaryExpression(GoErrorType.INSTANCE, derefId,
+						GetTransientSecondParameter.INSTANCE, getLocation());
+				AnalysisState<A> asg = state.assign(deref, lExp, original);
+				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+						getLocation(), tupleType,
+						ref,
+						rExp);
 
-			// Assign the len property to this hid
-			Variable len = new Variable(Untyped.INSTANCE, "len",
-					getLocation());
-			AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
-					len, getLocation());
-			AnalysisState<A> lenState = state.assign(lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+				result = result.lub(tupleExp);
+			}
 
-			// Assign the cap property to this hid
-			Variable cap = new Variable(Untyped.INSTANCE, "cap",
-					getLocation());
-			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
-					cap, getLocation());
-			AnalysisState<
-					A> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			return result;
+		}
+	}
+	
+	
 
-			return capState.smallStepSemantics(ref, original);
+	/**
+	 * The GetTransient operator returning the first parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+	 */
+	public static class GetTransientOperatorFirstParameter implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final GetTransientOperatorFirstParameter INSTANCE = new GetTransientOperatorFirstParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
+		 */
+		protected GetTransientOperatorFirstParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "GetTransientOperator_1";
+		}
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			Type sliceOfSliceOfBytes = GoSliceType.getSliceOfSliceOfBytes();
+			Type mapsType = GoMapType.lookup(GoStringType.INSTANCE, sliceOfSliceOfBytes);
+			return Collections.singleton(mapsType);
+		}
+	}
+
+	/**
+	 * The GetTransient operator returning the second parameter of the tuple
+	 * expression result.
+	 * 
+	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+	 */
+	public static class GetTransientSecondParameter implements UnaryOperator {
+
+		/**
+		 * The singleton instance of this class.
+		 */
+		public static final GetTransientSecondParameter INSTANCE = new GetTransientSecondParameter();
+
+		/**
+		 * Builds the operator. This constructor is visible to allow
+		 * subclassing: instances of this class should be unique, and the
+		 * singleton can be retrieved through field {@link #INSTANCE}.
+		 */
+		protected GetTransientSecondParameter() {
+		}
+
+		@Override
+		public String toString() {
+			return "GetTransientOperator_2";
+		}
+
+		@Override
+		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
+			return Collections.singleton(GoErrorType.INSTANCE);
 		}
 	}
 }

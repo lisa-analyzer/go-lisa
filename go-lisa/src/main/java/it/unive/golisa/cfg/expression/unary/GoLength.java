@@ -65,6 +65,9 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));
 		}
 
+		if(result.isBottom())
+			result = result.lub(state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), this));
+			
 		return result;
 	}
 }

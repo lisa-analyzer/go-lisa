@@ -1,9 +1,16 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.analysis.GoIntervalDomain;
+import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
@@ -13,6 +20,12 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapExpression;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import java.util.Set;
@@ -63,7 +76,51 @@ public class GoCollectionAccess extends BinaryExpression {
 	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> interprocedural,
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 			throws SemanticException {
-		AnalysisState<A> result = state.bottom();
+		
+		
+		if (right instanceof Tainted)
+			return state.smallStepSemantics(right, this);
+
+		
+		SymbolicExpression inner;
+		if (left instanceof HeapReference)
+			inner = ((HeapReference) left).getExpression();
+		else if (left instanceof HeapExpression)
+			inner = left;
+		else
+			inner = new HeapDereference(getStaticType(), left, getLocation());
+		
+		AnalysisState<A> result = state
+				.smallStepSemantics(new AccessChild(Untyped.INSTANCE, inner, right, getLocation()), this);
+		
+		Tainted tainted = new Tainted(getLocation());
+		
+		// Workaround for cases such as arr[t], where t is tainted
+
+		if (state.getState() instanceof SimpleAbstractState<?, ?, ?>) {
+			SimpleAbstractState<?, ?, ?> simpleState = (SimpleAbstractState<?, ?, ?>) state.getState();
+			if (simpleState.getValueState() instanceof ValueEnvironment<?>) {
+				ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) simpleState.getValueState();
+				for (SymbolicExpression stack : simpleState.rewrite(state.getComputedExpressions(), getReceiver(), simpleState)) {
+					NonRelationalValueDomain<?> stackValue = valueEnv.eval((ValueExpression)stack, getReceiver(), simpleState);
+					if (stackValue instanceof TaintDomainForPrivacyHF) {
+						if(((TaintDomainForPrivacyHF) stackValue).isTainted()) {
+							AnalysisState<A> tmp = state.bottom();
+							for (SymbolicExpression id : result.getComputedExpressions())
+								tmp = tmp.lub(result.assign(id, tainted, this));
+							return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
+						} else {
+							AnalysisState<A> tmp = state.bottom();
+							for (SymbolicExpression id : result.getComputedExpressions())
+								tmp = tmp.lub(result.assign(id, new PushAny(getStaticType(), getLocation()), this));
+							return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
+						}
+						
+					}
+				}				
+			}
+		}
+
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		for (Type type : ltypes) {
 			if (type.isPointerType()) {
@@ -73,7 +130,6 @@ public class GoCollectionAccess extends BinaryExpression {
 						this));
 			}
 		}
-
 		return result;
 	}
 }

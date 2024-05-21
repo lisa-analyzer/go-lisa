@@ -18,6 +18,7 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.type.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -187,19 +188,28 @@ public class GoMultiAssignment extends NaryExpression {
 				continue;
 
 			AnalysisState<A> partialResult = entryState.bottom();
-
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
-				HeapDereference deref = new HeapDereference(getStaticType(),
-						retExp, getLocation());
+				
+				boolean allAllocationSites = true;
+				for (SymbolicExpression e : rightState.getState().rewrite(retExp, this, rightState.getState()))
+					if (!(e instanceof AllocationSite)) {
+						allAllocationSites = false;
+						break;
+					}
+
+				SymbolicExpression rec = retExp;
+				if (!allAllocationSites)
+					rec = new HeapDereference(getStaticType(), retExp, getLocation());
+				
 				AccessChild access;
 				Type rightExpType = retExp.getStaticType();
 				if (rightExpType instanceof ReferenceType
 						&& ((ReferenceType) rightExpType).getInnerType() instanceof GoTupleType) {
 					Type typeAtPos = ((GoTupleType) ((ReferenceType) rightExpType).getInnerType()).getTypeAt(i);
-					access = new AccessChild(typeAtPos, deref,
+					access = new AccessChild(typeAtPos, rec,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				} else
-					access = new AccessChild(Untyped.INSTANCE, deref,
+					access = new AccessChild(Untyped.INSTANCE, rec,
 							new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 				for (SymbolicExpression idExp : idState.getComputedExpressions()) {
 					AnalysisState<A> assign;

@@ -1,5 +1,12 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -11,13 +18,14 @@ import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
+import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.type.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
-import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -28,21 +36,13 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi-assignment.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoMultiAssignment extends Expression {
-	// FIXME this should be an instance of NaryExpression to make it work
-	// correctly with lisa
+public class GoMultiAssignment extends NaryExpression {
 
 	/**
 	 * The identifiers to assign.
@@ -75,7 +75,9 @@ public class GoMultiAssignment extends Expression {
 	 */
 	public GoMultiAssignment(CFG cfg, SourceCodeLocation location, Expression[] ids, Expression e,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {
-		super(cfg, location);
+		super(cfg, location, ":=",
+				GoTupleType.getTupleTypeOf(location, Arrays.stream(ids).map(i -> i.getStaticType()).toArray(Type[]::new)), 
+				join(ids, e));
 		this.ids = ids;
 		this.e = e;
 		this.blocksToDeclaration = new HashMap<>();
@@ -84,24 +86,15 @@ public class GoMultiAssignment extends Expression {
 			if (id instanceof VariableRef)
 				blocksToDeclaration.put((VariableRef) id, BlockInfo.getListOfBlocksBeforeDeclaration(listBlock, id));
 		this.containingBlock = containingBlock;
-
-		this.e.setParentStatement(this);
-		for (Expression id : ids)
-			id.setParentStatement(this);
 	}
-
-	@Override
-	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		for (int i = 0; i < ids.length; i++)
-			if (!ids[i].accept(visitor, tool))
-				return false;
-
-		if (!e.accept(visitor, tool))
-			return false;
-
-		return visitor.visit(tool, getCFG(), this);
+	
+	private static Expression[] join(Expression[] ids, Expression e) {
+		Expression[] res = new Expression[ids.length + 1];
+		System.arraycopy(ids, 0, res, 0, ids.length);
+		res[ids.length] = e;
+		return res;
 	}
-
+	
 	@Override
 	public String toString() {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
@@ -251,7 +244,18 @@ public class GoMultiAssignment extends Expression {
 	}
 
 	@Override
-	protected int compareSameClass(Statement o) {
+	protected int compareSameClassAndParams(
+			Statement o) {
 		return 0; // nothing else to compare
+	}
+
+	@Override
+	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
+			InterproceduralAnalysis<A> interprocedural,
+			AnalysisState<A> state,
+			ExpressionSet[] params,
+			StatementStore<A> expressions)
+			throws SemanticException {
+		throw new UnsupportedOperationException("This method should never be called!");
 	}
 }

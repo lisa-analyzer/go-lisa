@@ -2,15 +2,6 @@ package benchmarks.tarsis;
 
 import static org.junit.Assert.assertEquals;
 
-import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.lattices.Satisfiability;
-import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.analysis.string.fsa.FSA;
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.logging.TimeFormat;
-import it.unive.lisa.util.numeric.IntInterval;
-import it.unive.lisa.util.numeric.MathNumber;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+
 import org.apache.commons.lang3.function.FailableFunction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -38,6 +30,16 @@ import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
+import it.unive.lisa.analysis.Lattice;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.lattices.Satisfiability;
+import it.unive.lisa.analysis.numeric.Interval;
+import it.unive.lisa.analysis.string.fsa.FSA;
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.logging.TimeFormat;
+import it.unive.lisa.util.numeric.IntInterval;
+import it.unive.lisa.util.numeric.MathNumber;
 
 @Ignore("This test should only be manually executed for the benchmark as it takes few hours")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

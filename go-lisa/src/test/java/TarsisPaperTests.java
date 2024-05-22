@@ -1,4 +1,11 @@
 
+import java.io.IOException;
+
+import org.junit.FixMethodOrder;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+
 import it.unive.golisa.analysis.composition.SmashedSum;
 import it.unive.golisa.cfg.expression.literal.GoString;
 import it.unive.lisa.AnalysisSetupException;
@@ -37,11 +44,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import java.io.IOException;
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 @Ignore("This test should only be manually executed for the benchmark as it takes few hours")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

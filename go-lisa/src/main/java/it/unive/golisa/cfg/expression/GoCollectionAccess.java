@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.analysis.GoIntervalDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
+import java.util.Set;
+
 import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
 import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.lisa.analysis.AbstractState;
@@ -22,13 +22,10 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapExpression;
 import it.unive.lisa.symbolic.heap.HeapReference;
-import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Set;
 
 /**
  * A Go access expression (e.g., x.y).

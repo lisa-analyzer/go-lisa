@@ -1,10 +1,11 @@
 package it.unive.golisa.checker.hf.readwrite.graph.edges;
 
+import java.util.Objects;
+
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteGraph;
 import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteNode;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeEdge;
-import java.util.Objects;
 
 public abstract class ReadWriteEdge implements CodeEdge<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
 

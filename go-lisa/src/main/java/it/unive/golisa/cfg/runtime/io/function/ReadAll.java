@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.runtime.io.function;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -31,9 +35,6 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * func ReadAll(r Reader) ([]byte, error).

@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.frontend.GoSyntaxException;
@@ -18,7 +20,6 @@ import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import java.util.List;
 
 /**
  * A Go assignment.

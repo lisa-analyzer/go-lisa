@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
@@ -30,9 +34,6 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * func (iter *StateQueryIterator) Next() (*queryresult.KV, error).

@@ -1,7 +1,8 @@
 package it.unive.golisa.analysis.taint;
 
-import it.unive.golisa.cfg.runtime.conversion.GoConv;
+import java.util.Set;
 
+import it.unive.golisa.cfg.runtime.conversion.GoConv;
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
@@ -23,7 +24,6 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.util.Set;
 
 /**
  * The taint domain, used for the taint analysis.

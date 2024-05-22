@@ -1,14 +1,5 @@
 package it.unive.golisa.checker.hf.readwrite.graph;
 
-import it.unive.golisa.checker.hf.readwrite.graph.edges.ReadWriteEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
-import it.unive.lisa.outputs.DotGraph;
-import it.unive.lisa.outputs.serializableGraph.SerializableEdge;
-import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
-import it.unive.lisa.outputs.serializableGraph.SerializableNode;
-import it.unive.lisa.outputs.serializableGraph.SerializableNodeDescription;
-import it.unive.lisa.outputs.serializableGraph.SerializableValue;
-import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,10 +13,21 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
+
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
+
+import it.unive.golisa.checker.hf.readwrite.graph.edges.ReadWriteEdge;
+import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
+import it.unive.lisa.outputs.DotGraph;
+import it.unive.lisa.outputs.serializableGraph.SerializableEdge;
+import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
+import it.unive.lisa.outputs.serializableGraph.SerializableNode;
+import it.unive.lisa.outputs.serializableGraph.SerializableNodeDescription;
+import it.unive.lisa.outputs.serializableGraph.SerializableValue;
+import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
 
 public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
 

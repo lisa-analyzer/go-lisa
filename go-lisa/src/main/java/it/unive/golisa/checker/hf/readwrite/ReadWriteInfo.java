@@ -1,9 +1,10 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.KeyType;
-import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.TypeInstruction;
 import java.util.Arrays;
 import java.util.Objects;
+
+import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.KeyType;
+import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.TypeInstruction;
 
 public class ReadWriteInfo {
 

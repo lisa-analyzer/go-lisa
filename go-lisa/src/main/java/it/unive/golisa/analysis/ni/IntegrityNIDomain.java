@@ -1,5 +1,9 @@
 package it.unive.golisa.analysis.ni;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
@@ -29,9 +33,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * The type-system based implementation of the non interference analysis.

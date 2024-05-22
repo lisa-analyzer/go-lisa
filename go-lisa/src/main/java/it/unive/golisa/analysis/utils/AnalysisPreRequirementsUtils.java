@@ -1,5 +1,16 @@
 package it.unive.golisa.analysis.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Function;
+
 import it.unive.golisa.cfg.expression.binary.GoChannelSend;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
@@ -17,17 +28,6 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.util.function.Function;
 
 /**
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>

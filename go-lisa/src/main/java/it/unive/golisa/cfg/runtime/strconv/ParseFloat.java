@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -26,8 +29,6 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * func ParseFloat(s string, bitSize int) (float64, error).

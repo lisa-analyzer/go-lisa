@@ -1,7 +1,8 @@
 
+import org.junit.Test;
+
 import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
 import it.unive.lisa.AnalysisSetupException;
-import org.junit.Test;
 
 public class UnhandledErrorsTest extends GoChaincodeTestExecutor {
 

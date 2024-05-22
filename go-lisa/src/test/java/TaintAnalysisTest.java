@@ -1,4 +1,10 @@
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Test;
+
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.loader.annotation.AnnotationSet;
@@ -17,12 +23,6 @@ import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
 
 public class TaintAnalysisTest extends GoChaincodeTestExecutor {
 

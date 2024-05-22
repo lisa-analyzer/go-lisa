@@ -1,5 +1,31 @@
 package it.unive.golisa.frontend;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -154,6 +180,7 @@ import it.unive.golisa.cfg.statement.block.IdInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoFunctionType;
+import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -191,30 +218,6 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method.
@@ -1904,6 +1907,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		VariableRef valRange = null;
 		Statement idxAssign = null;
 		Statement valueAssign = null;
+		
+		entryPoints.add(rangeNode);
 
 		if (range.identifierList() != null) {
 			VariableRef[] rangeIds = visitIdentifierList(range.identifierList());
@@ -1980,7 +1985,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
 		}
 
-		// entryPoints.remove(entryPoints.size() - 1);
+		 entryPoints.remove(entryPoints.size() - 1);
 		// exitPoints.remove(exitPoints.size() - 1);
 		restoreVisibleIdsAfterForLoop(backup);
 
@@ -2530,7 +2535,18 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (lit instanceof Expression)
 				return (Expression) lit;
 			else if (lit instanceof Expression[])
-				return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) lit, getContentType(type));
+				if(type instanceof GoMapType && ((Expression[]) lit).length == 2) {
+
+					Expression[] keys = new Expression[1];
+					Expression[] values = new Expression[1];
+
+						keys[0] = ((Expression[]) lit)[0];
+						values[0] = ((Expression[]) lit)[1];
+
+					return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
+				}
+				else
+					return new GoNonKeyedLiteral(cfg, locationOf(ctx), (Expression[]) lit, getContentType(type));
 			else if (lit instanceof Map<?, ?>) {
 				Object[] keysObj = ((Map<Expression, Expression>) lit).keySet().toArray();
 				Object[] valuesObj = ((Map<Expression, Expression>) lit).values().toArray();

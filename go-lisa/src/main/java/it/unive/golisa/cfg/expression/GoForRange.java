@@ -1,11 +1,12 @@
 package it.unive.golisa.cfg.expression;
 
+import java.util.Collection;
+
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.controlFlow.Loop;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
-import java.util.Collection;
 
 /**
  * The Go for-range loop.

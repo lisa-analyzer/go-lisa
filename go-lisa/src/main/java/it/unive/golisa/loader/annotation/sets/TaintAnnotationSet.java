@@ -1,5 +1,13 @@
 package it.unive.golisa.loader.annotation.sets;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
@@ -10,13 +18,6 @@ import it.unive.golisa.loader.annotation.MethodAnnotation;
 import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
 import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The class represents the set of annotations for the taint analysis.

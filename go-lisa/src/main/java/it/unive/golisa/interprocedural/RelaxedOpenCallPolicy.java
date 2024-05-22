@@ -14,7 +14,6 @@ import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.inference.InferredValue;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.interprocedural.OpenCallPolicy;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
 import it.unive.lisa.symbolic.SymbolicExpression;

@@ -1,10 +1,11 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.program.cfg.statement.call.Call;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.program.cfg.statement.call.Call;
 
 /**
  * Read-write set issue information.

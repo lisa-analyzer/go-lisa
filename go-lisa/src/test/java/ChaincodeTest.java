@@ -1,4 +1,9 @@
 
+import java.io.IOException;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.taint.TaintDomainForNonDeterminism;
@@ -20,10 +25,6 @@ import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
-
-import java.io.IOException;
-import org.junit.Ignore;
-import org.junit.Test;
 
 public class ChaincodeTest extends GoChaincodeTestExecutor {
 

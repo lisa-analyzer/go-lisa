@@ -1,4 +1,6 @@
 
+import org.junit.Test;
+
 import it.unive.golisa.checker.hf.readwrite.ReadWritePairChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePathChecker;
 import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
@@ -12,8 +14,6 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
-
-import org.junit.Test;
 
 public class ReadWriteTest extends GoChaincodeTestExecutor {
 

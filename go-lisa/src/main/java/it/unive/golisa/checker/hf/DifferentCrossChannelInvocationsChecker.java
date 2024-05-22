@@ -1,5 +1,12 @@
 package it.unive.golisa.checker.hf;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.analysis.tarsis.utils.TarsisUtils;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.lisa.analysis.AnalysisState;
@@ -26,12 +33,6 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A Go Checker for the detection of different cross-channel invocations in

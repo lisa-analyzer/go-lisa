@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -23,7 +25,6 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Set;
 
 /**
  * func Sprintf(format string, a ...any) string.

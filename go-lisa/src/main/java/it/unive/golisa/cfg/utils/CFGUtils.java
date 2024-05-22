@@ -1,5 +1,14 @@
 package it.unive.golisa.cfg.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -9,14 +18,6 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 
 /**
  * Class containing some utils methods to deal with CFGs.

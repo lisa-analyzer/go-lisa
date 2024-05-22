@@ -1,4 +1,8 @@
 
+import java.io.IOException;
+
+import org.junit.Test;
+
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
@@ -10,8 +14,6 @@ import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
 import it.unive.lisa.interprocedural.context.FullStackToken;
-import java.io.IOException;
-import org.junit.Test;
 
 public class InterproceduralTest extends GoAnalysisTestExecutor {
 

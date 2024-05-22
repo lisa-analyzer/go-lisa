@@ -1,5 +1,18 @@
 package it.unive.golisa.checker.hf.readwrite;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.utils.CFGUtils;
@@ -30,17 +43,6 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
 import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 import it.unive.lisa.util.file.FileManager;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.

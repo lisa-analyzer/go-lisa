@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.type.numeric.unsigned;
 
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -8,8 +11,6 @@ import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Go unsigned int type. The unsigned int type, in Go, is a machine dependent

@@ -6,10 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Set;
 
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;

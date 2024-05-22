@@ -1,7 +1,8 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import it.unive.lisa.program.cfg.statement.call.Call;
 import java.util.List;
+
+import it.unive.lisa.program.cfg.statement.call.Call;
 
 public class ReadWriteHFUtils {
 

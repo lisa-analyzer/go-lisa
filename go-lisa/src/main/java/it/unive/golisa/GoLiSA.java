@@ -30,7 +30,6 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.hf.privacy.JSONPrivateDataCollectionPolicyParser;
 import it.unive.golisa.analysis.hf.privacy.JSONPrivateDataCollectionPolicyParser.PrivateDataPolicy;
-
 import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
 import it.unive.golisa.analysis.utilities.PrivacySignatures;
 import it.unive.golisa.cfg.utils.CFGUtils;
@@ -73,13 +72,13 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
-import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+import it.unive.lisa.program.cfg.statement.call.NativeCall;
+import it.unive.lisa.program.cfg.statement.call.OpenCall;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.program.cfg.statement.call.OpenCall;
-import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
@@ -180,7 +179,7 @@ public class GoLiSA {
 		}
 
 		if(program != null) {
-			/*
+		
 			if(satisfyPhaseRequirements(program, PRIVATE_INPUT_IN_PUBLIC_STATES))
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 			else 
@@ -201,7 +200,7 @@ public class GoLiSA {
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_STATES_IN_PUBLIC_STATES);
-			*/
+			
 			if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES))
 				runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
 		}

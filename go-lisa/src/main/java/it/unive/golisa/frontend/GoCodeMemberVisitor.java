@@ -849,7 +849,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement entryNode = null;
 
 		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
-
+		blockDeep++;
 		for (int i = 0; i < ctx.statement().size(); i++) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> currentStmt = visitStatement(ctx.statement(i));
@@ -865,7 +865,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			// scoping must be updated for each case
 			updateVisileIds(backup, lastStmt);
 		}
-
+		blockDeep--;
 		return Triple.of(entryNode, block, lastStmt);
 	}
 

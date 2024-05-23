@@ -1627,6 +1627,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 	public Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> visitIfStmt(IfStmtContext ctx) {
 		NodeList<CFG, Statement, Edge> block = new NodeList<>(SEQUENTIAL_SINGLETON);
 
+		Map<String, Set<IdInfo>> backup = new HashMap<>(visibleIds);
+		
 		// Visit if statement Boolean Guard
 		Statement booleanGuard = visitExpression(ctx.expression());
 		block.addNode(booleanGuard);
@@ -1694,6 +1696,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(initialStmt.getRight(), booleanGuard), block);
 		}
 
+		restoreVisibleIds(backup);
+		
 		cfs.add(new IfThenElse(matrix, booleanGuard, ifExitNode, trueBlockNodes, falseBlockNodes));
 
 		return Triple.of(entryNode, block, ifExitNode);
@@ -1857,7 +1861,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> body = visitBlock(ctx.block());
 		block.mergeWith(body.getMiddle());
 
-		restoreVisibleIdsAfterForLoop(backup);
+		restoreVisibleIds(backup);
 
 		addEdge(new TrueEdge(cond, body.getLeft()), block);
 		addEdge(new FalseEdge(cond, exitNode), block);
@@ -1882,7 +1886,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> body = visitBlock(ctx.block());
 		block.mergeWith(body.getMiddle());
 
-		restoreVisibleIdsAfterForLoop(backup);
+		restoreVisibleIds(backup);
 
 		addEdge(new TrueEdge(guard, body.getLeft()), block);
 		addEdge(new FalseEdge(guard, exitNode), block);
@@ -1988,7 +1992,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		 entryPoints.remove(entryPoints.size() - 1);
 		// exitPoints.remove(exitPoints.size() - 1);
-		restoreVisibleIdsAfterForLoop(backup);
+		restoreVisibleIds(backup);
 
 		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
 
@@ -2049,7 +2053,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Statement exitNodeBlock = inner.getRight();
 		Statement entryNodeOfBlock = inner.getLeft();
 
-		restoreVisibleIdsAfterForLoop(backup);
+		restoreVisibleIds(backup);
 
 		addEdge(new TrueEdge(cond, entryNodeOfBlock), block);
 		addEdge(new FalseEdge(cond, exitNode), block);
@@ -2078,7 +2082,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		return Triple.of(entryNode, block, exitNode);
 	}
 
-	private void restoreVisibleIdsAfterForLoop(Map<String, Set<IdInfo>> backup) {
+	private void restoreVisibleIds(Map<String, Set<IdInfo>> backup) {
 
 		Map<String, Set<IdInfo>> toRemove = new HashMap<>();
 		for (Entry<String, Set<IdInfo>> id : visibleIds.entrySet())

@@ -38,7 +38,7 @@ public class SetStateValidationParameter extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public SetStateValidationParameter(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, true, "PutState", GoErrorType.INSTANCE,
+		super(new CodeMemberDescriptor(location, shimUnit, true, "SetStateValidationParameter", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "key", GoStringType.INSTANCE),
 				new Parameter(location, "ep", GoSliceType.getSliceOfSliceOfBytes())),

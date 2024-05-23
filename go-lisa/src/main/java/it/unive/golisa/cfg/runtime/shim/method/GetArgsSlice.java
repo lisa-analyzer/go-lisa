@@ -59,7 +59,7 @@ public class GetArgsSlice extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public GetArgsSlice(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, true, "GetArgs",
+		super(new CodeMemberDescriptor(location, shimUnit, true, "GetArgsSlice",
 				GoTupleType.getTupleTypeOf(location, GoSliceType.lookup(GoUInt8Type.INSTANCE),
 						GoErrorType.INSTANCE), anns,
 				new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),

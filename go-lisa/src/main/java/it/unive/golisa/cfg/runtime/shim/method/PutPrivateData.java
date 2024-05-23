@@ -41,7 +41,7 @@ public class PutPrivateData extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public PutPrivateData(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, false, "PutState", GoErrorType.INSTANCE,
+		super(new CodeMemberDescriptor(location, shimUnit, false, "PutPrivateData", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "collection", GoStringType.INSTANCE),
 				new Parameter(location, "key", GoStringType.INSTANCE),

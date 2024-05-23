@@ -51,9 +51,9 @@ public class PrivacySignatures {
 		
 		publicWriteStatesAndResponsesWithCriticalParams = new HashMap<>();
 		publicWriteStatesAndResponsesWithCriticalParams.put(Pair.of("ChaincodeStub", CallType.INSTANCE), Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
-				Pair.of("SetStateValidationParameter", 1), Pair.of("SetStateValidationParameter", 2), Pair.of("SetStateValidationParameter", 3)));
+				Pair.of("SetStateValidationParameter", 1), Pair.of("SetStateValidationParameter", 2)));
 		publicWriteStatesAndResponsesWithCriticalParams.put(Pair.of("ChaincodeStubInterface", CallType.INSTANCE), Set.of(Pair.of("PutState", 1), Pair.of("PutState", 2), Pair.of("DelState", 1),
-				Pair.of("SetStateValidationParameter", 1), Pair.of("SetStateValidationParameter", 2), Pair.of("SetStateValidationParameter", 3)));
+				Pair.of("SetStateValidationParameter", 1), Pair.of("SetStateValidationParameter", 2)));
 		publicWriteStatesAndResponsesWithCriticalParams.put(Pair.of("shim", CallType.STATIC), Set.of(Pair.of("Success", 0), Pair.of("Error", 0)));
 
 		

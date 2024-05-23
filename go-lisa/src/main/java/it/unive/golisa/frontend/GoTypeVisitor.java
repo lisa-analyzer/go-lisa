@@ -1,6 +1,7 @@
 package it.unive.golisa.frontend;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
+import it.unive.lisa.program.ProgramValidationException;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
@@ -407,6 +409,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 						loc, unit, fd.getLeft(), true,
 						fd.getRight() == null ? Untyped.INSTANCE : globalType));
 			}
+		if(unit == null)
+			return GoStructType.lookup("<UNKNOWN UNIT>", null);
 		return GoStructType.lookup(unit.getName(), unit);
 	}
 

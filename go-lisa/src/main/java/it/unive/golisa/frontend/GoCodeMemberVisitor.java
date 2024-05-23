@@ -214,6 +214,7 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.literal.TrueLiteral;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
@@ -2488,7 +2489,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			return new VariableRef(cfg, locationOf(ctx), ctx.IDENTIFIER().getText());
 
 		Object child = visitChildren(ctx);
-		if (!(child instanceof Expression))
+		if (child != null && !(child instanceof Expression))
 			throw new IllegalStateException("Expression expected, found Statement instead");
 		else
 			return (Expression) child;
@@ -2535,13 +2536,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (lit instanceof Expression)
 				return (Expression) lit;
 			else if (lit instanceof Expression[])
-				if(type instanceof GoMapType && ((Expression[]) lit).length == 2) {
-
-					Expression[] keys = new Expression[1];
-					Expression[] values = new Expression[1];
-
-						keys[0] = ((Expression[]) lit)[0];
-						values[0] = ((Expression[]) lit)[1];
+				if(type instanceof GoMapType) {
+					GoMapType mapType = (GoMapType) type;
+					Expression[] litExpress = (Expression[]) lit;
+					Expression[] keys = new Expression[litExpress.length];
+					Expression[] values = new Expression[litExpress.length];
+					
+					for(int i = 0; i< litExpress.length; i++)
+						keys[i] = new GoUnknown(cfg, locationOf(ctx));
+					
+					for(int i = 0; i< litExpress.length; i++)
+						values[i] = litExpress[i];
 
 					return new GoKeyedLiteral(cfg, locationOf(ctx), keys, values, type);
 				}

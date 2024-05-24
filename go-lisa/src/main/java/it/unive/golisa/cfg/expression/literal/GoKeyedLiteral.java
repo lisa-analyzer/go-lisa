@@ -190,7 +190,7 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A> tmp = containerState;
 
 				for (int i = 0; i < keys.length; i++) {
-					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true)
+					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true) == null ? Untyped.INSTANCE : structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true)
 							.getStaticType();
 					Variable field = getVariable((VariableRef) keys[i]);
 					AccessChild access = new AccessChild(fieldType, dereference, field, getLocation());

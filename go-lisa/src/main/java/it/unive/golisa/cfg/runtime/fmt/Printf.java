@@ -73,7 +73,7 @@ public class Printf extends NativeCFG {
 		 */
 		public static PrintfImpl build(CFG cfg, CodeLocation location, Expression... params) {
 			if(params.length > 1)
-				return new	PrintfImpl(cfg, location, params[0], params[1]);
+				return new	PrintfImpl(cfg, location, params);
 			else 
 				return new PrintfImpl(cfg, location, params[0]);
 		}

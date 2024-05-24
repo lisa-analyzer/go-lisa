@@ -214,7 +214,6 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.literal.TrueLiteral;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
@@ -481,6 +480,17 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				for (VariableTableEntry entry : cfg.getDescriptor().getVariables())
 					if (preExits.contains(entry.getScopeEnd()))
 						entry.setScopeEnd(ret);
+			}
+		} else {
+			NodeList<CFG, Statement, Edge> list = cfg.getNodeList();
+			for (Statement st : list) {
+				Collection<Edge> outs = list.getOutgoingEdges(st);
+				if (outs.isEmpty() && !st.stopsExecution() && !st.throwsError()) {
+					// it could happen for methods that return void
+					Ret ret = new Ret(cfg, st.getLocation());
+					cfg.addNode(ret);
+					cfg.addEdge(new SequentialEdge(st, ret));
+				}
 			}
 		}
 	}
@@ -821,6 +831,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		for (int i = 0; i < ctx.statement().size(); i++) {
 			Triple<Statement, NodeList<CFG, Statement, Edge>,
 					Statement> currentStmt = visitStatement(ctx.statement(i));
+
 			block.mergeWith(currentStmt.getMiddle());
 
 			if (lastStmt != null)
@@ -2176,6 +2187,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			if (ctx.arguments() != null) {
 				Expression[] args = visitArguments(ctx.arguments());
 
+				if(primary.toString().contains("Respond"))
+					System.out.println("");
+				
 				if (primary instanceof VariableRef)
 					// Function call (e.g., f(1,2,3))
 					// this call is not an instance call

@@ -69,7 +69,10 @@ public class Println extends NativeCFG {
 		 * @return the pluggable statement
 		 */
 		public static PrintlnImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			return new PrintlnImpl(cfg, location, params[0]);
+			if(params.length > 0)
+				return new PrintlnImpl(cfg, location, params[0]);
+			else
+				return new PrintlnImpl(cfg, location);
 		}
 
 		/**
@@ -84,6 +87,10 @@ public class Println extends NativeCFG {
 			super(cfg, location, "Println", Untyped.INSTANCE, arg);
 		}
 
+
+		public PrintlnImpl(CFG cfg, CodeLocation location) {
+			super(cfg, location, "Println", Untyped.INSTANCE);
+		}
 
 		@Override
 		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(

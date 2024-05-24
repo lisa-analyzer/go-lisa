@@ -2436,7 +2436,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			Expression[] values = new Expression[valuesObj.length];
 
 			for (int i = 0; i < keys.length; i++) {
-				keys[i] = (Expression) keysObj[i];
+				keys[i] =  keysObj[i] != null ? (Expression) keysObj[i] : new GoUnknown(cfg, locationOf(ctx));
 				values[i] = (Expression) valuesObj[i];
 			}
 			if (type instanceof GoArrayType && ((GoArrayType) type).getLength() == -1)

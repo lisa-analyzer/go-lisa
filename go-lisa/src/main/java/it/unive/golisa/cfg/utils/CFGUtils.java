@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -279,6 +280,10 @@ public class CFGUtils {
 		} else if (st instanceof GoMultiAssignment) {
 			GoMultiAssignment multiAssign = (GoMultiAssignment) st;
 			if (matchNodeOrSubExpressions(multiAssign.getExpressionToAssign(), condition))
+				return true;
+		} else if (st instanceof GoReturn) {
+			GoReturn ret  = (GoReturn) st;
+			if (matchNodeOrSubExpressions(ret.getSubExpression(), condition))
 				return true;
 		}
 

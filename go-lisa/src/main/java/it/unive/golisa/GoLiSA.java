@@ -69,6 +69,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.edge.Edge;
+import it.unive.lisa.program.cfg.statement.Return;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
@@ -704,7 +705,8 @@ public class GoLiSA {
 			
 		switch(phase) {
 		case PRIVATE_INPUT_IN_PUBLIC_STATES:
-			if(countCallsMatchingSignatures(program, PrivacySignatures.privateInputs) > 0 && countCallsMatchingSignatures(program, PrivacySignatures.publicWriteStatesAndResponses) > 0 )
+			if(countCallsMatchingSignatures(program, PrivacySignatures.privateInputs) > 0 
+					&& countCallsMatchingSignatures(program, PrivacySignatures.publicWriteStatesAndResponses) > 0 )
 				return true;
 			break;
 		case PUBLIC_INPUT_IN_PRIVATE_STATES:
@@ -785,7 +787,7 @@ public class GoLiSA {
 						if(c.getCallType() == CallType.STATIC) {
 							if(signatures.entrySet().stream().anyMatch(set -> set.getKey().getValue() == CallType.STATIC && set.getValue().stream()
 											.anyMatch(s -> 
-											(c.getFullTargetName()).equals(set.getKey()+"::"+s) //qualifier::targetName
+											(c.getFullTargetName()).equals(set.getKey().getKey()+"::"+s) //qualifier::targetName
 														))) {
 								return true;
 							}
@@ -804,7 +806,7 @@ public class GoLiSA {
 							}
 						}
 					
-					}
+					} 
 					return false;
 				}
 				

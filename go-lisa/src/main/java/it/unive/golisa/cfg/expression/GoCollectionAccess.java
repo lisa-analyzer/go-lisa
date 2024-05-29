@@ -74,7 +74,6 @@ public class GoCollectionAccess extends BinaryExpression {
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 			throws SemanticException {
 		
-		
 		if (right instanceof Tainted)
 			return state.smallStepSemantics(right, this);
 
@@ -105,12 +104,12 @@ public class GoCollectionAccess extends BinaryExpression {
 							AnalysisState<A> tmp = state.bottom();
 							for (SymbolicExpression id : result.getComputedExpressions())
 								tmp = tmp.lub(result.assign(id, tainted, this));
-							return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
+							// return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
 						} else {
 							AnalysisState<A> tmp = state.bottom();
 							for (SymbolicExpression id : result.getComputedExpressions())
 								tmp = tmp.lub(result.assign(id, new PushAny(getStaticType(), getLocation()), this));
-							return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
+							// return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
 						}
 						
 					}

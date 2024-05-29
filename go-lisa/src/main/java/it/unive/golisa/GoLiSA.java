@@ -151,6 +151,7 @@ public class GoLiSA {
 
 
 		Program program = null;
+		boolean err = false;
 		EntryPointLoader entryLoader = new EntryPointLoader();
 		try {		
 			program = GoFrontEnd.processFile(filePath);
@@ -161,52 +162,80 @@ public class GoLiSA {
 		} catch (ParseCancellationException e) {
 			// a parsing error occurred
 			System.err.println("Parsing error.");
-			return;
+			err = true;
 		} catch (IOException e) {
 			// the file does not exists
 			System.err.println("File " + filePath + " does not exist.");
-			return;
+			err = true;
 		} catch (UnsupportedOperationException e1) {
 			// an unsupported operations has been encountered
 			System.err.println(e1 + " " + e1.getStackTrace()[0].toString());
 			e1.printStackTrace();
-			return;
+			err = true;
 		} catch (Exception e2) {
 			// other exception
 			e2.printStackTrace();
 			System.err.println(e2 + " " + e2.getStackTrace()[0].toString());
-			return;
+			err = true;
 		}
 
-		if(program != null) {
+		Boolean[] res = new Boolean[5];
+		res[0] = null;
+		res[1] = null;
+		res[2] = null;
+		res[3] = null;
+		res[4] = null;
 		
-			if(satisfyPhaseRequirements(program, PRIVATE_INPUT_IN_PUBLIC_STATES))
+		if(!err && program != null) {
+			
+			res[0] = satisfyPhaseRequirements(program, PRIVATE_INPUT_IN_PUBLIC_STATES);
+			res[1] = satisfyPhaseRequirements(program, PUBLIC_INPUT_IN_PRIVATE_STATES);
+			res[2] = satisfyPhaseRequirements(program, PUBLIC_STATES_IN_PRIVATE_STATES);
+			res[3] = satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES);
+			res[4] = satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES);
+
+			if(res[0])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_INPUT_IN_PUBLIC_STATES);
-			
+
 		
-			if(satisfyPhaseRequirements(program, PUBLIC_INPUT_IN_PRIVATE_STATES))
+			if(res[1])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES, PrivacySignatures.publicInputs, PrivacySignatures.privateWriteStatesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_INPUT_IN_PRIVATE_STATES);
-		
-			if(satisfyPhaseRequirements(program, PUBLIC_STATES_IN_PRIVATE_STATES))
+
+			if(res[2])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_STATES_IN_PRIVATE_STATES, PrivacySignatures.publicReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_STATES_IN_PRIVATE_STATES);
 			
-			if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES))
-				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
+			if(res[3])
+				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES, PrivacySignatures.privateReadStates, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_STATES_IN_PUBLIC_STATES);
 			
-			if(satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES))
+			if(res[4])
 				runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
+
 		}
+		
+		System.out.println(buildString(filePath, res));
 	}
 	
 	
+
+	private static char[] buildString(String filePath, Boolean[] res) {
+		String s = "###" + filePath + ";";
+		for(int i =0; i <res.length;i++) {
+			s += res[i] == null ? "-" : res[i] ? "Yes" : "No";
+			s +=";";
+		}
+		s += "\n";
+		return s.toCharArray();
+	}
+
+
 
 	private static void runInformationFlowAnalysis(Program program, EntryPointLoader entryLoader, String outputDir,
 			GraphType dumpOpt, String target, Map<Pair<String, CallType>, Set<String>> sources,
@@ -287,7 +316,7 @@ public class GoLiSA {
 								
 															ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 															if (valueState.eval((ValueExpression) s, call, state.getState())
-																	.isTainted())
+																	.isTainted() || valueState.eval((ValueExpression) s, call, state.getState()).isTop())
 																resultsParam[sink.getRight()] = true;
 														}
 												
@@ -376,7 +405,7 @@ public class GoLiSA {
 		
 		Set<CFG> cfgEntryPoints = new HashSet<>();
 
-		if (!entryLoader.isEntryFound()) {
+		//if (!entryLoader.isEntryFound()) {
 			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
 					.getAppliedAnnotations();
 
@@ -385,7 +414,7 @@ public class GoLiSA {
 			for (CFG c : cfgEntryPoints)
 				program.addEntryPoint(c);
 
-		}
+		//}
 		
 		
 		if (!program.getEntryPoints().isEmpty()) {
@@ -625,16 +654,16 @@ public class GoLiSA {
 		
 		Set<CFG> cfgEntryPoints = new HashSet<>();
 
-		if (!entryLoader.isEntryFound()) {
+		//if (!entryLoader.isEntryFound()) {
 			Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
 					.getAppliedAnnotations();
 
 			cfgEntryPoints.addAll(EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
-					appliedAnnotations, null ,annotationSet)); // the idea is to add entry points where there are private read states and private write states
+					appliedAnnotations, null ,annotationSet)); 
 			for (CFG c : cfgEntryPoints)
 				program.addEntryPoint(c);
 
-		}
+		//}
 		
 		
 		if (!program.getEntryPoints().isEmpty()) {
@@ -754,14 +783,14 @@ public class GoLiSA {
 					if (t instanceof Call) {
 						Call c = (Call) t;
 						if(c.getCallType() == CallType.STATIC) {
-							if(signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
+							if(signatures.entrySet().stream().anyMatch(set -> set.getKey().getValue() == CallType.STATIC && set.getValue().stream()
 											.anyMatch(s -> 
 											(c.getFullTargetName()).equals(set.getKey()+"::"+s) //qualifier::targetName
 														))) {
 								return true;
 							}
 						} else if(c.getCallType() == CallType.INSTANCE) {
-							if(signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
+							if(signatures.entrySet().stream().anyMatch(set -> set.getKey().getValue() == CallType.INSTANCE && set.getValue().stream()
 									.anyMatch(s -> 
 									(c.getTargetName()).equals(s) //targetName
 												))) {

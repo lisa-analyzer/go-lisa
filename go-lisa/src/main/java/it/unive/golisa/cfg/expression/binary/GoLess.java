@@ -3,6 +3,7 @@ package it.unive.golisa.cfg.expression.binary;
 import java.util.Set;
 
 import it.unive.golisa.cfg.type.GoBoolType;
+import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -14,6 +15,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonLt;
 import it.unive.lisa.type.Type;
 
@@ -60,6 +62,11 @@ public class GoLess extends it.unive.lisa.program.cfg.statement.BinaryExpression
 											left, right, ComparisonLt.INSTANCE, getLocation()),
 									this));
 			}
+		
+
+		if(result.isBottom())
+			result = result.lub(state.smallStepSemantics(new PushAny(GoBoolType.INSTANCE, getLocation()), this));	
+		
 		return result;
 	}
 }

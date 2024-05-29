@@ -14,6 +14,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonGt;
 import it.unive.lisa.type.Type;
 
@@ -67,6 +68,9 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 					result = result.lub(tmp);
 				}
 			}
+		if(result.isBottom())
+			result = result.lub(state.smallStepSemantics(new PushAny(GoBoolType.INSTANCE, getLocation()), this));	
+		
 		return result;
 	}
 }

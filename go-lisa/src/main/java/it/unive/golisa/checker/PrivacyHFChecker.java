@@ -94,7 +94,7 @@ public abstract class PrivacyHFChecker implements SemanticCheck<SimpleAbstractSt
 		
 									ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())
-											.isTainted())
+											.isTainted() || valueState.eval((ValueExpression) s, node, state.getState()).isTop())
 										resultsParam[i] = true;
 								}
 							}
@@ -126,7 +126,7 @@ public abstract class PrivacyHFChecker implements SemanticCheck<SimpleAbstractSt
 		
 									ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())
-											.isTainted())
+											.isTainted() || valueState.eval((ValueExpression) s, node, state.getState()).isTop())
 										resultsParam[i] = true;
 								}
 							}

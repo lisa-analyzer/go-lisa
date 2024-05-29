@@ -76,7 +76,7 @@ public class GoMultiAssignment extends NaryExpression {
 	 */
 	public GoMultiAssignment(CFG cfg, SourceCodeLocation location, Expression[] ids, Expression e,
 			List<BlockInfo> listBlock, OpenBlock containingBlock) {
-		super(cfg, location, ":=",
+		super(cfg, location, "=",
 				GoTupleType.getTupleTypeOf(location, Arrays.stream(ids).map(i -> i.getStaticType()).toArray(Type[]::new)), 
 				join(ids, e));
 		this.ids = ids;
@@ -98,7 +98,7 @@ public class GoMultiAssignment extends NaryExpression {
 	
 	@Override
 	public String toString() {
-		return StringUtils.join(ids, ", ") + " := " + e.toString();
+		return StringUtils.join(ids, ", ") + " = " + e.toString();
 	}
 
 	private <A extends AbstractState<A>,

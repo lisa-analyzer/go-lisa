@@ -14,6 +14,7 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
 import it.unive.lisa.type.Type;
 
@@ -64,6 +65,10 @@ public class GoNotEqual extends it.unive.lisa.program.cfg.statement.BinaryExpres
 							.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 									left, right,
 									ComparisonNe.INSTANCE, getLocation()), this));
+		
+		if(result.isBottom())
+			result = result.lub(state.smallStepSemantics(new PushAny(GoBoolType.INSTANCE, getLocation()), this));	
+		
 		return result;
 
 	}

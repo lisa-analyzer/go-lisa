@@ -88,6 +88,8 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 	private TaintDomainForPrivacyHF(byte v) {
 		this.v = v;
 	}
+	
+	
 
 	@Override
 	public TaintDomainForPrivacyHF fixedVariable(Identifier id, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
@@ -130,7 +132,7 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 	 * @return {@code true} if is tainted, otherwise {@code false}
 	 */
 	public boolean isTainted() {
-		return this == TAINTED;
+		return this == TAINTED || this == TOP;
 	}
 
 	/**
@@ -216,9 +218,11 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 			return false;
 		}
 
-		if (!types.isEmpty())
-			return types.stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
-		return !expression.getStaticType().isPointerType() && !expression.getStaticType().isInMemoryType();
+//		if (!types.isEmpty())
+//			return types.stream().anyMatch(t -> !t.isPointerType() && !t.isInMemoryType());
+//		return !expression.getStaticType().isPointerType() && !expression.getStaticType().isInMemoryType();
+		
+		return true;
 	}
 
 	@Override

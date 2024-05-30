@@ -582,7 +582,10 @@ public class GoLiSA {
 					readerSetsMapping.putIfAbsent(new Tarsis(), new HashSet<Call>());
 					readerSetsMapping.get(new Tarsis()).add(key1);
 				} else 			
-					readerSetsMapping.put(stringValue1, similarCollections);
+					if(readerSetsMapping.containsKey(stringValue1))
+						readerSetsMapping.get(stringValue1).addAll(similarCollections);
+					else	
+						readerSetsMapping.put(stringValue1, similarCollections);
 			}
 		}
 		
@@ -607,7 +610,12 @@ public class GoLiSA {
 					writerSetsMapping.putIfAbsent(new Tarsis(), new HashSet<Call>());
 					writerSetsMapping.get(new Tarsis()).add(key1);
 				} else
-					writerSetsMapping.put(stringValue1, similarCollections);
+					if(writerSetsMapping.containsKey(stringValue1))
+						writerSetsMapping.get(stringValue1).addAll(similarCollections);
+					else	
+						writerSetsMapping.put(stringValue1, similarCollections);
+			
+					
 			}
 		}
 		

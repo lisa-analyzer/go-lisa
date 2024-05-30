@@ -121,6 +121,11 @@ public class Replace extends NativeCFG {
 									.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(
 											GoStringType.INSTANCE,
 											left, middle, right, StringReplace.INSTANCE, getLocation()), original));
+			if(result.isBottom())
+				return state
+				.smallStepSemantics(new it.unive.lisa.symbolic.value.TernaryExpression(
+						GoStringType.INSTANCE,
+						left, middle, right, StringReplace.INSTANCE, getLocation()), original);
 			return result;
 		}
 	}

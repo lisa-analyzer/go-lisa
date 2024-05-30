@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.binary;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import it.unive.lisa.analysis.AbstractState;
@@ -14,7 +15,11 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
+import it.unive.lisa.type.Untyped;
 
 /**
  * A Go bit-wise and expression (e.g., x & y).
@@ -60,6 +65,18 @@ public class GoBitwiseAnd extends BinaryExpression implements GoBinaryNumericalO
 							.smallStepSemantics(new PushAny(resultType(leftType, rightType), getLocation()), this);
 					result = result.lub(tmp);
 				}
+		
+		if(result.isBottom())
+			state
+			.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(Untyped.INSTANCE, left, right, new BinaryOperator() {
+				
+				@Override
+				public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+					Set<Type> res = new HashSet<Type>();
+					res.add(Untyped.INSTANCE);
+					return res;
+				}
+			}, getLocation()),this);
 		return result;
 	}
 }

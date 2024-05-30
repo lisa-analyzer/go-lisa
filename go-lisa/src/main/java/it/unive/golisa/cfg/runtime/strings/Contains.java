@@ -110,6 +110,11 @@ public class Contains extends NativeCFG {
 						result = result.lub(state
 								.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 										left, right, StringContains.INSTANCE, getLocation()), original));
+			
+			if(result.isBottom())
+				return state.lub(state
+						.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
+								left, right, StringContains.INSTANCE, getLocation()), original));
 			return result;
 		}
 	}

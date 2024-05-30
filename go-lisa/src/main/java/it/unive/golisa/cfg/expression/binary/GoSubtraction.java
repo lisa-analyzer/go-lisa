@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.binary;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import it.unive.lisa.analysis.AbstractState;
@@ -13,8 +14,11 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingSub;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
+import it.unive.lisa.type.Untyped;
 
 /**
  * A Go numerical subtraction expression (e.g., x - y).
@@ -58,6 +62,17 @@ public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExp
 							this));
 			}
 
+		if(result.isBottom())
+			state
+			.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(Untyped.INSTANCE, left, right, new BinaryOperator() {
+				
+				@Override
+				public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
+					Set<Type> res = new HashSet<Type>();
+					res.add(Untyped.INSTANCE);
+					return res;
+				}
+			}, getLocation()),this);
 		return result;
 	}
 }

@@ -50,6 +50,11 @@ public class GoNot extends it.unive.lisa.program.cfg.statement.UnaryExpression {
 						new UnaryExpression(GoBoolType.INSTANCE, expr, LogicalNegation.INSTANCE,
 								getLocation()),
 						this));
+		if(result.isBottom())
+			return state.lub(state.smallStepSemantics(
+					new UnaryExpression(GoBoolType.INSTANCE, expr, LogicalNegation.INSTANCE,
+							getLocation()),
+					this));
 		return result;
 	}
 }

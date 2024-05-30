@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression.ternary;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import it.unive.golisa.cfg.type.GoStringType;
@@ -15,7 +16,10 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
+import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.TypeSystem;
+import it.unive.lisa.type.Untyped;
 
 /**
  * A Go slice expression (e.g., s[1:5]).
@@ -62,6 +66,20 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 								this);
 						result = result.lub(tmp);
 					}
+		
+		if(result.isBottom())
+			return state.smallStepSemantics(
+					new TernaryExpression(Untyped.INSTANCE,
+							left, middle, right, new TernaryOperator() {
+								
+								@Override
+								public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> middle, Set<Type> right) {
+									Set<Type> res = new HashSet<Type>();
+									res.add(Untyped.INSTANCE);
+									return res;
+								}
+							}, getLocation()),
+					this);
 		return result;
 	}
 }

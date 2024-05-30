@@ -89,8 +89,8 @@ public abstract class PrivacyHFChecker implements SemanticCheck<SimpleAbstractSt
 								for (SymbolicExpression s : reachableIds) {
 									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
 		
-									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
-										continue;
+									//if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+									//	continue;
 		
 									ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())
@@ -121,8 +121,8 @@ public abstract class PrivacyHFChecker implements SemanticCheck<SimpleAbstractSt
 								for (SymbolicExpression s : reachableIds) {
 									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
 		
-									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
-										continue;
+									//if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+									//	continue;
 		
 									ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())

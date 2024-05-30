@@ -195,17 +195,19 @@ public class GoLiSA {
 			res[3] = satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES);
 			res[4] = satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES);
 
+		
 			if(res[0])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_INPUT_IN_PUBLIC_STATES);
-
+		
 		
 			if(res[1])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES, PrivacySignatures.publicInputs, PrivacySignatures.privateWriteStatesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PUBLIC_INPUT_IN_PRIVATE_STATES);
 
+		
 			if(res[2])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_STATES_IN_PRIVATE_STATES, PrivacySignatures.publicReadStates, PrivacySignatures.privateWriteStatesWithCriticalParams);
 			else 
@@ -218,7 +220,7 @@ public class GoLiSA {
 			
 			if(res[4])
 				runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
-
+		
 		}
 		
 		System.out.println(buildString(filePath, res));
@@ -288,10 +290,13 @@ public class GoLiSA {
 								
 							Map<Pair<String, CallType>, Set<Pair<String, Integer>>> sinksPhase = GetPhaseSinksSignatures(target);
 										
-						 if(!target.equals(PRIVATE_STATES_IN_OTHER_PRIVATE_STATES))
+						 if(!target.equals(PRIVATE_STATES_IN_OTHER_PRIVATE_STATES)) {
+							 
+							boolean[] resultsParam = new boolean[call.getParameters().length];
+							 
 							for(Pair<String, CallType> key : sinksPhase.keySet()){
 								for(Pair<String, Integer> sink : sinksPhase.get(key) ) {
-									boolean[] resultsParam = new boolean[call.getParameters().length];
+									
 									if(sink.getLeft().equals(call.getTargetName())
 											&& call.getParameters().length > sink.getRight() &&
 											(!key.getRight().equals(CallType.STATIC) || (key.getRight().equals(CallType.STATIC) && call.getQualifier().equals(key.getLeft())))) {
@@ -310,10 +315,10 @@ public class GoLiSA {
 														reachableIds
 																.addAll(state.getState().reachableFrom(e, call, state.getState()).elements);
 														for (SymbolicExpression s : reachableIds) {
-															Set<Type> types = state.getState().getRuntimeTypesOf(s, call, state.getState());
+															//Set<Type> types = state.getState().getRuntimeTypesOf(s, call, state.getState());
 								
-															if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
-																continue;
+															//if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+															//	continue;
 								
 															ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 															if (valueState.eval((ValueExpression) s, call, state.getState())
@@ -328,9 +333,10 @@ public class GoLiSA {
 										}
 									}
 									
-									buildWarning(tool, call, null, resultsParam);
 								}
 							}
+							buildWarning(tool, call, null, resultsParam);
+						 }
 							
 							for(Call raw : sinksRaw) {
 								boolean[] resultsParam = new boolean[raw.getParameters().length];

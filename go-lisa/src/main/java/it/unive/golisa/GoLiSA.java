@@ -338,7 +338,7 @@ public class GoLiSA {
 							buildWarning(tool, call, null, resultsParam);
 						 }
 							
-							for(Call raw : sinksRaw) {
+						for(Call raw : sinksRaw) {
 								boolean[] resultsParam = new boolean[raw.getParameters().length];
 								if(raw.getLocation().equals(call.getLocation())
 										&& raw.getCallType().equals(call.getCallType())
@@ -367,8 +367,8 @@ public class GoLiSA {
 															for (SymbolicExpression s : reachableIds) {
 																Set<Type> types = state.getState().getRuntimeTypesOf(s, call, state.getState());
 									
-																if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
-																	continue;
+																//if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+																//	continue;
 									
 																ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 																if (valueState.eval((ValueExpression) s, call, state.getState())

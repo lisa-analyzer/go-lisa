@@ -282,7 +282,7 @@ public class GoLiSA {
 			try {
 				confPhase.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new TaintDomainForPrivacyHF()),
 						new TypeEnvironment<>(new InferredTypes()));
-				confPhase.semanticChecks.add( new PrivacyHFChecker() {
+				confPhase.semanticChecks.add( new PrivacyHFChecker(target) {
 
 					@Override
 					protected void checkSignature(UnresolvedCall call, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool) {

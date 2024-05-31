@@ -52,8 +52,6 @@ public abstract class PrivacyHFChecker implements SemanticCheck<SimpleAbstractSt
 	 */
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
 
-
-
 	@Override
 	public boolean visit(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomainForPrivacyHF>, TypeEnvironment<InferredTypes>>> tool,
 			CFG graph, Statement node) {
@@ -162,7 +160,7 @@ public abstract class PrivacyHFChecker implements SemanticCheck<SimpleAbstractSt
 			
 		}
 		if(matches > 0)
-			tool.warnOn(call, "The sink "+ call.getFullTargetName() +" has the following tainted parameter"+ (matches > 1 ? "s": "") + ": " + res); 
+			tool.warnOn(call, "["+ message + "] " + "The sink "+ call.getFullTargetName() +" has the following tainted parameter"+ (matches > 1 ? "s": "") + ": " + res); 
 			
 	}
 	

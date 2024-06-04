@@ -14,6 +14,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
@@ -144,6 +145,8 @@ public class GetPrivateDataByPartialCompositeKey extends NativeCFG {
 			// Retrieves all the identifiers reachable from expr
 			ExpressionSet reachableIds = state.getState().reachableFrom(e1, this, state.getState());
 			for (SymbolicExpression id : reachableIds) {
+				if (id instanceof AllocationSite)
+					id = new HeapReference(new ReferenceType(id.getStaticType()), id, getLocation());
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, e1.getCodeLocation());
 				QuaternaryExpression lExp = new QuaternaryExpression(GoSliceType.getSliceOfBytes(), derefId, e2, e3, e4,
 						GetPrivateDataByPartialCompositeKeyOperatorFirstParameter.INSTANCE, getLocation());

@@ -16,6 +16,7 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.annotations.Annotation;
@@ -145,6 +146,8 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 			Collection<SymbolicExpression> reachableIdsRight = state.getState().reachableFrom(right, this,
 					state.getState()).elements;
 			for (SymbolicExpression id : reachableIds) {
+				if (id instanceof AllocationSite)
+					id = new HeapReference(new ReferenceType(id.getStaticType()), id, getLocation());
 				for (SymbolicExpression r : reachableIdsRight) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 					TernaryExpression lExp = new TernaryExpression(new ReferenceType(allocType), derefId, middle, r,

@@ -17,6 +17,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.QuaternaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
@@ -198,14 +199,33 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 			throws SemanticException {
 		if(expression instanceof Tainted)
 			return TAINTED;
+		if(expression instanceof QuaternaryExpression) {
+			QuaternaryExpression quat = (QuaternaryExpression) expression;
+			SymbolicExpression e2 = quat.getSymbolicExpr2();
+			SymbolicExpression e3 = quat.getSymbolicExpr3();
+			SymbolicExpression e4 = quat.getSymbolicExpr4();
+			TaintDomainForPrivacyHF ev2 = BaseNonRelationalValueDomain.super.eval((ValueExpression) e2,environment, pp, oracle);
+			TaintDomainForPrivacyHF ev3 = BaseNonRelationalValueDomain.super.eval((ValueExpression) e3,environment, pp, oracle);
+			TaintDomainForPrivacyHF ev4 = BaseNonRelationalValueDomain.super.eval((ValueExpression) e4,environment, pp, oracle);
+			
+			if(ev2.isTainted() || ev3.isTainted() || ev4.isTainted())
+				return TAINTED;
+			else
+				return CLEAN;
+		}
+			
+
 		return BaseNonRelationalValueDomain.super.eval(expression, environment, pp, oracle);
 
 	}
+	
+	
 
 	@Override
 	public TaintDomainForPrivacyHF evalIdentifier(Identifier id, ValueEnvironment<TaintDomainForPrivacyHF> environment,
 			ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
-		// TODO Auto-generated method stub
+		if(id.getName().equals("err"))
+			return CLEAN;
 		return BaseNonRelationalValueDomain.super.evalIdentifier(id, environment, pp, oracle);
 	}
 

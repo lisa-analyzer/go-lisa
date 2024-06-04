@@ -116,6 +116,11 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 				: this == CLEAN ? new StringRepresentation("_")
 						: this == TAINTED ? new StringRepresentation("#") : Lattice.topRepresentation();
 	}
+	
+	@Override
+	public String toString() {
+		return representation().toString();
+	}
 
 	@Override
 	public TaintDomainForPrivacyHF top() {
@@ -197,6 +202,12 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 	public TaintDomainForPrivacyHF eval(ValueExpression expression,
 			ValueEnvironment<TaintDomainForPrivacyHF> environment, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
+		if (expression instanceof Identifier) {
+			TaintDomainForPrivacyHF fixed = fixedVariable((Identifier) expression, pp, oracle);
+			if (!fixed.isBottom())
+				return fixed;
+		}
+		
 		if(expression instanceof Tainted)
 			return TAINTED;
 		if(expression instanceof QuaternaryExpression) {
@@ -224,8 +235,6 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 	@Override
 	public TaintDomainForPrivacyHF evalIdentifier(Identifier id, ValueEnvironment<TaintDomainForPrivacyHF> environment,
 			ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
-		if(id.getName().equals("err"))
-			return CLEAN;
 		return BaseNonRelationalValueDomain.super.evalIdentifier(id, environment, pp, oracle);
 	}
 
@@ -282,5 +291,9 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 		return true;
 	}
 	
-	
+//	@Override
+//	public TaintDomainForPrivacyHF unknownVariable(
+//			Identifier id) {
+//		return CLEAN;
+//	}
 }

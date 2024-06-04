@@ -31,8 +31,8 @@ public class PrivacySignatures {
 		privateInputs.put(Pair.of("ChaincodeStubInterface", CallType.INSTANCE), Set.of("GetTransient"));
 		
 		publicReadStates = new HashMap<>();
-		publicReadStates.put(Pair.of("ChaincodeStub", CallType.INSTANCE), Set.of("GetState", "GetStateValidationParameter", "GetStateByRange", "GetStateByRangeWithPagination", "GetStateByPartialCompositeKey", "GetHistoryForKey"));
-		publicReadStates.put(Pair.of("ChaincodeStubInterface", CallType.INSTANCE), Set.of("GetState", "GetStateValidationParameter", "GetStateByRange", "GetStateByRangeWithPagination", "GetStateByPartialCompositeKey", "GetHistoryForKey"));
+		publicReadStates.put(Pair.of("ChaincodeStub", CallType.INSTANCE), Set.of("GetState", "GetStateValidationParameter", "GetStateByRange", "GetStateByRangeWithPagination", "GetQueryResult", "GetQueryResultWithPagination", "GetStateByPartialCompositeKey", "GetStateByPartialCompositeKeyWithPagination", "GetHistoryForKey"));
+		publicReadStates.put(Pair.of("ChaincodeStubInterface", CallType.INSTANCE), Set.of("GetState", "GetStateValidationParameter", "GetStateByRange", "GetStateByRangeWithPagination", "GetQueryResult", "GetQueryResultWithPagination", "GetStateByPartialCompositeKey", "GetStateByPartialCompositeKeyWithPagination", "GetHistoryForKey"));
 		
 		publicWriteStatesAndResponses = new HashMap<>();
 		publicWriteStatesAndResponses.put(Pair.of("ChaincodeStub", CallType.INSTANCE), Set.of("PutState", "DelState", "SetStateValidationParameter"));

@@ -24,6 +24,11 @@ public class GoLangUtils {
 	public static final String BLANK_IDENTIFIER = "_";
 
 	/**
+	 * The name of the error identifier.
+	 */
+	public static final String ERROR_IDENTIFIER = "err";
+	
+	/**
 	 * The file name of the source code location of code members belonging to
 	 * run-times.
 	 */
@@ -59,6 +64,20 @@ public class GoLangUtils {
 	 */
 	public static boolean refersToBlankIdentifier(Expression exp) {
 		return exp instanceof VariableRef && ((VariableRef) exp).getName().equals(BLANK_IDENTIFIER);
+	}
+	
+
+	/**
+	 * Checks whether the expression {@code exp} is an instanceof
+	 * {@link VariableRef} and it is err.
+	 * 
+	 * @param e the expression
+	 * 
+	 * @return whether the expression {@code exp} is an instanceof
+	 *             {@link VariableRef} and it
+	 */
+	public static boolean refersToErrorIdentifier(Expression exp) {
+		return exp instanceof VariableRef && ((VariableRef) exp).getName().equals(ERROR_IDENTIFIER);
 	}
 
 	public static Map<String, Set<MethodGoLangApiSignature>> getGoLangApiMethodSignatures() {

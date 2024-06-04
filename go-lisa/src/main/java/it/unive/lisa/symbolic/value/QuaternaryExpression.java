@@ -1,9 +1,13 @@
 package it.unive.lisa.symbolic.value;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.heap.pointbased.AllocationSiteBasedAnalysis.Rewriter;
+import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.symbolic.ExpressionVisitor;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -169,10 +173,30 @@ public class QuaternaryExpression extends ValueExpression {
 
 	@Override
 	public <T> T accept(ExpressionVisitor<T> visitor, Object... params) throws SemanticException {
-			T t1 = this.e1.accept(visitor, params);
-			T t2 = this.e2.accept(visitor, params);
-			T t3 = this.e3.accept(visitor, params);
-			T t4 = this.e3.accept(visitor, params);
+		
+			if(visitor instanceof Rewriter) {
+				Rewriter rewriter = (Rewriter) visitor;
+				
+				ExpressionSet set1 = (ExpressionSet) this.e1.accept(visitor, params);
+				ExpressionSet set2 = (ExpressionSet) this.e2.accept(visitor, params);
+				ExpressionSet set3 = (ExpressionSet) this.e3.accept(visitor, params);
+				ExpressionSet set4 = (ExpressionSet) this.e3.accept(visitor, params);
+				
+				Set<SymbolicExpression> res = new HashSet<>();
+				
+				for(SymbolicExpression e1 : set1) {
+					for(SymbolicExpression e2 : set2) {
+						for(SymbolicExpression e3 : set3) {
+							for(SymbolicExpression e4 : set4) {
+								res.add(new QuaternaryExpression(getStaticType(), e1, e2, e3, e4, operator, getCodeLocation()));
+							}
+						}
+					}
+				}
+				
+				return (T) new ExpressionSet(res);
+			}
+
 			return visitor.visit(new PushAny(getStaticType(), getCodeLocation()), params);
 	}
 

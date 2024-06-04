@@ -144,8 +144,7 @@ public class GetFunctionAndParameters extends NativeCFG {
 					A> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
 			return GoTupleExpression.allocateTupleExpression(capState, anns, this, getLocation(), tupleType,
-					new PushAny(GoStringType.INSTANCE, getLocation()),
-					ref);
+					new PushAny(GoStringType.INSTANCE, getLocation()), ref);
 		}
 	}
 }

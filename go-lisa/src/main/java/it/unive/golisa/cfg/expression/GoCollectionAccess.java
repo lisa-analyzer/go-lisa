@@ -76,7 +76,7 @@ public class GoCollectionAccess extends BinaryExpression {
 		
 		if (right instanceof Tainted)
 			return state.smallStepSemantics(right, this);
-
+		
 		
 		SymbolicExpression inner;
 		if (left instanceof HeapReference)
@@ -104,12 +104,12 @@ public class GoCollectionAccess extends BinaryExpression {
 							AnalysisState<A> tmp = state.bottom();
 							for (SymbolicExpression id : result.getComputedExpressions())
 								tmp = tmp.lub(result.assign(id, tainted, this));
-							// return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
+							result = result.lub(new AnalysisState<>(tmp.getState(), result.getComputedExpressions()));
 						} else {
 							AnalysisState<A> tmp = state.bottom();
 							for (SymbolicExpression id : result.getComputedExpressions())
 								tmp = tmp.lub(result.assign(id, new PushAny(getStaticType(), getLocation()), this));
-							// return new AnalysisState<>(tmp.getState(), result.getComputedExpressions());
+							result = result.lub(new AnalysisState<>(tmp.getState(), result.getComputedExpressions()));
 						}
 						
 					}

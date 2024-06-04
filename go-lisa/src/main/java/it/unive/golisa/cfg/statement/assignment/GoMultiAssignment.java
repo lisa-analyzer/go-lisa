@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
+import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -34,6 +35,7 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
@@ -184,10 +186,15 @@ public class GoMultiAssignment extends NaryExpression {
 			AnalysisState<A> idState = ids[i].forwardSemantics(result, interprocedural, expressions);
 			expressions.put(ids[i], idState);
 
-			if (GoLangUtils.refersToBlankIdentifier(ids[i]))
-				continue;
+			
+				
 
 			AnalysisState<A> partialResult = entryState.bottom();
+			if (GoLangUtils.refersToErrorIdentifier(ids[i])) {
+				for (SymbolicExpression idExp : idState.getComputedExpressions())
+					finalResult = finalResult.lub(finalResult.assign(idExp, new PushAny(GoErrorType.INSTANCE, getLocation()), this));
+				continue;
+			}
 			for (SymbolicExpression retExp : rightState.getComputedExpressions()) {
 				
 				boolean allAllocationSites = true;

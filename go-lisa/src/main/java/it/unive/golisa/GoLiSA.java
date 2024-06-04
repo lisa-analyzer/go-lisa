@@ -51,6 +51,7 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.heap.pointbased.FieldSensitivePointBasedHeap;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -280,7 +281,7 @@ public class GoLiSA {
 			}};
 			
 			try {
-				confPhase.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new TaintDomainForPrivacyHF()),
+				confPhase.abstractState = new SimpleAbstractState<>(new FieldSensitivePointBasedHeap(), new ValueEnvironment<>(new TaintDomainForPrivacyHF()),
 						new TypeEnvironment<>(new InferredTypes()));
 				confPhase.semanticChecks.add( new PrivacyHFChecker(target) {
 

@@ -132,10 +132,12 @@ public class GetPrivateDataByRange extends NativeCFG {
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(iteratorType, e1.getCodeLocation(), new Annotations(),
 					true);
+			
 			if (original instanceof ResolvedCall)
 				for (CodeMember target : ((ResolvedCall) original).getTargets())
 					for (Annotation ann : target.getDescriptor().getAnnotations())
 						created.getAnnotations().addAnnotation(ann);
+			
 			HeapReference ref = new HeapReference(new ReferenceType(iteratorType), created, e1.getCodeLocation());
 			HeapDereference deref = new HeapDereference(iteratorType, ref, e1.getCodeLocation());
 			AnalysisState<A> result = state.bottom();

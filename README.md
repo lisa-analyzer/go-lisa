@@ -51,21 +51,21 @@ It is suggested to allow only read-only access to the generated token.
 ### Walkthrough to Analyze Running Example
 
 - It is possible compile the go-lisa project within `go-lisa` folder using the command `gradle install`, then the compiled binaries will be created in the `build` folder
-<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/issta23-demo-tool/img/build.png"/>
+<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/scsr2024/img/build.png"/>
 
 - The running example `running-example.go` is located in the root folder of repository. At this point, it is possible extract the binaries and the GoLiSA's launcher contained in the archive of `build` folder and analyze the running example
-<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/issta23-demo-tool/img/go-lisa-run.png"/>
+<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/scsr2024/img/go-lisa-run.png"/>
 
 - The result of analysis will stored in the `output` directory which will be created in the root folder where the launcher runs.
-<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/issta23-demo-tool/img/go-lisa-res.png"/>
+<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/scsr2024/img/go-lisa-res.png"/>
 
 The `output` directory will contain several files:
 
-- `report.json` the analysis report in JSON format containing the warning triggered by the analysis
-<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/issta23-demo-tool/img/warnings.png"/>
+- `report.json` the analysis report in JSON format that may containg the warning triggered by the analysis (if supported, e.g. `taint` analysis)
+<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/scsr2024/img/warnings.png"/>
 
 - `*.html` analysis dump of CFGs in HTML format, where each CFG node contains analysis information for each program point
-<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/issta23-demo-tool/img/cfg.png"/>
+<img src="https://raw.githubusercontent.com/lisa-analyzer/go-lisa/scsr2024/img/cfg.png"/>
 
 - `js` folder that contains supporting material for HTML visualization of CFGs 
 

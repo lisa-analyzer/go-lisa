@@ -77,43 +77,6 @@ public class ReadWritePathChecker implements
 	}
 
 	@Override
-	public void afterExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
-					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool) {
-		
-		if(computeGraph) {
-			for(Entry<String, ReadWriteGraph> entry : reconstructedGraphs.entrySet()) {
-				try {
-					
-					dump(tool.getFileManager(), entry.getKey(), entry.getValue().toSerializableGraph());
-				} catch (IOException e) {
-					LOG.warn("Unable to dump read-write graph \""+ entry.getKey() +"\". Error: " + e.getMessage());
-				}
-			}
-		}
-	}
-
-	private void dump(FileManager fileManager, String filename, SerializableGraph graph) throws IOException {
-		fileManager.mkDotFile(filename, writer -> graph.toDot().dump(writer));
-	}
-
-	@Override
-	public void visitGlobal(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
-					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
-			Unit unit, Global global, boolean instance) {
-	}
-
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph) {
-		return true;
-	}
-
-	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
@@ -337,6 +300,16 @@ private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<Po
 		return false;
 	}
 	
+	public Collection<CodeMember> getCalleesTransitively(CheckToolWithAnalysisResults<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CodeMember cm) {
+		VisitOnceWorkingSet<CodeMember> ws = VisitOnceFIFOWorkingSet.mk();
+		tool.getCallees(cm).stream().forEach(ws::push);
+		while (!ws.isEmpty())
+			tool.getCallees(ws.pop()).stream().forEach(ws::push);
+		return ws.getSeen();
+	}
+	
 	private boolean checkCalleesRecursive(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seen) {
 		
 		if(seen.contains(graph))
@@ -412,6 +385,28 @@ private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<Po
 	}
 
 	@Override
+	public void afterExecution(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool) {
+		
+		if(computeGraph) {
+			for(Entry<String, ReadWriteGraph> entry : reconstructedGraphs.entrySet()) {
+				try {
+					
+					dump(tool.getFileManager(), entry.getKey(), entry.getValue().toSerializableGraph());
+				} catch (IOException e) {
+					LOG.warn("Unable to dump read-write graph \""+ entry.getKey() +"\". Error: " + e.getMessage());
+				}
+			}
+		}
+	}
+
+	private void dump(FileManager fileManager, String filename, SerializableGraph graph) throws IOException {
+		fileManager.mkDotFile(filename, writer -> graph.toDot().dump(writer));
+	}
+	
+	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
@@ -428,15 +423,20 @@ private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<Po
 			Unit unit) {
 		return true;
 	}
-	
-	public Collection<CodeMember> getCalleesTransitively(CheckToolWithAnalysisResults<
+
+	@Override
+	public void visitGlobal(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
+			Unit unit, Global global, boolean instance) {
+	}
+
+	@Override
+	public boolean visit(CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CodeMember cm) {
-		VisitOnceWorkingSet<CodeMember> ws = VisitOnceFIFOWorkingSet.mk();
-		tool.getCallees(cm).stream().forEach(ws::push);
-		while (!ws.isEmpty())
-			tool.getCallees(ws.pop()).stream().forEach(ws::push);
-		return ws.getSeen();
+			PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph) {
+		return true;
 	}
 	
 }

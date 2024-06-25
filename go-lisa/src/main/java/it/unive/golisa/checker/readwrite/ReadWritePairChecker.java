@@ -51,9 +51,7 @@ public class ReadWritePairChecker implements
 	private Set<AnalysisReadWriteHFInfo> writers;
 	private Set<AnalysisReadWriteHFInfo> readers;
 	
-	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates;
-	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates;
-	
+
 	public Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> getReadAfterWriteCandidates() {
 		return readAfterWriteCandidates;
 	}
@@ -70,7 +68,146 @@ public class ReadWritePairChecker implements
 		readers = new HashSet<>();
 	}
 
+	
+	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates;
+	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates;
+	
+
 	@Override
+	public boolean visit(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
+			CFG graph, Statement node) {
+		/**
+		* Here, it is where are collected the string value for each read/write operation
+		**/
+		
+		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
+		if(calls.isEmpty())
+			return true;
+		
+		for(Call call : calls) {
+			if(ReadWriteHFUtils.isReadOrWriteCall(call)) { // Detected read/write operation
+				try {
+					ReadWriteInfo info = ReadWriteHFUtils.getReadWriteInfo(call);
+					int[] keyParams = info.getKeyParameters();
+					
+					for (AnalyzedCFG<
+							SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
+							PointBasedHeap, ValueEnvironment<Tarsis>,
+							TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) { // It query the analysis results for a specific call
+						Call resolved = call instanceof UnresolvedCall ? (Call) tool.getResolvedVersion((UnresolvedCall) call, result) : call;
+						ArrayList<Set<Tarsis>> keyValues = new ArrayList<>();
+						
+						/**
+						* Depending of the call kind, it extract the possible key values with the method extractKeyValues
+						**/
+						if (resolved instanceof NativeCall) {
+							NativeCall nativeCfg = (NativeCall) resolved;
+							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
+							for (CodeMember n : nativeCfgs) {
+								Parameter[] parameters = n.getDescriptor().getFormals();
+								keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
+							}
+						} else if (resolved instanceof CFGCall) {
+							CFGCall cfg = (CFGCall) resolved;
+							
+							for (CodeMember n : cfg.getTargets()) {
+								Parameter[] parameters = n.getDescriptor().getFormals();
+								keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
+							}
+						} else {
+							keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
+						}
+						
+						/**
+						* The possible key values and the operation are collected in a more specific data structure called AnalysisReadWriteHFInfo
+						**/
+						AnalysisReadWriteHFInfo infoForAnalysis;
+						if(!info.hasCollection())
+							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
+						else {
+							Set<Tarsis> collectionValues = extractCollectionValues(call, info.getCollectionParam().intValue(), node, result);
+							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, collectionValues);
+						}
+						
+						if(ReadWriteHFUtils.isReadCall(call))
+							readers.add(infoForAnalysis);
+						else if(ReadWriteHFUtils.isWriteCall(call))
+							writers.add(infoForAnalysis);
+					}
+					
+					
+				} catch (SemanticException e) {
+					System.err.println("Cannot check " + node);
+					e.printStackTrace(System.err);
+				}
+			}
+		}		
+		return true;
+	}
+
+
+	private Set<Tarsis> extractCollectionValues(Call call, int collectionParam, Statement node,
+			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result) throws SemanticException {
+
+	
+		int par = call.getCallType().equals(CallType.STATIC) ? collectionParam : collectionParam+1;
+		Set<Tarsis> res = new HashSet<>();
+			
+		if(par < call.getParameters().length) {
+				
+			AnalysisState<
+			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+					TypeEnvironment<InferredTypes>>,
+			PointBasedHeap, ValueEnvironment<Tarsis>,
+			TypeEnvironment<InferredTypes>> state = result
+					.getAnalysisStateAfter(call.getParameters()[par]);
+			for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), node))
+				res.add(state.getState().getValueState().eval((ValueExpression) stack, node));
+		
+		}
+		
+		return res;
+	}
+
+	private String extractValueStringFromTarsisStates(Tarsis state) {
+		if(state.getAutomaton().emptyString().equals(state.getAutomaton()))
+			return "";
+		else if(!state.getAutomaton().acceptsTopEventually())
+			return state.getAutomaton().toString();
+		
+		return null;
+	}
+	
+
+	private ArrayList<Set<Tarsis>> extractKeyValues(Call call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result) throws SemanticException {
+		
+		ArrayList<Set<Tarsis>> valStringDomain = new ArrayList<>(keyParams.length);
+		
+		for(int i=0; i < keyParams.length; i++) {
+			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i]+1; // yields the parameter corresponding to the key value
+			valStringDomain.add(new HashSet<>());
+			if(par < parametersLength) {
+				
+				AnalysisState<
+				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+						TypeEnvironment<InferredTypes>>,
+				PointBasedHeap, ValueEnvironment<Tarsis>,
+				TypeEnvironment<InferredTypes>> state = result
+						.getAnalysisStateAfter(call.getParameters()[par]);
+				for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), node)) { // stack corresponding to the key value
+					valStringDomain.get(i).add(state.getState().getValueState().eval((ValueExpression) stack, node)); // It queries tha string analysis state to get the possible key value
+				}
+			}
+		}
+		
+		return valStringDomain;
+		
+	}
+	
+		@Override
 	public void afterExecution(
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
@@ -251,154 +388,12 @@ public class ReadWritePairChecker implements
 	}
 	
 	@Override
-	public void visitGlobal(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
-					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
-			Unit unit, Global global, boolean instance) {
-	}
-
-	@Override
 	public boolean visit(CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
 			PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph) {
 		return true;
 	}
-
-	@Override
-	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
-					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
-			CFG graph, Statement node) {
-		/**
-		* Here, it is where are collected the sring value for each read/write operation
-		**/
-		
-		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
-		if(calls.isEmpty())
-			return true;
-		
-		for(Call call : calls) {
-			if(ReadWriteHFUtils.isReadOrWriteCall(call)) { // Detected read/write operation
-				try {
-					ReadWriteInfo info = ReadWriteHFUtils.getReadWriteInfo(call);
-					int[] keyParams = info.getKeyParameters();
-					
-					for (AnalyzedCFG<
-							SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
-							PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) { // It query the analysis results for a specific call
-						Call resolved = call instanceof UnresolvedCall ? (Call) tool.getResolvedVersion((UnresolvedCall) call, result) : call;
-						ArrayList<Set<Tarsis>> keyValues = new ArrayList<>();
-						
-						/**
-						* Depending of the call kind, it extract the possible key values with the method extractKeyValues
-						**/
-						if (resolved instanceof NativeCall) {
-							NativeCall nativeCfg = (NativeCall) resolved;
-							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
-							for (CodeMember n : nativeCfgs) {
-								Parameter[] parameters = n.getDescriptor().getFormals();
-								keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
-							}
-						} else if (resolved instanceof CFGCall) {
-							CFGCall cfg = (CFGCall) resolved;
-							
-							for (CodeMember n : cfg.getTargets()) {
-								Parameter[] parameters = n.getDescriptor().getFormals();
-								keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
-							}
-						} else {
-							keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
-						}
-						
-						/**
-						* The possible key values and the operation are collected in a more specific data structure called AnalysisReadWriteHFInfo
-						**/
-						AnalysisReadWriteHFInfo infoForAnalysis;
-						if(!info.hasCollection())
-							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
-						else {
-							Set<Tarsis> collectionValues = extractCollectionValues(call, info.getCollectionParam().intValue(), node, result);
-							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, collectionValues);
-						}
-						
-						if(ReadWriteHFUtils.isReadCall(call))
-							readers.add(infoForAnalysis);
-						else if(ReadWriteHFUtils.isWriteCall(call))
-							writers.add(infoForAnalysis);
-					}
-					
-					
-				} catch (SemanticException e) {
-					System.err.println("Cannot check " + node);
-					e.printStackTrace(System.err);
-				}
-			}
-		}		
-		return true;
-	}
-
-
-	private Set<Tarsis> extractCollectionValues(Call call, int collectionParam, Statement node,
-			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result) throws SemanticException {
-
 	
-		int par = call.getCallType().equals(CallType.STATIC) ? collectionParam : collectionParam+1;
-		Set<Tarsis> res = new HashSet<>();
-			
-		if(par < call.getParameters().length) {
-				
-			AnalysisState<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-					TypeEnvironment<InferredTypes>>,
-			PointBasedHeap, ValueEnvironment<Tarsis>,
-			TypeEnvironment<InferredTypes>> state = result
-					.getAnalysisStateAfter(call.getParameters()[par]);
-			for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), node))
-				res.add(state.getState().getValueState().eval((ValueExpression) stack, node));
-		
-		}
-		
-		return res;
-	}
-
-	private String extractValueStringFromTarsisStates(Tarsis state) {
-		if(state.getAutomaton().emptyString().equals(state.getAutomaton()))
-			return "";
-		else if(!state.getAutomaton().acceptsTopEventually())
-			return state.getAutomaton().toString();
-		
-		return null;
-	}
-	
-
-	private ArrayList<Set<Tarsis>> extractKeyValues(Call call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> result) throws SemanticException {
-		
-		ArrayList<Set<Tarsis>> valStringDomain = new ArrayList<>(keyParams.length);
-		
-		for(int i=0; i < keyParams.length; i++) {
-			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i]+1; // yields the parameter corresponding to the key value
-			valStringDomain.add(new HashSet<>());
-			if(par < parametersLength) {
-				
-				AnalysisState<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-						TypeEnvironment<InferredTypes>>,
-				PointBasedHeap, ValueEnvironment<Tarsis>,
-				TypeEnvironment<InferredTypes>> state = result
-						.getAnalysisStateAfter(call.getParameters()[par]);
-				for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), node)) { // stack corresponding to the key value
-					valStringDomain.get(i).add(state.getState().getValueState().eval((ValueExpression) stack, node)); // It queries tha string analysis state to get the possible key value
-				}
-			}
-		}
-		
-		return valStringDomain;
-		
-	}
-
 	@Override
 	public boolean visit(
 			CheckToolWithAnalysisResults<
@@ -415,5 +410,14 @@ public class ReadWritePairChecker implements
 					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
 			Unit unit) {
 		return true;
+	}
+	
+		
+	@Override
+	public void visitGlobal(
+			CheckToolWithAnalysisResults<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
+					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
+			Unit unit, Global global, boolean instance) {
 	}
 }

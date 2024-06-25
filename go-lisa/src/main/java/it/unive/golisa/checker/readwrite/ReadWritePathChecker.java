@@ -144,6 +144,8 @@ public class ReadWritePathChecker implements
 					tmpGraph = new ReadWriteGraph("ReadAfterWrite - Write location: " + write.getCall().getLocation() +" - Read Location -" + read.getCall().getLocation());
 				 if(interproceduralCheck(tool, graph, write.getCall(), read.getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
 					 	reconstructedGraphs.put(tmpGraph.getName(), tmpGraph);
+						// Detected read-after-write issues
+						// Warning generation
 						tool.warnOn(node, "Detected a possible read after write issue. Read location: " + p.getRight().getCall().getLocation());
 				 }
 			}
@@ -160,6 +162,8 @@ public class ReadWritePathChecker implements
 					tmpGraph = new ReadWriteGraph("OverWrite - Write1 location: " + p.getRight().getCall().getLocation() +" - Write2 Location -" + p.getLeft().getCall().getLocation());
 				if(interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(), new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
 				 	reconstructedGraphs.put(tmpGraph.getName(), tmpGraph);
+					// Detected read-after-write issues
+					// Warning generation
 					tool.warnOn(node, "Detected a possible over-write issue. Over-write location: " + p.getRight().getCall().getLocation());
 				}
 			}
@@ -168,7 +172,9 @@ public class ReadWritePathChecker implements
 	}
 	
 
-
+	/**
+	* Recursive function that checks CFGs and call graphs to detect if a node is executed after another
+	**/
 	private boolean interproceduralCheck(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>, PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool, CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Statement startNode = CFGUtils.extractTargetNodeFromGraph(graph, start);
@@ -177,9 +183,10 @@ public class ReadWritePathChecker implements
 		boolean isStartDeferred =  startNode instanceof GoDefer;
 		
 		Statement endNode = CFGUtils.extractTargetNodeFromGraph(graph, end);
-		if(endNode != null) {
+		if(endNode != null) { 
+			// Detected end node in the CFG
 			
-			boolean isEndDeferred =  endNode instanceof GoDefer;
+			boolean isEndDeferred =  endNode instanceof GoDefer; // check for dereference
 		
 			if(isMatching(graph, startNode, isStartDeferred, endNode, isEndDeferred)) {
 				if(computeGraph) {
@@ -197,7 +204,8 @@ public class ReadWritePathChecker implements
 				
 			
 		} 
-
+		
+		// The CFG does not contain the node, than it checks recusively the callees of the function represented by CFG
 		if(checkCallees(tool, graph, startNode, end, seenCallees, isStartDeferred)) {
 			if(computeGraph){
 				ReadWriteNode node = new ReadWriteNode(tmpGraph, startNode);
@@ -209,7 +217,8 @@ public class ReadWritePathChecker implements
 			}
 			return true;
 		}
-
+		
+		// The CFG does not contain the node, than it checks recusively the callers of the function represented by CFG
 		if(checkCallers(tool, graph, end, seenCallees, seenCallers)) {
 			if(computeGraph){
 				ReadWriteNode node = new ReadWriteNode(tmpGraph, startNode);
@@ -394,15 +403,6 @@ private boolean checkCallees(CheckToolWithAnalysisResults<SimpleAbstractState<Po
 					Statement sTarget = CFGUtils.extractTargetNodeFromGraph(callerCFG, c);
 					if(sTarget != null)
 						if(interproceduralCheck(tool,callerCFG, sTarget, end, seenCallees, seenCallers)) {
-							/*
-							 
-							if(computeGraph){
-								ReadWriteNode node = new ReadWriteNode(tmpGraph, sTarget);
-								tmpGraph.addNode(node);
-								//tmpGraph.addEdge(new ReadWriteEdge(node, destinationNode, InfoEdgeType.CALLER));
-								destinationNode = node;
-							}
-							*/
 							return true;
 						}
 				}

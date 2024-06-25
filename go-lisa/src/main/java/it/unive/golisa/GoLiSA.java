@@ -153,11 +153,17 @@ public class GoLiSA {
 			conf.semanticChecks.add(new NumericalOverflowChecker());
 			break;
 		case "read-write":
+			/**
+			* This part of the code apply the settings to perform the string analysis and collect possible pair candidates
+			* read-write and write-write that could keep the same key value (Lines 2-4 of Algorithm 1)
+			**/
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-					new ValueEnvironment<>(new Tarsis()),
+					new ValueEnvironment<>(new Tarsis()), // It sets the string abstract domain to use, in our case Tarsis. As reported in the paper, it can be also customized with others (if implemented).
 					new TypeEnvironment<>(new InferredTypes()));
-			readWritePairChecker = new ReadWritePairChecker();
+					
+			// It sets the ReadWritePairChecker that collect the candidates exploiting the results of string analysis.
+			readWritePairChecker = new ReadWritePairChecker(); 
 			conf.semanticChecks.add(readWritePairChecker);
 			break;
 		default:
@@ -189,13 +195,11 @@ public class GoLiSA {
 				Set<Pair<CodeAnnotation, CodeMemberDescriptor>> appliedAnnotations = annotationLoader
 						.getAppliedAnnotations();
 
-				// if(EntryPointsUtils.containsPossibleEntryPointsForAnalysis(appliedAnnotations,
-				// annotationSet)) {
 				Set<CFG> cfgs = EntryPointsUtils.computeEntryPointSetFromPossibleEntryPointsForAnalysis(program,
 						appliedAnnotations, annotationSet);
 				for (CFG c : cfgs)
 					program.addEntryPoint(c);
-				// }
+
 			}
 
 			if (!program.getEntryPoints().isEmpty()) {
@@ -228,7 +232,7 @@ public class GoLiSA {
 		LiSA lisa = new LiSA(conf);
 
 		try {
-			lisa.run(program);
+			lisa.run(program); // actual execution of the analysis
 		} catch (Exception e) {
 			// an error occurred during the analysis
 			e.printStackTrace();
@@ -236,8 +240,13 @@ public class GoLiSA {
 		}
 	
 		if(analysis.equals("read-write")) {
-			//phase 2
-
+			
+			/**
+			* This part of the code is executed after the execution of string analysis and the computation of candidates
+			* It checks for each candidate pair if exist an execution path where an instruction of the pair is executed after the other 
+			* and in case triggers a warning when the issue is detected (Lines 5-14 of Algorithm 1)
+			**/
+			
 			LiSAConfiguration conf2 = new LiSAConfiguration();
 			conf2.workdir = outputDir;
 			conf2.jsonOutput = true;
@@ -247,6 +256,9 @@ public class GoLiSA {
 			conf2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
 					new ValueEnvironment<>(new Tarsis()),
 					new TypeEnvironment<>(new InferredTypes()));
+			/**
+			* It set the ReadWritePathChecker that perform the checks on execution paths and gets the candidates computed by readWritePairChecker
+			**/
 			conf2.semanticChecks.add(new ReadWritePathChecker(readWritePairChecker.getReadAfterWriteCandidates(), readWritePairChecker.getOverWriteCandidates(), cmd.hasOption(dumpAdditionalAnalysisInfo)));
 
 			conf2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;

@@ -76,6 +76,9 @@ public class ReadWritePairChecker implements
 					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool) {
 
+		/**
+		* Here, it is where pair candidates are computed, i.e. after string analysis (that is computed )
+		**/
 		readAfterWriteCandidates = computeReadAfterWriteCandidates();
 		overWriteCandidates = computeOverWriteCandidates();
 	}
@@ -89,7 +92,9 @@ public class ReadWritePairChecker implements
 			for(AnalysisReadWriteHFInfo r : readers) {
 				if(!matchCollection(r,w))
 					continue;
-				
+				/**
+				* match depending to the type of reader (single key, range of keys, composite key)
+				**/
 				boolean found = false;
 				switch(r.getInfo().getKeyType()) {
 					case SINGLE:
@@ -266,13 +271,16 @@ public class ReadWritePairChecker implements
 					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
 					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>> tool,
 			CFG graph, Statement node) {
+		/**
+		* Here, it is where are collected the sring value for each read/write operation
+		**/
 		
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
 		if(calls.isEmpty())
 			return true;
 		
 		for(Call call : calls) {
-			if(ReadWriteHFUtils.isReadOrWriteCall(call)) {
+			if(ReadWriteHFUtils.isReadOrWriteCall(call)) { // Detected read/write operation
 				try {
 					ReadWriteInfo info = ReadWriteHFUtils.getReadWriteInfo(call);
 					int[] keyParams = info.getKeyParameters();
@@ -280,10 +288,13 @@ public class ReadWritePairChecker implements
 					for (AnalyzedCFG<
 							SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>,
 							PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) {
+							TypeEnvironment<InferredTypes>> result : tool.getResultOf(call.getCFG())) { // It query the analysis results for a specific call
 						Call resolved = call instanceof UnresolvedCall ? (Call) tool.getResolvedVersion((UnresolvedCall) call, result) : call;
 						ArrayList<Set<Tarsis>> keyValues = new ArrayList<>();
 						
+						/**
+						* Depending of the call kind, it extract the possible key values with the method extractKeyValues
+						**/
 						if (resolved instanceof NativeCall) {
 							NativeCall nativeCfg = (NativeCall) resolved;
 							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
@@ -302,6 +313,9 @@ public class ReadWritePairChecker implements
 							keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
 						}
 						
+						/**
+						* The possible key values and the operation are collected in a more specific data structure called AnalysisReadWriteHFInfo
+						**/
 						AnalysisReadWriteHFInfo infoForAnalysis;
 						if(!info.hasCollection())
 							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
@@ -365,7 +379,7 @@ public class ReadWritePairChecker implements
 		ArrayList<Set<Tarsis>> valStringDomain = new ArrayList<>(keyParams.length);
 		
 		for(int i=0; i < keyParams.length; i++) {
-			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i]+1;
+			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i]+1; // yields the parameter corresponding to the key value
 			valStringDomain.add(new HashSet<>());
 			if(par < parametersLength) {
 				
@@ -375,8 +389,8 @@ public class ReadWritePairChecker implements
 				PointBasedHeap, ValueEnvironment<Tarsis>,
 				TypeEnvironment<InferredTypes>> state = result
 						.getAnalysisStateAfter(call.getParameters()[par]);
-				for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), node)) {
-					valStringDomain.get(i).add(state.getState().getValueState().eval((ValueExpression) stack, node));
+				for (SymbolicExpression stack : state.rewrite(state.getComputedExpressions(), node)) { // stack corresponding to the key value
+					valStringDomain.get(i).add(state.getState().getValueState().eval((ValueExpression) stack, node)); // It queries tha string analysis state to get the possible key value
 				}
 			}
 		}

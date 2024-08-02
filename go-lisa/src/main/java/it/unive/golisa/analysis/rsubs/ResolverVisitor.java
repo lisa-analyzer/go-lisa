@@ -6,6 +6,7 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.symbolic.ExpressionVisitor;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapExpression;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -16,6 +17,7 @@ import it.unive.lisa.symbolic.value.PushInv;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 
@@ -30,33 +32,56 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	private static final String CANNOT_PROCESS_ERROR = "Cannot process a heap expression with a value domain";
 
 	@Override
-	public String visit(AccessChild expression, String receiver, String child, Object... params)
+	public String visit(
+			AccessChild expression,
+			String receiver,
+			String child,
+			Object... params)
 			throws SemanticException {
 		throw new SemanticException(CANNOT_PROCESS_ERROR);
 	}
 
 	@Override
-	public String visit(MemoryAllocation expression, Object... params) throws SemanticException {
+	public String visit(
+			MemoryAllocation expression,
+			Object... params)
+			throws SemanticException {
 		throw new SemanticException(CANNOT_PROCESS_ERROR);
 	}
 
 	@Override
-	public String visit(HeapReference expression, String arg, Object... params) throws SemanticException {
+	public String visit(
+			HeapReference expression,
+			String arg,
+			Object... params)
+			throws SemanticException {
 		throw new SemanticException(CANNOT_PROCESS_ERROR);
 	}
 
 	@Override
-	public String visit(HeapDereference expression, String arg, Object... params) throws SemanticException {
+	public String visit(
+			HeapDereference expression,
+			String arg,
+			Object... params)
+			throws SemanticException {
 		throw new SemanticException(CANNOT_PROCESS_ERROR);
 	}
 
 	@Override
-	public String visit(UnaryExpression expression, String arg, Object... params) throws SemanticException {
+	public String visit(
+			UnaryExpression expression,
+			String arg,
+			Object... params)
+			throws SemanticException {
 		return null;
 	}
 
 	@Override
-	public String visit(BinaryExpression expression, String left, String right, Object... params)
+	public String visit(
+			BinaryExpression expression,
+			String left,
+			String right,
+			Object... params)
 			throws SemanticException {
 
 		if (expression.getOperator() == StringConcat.INSTANCE) {
@@ -69,7 +94,12 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	}
 
 	@Override
-	public String visit(TernaryExpression expression, String left, String middle, String right, Object... params)
+	public String visit(
+			TernaryExpression expression,
+			String left,
+			String middle,
+			String right,
+			Object... params)
 			throws SemanticException {
 
 		if (expression.getOperator() == StringReplace.INSTANCE) {
@@ -81,17 +111,26 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	}
 
 	@Override
-	public String visit(Skip expression, Object... params) throws SemanticException {
+	public String visit(
+			Skip expression,
+			Object... params)
+			throws SemanticException {
 		return null;
 	}
 
 	@Override
-	public String visit(PushAny expression, Object... params) throws SemanticException {
+	public String visit(
+			PushAny expression,
+			Object... params)
+			throws SemanticException {
 		return null;
 	}
 
 	@Override
-	public String visit(Constant expression, Object... params) throws SemanticException {
+	public String visit(
+			Constant expression,
+			Object... params)
+			throws SemanticException {
 		if (expression.getValue() instanceof String)
 			return (String) expression.getValue();
 		else
@@ -99,7 +138,10 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	}
 
 	@Override
-	public String visit(Identifier expression, Object... params) throws SemanticException {
+	public String visit(
+			Identifier expression,
+			Object... params)
+			throws SemanticException {
 		@SuppressWarnings("unchecked")
 		ValueEnvironment<StringConstantPropagation> cs = (ValueEnvironment<StringConstantPropagation>) params[0];
 
@@ -110,7 +152,29 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 	}
 
 	@Override
-	public String visit(PushInv expression, Object... params) throws SemanticException {
+	public String visit(
+			PushInv expression,
+			Object... params)
+			throws SemanticException {
 		return null;
+	}
+
+	@Override
+	public String visit(
+			HeapExpression expression,
+			String[] subExpressions,
+			Object... params)
+			throws SemanticException {
+		throw new SemanticException(CANNOT_PROCESS_ERROR);
+	}
+
+	@Override
+	public String visit(
+			ValueExpression expression,
+			String[] subExpressions,
+			Object... params)
+			throws SemanticException {
+		throw new SemanticException(
+				"No visiting rule specified for value expression of type " + expression.getClass().getName());
 	}
 }

@@ -17,7 +17,6 @@ import it.unive.golisa.frontend.GoFrontEnd;
 import it.unive.lisa.AnalysisException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.conf.LiSAConfiguration;
-import it.unive.lisa.imp.ParsingException;
 import it.unive.lisa.outputs.compare.JsonReportComparer;
 import it.unive.lisa.outputs.compare.JsonReportComparer.BaseDiffAlgorithm;
 import it.unive.lisa.outputs.compare.JsonReportComparer.DiffAlgorithm;
@@ -36,8 +35,6 @@ public abstract class GoAnalysisTestExecutor {
 	/**
 	 * Performs a test, running an analysis. The test will fail if:
 	 * <ul>
-	 * <li>The imp file cannot be parsed (i.e. a {@link ParsingException} is
-	 * thrown)</li>
 	 * <li>The previous working directory using for the test execution cannot be
 	 * deleted</li>
 	 * <li>The analysis run terminates with an {@link AnalysisException}</li>

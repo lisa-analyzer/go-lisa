@@ -29,10 +29,9 @@ mainClassName = 'it.unive.golisa.GoLiSA'
 dependencies {
     antlr 'org.antlr:antlr4:4.11.1'    
     testImplementation 'junit:junit:4.12'
-    implementation 'io.github.lisa-analyzer:lisa-program:0.1b10-SNAPSHOT'
-    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1b10-SNAPSHOT'
-    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1b10-SNAPSHOT'
-    implementation 'io.github.lisa-analyzer:lisa-imp:0.1b10-SNAPSHOT'
+    implementation 'io.github.lisa-analyzer:lisa-sdk:0.1'
+    implementation 'io.github.lisa-analyzer:lisa-program:0.1'
+    implementation 'io.github.lisa-analyzer:lisa-analyses:0.1'
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.5.0'
 
   	implementation 'javax.xml.bind:jaxb-api:2.2.4'

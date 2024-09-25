@@ -21,6 +21,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
@@ -82,6 +83,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import it.unive.lisa.util.file.FileManager;
 
 /**
  * The Go frontend for LiSA.
@@ -107,7 +109,7 @@ public class GoLiSA {
 	 * 
 	 * @throws AnalysisSetupException if something goes wrong with the analysis
 	 */
-	public static void main(String[] args) throws AnalysisSetupException {
+	public static void main(String[] args) throws AnalysisSetupException, IOException {
 
 		Options options = new Options();
 
@@ -146,6 +148,8 @@ public class GoLiSA {
 		String filePath = cmd.getOptionValue("input");
 		
 		String outputDir = cmd.getOptionValue("output");
+		FileManager.forceDeleteFolder(outputDir);
+		FileUtils.forceMkdir(new File(outputDir));
 		
 		GraphType dumpOpt = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 		

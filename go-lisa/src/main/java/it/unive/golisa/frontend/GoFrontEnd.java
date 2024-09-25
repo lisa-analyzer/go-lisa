@@ -168,27 +168,25 @@ public class GoFrontEnd extends GoParserBaseVisitor<Object> implements GoRuntime
 
 		long start = System.currentTimeMillis();
 
-		InputStream stream = new FileInputStream(getFilePath());
-
-		log.info("Lines of code: " + Files.lines(Paths.get(getFilePath())).count());
-
-		GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
-		GoParser parser = new GoParser(new CommonTokenStream(lexer));
-		parser.setErrorHandler(new BailErrorStrategy());
-
-		ParseTree tree = parser.sourceFile();
-		long parsingTime = System.currentTimeMillis();
-
-		Program result = visitSourceFile((SourceFileContext) tree);
-
-		log.info("PARSING TIME: " + (parsingTime - start) + " CFG time: " + (System.currentTimeMillis() - parsingTime));
-
-		stream.close();
-
-		// Register all the types
-		registerTypes(program);
-
-		return result;
+		try (InputStream stream = new FileInputStream(getFilePath())) {
+			log.info("Lines of code: " + Files.lines(Paths.get(getFilePath())).count());
+	
+			GoLexer lexer = new GoLexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+			GoParser parser = new GoParser(new CommonTokenStream(lexer));
+			parser.setErrorHandler(new BailErrorStrategy());
+	
+			ParseTree tree = parser.sourceFile();
+			long parsingTime = System.currentTimeMillis();
+	
+			Program result = visitSourceFile((SourceFileContext) tree);
+	
+			log.info("PARSING TIME: " + (parsingTime - start) + " CFG time: " + (System.currentTimeMillis() - parsingTime));
+	
+			// Register all the types
+			registerTypes(program);
+	
+			return result;
+		}
 	}
 
 	private static void clearTypes() {

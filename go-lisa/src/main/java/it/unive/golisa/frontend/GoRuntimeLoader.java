@@ -1,5 +1,7 @@
 package it.unive.golisa.frontend;
 
+import java.util.function.Consumer;
+
 import it.unive.golisa.cfg.runtime.bytes.function.NewBuffer;
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.runtime.container.list.function.New;
@@ -116,6 +118,7 @@ import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.type.Type;
 
 /**
  * The interface managing the loading of runtimes.
@@ -192,7 +195,7 @@ public interface GoRuntimeLoader {
 	}
 
 	private void loadCosmosTypes(Program program) {
-		GoStructType.registerType(Grant.getGrantType(program));
+		register(Grant.getGrantType(program), program, GoStructType::registerType);
 	}
 
 	private void loadFilePath(Program program) {
@@ -209,11 +212,11 @@ public interface GoRuntimeLoader {
 	private void loadIO(Program program) {
 		CodeUnit io = new CodeUnit(runtimeLocation, program, "io");
 
-		GoStructType.registerType(PipeReader.getPipeReaderType(program));
-		GoStructType.registerType(PipeWriter.getPipeWriterType(program));
-		GoStructType.registerType(Reader.getReaderType(program));
-		GoStructType.registerType(Writer.getWriterType(program));
-		GoStructType.registerType(FileInfo.getFileInfoType(program));
+		register(PipeReader.getPipeReaderType(program), program, GoStructType::registerType);
+		register(PipeWriter.getPipeWriterType(program), program, GoStructType::registerType);
+		register(Reader.getReaderType(program), program, GoStructType::registerType);
+		register(Writer.getWriterType(program), program, GoStructType::registerType);
+		register(FileInfo.getFileInfoType(program), program, GoStructType::registerType);
 
 		// adding functions
 		io.addCodeMember(new Copy(runtimeLocation, io));
@@ -426,7 +429,7 @@ public interface GoRuntimeLoader {
 		GoStructType.registerType(Buffer.getBufferType(program));
 		GoStructType.registerType(Reader.getReaderType(program));
 
-		GoInterfaceType.registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
+		register(ChaincodeStubInterface.getChainCodeStubInterfaceType(program), program, GoInterfaceType::registerType);
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
 		GoInterfaceType.registerType(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program));
@@ -542,6 +545,11 @@ public interface GoRuntimeLoader {
 
 		CodeUnit cu = new CodeUnit(runTimeSourceLocation, program, lib);
 		program.addUnit(cu);
+	}
+	
+	private static <T extends Type> void register(T t, Program p, Consumer<T> consumer) {
+		p.getTypes().registerType(t);
+		consumer.accept(t);
 	}
 
 }

@@ -236,10 +236,10 @@ public interface GoRuntimeLoader {
 		loadIO(program);
 
 		// adding types
-		GoStructType.registerType(PipeReader.getPipeReaderType(program));
-		GoStructType.registerType(PipeWriter.getPipeWriterType(program));
-		GoStructType.registerType(Reader.getReaderType(program));
-		GoStructType.registerType(Writer.getWriterType(program));
+		register(PipeReader.getPipeReaderType(program), program, GoStructType::registerType);
+		register(PipeWriter.getPipeWriterType(program), program, GoStructType::registerType);
+		register(Reader.getReaderType(program), program, GoStructType::registerType);
+		register(Writer.getWriterType(program), program, GoStructType::registerType);
 
 		// adding functions
 		ioutil.addCodeMember(new NopCloser(runtimeLocation, ioutil));
@@ -257,8 +257,8 @@ public interface GoRuntimeLoader {
 	private void loadOs(Program program) {
 		CodeUnit os = new CodeUnit(runtimeLocation, program, "os");
 
-		GoStructType.registerType(File.getFileType(program));
-		GoStructType.registerType(FileMode.getFileModeType(program));
+		register(File.getFileType(program), program, GoStructType::registerType);
+		register(FileMode.getFileModeType(program), program, GoStructType::registerType);
 
 		// os/file
 		os.addCodeMember(new Create(runtimeLocation, os));
@@ -322,8 +322,7 @@ public interface GoRuntimeLoader {
 		listUnit.addCodeMember(new New(runtimeLocation, listUnit));
 
 		// adding types
-		program.getTypes().registerType(list);
-		GoStructType.registerType(list);
+		register(list, program, GoStructType::registerType);
 
 		// registers methods
 		List.registerMethods();
@@ -339,7 +338,7 @@ public interface GoRuntimeLoader {
 		CodeUnit mathRand = new CodeUnit(runtimeLocation, program, "rand");
 
 		// registers types of rand package
-		GoStructType.registerType(Rand.getRandType(program));
+		register(Rand.getRandType(program), program, GoStructType::registerType);
 
 		// adding functions and static methods
 		mathRand.addCodeMember(new ExpFloat64(runtimeLocation, mathRand));
@@ -389,9 +388,7 @@ public interface GoRuntimeLoader {
 		Buffer bufferType = Buffer.getBufferType(program);
 
 		// adding types
-		program.getTypes().registerType(bufferType);
-		GoStructType.registerType(bufferType);
-
+		register(bufferType, program, GoStructType::registerType);
 		// registers methods
 		Buffer.registerMethods();
 		program.addUnit(bytes);
@@ -401,7 +398,7 @@ public interface GoRuntimeLoader {
 
 	private void loadHFContractApi(Program program) {
 		CodeUnit contractapi = new CodeUnit(runtimeLocation, program, "contractapi");
-		GoInterfaceType.registerType(TransactionContext.getTransactionContextType(program));
+		register(TransactionContext.getTransactionContextType(program), program, GoInterfaceType::registerType);
 
 		TransactionContext.registerMethods();
 
@@ -411,7 +408,7 @@ public interface GoRuntimeLoader {
 	
 	private void loadStateBased(Program program) {
 		CodeUnit statebased = new CodeUnit(runtimeLocation, program, "statebased");
-		GoInterfaceType.registerType(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program));
+		register(KeyEndorsementPolicy.getKeyEndorsementPolicyType(program), program, GoInterfaceType::registerType);
 
 		KeyEndorsementPolicy.registerMethods();
 
@@ -426,22 +423,27 @@ public interface GoRuntimeLoader {
 		CodeUnit shim = new CodeUnit(runtimeLocation, program, "shim");
 
 		// FIXME
-		GoStructType.registerType(Buffer.getBufferType(program));
-		GoStructType.registerType(Reader.getReaderType(program));
+		register(Buffer.getBufferType(program), program, GoStructType::registerType);
+		register(Reader.getReaderType(program), program, GoStructType::registerType);
 
 		register(ChaincodeStubInterface.getChainCodeStubInterfaceType(program), program, GoInterfaceType::registerType);
-		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
-		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
-		GoInterfaceType.registerType(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program));
-		GoInterfaceType.registerType(HistoryQueryIteratorInterface.getHistoryQueryIteratorInterfaceType(program));
-		GoStructType.registerType(Handler.getHandlerType(program));
-		GoStructType.registerType(TLSProperties.getTLSPropertiesType(program));
-		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
-		GoStructType.registerType(ChaincodeServer.getChaincodeServerType(program));
-		GoStructType.registerType(Response.getResponseType(program));
-		GoStructType.registerType(CommonIterator.getCommonIteratorType(program));
-		GoStructType.registerType(StateQueryIterator.getStateQueryIterator(program));
-		GoStructType.registerType(HistoryQueryIterator.getStateQueryIterator(program));
+		register(Reader.getReaderType(program), program, GoStructType::registerType);
+		
+		
+		register(Chaincode.getChaincodeType(program), program, GoInterfaceType::registerType);
+		register(HistoryQueryIteratorInterface.getHistoryQueryIteratorInterfaceType(program), program, GoInterfaceType::registerType);
+		register(CommonIteratorInterface.getCommonIteratorInterfaceType(program), program, GoInterfaceType::registerType);
+		register(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program), program, GoInterfaceType::registerType);
+		
+		
+		register(Handler.getHandlerType(program), program, GoStructType::registerType);
+		register(TLSProperties.getTLSPropertiesType(program), program, GoStructType::registerType);
+		register(ChaincodeStub.getChaincodeStubType(program), program, GoStructType::registerType);
+		register(ChaincodeServer.getChaincodeServerType(program), program, GoStructType::registerType);
+		register(Response.getResponseType(program), program, GoStructType::registerType);
+		register(CommonIterator.getCommonIteratorType(program), program, GoStructType::registerType);
+		register(StateQueryIterator.getStateQueryIterator(program), program, GoStructType::registerType);
+		register(HistoryQueryIterator.getStateQueryIterator(program), program, GoStructType::registerType);
 
 		// adding functions
 		shim.addCodeMember(new Start(runtimeLocation, shim));
@@ -457,8 +459,8 @@ public interface GoRuntimeLoader {
 		ChaincodeStub.getChaincodeStubType(program).getUnit()
 				.addAncestor(ChaincodeStubInterface.getChainCodeStubInterfaceType(program).getUnit());
 
-		// FIXME: we should register this type just in GoInterfaceType
-		program.getTypes().registerType(ChaincodeStubInterface.getChainCodeStubInterfaceType(program));
+		register(ChaincodeStubInterface.getChainCodeStubInterfaceType(program), program, GoInterfaceType::registerType);
+
 
 		// adding compilation unit to program
 		program.addUnit(shim);
@@ -518,9 +520,8 @@ public interface GoRuntimeLoader {
 	private void loadTime(Program program) {
 		CodeUnit time = new CodeUnit(runtimeLocation, program, "time");
 
-		Time timeType = Time.getTimeType(program);
-		GoStructType.registerType(timeType);
-		program.getTypes().registerType(timeType);
+		register(Time.getTimeType(program), program, GoStructType::registerType);
+
 		program.getTypes().registerType(Month.INSTANCE);
 		program.getTypes().registerType(Duration.INSTANCE);
 

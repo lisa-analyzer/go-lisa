@@ -873,9 +873,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			lastStmt = currentStmt.getRight();
 
-			// scoping must be updated for each case
-			updateVisileIds(backup, lastStmt);
 		}
+		
+		// scoping must be updated for each case
+		updateVisileIds(backup, lastStmt);
+		
 		blockDeep--;
 		return Triple.of(entryNode, block, lastStmt);
 	}

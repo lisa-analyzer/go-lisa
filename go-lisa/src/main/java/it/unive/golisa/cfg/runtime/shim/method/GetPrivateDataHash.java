@@ -5,6 +5,7 @@ import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -31,10 +32,13 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.ResolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.BinaryExpression;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
@@ -122,108 +126,46 @@ public class GetPrivateDataHash extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression middle, SymbolicExpression right, StatementStore<A> expressions)
 				throws SemanticException {
-			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
 
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), new ReferenceType(sliceOfBytes),
-					GoErrorType.INSTANCE);
 
-			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, left.getCodeLocation(), new Annotations(),
-					true);
+			AccessChild collectionChild = new AccessChild(left.getStaticType(), left, middle, getLocation());
 			
+			Type  sliceBytes= GoSliceType.getSliceOfBytes();
+			AccessChild keyChild = new AccessChild(sliceBytes, collectionChild, right, getLocation());
+			
+			
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(original.getLocation(), sliceBytes, GoErrorType.INSTANCE);
+
+			Annotations annots = new Annotations();
 			if (original instanceof ResolvedCall)
 				for (CodeMember target : ((ResolvedCall) original).getTargets())
 					for (Annotation ann : target.getDescriptor().getAnnotations())
-						created.getAnnotations().addAnnotation(ann);
+						annots.addAnnotation(ann);
 			
-			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, left.getCodeLocation());
-			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, left.getCodeLocation());
-			AnalysisState<A> result = state.bottom();
+			
+			AnalysisState<A> pState = state.smallStepSemantics(keyChild, original);
+			
+			ExpressionSet computeExprs = pState.getComputedExpressions();
+			AnalysisState<A> ret = state.bottom();
+			
+			for(SymbolicExpression exp : pState.getState().rewrite(computeExprs, original, state.getState())) {
+				if(exp instanceof Identifier) {
+					Identifier v = (Identifier) exp;
+					for (Annotation ann : annots)
+						v.addAnnotation(ann);
+				}
+				ret = ret.lub(GoTupleExpression.allocateTupleExpression(pState, 
+					annots, 
+					this,
+					getLocation(), 
+					tupleType,
+					exp,
+					new Constant(GoNilType.INSTANCE, "nil", getLocation())));
+			}			
+			
 
-			// Retrieves all the identifiers reachable from expr
-			ExpressionSet reachableIds = state.getState().reachableFrom(left, this, state.getState());
-			for (SymbolicExpression id : reachableIds) {
-				if (id instanceof AllocationSite)
-					id = new HeapReference(new ReferenceType(id.getStaticType()), id, getLocation());
-				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
-				TernaryExpression lExp =  new TernaryExpression(GoSliceType.getSliceOfBytes(), derefId, middle, right,
-						GetPrivateDataHashOperatorFirstParameter.INSTANCE, getLocation());
-				BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, derefId, right,
-						GetPrivateDataHashOperatorThirdParameter.INSTANCE, getLocation());
-				AnalysisState<A> asg = state.assign(deref, lExp, original);
-				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
-						getLocation(), tupleType,
-						ref,
-						rExp);
-
-				result = result.lub(tupleExp);
-			}
-
-			return result;
+			return ret;
 		}
 	}
 
-	/**
-	 * The GetPrivateDataHash operator returning the first parameter of the tuple
-	 * expression result.
-	 * 
-	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
-	 */
-	public static class GetPrivateDataHashOperatorFirstParameter implements TernaryOperator {
-
-		/**
-		 * The singleton instance of this class.
-		 */
-		public static final GetPrivateDataHashOperatorFirstParameter INSTANCE = new GetPrivateDataHashOperatorFirstParameter();
-
-		/**
-		 * Builds the operator. This constructor is visible to allow
-		 * subclassing: instances of this class should be unique, and the
-		 * singleton can be retrieved through field {@link #INSTANCE}.
-		 */
-		protected GetPrivateDataHashOperatorFirstParameter() {
-		}
-
-		@Override
-		public String toString() {
-			return "GetPrivateDataHashOperator_1";
-		}
-
-		@Override
-		public Set<Type> typeInference(TypeSystem types, Set<Type> left,Set<Type> middle, Set<Type> right) {
-			return Collections.singleton(GoSliceType.getSliceOfBytes());
-		}
-	}
-
-	/**
-	 * The GetPrivateDataHash operator returning the second parameter of the tuple
-	 * expression result.
-	 * 
-	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
-	 */
-	public static class GetPrivateDataHashOperatorThirdParameter implements BinaryOperator {
-
-		/**
-		 * The singleton instance of this class.
-		 */
-		public static final GetPrivateDataHashOperatorThirdParameter INSTANCE = new GetPrivateDataHashOperatorThirdParameter();
-
-		/**
-		 * Builds the operator. This constructor is visible to allow
-		 * subclassing: instances of this class should be unique, and the
-		 * singleton can be retrieved through field {@link #INSTANCE}.
-		 */
-		protected GetPrivateDataHashOperatorThirdParameter() {
-		}
-
-		@Override
-		public String toString() {
-			return "GetPrivateDataHashOperator_3";
-		}
-
-		@Override
-		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
-			return Collections.singleton(GoErrorType.INSTANCE);
-		}
-	}
 }

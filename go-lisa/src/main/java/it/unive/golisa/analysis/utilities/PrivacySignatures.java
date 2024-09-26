@@ -15,7 +15,7 @@ public class PrivacySignatures {
 	public static final Map<Pair<String, CallType>, Set<String>> privateInputs;
 	public static final Map<Pair<String, CallType>, Set<String>> publicReadStates;
 	public static final Map<Pair<String, CallType>, Set<String>> publicWriteStatesAndResponses;
-	public static final Map<Pair<String, CallType>, Set<String>>privateReadStates;
+	public static final Map<Pair<String, CallType>, Set<String>> privateReadStates;
 	public static final Map<Pair<String, CallType>, Set<String>> privateWriteStates;
 	
 	public static final Map<Pair<String, CallType>, Set<Pair<String, Integer>>> publicWriteStatesAndResponsesWithCriticalParams;

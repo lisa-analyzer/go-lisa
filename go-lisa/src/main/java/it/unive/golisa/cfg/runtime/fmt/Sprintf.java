@@ -146,6 +146,8 @@ public class Sprintf extends NativeCFG {
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
 			return Set.of(types.getStringType());
 		}
+		
+		
 	}
 	
 	/**

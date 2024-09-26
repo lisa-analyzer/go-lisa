@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
@@ -13,21 +14,28 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.call.ResolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
@@ -110,98 +118,40 @@ public class Marshal extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
 
-			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
-					new ReferenceType(sliceOfBytes), GoErrorType.INSTANCE);
+			Type  sliceBytes= GoSliceType.getSliceOfBytes();
 
-			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(),
-					true);
-			HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), created, expr.getCodeLocation());
-			HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
-			AnalysisState<A> result = state.bottom();
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(original.getLocation(), sliceBytes, GoErrorType.INSTANCE);
 
-			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(expr, this,
-					state.getState()).elements;
-			for (SymbolicExpression id : reachableIds) {
-				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(GoSliceType.getSliceOfBytes(), derefId,
-						MarshalOperatorFirstParameter.INSTANCE, getLocation());
-				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId,
-						MarshalOperatorSecondParameter.INSTANCE, getLocation());
-				AnalysisState<A> asg = state.assign(deref, left, original);
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
-						getLocation(), tupleType,
-						ref,
-						right));
-			}
+			Annotations annots = new Annotations();
+			if (original instanceof ResolvedCall)
+				for (CodeMember target : ((ResolvedCall) original).getTargets())
+					for (Annotation ann : target.getDescriptor().getAnnotations())
+						annots.addAnnotation(ann);
+			
+			
+			AnalysisState<A> pState = state.smallStepSemantics(expr, original);
+			
+			ExpressionSet computeExprs = pState.getComputedExpressions();
+			AnalysisState<A> ret = state.bottom();
+			
+			for(SymbolicExpression exp : pState.getState().rewrite(computeExprs, original, state.getState())) {
+				if(exp instanceof Identifier) {
+					Identifier v = (Identifier) exp;
+					for (Annotation ann : annots)
+						v.addAnnotation(ann);
+				}
+				ret = ret.lub(GoTupleExpression.allocateTupleExpression(pState, 
+					annots, 
+					this,
+					getLocation(), 
+					tupleType,
+					exp,
+					new Constant(GoErrorType.INSTANCE, "error", getLocation())));
+			}			
+			
 
-			return result;
+			return ret;
 		}
 	}
 
-	/**
-	 * The Marshal operator returning the second parameter of the tuple
-	 * expression result.
-	 * 
-	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
-	 */
-	public static class MarshalOperatorFirstParameter implements UnaryOperator {
-
-		/**
-		 * The singleton instance of this class.
-		 */
-		public static final MarshalOperatorFirstParameter INSTANCE = new MarshalOperatorFirstParameter();
-
-		/**
-		 * Builds the operator. This constructor is visible to allow
-		 * subclassing: instances of this class should be unique, and the
-		 * singleton can be retrieved through field {@link #INSTANCE}.
-		 */
-		protected MarshalOperatorFirstParameter() {
-		}
-
-		@Override
-		public String toString() {
-			return "Marshal_1";
-		}
-
-		@Override
-		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(GoSliceType.getSliceOfBytes());
-		}
-	}
-
-	/**
-	 * The Marshal operator returning the second parameter of the tuple
-	 * expression result.
-	 * 
-	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
-	 */
-	public static class MarshalOperatorSecondParameter implements UnaryOperator {
-
-		/**
-		 * The singleton instance of this class.
-		 */
-		public static final MarshalOperatorSecondParameter INSTANCE = new MarshalOperatorSecondParameter();
-
-		/**
-		 * Builds the operator. This constructor is visible to allow
-		 * subclassing: instances of this class should be unique, and the
-		 * singleton can be retrieved through field {@link #INSTANCE}.
-		 */
-		protected MarshalOperatorSecondParameter() {
-		}
-
-		@Override
-		public String toString() {
-			return "Marshal_2";
-		}
-
-		@Override
-		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-			return Collections.singleton(GoErrorType.INSTANCE);
-		}
-	}
 }

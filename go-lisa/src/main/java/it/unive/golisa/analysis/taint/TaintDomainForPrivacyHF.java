@@ -95,7 +95,9 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 	@Override
 	public TaintDomainForPrivacyHF fixedVariable(Identifier id, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 
-	
+		if(id.getName().equals("err"))
+			return CLEAN;
+		
 		Annotations annots = id.getAnnotations();
 		if (annots.isEmpty())
 			return BaseNonRelationalValueDomain.super.fixedVariable(id, pp, oracle);
@@ -138,7 +140,8 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 	 * @return {@code true} if is tainted, otherwise {@code false}
 	 */
 	public boolean isTainted() {
-		return this == TAINTED || this == TOP;
+		return this == TAINTED //|| this == TOP
+				;
 	}
 
 	/**

@@ -6,6 +6,7 @@ import java.util.Set;
 import it.unive.golisa.cfg.runtime.fabriccontractapigo.type.TransactionContext;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -21,6 +22,8 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.AccessChild;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
@@ -99,16 +102,9 @@ public class GetStub extends NativeCFG {
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(new UnaryExpression(getStaticType(), expr, new UnaryOperator() {
-				
-				@Override
-				public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
-					Set<Type> res = new HashSet<>();
-					res.add(ChaincodeStub.getChaincodeStubType(getProgram()));
-					res.add(ChaincodeStubInterface.getChainCodeStubInterfaceType(getProgram()));
-					return res;
-				}
-			}, getLocation()), original);
+			
+			AccessChild ac = new AccessChild(ChaincodeStub.getChaincodeStubType(getProgram()), expr, new Constant(GoStringType.INSTANCE, "STUB_VALUE", getLocation()), getLocation());
+			return state.smallStepSemantics(ac, original);
 		}
 	}
 }

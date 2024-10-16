@@ -16,6 +16,7 @@ import it.unive.golisa.cfg.runtime.encoding.json.function.MarshalIndent;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Unmarshal;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Valid;
 import it.unive.golisa.cfg.runtime.fabriccontractapigo.type.TransactionContext;
+import it.unive.golisa.cfg.runtime.fabriccontractapigo.type.TransactionContextInterface;
 import it.unive.golisa.cfg.runtime.fmt.Print;
 import it.unive.golisa.cfg.runtime.fmt.Printf;
 import it.unive.golisa.cfg.runtime.fmt.Println;
@@ -399,9 +400,10 @@ public interface GoRuntimeLoader {
 	private void loadHFContractApi(Program program) {
 		CodeUnit contractapi = new CodeUnit(runtimeLocation, program, "contractapi");
 		register(TransactionContext.getTransactionContextType(program), program, GoInterfaceType::registerType);
-
+		register(TransactionContextInterface.getTransactionContextInterfaceType(program), program, GoInterfaceType::registerType);
+		
 		TransactionContext.registerMethods();
-
+		TransactionContextInterface.registerMethods();
 		// adding compilation unit to program
 		program.addUnit(contractapi);
 	}

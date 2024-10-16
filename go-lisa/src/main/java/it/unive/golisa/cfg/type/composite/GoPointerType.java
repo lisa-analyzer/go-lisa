@@ -5,14 +5,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.literal.GoNil;
+import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.type.PointerType;
+import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
  * A Go pointer type.
@@ -142,5 +153,40 @@ public class GoPointerType implements PointerType, Type {
 	@Override
 	public Type getInnerType() {
 		return baseType;
+	}
+	
+	@Override
+	public Expression unknownValue(CFG cfg, CodeLocation location) {
+		
+		return new Expression(cfg, location, baseType) {
+			
+			@Override
+			public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
+				
+				return false;
+			}
+			
+			@Override
+			public String toString() {
+				
+				return "<POINTER_TO_UNKNOWN_VALUE>";
+			}
+			
+			@Override
+			public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(AnalysisState<A> entryState,
+					InterproceduralAnalysis<A> interprocedural, StatementStore<A> expressions) throws SemanticException {
+				
+				MemoryAllocation created = new MemoryAllocation(baseType, location);
+				HeapReference ref = new HeapReference(new ReferenceType(baseType), created, location);				
+				
+				return entryState.smallStepSemantics(ref, this);
+	
+			}
+			
+			@Override
+			protected int compareSameClass(Statement o) {
+				return 0;
+			}
+		};
 	}
 }

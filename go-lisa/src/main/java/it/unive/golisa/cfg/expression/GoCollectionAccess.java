@@ -22,6 +22,7 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapExpression;
 import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
@@ -97,6 +98,34 @@ public class GoCollectionAccess extends BinaryExpression {
 			SimpleAbstractState<?, ?, ?> simpleState = (SimpleAbstractState<?, ?, ?>) state.getState();
 			if (simpleState.getValueState() instanceof ValueEnvironment<?>) {
 				ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) simpleState.getValueState();
+				
+				if(left instanceof Identifier) {
+					
+					NonRelationalValueDomain<?> leftState = valueEnv.getMap().get(left);
+					if (leftState instanceof TaintDomainForPrivacyHF) {
+						if(((TaintDomainForPrivacyHF) leftState).isTainted()) {
+							AnalysisState<A> tmp = state.bottom();
+							for (SymbolicExpression id : result.getComputedExpressions())
+								tmp = tmp.lub(result.assign(id, tainted, this));
+							result = result.lub(new AnalysisState<>(tmp.getState(), result.getComputedExpressions()));
+							return result;
+						}
+					}
+				}
+				if(right instanceof Identifier) {
+					
+					NonRelationalValueDomain<?> rightState = valueEnv.getMap().get(right);
+					if (rightState instanceof TaintDomainForPrivacyHF) {
+						if(((TaintDomainForPrivacyHF) rightState).isTainted()) {
+							AnalysisState<A> tmp = state.bottom();
+							for (SymbolicExpression id : result.getComputedExpressions())
+								tmp = tmp.lub(result.assign(id, tainted, this));
+							result = result.lub(new AnalysisState<>(tmp.getState(), result.getComputedExpressions()));
+							return result;
+						}
+					}
+				}
+				
 				for (SymbolicExpression stack : simpleState.rewrite(state.getComputedExpressions(), getReceiver(), simpleState)) {
 					NonRelationalValueDomain<?> stackValue = valueEnv.eval((ValueExpression)stack, getReceiver(), simpleState);
 					if (stackValue instanceof TaintDomainForPrivacyHF) {

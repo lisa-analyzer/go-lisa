@@ -60,7 +60,7 @@ public class GoMul extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 							state.smallStepSemantics(new BinaryExpression(resultType(leftType, rightType), left, right,
 									NumericNonOverflowingMul.INSTANCE, getLocation()), this));
 		if(result.isBottom())
-			state
+			result = state
 			.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(Untyped.INSTANCE, left, right, new BinaryOperator() {
 				
 				@Override

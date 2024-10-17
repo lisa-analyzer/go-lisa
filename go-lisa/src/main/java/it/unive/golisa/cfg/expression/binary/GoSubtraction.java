@@ -63,7 +63,7 @@ public class GoSubtraction extends it.unive.lisa.program.cfg.statement.BinaryExp
 			}
 
 		if(result.isBottom())
-			state
+			result = state
 			.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(Untyped.INSTANCE, left, right, new BinaryOperator() {
 				
 				@Override

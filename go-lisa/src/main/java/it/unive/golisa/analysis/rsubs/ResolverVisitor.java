@@ -6,6 +6,7 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.symbolic.ExpressionVisitor;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapExpression;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -16,6 +17,7 @@ import it.unive.lisa.symbolic.value.PushInv;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 
@@ -111,6 +113,19 @@ public class ResolverVisitor implements ExpressionVisitor<String> {
 
 	@Override
 	public String visit(PushInv expression, Object... params) throws SemanticException {
+		return null;
+	}
+
+	@Override
+	public String visit(HeapExpression expression, String[] subExpressions, Object... params) throws SemanticException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visit(ValueExpression expression, String[] subExpressions, Object... params)
+			throws SemanticException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

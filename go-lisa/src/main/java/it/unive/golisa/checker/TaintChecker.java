@@ -115,6 +115,7 @@ public class TaintChecker implements
 					Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
 					for (CodeMember n : nativeCfgs) {
 						Parameter[] parameters = n.getDescriptor().getFormals();
+						boolean[] resultsParam = new boolean[parameters.length];
 						for (int i = 0; i < parameters.length; i++)
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
 								AnalysisState<
@@ -136,17 +137,16 @@ public class TaintChecker implements
 									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
 									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
-										tool.warnOn(call, message + "The value passed for the " + StringUtilities.ordinal(i + 1)
-												+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-												+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+										resultsParam[i] = true;
 								}
 							}
-
+						buildWarning(tool, call, parameters, resultsParam);
 					}
 				} else if (resolved instanceof CFGCall) {
 					CFGCall cfg = (CFGCall) resolved;
 					for (CodeMember n : cfg.getTargets()) {
 						Parameter[] parameters = n.getDescriptor().getFormals();
+						boolean[] resultsParam = new boolean[parameters.length];
 						for (int i = 0; i < parameters.length; i++)
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
 								AnalysisState<
@@ -168,12 +168,11 @@ public class TaintChecker implements
 
 									if (valueState.eval((ValueExpression) s, node, state.getState())
 											.isTainted())
-										tool.warnOn(call, message + "The value passed for the " + StringUtilities.ordinal(i + 1)
-												+ " parameter of this call is tainted, and it reaches the sink at parameter '"
-												+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
+										resultsParam[i] = true;
 								}
 							}
 
+						buildWarning(tool, call, parameters, resultsParam);
 					}
 				}
 			}
@@ -184,6 +183,26 @@ public class TaintChecker implements
 
 		return true;
 
+	}
+	
+	protected void buildWarning(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+			UnresolvedCall call, Parameter[] parameters, boolean[] results) {
+			
+		int matches = 0;
+		String res = "";
+		for (int i=0; i < results.length; i++) {
+			if(results[i]) {
+				if(matches > 0)
+					res += ", ";
+				
+				res += parameters != null ? parameters[i].getName() +"("+StringUtilities.ordinal(i + 1)+")" : StringUtilities.ordinal(i + 1) +" param";
+				matches++;
+			}
+			
+		}
+		if(matches > 0)
+			tool.warnOn(call, "["+ message + "] " + "The sink "+ call.getFullTargetName() +" has the following tainted parameter"+ (matches > 1 ? "s": "") + ": " + res); 
+			
 	}
 
 	@Override

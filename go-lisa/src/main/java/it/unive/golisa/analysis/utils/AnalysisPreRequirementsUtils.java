@@ -184,12 +184,13 @@ public class AnalysisPreRequirementsUtils {
 				
 				@Override
 				public Boolean apply(Statement t) {
-					if (t instanceof Call)
+					if (t instanceof Call) {
 						if(signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
-										.anyMatch(s -> (((Call) t).getFullTargetName()).equals(set.getKey()+"::"+s) //qualifier::targetName
-													))) {
+										.anyMatch(s -> (((Call) t).getFullTargetName()).equals(set.getKey()+"::"+s)  //qualifier::targetName
+												|| (((Call) t).getFullTargetName()).equals(s)))) {
 							return true;
 						}
+					}
 					return false;
 				}
 			};

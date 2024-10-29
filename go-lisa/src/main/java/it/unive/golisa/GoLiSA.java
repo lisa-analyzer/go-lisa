@@ -202,16 +202,12 @@ public class GoLiSA {
 		case "unhandled-errors":
 			conf.syntacticChecks.add(new UnhandledErrorsChecker());
 			break;
-		case "var-numerical-overflow":
+		case "numerical-issues":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
 					new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new NumericalOverflowOfVariablesChecker());
-		case "div-by-zero":
-			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
-					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new DivByZeroChecker());
+			conf.semanticChecks.add(new DivByZeroChecker());			
 		default:
 
 		}

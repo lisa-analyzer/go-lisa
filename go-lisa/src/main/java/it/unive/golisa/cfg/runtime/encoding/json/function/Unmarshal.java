@@ -1,5 +1,8 @@
 package it.unive.golisa.cfg.runtime.encoding.json.function;
 
+import java.util.Map;
+
+import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
@@ -8,7 +11,10 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.StatementStore;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -21,7 +27,10 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
+import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
@@ -96,12 +105,34 @@ public class Unmarshal extends NativeCFG {
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 				throws SemanticException {
+			
+			AnalysisState<A> ret = state;
+			if(left instanceof Identifier && (right instanceof Identifier || (right instanceof HeapReference && ((HeapReference) right).getExpression() instanceof Identifier))) {
+				Identifier tmp = right instanceof HeapReference ? (Identifier) ((HeapReference) right).getExpression() : (Identifier) right;
 
-			AnalysisState<A> errorValue = state
-					.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+				
+				if (state.getState() instanceof SimpleAbstractState<?, ?, ?>) {
+					SimpleAbstractState<?, ?, ?> simpleState = (SimpleAbstractState<?, ?, ?>) ret.getState();
+					if (simpleState.getValueState() instanceof ValueEnvironment<?>) {
+						ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) simpleState.getValueState();
+						Map<Identifier, Object> map = (Map<Identifier, Object>) valueEnv.getMap();
+						map.put(tmp, map.get(left));
+						
+						for(SymbolicExpression exp : simpleState.reachableFrom(tmp, original, simpleState)) {
+							if(exp instanceof Identifier && !(exp instanceof MemoryPointer))
+								map.put((Identifier)exp, map.get(left));
+						}
+
+					}
+				}
+			}
+			
+			AnalysisState<A> errorValue = ret.lub(state
+					.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original));
 			AnalysisState<A> nilValue = state
 					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return errorValue.lub(nilValue);
 		}
 	}
+
 }

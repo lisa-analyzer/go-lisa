@@ -30,7 +30,7 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 				return false;
 		} else if (formals.length > actuals.length)
 			return false;
-
+/*
 		for (int i = 0; i < formals.length; i++)
 			if (i == formals.length - 1 && hasVarargs)
 				if (i == types.length)
@@ -42,7 +42,7 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 				return matchCallee(formals[i], types[i]);
 			else if (!matches(formals[i].getStaticType(), types[i]))
 				return false;
-
+*/
 		return true;
 	}
 

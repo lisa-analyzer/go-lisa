@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.fabriccontractapigo.method;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.fabriccontractapigo.type.TransactionContext;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
@@ -24,10 +21,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.value.Constant;
-import it.unive.lisa.symbolic.value.UnaryExpression;
-import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 
 /**
  * func (ctx *TransactionContext) GetStub() shim.ChaincodeStubInterface.

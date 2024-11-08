@@ -1,12 +1,17 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
+import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
+import it.unive.golisa.analysis.taint.Tainted;
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -17,10 +22,13 @@ import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
+import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
+import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
+import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.type.TypeDomain;
 import it.unive.lisa.analysis.value.ValueDomain;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
@@ -35,7 +43,9 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Constant;
+import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
@@ -227,10 +237,18 @@ public class GoMultiAssignment extends NaryExpression {
 						if (typeAtPos instanceof ReferenceType) {
 							HeapReference ref = new HeapReference(new ReferenceType(typeAtPos), access, getLocation());
 							assign = finalResult.assign(idExp, ref, this);
-						} else
+						} else {
+							if(isHFTaintPrivacyState(idState))
+								assign =  (AnalysisState<A>) computeHFPrivacyState(idState, idExp, retExp, finalResult, access);
+							else 
+								assign = finalResult.assign(idExp, access, this);
+						}
+					} else {
+						if(isHFTaintPrivacyState(idState))
+							assign =  (AnalysisState<A>) computeHFPrivacyState(idState, idExp, retExp, finalResult, access);
+						else
 							assign = finalResult.assign(idExp, access, this);
-					} else
-						assign = finalResult.assign(idExp, access, this);
+					}
 
 					partialResult = partialResult.lub(assign);
 				}
@@ -241,6 +259,80 @@ public class GoMultiAssignment extends NaryExpression {
 
 		return finalResult;
 	}
+		
+		
+	private AnalysisState<?> computeHFPrivacyState(AnalysisState<?> state, SymbolicExpression left,
+			SymbolicExpression right, AnalysisState<?> result, AccessChild access) throws SemanticException {
+		Tainted tainted = new Tainted(getLocation());
+		
+		// Workaround for cases such as arr[t], where t is tainted
+
+		if (state.getState() instanceof SimpleAbstractState<?, ?, ?>) {
+			SimpleAbstractState<?, ?, ?> simpleState = (SimpleAbstractState<?, ?, ?>) state.getState();
+			if (simpleState.getValueState() instanceof ValueEnvironment<?>) {
+				ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) simpleState.getValueState();
+				
+				if(left instanceof Identifier) {
+					NonRelationalValueDomain<?> leftState = valueEnv.getMap().get(left);
+					if (leftState instanceof TaintDomainForPrivacyHF) {
+						if(((TaintDomainForPrivacyHF) leftState).isTainted()) {
+							return result.assign(left, tainted, this);
+						}
+					}
+				}
+				if(right instanceof Identifier  || right instanceof AccessChild) {
+					Set<Identifier> ids = new HashSet<>();
+					
+					if(right instanceof AccessChild) {
+						AccessChild ac = (AccessChild) right;
+						
+						SymbolicExpression tmp = ac.getContainer();
+						
+						if(tmp instanceof HeapDereference)
+							tmp = ((HeapDereference) tmp).getExpression();
+						
+						if(tmp instanceof Identifier)
+							ids.add((Identifier) tmp);
+						
+						tmp = ac.getChild();
+						
+						if(tmp instanceof HeapDereference)
+							tmp = ((HeapDereference) tmp).getExpression();
+						
+						if(tmp instanceof Identifier)
+							ids.add((Identifier) tmp);
+						
+					} else
+						ids.add((Identifier) right);
+					
+					for(Identifier id : ids) {
+						NonRelationalValueDomain<?> rightState = valueEnv.getMap().get(id);
+						if (rightState instanceof TaintDomainForPrivacyHF) {
+							if(((TaintDomainForPrivacyHF) rightState).isTainted()) {
+								return result.assign(left, tainted, this);
+							}
+						}
+					}
+				}		
+			}
+		}
+	
+		return result.assign(left, access, this);
+	}
+
+	private boolean isHFTaintPrivacyState(AnalysisState<?> state) {
+		if (state.getState() instanceof SimpleAbstractState<?, ?, ?>) {
+			SimpleAbstractState<?, ?, ?> simpleState = (SimpleAbstractState<?, ?, ?>) state.getState();
+			if (simpleState.getValueState() instanceof ValueEnvironment<?>) {
+				ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) simpleState.getValueState();
+				return valueEnv.lattice instanceof TaintDomainForPrivacyHF;
+			}
+		}
+		
+		return false;
+	}
+
+
 
 	/**
 	 * Yields the assigned identifiers.

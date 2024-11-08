@@ -105,8 +105,13 @@ public class GoCollectionAccess extends BinaryExpression {
 					if (leftState instanceof TaintDomainForPrivacyHF) {
 						if(((TaintDomainForPrivacyHF) leftState).isTainted()) {
 							AnalysisState<A> tmp = state.bottom();
-							for (SymbolicExpression id : result.getComputedExpressions())
+							for (SymbolicExpression id : result.getComputedExpressions()) { 
 								tmp = tmp.lub(result.assign(id, tainted, this));
+								tmp = tmp.lub(state.smallStepSemantics(
+										new AccessChild(Untyped.INSTANCE,
+												new HeapDereference(getStaticType(), id, getLocation()), tainted, getLocation()),
+										this));
+							}
 							result = result.lub(new AnalysisState<>(tmp.getState(), result.getComputedExpressions()));
 							return result;
 						}

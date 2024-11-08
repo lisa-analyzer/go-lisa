@@ -206,7 +206,6 @@ public class GoLiSA {
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_INPUT_IN_PUBLIC_STATES);
 		
-		
 			if(res[1])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PUBLIC_INPUT_IN_PRIVATE_STATES, PrivacySignatures.publicInputs, PrivacySignatures.privateWriteStatesWithCriticalParams);
 			else 
@@ -225,7 +224,7 @@ public class GoLiSA {
 			
 			if(res[4])
 				runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
-		
+
 		}
 		
 		System.out.println(buildString(filePath, res));

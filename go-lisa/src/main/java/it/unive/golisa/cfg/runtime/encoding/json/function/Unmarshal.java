@@ -32,6 +32,7 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.MemoryPointer;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.symbolic.value.Skip;
 
 /**
  * func Unmarshal(data []byte, v interface{}) error.
@@ -106,9 +107,11 @@ public class Unmarshal extends NativeCFG {
 				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 				throws SemanticException {
 			
-			AnalysisState<A> ret = state;
+			// cheap way to clone the state to avoid side effects
+			AnalysisState<A> ret = state.smallStepSemantics(new Skip(getLocation()), original);
+			
 			if(left instanceof Identifier && (right instanceof Identifier || (right instanceof HeapReference && ((HeapReference) right).getExpression() instanceof Identifier))) {
-				Identifier tmp = right instanceof HeapReference ? (Identifier) ((HeapReference) right).getExpression() : (Identifier) right;
+				Identifier lhs = right instanceof HeapReference ? (Identifier) ((HeapReference) right).getExpression() : (Identifier) right;
 
 				
 				if (state.getState() instanceof SimpleAbstractState<?, ?, ?>) {
@@ -116,13 +119,12 @@ public class Unmarshal extends NativeCFG {
 					if (simpleState.getValueState() instanceof ValueEnvironment<?>) {
 						ValueEnvironment<?> valueEnv = (ValueEnvironment<?>) simpleState.getValueState();
 						Map<Identifier, Object> map = (Map<Identifier, Object>) valueEnv.getMap();
-						map.put(tmp, map.get(left));
+						map.put(lhs, map.get(left));
 						
-						for(SymbolicExpression exp : simpleState.reachableFrom(tmp, original, simpleState)) {
+						for(SymbolicExpression exp : simpleState.reachableFrom(lhs, original, simpleState)) {
 							if(exp instanceof Identifier && !(exp instanceof MemoryPointer))
 								map.put((Identifier)exp, map.get(left));
 						}
-
 					}
 				}
 			}

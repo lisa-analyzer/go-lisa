@@ -87,8 +87,8 @@ public class GoCollectionAccess extends BinaryExpression {
 			Unit unit = this.getProgram().getUnit(left.toString());
 			if(unit != null) {
 				Global global = unit.getGlobal(right.toString());
-				
-				return new AccessGlobal(getCFG(), getLocation(), unit, global).forwardSemantics(state, interprocedural, expressions);
+				if(global != null)
+					return new AccessGlobal(getCFG(), getLocation(), unit, global).forwardSemantics(state, interprocedural, expressions);
 			}
 		}
 		

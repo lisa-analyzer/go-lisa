@@ -21,6 +21,7 @@ import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
@@ -45,7 +46,8 @@ public class DecodeString extends NativeCFG {
 	 * @param unit the unit to which this native cfg belongs to
 	 */
 	public DecodeString(CodeLocation location, CompilationUnit unit) {
-		super(new CodeMemberDescriptor(location, unit, false, "DecodeString", GoErrorType.INSTANCE,
+		super(new CodeMemberDescriptor(location, unit, true, "DecodeString", GoErrorType.INSTANCE,
+				new Parameter(location, "encoding", Encoding.getEncodingType(unit.getProgram())),
 				new Parameter(location, "s", GoStringType.INSTANCE)),
 				DecodeStringImpl.class);
 	}
@@ -55,7 +57,7 @@ public class DecodeString extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
 	 */
-	public static class DecodeStringImpl extends UnaryExpression
+	public static class DecodeStringImpl extends BinaryExpression
 			implements PluggableStatement {
 
 		private Statement original;
@@ -65,10 +67,6 @@ public class DecodeString extends NativeCFG {
 			original = st;
 		}
 
-		@Override
-		protected int compareSameClassAndParams(Statement o) {
-			return 0; // nothing else to compare
-		}
 
 		/**
 		 * Builds the pluggable statement.
@@ -76,12 +74,12 @@ public class DecodeString extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param par   the parameter
+		 * @param params   the parameters
 		 * 
 		 * @return the pluggable statement
 		 */
-		public static DecodeStringImpl build(CFG cfg, CodeLocation location, Expression par) {
-			return new DecodeStringImpl(cfg, location, par);
+		public static DecodeStringImpl build(CFG cfg, CodeLocation location, Expression[] params) {
+			return new DecodeStringImpl(cfg, location, params[0], params[1]);
 		}
 
 		/**
@@ -92,48 +90,58 @@ public class DecodeString extends NativeCFG {
 		 *                     defined
 		 * @param par     the par of this expression
 		 */
-		public DecodeStringImpl(CFG cfg, CodeLocation location, Expression par) {
-			super(cfg, location, "DecodeStringImpl", GoErrorType.INSTANCE, par);
+		public DecodeStringImpl(CFG cfg, CodeLocation location, Expression left, Expression right) {
+			super(cfg, location, "DecodeStringImpl", GoErrorType.INSTANCE, left, right);
 		}
 
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
-				StatementStore<A> expressions) throws SemanticException {
-			Type  sliceBytes= GoSliceType.getSliceOfBytes();
-
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(original.getLocation(), sliceBytes, GoErrorType.INSTANCE);
-
-			Annotations annots = new Annotations();
-			if (original instanceof ResolvedCall)
-				for (CodeMember target : ((ResolvedCall) original).getTargets())
-					for (Annotation ann : target.getDescriptor().getAnnotations())
-						annots.addAnnotation(ann);
-			
-			
-			AnalysisState<A> pState = state.smallStepSemantics(expr, original);
-			
-			ExpressionSet computeExprs = pState.getComputedExpressions();
-			AnalysisState<A> ret = state.bottom();
-			
-			for(SymbolicExpression exp : pState.getState().rewrite(computeExprs, original, state.getState())) {
-				if(exp instanceof Identifier) {
-					Identifier v = (Identifier) exp;
-					for (Annotation ann : annots)
-						v.addAnnotation(ann);
-				}
-				ret = ret.lub(GoTupleExpression.allocateTupleExpression(pState, 
-					annots, 
-					this,
-					getLocation(), 
-					tupleType,
-					exp,
-					new Constant(GoErrorType.INSTANCE, "error", getLocation())));
-			}			
-			
-
-			return ret;
+		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+				Type  sliceBytes= GoSliceType.getSliceOfBytes();
+	
+				GoTupleType tupleType = GoTupleType.getTupleTypeOf(original.getLocation(), sliceBytes, GoErrorType.INSTANCE);
+	
+				Annotations annots = new Annotations();
+				if (original instanceof ResolvedCall)
+					for (CodeMember target : ((ResolvedCall) original).getTargets())
+						for (Annotation ann : target.getDescriptor().getAnnotations())
+							annots.addAnnotation(ann);
+				
+				
+				AnalysisState<A> pState = state.smallStepSemantics(right, original);
+				
+				ExpressionSet computeExprs = pState.getComputedExpressions();
+				AnalysisState<A> ret = state.bottom();
+				
+				for(SymbolicExpression exp : pState.getState().rewrite(computeExprs, original, state.getState())) {
+					if(exp instanceof Identifier) {
+						Identifier v = (Identifier) exp;
+						for (Annotation ann : annots)
+							v.addAnnotation(ann);
+					}
+					ret = ret.lub(GoTupleExpression.allocateTupleExpression(pState, 
+						annots, 
+						this,
+						getLocation(), 
+						tupleType,
+						exp,
+						new Constant(GoErrorType.INSTANCE, "error", getLocation())));
+				}			
+				
+	
+				return ret;
 		}
+
+
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+
+
 	}
 }

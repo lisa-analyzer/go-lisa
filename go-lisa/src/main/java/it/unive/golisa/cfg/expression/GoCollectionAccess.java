@@ -12,11 +12,15 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.SourceCodeLocation;
+import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.global.AccessGlobal;
+import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -25,6 +29,7 @@ import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
@@ -78,6 +83,14 @@ public class GoCollectionAccess extends BinaryExpression {
 		if (right instanceof Tainted)
 			return state.smallStepSemantics(right, this);
 		
+		if(left instanceof Variable) {
+			Unit unit = this.getProgram().getUnit(left.toString());
+			if(unit != null) {
+				Global global = unit.getGlobal(right.toString());
+				
+				return new AccessGlobal(getCFG(), getLocation(), unit, global).forwardSemantics(state, interprocedural, expressions);
+			}
+		}
 		
 		SymbolicExpression inner;
 		if (left instanceof HeapReference)

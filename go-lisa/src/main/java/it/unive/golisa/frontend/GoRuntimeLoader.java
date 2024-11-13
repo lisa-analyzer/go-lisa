@@ -115,11 +115,13 @@ import it.unive.golisa.cfg.runtime.time.type.Month;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.runtime.url.PathEscape;
 import it.unive.golisa.cfg.runtime.url.QueryEscape;
+import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.golang.util.GoLangAPISignatureMapper;
 import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.type.Type;
@@ -325,11 +327,12 @@ public interface GoRuntimeLoader {
 
 		register(Encoding.getEncodingType(program), program, GoInterfaceType::registerType);
 		register(StdEncoding.getStdEncodingType(program), program, GoInterfaceType::registerType);
+
+		base64Unit.addGlobal(new Global(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, base64Unit, "StdEncoding",
+				false, Encoding.getEncodingType(program)));
 		
 		Encoding.registerMethods();
 		StdEncoding.registerMethods();
-	
-
 		program.addUnit(base64Unit);
 	}
 

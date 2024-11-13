@@ -326,7 +326,7 @@ public class GoLiSA {
 								
 															ValueEnvironment<TaintDomainForPrivacyHF> valueState = state.getState().getValueState();
 															if (valueState.eval((ValueExpression) s, call, state.getState())
-																	.isTainted() || valueState.eval((ValueExpression) s, call, state.getState()).isTop())
+																	.isTainted()) //|| valueState.eval((ValueExpression) s, call, state.getState()).isTop())
 																resultsParam[sink.getRight()] = true;
 														}
 												

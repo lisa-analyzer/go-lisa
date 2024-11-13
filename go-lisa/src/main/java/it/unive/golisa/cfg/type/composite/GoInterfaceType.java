@@ -14,6 +14,7 @@ import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.InMemoryType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
@@ -67,6 +68,8 @@ public class GoInterfaceType implements Type, UnitType, InMemoryType {
 
 	private final String name;
 	private final CompilationUnit unit;
+	
+
 
 	/**
 	 * Builds an interface type.
@@ -100,6 +103,8 @@ public class GoInterfaceType implements Type, UnitType, InMemoryType {
 	public boolean isEmptyInterface() {
 		return name.equals(EmptyInterface.EMPTY_INTERFACE_NAME);
 	}
+	
+	
 
 	@Override
 	public boolean canBeAssignedTo(Type other) {
@@ -181,6 +186,7 @@ public class GoInterfaceType implements Type, UnitType, InMemoryType {
 				instances.add(GoStructType.get(un.getName()));
 		return instances;
 	}
+
 
 	@Override
 	public CompilationUnit getUnit() {

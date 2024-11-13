@@ -8,6 +8,9 @@ import it.unive.golisa.cfg.runtime.container.list.function.New;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
 import it.unive.golisa.cfg.runtime.cosmos.time.Grant;
 import it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function.Wrap;
+import it.unive.golisa.cfg.runtime.encoding.base64.function.DecodeString;
+import it.unive.golisa.cfg.runtime.encoding.base64.function.Encoding;
+import it.unive.golisa.cfg.runtime.encoding.base64.function.StdEncoding;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Compact;
 import it.unive.golisa.cfg.runtime.encoding.json.function.HtmlEscape;
 import it.unive.golisa.cfg.runtime.encoding.json.function.Indent;
@@ -167,18 +170,20 @@ public interface GoRuntimeLoader {
 			loadBytes(program);
 		else if (module.equals("encoding/json"))
 			loadJson(program);
+		else if (module.equals("encoding/base64"))
+			loadBase64(program);
 		else if (module.equals("container/list"))
 			loadList(program);
-		else if (module.startsWith("github.com/hyperledger")) {
+		else //if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
-			if (module.endsWith("pkg/statebased"))
+			else	if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
-			if (module.endsWith("/contractapi")) {
+			else if (module.endsWith("/contractapi")) {
 				loadHFContractApi(program);
 				loadShim(program);
 			}
-		} else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
+		else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
 			loadCosmosTypes(program);
 			if (module.endsWith("/errors"))
 				loadCosmosErrors(program);
@@ -313,6 +318,19 @@ public interface GoRuntimeLoader {
 		jsonUnit.addCodeMember(new Valid(runtimeLocation, jsonUnit));
 
 		program.addUnit(jsonUnit);
+	}
+	
+	private void loadBase64(Program program) {
+		CodeUnit base64Unit = new CodeUnit(runtimeLocation, program, "base64");
+
+		register(Encoding.getEncodingType(program), program, GoInterfaceType::registerType);
+		register(StdEncoding.getStdEncodingType(program), program, GoInterfaceType::registerType);
+		
+		Encoding.registerMethods();
+		StdEncoding.registerMethods();
+	
+
+		program.addUnit(base64Unit);
 	}
 
 	private void loadList(Program program) {

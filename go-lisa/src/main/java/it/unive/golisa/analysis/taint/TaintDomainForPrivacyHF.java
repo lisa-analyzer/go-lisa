@@ -22,12 +22,10 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.QuaternaryExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 
@@ -262,37 +260,6 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 		}
 		
 		return eval;
-		/*
-		if(id instanceof StackAllocationSite && pp.toString().contains("carInput")) {
-			StackAllocationSite as = (StackAllocationSite) id;
-				String objName = as.getLocationName();
-				
-				Identifier objRefId = null;
-				for(Identifier k : environment.getKeys())
-					if(k.getName().equals("pp@"+objName)) {
-							objRefId=k;
-							TaintDomainForPrivacyHF asd = environment.getMap().get(objRefId);
-							return evalIdentifier(objRefId, environment, pp, oracle);
-					}
-	
-				if(objRefId != null) {
-					
-					for(Identifier k : environment.getKeys())
-						
-						if(k instanceof Variable ) {			
-							if(k.getCodeLocation().equals(objRefId.getCodeLocation())) {
-							TaintDomainForPrivacyHF value = environment.getMap().get(k);
-							
-							
-							if(value != null && value.isTainted())
-								return TAINTED;
-							}
-						}
-				}
-		}
-		
-		return BaseNonRelationalValueDomain.super.evalIdentifier(id, environment, pp, oracle);
-		*/
 	}
 
 	@Override

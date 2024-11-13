@@ -4,7 +4,10 @@ import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
+import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
+import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
@@ -32,6 +35,7 @@ import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.ReferenceType;
@@ -120,40 +124,27 @@ public class GetFunctionAndParameters extends NativeCFG {
 		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
 				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
 				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			Type sliceOfString = GoSliceType.getSliceOfStrings();
-			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoStringType.INSTANCE,
-					new ReferenceType(sliceOfString));
+			
+			Type stringType = GoStringType.INSTANCE;
+			Type sliceOfStrings= GoSliceType.getSliceOfStrings();
+			
+			GoTupleType tupleType = GoTupleType.getTupleTypeOf(original.getLocation(), stringType, sliceOfStrings);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(sliceOfString, expr.getCodeLocation(), anns, true);
-
+			MemoryAllocation created = new MemoryAllocation(sliceOfStrings, getLocation(), anns, true);
 			if (original instanceof ResolvedCall)
 				for (CodeMember target : ((ResolvedCall) original).getTargets())
 					for (Annotation ann : target.getDescriptor().getAnnotations())
 						created.getAnnotations().addAnnotation(ann);
 			
-			state = state.smallStepSemantics(created, original);
-
-			HeapReference ref = new HeapReference(new ReferenceType(sliceOfString), created, expr.getCodeLocation());
-			HeapDereference deref = new HeapDereference(sliceOfString, ref, expr.getCodeLocation());
-
-			// Assign the len property to this hid
-			Variable len = new Variable(Untyped.INSTANCE, "len",
-					getLocation());
-			AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
-					len, getLocation());
-			AnalysisState<A> lenState = state.assign(lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
-
-			// Assign the cap property to this hid
-			Variable cap = new Variable(Untyped.INSTANCE, "cap",
-					getLocation());
-			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
-					cap, getLocation());
-			AnalysisState<
-					A> capState = lenState.assign(capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
-
-			return GoTupleExpression.allocateTupleExpression(capState, anns, this, getLocation(), tupleType,
-					new PushAny(GoStringType.INSTANCE, getLocation()), ref);
+			AnalysisState<A> tuple = GoTupleExpression.allocateTupleExpression(state, 
+					new Annotations(), 
+					this,
+					getLocation(), 
+					tupleType,
+					new Constant(stringType, "String_Value", getLocation()),
+					created);
+			return tuple;
 		}
 	}
 }

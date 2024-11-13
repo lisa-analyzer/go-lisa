@@ -53,7 +53,7 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 			return state.bottom();
 		if (!rtype.isBooleanType() && !rtype.isUntyped())
 			return state.bottom();
-
+/*
 		if (state.satisfies(left, this) == Satisfiability.SATISFIED)
 			return state;
 		else if (state.satisfies(left, this) == Satisfiability.NOT_SATISFIED)
@@ -65,6 +65,9 @@ public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpre
 					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 							left, right, LogicalOr.INSTANCE, getLocation()), this));
 		else
-			return state.bottom();
+			return state.bottom();*/
+		return state
+				.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
+						left, right, LogicalOr.INSTANCE, getLocation()), this);
 	}
 }

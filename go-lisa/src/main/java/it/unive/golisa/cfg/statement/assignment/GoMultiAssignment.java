@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +25,8 @@ import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.analysis.heap.HeapDomain;
 import it.unive.lisa.analysis.heap.pointbased.AllocationSite;
+import it.unive.lisa.analysis.heap.pointbased.HeapAllocationSite;
+import it.unive.lisa.analysis.heap.pointbased.StackAllocationSite;
 import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.analysis.nonrelational.value.NonRelationalValueDomain;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
@@ -280,8 +281,10 @@ public class GoMultiAssignment extends NaryExpression {
 						}
 					}
 				}
-				if(right instanceof Identifier  || right instanceof AccessChild) {
+				if(right instanceof Identifier  || right instanceof AccessChild || right instanceof HeapReference) {
 					Set<Identifier> ids = new HashSet<>();
+					
+					
 					
 					if(right instanceof AccessChild) {
 						AccessChild ac = (AccessChild) right;
@@ -302,16 +305,51 @@ public class GoMultiAssignment extends NaryExpression {
 						if(tmp instanceof Identifier)
 							ids.add((Identifier) tmp);
 						
-					} else
+					} else if(right instanceof Identifier) {
 						ids.add((Identifier) right);
+					} else if ( right instanceof HeapReference) {
+						ExpressionSet reachables = simpleState.reachableFrom(((HeapReference) right).getExpression(), this, simpleState);
+						
+						for( SymbolicExpression expr : reachables) {
+							if (expr instanceof Identifier)
+								ids.add((Identifier) expr);
+						}
+					}
 					
 					for(Identifier id : ids) {
 						NonRelationalValueDomain<?> rightState = valueEnv.getMap().get(id);
-						if (rightState instanceof TaintDomainForPrivacyHF) {
-							if(((TaintDomainForPrivacyHF) rightState).isTainted()) {
-								return result.assign(left, tainted, this);
+						if(rightState != null) {
+							if (rightState instanceof TaintDomainForPrivacyHF) {
+									if(((TaintDomainForPrivacyHF) rightState).isTainted()) {
+										return result.assign(left, tainted, this);
+									}
+								}
+						}
+						else if (id instanceof AllocationSite) {
+							for(Identifier key : valueEnv.getMap().keySet()) {
+								if(!key.equals(id) && key instanceof AllocationSite) {
+										AllocationSite as = (AllocationSite) key;
+										String objName = as.getLocationName();
+										AllocationSite parent;
+										if(id instanceof StackAllocationSite) {
+											parent = new StackAllocationSite(as.getStaticType(), objName, as.isWeak(), as.getCodeLocation());
+										} else {
+											parent = new HeapAllocationSite(as.getStaticType(), objName, as.isWeak(), as.getCodeLocation());
+										}
+										if(parent.equals(id)) {
+											NonRelationalValueDomain<?> parentState = valueEnv.getMap().get(as);
+											if(parentState != null) {
+												if (parentState instanceof TaintDomainForPrivacyHF) {
+														if(((TaintDomainForPrivacyHF) parentState).isTainted()) {
+															return result.assign(left, tainted, this);
+														}
+													}
+											}
+										}
+								}
 							}
 						}
+									
 					}
 				}		
 			}

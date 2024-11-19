@@ -63,32 +63,38 @@ public class NumericalOverflowOfVariablesChecker implements
 			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool) {
 		// TODO: add a smart way to trigger warnings
 		for(IssueInfo issue : detectedIssues) {
-			tool.warnOn(issue.getStatement(), getWarningMessage(issue.getIssue()));
+			tool.warnOn(issue.getStatement(), getWarningMessage(issue.getIssues()));
 		}
 	}
 
-	private String getWarningMessage(NumericalIssue numericalIssue) {
+	private String getWarningMessage(Set<NumericalIssue> numericalIssues) {
 		
 		String res  ="";
-		switch(numericalIssue) {
-			case OVERFLOW:
-				res = "an integer overflow occurs";
-				break;
-			case MAY_OVERFLOW:
-				res = "an integer overflow may occur";
-				break;
-			case UNDERFLOW:
-				res = "an integer underflow occurs";
-				break;
-			case MAY_UNDERFLOW:
-				res = "an integer underflow may occur";
-				break;
-			default:
-				new IllegalArgumentException("Message for the numerical issue "+ numericalIssue +" not implemented yet!");
-				
+		int i = 0;
+		for(NumericalIssue ni : numericalIssues) {
+			if(i > 0)
+				res += " and ";
+			switch(ni) {
+				case OVERFLOW:
+					res += "an integer overflow occurs";
+					break;
+				case MAY_OVERFLOW:
+					res += "an integer overflow may occur";
+					break;
+				case UNDERFLOW:
+					res += "an integer underflow occurs";
+					break;
+				case MAY_UNDERFLOW:
+					res += "an integer underflow may occur";
+					break;
+				default:
+					new IllegalArgumentException("Message for the numerical issue "+ ni +" not implemented yet!");
+					
+			}
+			i++;
 		}
 		
-		return "Detected numerical issue: " + res;
+		return "Detected numerical issues: " + res;
 	}
 
 	@Override
@@ -188,27 +194,36 @@ public class NumericalOverflowOfVariablesChecker implements
 				if(!intervalAbstractValue.isBottom()) {
 					IntInterval interval = intervalAbstractValue.interval;
 					
-					checkOverflow(tool, node, interval, numericalTypes);					
-					checkUnderflow(tool,node, interval, numericalTypes);
+					NumericalIssue overflow = checkOverflow(tool, node, interval, numericalTypes);					
+					NumericalIssue underflow = checkUnderflow(tool,node, interval, numericalTypes);
+					
+					if(overflow != null || underflow != null) {
+						IssueInfo info = new IssueInfo(node, new HashSet<>());
+						if(overflow != null)
+							info.getIssues().add(overflow);
+						if(underflow != null)
+							info.getIssues().add(underflow);
+						detectedIssues.add(info);
+					}
 				}
 		}
 		
 		
 	}
 
-	private void checkOverflow(
+	private NumericalIssue checkOverflow(
 			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool,
 			Statement node, IntInterval interval, Set<Type> numericalTypes) {
 		Type[] arrayTypes = numericalTypes.toArray(new Type[] {});
 		if(!numericalTypes.isEmpty())
 			if(numericalTypes.size() == 1) {
 				if(isOverflow(interval, arrayTypes[0]))
-					detectedIssues.add(new IssueInfo(node, NumericalIssue.OVERFLOW));
+					return NumericalIssue.OVERFLOW; 
 			} else {
 				if(isOverflow(interval, getWorstCaseTypeForOverflow(numericalTypes)))
-					detectedIssues.add(new IssueInfo(node, NumericalIssue.MAY_OVERFLOW));
+					return NumericalIssue.MAY_OVERFLOW; 
 			}
-		
+		return null;
 	}
 	
 	private Type getWorstCaseTypeForOverflow(Set<Type> numericTypes) {
@@ -231,18 +246,20 @@ public class NumericalOverflowOfVariablesChecker implements
 
 	}
 	
-	private void checkUnderflow(
+	private NumericalIssue checkUnderflow(
 			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Interval>, TypeEnvironment<InferredTypes>>> tool,
 			Statement node, IntInterval interval, Set<Type> numericalTypes) {
 		Type[] arrayTypes = numericalTypes.toArray(new Type[] {});
-		if(!numericalTypes.isEmpty())
+		if(!numericalTypes.isEmpty()) {
 			if(numericalTypes.size() == 1) {
 				if(isUnderflow(interval, arrayTypes[0]))
-					detectedIssues.add(new IssueInfo(node, NumericalIssue.UNDERFLOW));
+					return NumericalIssue.UNDERFLOW;
 			} else {
 				if(isUnderflow(interval, getWorstCaseTypeForUnderflow(numericalTypes)))
-					detectedIssues.add(new IssueInfo(node, NumericalIssue.MAY_UNDERFLOW));
-			}
+					return NumericalIssue.MAY_UNDERFLOW;
+			}		
+		}
+		return null;
 	}
 	
 	private Type getWorstCaseTypeForUnderflow(Set<Type> numericTypes) {
@@ -355,27 +372,28 @@ public class NumericalOverflowOfVariablesChecker implements
 
 		
 		private final Statement statement;
-		private final NumericalIssue issue;
+		private final Set<NumericalIssue> issues;
 		
-		public IssueInfo(Statement statement, NumericalIssue issue) {
+		public IssueInfo(Statement statement, Set<NumericalIssue> issues) {
 			this.statement = statement;
-			this.issue = issue;
+			this.issues = issues;
 		}
 
 		public Statement getStatement() {
 			return statement;
 		}
 
-		public NumericalIssue getIssue() {
-			return issue;
+		public Set<NumericalIssue> getIssues() {
+			return issues;
 		}
+
 
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + getEnclosingInstance().hashCode();
-			result = prime * result + Objects.hash(issue, statement);
+			result = prime * result + Objects.hash(issues, statement);
 			return result;
 		}
 
@@ -390,7 +408,7 @@ public class NumericalOverflowOfVariablesChecker implements
 			IssueInfo other = (IssueInfo) obj;
 			if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
 				return false;
-			return issue == other.issue && Objects.equals(statement, other.statement);
+			return Objects.equals(issues, other.issues) && Objects.equals(statement, other.statement);
 		}
 
 		private NumericalOverflowOfVariablesChecker getEnclosingInstance() {

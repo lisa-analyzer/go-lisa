@@ -76,19 +76,12 @@ public class AnalysisPreRequirementsUtils {
 					return true;
 				break;
 			case "ucci":
+			case "cchi":
 				// at least a cross-contract invocation
 				Map<String, Set<String>> CCIs = new HashMap<>();
 				CCIs.put("ChaincodeStub", Set.of("InvokeChaincode"));
 				CCIs.put("ChaincodeStubInterface", Set.of("InvokeChaincode"));
 				if(countCallsMatchingSignatures(program, CCIs) > 0)
-					return true;
-				break;
-			case "dcci":
-				// at least two cross-contract invocation
-				Map<String, Set<String>> dCCIs = new HashMap<>();
-				dCCIs.put("ChaincodeStub", Set.of("InvokeChaincode"));
-				dCCIs.put("ChaincodeStubInterface", Set.of("InvokeChaincode"));
-				if(countCallsMatchingSignatures(program, dCCIs) > 1)
 					return true;
 				break;
 			case "div-by-zero":

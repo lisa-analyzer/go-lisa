@@ -30,7 +30,7 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 ## Publications
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Pietro Ferrara, Agostino Cortesi: <i>Detection of Read-Write Issues in Hyperledger Fabric Smart Contracts</i>, in Proceedings of The 40th ACM/SIGAPP Symposium On Applied Computing (SAC), 2025
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Static Detection of Untrusted Cross-Contract Invocations in Go Smart Contracts</i> in Proceedings of The 40th ACM/SIGAPP Symposium On Applied Computing (SAC), 2025
-- Luca Olivieri, Luca Negrini,  Vincenzo Arceri, Badar Chachar, Pietro Ferrara, Agostino Cortesi: <i>Detection of Phantom Reads in Hyperledger Fabric</i>, in IEEE Access, vol. 12, pp. 80687-80697, 2024 ([link]([10.1109/ACCESS.2024.3410019](http://doi.org/10.1109/ACCESS.2024.3410019))
+- Luca Olivieri, Luca Negrini,  Vincenzo Arceri, Badar Chachar, Pietro Ferrara, Agostino Cortesi: <i>Detection of Phantom Reads in Hyperledger Fabric</i>, in IEEE Access, vol. 12, pp. 80687-80697, 2024 ([link]([10.1109/ACCESS.2024.3410019](http://doi.org/10.1109/ACCESS.2024.3410019)))
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Fabio Tagliaferro, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Information Flow Analysis for Detecting Non-Determinism in Blockchain</i>. ECOOP 2023: 23:1-23:25 ([link](https://drops.dagstuhl.de/opus/volltexte/2023/18216/))
 - Luca Olivieri, Fabio Tagliaferro, Vincenzo Arceri, Marco Ruaro, Luca Negrini, Agostino Cortesi, Pietro Ferrara, Fausto Spoto, Enrico Talin:
 <i>Ensuring determinism in blockchain software with GoLiSA: an industrial experience report</i>. SOAP@PLDI 2022: 23-29 ([link](https://dl.acm.org/doi/10.1145/3520313.3534658))

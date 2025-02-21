@@ -2,6 +2,7 @@ package it.unive.golisa.checker.hf;
 
 import it.unive.golisa.analysis.tarsis.utils.TarsisUtils;
 import it.unive.golisa.cfg.utils.CFGUtils;
+import it.unive.golisa.checker.hf.cci.CrossContractInvocationInformation;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -48,20 +49,26 @@ public class CrossChannelInvocationsIssuesChecker implements
 		SemanticCheck<
 				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
 
-	private Map<Statement, Set<Tarsis>> crossContractInvocations;
+	private Map<Statement, CrossContractInvocationInformation> crossContractInvocations;
+	private Map<Statement, CrossContractInvocationInformation> crossChannelInvocations;
+
 	
 	private boolean intraChaincode = true;
-
+	private String channelName; // Name of the channel provided by the command line
+	
 	public CrossChannelInvocationsIssuesChecker() {
+		channelName= null;
 	}
 	
-	public CrossChannelInvocationsIssuesChecker(boolean intraChaincode) {
+	public CrossChannelInvocationsIssuesChecker(boolean intraChaincode, String channelName) {
 		this.intraChaincode = intraChaincode;
+		this.channelName= channelName;
 	}
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
 		crossContractInvocations = new HashMap<>();
+		crossChannelInvocations = new HashMap<>();
 	}
 
 	@Override
@@ -75,19 +82,27 @@ public class CrossChannelInvocationsIssuesChecker implements
 		//CASE 1: single CCIs with arbitrary channel
 		Statement[] invocations = crossContractInvocations.keySet().toArray(new Statement[] {});
 		for (int i = 0; i < invocations.length; i++) {
-			Set<Tarsis> stringApproximations = crossContractInvocations.get(invocations[i]);
+			Set<Tarsis> stringApproximations = crossContractInvocations.get(invocations[i]).getChannelApproximations();
+			CrossContractInvocationInformation cchiInfo = new CrossContractInvocationInformation(); 
+			boolean found =false;
 			for(Tarsis t : stringApproximations) {
 				if(mayCrossChannel(t)) {
 					singleCrossChannelInvocations.add(invocations[i]);
-					break;
+					CrossContractInvocationInformation cciInfo = crossContractInvocations.get(invocations[i]);
+					cchiInfo.addAllChannelApproximations(cciInfo.getChannelApproximations());
+					cchiInfo.addAllContractNameApproximations(cciInfo.getContractNameApproximations());
+					found = true;
 				}
 			}
+			if(found)
+				crossChannelInvocations.put(invocations[i], cchiInfo);	
 		}
 		
 		for(Statement cch : singleCrossChannelInvocations) {
 			tool.warnOn(cch, "Detected possible cross-channel invocation. It may lead to a lack of transparency because no new transactions are created during the invocation.");
 			if(intraChaincode)
 				tool.warnOn(cch, "Detected possible cross-channel invocation. It may lead to uncommited write operations during the execution of callee chaincode.");
+			
 		}
 		
 		//CASE 2: CCIs with different channels
@@ -96,8 +111,8 @@ public class CrossChannelInvocationsIssuesChecker implements
 		boolean isDiff = false;
 		for (int i = 0; i < invocations.length - 1; i++) {
 			for (int j = i + 1; j < invocations.length; j++) {
-				Set<Tarsis> t1Set = crossContractInvocations.get(invocations[i]);
-				Set<Tarsis> t2Set = crossContractInvocations.get(invocations[j]);
+				Set<Tarsis> t1Set = crossContractInvocations.get(invocations[i]).getChannelApproximations();
+				Set<Tarsis> t2Set = crossContractInvocations.get(invocations[j]).getChannelApproximations();
 				for (Tarsis t1 : t1Set) {
 					for (Tarsis t2 : t2Set) {
 						if (t1.isTop() || t2.isTop()
@@ -117,6 +132,14 @@ public class CrossChannelInvocationsIssuesChecker implements
 				if (isDiff) {
 					if(!multipleCrossChannelInvocations.contains(Pair.of(invocations[j], invocations[i])))
 						multipleCrossChannelInvocations.add(Pair.of(invocations[i], invocations[j]));
+					if(!crossChannelInvocations.containsKey(invocations[i]))
+						crossChannelInvocations.put(invocations[i], new CrossContractInvocationInformation());
+					crossChannelInvocations.get(invocations[i]).addAllChannelApproximations(crossContractInvocations.get(invocations[i]).getChannelApproximations());
+					crossChannelInvocations.get(invocations[i]).addAllContractNameApproximations(crossContractInvocations.get(invocations[i]).getContractNameApproximations());
+					if(!crossChannelInvocations.containsKey(invocations[j]))
+						crossChannelInvocations.put(invocations[j], new CrossContractInvocationInformation());
+					crossChannelInvocations.get(invocations[j]).addAllChannelApproximations(crossContractInvocations.get(invocations[j]).getChannelApproximations());
+					crossChannelInvocations.get(invocations[j]).addAllContractNameApproximations(crossContractInvocations.get(invocations[j]).getContractNameApproximations());
 				}
 					
 			}
@@ -137,8 +160,19 @@ public class CrossChannelInvocationsIssuesChecker implements
 	private boolean mayCrossChannel(Tarsis t) {
 		return t.isTop() || t.getAutomaton().getFinalStates().size() > 1
 				|| hasFinalStateMultipleIngoingEdges(t.getAutomaton())
-				|| AutomatonUtils.containsTopTransaction(t.getAutomaton())
-				|| AutomatonUtils.hasCycle(t.getAutomaton());
+				|| t.getAutomaton().acceptsTopEventually()
+				|| AutomatonUtils.hasCycle(t.getAutomaton())
+				|| !isNameChannel(t);
+	}
+
+	private boolean isNameChannel(Tarsis t) {
+		if(channelName != null) {
+			// https://github.com/hyperledger/fabric-chaincode-go/blob/main/shim/interfaces.go#L73C2-L74C17
+			// if `channel` is empty string, the caller's channel is assumed.
+			return  t.getAutomaton().isEqualTo(RegexAutomaton.emptyStr())
+					|| t.getAutomaton().isEqualTo(RegexAutomaton.string(channelName));
+		}
+		return false;
 	}
 
 	private boolean hasFinalStateMultipleIngoingEdges(RegexAutomaton automaton) {
@@ -184,13 +218,15 @@ public class CrossChannelInvocationsIssuesChecker implements
 								? (Call) tool.getResolvedVersion((UnresolvedCall) call, result)
 								: call;
 						Set<Tarsis> channelValues = null;
-
+						Set<Tarsis> contractNameValues = null;
+						
 						if (resolved instanceof NativeCall) {
 							NativeCall nativeCfg = (NativeCall) resolved;
 							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
 							for (CodeMember n : nativeCfgs) {
 								Parameter[] parameters = n.getDescriptor().getFormals();
 								channelValues = extractChannelValues(call, parameters.length, node, result);
+								contractNameValues = extractContractNameValues(call, parameters.length, node, result);
 							}
 						} else if (resolved instanceof CFGCall) {
 							CFGCall cfg = (CFGCall) resolved;
@@ -198,14 +234,18 @@ public class CrossChannelInvocationsIssuesChecker implements
 							for (CodeMember n : cfg.getTargets()) {
 								Parameter[] parameters = n.getDescriptor().getFormals();
 								channelValues = extractChannelValues(call, parameters.length, node, result);
+								contractNameValues = extractContractNameValues(call, parameters.length, node, result);
 							}
 						} else {
 							channelValues = extractChannelValues(call, call.getParameters().length, node, result);
+							contractNameValues = extractContractNameValues(call, call.getParameters().length, node, result);
 						}
 
-						crossContractInvocations.putIfAbsent(call, new HashSet<>());
+						crossContractInvocations.putIfAbsent(call, new CrossContractInvocationInformation());
 						if (channelValues != null)
-							crossContractInvocations.get(call).addAll(channelValues);
+							crossContractInvocations.get(call).addAllChannelApproximations(channelValues);
+						if(contractNameValues != null)
+							crossContractInvocations.get(call).addAllContractNameApproximations(contractNameValues);
 					}
 
 				} catch (SemanticException e) {
@@ -215,6 +255,26 @@ public class CrossChannelInvocationsIssuesChecker implements
 			}
 		}
 		return true;
+	}
+
+	private Set<Tarsis> extractContractNameValues(Call call, int parametersLength, Statement node,
+			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result) 
+					throws SemanticException {
+		int par = 1;
+		Set<Tarsis> res = new HashSet<>();
+		if (par < parametersLength) {
+
+			AnalysisState<
+					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
+							TypeEnvironment<InferredTypes>>> state = result
+									.getAnalysisStateAfter(call.getParameters()[par]);
+			for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
+					state.getState())) {
+				res.add(state.getState().getValueState().eval((ValueExpression) stack, node, state.getState()));
+			}
+		}
+
+		return res;
 	}
 
 	private Set<Tarsis> extractChannelValues(Call call, int parametersLength, Statement node, AnalyzedCFG<
@@ -254,4 +314,9 @@ public class CrossChannelInvocationsIssuesChecker implements
 			Unit unit) {
 		return true;
 	}
+
+	public Map<Statement, CrossContractInvocationInformation> getCrossChannelInvocations() {
+		return crossChannelInvocations;
+	}
+	
 }

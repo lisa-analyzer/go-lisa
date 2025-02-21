@@ -9,6 +9,7 @@ import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
@@ -26,6 +27,8 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import it.unive.lisa.util.datastructures.automaton.State;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -132,10 +135,19 @@ public class CrossChannelInvocationsIssuesChecker implements
 	}
 
 	private boolean mayCrossChannel(Tarsis t) {
-		return t.isTop() || t.getAutomaton().getFinalStates().size() > 2
+		return t.isTop() || t.getAutomaton().getFinalStates().size() > 1
+				|| hasFinalStateMultipleIngoingEdges(t.getAutomaton())
 				|| AutomatonUtils.containsTopTransaction(t.getAutomaton())
 				|| AutomatonUtils.hasCycle(t.getAutomaton());
 	}
+
+	private boolean hasFinalStateMultipleIngoingEdges(RegexAutomaton automaton) {
+		for(State f : automaton.getFinalStates())
+			if(automaton.getIngoingTransitionsFrom(f).size() > 1)
+				return true;
+		return false;
+	}
+	
 
 	@Override
 	public void visitGlobal(

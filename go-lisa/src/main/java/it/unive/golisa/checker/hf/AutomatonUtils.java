@@ -2,7 +2,6 @@ package it.unive.golisa.checker.hf;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.SortedSet;
 
 import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.util.datastructures.automaton.State;
@@ -36,8 +35,10 @@ public class AutomatonUtils {
 			for(Transition<RegularExpression> t : automaton.getOutgoingTransitionsFrom(s)) {
 				if(seen.contains(t.getDestination()))
 					return true;
-				else 
-					recursiveDFS(t.getDestination(), automaton, Set.copyOf(seen));
+				else {
+					if (recursiveDFS(t.getDestination(), automaton, new HashSet<State>(seen)))
+						return true;
+				}
 			}
 			return false;
 			

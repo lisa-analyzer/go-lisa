@@ -1,0 +1,42 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/hf/cchi/cchi4/cchi4.go':24:63] on 'untyped SimpleContract::Invoke(*SimpleContract t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Detected possible cross-channel invocation. It may lead to a lack of transparency because no new transactions are created during the invocation."
+  }, {
+    "message" : "['go-testcases/hf/cchi/cchi4/cchi4.go':24:63] on 'untyped SimpleContract::Invoke(*SimpleContract t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Detected possible cross-channel invocation. It may lead to uncommited write operations during the execution of callee chaincode."
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "149ms",
+    "end" : "2025-02-21T10:30:08.506+01:00",
+    "expressions" : "37",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "43",
+    "programs" : "1",
+    "start" : "2025-02-21T10:30:08.357+01:00",
+    "statements" : "12",
+    "units" : "10",
+    "version" : "0.1",
+    "warnings" : "2"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "RelaxedOpenCallPolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "CrossChannelInvocationsIssuesChecker",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/hf/cchi/cchi4"
+  }
+}

@@ -16,7 +16,7 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 	- `non-determinism-ni`  performs an analysis to detect explicit and implicit flows that lead to issues related to __non-determinism__ in blockchain software
 	- `phantom-read` performs an analysis to detect __phantom__ __reads__ in blockchain software for Hyperledger Fabric 
 	- `ucci`  performs an analysis to detect __untrusted__ __cross-contract__ __invocations__ in blockchain software for Hyperledger Fabric 
-	- `dcci` performs an analysis to detect different cross-channel invocations in blockchain software for Hyperledger Fabric
+	- `cchi` performs an analysis to detect issues related to cross-channel invocations in blockchain software for Hyperledger Fabric
 	- `read-write` performs an analysis to detect __read-after-write__ and __over-write__ issues in blockchain software for Hyperledger Fabric 
 	- `unhandled-errors` performs an analysis to detect __unhandled__ __errors__ in blockchain software for Hyperledger Fabric 
 	- `phantom-read` performs an analysis to detect __phantom__ __reads__ in blockchain software for Hyperledger Fabric 

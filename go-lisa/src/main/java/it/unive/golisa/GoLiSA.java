@@ -11,6 +11,7 @@ import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.hf.CrossChannelInvocationsIssuesChecker;
 import it.unive.golisa.checker.hf.DifferentCrossChannelInvocationsChecker;
 import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePairChecker;
@@ -177,11 +178,11 @@ public class GoLiSA {
 					new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
 			conf.semanticChecks.add(new TaintChecker("Possible untrusted cross-contract invocation."));
 			break;
-		case "dcci":
+		case "cchi":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
 					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new DifferentCrossChannelInvocationsChecker());
+			conf.semanticChecks.add(new CrossChannelInvocationsIssuesChecker());
 			break;
 		case "read-write":
 

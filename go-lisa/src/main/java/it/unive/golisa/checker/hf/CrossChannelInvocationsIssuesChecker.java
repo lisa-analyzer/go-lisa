@@ -33,22 +33,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 /**
  * A Go Checker for the detection of different cross-channel invocations in
  * Hyperledger Fabric.
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
-public class DifferentCrossChannelInvocationsChecker implements
+public class CrossChannelInvocationsIssuesChecker implements
 		SemanticCheck<
 				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
 
-	private Map<Statement, Set<Tarsis>> crossChannelInvocations;
+	private Map<Statement, Set<Tarsis>> crossContractInvocations;
+	
+	private boolean intraChaincode = true;
 
+	public CrossChannelInvocationsIssuesChecker() {
+	}
+	
+	public CrossChannelInvocationsIssuesChecker(boolean intraChaincode) {
+		this.intraChaincode = intraChaincode;
+	}
 	@Override
 	public void beforeExecution(CheckToolWithAnalysisResults<
 			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
-		crossChannelInvocations = new HashMap<>();
+		crossContractInvocations = new HashMap<>();
 	}
 
 	@Override
@@ -56,13 +66,35 @@ public class DifferentCrossChannelInvocationsChecker implements
 			CheckToolWithAnalysisResults<
 					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
 							TypeEnvironment<InferredTypes>>> tool) {
-
-		Statement[] invocations = crossChannelInvocations.keySet().toArray(new Statement[] {});
+		
+		Set<Statement> singleCrossChannelInvocations = new HashSet<>();
+		
+		//CASE 1: single CCIs with arbitrary channel
+		Statement[] invocations = crossContractInvocations.keySet().toArray(new Statement[] {});
+		for (int i = 0; i < invocations.length; i++) {
+			Set<Tarsis> stringApproximations = crossContractInvocations.get(invocations[i]);
+			for(Tarsis t : stringApproximations) {
+				if(mayCrossChannel(t)) {
+					singleCrossChannelInvocations.add(invocations[i]);
+					break;
+				}
+			}
+		}
+		
+		for(Statement cch : singleCrossChannelInvocations) {
+			tool.warnOn(cch, "Detected possible cross-channel invocation. It may lead to a lack of transparency because no new transactions are created during the invocation.");
+			if(intraChaincode)
+				tool.warnOn(cch, "Detected possible cross-channel invocation. It may lead to uncommited write operations during the execution of callee chaincode.");
+		}
+		
+		//CASE 2: CCIs with different channels
+		Set<Pair<Statement,Statement>> multipleCrossChannelInvocations  = new HashSet<>();
+		
 		boolean isDiff = false;
 		for (int i = 0; i < invocations.length - 1; i++) {
 			for (int j = i + 1; j < invocations.length; j++) {
-				Set<Tarsis> t1Set = crossChannelInvocations.get(invocations[i]);
-				Set<Tarsis> t2Set = crossChannelInvocations.get(invocations[j]);
+				Set<Tarsis> t1Set = crossContractInvocations.get(invocations[i]);
+				Set<Tarsis> t2Set = crossContractInvocations.get(invocations[j]);
 				for (Tarsis t1 : t1Set) {
 					for (Tarsis t2 : t2Set) {
 						if (t1.isTop() || t2.isTop()
@@ -79,13 +111,30 @@ public class DifferentCrossChannelInvocationsChecker implements
 						break;
 				}
 
-				if (isDiff)
-					tool.warnOn(invocations[i],
-							"Detected cross-channel invocations on different channels. The other invocation: "
-									+ invocations[j].getLocation());
+				if (isDiff) {
+					if(!multipleCrossChannelInvocations.contains(Pair.of(invocations[j], invocations[i])))
+						multipleCrossChannelInvocations.add(Pair.of(invocations[i], invocations[j]));
+				}
+					
 			}
 		}
+		
+		for( Pair<Statement, Statement> cchs : multipleCrossChannelInvocations) {
+			tool.warnOn(cchs.getLeft(),
+					"Detected cross-channel invocations on different channels. The other invocation: "
+							+ cchs.getRight().getLocation() + ". They may lead to a lack of transparency because no new transactions are created during the invocation.");
+			if(intraChaincode)
+				tool.warnOn(cchs.getLeft(),
+						"Detected cross-channel invocations on different channels. The other invocation: "
+								+ cchs.getRight().getLocation() + ". They may lead to uncommited write operations during the execution of callee chaincode.");
+		}
 
+	}
+
+	private boolean mayCrossChannel(Tarsis t) {
+		return t.isTop() || t.getAutomaton().getFinalStates().size() > 2
+				|| AutomatonUtils.containsTopTransaction(t.getAutomaton())
+				|| AutomatonUtils.hasCycle(t.getAutomaton());
 	}
 
 	@Override
@@ -142,9 +191,9 @@ public class DifferentCrossChannelInvocationsChecker implements
 							channelValues = extractChannelValues(call, call.getParameters().length, node, result);
 						}
 
-						crossChannelInvocations.putIfAbsent(call, new HashSet<>());
+						crossContractInvocations.putIfAbsent(call, new HashSet<>());
 						if (channelValues != null)
-							crossChannelInvocations.get(call).addAll(channelValues);
+							crossContractInvocations.get(call).addAll(channelValues);
 					}
 
 				} catch (SemanticException e) {

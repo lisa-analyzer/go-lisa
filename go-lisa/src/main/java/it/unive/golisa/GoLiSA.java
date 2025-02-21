@@ -12,7 +12,6 @@ import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.checker.hf.CrossChannelInvocationsIssuesChecker;
-import it.unive.golisa.checker.hf.DifferentCrossChannelInvocationsChecker;
 import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePairChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePathChecker;

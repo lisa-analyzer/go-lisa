@@ -6,13 +6,17 @@ import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.analysis.utils.AnalysisPreRequirementsUtils;
+import it.unive.golisa.analysis.utils.FileInfo;
 import it.unive.golisa.checker.DivByZeroChecker;
 import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.hf.CchiUtils;
 import it.unive.golisa.checker.hf.CrossChannelInvocationsIssuesChecker;
+import it.unive.golisa.checker.hf.CrossChannelInvocationsWriteOpsChecker;
 import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
+import it.unive.golisa.checker.hf.cci.CrossContractInvocationInformation;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePairChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePathChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
@@ -31,6 +35,7 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
+import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
@@ -41,10 +46,13 @@ import it.unive.lisa.interprocedural.context.FullStackToken;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
+import it.unive.lisa.program.cfg.statement.Statement;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.cli.CommandLine;
@@ -223,7 +231,6 @@ public class GoLiSA {
 					conf.semanticChecks.add(new TaintChecker("Possible untrusted cross-contract invocation."));
 					break;
 				case "cchi":
-
 					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
 					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
 							new TypeEnvironment<>(new InferredTypes()));
@@ -306,17 +313,41 @@ public class GoLiSA {
 				}
 				lisaExecution(fInfo.getInput(), annotationSet, cmd.getOptionValue("framework"), analysis, conf);
 			}
-		}
-		
-/*		if(crossContractAnalysis) {
-			CrossContractAnalysisUtils.buildExtendedProgram();
-			switch (analysis) {
 			
-				case "cchi":
-				default:
-					
+			if(crossContractAnalysis) {
+				switch (analysis) {
+				
+					case "cchi":
+						Map<Statement, CrossContractInvocationInformation> cchis = cchiChecker.getCrossChannelInvocations();
+						
+						for (FileInfo fi : fileInfos) {
+							Set<Statement> cchisToCheck;
+							
+							LiSAConfiguration cchis2 = new LiSAConfiguration();
+							cchis2.workdir = outputDir + File.separatorChar +"xcontract" + File.separatorChar+ "Result"+fileInfos.hashCode();
+							cchis2.jsonOutput = true;
+							cchis2.optimize = false;
+
+							cchis2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
+							
+							conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+							conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
+									new TypeEnvironment<>(new InferredTypes()));
+							
+							cchisToCheck = CchiUtils.computeCchisToCheck(fi, cchis);
+							
+							if(cchisToCheck != null && !cchisToCheck.isEmpty()) {
+								conf.semanticChecks.add(new CrossChannelInvocationsWriteOpsChecker(cchisToCheck,  cmd.hasOption(dumpAdditionalAnalysisInfo)));
+								lisaExecution(fi.getInput(), annotationSet, cmd.getOptionValue("framework"), "cchi-write", conf);
+							}
+						} 
+
+					default:
+						
+				}
 			}
-		}*/
+		}
+
 	}
 
 	private static Program lisaExecution(String filePath, AnnotationSet[] annotationSet, String framework, String analysis,

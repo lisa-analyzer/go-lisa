@@ -86,7 +86,7 @@ public class CrossChannelInvocationsIssuesChecker implements
 			CrossContractInvocationInformation cchiInfo = new CrossContractInvocationInformation(); 
 			boolean found =false;
 			for(Tarsis t : stringApproximations) {
-				if(mayCrossChannel(t)) {
+				if(CchiUtils.mayCrossChannel(channelName, t)) {
 					singleCrossChannelInvocations.add(invocations[i]);
 					CrossContractInvocationInformation cciInfo = crossContractInvocations.get(invocations[i]);
 					cchiInfo.addAllChannelApproximations(cciInfo.getChannelApproximations());
@@ -156,32 +156,6 @@ public class CrossChannelInvocationsIssuesChecker implements
 		}
 
 	}
-
-	private boolean mayCrossChannel(Tarsis t) {
-		return t.isTop() || t.getAutomaton().getFinalStates().size() > 1
-				|| hasFinalStateMultipleIngoingEdges(t.getAutomaton())
-				|| t.getAutomaton().acceptsTopEventually()
-				|| AutomatonUtils.hasCycle(t.getAutomaton())
-				|| !isNameChannel(t);
-	}
-
-	private boolean isNameChannel(Tarsis t) {
-		if(channelName != null) {
-			// https://github.com/hyperledger/fabric-chaincode-go/blob/main/shim/interfaces.go#L73C2-L74C17
-			// if `channel` is empty string, the caller's channel is assumed.
-			return  t.getAutomaton().isEqualTo(RegexAutomaton.emptyStr())
-					|| t.getAutomaton().isEqualTo(RegexAutomaton.string(channelName));
-		}
-		return false;
-	}
-
-	private boolean hasFinalStateMultipleIngoingEdges(RegexAutomaton automaton) {
-		for(State f : automaton.getFinalStates())
-			if(automaton.getIngoingTransitionsFrom(f).size() > 1)
-				return true;
-		return false;
-	}
-	
 
 	@Override
 	public void visitGlobal(

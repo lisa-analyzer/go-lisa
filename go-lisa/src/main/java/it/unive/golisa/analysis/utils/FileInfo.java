@@ -1,8 +1,8 @@
-package it.unive.golisa;
+package it.unive.golisa.analysis.utils;
 
 import java.util.Objects;
 
-class FileInfo {
+public class FileInfo {
 	
     private final String input;
     private final String contractname;

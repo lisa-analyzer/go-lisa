@@ -9,7 +9,10 @@ GoLiSA is a static analyzer based on abstract interpretation for smart contracts
 ## Usage
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) and it expects four parameters:
 - `-i path`: the Go file to be analyzed
+- `-ci name channel`: the deployment name and channel of the contract to analyze (Hyperledger Fabric only)
 - `-o path`: the output directory
+- `-d`: the dump of analysis information
+- `-xc`: set cross-contract analysis (Hyperledger Fabric only)
 - `-f framework`: the blockchain framework used in the input file (`hyperledger-fabric`, `cosmos-sdk`, `tendermint-core`)
 - `-a analysis`: the analysis to perform 
 	- `non-determinism`  performs an analysis to detect explicit flows that lead to issues related to __non-determinism__ in blockchain software
@@ -25,7 +28,7 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 	
 ### Example of command line
 
-`-i C:\Users\MyAccount\mycontract.go -o C:\Users\MyAccount\output -f hyperledger-fabric -a unhandled-errors`
+`-i C:\Users\MyAccount\codeA.go  -ci "contractA" "otherchannel" -i C:\Users\MyAccount\codeB.go -ci "contractB" "mychannel" -o C:\Users\MyAccount\output -f hyperledger-fabric -a cchi -xc`
 
 ## Publications
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Fabio Tagliaferro, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Information Flow Analysis for Detecting Non-Determinism in Blockchain</i>. ECOOP 2023: 23:1-23:25 ([link](https://drops.dagstuhl.de/opus/volltexte/2023/18216/))

@@ -110,8 +110,10 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 					if(!writeOps.isEmpty())
 						for(Statement e : entryPoints) {
 							for(Statement w : writeOps)
-								if(CFGUtils.existPath(graph, e, w, Search.DFS))
-									tool.warnOn(w, "Detected possible uncommited write operations");
+								if(CFGUtils.existPath(graph, e, w, Search.DFS)) {
+									for(Statement cchi : cchisToCheck)
+										tool.warnOn(w, "Detected possible uncommitted write operation due to a cross-channel invocation at " + cchi.getLocation());
+								}
 						}
 					interproceduralAnalysis(tool, interCFG, seen);
 				}

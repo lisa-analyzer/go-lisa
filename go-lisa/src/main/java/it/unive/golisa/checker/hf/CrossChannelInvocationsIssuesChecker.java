@@ -33,6 +33,7 @@ import it.unive.lisa.util.datastructures.automaton.State;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -145,16 +146,35 @@ public class CrossChannelInvocationsIssuesChecker implements
 			}
 		}
 		
+		Map<Statement, Set<Statement>> results = new HashMap<>();
 		for( Pair<Statement, Statement> cchs : multipleCrossChannelInvocations) {
-			tool.warnOn(cchs.getLeft(),
-					"Detected cross-channel invocations on different channels. The other invocation: "
-							+ cchs.getRight().getLocation() + ". They may lead to a lack of transparency because no new transactions are created during the invocation.");
-			if(intraChaincode)
-				tool.warnOn(cchs.getLeft(),
-						"Detected cross-channel invocations on different channels. The other invocation: "
-								+ cchs.getRight().getLocation() + ". They may lead to uncommited write operations during the execution of callee chaincode.");
+		  if(!results.containsKey(cchs.getLeft()))
+		      results.put(cchs.getLeft(), new HashSet<>());
+		  results.get(cchs.getLeft()).add(cchs.getRight());
 		}
 
+		for(Statement target : results.keySet()) {
+		  Set<Statement> others = results.get(target);
+		  tool.warnOn(target,
+		      "Detected cross-channel invocations on different channels. The other invocations: "
+		          + printOtherLocations(others) + ". They may lead to a lack of transparency because no new transactions are created during the invocation.");
+		  if(intraChaincode)
+		    tool.warnOn(target,
+		        "Detected cross-channel invocations on different channels. The other invocations: "
+		            + printOtherLocations(others) + ". They may lead to uncommited write operations during the execution of callee chaincode.");
+		}
+	}
+
+	private String printOtherLocations(Set<Statement> others) {
+	  String result = "";
+	  Iterator<Statement> iter = others.iterator();
+	  while(iter.hasNext()) {
+	    Statement cchi = iter.next();
+		result += cchi.getLocation();
+		if(iter.hasNext())
+			result += ", ";
+	  }
+	  return result;
 	}
 
 	@Override

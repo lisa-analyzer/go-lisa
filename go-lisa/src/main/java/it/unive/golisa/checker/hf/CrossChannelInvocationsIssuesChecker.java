@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -107,32 +108,33 @@ public class CrossChannelInvocationsIssuesChecker implements
 		}
 		
 		//CASE 2: CCIs with different channels
-		Set<Pair<Statement,Statement>> multipleCrossChannelInvocations  = new HashSet<>();
-		
-		boolean isDiff = false;
+		Map<Statement, Set<Statement>> multipleCrossChannelInvocations = new HashMap<>();
 		for (int i = 0; i < invocations.length - 1; i++) {
 			for (int j = i + 1; j < invocations.length; j++) {
+				boolean isDiff = false;
 				Set<Tarsis> t1Set = crossContractInvocations.get(invocations[i]).getChannelApproximations();
 				Set<Tarsis> t2Set = crossContractInvocations.get(invocations[j]).getChannelApproximations();
 				for (Tarsis t1 : t1Set) {
 					for (Tarsis t2 : t2Set) {
-						if (t1.isTop() || t2.isTop()
-								|| !TarsisUtils.possibleEqualsMatch(t1, t2)
-								|| (TarsisUtils.extractValueStringFromTarsisStates(t1) != null
+						if(!t1.isTop() && !t2.isTop()
+								&& (TarsisUtils.possibleEqualsMatch(t1, t2) || (TarsisUtils.extractValueStringFromTarsisStates(t1) != null
 										&& TarsisUtils.extractValueStringFromTarsisStates(t2) != null &&
-										!TarsisUtils.extractValueStringFromTarsisStates(t1)
-												.equals(TarsisUtils.extractValueStringFromTarsisStates(t2)))) {
-							isDiff = true;
-							break;
-						}
+										TarsisUtils.extractValueStringFromTarsisStates(t1)
+												.equals(TarsisUtils.extractValueStringFromTarsisStates(t2)))))
+							continue;
+						isDiff = true;
+						break;
+
 					}
 					if (isDiff)
 						break;
 				}
 
 				if (isDiff) {
-					if(!multipleCrossChannelInvocations.contains(Pair.of(invocations[j], invocations[i])))
-						multipleCrossChannelInvocations.add(Pair.of(invocations[i], invocations[j]));
+					if(!multipleCrossChannelInvocations.containsKey(invocations[i]))
+						multipleCrossChannelInvocations.put(invocations[i], new HashSet<>());
+					multipleCrossChannelInvocations.get(invocations[i]).add(invocations[j]);
+					
 					if(!crossChannelInvocations.containsKey(invocations[i]))
 						crossChannelInvocations.put(invocations[i], new CrossContractInvocationInformation());
 					crossChannelInvocations.get(invocations[i]).addAllChannelApproximations(crossContractInvocations.get(invocations[i]).getChannelApproximations());
@@ -146,15 +148,9 @@ public class CrossChannelInvocationsIssuesChecker implements
 			}
 		}
 		
-		Map<Statement, Set<Statement>> results = new HashMap<>();
-		for( Pair<Statement, Statement> cchs : multipleCrossChannelInvocations) {
-		  if(!results.containsKey(cchs.getLeft()))
-		      results.put(cchs.getLeft(), new HashSet<>());
-		  results.get(cchs.getLeft()).add(cchs.getRight());
-		}
-
-		for(Statement target : results.keySet()) {
-		  Set<Statement> others = results.get(target);
+		Map<Statement, Set<Statement>> result = reduceForWarnings(multipleCrossChannelInvocations);
+		for(Statement target : result.keySet()) {
+		  Set<Statement> others = result.get(target);
 		  tool.warnOn(target,
 		      "Detected cross-channel invocations on different channels. The other invocations: "
 		          + printOtherLocations(others) + ". They may lead to a lack of transparency because no new transactions are created during the invocation.");
@@ -163,6 +159,28 @@ public class CrossChannelInvocationsIssuesChecker implements
 		        "Detected cross-channel invocations on different channels. The other invocations: "
 		            + printOtherLocations(others) + ". They may lead to uncommited write operations during the execution of callee chaincode.");
 		}
+	}
+
+	private Map<Statement, Set<Statement>> reduceForWarnings(
+			Map<Statement, Set<Statement>> multipleCrossChannelInvocations) {
+		Set<Pair<Statement, Statement>> tmp = new HashSet<>();
+		
+		for(Entry<Statement, Set<Statement>> entry :multipleCrossChannelInvocations.entrySet()) {
+			Statement cci1 = entry.getKey();
+			for(Statement cci2 :entry.getValue()) {
+				if(!tmp.contains(Pair.of(cci1, cci2)) && !tmp.contains(Pair.of(cci2, cci1)))
+					tmp.add(Pair.of(cci1, cci2));
+			}
+		}
+		
+		Map<Statement, Set<Statement>> result = new HashMap<>();
+		for(Pair<Statement, Statement> pair : tmp) {
+			if(!result.containsKey(pair.getLeft()))
+				result.put(pair.getLeft(), new HashSet<>());
+			result.get(pair.getLeft()).add(pair.getRight());
+		}
+		
+		return result;
 	}
 
 	private String printOtherLocations(Set<Statement> others) {
@@ -285,7 +303,8 @@ public class CrossChannelInvocationsIssuesChecker implements
 									.getAnalysisStateAfter(call.getParameters()[par]);
 			for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
 					state.getState())) {
-				res.add(state.getState().getValueState().eval((ValueExpression) stack, node, state.getState()));
+				Tarsis value = state.getState().getValueState().eval((ValueExpression) stack, node, state.getState());
+				res.add(value);
 			}
 		}
 

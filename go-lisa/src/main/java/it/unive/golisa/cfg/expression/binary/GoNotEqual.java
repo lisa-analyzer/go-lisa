@@ -56,9 +56,9 @@ public class GoNotEqual extends it.unive.lisa.program.cfg.statement.BinaryExpres
 
 		// TODO: composite types are not covered yey
 		AnalysisState<A> result = state.bottom();
-		for (Type lType : ltypes)
-			for (Type rType : rtypes)
-				if (rType.canBeAssignedTo(lType) || lType.canBeAssignedTo(rType))
+		//for (Type lType : ltypes)
+		//	for (Type rType : rtypes)
+		//		if (rType.canBeAssignedTo(lType) || lType.canBeAssignedTo(rType))
 					result = result.lub(state
 							.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
 									left, right,

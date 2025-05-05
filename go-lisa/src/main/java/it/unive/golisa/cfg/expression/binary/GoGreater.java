@@ -51,9 +51,9 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 		// following the Golang specification:
 		// in any comparison, the first operand must be assignable to the type
 		// of the second operand, or vice versa.
-		for (Type leftType : ltypes)
-			for (Type rightType : rtypes) {
-				if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
+		//for (Type leftType : ltypes)
+		//	for (Type rightType : rtypes) {
+		//		if (leftType.canBeAssignedTo(rightType) || rightType.canBeAssignedTo(leftType)) {
 					// TODO: only, integer, floating point values, strings are
 					// ordered
 					// but missing lexicographical string order in LiSA
@@ -64,8 +64,8 @@ public class GoGreater extends it.unive.lisa.program.cfg.statement.BinaryExpress
 
 									this);
 					result = result.lub(tmp);
-				}
-			}
+		//		}
+		//	}
 		return result;
 	}
 }

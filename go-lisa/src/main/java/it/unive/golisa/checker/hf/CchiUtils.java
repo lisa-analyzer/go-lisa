@@ -98,7 +98,7 @@ public class CchiUtils {
 
 	public static boolean mayCrossChannel(String channelName, Tarsis t) {
 		return  containsApproximations(t)
-				|| !isNameChannel(channelName,t);
+				|| (channelName != null && !isNameChannel(channelName,t));
 	}
 	
 	private static boolean containsApproximations(Tarsis t) {

@@ -56,10 +56,10 @@ public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpressio
 		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
 		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
 
-		for (Type leftType : ltypes)
-			for (Type rightType : rtypes)
+		//for (Type leftType : ltypes)
+		//	for (Type rightType : rtypes)
 
-				if (rightType.canBeAssignedTo(leftType) || leftType.canBeAssignedTo(rightType)) {
+		//		if (rightType.canBeAssignedTo(leftType) || leftType.canBeAssignedTo(rightType)) {
 					// TODO: not covering composite types (e.g., channels,
 					// arrays, structs...)
 					AnalysisState<A> tmp = state
@@ -67,7 +67,7 @@ public class GoEqual extends it.unive.lisa.program.cfg.statement.BinaryExpressio
 									left, right,
 									ComparisonEq.INSTANCE, getLocation()), this);
 					result = result.lub(tmp);
-				}
+		//		}
 		return result;
 	}
 }

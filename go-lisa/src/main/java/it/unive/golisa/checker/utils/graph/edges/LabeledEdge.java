@@ -1,39 +1,39 @@
-package it.unive.golisa.checker.hf.readwrite.graph.edges;
+package it.unive.golisa.checker.utils.graph.edges;
 
-import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteGraph;
-import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteNode;
+import it.unive.golisa.checker.utils.graph.GraphForCheckers;
+import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeEdge;
 import java.util.Objects;
 
-public abstract class ReadWriteEdge implements CodeEdge<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
+public abstract class LabeledEdge implements CodeEdge<GraphForCheckers, StandardNode, LabeledEdge>, Cloneable {
 
-	private final ReadWriteNode source;
-	private final ReadWriteNode destination;
+	private final StandardNode source;
+	private final StandardNode destination;
 
-	public ReadWriteEdge(ReadWriteNode source, ReadWriteNode destination) {
+	public LabeledEdge(StandardNode source, StandardNode destination) {
 		this.source = source;
 		this.destination = destination;
 	}
 
 	@Override
-	public ReadWriteNode getSource() {
+	public StandardNode getSource() {
 		return source;
 	}
 
 	@Override
-	public ReadWriteNode getDestination() {
+	public StandardNode getDestination() {
 		return destination;
 	}
 
 	@Override
-	public <V> boolean accept(GraphVisitor<ReadWriteGraph, ReadWriteNode, ReadWriteEdge, V> visitor, V tool) {
+	public <V> boolean accept(GraphVisitor<GraphForCheckers, StandardNode, LabeledEdge, V> visitor, V tool) {
 		return visitor.visit(tool, source.getGraph(), this);
 	}
 
 	@Override
 	public String toString() {
-		return source + " " + getEdgeSymbol() + " " + destination;
+		return source + " " + getEdgeLabel() + " " + destination;
 	}
 
 	@Override
@@ -49,12 +49,12 @@ public abstract class ReadWriteEdge implements CodeEdge<ReadWriteGraph, ReadWrit
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ReadWriteEdge other = (ReadWriteEdge) obj;
+		LabeledEdge other = (LabeledEdge) obj;
 		return Objects.equals(destination, other.destination) && Objects.equals(source, other.source);
 	}
 
 	@Override
-	public int compareTo(ReadWriteEdge o) {
+	public int compareTo(LabeledEdge o) {
 		int cmp;
 		if ((cmp = source.compareTo(o.source)) != 0)
 			return cmp;
@@ -68,6 +68,13 @@ public abstract class ReadWriteEdge implements CodeEdge<ReadWriteGraph, ReadWrit
 		return false;
 	}
 
-	public abstract String getEdgeSymbol();
+	public abstract String getEdgeLabel();
+
+	@Override
+	public LabeledEdge clone() throws CloneNotSupportedException {
+		return newInstance(source, destination);
+	}
+	
+	
 
 }

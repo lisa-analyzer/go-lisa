@@ -63,6 +63,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 											break;
 										}
 									}
+
 								}
 
 								if (!found)
@@ -73,6 +74,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 						}
 
 				}
+
 			}
 		}
 		return true;

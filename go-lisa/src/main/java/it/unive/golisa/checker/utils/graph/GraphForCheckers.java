@@ -1,13 +1,15 @@
-package it.unive.golisa.checker.hf.readwrite.graph;
+package it.unive.golisa.checker.utils.graph;
 
-import it.unive.golisa.checker.hf.readwrite.graph.edges.ReadWriteEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
+import it.unive.golisa.checker.utils.graph.edges.LabeledEdge;
+import it.unive.golisa.checker.utils.graph.edges.StandardEdge;
+import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
 import it.unive.lisa.outputs.DotGraph;
 import it.unive.lisa.outputs.serializableGraph.SerializableEdge;
 import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
 import it.unive.lisa.outputs.serializableGraph.SerializableNode;
 import it.unive.lisa.outputs.serializableGraph.SerializableNodeDescription;
 import it.unive.lisa.outputs.serializableGraph.SerializableValue;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +18,7 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -27,11 +30,11 @@ import org.graphstream.graph.Element;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
 
-public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
+public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, LabeledEdge> implements Cloneable {
 
 	private final String name;
 
-	public ReadWriteGraph(String name) {
+	public GraphForCheckers(String name) {
 		super(new StandardEdge(null, null));
 		this.name = name;
 	}
@@ -42,23 +45,23 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 
 	@Override
 	public SerializableGraph toSerializableGraph(
-			BiFunction<ReadWriteGraph, ReadWriteNode, SerializableValue> descriptionGenerator) {
+			BiFunction<GraphForCheckers, StandardNode, SerializableValue> descriptionGenerator) {
 
 		SortedSet<SerializableNode> nodes = new TreeSet<>();
-		Map<ReadWriteNode, Integer> nodeIds = new HashMap<>();
+		Map<StandardNode, Integer> nodeIds = new HashMap<>();
 		SortedSet<SerializableNodeDescription> descrs = new TreeSet<>();
 		SortedSet<SerializableEdge> edges = new TreeSet<>();
 
 		int counter = 0;
-		for (ReadWriteNode node : getNodes()) {
+		for (StandardNode node : getNodes()) {
 			addNode(counter, nodes, descrs, node, descriptionGenerator);
 			nodeIds.put(node, counter);
 			counter++;
 		}
 
-		for (ReadWriteNode src : getNodes())
-			for (ReadWriteNode dest : followersOf(src))
-				for (ReadWriteEdge edge : list.getEdgesConnecting(src, dest))
+		for (StandardNode src : getNodes())
+			for (StandardNode dest : followersOf(src))
+				for (LabeledEdge edge : list.getEdgesConnecting(src, dest))
 					edges.add(new SerializableEdge(nodeIds.get(src), nodeIds.get(dest),
 							edge.getClass().getSimpleName()));
 
@@ -69,8 +72,8 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 			int id,
 			SortedSet<SerializableNode> nodes,
 			SortedSet<SerializableNodeDescription> descrs,
-			ReadWriteNode node,
-			BiFunction<ReadWriteGraph, ReadWriteNode, SerializableValue> descriptionGenerator) {
+			StandardNode node,
+			BiFunction<GraphForCheckers, StandardNode, SerializableValue> descriptionGenerator) {
 		SerializableNode n = new SerializableNode(id, Collections.emptyList(),
 				node.toString() + "\n\n" + "Location: " + node.getStatement().getLocation());
 		nodes.add(n);
@@ -149,6 +152,10 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 				e.setAttribute(COLOR, COLOR_BLACK);
 				break;
 			}
+		}
+		
+		public void removeEdge(Edge edge) {
+			graph.removeEdge(edge);
 		}
 
 		protected static String edgeName(long src, long dest, SerializableEdge edge) {
@@ -283,4 +290,33 @@ public class ReadWriteGraph extends CodeGraph<ReadWriteGraph, ReadWriteNode, Rea
 			}
 		}
 	}
+
+	public StandardNode getNodeFromStatement(Statement statement) {
+		for(StandardNode n : getNodes())
+			if(n.getStatement().equals(statement))
+					return n;
+		return null;
+	}
+
+	public void merge(GraphForCheckers other) throws CloneNotSupportedException {
+		for(StandardNode n : other.getNodes()) {
+			this.addNode(n.clone());
+		}
+		for(LabeledEdge e : other.getEdges()) {
+			this.addEdge(e.clone());
+		}
+	}
+
+	@Override
+	public GraphForCheckers clone() throws CloneNotSupportedException {
+		GraphForCheckers clone = new GraphForCheckers(getName());
+		for(StandardNode n : getNodes())
+			clone.addNode(n.clone());
+		for(LabeledEdge e : getEdges())
+			clone.addEdge(e.clone());
+		
+		return clone;
+	}
+	
+	
 }

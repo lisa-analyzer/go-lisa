@@ -92,6 +92,7 @@ import it.unive.golisa.cfg.expression.GoForRange;
 import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
 import it.unive.golisa.cfg.expression.GoPanic;
+import it.unive.golisa.cfg.expression.GoRecover;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseNAnd;
@@ -2163,6 +2164,9 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				} else {
 					return new GoMake(cfg, locationOf(ctx.primaryExpr()), Untyped.INSTANCE, args);
 				}
+			case "recover":
+				args = visitArguments(ctx.arguments());
+				return new GoRecover(cfg, locationOf(ctx.primaryExpr()));
 			case "panic":
 				args = visitArguments(ctx.arguments());
 				return new GoPanic(cfg, locationOf(ctx.primaryExpr()), args);

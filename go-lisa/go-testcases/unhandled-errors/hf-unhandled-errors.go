@@ -17,6 +17,8 @@ func (t *SimpleAsset) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	value1, _ := stub.GetState(args[0]) // KO: error is discarded
 	
 	stub.PutState(args[0], []byte("ASD")) // KO: error is discarded
+
+	_ = stub.PutState(args[0], []byte("ASD")) // KO: error is discarded
 	
 	value2, err := stub.GetState(args[1]) // KO: error is not handled
 

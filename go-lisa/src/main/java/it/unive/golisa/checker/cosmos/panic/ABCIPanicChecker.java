@@ -147,17 +147,10 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		Expression expr = defer.getSubExpression();
 		if(expr instanceof CFGCall) {
 			CFGCall call = (CFGCall) expr;
-			return call.getTargetedCFGs().stream().anyMatch(cfg -> cfg.getNodes().stream().anyMatch(n -> n instanceof GoRecover || containsRecover(n)));
+			return call.getTargetedCFGs().stream().anyMatch(cfg -> cfg.getNodes().stream().anyMatch(n -> CFGUtils.matchNodeOrSubExpressions(n, st -> st instanceof GoRecover)));
 		}
 		return false;
 	}
-
-
-	private boolean containsRecover(Statement n) {
-		
-		return n instanceof GoRecover;
-	}
-
 
 	private GraphForCheckers extractPathCriticalComponentsInvolvedInPanic(GoPanic node,
 			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) throws CloneNotSupportedException {

@@ -5,6 +5,8 @@ import java.util.Map;
 
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
+import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
+import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils;
 import it.unive.golisa.golang.util.GoLangUtils;
@@ -90,6 +92,36 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 			}
 		}
 		
+		if (node instanceof GoShortVariableDeclaration) {
+			GoShortVariableDeclaration declr = (GoShortVariableDeclaration) node;
+			Expression right = declr.getRight();
+			if (right instanceof Call) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right)) {
+					assignmentMap.put((Call) right, Boolean.TRUE);
+					Expression left = declr.getLeft();
+					if (left instanceof VariableRef) {
+						checkVariableRef((VariableRef) left, (Call) right, tool, graph, node);
+					}
+				}
+
+			}
+		}
+		
+		if (node instanceof GoVariableDeclaration) {
+			GoVariableDeclaration declr = (GoVariableDeclaration) node;
+			Expression right = declr.getRight();
+			if (right instanceof Call) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right)) {
+					assignmentMap.put((Call) right, Boolean.TRUE);
+					Expression left = declr.getLeft();
+					if (left instanceof VariableRef) {
+						checkVariableRef((VariableRef) left, (Call) right, tool, graph, node);
+					}
+				}
+
+			}
+		}
+
 		return true;
 	}
 

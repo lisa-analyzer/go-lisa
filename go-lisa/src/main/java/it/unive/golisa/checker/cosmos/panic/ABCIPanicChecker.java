@@ -1,9 +1,7 @@
 package it.unive.golisa.checker.cosmos.panic;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import it.unive.golisa.analysis.DummyDomain;
@@ -28,7 +26,6 @@ import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
-import it.unive.lisa.checks.syntactic.CheckTool;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -36,8 +33,6 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
-import javassist.expr.NewArray;
-
 
 /**
  * Unhandled errors Checker in Hyperledger Fabric.
@@ -64,14 +59,17 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 							(GoPanic) node, tool);
 
 					String printComponents = criticalComponentsToString(panicGraphWithRecoveries);
-					if (!existPossibleRecoveryDefer(panicGraphWithRecoveries)) {
-						tool.warnOn(node, "Detected unhandled panic within the following ABCI methods: "
-								+ printComponents + ". Possible recovery functions not found.");
+					if (!(existPossibleRecoveryDefer(panicGraphWithRecoveries) ||  existRecoveryDefer(panicGraphWithRecoveries))) {
+						tool.warnOn(node, "Detected unhandled panic within a critical execution "
+								+ printComponents + ". There are no execution paths with recovery function to handle the panic.");
 					} else {
-						// TODO: handle the case where at least one path is unhandled and the another is
-						// handled
-						tool.warnOn(node, "Detected panic within the following ABCI methods: " + printComponents
-								+ ". Ensure that recovery functions properly handle the panic exception.");
+						if(atLeastOnePathWithoutRecovery(panicGraphWithRecoveries)) {
+							tool.warnOn(node, "Detected panic within a critical execution " + printComponents
+									+ ". There is at least an execution path without a recovery function.");
+						} else {
+							tool.warnOn(node, "Detected panic within a critical execution " + printComponents
+									+ ". Ensure that all the possible recovery functions properly handle the panic exception.");
+						}
 					}
 
 				}
@@ -95,13 +93,13 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		return String.join(",", signatures);
 	}
 
-
-
 	private boolean existPossibleRecoveryDefer(GraphForCheckers panicGraphWithRecoveries) {
-		
 		return panicGraphWithRecoveries.getNodes().stream().anyMatch(n -> n instanceof PossileRecoveryNode);
 	}
 
+	private boolean existRecoveryDefer(GraphForCheckers panicGraphWithRecoveries) {
+		return panicGraphWithRecoveries.getNodes().stream().anyMatch(n -> n instanceof RecoveryNode);
+	}
 
 
 	private GraphForCheckers computePossibleRecoveryDefers(GraphForCheckers panicGraph, GoPanic panic, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) throws CloneNotSupportedException {
@@ -139,8 +137,10 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		
 		Collection<LabeledEdge> ingoingEdges = graphWithRecovery.getIngoingEdges(stNode);
 		if(!ingoingEdges.isEmpty())
-			for(LabeledEdge e : ingoingEdges)
-				computePossibleRecoveryDefersRecursive(graphWithRecovery, e.getSource().getStatement(), tool, seen);
+			for(LabeledEdge e : ingoingEdges) {
+				
+				computePossibleRecoveryDefersRecursive(graphWithRecovery, e.getSource().getStatement(), tool, new HashSet<>(seen));
+			}
 	}
 
 	private boolean hasExplicitRecovery(GoDefer defer, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) {
@@ -186,7 +186,7 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 								VariableScopingCFG callerCFG = (VariableScopingCFG) cm;
 								Statement sTarget = CFGUtils.extractTargetNodeFromGraph(callerCFG, c);
 								if (sTarget != null) {
-									 GraphForCheckers tmp = extractPathCriticalComponentsInvolvedInPanicRecursive(sTarget, sTarget, graph, tool, seen);
+									 GraphForCheckers tmp = extractPathCriticalComponentsInvolvedInPanicRecursive(sTarget, node, graph, tool, new HashSet<>(seen));
 									 if(tmp != null) {
 											graph.merge(tmp);
 									 }
@@ -196,55 +196,51 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 					}
 				}
 			}
+		} else {
+			throw new UnsupportedOperationException("The analysis on cyclic graphs are currently not supported");
 		}
 		return graph;
-	}
-
-
-
-	private Set<CodeMemberDescriptor> extractCriticalComponentsInvolvedInPanic(GoPanic panic, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) {
-		Set<CodeMember> seen = new HashSet<>();
-		return extractCriticalComponentsRecursive(panic, tool, seen);
-	}
-	
-	private Set<CodeMemberDescriptor> extractCriticalComponentsRecursive(Statement node, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool, Set<CodeMember>  seen) {
-		Set<CodeMemberDescriptor> result = new HashSet<>();
-		if(!seen.contains(node.getCFG())) {
-			seen.add(node.getCFG());	
-			if(isCriticalComponent(node.getCFG().getDescriptor())) {
-				result.add(node.getCFG().getDescriptor());
-			} else {
-				// check callers of CFG recursively
-				Collection<CodeMember> callers = tool.getCallers(node.getCFG());
-
-				for (CodeMember cm : callers) {
-					if (!seen.contains(cm)) {
-						seen.add(cm);
-
-						for (Call c : tool.getCallSites(node.getCFG())) {
-							if (cm instanceof VariableScopingCFG) {
-								VariableScopingCFG callerCFG = (VariableScopingCFG) cm;
-								Statement sTarget = CFGUtils.extractTargetNodeFromGraph(callerCFG, c);
-								if (sTarget != null) {
-									result.addAll(extractCriticalComponentsRecursive(sTarget, tool, seen));
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return result;
 	}
 
 	private boolean isCriticalComponent(CodeMemberDescriptor descriptor) {
 		return descriptor.getSignature().contains("BeginBlocker") 
 		|| descriptor.getSignature().contains("EndBlocker"); 
 	}
+	
 
-	private Set<Statement> extractPossibleRecoveryDefer(Statement node) {
-		// TODO Auto-generated method stub
-		return null;
+	private boolean atLeastOnePathWithoutRecovery(GraphForCheckers panicGraphWithRecoveries) {
+		Set<Statement> seen = new HashSet<>();
+		PanicNode panicNode = null;
+		for(StandardNode n : panicGraphWithRecoveries.getNodes())
+			if(n instanceof PanicNode) {
+				panicNode= (PanicNode) n;
+				break;
+			}
+			
+		return atLeastOnePathWithoutRecoveryRecursive(panicGraphWithRecoveries, panicNode.getStatement(), seen);
+	}
+	
+	private boolean atLeastOnePathWithoutRecoveryRecursive(GraphForCheckers panicGraphWithRecoveries, Statement st, Set<Statement> seen) {
+
+		if(seen.contains(st))
+			return false;
+		seen.add(st);
+		
+		StandardNode stNode = panicGraphWithRecoveries.getNodeFromStatement(st);
+		
+		if(stNode instanceof PossileRecoveryNode || stNode instanceof RecoveryNode)
+			return false;
+		
+		if(isCriticalComponent(st.getCFG().getDescriptor()))
+				return true;
+		
+		Collection<LabeledEdge> ingoingEdges = panicGraphWithRecoveries.getIngoingEdges(stNode);
+		if(!ingoingEdges.isEmpty())
+			for(LabeledEdge e : ingoingEdges) {
+				if(atLeastOnePathWithoutRecoveryRecursive(panicGraphWithRecoveries, e.getSource().getStatement(), new HashSet<>(seen)))
+					return true;
+			}
+		return false;
 	}
 
 }

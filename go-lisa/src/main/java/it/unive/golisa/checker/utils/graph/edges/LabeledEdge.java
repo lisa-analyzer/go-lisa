@@ -50,7 +50,7 @@ public abstract class LabeledEdge implements CodeEdge<GraphForCheckers, Standard
 		if (getClass() != obj.getClass())
 			return false;
 		LabeledEdge other = (LabeledEdge) obj;
-		return Objects.equals(destination, other.destination) && Objects.equals(source, other.source);
+		return destination.equals(other.destination) && source.equals(other.source);
 	}
 
 	@Override

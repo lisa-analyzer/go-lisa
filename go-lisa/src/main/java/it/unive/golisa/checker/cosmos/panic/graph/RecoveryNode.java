@@ -16,4 +16,9 @@ public class RecoveryNode extends StandardNode {
 		super(graph, st);
 	}
 
+	@Override
+	public RecoveryNode clone() throws CloneNotSupportedException {
+
+		return new RecoveryNode(getGraph(), (GoDefer) getStatement());
+	}
 }

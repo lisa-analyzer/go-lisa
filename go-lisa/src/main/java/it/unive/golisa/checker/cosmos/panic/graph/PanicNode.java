@@ -16,4 +16,22 @@ public class PanicNode extends StandardNode {
 		super(graph, st);
 	}
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
+	@Override
+	public PanicNode clone() throws CloneNotSupportedException {
+
+		return new PanicNode(getGraph(), (GoPanic) getStatement());
+	}
+
+	
+
 }

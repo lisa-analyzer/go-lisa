@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -32,7 +33,7 @@ import org.graphstream.stream.file.FileSinkDOT;
 
 public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, LabeledEdge> implements Cloneable {
 
-	private final String name;
+	private final String name; 
 
 	public GraphForCheckers(String name) {
 		super(new StandardEdge(null, null));
@@ -300,10 +301,12 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 
 	public void merge(GraphForCheckers other) throws CloneNotSupportedException {
 		for(StandardNode n : other.getNodes()) {
-			this.addNode(n.clone());
+			if(!this.containsNode(n))
+				this.addNode(n.clone());
 		}
 		for(LabeledEdge e : other.getEdges()) {
-			this.addEdge(e.clone());
+			if(!this.containsEdge(e))
+				this.addEdge(e.clone());
 		}
 	}
 
@@ -312,11 +315,31 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		GraphForCheckers clone = new GraphForCheckers(getName());
 		for(StandardNode n : getNodes())
 			clone.addNode(n.clone());
-		for(LabeledEdge e : getEdges())
+		for(LabeledEdge e : getEdges()) {
 			clone.addEdge(e.clone());
+		}
 		
 		return clone;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GraphForCheckers other = (GraphForCheckers) obj;
+		return Objects.equals(name, other.name);
+	}
+	
+	
 	
 	
 }

@@ -2,6 +2,7 @@ package it.unive.golisa.checker.cosmos.panic;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import it.unive.golisa.analysis.DummyDomain;
@@ -19,6 +20,10 @@ import it.unive.golisa.checker.utils.graph.edges.CallerEdge;
 import it.unive.golisa.checker.utils.graph.edges.LabeledEdge;
 import it.unive.golisa.checker.utils.graph.edges.StandardEdge;
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.GoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.golisa.golang.util.GoLangUtils;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
@@ -31,8 +36,10 @@ import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 
 /**
  * Unhandled errors Checker in Hyperledger Fabric.
@@ -67,8 +74,9 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 							tool.warnOn(node, "Detected panic within a critical execution " + printComponents
 									+ ". There is at least an execution path without a recovery function.");
 						} else {
-							tool.warnOn(node, "Detected panic within a critical execution " + printComponents
-									+ ". Ensure that all the possible recovery functions properly handle the panic exception.");
+							if(existPossibleRecoveryDefer(panicGraphWithRecoveries))
+								tool.warnOn(node, "Detected panic within a critical execution " + printComponents
+										+ ". Ensure that all the possible recovery functions properly handle the panic exception.");
 						}
 					}
 
@@ -119,17 +127,17 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		StandardNode stNode = graphWithRecovery.getNodeFromStatement(st);
 		for(Statement n : st.getCFG().getNodes()) {
 			if(!n.equals(st) && n instanceof GoDefer) {
-				boolean add = st instanceof GoDefer ? CFGUtils.existPath(st.getCFG(), st, (GoDefer) n, Search.BFS) : CFGUtils.existPath(st.getCFG(), n, st, Search.BFS);
+				boolean isCandidate = st instanceof GoDefer ? CFGUtils.existPath(st.getCFG(), st, (GoDefer) n, Search.BFS) : CFGUtils.existPath(st.getCFG(), n, st, Search.BFS);
 
-				if(add) {
+				if(isCandidate && maybeRecovery((GoDefer) n)) {
 					StandardNode recovery = hasExplicitRecovery((GoDefer) n, tool) ? new RecoveryNode(graphWithRecovery, (GoDefer) n) : new PossileRecoveryNode(graphWithRecovery, (GoDefer) n);
 					graphWithRecovery.addNode(recovery);
-					graphWithRecovery.addEdge(new StandardEdge(recovery, stNode));
 					Collection<LabeledEdge> edgesToRemove = graphWithRecovery.getIngoingEdges(stNode);
 					for( LabeledEdge e : edgesToRemove) {
 						graphWithRecovery.addEdge(e.newInstance(e.getSource(), recovery));
-						graphWithRecovery.getEdges().remove(e);
+						graphWithRecovery.getNodeList().removeEdge(e);
 					}
+					graphWithRecovery.addEdge(new StandardEdge(recovery, stNode));
 				}
 			}
 				
@@ -140,8 +148,65 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 			for(LabeledEdge e : ingoingEdges) {
 				
 				computePossibleRecoveryDefersRecursive(graphWithRecovery, e.getSource().getStatement(), tool, new HashSet<>(seen));
+
 			}
 	}
+
+	private boolean maybeRecovery(GoDefer defer) {
+		Expression expr = defer.getSubExpression();
+		if(expr instanceof CFGCall) {
+			CFGCall call = (CFGCall) expr;
+			return call.getTargetedCFGs().stream().anyMatch(cfg -> cfg.getNodes().stream().anyMatch(n -> CFGUtils.matchNodeOrSubExpressions(n, st -> st instanceof GoRecover)));
+		} else if(expr instanceof UnresolvedCall) {
+			//TODO:add possible saniteizer list
+			
+			if(!matchAnyGoAPIMethodOrFunctionSignatures((UnresolvedCall) expr))
+				return true;
+		}
+		return false;
+	}
+
+
+	private boolean matchAnyGoAPIMethodOrFunctionSignatures(UnresolvedCall call) {
+		Map<String, Set<FuncGoLangApiSignature>> mapf = GoLangUtils.getGoLangApiFunctionSignatures();
+		Map<String, Set<MethodGoLangApiSignature>> mapm = GoLangUtils.getGoLangApiMethodSignatures();
+
+		for(String pckg : mapf.keySet())
+			for(FuncGoLangApiSignature f : mapf.get(pckg)) 
+				if(matchSignature(f, call))
+						return true;
+
+		for(String pckg : mapm.keySet())
+			for(MethodGoLangApiSignature m : mapm.get(pckg)) 
+				if(matchSignature(m, call))
+					return true;
+		
+		return false;
+	}
+
+	private boolean matchSignature(GoLangApiSignature goLangApiSignature, UnresolvedCall call) {
+
+		String signatureName = null;
+		if (goLangApiSignature instanceof FuncGoLangApiSignature)
+			signatureName = ((FuncGoLangApiSignature) goLangApiSignature).getName();
+		else if (goLangApiSignature instanceof MethodGoLangApiSignature)
+			signatureName = ((MethodGoLangApiSignature) goLangApiSignature).getName();
+
+		if (signatureName != null && signatureName.equals(call.getTargetName())
+				&& call.getParameters().length > 0
+				&& call.getParameters()[0] instanceof VariableRef) {
+
+			VariableRef var = (VariableRef) call.getParameters()[0];
+			if (goLangApiSignature instanceof FuncGoLangApiSignature)
+				if(goLangApiSignature.getPackage().contains(var.getName()))
+					return true;
+			else 
+				return true;
+		}
+
+		return false;
+	}
+
 
 	private boolean hasExplicitRecovery(GoDefer defer, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) {
 		Expression expr = defer.getSubExpression();
@@ -231,15 +296,18 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		if(stNode instanceof PossileRecoveryNode || stNode instanceof RecoveryNode)
 			return false;
 		
-		if(isCriticalComponent(st.getCFG().getDescriptor()))
-				return true;
+
 		
 		Collection<LabeledEdge> ingoingEdges = panicGraphWithRecoveries.getIngoingEdges(stNode);
 		if(!ingoingEdges.isEmpty())
 			for(LabeledEdge e : ingoingEdges) {
+				
 				if(atLeastOnePathWithoutRecoveryRecursive(panicGraphWithRecoveries, e.getSource().getStatement(), new HashSet<>(seen)))
 					return true;
 			}
+		else 
+			if(isCriticalComponent(st.getCFG().getDescriptor()))
+				return true;
 		return false;
 	}
 

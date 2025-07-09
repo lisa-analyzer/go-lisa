@@ -7,6 +7,7 @@ import java.util.Set;
 
 import it.unive.golisa.analysis.DummyDomain;
 import it.unive.golisa.cfg.VariableScopingCFG;
+import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoPanic;
 import it.unive.golisa.cfg.expression.GoRecover;
 import it.unive.golisa.cfg.statement.GoDefer;
@@ -20,6 +21,7 @@ import it.unive.golisa.checker.utils.graph.edges.CallerEdge;
 import it.unive.golisa.checker.utils.graph.edges.LabeledEdge;
 import it.unive.golisa.checker.utils.graph.edges.StandardEdge;
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
+import it.unive.golisa.cosmossdk.util.CosmosUtils;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
@@ -160,9 +162,21 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		} else if(expr instanceof UnresolvedCall) {
 			//TODO:add possible saniteizer list
 			
-			if(!matchAnyGoAPIMethodOrFunctionSignatures((UnresolvedCall) expr))
+			if(!matchAnyGoAPIMethodOrFunctionSignatures((UnresolvedCall) expr) && !matchAnyUnsafeMethodOrFunctionSignatures((UnresolvedCall) expr))
 				return true;
 		}
+		return false;
+	}
+
+
+	private boolean matchAnyUnsafeMethodOrFunctionSignatures(UnresolvedCall call) {
+		Map<String, Set<FuncGoLangApiSignature>> mapf = CosmosUtils.getCosmosApiFunctionSignatures();
+		
+		for(String pckg : mapf.keySet())
+			for(FuncGoLangApiSignature f : mapf.get(pckg)) 
+				if(matchSignature(f, call))
+						return true;
+		
 		return false;
 	}
 
@@ -193,15 +207,9 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 			signatureName = ((MethodGoLangApiSignature) goLangApiSignature).getName();
 
 		if (signatureName != null && signatureName.equals(call.getTargetName())
-				&& call.getParameters().length > 0
-				&& call.getParameters()[0] instanceof VariableRef) {
-
-			VariableRef var = (VariableRef) call.getParameters()[0];
-			if (goLangApiSignature instanceof FuncGoLangApiSignature)
-				if(goLangApiSignature.getPackage().contains(var.getName()))
+				&& call.getParameters().length > 0) {
+			if(goLangApiSignature.getPackage().contains(call.getQualifier()))
 					return true;
-			else 
-				return true;
 		}
 
 		return false;
@@ -295,8 +303,6 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		
 		if(stNode instanceof PossileRecoveryNode || stNode instanceof RecoveryNode)
 			return false;
-		
-
 		
 		Collection<LabeledEdge> ingoingEdges = panicGraphWithRecoveries.getIngoingEdges(stNode);
 		if(!ingoingEdges.isEmpty())

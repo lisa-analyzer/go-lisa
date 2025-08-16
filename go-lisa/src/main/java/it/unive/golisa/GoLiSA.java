@@ -35,7 +35,6 @@ import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
@@ -324,21 +323,21 @@ public class GoLiSA {
 							Set<Statement> cchisToCheck;
 							
 							LiSAConfiguration cchis2 = new LiSAConfiguration();
-							cchis2.workdir = outputDir + File.separatorChar +"xcontract" + File.separatorChar+ "Result"+fileInfos.hashCode();
+							cchis2.workdir = conf.workdir + File.separatorChar +"xcontract" + File.separatorChar+ "Result"+fileInfos.hashCode();
 							cchis2.jsonOutput = true;
 							cchis2.optimize = false;
 
 							cchis2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
 							
-							conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-							conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
+							cchis2.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+							cchis2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
 									new TypeEnvironment<>(new InferredTypes()));
 							
 							cchisToCheck = CchiUtils.computeCchisToCheck(fi, cchis);
 							
 							if(cchisToCheck != null && !cchisToCheck.isEmpty()) {
-								conf.semanticChecks.add(new CrossChannelInvocationsWriteOpsChecker(cchisToCheck,  cmd.hasOption(dumpAdditionalAnalysisInfo)));
-								lisaExecution(fi.getInput(), annotationSet, cmd.getOptionValue("framework"), "cchi-write", conf);
+								cchis2.semanticChecks.add(new CrossChannelInvocationsWriteOpsChecker(cchisToCheck,  cmd.hasOption(dumpAdditionalAnalysisInfo)));
+								lisaExecution(fi.getInput(), annotationSet, cmd.getOptionValue("framework"), "cchi-write", cchis2);
 							}
 						} 
 

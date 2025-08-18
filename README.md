@@ -30,7 +30,10 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 
 `-i C:\Users\MyAccount\codeA.go  -ci "contractA" "otherchannel" -i C:\Users\MyAccount\codeB.go -ci "contractB" "mychannel" -o C:\Users\MyAccount\output -f hyperledger-fabric -a cchi -xc`
 
-## Publications
+
+## GoLiSA Publications
+- Luca Olivieri:  <i>Static Detection of Cross-Channel Invocation Issues in Hyperledger Fabric</i>, in Proceedings of The 36th IEEE International Symposium on Software Reliability Engineering , 2025
+- Luca Olivieri, David Beste, Luca Negrini, Lea Schönherr, Antonio Emanuele Cinà and Pietro Ferrara <i>Code Generation of Smart Contracts with LLMs: A Case Study on Hyperledger Fabric</i>, in Proceedings of The 36th IEEE International Symposium on Software Reliability Engineering , 2025
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Pietro Ferrara, Agostino Cortesi: <i>Detection of Read-Write Issues in Hyperledger Fabric Smart Contracts</i>, in Proceedings of The 40th ACM/SIGAPP Symposium On Applied Computing (SAC), 2025 ([link](https://doi.org/10.1145/3672608.3707721))
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Static Detection of Untrusted Cross-Contract Invocations in Go Smart Contracts</i> in Proceedings of The 40th ACM/SIGAPP Symposium On Applied Computing (SAC), 2025 ([link](https://doi.org/10.1145/3672608.3707728)) 
 - Luca Olivieri, Luca Negrini,  Vincenzo Arceri, Badar Chachar, Pietro Ferrara, Agostino Cortesi: <i>Detection of Phantom Reads in Hyperledger Fabric</i>, in IEEE Access, vol. 12, pp. 80687-80697, 2024 ([link]([10.1109/ACCESS.2024.3410019](http://doi.org/10.1109/ACCESS.2024.3410019)))
@@ -38,5 +41,18 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 - Luca Olivieri, Fabio Tagliaferro, Vincenzo Arceri, Marco Ruaro, Luca Negrini, Agostino Cortesi, Pietro Ferrara, Fausto Spoto, Enrico Talin:
 <i>Ensuring determinism in blockchain software with GoLiSA: an industrial experience report</i>. SOAP@PLDI 2022: 23-29 ([link](https://dl.acm.org/doi/10.1145/3520313.3534658))
 
-## How to build the project ##
+## How to build the project
 GoLiSA comes as a Gradle 8.0 project. For development with Eclipse, please install the [Gradle IDE Pack](https://marketplace.eclipse.org/content/gradle-ide-pack) plugin from the Eclipse marketplace, and make sure to import the project into the workspace as a Gradle project.
+
+## Experimental Evaluations
+The code in this branch allows to reproduce the results provided in <i>Static Detection of Cross-Channel Invocation Issues in Hyperledger Fabric</i>, in Proceedings of The 36th IEEE International Symposium on Software Reliability Engineering , 2025. 
+Please look at the specific artifacts or branches cited in the corresponding research papers to reproduce other experimental evaluations and results.
+
+### How to run the experiments of sample set (few minutes)
+
+The sample set folder is located in `sample-set` and it contains samples of chaincodes proposed in the running example of the paper.
+
+After the build of GoLiSA, it is possible to execute the analysis to this set directly running the following command:
+```
+./go-lisa/bin/go-lisa -i "sample-set/code1.go" -ci "Contract1" "channel-B" -i "sample-set/code2.go" -ci "Contract2" "channel-A" -a "cchi" -f "hyperledger-fabric" -xc -o "results/samples"
+```

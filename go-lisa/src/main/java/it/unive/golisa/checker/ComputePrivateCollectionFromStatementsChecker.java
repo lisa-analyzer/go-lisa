@@ -1,11 +1,13 @@
 package it.unive.golisa.checker;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import it.unive.golisa.analysis.taint.TaintDomainForPrivacyHF;
 import it.unive.golisa.analysis.utilities.PrivacySignatures;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.lisa.analysis.AnalysisState;
@@ -25,6 +27,7 @@ import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
@@ -84,9 +87,17 @@ SemanticCheck<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, Type
 					}
 					
 					if(PrivacySignatures.isReadPrivateState(call)) {
-						readers.put(call,collectionValue);
+						Collection<AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>>> result = tool.getResultOf(call.getCFG());
+						for (AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> analyzedCFG : result) {
+							Call resolved = (Call) tool.getResolvedVersion((UnresolvedCall) call, analyzedCFG);
+							readers.put(resolved,collectionValue);
+						}
 					} else {
-						writers.put(call,collectionValue);
+						Collection<AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>>> result = tool.getResultOf(call.getCFG());
+						for (AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> analyzedCFG : result) {
+							Call resolved = (Call) tool.getResolvedVersion((UnresolvedCall) call, analyzedCFG);
+							writers.put(resolved,collectionValue);
+						}
 					}
 					
 				} catch (SemanticException e) {

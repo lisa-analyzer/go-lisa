@@ -200,7 +200,6 @@ public class GoLiSA {
 			res[3] = satisfyPhaseRequirements(program, PRIVATE_STATES_IN_PUBLIC_STATES);
 			res[4] = satisfyPhaseRequirements(program, PRIVATE_STATES_IN_OTHER_PRIVATE_STATES);
 
-		
 			if(res[0])
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_INPUT_IN_PUBLIC_STATES, PrivacySignatures.privateInputs, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 			else 
@@ -221,7 +220,7 @@ public class GoLiSA {
 				runInformationFlowAnalysis(program, entryLoader, outputDir, dumpOpt, PRIVATE_STATES_IN_PUBLIC_STATES, PrivacySignatures.privateReadStates, PrivacySignatures.publicWriteStatesAndResponsesWithCriticalParams);
 			else 
 				LOG.info("Program does not contains at least a source and sink for phase " + PRIVATE_STATES_IN_PUBLIC_STATES);
-			
+
 			if(res[4])
 				runAnalysesForPrivateInOtherPrivateStates(program, entryLoader, outputDir, dumpOpt, policyPath);	
 
@@ -499,6 +498,8 @@ public class GoLiSA {
 		
 		Set<Triple<CallType, ? extends CodeAnnotation, CodeMemberDescriptor>> specificCodeMemberAnnotations = new HashSet<>() ;
 		
+		TaintDomainForPrivacyHF.TAINTED_ANNOTATION.cleanSources();
+		
 		Set<Call> sourcesTocheckRawData = new HashSet<>();
 		for(Call source : sources) {
 			Set<CodeMemberDescriptor> descriptors = getCodeMemberDescriptors(source);
@@ -506,6 +507,7 @@ public class GoLiSA {
 				sourcesTocheckRawData.add(source);
 			else
 				for(CodeMemberDescriptor d : descriptors) {
+					TaintDomainForPrivacyHF.TAINTED_ANNOTATION.addSource(source);
 					specificCodeMemberAnnotations.add(Triple.of(source.getCallType(), new MethodAnnotation(TaintDomainForPrivacyHF.TAINTED_ANNOTATION, d.getUnit().getName(), d.getName()), d));
 				}
 		}

@@ -16,6 +16,7 @@ import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
 import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.ProgramPoint;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
@@ -42,7 +43,7 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 	/**
 	 * The annotation Tainted.
 	 */
-	public static final Annotation TAINTED_ANNOTATION = new Annotation("lisa.taint.Tainted");
+	public static final SourceTrackTaintAnnotation TAINTED_ANNOTATION = new SourceTrackTaintAnnotation("lisa.taint.Tainted");
 
 	/**
 	 * The matcher for the Tainted annotation.
@@ -105,8 +106,17 @@ public class TaintDomainForPrivacyHF implements BaseNonRelationalValueDomain<Tai
 		if (annots.isEmpty())
 			return BaseNonRelationalValueDomain.super.fixedVariable(id, pp, oracle);
 
-		if (annots.contains(TAINTED_MATCHER))
-			return TAINTED;
+		for(Annotation a : annots)
+			if (TAINTED_MATCHER.matches(a)) {
+				if(a instanceof SourceTrackTaintAnnotation) {
+	 				SourceTrackTaintAnnotation stta = (SourceTrackTaintAnnotation) a;
+	 				for(Statement src : stta.getSources())
+	 					if(src.getLocation().equals(pp.getLocation()))
+	 						return TAINTED;
+				} else 
+					return TAINTED;
+			}
+		
 
 		if (annots.contains(CLEAN_MATCHER))
 			return CLEAN;

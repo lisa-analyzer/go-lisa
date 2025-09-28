@@ -1,0 +1,46 @@
+{
+  "warnings" : [ {
+    "message" : "['go-testcases/unhandled-errors/hf-unhandled-errors/hf-unhandled-errors.go':17:35] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Unhandled error of a blockchain read operation. It is discarded during the assignment."
+  }, {
+    "message" : "['go-testcases/unhandled-errors/hf-unhandled-errors/hf-unhandled-errors.go':19:37] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Unhandled error of a blockchain write operation. The error seems not assigned in any variable"
+  }, {
+    "message" : "['go-testcases/unhandled-errors/hf-unhandled-errors/hf-unhandled-errors.go':21:41] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Unhandled error of a blockchain write operation. It is discarded during the assignment."
+  }, {
+    "message" : "['go-testcases/unhandled-errors/hf-unhandled-errors/hf-unhandled-errors.go':23:37] on 'untyped SimpleAsset::Invoke(*SimpleAsset t, shim.ChaincodeStubInterface stub)': [EXPRESSION] Unhandled error of a blockchain read operation. It seems not checked in any condition statements in the method"
+  } ],
+  "files" : [ "report.json" ],
+  "info" : {
+    "cfgs" : "1",
+    "duration" : "48ms",
+    "end" : "2025-09-28T11:36:10.109+02:00",
+    "expressions" : "35",
+    "files" : "0",
+    "globals" : "6",
+    "members" : "44",
+    "programs" : "1",
+    "start" : "2025-09-28T11:36:10.061+02:00",
+    "statements" : "6",
+    "units" : "10",
+    "version" : "0.1",
+    "warnings" : "4"
+  },
+  "configuration" : {
+    "analysisGraphs" : "NONE",
+    "descendingPhaseType" : "NONE",
+    "dumpForcesUnwinding" : "false",
+    "fixpointWorkingSet" : "DuplicateFreeFIFOWorkingSet",
+    "glbThreshold" : "5",
+    "hotspots" : "unset",
+    "jsonOutput" : "true",
+    "openCallPolicy" : "WorstCasePolicy",
+    "optimize" : "false",
+    "recursionWideningThreshold" : "5",
+    "semanticChecks" : "",
+    "serializeInputs" : "false",
+    "serializeResults" : "false",
+    "syntacticChecks" : "UnhandledErrorsChecker",
+    "useWideningPoints" : "true",
+    "wideningThreshold" : "5",
+    "workdir" : "go-outputs/unhandled-errors/hf-unhandled-errors"
+  }
+}

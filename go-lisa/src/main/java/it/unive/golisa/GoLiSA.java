@@ -205,7 +205,8 @@ public class GoLiSA {
 			conf.syntacticChecks.add(new UnhandledErrorsChecker());
 			conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new DummyDomain()),
 					new TypeEnvironment<>(new InferredTypes()));
-			conf.semanticChecks.add(new ABCIPanicChecker());
+			if(cmd.getOptionValue("framework").equalsIgnoreCase("COSMOS-SDK"))
+				conf.semanticChecks.add(new ABCIPanicChecker());
 			break;
 		case "numerical-issues":
 			conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;

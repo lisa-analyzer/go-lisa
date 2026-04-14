@@ -1,5 +1,6 @@
 package it.unive.golisa.cfg.expression;
 
+import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.lisa.analysis.AbstractState;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
@@ -64,15 +65,18 @@ public class GoCollectionAccess extends BinaryExpression {
 			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
 			throws SemanticException {
 		AnalysisState<A> result = state.bottom();
-		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
-		for (Type type : ltypes) {
-			if (type.isPointerType()) {
+		//Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
+		//for (Type type : ltypes) {
+		//	if (type.isPointerType() 
+		//			|| type instanceof GoStructType) {
+				
+				
 				result = result.lub(state.smallStepSemantics(
 						new AccessChild(Untyped.INSTANCE,
 								new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
 						this));
-			}
-		}
+		//	}
+		//}
 
 		return result;
 	}

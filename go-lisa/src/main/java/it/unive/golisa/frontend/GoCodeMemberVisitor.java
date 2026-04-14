@@ -1741,6 +1741,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> lastCaseBlock = null;
 		block.addNode(exitNode);
 		storeIds(exitNode);
+		exitPoints.add(exitNode);
+		
 
 		int ncases = ctx.exprCaseClause().size();
 		List<SwitchCase> scases = new ArrayList<>(ncases);
@@ -1814,6 +1816,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
+		exitPoints.remove(exitPoints.size() - 1);
 		cfs.add(new Switch(matrix, entryNode, exitNode, scases.toArray(SwitchCase[]::new), def));
 
 		return Triple.of(entryNode, block, exitNode);
@@ -1949,6 +1952,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		rangeNode.setIdxRange(idxRange);
 		rangeNode.setValRange(valRange);
 
+		entryPoints.add(rangeNode);
+		
 		block.addNode(rangeNode);
 		addEdge(new FalseEdge(rangeNode, exitNode), block);
 
@@ -1980,9 +1985,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
 		}
 
-		// entryPoints.remove(entryPoints.size() - 1);
+		 entryPoints.remove(entryPoints.size() - 1);
 		// exitPoints.remove(exitPoints.size() - 1);
 		restoreVisibleIdsAfterForLoop(backup);
+
 
 		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
 
@@ -2663,6 +2669,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		NoOp exitNode = new NoOp(cfg, location);
 		block.addNode(exitNode);
 		storeIds(exitNode);
+		
+		exitPoints.add(exitNode);
 
 		Statement entryNode = null;
 		Statement previousGuard = null;
@@ -2749,6 +2757,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
+		exitPoints.remove(exitPoints.size()-1);
 		cfs.add(new TypeSwitch(matrix, entryNode, exitNode, scases.toArray(TypeSwitchCase[]::new), def));
 		return Triple.of(entryNode, block, exitNode);
 	}

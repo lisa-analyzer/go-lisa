@@ -4,12 +4,12 @@ import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.cfg.utils.CFGUtils.Search;
-import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteGraph;
-import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteNode;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.CalleeEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.CallerEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.DeferEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
+import it.unive.golisa.checker.utils.graph.edges.CalleeEdge;
+import it.unive.golisa.checker.utils.graph.edges.CallerEdge;
+import it.unive.golisa.checker.utils.graph.edges.DeferEdge;
+import it.unive.golisa.checker.utils.graph.GraphForCheckers;
+import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
+import it.unive.golisa.checker.utils.graph.edges.StandardEdge;
 import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
 import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
@@ -57,7 +57,7 @@ public class ReadWritePathChecker implements
 	private final Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates;
 
 	private final boolean computeGraph;
-	private final Map<String, ReadWriteGraph> reconstructedGraphs;
+	private final Map<String, GraphForCheckers> reconstructedGraphs;
 
 	public ReadWritePathChecker(Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates,
 			Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates, boolean computeGraph) {
@@ -79,7 +79,7 @@ public class ReadWritePathChecker implements
 							TypeEnvironment<InferredTypes>>> tool) {
 
 		if (computeGraph) {
-			for (Entry<String, ReadWriteGraph> entry : reconstructedGraphs.entrySet()) {
+			for (Entry<String, GraphForCheckers> entry : reconstructedGraphs.entrySet()) {
 				try {
 
 					dump(tool.getFileManager(), entry.getKey(), entry.getValue().toSerializableGraph());
@@ -125,8 +125,8 @@ public class ReadWritePathChecker implements
 		return true;
 	}
 
-	private ReadWriteGraph tmpGraph;
-	private ReadWriteNode destinationNode;
+	private GraphForCheckers tmpGraph;
+	private StandardNode destinationNode;
 	private boolean isDeferredCallee;
 
 	private void checkReadAfterWriteIssues(
@@ -138,7 +138,7 @@ public class ReadWritePathChecker implements
 				AnalysisReadWriteHFInfo write = p.getLeft();
 				AnalysisReadWriteHFInfo read = p.getRight();
 				if (computeGraph)
-					tmpGraph = new ReadWriteGraph("ReadAfterWrite - Write location: " + write.getCall().getLocation()
+					tmpGraph = new GraphForCheckers("ReadAfterWrite - Write location: " + write.getCall().getLocation()
 							+ " - Read Location -" + read.getCall().getLocation());
 				if (interproceduralCheck(tool, graph, write.getCall(), read.getCall(), new HashSet<CodeMember>(),
 						new HashSet<CodeMember>())) {
@@ -160,7 +160,7 @@ public class ReadWritePathChecker implements
 		for (Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : overWriteCandidates) {
 			if (CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
 				if (computeGraph)
-					tmpGraph = new ReadWriteGraph("OverWrite - Write1 location: " + p.getRight().getCall().getLocation()
+					tmpGraph = new GraphForCheckers("OverWrite - Write1 location: " + p.getRight().getCall().getLocation()
 							+ " - Write2 Location -" + p.getLeft().getCall().getLocation());
 				if (interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(),
 						new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
@@ -191,8 +191,8 @@ public class ReadWritePathChecker implements
 
 			if (isMatching(graph, startNode, isStartDeferred, endNode, isEndDeferred)) {
 				if (computeGraph) {
-					ReadWriteNode node1 = new ReadWriteNode(tmpGraph, startNode);
-					ReadWriteNode node2 = new ReadWriteNode(tmpGraph, endNode);
+					StandardNode node1 = new StandardNode(tmpGraph, startNode);
+					StandardNode node2 = new StandardNode(tmpGraph, endNode);
 
 					tmpGraph.addNode(node1);
 					tmpGraph.addNode(node2);
@@ -207,7 +207,7 @@ public class ReadWritePathChecker implements
 
 		if (checkCallees(tool, graph, startNode, end, seenCallees, isStartDeferred)) {
 			if (computeGraph) {
-				ReadWriteNode node = new ReadWriteNode(tmpGraph, startNode);
+				StandardNode node = new StandardNode(tmpGraph, startNode);
 
 				tmpGraph.addNode(node);
 
@@ -220,7 +220,7 @@ public class ReadWritePathChecker implements
 
 		if (checkCallers(tool, graph, end, seenCallees, seenCallers)) {
 			if (computeGraph) {
-				ReadWriteNode node = new ReadWriteNode(tmpGraph, startNode);
+				StandardNode node = new StandardNode(tmpGraph, startNode);
 
 				tmpGraph.addNode(node);
 
@@ -303,7 +303,7 @@ public class ReadWritePathChecker implements
 										for (Statement e : interCFG.getEntrypoints())
 											if (checkCalleesRecursive(tool, interCFG, e, end, seen)) {
 												if (computeGraph) {
-													ReadWriteNode node = new ReadWriteNode(tmpGraph, n);
+													StandardNode node = new StandardNode(tmpGraph, n);
 													tmpGraph.addNode(node);
 													tmpGraph.addEdge(new CalleeEdge(node, destinationNode));
 													destinationNode = node;
@@ -336,7 +336,7 @@ public class ReadWritePathChecker implements
 
 		if (endNode != null) {
 			if (computeGraph) {
-				ReadWriteNode node = new ReadWriteNode(tmpGraph, endNode);
+				StandardNode node = new StandardNode(tmpGraph, endNode);
 				tmpGraph.addNode(node);
 				destinationNode = node;
 			}
@@ -358,7 +358,7 @@ public class ReadWritePathChecker implements
 										for (Statement e : interCFG.getEntrypoints())
 											if (checkCalleesRecursive(tool, interCFG, e, end, seen)) {
 												if (computeGraph) {
-													ReadWriteNode node = new ReadWriteNode(tmpGraph, e);
+													StandardNode node = new StandardNode(tmpGraph, e);
 													tmpGraph.addNode(node);
 													tmpGraph.addEdge(new CalleeEdge(node, destinationNode));
 													destinationNode = node;

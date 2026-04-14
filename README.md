@@ -9,7 +9,10 @@ GoLiSA is a static analyzer based on abstract interpretation for smart contracts
 ## Usage
 The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) and it expects four parameters:
 - `-i path`: the Go file to be analyzed
+- `-ci name channel`: the deployment name and channel of the contract to analyze (Hyperledger Fabric only)
 - `-o path`: the output directory
+- `-d`: the dump of analysis information
+- `-xc`: set cross-contract analysis (Hyperledger Fabric only)
 - `-f framework`: the blockchain framework used in the input file (`hyperledger-fabric`, `cosmos-sdk`, `tendermint-core`)
 - `-a analysis`: the analysis to perform 
 	- `non-determinism`  performs an analysis to detect explicit flows that lead to issues related to __non-determinism__ in blockchain software
@@ -25,7 +28,7 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 	
 ### Example of command line
 
-`-i C:\Users\MyAccount\mycontract.go -o C:\Users\MyAccount\output -f hyperledger-fabric -a unhandled-errors`
+`-i C:\Users\MyAccount\codeA.go  -ci "contractA" "otherchannel" -i C:\Users\MyAccount\codeB.go -ci "contractB" "mychannel" -o C:\Users\MyAccount\output -f hyperledger-fabric -a cchi -xc`
 
 ## Publications on GoLiSA and its analyses
 - Luca Olivieri, Luca Negrini: <i>Don’t Panic: Error Handling Patterns in Go Smart Contracts and Blockchain Software</i>, in Proceedings of 7th Conference on Blockchain Research & Applications for Innovative Networks and Services (BRAINS), 2025 ([link]([10.1109/BRAINS67003.2025.11302935](http://doi.org/10.1109/BRAINS67003.2025.11302935)))
@@ -43,5 +46,18 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 ### Experimental Evaluations
 The code in this branch is under development. Please look at the specific artifacts or branches cited in the corresponding research papers to reproduce experimental evaluations and results. 
 
-## How to build the project ##
+## How to build the project
 GoLiSA comes as a Gradle 8.0 project. For development with Eclipse, please install the [Gradle IDE Pack](https://marketplace.eclipse.org/content/gradle-ide-pack) plugin from the Eclipse marketplace, and make sure to import the project into the workspace as a Gradle project.
+
+## Experimental Evaluations
+The code in this branch allows to reproduce the results provided in <i>Static Detection of Cross-Channel Invocation Issues in Hyperledger Fabric</i>, in Proceedings of The 36th IEEE International Symposium on Software Reliability Engineering , 2025. 
+Please look at the specific artifacts or branches cited in the corresponding research papers to reproduce other experimental evaluations and results.
+
+### How to run the experiments of sample set (few minutes)
+
+The sample set folder is located in `sample-set` and it contains samples of chaincodes proposed in the running example of the paper.
+
+After the build of GoLiSA, it is possible to execute the analysis to this set directly running the following command:
+```
+./go-lisa/bin/go-lisa -i "sample-set/code1.go" -ci "Contract1" "channel-B" -i "sample-set/code2.go" -ci "Contract2" "channel-A" -a "cchi" -f "hyperledger-fabric" -xc -o "results/samples"
+```

@@ -50,15 +50,16 @@ public class GoLess extends it.unive.lisa.program.cfg.statement.BinaryExpression
 		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
 
 		AnalysisState<A> result = state.bottom();
-		for (Type lType : ltypes)
-			for (Type rType : rtypes) {
-				if (lType.canBeAssignedTo(rType) || rType.canBeAssignedTo(lType))
+
+	//	for (Type lType : ltypes)
+	//		for (Type rType : rtypes) {
+	//			if (lType.canBeAssignedTo(rType) || rType.canBeAssignedTo(lType))
 					result = result.lub(state
 							.smallStepSemantics(
 									new BinaryExpression(GoBoolType.INSTANCE,
 											left, right, ComparisonLt.INSTANCE, getLocation()),
 									this));
-			}
+	//		}
 		return result;
 	}
 }

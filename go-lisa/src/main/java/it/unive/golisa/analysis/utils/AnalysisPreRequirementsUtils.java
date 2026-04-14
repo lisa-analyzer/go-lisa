@@ -84,12 +84,14 @@ public class AnalysisPreRequirementsUtils {
 				if(countCallsMatchingSignatures(program, CCIs) > 0)
 					return true;
 				break;
+			
 			case "div-by-zero":
 				if( countStatementsMatchingType(program, GoDiv.class) > 0)
 					return true;
 			case "read-write":
 			case "unhandled-errors":
 			case "numerical-issues":
+			case "cchi-write":
 				//no particular pre-requirements
 				return true;
 			default:

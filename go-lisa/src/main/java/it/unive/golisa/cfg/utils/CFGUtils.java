@@ -57,6 +57,8 @@ public class CFGUtils {
 	 * @throws IllegalArgumentException if the search algorithm is not supported
 	 */
 	public static boolean existPath(CFG cfg, Statement source, Statement destination, Search search) {
+		if(source.equals(destination))
+			return true;
 		if (search.equals(Search.BFS))
 			return searchBFS(cfg, source, destination);
 		else if (search.equals(Search.DFS))

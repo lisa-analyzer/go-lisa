@@ -1,13 +1,14 @@
-package it.unive.golisa.checker.hf.readwrite.graph;
+package it.unive.golisa.checker.utils.graph.nodes;
 
-import it.unive.golisa.checker.hf.readwrite.graph.edges.ReadWriteEdge;
+import it.unive.golisa.checker.utils.graph.GraphForCheckers;
+import it.unive.golisa.checker.utils.graph.edges.LabeledEdge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeNode;
 
-public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, ReadWriteEdge> {
+public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, LabeledEdge>, Cloneable {
 
-	private final ReadWriteGraph graph;
+	private final GraphForCheckers graph;
 	private final Statement st;
 
 	/**
@@ -16,13 +17,13 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 	 * @param graph the parent graph
 	 * @param cm    the code member represented by this node
 	 */
-	public ReadWriteNode(ReadWriteGraph graph, Statement st) {
+	public StandardNode(GraphForCheckers graph, Statement st) {
 		this.graph = graph;
 		this.st = st;
 	}
 
 	@Override
-	public <V> boolean accept(GraphVisitor<ReadWriteGraph, ReadWriteNode, ReadWriteEdge, V> visitor, V tool) {
+	public <V> boolean accept(GraphVisitor<GraphForCheckers, StandardNode, LabeledEdge, V> visitor, V tool) {
 		return visitor.visit(tool, graph, this);
 	}
 
@@ -42,7 +43,7 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ReadWriteNode other = (ReadWriteNode) obj;
+		StandardNode other = (StandardNode) obj;
 		if (st == null) {
 			if (other.st != null)
 				return false;
@@ -51,7 +52,7 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 		return true;
 	}
 
-	public ReadWriteGraph getGraph() {
+	public GraphForCheckers getGraph() {
 		return graph;
 	}
 
@@ -65,7 +66,7 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 	}
 
 	@Override
-	public int compareTo(ReadWriteNode o) {
+	public int compareTo(StandardNode o) {
 		int cmp;
 		if ((cmp = st.getLocation().compareTo(o.st.getLocation())) != 0)
 			return cmp;
@@ -74,8 +75,15 @@ public class ReadWriteNode implements CodeNode<ReadWriteGraph, ReadWriteNode, Re
 		return compareToSameClassAndLocation(o);
 	}
 
-	private int compareToSameClassAndLocation(ReadWriteNode o) {
+	private int compareToSameClassAndLocation(StandardNode o) {
 
 		return 0;
 	}
+
+	@Override
+	public StandardNode clone() throws CloneNotSupportedException {
+		return new StandardNode(graph, st);
+	}
+	
+	
 }

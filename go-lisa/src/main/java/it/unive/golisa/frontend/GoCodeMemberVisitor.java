@@ -91,6 +91,8 @@ import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoForRange;
 import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
+import it.unive.golisa.cfg.expression.GoPanic;
+import it.unive.golisa.cfg.expression.GoRecover;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseNAnd;
@@ -1743,7 +1745,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		storeIds(exitNode);
 		exitPoints.add(exitNode);
 		
-
 		int ncases = ctx.exprCaseClause().size();
 		List<SwitchCase> scases = new ArrayList<>(ncases);
 		DefaultSwitchCase def = null;
@@ -1951,6 +1952,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		rangeNode.setIdxRange(idxRange);
 		rangeNode.setValRange(valRange);
+		
+		entryPoints.add(rangeNode);
 
 		entryPoints.add(rangeNode);
 		
@@ -1985,7 +1988,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
 		}
 
-		 entryPoints.remove(entryPoints.size() - 1);
+		entryPoints.remove(entryPoints.size() - 1);
 		// exitPoints.remove(exitPoints.size() - 1);
 		restoreVisibleIdsAfterForLoop(backup);
 
@@ -2164,6 +2167,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				} else {
 					return new GoMake(cfg, locationOf(ctx.primaryExpr()), Untyped.INSTANCE, args);
 				}
+			case "recover":
+				args = visitArguments(ctx.arguments());
+				return new GoRecover(cfg, locationOf(ctx.primaryExpr()));
+			case "panic":
+				args = visitArguments(ctx.arguments());
+				return new GoPanic(cfg, locationOf(ctx.primaryExpr()), args);
 			}
 
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
@@ -2756,6 +2765,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode), block);
 			entryNode = simpleStmt.getLeft();
 		}
+		
+		exitPoints.remove(exitPoints.size()-1);
 
 		exitPoints.remove(exitPoints.size()-1);
 		cfs.add(new TypeSwitch(matrix, entryNode, exitNode, scases.toArray(TypeSwitchCase[]::new), def));

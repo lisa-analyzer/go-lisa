@@ -1,6 +1,7 @@
 package it.unive.golisa;
 
 import it.unive.golisa.analysis.GoIntervalDomain;
+import it.unive.golisa.analysis.DummyDomain;
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
@@ -12,6 +13,7 @@ import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.cosmos.panic.ABCIPanicChecker;
 import it.unive.golisa.checker.hf.CchiUtils;
 import it.unive.golisa.checker.hf.CrossChannelInvocationsIssuesChecker;
 import it.unive.golisa.checker.hf.CrossChannelInvocationsWriteOpsChecker;
@@ -171,7 +173,7 @@ public class GoLiSA {
 		boolean crossContractAnalysis = cmd.hasOption(crosscontract_opt);
 		
 		for(FileInfo fInfo : fileInfos) {
-			
+
 			LiSAConfiguration conf = new LiSAConfiguration();
 			conf.workdir = outputDir + File.separatorChar + "Result"+fileInfos.hashCode();
 			conf.jsonOutput = true;
@@ -254,6 +256,9 @@ public class GoLiSA {
 					break;
 				case "unhandled-errors":
 					conf.syntacticChecks.add(new UnhandledErrorsChecker());
+					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new DummyDomain()),
+							new TypeEnvironment<>(new InferredTypes()));
+					conf.semanticChecks.add(new ABCIPanicChecker());
 					break;
 				case "numerical-issues":
 					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
@@ -381,6 +386,12 @@ public class GoLiSA {
 			
 			if(analysis.equals("numerical-issues") || analysis.equals("div-by-zero"))
 				for (CFG c : program.getAllCFGs())
+					program.addEntryPoint(c);
+			
+			if(analysis.equals("unhandled-errors") && framework.equalsIgnoreCase("COSMOS-SDK"))
+				for (CFG c : program.getAllCFGs())
+					if(c.getDescriptor().getSignature().contains("BeginBlocker") 
+							|| c.getDescriptor().getSignature().contains("EndBlocker"))
 					program.addEntryPoint(c);
 
 			if (!program.getEntryPoints().isEmpty()) {

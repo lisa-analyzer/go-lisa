@@ -88,6 +88,14 @@ public class AnalysisPreRequirementsUtils {
 			case "div-by-zero":
 				if( countStatementsMatchingType(program, GoDiv.class) > 0)
 					return true;
+			case "event-issues":
+				// at least a event emit
+				Map<String, Set<String>> req = new HashMap<>();
+				req.put("ChaincodeStub", Set.of("SetEvent"));
+				req.put("ChaincodeStubInterface", Set.of("SetEvent"));
+				if(countCallsMatchingSignatures(program, req) > 0)
+					return true;
+				break;
 			case "read-write":
 			case "unhandled-errors":
 			case "numerical-issues":

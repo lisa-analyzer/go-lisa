@@ -37,7 +37,7 @@ import it.unive.lisa.util.file.FileManager;
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
-public class CrossChannelInvocationsWriteOpsChecker implements
+public class CrossChannelInvocationsWriteOpsAndEventEmitChecker implements
 		SemanticCheck<
 				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
 
@@ -45,7 +45,7 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 	private final boolean computeGraph;
 	private Set<Statement> cchisToCheck;
 	
-	public CrossChannelInvocationsWriteOpsChecker(Set<Statement> cchisToCheck,boolean computeGraph) {
+	public CrossChannelInvocationsWriteOpsAndEventEmitChecker(Set<Statement> cchisToCheck,boolean computeGraph) {
 		this.cchisToCheck = cchisToCheck;
 		this.computeGraph = computeGraph;
 	}
@@ -78,13 +78,52 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 							tool.warnOn(w, "Detected possible uncommited write operations");
 				}
 			
-			interproceduralAnalysis(tool, graph, new HashSet<CodeMember>());
+			interproceduralAnalysisWriteOps(tool, graph, new HashSet<CodeMember>());
+			
+			
+			Set<Statement> eventEmits = getEventEmits(graph);
+			if(!eventEmits.isEmpty())
+				for(Statement e : entryPoints) {
+					for(Statement ev : eventEmits)
+						if(CFGUtils.existPath(graph, e, ev, Search.DFS))
+							tool.warnOn(ev, "Detected possible unemitted event in cross-channel invocation");
+				}
+			
+			interproceduralAnalysisEventEmits(tool, graph, new HashSet<CodeMember>());
+			
 
 		}
 		
 		return true;
 	}
 	
+	private void interproceduralAnalysisEventEmits(
+			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			CFG graph, HashSet<CodeMember> seen) {
+		if(!seen.contains(graph)) {
+			seen.add(graph);
+			Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
+			for (CodeMember cm : codemembers) {
+				if (cm instanceof VariableScopingCFG) {
+					VariableScopingCFG interCFG = (VariableScopingCFG) cm;
+					Collection<Statement> entryPoints = interCFG.getEntrypoints();
+					Set<Statement> eventEmits = getEventEmits(interCFG);
+					if(!eventEmits.isEmpty())
+						for(Statement e : entryPoints) {
+							for(Statement ev : eventEmits)
+								if(CFGUtils.existPath(graph, e, ev, Search.DFS)) {
+									for(Statement cchi : cchisToCheck)
+										tool.warnOn(ev, "Detected possible unemitted event due to a cross-channel invocation at " + cchi.getLocation());
+								}
+						}
+					interproceduralAnalysisEventEmits(tool, interCFG, seen);
+				}
+			}
+		}
+		
+	}
+
+
 	private Set<Statement> getWriteOperations(CFG graph) {
 		Set<Statement> result = new HashSet<>();
 		for(Statement n : graph.getNodes()) {
@@ -98,7 +137,20 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 		return result;
 	}
 	
-	private void interproceduralAnalysis(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool, CFG graph, Set<CodeMember> seen) {
+	private Set<Statement> getEventEmits(CFG graph) {
+		Set<Statement> result = new HashSet<>();
+		for(Statement n : graph.getNodes()) {
+			List<Call> calls = CFGUtils.extractCallsFromStatement(n);
+			for(Call c : calls) {
+				if(c.getTargetName().equals("SetEvent") && c.getParameters().length == 2)
+					result.add(n);
+			}
+		}			
+			
+		return result;
+	}
+	
+	private void interproceduralAnalysisWriteOps(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool, CFG graph, Set<CodeMember> seen) {
 		if(!seen.contains(graph)) {
 			seen.add(graph);
 			Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
@@ -115,7 +167,7 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 										tool.warnOn(w, "Detected possible uncommitted write operation due to a cross-channel invocation at " + cchi.getLocation());
 								}
 						}
-					interproceduralAnalysis(tool, interCFG, seen);
+					interproceduralAnalysisWriteOps(tool, interCFG, seen);
 				}
 			}
 		}

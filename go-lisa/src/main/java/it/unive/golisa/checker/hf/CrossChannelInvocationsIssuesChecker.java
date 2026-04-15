@@ -102,9 +102,10 @@ public class CrossChannelInvocationsIssuesChecker implements
 		
 		for(Statement cch : singleCrossChannelInvocations) {
 			tool.warnOn(cch, "Detected possible cross-channel invocation. It may lead to a lack of transparency because no new transactions are created during the invocation.");
-			if(intraChaincode)
+			if(intraChaincode) {
 				tool.warnOn(cch, "Detected possible cross-channel invocation. It may lead to uncommited write operations during the execution of callee chaincode.");
-			
+				tool.warnOn(cch, "Detected possible cross-channel invocation. It may lead to unemitted events during the execution of callee chaincode.");
+			}
 		}
 		
 		//CASE 2: CCIs with different channels
@@ -154,10 +155,14 @@ public class CrossChannelInvocationsIssuesChecker implements
 		  tool.warnOn(target,
 		      "Detected cross-channel invocations on different channels. The other invocations: "
 		          + printOtherLocations(others) + ". They may lead to a lack of transparency because no new transactions are created during the invocation.");
-		  if(intraChaincode)
+		  if(intraChaincode) {
 		    tool.warnOn(target,
 		        "Detected cross-channel invocations on different channels. The other invocations: "
 		            + printOtherLocations(others) + ". They may lead to uncommited write operations during the execution of callee chaincode.");
+		    tool.warnOn(target,
+			        "Detected cross-channel invocations on different channels. The other invocations: "
+			            + printOtherLocations(others) + ". They may lead to unemitted events during the execution of callee chaincode.");
+		  }
 		}
 	}
 

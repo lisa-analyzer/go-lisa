@@ -14,9 +14,12 @@ import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.checker.hf.CchiUtils;
 import it.unive.golisa.checker.hf.CrossChannelInvocationsIssuesChecker;
-import it.unive.golisa.checker.hf.CrossChannelInvocationsWriteOpsChecker;
+import it.unive.golisa.checker.hf.CrossChannelInvocationsWriteOpsAndEventEmitChecker;
 import it.unive.golisa.checker.hf.UnhandledErrorsChecker;
 import it.unive.golisa.checker.hf.cci.CrossContractInvocationInformation;
+import it.unive.golisa.checker.hf.events.EmptyEventNameChecker;
+import it.unive.golisa.checker.hf.events.EventEmitWithNoSuccessChecker;
+import it.unive.golisa.checker.hf.events.MultipleEventEmitChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePairChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePathChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
@@ -252,6 +255,17 @@ public class GoLiSA {
 		
 					conf.workdir = dirPhase1.getAbsolutePath();
 					break;
+				case "event-issues":
+					
+					require2Phase = true;
+		
+					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
+					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
+							new TypeEnvironment<>(new InferredTypes()));
+					conf.semanticChecks.add(new MultipleEventEmitChecker(cmd.hasOption(dumpAdditionalAnalysisInfo)));
+					conf.semanticChecks.add(new EmptyEventNameChecker());
+					conf.semanticChecks.add(new EventEmitWithNoSuccessChecker());
+					break;
 				case "unhandled-errors":
 					conf.syntacticChecks.add(new UnhandledErrorsChecker());
 					break;
@@ -276,7 +290,6 @@ public class GoLiSA {
 					//program.getAllCFGs().
 				}
 			}
-			
 			
 			File dirPhase2 = new File(outputDir, "Phase2");
 	
@@ -336,7 +349,7 @@ public class GoLiSA {
 							cchisToCheck = CchiUtils.computeCchisToCheck(fi, cchis);
 							
 							if(cchisToCheck != null && !cchisToCheck.isEmpty()) {
-								cchis2.semanticChecks.add(new CrossChannelInvocationsWriteOpsChecker(cchisToCheck,  cmd.hasOption(dumpAdditionalAnalysisInfo)));
+								cchis2.semanticChecks.add(new CrossChannelInvocationsWriteOpsAndEventEmitChecker(cchisToCheck,  cmd.hasOption(dumpAdditionalAnalysisInfo)));
 								lisaExecution(fi.getInput(), annotationSet, cmd.getOptionValue("framework"), "cchi-write", cchis2);
 							}
 						} 

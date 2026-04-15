@@ -2765,7 +2765,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			block.mergeWith(simpleStmt.getMiddle());
 			addEdge(new SequentialEdge(simpleStmt.getRight(), entryNode), block);
 			entryNode = simpleStmt.getLeft();
-		}s
+		}
 
 		exitPoints.remove(exitPoints.size()-1);
 		cfs.add(new TypeSwitch(matrix, entryNode, exitNode, scases.toArray(TypeSwitchCase[]::new), def));

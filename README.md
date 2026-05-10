@@ -80,11 +80,12 @@ The command run the tool printing the help message
 | Option | Long Option         | Argument          | Description                                                                                                                                                               |
 | ------ | ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-i`   | `--input`           | `file`            | Go source file to analyze (multiple files can be analyzed using multiple input options)			          					          					               |
-| `-ci`  | `--input`           | `name`            | Deployment name and channel of the contract to analyze (`hyperledger-fabric` framework only)				          					          					       |
-| `-o`   | `--outdir`          | `name` `channel`  | Output directory for analysis results                                                                                                                                     |
+| `-ci`  | `--contractinfo`    | `name` `channel`  | Deployment name and channel of the contract to analyze (`hyperledger-fabric` framework only)				          					          					       |
+| `-o`   | `--outdir`          | `directory`       | Output directory for analysis results                                                                                                                                     |
 | `-f`   | `--framework`       | `framework`       | Framework used by the input files: `hyperledger-fabric`, `cosmos-sdk`, `tendermint-core`                                                                                  |
 | `-a`   | `--analysis`        | `analysis`        | Analysis to perform : `non-determinism`, `non-determinism-ni`, `phantom-read`, `ucci`, `cchi`, `read-write`, `unhandled-errors`, `var-numerical-overflow`,  `div-by-zero` |
-| `-xc`  | `--analysis`        |`--analysis`       | Enable cross-contract analysis
+| `-xc`  | `--crosscontract`   | —                 | Enable cross-contract analysis                                                                                                                                            |
+| `-d`   | `--dumpAnalysis`    | —				   | Dump the analysis                                                                                                                                                         |
 | `-h`   | `--help`            | —                 | Print the help message                                                                                                                                                    |
 
 ---

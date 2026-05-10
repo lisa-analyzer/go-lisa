@@ -6,9 +6,7 @@
 [![GitHub license](https://img.shields.io/github/license/lisa-analyzer/go-lisa)](https://github.com/lisa-analyzer/go-lisa/blob/master/LICENSE)
 [![Built on LiSA](https://img.shields.io/badge/Built%20on-LiSA-informational)](https://github.com/lisa-analyzer/lisa)
 
-# JLiSA — Java Frontend of LiSA (Library for Static Analysis)
-
-**JLiSA** is a static analysis tool for Go programs, built on top of the [LiSA (Library for Static Analysis)](https://github.com/lisa-analyzer/lisa) framework. It provides a front-end that translates Go source files into LiSA's control flow graph (CFG) representation, enriches it with the semantics of a subset of the Go standard library, and runs configurable abstract interpretation analyses to detect bugs and verify program properties.
+**GoLiSA** is a static analysis tool for Go programs, built on top of the [LiSA (Library for Static Analysis)](https://github.com/lisa-analyzer/lisa) framework. It provides a front-end that translates Go source files into LiSA's control flow graph (CFG) representation, enriches it with the semantics of a subset of the Go standard library, and runs configurable abstract interpretation analyses to detect bugs and verify program properties.
 
 ---
 

@@ -33,7 +33,6 @@ public class GoLangAPISignatureMapper {
 	private final Set<String> pkgs;
 
 	private GoLangAPISignatureMapper() {
-		long t = System.currentTimeMillis();
 		pkgs = new HashSet<>();
 		mapConst = new HashMap<String, Set<ConstGoLangApiSignature>>();
 		mapFunc = new HashMap<String, Set<FuncGoLangApiSignature>>();
@@ -42,9 +41,6 @@ public class GoLangAPISignatureMapper {
 		mapVar = new HashMap<String, Set<VarGoLangApiSignature>>();
 
 		build();
-
-		t = System.currentTimeMillis() - t;
-		System.out.println(t);
 	}
 
 	public Set<String> getPackages() {

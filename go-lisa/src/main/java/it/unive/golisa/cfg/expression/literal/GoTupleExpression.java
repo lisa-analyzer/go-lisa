@@ -3,12 +3,13 @@ package it.unive.golisa.cfg.expression.literal;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -16,6 +17,7 @@ import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -45,6 +47,11 @@ public class GoTupleExpression extends NaryExpression {
 	 */
 	public GoTupleExpression(CFG cfg, Parameter[] types, CodeLocation location, Expression... expressions) {
 		this(cfg, GoTupleType.lookup(types), location, expressions);
+	}
+
+	@Override
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	/**
@@ -77,12 +84,12 @@ public class GoTupleExpression extends NaryExpression {
 	 * 
 	 * @throws SemanticException if an error occurs during the computation
 	 */
-	public static <A extends AbstractState<A>> AnalysisState<A> allocateTupleExpression(AnalysisState<A> entryState,
+	public static <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> allocateTupleExpression(InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> entryState,
 			Annotations anns, ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps)
 			throws SemanticException {
 		// Allocates the new heap allocation
 		MemoryAllocation created = new MemoryAllocation(tupleType, location, anns, true);
-		entryState = entryState.smallStepSemantics(created, pp);
+		entryState = interprocedural.getAnalysis().smallStepSemantics(entryState, created, pp);
 		HeapReference ref = new HeapReference(new ReferenceType(tupleType), created,
 				location);
 		HeapDereference deref = new HeapDereference(tupleType, ref,
@@ -92,20 +99,21 @@ public class GoTupleExpression extends NaryExpression {
 		for (int i = 0; i < exps.length; i++) {
 			AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
 					new Constant(GoIntType.INSTANCE, i, location), location);
-			Type t = tmp.getState().getDynamicTypeOf(exps[i], pp, tmp.getState());
-			tmp = tmp.assign(access, NumericalTyper.type(exps[i], t), pp);
+			Type t = interprocedural.getAnalysis().getDynamicTypeOf(tmp, exps[i], pp);
+			tmp = interprocedural.getAnalysis().assign(tmp, access, NumericalTyper.type(exps[i], t), pp);
 		}
 
-		return tmp.smallStepSemantics(ref, pp);
+		return interprocedural.getAnalysis().smallStepSemantics(tmp, ref, pp);
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+			StatementStore<A> expressions) throws SemanticException {
 
 		// Allocates the new heap allocation
 		MemoryAllocation created = new MemoryAllocation(tupleType, getLocation(), new Annotations());
-		AnalysisState<A> allocState = state.smallStepSemantics(created, this);
+		AnalysisState<A> allocState = interprocedural.getAnalysis().smallStepSemantics(state, created, this);
 		HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), created,
 				getLocation());
 		HeapDereference deref = new HeapDereference(getStaticType(), ref,
@@ -116,11 +124,13 @@ public class GoTupleExpression extends NaryExpression {
 			AccessChild access = new AccessChild(tupleType.getTypeAt(i), deref,
 					new Constant(GoIntType.INSTANCE, i, getLocation()), getLocation());
 			for (SymbolicExpression v : params[i]) {
-				Type vtype = tmp.getState().getDynamicTypeOf(v, this, tmp.getState());
-				tmp = tmp.assign(access, NumericalTyper.type(v, vtype), this);
+				Type vtype = interprocedural.getAnalysis().getDynamicTypeOf(tmp, v, this);
+				tmp = interprocedural.getAnalysis().assign(tmp, access, NumericalTyper.type(v, vtype), this);
 			}
 		}
 
-		return tmp.smallStepSemantics(ref, this);
+		return interprocedural.getAnalysis().smallStepSemantics(tmp, ref, this);
 	}
+	
+	
 }

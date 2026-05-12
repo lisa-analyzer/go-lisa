@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.runtime.time.method;
 
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -83,11 +84,15 @@ public class Unix extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(
-					new PushAny(GoInt64Type.INSTANCE, getLocation()), original);
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
+		@Override
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoInt64Type.INSTANCE, getLocation()), original);
 		}
 	}
 }

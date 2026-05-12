@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class TendermintCoreNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
+public class TendermintCoreNonDeterminismAnnotationSet extends TaintAnnotationSet {
 
 	/**
 	 * Builds an instance of an annotation set for non-determinism related to

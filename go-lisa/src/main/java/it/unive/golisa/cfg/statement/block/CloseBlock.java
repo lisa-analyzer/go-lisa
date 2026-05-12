@@ -1,6 +1,7 @@
 package it.unive.golisa.cfg.statement.block;
 
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -35,13 +36,13 @@ public class CloseBlock extends Statement {
 	}
 
 	@Override
-	public int setOffset(int offset) {
-		return this.offset = offset;
+	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
+		return visitor.visit(tool, getCFG(), this);
 	}
 
 	@Override
-	public <V> boolean accept(GraphVisitor<CFG, Statement, Edge, V> visitor, V tool) {
-		return true;
+	protected int compareSameClass(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	@Override
@@ -79,12 +80,12 @@ public class CloseBlock extends Statement {
 	 * the block (e.g., about variable re-declarations).
 	 */
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> forwardSemantics(
-			AnalysisState<A> entryState, InterproceduralAnalysis<A> interprocedural,
-			StatementStore<A> expressions) throws SemanticException {
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemantics(
+			AnalysisState<A> entryState, InterproceduralAnalysis<A, D> interprocedural, StatementStore<A> expressions)
+			throws SemanticException {
 		// The close block does not compute any symbolic expression, so it
 		// returns the empty set just popping the scope on the analysis state
-		return new AnalysisState<>(entryState.getState().popScope(new ScopeToken(open)),
-				entryState.getComputedExpressions(), entryState.getFixpointInformation());
+		return entryState.popScope(new ScopeToken(open), this);
+
 	}
 }

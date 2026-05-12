@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.runtime.bytes.function;
 
 import it.unive.golisa.cfg.runtime.bytes.type.Buffer;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -66,6 +67,11 @@ public class NewBuffer extends NativeCFG {
 			original = st;
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -93,8 +99,9 @@ public class NewBuffer extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> arg0,
-				AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> arg3) throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
 			Buffer bufferType = Buffer.getBufferType(getProgram());
 
 			// Allocates the new memory for a Buffer object
@@ -103,16 +110,15 @@ public class NewBuffer extends NativeCFG {
 			HeapDereference deref = new HeapDereference(bufferType, ref, getLocation());
 
 			AnalysisState<A> asg = state.bottom();
-			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(expr, this,
-					state.getState()).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(bufferType, derefId, NewBufferOperator.INSTANCE,
 						getLocation());
-				asg = asg.lub(state.assign(deref, left, original));
+				asg = asg.lub(interprocedural.getAnalysis().assign(state, deref, left, original));
 			}
 
-			return asg.smallStepSemantics(ref, original);
+			return interprocedural.getAnalysis().smallStepSemantics(asg, ref, original);
 		}
 	}
 

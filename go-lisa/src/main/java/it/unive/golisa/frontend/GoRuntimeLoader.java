@@ -83,6 +83,8 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStubInterface;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIterator;
 import it.unive.golisa.cfg.runtime.shim.type.CommonIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.Handler;
+import it.unive.golisa.cfg.runtime.shim.type.HistoryQueryIterator;
+import it.unive.golisa.cfg.runtime.shim.type.HistoryQueryIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.runtime.shim.type.TLSProperties;
@@ -413,6 +415,7 @@ public interface GoRuntimeLoader {
 		GoInterfaceType.registerType(Chaincode.getChaincodeType(program));
 		GoInterfaceType.registerType(CommonIteratorInterface.getCommonIteratorInterfaceType(program));
 		GoInterfaceType.registerType(StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(program));
+		GoInterfaceType.registerType(HistoryQueryIteratorInterface.getHistoryQueryIteratorInterfaceType(program));
 		GoStructType.registerType(Handler.getHandlerType(program));
 		GoStructType.registerType(TLSProperties.getTLSPropertiesType(program));
 		GoStructType.registerType(ChaincodeStub.getChaincodeStubType(program));
@@ -420,6 +423,7 @@ public interface GoRuntimeLoader {
 		GoStructType.registerType(Response.getResponseType(program));
 		GoStructType.registerType(CommonIterator.getCommonIteratorType(program));
 		GoStructType.registerType(StateQueryIterator.getStateQueryIterator(program));
+		GoStructType.registerType(HistoryQueryIterator.getStateQueryIterator(program));
 
 		// adding functions
 		shim.addCodeMember(new Start(runtimeLocation, shim));

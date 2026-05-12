@@ -1,37 +1,13 @@
 package it.unive.golisa.analysis.ni;
 
-import it.unive.golisa.cfg.expression.unary.GoRange;
-import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
-import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
-import it.unive.golisa.cfg.type.composite.GoMapType;
-import it.unive.lisa.analysis.Lattice;
-import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
-import it.unive.lisa.analysis.nonrelational.inference.BaseInferredValue;
-import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
-import it.unive.lisa.program.annotations.Annotation;
-import it.unive.lisa.program.annotations.Annotations;
-import it.unive.lisa.program.annotations.matcher.AnnotationMatcher;
-import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
+import it.unive.lisa.analysis.informationFlow.NonInterference;
+import it.unive.lisa.lattices.informationFlow.NonInterferenceValue;
 import it.unive.lisa.program.cfg.ProgramPoint;
-import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.VariableRef;
-import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.BinaryExpression;
-import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.symbolic.value.Identifier;
-import it.unive.lisa.symbolic.value.PushAny;
-import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
-import it.unive.lisa.symbolic.value.operator.ternary.TernaryOperator;
-import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
-import it.unive.lisa.type.Type;
-import it.unive.lisa.type.Untyped;
-import it.unive.lisa.util.representation.StringRepresentation;
-import it.unive.lisa.util.representation.StructuredRepresentation;
+
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * The type-system based implementation of the non interference analysis.
@@ -41,27 +17,7 @@ import java.util.Set;
  * @see <a href=
  *          "https://en.wikipedia.org/wiki/Non-interference_(security)">Non-interference</a>
  */
-public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
-
-	/**
-	 * The annotation Low.
-	 */
-	public static final Annotation LOW_ANNOTATION = new Annotation("lisa.intni.Low");
-
-	/**
-	 * The matcher of the Low annotation.
-	 */
-	private static final AnnotationMatcher LOW_MATCHER = new BasicAnnotationMatcher(LOW_ANNOTATION);
-
-	/**
-	 * The annotation High.
-	 */
-	public static final Annotation HIGH_ANNOTATION = new Annotation("lisa.intni.High");
-
-	/**
-	 * The matcher of the High annotation.
-	 */
-	private static final AnnotationMatcher HIGH_MATCHER = new BasicAnnotationMatcher(HIGH_ANNOTATION);
+public class IntegrityNIDomain extends NonInterference {
 
 	/**
 	 * The top state.
@@ -108,8 +64,14 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 		this.v = v;
 		this.guards = new IdentityHashMap<>();
 	}
-
+	
+	
 	@Override
+	public NonInterferenceValue fixedVariable(Identifier id, ProgramPoint pp, SemanticOracle oracle) {
+
+		return super.fixedVariable(id, pp, oracle);
+	}
+/*	@Override
 	public IntegrityNIDomain fixedVariable(Identifier id, ProgramPoint pp, SemanticOracle oracle)
 			throws SemanticException {
 
@@ -200,6 +162,10 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	public IntegrityNIDomain bottom() {
 		return BOTTOM;
 	}
+	
+	*/
+
+
 
 	/**
 	 * Yields true if the state is low.
@@ -219,6 +185,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 		return this == HIGH;
 	}
 
+	/*
 	@Override
 	public InferredPair<IntegrityNIDomain> evalNullConstant(IntegrityNIDomain state, ProgramPoint pp,
 			SemanticOracle oracle)
@@ -367,6 +334,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 			return false;
 		return true;
 	}
+	*/
 
 	/**
 	 * Yields the computed state.
@@ -378,6 +346,7 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 	 * 
 	 * @throws SemanticException the exception triggered by lub operator
 	 */
+	/*
 	private IntegrityNIDomain state(IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		Map<ProgramPoint, IntegrityNIDomain> guards = new IdentityHashMap<>();
 		for (ProgramPoint guard : pp.getCFG().getGuards(pp))
@@ -402,4 +371,5 @@ public class IntegrityNIDomain implements BaseInferredValue<IntegrityNIDomain> {
 		inf.guards.put(src, inf);
 		return new InferenceSystem<>(environment, inf);
 	}
+	*/
 }

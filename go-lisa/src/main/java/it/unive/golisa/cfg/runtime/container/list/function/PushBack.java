@@ -1,7 +1,8 @@
 package it.unive.golisa.cfg.runtime.container.list.function;
 
 import it.unive.golisa.cfg.runtime.container.list.type.List;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -83,10 +84,16 @@ public class PushBack extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
+		@Override
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(Untyped.INSTANCE, getLocation()), original);
+
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Untyped.INSTANCE, getLocation()), original);
 		}
 	}
 }

@@ -4,12 +4,13 @@ import it.unive.golisa.cfg.runtime.io.type.PipeReader;
 import it.unive.golisa.cfg.runtime.io.type.PipeWriter;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -57,6 +58,11 @@ public class Pipe extends NativeCFG {
 			original = st;
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -87,10 +93,10 @@ public class Pipe extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(new Skip(getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state, new Skip(getLocation()), original);
 		}
 
 	}

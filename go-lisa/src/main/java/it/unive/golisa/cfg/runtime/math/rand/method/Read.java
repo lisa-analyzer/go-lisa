@@ -5,7 +5,8 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -58,6 +59,11 @@ public class Read extends NativeCFG {
 			original = st;
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -87,11 +93,12 @@ public class Read extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
 			return state.top();
 		}
+
+
 	}
 }

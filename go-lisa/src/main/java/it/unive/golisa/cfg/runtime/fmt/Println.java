@@ -1,21 +1,23 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
-import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.golisa.program.cfg.VarArgsParameter;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Untyped;
 
@@ -43,13 +45,18 @@ public class Println extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class PrintlnImpl extends UnaryExpression implements PluggableStatement {
+	public static class PrintlnImpl extends NaryExpression implements PluggableStatement {
 
 		private Statement original;
 
 		@Override
 		public void setOriginatingStatement(Statement st) {
 			original = st;
+		}
+
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
 		}
 
 		/**
@@ -79,10 +86,15 @@ public class Println extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(expr, original);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+				StatementStore<A> expressions) throws SemanticException {
+			AnalysisState<A> res = state.bottom();
+			
+			for(ExpressionSet p : params)
+				for(SymbolicExpression e : p) 
+				res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state, e, original));
+			return res;
 		}
 	}
 }

@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class CosmosSDKNonDeterminismAnnotationSet extends NonDeterminismAnnotationSet {
+public class CosmosSDKNonDeterminismAnnotationSet extends TaintAnnotationSet {
 
 	/**
 	 * Builds an instance of an annotation set for non-determinism related to

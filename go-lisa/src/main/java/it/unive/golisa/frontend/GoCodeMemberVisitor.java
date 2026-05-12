@@ -80,17 +80,12 @@ import it.unive.golisa.antlr.GoParser.UnaryExprContext;
 import it.unive.golisa.antlr.GoParser.VarDeclContext;
 import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.DefaultSwitchCase;
-import it.unive.golisa.cfg.Switch;
-import it.unive.golisa.cfg.SwitchCase;
-import it.unive.golisa.cfg.TypeSwitch;
-import it.unive.golisa.cfg.TypeSwitchCase;
-import it.unive.golisa.cfg.VarArgsParameter;
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoForRange;
 import it.unive.golisa.cfg.expression.GoMake;
 import it.unive.golisa.cfg.expression.GoNew;
+import it.unive.golisa.cfg.expression.GoPanic;
+import it.unive.golisa.cfg.expression.GoRecover;
 import it.unive.golisa.cfg.expression.GoTypeConversion;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseAnd;
 import it.unive.golisa.cfg.expression.binary.GoBitwiseNAnd;
@@ -133,8 +128,8 @@ import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
-import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.expression.unary.GoRef;
+import it.unive.golisa.cfg.expression.unary.instrumented.GoRangeGetNextValue;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
@@ -158,6 +153,14 @@ import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.golisa.program.cfg.VarArgsParameter;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.golisa.program.cfg.controlflow.switches.DefaultSwitchCase;
+import it.unive.golisa.program.cfg.controlflow.switches.Switch;
+import it.unive.golisa.program.cfg.controlflow.switches.SwitchCase;
+import it.unive.golisa.program.cfg.controlflow.switches.TypeSwitch;
+import it.unive.golisa.program.cfg.controlflow.switches.TypeSwitchCase;
+import it.unive.golisa.program.cfg.controlflow.switches.instrumentations.SwitchDefault;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -582,7 +585,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
 
-		cfs.forEach(cfg::addControlFlowStructure);
+		cfs.forEach(cfg.getDescriptor()::addControlFlowStructure);
+		
 		matrix.mergeWith(res.getMiddle());
 
 		return res;
@@ -1741,6 +1745,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		Triple<Statement, NodeList<CFG, Statement, Edge>, Statement> lastCaseBlock = null;
 		block.addNode(exitNode);
 		storeIds(exitNode);
+		exitPoints.add(exitNode);
+		
 
 		int ncases = ctx.exprCaseClause().size();
 		List<SwitchCase> scases = new ArrayList<>(ncases);
@@ -1787,7 +1793,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			} else {
 				defaultBlock = caseBlock;
 				block.mergeWith(body);
-				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
+				def = new DefaultSwitchCase((SwitchDefault) caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
 
 			if (caseBlock.getRight() instanceof GoFallThrough)
@@ -1814,6 +1820,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
+		exitPoints.remove(exitPoints.size() - 1);
 		cfs.add(new Switch(matrix, entryNode, exitNode, scases.toArray(SwitchCase[]::new), def));
 
 		return Triple.of(entryNode, block, exitNode);
@@ -1948,7 +1955,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		rangeNode.setIdxRange(idxRange);
 		rangeNode.setValRange(valRange);
+		
+		entryPoints.add(rangeNode);
 
+		entryPoints.add(rangeNode);
+		
 		block.addNode(rangeNode);
 		addEdge(new FalseEdge(rangeNode, exitNode), block);
 
@@ -1980,9 +1991,10 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			addEdge(new SequentialEdge(valueAssign, inner.getLeft()), block);
 		}
 
-		// entryPoints.remove(entryPoints.size() - 1);
+		entryPoints.remove(entryPoints.size() - 1);
 		// exitPoints.remove(exitPoints.size() - 1);
 		restoreVisibleIdsAfterForLoop(backup);
+
 
 		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
 
@@ -2158,6 +2170,12 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				} else {
 					return new GoMake(cfg, locationOf(ctx.primaryExpr()), Untyped.INSTANCE, args);
 				}
+			case "recover":
+				args = visitArguments(ctx.arguments());
+				return new GoRecover(cfg, locationOf(ctx.primaryExpr()));
+			case "panic":
+				args = visitArguments(ctx.arguments());
+				return new GoPanic(cfg, locationOf(ctx.primaryExpr()), args);
 			}
 
 			Expression primary = visitPrimaryExpr(ctx.primaryExpr());
@@ -2663,6 +2681,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		NoOp exitNode = new NoOp(cfg, location);
 		block.addNode(exitNode);
 		storeIds(exitNode);
+		
+		exitPoints.add(exitNode);
 
 		Statement entryNode = null;
 		Statement previousGuard = null;
@@ -2731,7 +2751,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			} else {
 				defaultBlock = caseBlock;
-				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
+				def = new DefaultSwitchCase((SwitchDefault) caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
 		}
 
@@ -2749,6 +2769,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
+		exitPoints.remove(exitPoints.size()-1);
 		cfs.add(new TypeSwitch(matrix, entryNode, exitNode, scases.toArray(TypeSwitchCase[]::new), def));
 		return Triple.of(entryNode, block, exitNode);
 	}

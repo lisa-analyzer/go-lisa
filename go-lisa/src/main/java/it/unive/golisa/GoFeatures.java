@@ -1,7 +1,7 @@
 package it.unive.golisa;
 
 import it.unive.lisa.program.language.LanguageFeatures;
-import it.unive.lisa.program.language.hierarchytraversal.HierarcyTraversalStrategy;
+import it.unive.lisa.program.language.hierarchytraversal.HierarchyTraversalStrategy;
 import it.unive.lisa.program.language.hierarchytraversal.SingleInheritanceTraversalStrategy;
 import it.unive.lisa.program.language.parameterassignment.ParameterAssigningStrategy;
 import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
@@ -21,7 +21,7 @@ public class GoFeatures extends LanguageFeatures {
 	}
 
 	@Override
-	public HierarcyTraversalStrategy getTraversalStrategy() {
+	public HierarchyTraversalStrategy getTraversalStrategy() {
 		return SingleInheritanceTraversalStrategy.INSTANCE;
 	}
 

@@ -5,7 +5,7 @@ import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.NumericType;
+import it.unive.golisa.type.GoNumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
@@ -17,7 +17,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoUntypedInt implements Type, NumericType {
+public class GoUntypedInt implements GoNumericType, Type {
 
 	/**
 	 * Unique instance of GoUntypedInt type.
@@ -91,5 +91,11 @@ public class GoUntypedInt implements Type, NumericType {
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public int getNBits() {
+		// TODO
+		return 0;
 	}
 }

@@ -1,7 +1,8 @@
 package it.unive.golisa.cfg.expression.ternary;
 
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -9,6 +10,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
@@ -35,12 +37,18 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdTernarySemantics(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
-			StatementStore<A> expressions) throws SemanticException {
-		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
-		Set<Type> mtypes = state.getState().getRuntimeTypesOf(middle, this, state.getState());
-		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
+	}
+
+	@Override
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdTernarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+			SymbolicExpression middle, SymbolicExpression right, StatementStore<A> expressions)
+			throws SemanticException {
+		Set<Type> ltypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, left, this);
+		Set<Type> mtypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, middle, this);
+		Set<Type> rtypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, right, this);
 
 		AnalysisState<A> result = state.bottom();
 		for (Type leftType : ltypes)
@@ -49,7 +57,7 @@ public class GoSimpleSlice extends it.unive.lisa.program.cfg.statement.TernaryEx
 					if ((leftType.isStringType() || leftType.isUntyped())
 							&& (middleType.isNumericType() || middleType.isUntyped())
 							&& (rightType.isNumericType() || rightType.isUntyped())) {
-						AnalysisState<A> tmp = state.smallStepSemantics(
+						AnalysisState<A> tmp = interprocedural.getAnalysis().smallStepSemantics(state,
 								new TernaryExpression(GoStringType.INSTANCE,
 										left, middle, right, StringSubstring.INSTANCE, getLocation()),
 								this);

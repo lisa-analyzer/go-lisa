@@ -6,7 +6,8 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -60,6 +61,11 @@ public class Compact extends NativeCFG {
 			original = st;
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -88,15 +94,14 @@ public class Compact extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
 
-			AnalysisState<A> errorValue = state
-					.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
-			AnalysisState<A> nilValue = state
-					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			AnalysisState<A> errorValue = interprocedural.getAnalysis()
+					.smallStepSemantics(state, new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+			AnalysisState<A> nilValue = interprocedural.getAnalysis()
+					.smallStepSemantics(state, new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return errorValue.lub(nilValue);
 		}
 	}

@@ -1,15 +1,22 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
+import java.util.Collection;
+
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.Unit;
+import it.unive.lisa.program.annotations.Annotation;
+import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
@@ -18,7 +25,11 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
+import it.unive.lisa.symbolic.heap.HeapDereference;
+import it.unive.lisa.symbolic.heap.HeapReference;
+import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.PushAny;
+import it.unive.lisa.type.ReferenceType;
 
 /**
  * func Since(t Time) Duration.
@@ -54,6 +65,11 @@ public class Since extends NativeCFG {
 			original = st;
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -81,11 +97,31 @@ public class Since extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(
-					new PushAny(Duration.INSTANCE, getLocation()), original);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
+			
+			Unit unit = getProgram().getUnit("time");
+			Collection<CodeMember> members = unit.getCodeMembersByName("Since");
+			
+			Annotations annots = new Annotations();
+			for(CodeMember cm : members) {
+				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+					annots.addAnnotation(a);
+				}
+			}
+			
+			// Allocates the new memory for a Time object
+			MemoryAllocation alloc = new MemoryAllocation(Duration.INSTANCE, getLocation(), annots,  true);
+			AnalysisState<A> allocState = interprocedural.getAnalysis().smallStepSemantics(state, alloc, this);
+
+			// Assigns an unknown object to each allocation identifier
+			HeapReference ref = new HeapReference(new ReferenceType(Duration.INSTANCE), alloc, getLocation());
+			HeapDereference deref = new HeapDereference(Duration.INSTANCE, ref, getLocation());
+			AnalysisState<A> asg = interprocedural.getAnalysis().assign(allocState, deref, new PushAny(Duration.INSTANCE, getLocation()), this);
+
+			return interprocedural.getAnalysis().smallStepSemantics(asg, ref, original);
 		}
+
 	}
 }

@@ -6,7 +6,8 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -72,6 +73,11 @@ public class CreateCompositeKey extends NativeCFG {
 			original = st;
 		}
 
+		@Override
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
+		}
+
 		/**
 		 * Builds the pluggable statement.
 		 * 
@@ -102,20 +108,19 @@ public class CreateCompositeKey extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdTernarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
-				StatementStore<A> expressions) throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdTernarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression middle, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoStringType.INSTANCE,
 					GoErrorType.INSTANCE);
 			AnalysisState<A> result = state.bottom();
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(left, this,
-					state.getState()).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				if (id instanceof MemoryPointer)
 					continue;
-				Set<Type> idTypes = state.getState().getRuntimeTypesOf(id, this, state.getState());
+				Set<Type> idTypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, id, this);
 				for (Type t : idTypes) {
 					if (t.isPointerType()) {
 						HeapDereference derefId = new HeapDereference(t.asPointerType().getInnerType(), id,
@@ -128,7 +133,7 @@ public class CreateCompositeKey extends NativeCFG {
 								new Constant(getStaticType(), 1, getLocation()), middle,
 								new Constant(getStaticType(), 1, getLocation()),
 								CreateCompositeKeyOperatorSecondParameter.INSTANCE, getLocation());
-						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state,
+						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(interprocedural, state,
 								new Annotations(), original, getLocation(), tupleType,
 								leftExp,
 								rightExp);
@@ -143,7 +148,7 @@ public class CreateCompositeKey extends NativeCFG {
 								new Constant(getStaticType(), 1, getLocation()), middle,
 								new Constant(getStaticType(), 1, getLocation()),
 								CreateCompositeKeyOperatorSecondParameter.INSTANCE, getLocation());
-						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(state,
+						AnalysisState<A> tupleState = GoTupleExpression.allocateTupleExpression(interprocedural, state,
 								new Annotations(), original, getLocation(), tupleType,
 								leftExp,
 								rightExp);

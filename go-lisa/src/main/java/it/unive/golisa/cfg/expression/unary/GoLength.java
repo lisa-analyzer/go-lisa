@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.expression.unary;
 
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -10,6 +11,7 @@ import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
@@ -40,25 +42,35 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-		AnalysisState<A> result = state.bottom();
-		Set<Type> etypes = state.getState().getRuntimeTypesOf(expr, this, state.getState());
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
+	}
+	
+	
+
+	@Override
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+			StatementStore<A> expressions) throws SemanticException {
+		 AnalysisState<A> result = state.bottom();
+		Set<Type> etypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, expr, this);
 		for (Type type : etypes) {
 			if (type.isPointerType()) {
 				HeapDereference deref = new HeapDereference(type.asPointerType().getInnerType(), expr, getLocation());
 				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
 						new Variable(Untyped.INSTANCE, "len", getLocation()), getLocation());
-				result = result.lub(state.smallStepSemantics(lenAccess, this));
+				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(state, lenAccess, this));
 			} else if (type.isArrayType() || type instanceof GoSliceType) {
 				// FIXME we get here when rec is a parameter of an entrypoint,
 				// and len is not defined yet..
-				result = result.lub(state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), this));
+				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoIntType.INSTANCE, getLocation()), this));
 			} else if (type.isStringType())
-				result = result.lub(state.smallStepSemantics(
+				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(state,
 						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));
 		}
 
 		return result;
 	}
+
+
 }

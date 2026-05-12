@@ -40,7 +40,7 @@ GoLiSA translates Go source code into [LiSA](https://github.com/lisa-analyzer/li
 
 ## Installation
 
-**Prerequisites:** Java 17+, Gradle (wrapper included), GitHub credentials for the LiSA dependency.
+**Prerequisites:** Java 23+, Gradle (wrapper included), GitHub credentials for the LiSA dependency.
 
 ### LiSA Dependency
 

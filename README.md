@@ -65,7 +65,6 @@ The archive containing the tool is written to `build/distributions/golisa-0.1.zi
 
 ---
 
-<<<<<<< hf-checks
 ## Usage
 
 After building the distribution, run GoLiSA directly:
@@ -94,63 +93,6 @@ The command run the tool printing the help message
 ---
 
 ## Supported Analysis
-=======
-## Building GoLiSA
-Compiling GoLiSA requires:
-- JDK >= 11
-- [Gradle](https://gradle.org/install/) >= 6.0 
-
-```
-git clone https://github.com/lisa-analyzer/go-lisa
-cd go-lisa/go-lisa
-./gradlew build
-```
-In order to bundle GoLiSA as a distribution:
-```
-./gradlew distZip`
-unzip build/distributions/go-lisa-0.1 
-```
-Finally, to run GoLiSA:
-
-```
-./build/distributions/go-lisa-0.1/bin/go-lisa
-```
-
-### Building GoLiSA with snapshots
-
-It is possible that GoLiSA refers to a snapshot release of LiSA to exploit unreleased features, and, when building, you get the following error message:
-
-```
-> Could not resolve io.github.lisa-analyzer:lisa-project:ver-SNAPSHOT.
-  > Could not get resource 'https://maven.pkg.github.com/lisa-analyzer/lisa/io/github/lisa-analyzer/lisa-project/ver-SNAPSHOT/maven-metadata.xml'.
-    > Could not GET 'https://maven.pkg.github.com/lisa-analyzer/lisa/io/github/lisa-analyzer/lisa-project/ver-SNAPSHOT/maven-metadata.xml'. Received status code 401 from server: Unauthorized
-```
-
-In this case, you need to perform the following steps:
-- create a GitHub Personal Access Token following [this guide](https://docs.github.com/en/enterprise-cloud@latest/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) and grant `read:packages` permission
-- create a `gradle.properties` file at `go-lisa/go-lisa` (where the `gradlew` scripts are located) with the following content:
-```
-gpr.user=your-github-username
-gpr.key=github-access-token
-```
-
-Finally, re-execute the build to have the snapshot dependencies downloaded.
-
-### Development with Eclipse
-GoLiSA comes as a Gradle 6.0 project. For development with Eclipse, please install the [Gradle IDE Pack](https://marketplace.eclipse.org/content/gradle-ide-pack) plugin from the Eclipse marketplace, and make sure to import the project into the Eclipse workspace as a Gradle project.
-
-
-## Running GoLiSA
-The entry point is the [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) class, expecting four parameters:
-- `-i <path>`: the Go input file to be analyzed
-- `-o <path>`: the output directory
-- `-f <framework>`: the blockchain framework used in the Go input file (`hyperledger-fabric`, `cosmos-sdk`, `tendermint-core`)
-- `-a <analysis>`: the analysis to perform to detect issues of non-determinism (`taint`, `non-interference`)
-
-### Example
-
-`go-lisa -i mycontract.go -o output_dir -f hyperledger-fabric -a taint`
->>>>>>> master
 
 | Analysis                 | Description                                                                                                                                |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -175,7 +117,6 @@ The entry point is the [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.jav
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Static Detection of Untrusted Cross-Contract Invocations in Go Smart Contracts</i> in Proceedings of The 40th ACM/SIGAPP Symposium On Applied Computing (SAC), 2025 ([link]([10.1145/3672608.3707728](http://doi.org/10.1145/3672608.3707728)))
 - Luca Olivieri, Luca Negrini,  Vincenzo Arceri, Badar Chachar, Pietro Ferrara, Agostino Cortesi: <i>Detection of Phantom Reads in Hyperledger Fabric</i>, in IEEE Access, vol. 12, pp. 80687-80697, 2024 ([link]([10.1109/ACCESS.2024.3410019](http://doi.org/10.1109/ACCESS.2024.3410019)))
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Fabio Tagliaferro, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Information Flow Analysis for Detecting Non-Determinism in Blockchain</i>. ECOOP 2023: 23:1-23:25 ([link](https://drops.dagstuhl.de/opus/volltexte/2023/18216/))
-<<<<<<< hf-checks
 - Luca Olivieri, Fabio Tagliaferro, Vincenzo Arceri, Marco Ruaro, Luca Negrini, Agostino Cortesi, Pietro Ferrara, Fausto Spoto, Enrico Talin: <i>Ensuring determinism in blockchain software with GoLiSA: an industrial experience report</i>. SOAP@PLDI 2022: 23-29 ([link](https://dl.acm.org/doi/10.1145/3520313.3534658))
 
 ### Other publications involving GoLiSA
@@ -254,7 +195,3 @@ The code in this branch is under development. Please look at the specific artifa
 ### Logo 
 The Go gopher was designed by the Renee French. The design is licensed under the Creative Commons 4.0 Attributions license.
 Read [link1](http://blog.golang.org/gopher) and [link2](https://go.dev/wiki/Gopher) for more details.
-=======
-- Luca Olivieri, Fabio Tagliaferro, Vincenzo Arceri, Marco Ruaro, Luca Negrini, Agostino Cortesi, Pietro Ferrara, Fausto Spoto, Enrico Talin:
-<i>Ensuring determinism in blockchain software with GoLiSA: an industrial experience report</i>. SOAP@PLDI 2022: 23-29 ([link](https://dl.acm.org/doi/10.1145/3520313.3534658))
->>>>>>> master

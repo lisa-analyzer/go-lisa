@@ -3,23 +3,31 @@ package it.unive.golisa.checker.hf;
 import it.unive.golisa.analysis.tarsis.utils.TarsisUtils;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.checker.hf.cci.CrossContractInvocationInformation;
+import it.unive.lisa.analysis.Analysis;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.SimpleAbstractState;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.SimpleAbstractDomain;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.BaseNonRelationalDomain;
+import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
+import it.unive.lisa.analysis.nonrelational.heap.HeapValue;
+import it.unive.lisa.analysis.nonrelational.type.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
+import it.unive.lisa.checks.semantic.SemanticTool;
+import it.unive.lisa.lattices.SimpleAbstractState;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
@@ -47,9 +55,8 @@ import org.apache.commons.lang3.tuple.Pair;
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
-public class CrossChannelInvocationsIssuesChecker implements
-		SemanticCheck<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
+public class CrossChannelInvocationsIssuesChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
+SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> {
 
 	private Map<Statement, CrossContractInvocationInformation> crossContractInvocations;
 	private Map<Statement, CrossContractInvocationInformation> crossChannelInvocations;
@@ -66,28 +73,27 @@ public class CrossChannelInvocationsIssuesChecker implements
 		this.intraChaincode = intraChaincode;
 		this.channelName= channelName;
 	}
+
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
+	public void beforeExecution(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 		crossContractInvocations = new HashMap<>();
 		crossChannelInvocations = new HashMap<>();
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>>> tool) {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 		
 		Set<Statement> singleCrossChannelInvocations = new HashSet<>();
 		
 		//CASE 1: single CCIs with arbitrary channel
 		Statement[] invocations = crossContractInvocations.keySet().toArray(new Statement[] {});
 		for (int i = 0; i < invocations.length; i++) {
-			Set<Tarsis> stringApproximations = crossContractInvocations.get(invocations[i]).getChannelApproximations();
+			Set<RegexAutomaton> stringApproximations = crossContractInvocations.get(invocations[i]).getChannelApproximations();
 			CrossContractInvocationInformation cchiInfo = new CrossContractInvocationInformation(); 
 			boolean found =false;
-			for(Tarsis t : stringApproximations) {
+			for(RegexAutomaton t : stringApproximations) {
 				if(CchiUtils.mayCrossChannel(channelName, t)) {
 					singleCrossChannelInvocations.add(invocations[i]);
 					CrossContractInvocationInformation cciInfo = crossContractInvocations.get(invocations[i]);
@@ -112,10 +118,10 @@ public class CrossChannelInvocationsIssuesChecker implements
 		for (int i = 0; i < invocations.length - 1; i++) {
 			for (int j = i + 1; j < invocations.length; j++) {
 				boolean isDiff = false;
-				Set<Tarsis> t1Set = crossContractInvocations.get(invocations[i]).getChannelApproximations();
-				Set<Tarsis> t2Set = crossContractInvocations.get(invocations[j]).getChannelApproximations();
-				for (Tarsis t1 : t1Set) {
-					for (Tarsis t2 : t2Set) {
+				Set<RegexAutomaton> t1Set = crossContractInvocations.get(invocations[i]).getChannelApproximations();
+				Set<RegexAutomaton> t2Set = crossContractInvocations.get(invocations[j]).getChannelApproximations();
+				for (RegexAutomaton t1 : t1Set) {
+					for (RegexAutomaton t2 : t2Set) {
 						if(!t1.isTop() && !t2.isTop()
 								&& (TarsisUtils.possibleEqualsMatch(t1, t2) || (TarsisUtils.extractValueStringFromTarsisStates(t1) != null
 										&& TarsisUtils.extractValueStringFromTarsisStates(t2) != null &&
@@ -195,24 +201,35 @@ public class CrossChannelInvocationsIssuesChecker implements
 	  return result;
 	}
 
-	@Override
-	public void visitGlobal(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			Unit unit, Global global, boolean instance) {
-	}
+	
 
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph) {
+	public boolean visitUnit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			Unit unit) {
+		return true;
+	}
+	
+	
+
+	@Override
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
+	public void visitGlobal(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			Unit unit, Global global, boolean instance) {
+	}
+
+	
+
+	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
@@ -223,34 +240,32 @@ public class CrossChannelInvocationsIssuesChecker implements
 			if (call.getTargetName().equals("InvokeChaincode")) {
 				try {
 
-					for (AnalyzedCFG<
-							SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-									TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
+					for (var result : tool.getResultOf(call.getCFG())) {
 						Call resolved = call instanceof UnresolvedCall
 								? (Call) tool.getResolvedVersion((UnresolvedCall) call, result)
 								: call;
-						Set<Tarsis> channelValues = null;
-						Set<Tarsis> contractNameValues = null;
+						Set<RegexAutomaton> channelValues = null;
+						Set<RegexAutomaton> contractNameValues = null;
 						
 						if (resolved instanceof NativeCall) {
 							NativeCall nativeCfg = (NativeCall) resolved;
 							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
 							for (CodeMember n : nativeCfgs) {
 								Parameter[] parameters = n.getDescriptor().getFormals();
-								channelValues = extractChannelValues(call, parameters.length, node, result);
-								contractNameValues = extractContractNameValues(call, parameters.length, node, result);
+								channelValues = extractChannelValues(tool.getAnalysis(), call, parameters.length, node, result);
+								contractNameValues = extractContractNameValues(tool.getAnalysis(), call, parameters.length, node, result);
 							}
 						} else if (resolved instanceof CFGCall) {
 							CFGCall cfg = (CFGCall) resolved;
 
 							for (CodeMember n : cfg.getTargets()) {
 								Parameter[] parameters = n.getDescriptor().getFormals();
-								channelValues = extractChannelValues(call, parameters.length, node, result);
-								contractNameValues = extractContractNameValues(call, parameters.length, node, result);
+								channelValues = extractChannelValues(tool.getAnalysis(), call, parameters.length, node, result);
+								contractNameValues = extractContractNameValues(tool.getAnalysis(), call, parameters.length, node, result);
 							}
 						} else {
-							channelValues = extractChannelValues(call, call.getParameters().length, node, result);
-							contractNameValues = extractContractNameValues(call, call.getParameters().length, node, result);
+							channelValues = extractChannelValues(tool.getAnalysis(), call, call.getParameters().length, node, result);
+							contractNameValues = extractContractNameValues(tool.getAnalysis(), call, call.getParameters().length, node, result);
 						}
 
 						crossContractInvocations.putIfAbsent(call, new CrossContractInvocationInformation());
@@ -269,63 +284,43 @@ public class CrossChannelInvocationsIssuesChecker implements
 		return true;
 	}
 
-	private Set<Tarsis> extractContractNameValues(Call call, int parametersLength, Statement node,
-			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result) 
+	private Set<RegexAutomaton> extractContractNameValues(Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> analysis, Call call, int parametersLength, Statement node,
+			AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> result) 
 					throws SemanticException {
 		int par = 1;
-		Set<Tarsis> res = new HashSet<>();
+		Set<RegexAutomaton> res = new HashSet<>();
 		if (par < parametersLength) {
-
-			AnalysisState<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>>> state = result
-									.getAnalysisStateAfter(call.getParameters()[par]);
-			for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
-					state.getState())) {
-				res.add(state.getState().getValueState().eval((ValueExpression) stack, node, state.getState()));
-			}
-		}
-
-		return res;
-	}
-
-	private Set<Tarsis> extractChannelValues(Call call, int parametersLength, Statement node, AnalyzedCFG<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result)
-			throws SemanticException {
-
-		int par = 3;
-		Set<Tarsis> res = new HashSet<>();
-		if (par < parametersLength) {
-
-			AnalysisState<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>>> state = result
-									.getAnalysisStateAfter(call.getParameters()[par]);
-			for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
-					state.getState())) {
-				Tarsis value = state.getState().getValueState().eval((ValueExpression) stack, node, state.getState());
+			var state = result.getAnalysisStateAfter(call.getParameters()[par]);
+			for (SymbolicExpression stack : analysis.rewrite(state, state.getExecutionExpressions(), node)) {
+				var valueState = state.getExecutionState().valueState;
+				Tarsis analysisValueDomain = (Tarsis) analysis.domain.valueDomain;
+				SemanticOracle oracle = analysis.domain.makeOracle(state.getExecutionState());
+				var value = analysisValueDomain.eval(valueState, (ValueExpression) stack, (ProgramPoint) node, oracle);
 				res.add(value);
 			}
 		}
 
 		return res;
-
 	}
 
-	@Override
-	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Edge edge) {
-		return true;
-	}
+	private Set<RegexAutomaton> extractChannelValues(Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> analysis, Call call, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> result)
+			throws SemanticException {
 
-	@Override
-	public boolean visitUnit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			Unit unit) {
-		return true;
+		int par = 3;
+		Set<RegexAutomaton> res = new HashSet<>();
+		if (par < parametersLength) {
+
+			var state = result.getAnalysisStateAfter(call.getParameters()[par]);
+			
+			for(SymbolicExpression stack : analysis.rewrite(state, state.getExecutionExpressions(), node)) {
+				var valueState = state.getExecutionState().valueState;
+				Tarsis analysisValueDomain = (Tarsis) analysis.domain.valueDomain;
+				SemanticOracle oracle = analysis.domain.makeOracle(state.getExecutionState());
+				var value = analysisValueDomain.eval(valueState, (ValueExpression) stack, (ProgramPoint) node, oracle);
+				res.add(value);
+			}
+		}
+		return res;
 	}
 
 	public Map<Statement, CrossContractInvocationInformation> getCrossChannelInvocations() {

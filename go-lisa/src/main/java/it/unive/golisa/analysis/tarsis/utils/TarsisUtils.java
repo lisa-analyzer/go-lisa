@@ -1,6 +1,7 @@
 package it.unive.golisa.analysis.tarsis.utils;
 
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 
 /**
  * Utility class for {@link Tarsis}.
@@ -18,10 +19,8 @@ public class TarsisUtils {
 	 * @return {@code true}, if there is a possible match. Otherwise,
 	 *             {@code false}.
 	 */
-	public static boolean possibleEqualsMatch(Tarsis state1, Tarsis state2) {
-		return state1.getAutomaton().isEqualTo(state2.getAutomaton())
-				|| state1.getAutomaton().isContained(state2.getAutomaton())
-				|| state2.getAutomaton().isContained(state1.getAutomaton());
+	public static boolean possibleEqualsMatch(RegexAutomaton a1, RegexAutomaton a2) {
+		return a1.isEqualTo(a2)	|| a1.isContained(a2) || a2.isContained(a1);
 	}
 
 	/**
@@ -32,11 +31,11 @@ public class TarsisUtils {
 	 * @return the string value, if it is possible exactly compute the value.
 	 *             Otherwise, {@code null}.
 	 */
-	public static String extractValueStringFromTarsisStates(Tarsis state) {
-		if (state.getAutomaton().emptyString().equals(state.getAutomaton()))
+	public static String extractValueStringFromTarsisStates(RegexAutomaton a) {
+		if (a.emptyString().equals(a))
 			return "";
-		else if (!state.getAutomaton().acceptsTopEventually())
-			return state.getAutomaton().toString();
+		else if (!a.acceptsTopEventually())
+			return a.toString();
 
 		return null;
 	}

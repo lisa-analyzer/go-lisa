@@ -26,10 +26,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.Element;
-import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.stream.file.FileSinkDOT;
+//import org.graphstream.graph.Edge;
+//import org.graphstream.graph.Element;
+//import org.graphstream.graph.implementations.MultiGraph;
+//import org.graphstream.stream.file.FileSinkDOT;
 
 public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, LabeledEdge> implements Cloneable {
 
@@ -60,12 +60,13 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 			counter++;
 		}
 
+		/*
 		for (StandardNode src : getNodes())
 			for (StandardNode dest : followersOf(src))
 				for (LabeledEdge edge : list.getEdgesConnecting(src, dest))
 					edges.add(new SerializableEdge(nodeIds.get(src), nodeIds.get(dest),
 							edge.getClass().getSimpleName()));
-
+		 */
 		return new CustomSerializableGraph(name, null, nodes, edges, descrs);
 	}
 
@@ -132,6 +133,7 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 			long id = edge.getSourceId();
 			long id1 = edge.getDestId();
 
+			/*
 			Edge e = graph.addEdge(edgeName(id, id1, edge), nodeName(id), nodeName(id1), true);
 
 			switch (edge.getKind()) {
@@ -153,16 +155,20 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 				e.setAttribute(COLOR, COLOR_BLACK);
 				break;
 			}
+			*/
 		}
 		
+		/*
 		public void removeEdge(Edge edge) {
 			graph.removeEdge(edge);
 		}
-
+		 */
+		
 		protected static String edgeName(long src, long dest, SerializableEdge edge) {
 			return "edge-" + src + "-" + dest + "-" + edge.getKind();
 		}
 
+		/*
 		private class CustomDotSink extends FileSinkDOT {
 
 			@Override
@@ -207,9 +213,11 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 				return result + "]";
 			}
 		}
-
+		*/
+		
 		@Override
 		public void dump(Writer writer) throws IOException {
+			/*
 			FileSinkDOT sink = new CustomDotSink() {
 				@Override
 				protected void outputEndOfFile() throws IOException {
@@ -223,8 +231,9 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 			};
 			sink.setDirected(true);
 			sink.writeAll(graph, writer);
+			*/
 		}
-
+		/*
 		private class LegendClusterSink extends CustomDotSink {
 			@Override
 			protected void outputHeader() throws IOException {
@@ -234,12 +243,13 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 				out.printf("\tstyle=dotted;%n");
 				out.printf("\tnode [shape=plaintext];%n");
 			}
-		}
+		}*/
 
 		private static final class Legend {
-			private final org.graphstream.graph.Graph graph;
+			//private final org.graphstream.graph.Graph graph;
 
 			private Legend() {
+				/*
 				graph = new MultiGraph("legend");
 				org.graphstream.graph.Node l = graph.addNode("legend");
 				StringBuilder builder = new StringBuilder();
@@ -288,6 +298,7 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 				builder.append("</table>");
 				builder.append(">");
 				l.setAttribute("label", builder.toString());
+				*/
 			}
 		}
 	}

@@ -1,16 +1,18 @@
 package it.unive.golisa.checker;
 
-import it.unive.golisa.analysis.taint.TaintDomain;
-import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.SimpleAbstractDomain;
+import it.unive.lisa.analysis.informationFlow.BaseTaint;
+import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
+import it.unive.lisa.analysis.nonrelational.heap.HeapValue;
+import it.unive.lisa.analysis.nonrelational.type.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
+import it.unive.lisa.checks.semantic.SemanticTool;
+import it.unive.lisa.lattices.SimpleAbstractState;
+import it.unive.lisa.lattices.informationFlow.TaintLattice;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.annotations.Annotation;
@@ -19,6 +21,7 @@ import it.unive.lisa.program.annotations.matcher.BasicAnnotationMatcher;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
@@ -29,8 +32,10 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.StringUtilities;
+
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -38,13 +43,10 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class TaintChecker implements
-		SemanticCheck<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> {
-
+public class TaintChecker<H extends HeapValue<H>, V extends TaintLattice<V>, T extends TypeValue<T>> implements
+SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> {
 	
-	
-	private final String message;
+	protected final String message;
 	
 	public TaintChecker(String message) {
 		this.message = message;
@@ -53,7 +55,6 @@ public class TaintChecker implements
 	public TaintChecker() {
 		this.message = "";
 	}
-
 
 	/**
 	 * Sink annotation.
@@ -65,47 +66,49 @@ public class TaintChecker implements
 	 */
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
 
+
+
+
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool) {
+	public void beforeExecution(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-							TypeEnvironment<InferredTypes>>> tool) {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool) {
+	}
+
+	@Override
+	public boolean visitUnit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool,
+			Unit unit) {
+		return true;
 	}
 
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-							TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool,
 			Unit unit, Global global, boolean instance) {
-	}
-
+		}
+	
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-							TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
 
 		UnresolvedCall call = (UnresolvedCall) node;
 		try {
-			for (AnalyzedCFG<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-							TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
+			for (var result : tool.getResultOf(graph)) {
 				Call resolved = tool.getResolvedVersion(call, result);
 				if (resolved == null)
 					System.err.println("Error");
@@ -118,26 +121,37 @@ public class TaintChecker implements
 						boolean[] resultsParam = new boolean[parameters.length];
 						for (int i = 0; i < parameters.length; i++)
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
-								AnalysisState<
-										SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-												TypeEnvironment<InferredTypes>>> state = result
-														.getAnalysisStateAfter(call.getParameters()[i]);
+								var postState = result.getAnalysisStateAfter(call.getParameters()[i]);
 
 								Set<SymbolicExpression> reachableIds = new HashSet<>();
-								for (SymbolicExpression e : state.getComputedExpressions())
-									reachableIds
-											.addAll(state.getState().reachableFrom(e, node, state.getState()).elements);
+								Iterator<SymbolicExpression> comExprIterator = postState.getExecutionExpressions().iterator();
+								if (comExprIterator.hasNext()) {
 
-								for (SymbolicExpression s : reachableIds) {
-									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
+									SymbolicExpression expr = comExprIterator.next();
+									try {
+										reachableIds
+												.addAll(tool.getAnalysis().reachableFrom(postState, expr, (Statement) call).elements);
 
-									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
-										continue;
+										for (SymbolicExpression s : reachableIds) {
+											Set<Type> types = tool.getAnalysis().getRuntimeTypesOf(postState, s, (Statement) call);
 
-									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
-									if (valueState.eval((ValueExpression) s, node, state.getState())
-											.isTainted())
-										resultsParam[i] = true;
+											if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+												continue;
+											//extraction of the abstract value
+											ValueEnvironment<V> valueState = postState.getExecutionState().valueState;
+											BaseTaint<V> taintAnalysisValueDomain = (BaseTaint<V>) tool.getAnalysis().domain.valueDomain;
+											SemanticOracle oracle = tool.getAnalysis().domain.makeOracle(postState.getExecutionState());
+											TaintLattice<V> abstractValue = (TaintLattice<V>) taintAnalysisValueDomain.eval(valueState, (ValueExpression) s,
+													(ProgramPoint) call, oracle);
+
+											//check the abstractValue of the parameter
+											if (abstractValue.isPossiblyTainted() || abstractValue.isAlwaysTainted())
+												resultsParam[i] = true;
+										}
+									} catch (SemanticException e) {
+										e.printStackTrace();
+									}
+										
 								}
 							}
 						buildWarning(tool, call, parameters, resultsParam);
@@ -149,26 +163,36 @@ public class TaintChecker implements
 						boolean[] resultsParam = new boolean[parameters.length];
 						for (int i = 0; i < parameters.length; i++)
 							if (parameters[i].getAnnotations().contains(SINK_MATCHER)) {
-								AnalysisState<
-										SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-												TypeEnvironment<InferredTypes>>> state = result
-														.getAnalysisStateAfter(call.getParameters()[i]);
+								var postState = result.getAnalysisStateAfter(call.getParameters()[i]);
 								Set<SymbolicExpression> reachableIds = new HashSet<>();
-								for (SymbolicExpression e : state.getComputedExpressions())
-									reachableIds
-											.addAll(state.getState().reachableFrom(e, node, state.getState()).elements);
+								Iterator<SymbolicExpression> comExprIterator = postState.getExecutionExpressions().iterator();
+								if (comExprIterator.hasNext()) {
 
-								for (SymbolicExpression s : reachableIds) {
-									ValueEnvironment<TaintDomain> valueState = state.getState().getValueState();
+									SymbolicExpression boolExpr = comExprIterator.next();
+									try {
+										reachableIds
+												.addAll(tool.getAnalysis().reachableFrom(postState, boolExpr, (Statement) call).elements);
 
-									Set<Type> types = state.getState().getRuntimeTypesOf(s, node, state.getState());
+										for (SymbolicExpression s : reachableIds) {
+											Set<Type> types = tool.getAnalysis().getRuntimeTypesOf(postState, s, (Statement) call);
 
-									if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
-										continue;
+											if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
+												continue;
+											//extraction of the abstract value
+											ValueEnvironment<V> valueState = postState.getExecutionState().valueState;
+											BaseTaint<V> taintAnalysisValueDomain = (BaseTaint<V>) tool.getAnalysis().domain.valueDomain;
+											SemanticOracle oracle = tool.getAnalysis().domain.makeOracle(postState.getExecutionState());
+											TaintLattice<V> abstractValue = (TaintLattice<V>) taintAnalysisValueDomain.eval(valueState, (ValueExpression) s,
+													(ProgramPoint) call, oracle);
 
-									if (valueState.eval((ValueExpression) s, node, state.getState())
-											.isTainted())
-										resultsParam[i] = true;
+											//check the abstractValue of the parameter
+											if (abstractValue.isPossiblyTainted() || abstractValue.isAlwaysTainted())
+												resultsParam[i] = true;
+										}
+									} catch (SemanticException e) {
+										e.printStackTrace();
+									}
+										
 								}
 							}
 
@@ -182,10 +206,17 @@ public class TaintChecker implements
 		}
 
 		return true;
-
 	}
+
+	@Override
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool,
+			CFG graph, Edge edge) {
+		return true;
+	}
+
 	
-	protected void buildWarning(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>, TypeEnvironment<InferredTypes>>> tool,
+	protected void buildWarning(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool,
 			UnresolvedCall call, Parameter[] parameters, boolean[] results) {
 			
 		int matches = 0;
@@ -205,21 +236,4 @@ public class TaintChecker implements
 			
 	}
 
-	@Override
-	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-							TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Edge edge) {
-		return true;
-	}
-
-	@Override
-	public boolean visitUnit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<TaintDomain>,
-							TypeEnvironment<InferredTypes>>> tool,
-			Unit unit) {
-		return true;
-	}
 }

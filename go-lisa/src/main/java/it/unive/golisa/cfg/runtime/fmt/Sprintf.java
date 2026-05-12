@@ -2,15 +2,16 @@ package it.unive.golisa.cfg.runtime.fmt;
 
 import java.util.Set;
 
-import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.golisa.program.cfg.VarArgsParameter;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -94,12 +95,10 @@ public class Sprintf extends NativeCFG {
 			super(cfg, location, "Sprintf", GoStringType.INSTANCE, exprs);
 		}
 
-
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
-				StatementStore<A> expressions) throws SemanticException {
-			
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
+				it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
 			ExpressionSet p1 = params[0];
 			AnalysisState<A> res = state.bottom();
 			
@@ -107,18 +106,17 @@ public class Sprintf extends NativeCFG {
 				for(SymbolicExpression e1 : p1) {
 					for(int i = 1; i< params.length; i++)
 						for(SymbolicExpression e2 : params[i]) 
-							res = res.lub(state.smallStepSemantics(new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), e1,
+							res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state, new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), e1,
 								e2, SprintfOperator.INSTANCE, getLocation()), original));
 				}
 			} else {
 				for(SymbolicExpression e1 : p1) {
-					res = res.lub(state.smallStepSemantics(new it.unive.lisa.symbolic.value.UnaryExpression(getStaticType(),
+					res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state, new it.unive.lisa.symbolic.value.UnaryExpression(getStaticType(),
 							e1, (UnaryOperator) SprintfOperatorUnary.INSTANCE, getLocation()), original));
 				}
 			}
 			
 			return res;
-			
 		}
 	}
 

@@ -10,7 +10,7 @@ import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.checks.syntactic.CheckTool;
+import it.unive.lisa.ReportingTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
@@ -34,13 +34,13 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 	private Map<Call, Boolean> assignmentMap;
 	
 	@Override
-	public void beforeExecution(CheckTool tool) {
+	public void beforeExecution(ReportingTool tool) {
 		
 		assignmentMap = new HashMap<>();
 	}
 
 	@Override
-	public void afterExecution(CheckTool tool) {
+	public void afterExecution(ReportingTool tool) {
 		
 		for(Call call : assignmentMap.keySet()) {
 			if(!assignmentMap.get(call).booleanValue()) {
@@ -53,7 +53,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG graph, Statement node) {
+	public boolean visit(ReportingTool tool, CFG graph, Statement node) {
 		
 		if (node instanceof Call) {
 			if (ReadWriteHFUtils.isReadOrWriteCall((Call) node)) {
@@ -125,7 +125,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		return true;
 	}
 
-	private void checkVariableRef( VariableRef ref, Call call, CheckTool tool, CFG graph, Statement node) {
+	private void checkVariableRef( VariableRef ref, Call call, ReportingTool tool, CFG graph, Statement node) {
 		if (GoLangUtils.isBlankIdentifier(ref.getVariable()))
 			tool.warnOn(node,
 					"Unhandled error of a blockchain "
@@ -133,7 +133,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 							+ " operation. It is discarded during the assignment.");
 		else {
 			boolean found = false;
-			for (ControlFlowStructure cfs : graph.getControlFlowStructures()) {
+			for (ControlFlowStructure cfs : graph.getDescriptor().getControlFlowStructures()) {
 				if (cfs instanceof IfThenElse) {
 					CodeGraph<CFG, Statement,
 							Edge> path = CFGUtils.getPath(graph, node, cfs.getCondition());
@@ -185,22 +185,22 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG g) {
+	public boolean visit(ReportingTool tool, CFG g) {
 		return true;
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG graph, Edge edge) {
+	public boolean visit(ReportingTool tool, CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
-	public boolean visitUnit(CheckTool tool, Unit unit) {
+	public boolean visitUnit(ReportingTool tool, Unit unit) {
 		return true;
 	}
 
 	@Override
-	public void visitGlobal(CheckTool tool, Unit unit, Global global, boolean instance) {
+	public void visitGlobal(ReportingTool tool, Unit unit, Global global, boolean instance) {
 
 	}
 }

@@ -27,6 +27,8 @@ GoLiSA provides several static analyses for detecting issues in blockchain softw
 - [Awards, Honors, and Honorable Mentions](#awards)
 - [Experimental Evaluations](#experimental-evaluations)
 - [Analysis Examples](#analysis-examples)
+- [Analysis Examples](#analysis-examples)
+- [Other Licences](#other-licences)
 
 ---
 
@@ -139,60 +141,57 @@ The code in this branch is under development. Please look at the specific artifa
 ### Non-determinism Analysis
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a non-determinism`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a non-determinism
 ```
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a non-determinism-ni`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a non-determinism-ni
 ```
 
 ### Phantom Read Analysis
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a phantom-read`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a phantom-read
 ```
 
 ### Untrusted Cross-Contract Invocations Analysis
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a ucci`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a ucci
 ```
 
 ### Cross-Channel Invocations Analysis
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i codeA.go -o output -f hyperledger-fabric -a cchi`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i codeA.go -o output -f hyperledger-fabric -a cchi
 ```
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i codeA.go  -ci "contractA" "otherchannel" -i codeB.go -ci "contractB" "mychannel" -o output -f hyperledger-fabric -a cchi -xc`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i codeA.go  -ci "contractA" "otherchannel" -i codeB.go -ci "contractB" "mychannel" -o output -f hyperledger-fabric -a cchi -xc
 ```
 
 ### Read-after-write and Over-write Analysis
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a read-write`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a read-write
 ```
 
 ### Unhandled Errors Analysis
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a unhandled-errors`
+./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a unhandled-errors
 ```
 
 ### Numerical Issues Analysis
 
 ```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a var-numerical-overflow`
-```
-
-```bash
-./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a div-by-zero`
-```   
+./build/distributions/go-lisa-0.1/bin/go-lisa -i code.go -o output -f hyperledger-fabric -a numerical-issues
+```  
 
 ---
 
 ## Other Licences
 
+### Logo 
 The Go gopher was designed by the Renee French. The design is licensed under the Creative Commons 4.0 Attributions license.
 Read [link1](http://blog.golang.org/gopher) and [link2](https://go.dev/wiki/Gopher) for more details.

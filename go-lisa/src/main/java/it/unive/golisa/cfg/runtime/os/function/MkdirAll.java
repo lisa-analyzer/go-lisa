@@ -5,7 +5,8 @@ import it.unive.golisa.cfg.runtime.os.type.FileMode;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -40,11 +41,9 @@ public class MkdirAll extends NativeCFG {
 	 * @param osUnit   the unit to which this native cfg belongs to
 	 */
 	public MkdirAll(CodeLocation location, CodeUnit osUnit) {
-		super(new CodeMemberDescriptor(location, osUnit, false, "MkdirAll",
-				GoErrorType.INSTANCE,
+		super(new CodeMemberDescriptor(location, osUnit, false, "MkdirAll", GoErrorType.INSTANCE,
 				new Parameter(location, "path", GoStringType.INSTANCE),
-				new Parameter(location, "perm", FileMode.getFileModeType(osUnit.getProgram()))),
-				MkdirAllImpl.class);
+				new Parameter(location, "perm", FileMode.getFileModeType(osUnit.getProgram()))), MkdirAllImpl.class);
 	}
 
 	/**
@@ -52,8 +51,7 @@ public class MkdirAll extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class MkdirAllImpl extends BinaryExpression
-			implements PluggableStatement {
+	public static class MkdirAllImpl extends BinaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -71,8 +69,7 @@ public class MkdirAll extends NativeCFG {
 		 * Builds the pluggable statement.
 		 * 
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
-		 * @param location the location where this pluggable statement is
-		 *                     defined
+		 * @param location the location where this pluggable statement is defined
 		 * @param params   the parameters
 		 * 
 		 * @return the pluggable statement
@@ -85,8 +82,7 @@ public class MkdirAll extends NativeCFG {
 		 * Builds the pluggable statement.
 		 * 
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
-		 * @param location the location where this pluggable statement is
-		 *                     defined
+		 * @param location the location where this pluggable statement is defined
 		 * @param left     the left-hand side of this pluggable statement
 		 * @param right    the right-hand side of this pluggable statement
 		 */
@@ -95,16 +91,15 @@ public class MkdirAll extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
-			AnalysisState<
-					A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
-							original);
-			AnalysisState<A> nilValue = state
-					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+			AnalysisState<A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(Reader.getReaderType(null), getLocation()), original);
+			AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);
+
 		}
 	}
 }

@@ -4,12 +4,13 @@ import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -92,10 +93,10 @@ public class InvokeChaincode extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
-		return state.smallStepSemantics(new PushAny(Response.getResponseType(null), getLocation()),	original);
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Response.getResponseType(null), getLocation()),	original);
 		}
 	}
 }

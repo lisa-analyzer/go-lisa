@@ -7,7 +7,8 @@ import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -115,10 +116,10 @@ public class GetStateByRange extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdTernarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression middle, SymbolicExpression right,
-				StatementStore<A> expressions) throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdTernarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression middle, SymbolicExpression right, StatementStore<A> expressions)
+				throws SemanticException {
 			Type allocType = StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(getProgram());
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(allocType), GoErrorType.INSTANCE);
@@ -130,20 +131,19 @@ public class GetStateByRange extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(left, this,
-					state.getState()).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, derefId, middle, right,
 						GetStateByRangeOperatorFirstParameter.INSTANCE, getLocation());
-				asg = asg.lub(state.assign(deref, lExp, original));
+				asg = asg.lub(interprocedural.getAnalysis().assign(state, deref, lExp, original));
 			}
 
 			TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE,
 					new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right,
 					GetStateByRangeSecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
 					ref,
 					rExp);
 		}

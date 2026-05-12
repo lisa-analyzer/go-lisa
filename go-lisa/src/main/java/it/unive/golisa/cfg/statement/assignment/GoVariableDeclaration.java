@@ -1,10 +1,11 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -23,7 +24,6 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
-import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.TypeTokenType;
 import java.util.Collections;
 import java.util.Set;
@@ -70,16 +70,18 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
+	}
 
-			throws SemanticException {
+	@Override
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+			SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
 		// e.g., _ = f(), we just return right state
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
 
-		TypeSystem types = getProgram().getTypes();
 		Type idType = type.isInMemoryType() ? new ReferenceType(type) : type;
 		Set<Type> setIdType = Collections.singleton(idType);
 
@@ -95,29 +97,23 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 					getLeft().getLocation());
 
 		AnalysisState<A> result = state.bottom();
-		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
+		Set<Type> rtypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, right, this);
 		for (Type rightType : rtypes) {
 			AnalysisState<A> tmp = state.bottom();
 			if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat) {
 				Constant typeCast = new Constant(new TypeTokenType(setIdType), idType, getRight().getLocation());
-				tmp = state.assign(id, new BinaryExpression(type, right, typeCast, TypeConv.INSTANCE,
+				tmp = interprocedural.getAnalysis().assign(state, id, new BinaryExpression(type, right, typeCast, TypeConv.INSTANCE,
 						getRight().getLocation()), this);
 			} else
-				tmp = state.assign(id, right, this);
+				tmp =  interprocedural.getAnalysis().assign(state, id, right, this);
 
 			result = result.lub(tmp);
 		}
 
 		if (!getRight().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getRight().getMetaVariables());
+			result = result.withExecution(result.getExecution().forgetIdentifiers(getRight().getMetaVariables(), this));
 		if (!getLeft().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-
+			result = result.withExecution(result.getExecution().forgetIdentifiers(getLeft().getMetaVariables(), this));
 		return result;
-	}
-
-	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
 	}
 }

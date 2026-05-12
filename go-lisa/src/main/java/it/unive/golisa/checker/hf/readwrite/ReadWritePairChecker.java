@@ -1,23 +1,27 @@
 package it.unive.golisa.checker.hf.readwrite;
 
 import it.unive.golisa.cfg.utils.CFGUtils;
-import it.unive.lisa.analysis.AnalysisState;
+import it.unive.lisa.analysis.Analysis;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.lisa.analysis.SemanticOracle;
+import it.unive.lisa.analysis.SimpleAbstractDomain;
+import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
+import it.unive.lisa.analysis.nonrelational.heap.HeapValue;
+import it.unive.lisa.analysis.nonrelational.type.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
+import it.unive.lisa.checks.semantic.SemanticTool;
+import it.unive.lisa.lattices.SimpleAbstractState;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.Parameter;
+import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
@@ -41,9 +45,8 @@ import org.apache.commons.lang3.tuple.Pair;
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
-public class ReadWritePairChecker implements
-		SemanticCheck<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
+public class ReadWritePairChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
+SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>>  {
 
 	private Set<AnalysisReadWriteHFInfo> writers;
 	private Set<AnalysisReadWriteHFInfo> readers;
@@ -60,20 +63,102 @@ public class ReadWritePairChecker implements
 	}
 
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
+	public void beforeExecution(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 		writers = new HashSet<>();
 		readers = new HashSet<>();
 	}
 
 	@Override
 	public void afterExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>>> tool) {
-
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 		readAfterWriteCandidates = computeReadAfterWriteCandidates();
 		overWriteCandidates = computeOverWriteCandidates();
+	}
+
+	@Override
+	public boolean visitUnit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			Unit unit) {
+		return true;
+	}
+
+	@Override
+	public void visitGlobal(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			Unit unit, Global global, boolean instance) {
+	}
+
+	
+
+	@Override
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			CFG graph, Statement node) {
+
+		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
+		if (calls.isEmpty())
+			return true;
+
+		for (Call call : calls) {
+			if (ReadWriteHFUtils.isReadOrWriteCall(call)) {
+				try {
+					ReadWriteInfo info = ReadWriteHFUtils.getReadWriteInfo(call);
+					int[] keyParams = info.getKeyParameters();
+
+					for (var result : tool.getResultOf(call.getCFG())) {
+						Call resolved = call instanceof UnresolvedCall
+								? (Call) tool.getResolvedVersion((UnresolvedCall) call, result)
+								: call;
+						ArrayList<Set<RegexAutomaton>> keyValues = new ArrayList<>();
+
+						if (resolved instanceof NativeCall) {
+							NativeCall nativeCfg = (NativeCall) resolved;
+							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
+							for (CodeMember n : nativeCfgs) {
+								Parameter[] parameters = n.getDescriptor().getFormals();
+								keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, parameters.length, node, result);
+							}
+						} else if (resolved instanceof CFGCall) {
+							CFGCall cfg = (CFGCall) resolved;
+
+							for (CodeMember n : cfg.getTargets()) {
+								Parameter[] parameters = n.getDescriptor().getFormals();
+								keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, parameters.length, node, result);
+							}
+						} else {
+							keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, call.getParameters().length, node, result);
+						}
+
+						AnalysisReadWriteHFInfo infoForAnalysis;
+						if (!info.hasCollection())
+							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
+						else {
+							Set<RegexAutomaton> collectionValues = extractCollectionValues(tool.getAnalysis(), call,
+									info.getCollectionParam().intValue(), node, result);
+							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, collectionValues);
+						}
+
+						if (ReadWriteHFUtils.isReadCall(call))
+							readers.add(infoForAnalysis);
+						else if (ReadWriteHFUtils.isWriteCall(call))
+							writers.add(infoForAnalysis);
+					}
+
+				} catch (SemanticException e) {
+					System.err.println("Cannot check " + node);
+					e.printStackTrace(System.err);
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			CFG graph, Edge edge) {
+		return true;
 	}
 
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> computeReadAfterWriteCandidates() {
@@ -81,7 +166,7 @@ public class ReadWritePairChecker implements
 		Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> res = new HashSet<>();
 
 		for (AnalysisReadWriteHFInfo w : writers) {
-			Set<Tarsis> wkeyValues = w.getKeyValues().get(0);
+			Set<RegexAutomaton> wkeyValues = w.getKeyValues().get(0);
 			for (AnalysisReadWriteHFInfo r : readers) {
 				if (!matchCollection(r, w))
 					continue;
@@ -89,11 +174,11 @@ public class ReadWritePairChecker implements
 				boolean found = false;
 				switch (r.getInfo().getKeyType()) {
 				case SINGLE:
-					Set<Tarsis> rkeyValues = r.getKeyValues().get(0);
-					for (Tarsis wkvState : wkeyValues) {
+					Set<RegexAutomaton> rkeyValues = r.getKeyValues().get(0);
+					for (RegexAutomaton wkvState : wkeyValues) {
 						if (found)
 							break;
-						for (Tarsis rkvState : rkeyValues) {
+						for (RegexAutomaton rkvState : rkeyValues) {
 							if (wkvState.isTop() || rkvState.isTop()
 									|| possibleEqualsMatch(rkvState, wkvState)) {
 								res.add(Pair.of(w, r));
@@ -104,13 +189,13 @@ public class ReadWritePairChecker implements
 					}
 					break;
 				case RANGE:
-					Set<Tarsis> startKeyValue = r.getKeyValues().get(0);
-					Set<Tarsis> endKeyValue = r.getKeyValues().get(1);
-					for (Tarsis wkvState : wkeyValues) {
+					Set<RegexAutomaton> startKeyValue = r.getKeyValues().get(0);
+					Set<RegexAutomaton> endKeyValue = r.getKeyValues().get(1);
+					for (RegexAutomaton wkvState : wkeyValues) {
 						if (found)
 							break;
-						for (Tarsis rstartKeyValueState : startKeyValue) {
-							for (Tarsis rendKeyValueState : endKeyValue) {
+						for (RegexAutomaton rstartKeyValueState : startKeyValue) {
+							for (RegexAutomaton rendKeyValueState : endKeyValue) {
 								if (wkvState.isTop() || rendKeyValueState.isTop()
 										|| possibleRangeMatch(wkvState, rstartKeyValueState, rendKeyValueState)) {
 									res.add(Pair.of(w, r));
@@ -122,11 +207,11 @@ public class ReadWritePairChecker implements
 					}
 					break;
 				case COMPOSITE:
-					Set<Tarsis> rcompositeKeyValues = r.getKeyValues().get(0);
-					for (Tarsis wkvState : wkeyValues) {
+					Set<RegexAutomaton> rcompositeKeyValues = r.getKeyValues().get(0);
+					for (RegexAutomaton wkvState : wkeyValues) {
 						if (found)
 							break;
-						for (Tarsis rkvState : rcompositeKeyValues) {
+						for (RegexAutomaton rkvState : rcompositeKeyValues) {
 							if (wkvState.isTop() || rkvState.isTop()
 									|| possibleCompositeMatch(rkvState, wkvState)) {
 								res.add(Pair.of(w, r));
@@ -146,29 +231,29 @@ public class ReadWritePairChecker implements
 		return res;
 	}
 
-	private boolean possibleCompositeMatch(Tarsis rkvState, Tarsis wkvState) {
-		String prefixValue = extractValueStringFromTarsisStates(rkvState);
-		String value = extractValueStringFromTarsisStates(wkvState);
+	private boolean possibleCompositeMatch(RegexAutomaton rkvState, RegexAutomaton wkvState) {
+		String prefixValue = extractValueStringFromRegexAutomatonStates(rkvState);
+		String value = extractValueStringFromRegexAutomatonStates(wkvState);
 		if (prefixValue != null && value != null)
 			return value.contains(prefixValue);
 		return true;
 	}
 
-	private boolean possibleRangeMatch(Tarsis wkvState, Tarsis rstartKeyValueState, Tarsis rendKeyValueState) {
-		if (!rendKeyValueState.getAutomaton().isEqualTo(RegexAutomaton.emptyStr())) {
-			String value = extractValueStringFromTarsisStates(wkvState);
+	private boolean possibleRangeMatch(RegexAutomaton wkvState, RegexAutomaton rstartKeyValueState, RegexAutomaton rendKeyValueState) {
+		if (!rendKeyValueState.isEqualTo(RegexAutomaton.emptyStr())) {
+			String value = extractValueStringFromRegexAutomatonStates(wkvState);
 			if (value != null) {
 				boolean l = true;
 				boolean u = true;
 
 				if (!rstartKeyValueState.isTop()) {
-					String lBoundValue = extractValueStringFromTarsisStates(rstartKeyValueState);
+					String lBoundValue = extractValueStringFromRegexAutomatonStates(rstartKeyValueState);
 
 					if (lBoundValue != null)
 						l = lBoundValue.compareTo(value) <= 0;
 				}
 
-				String uBoundValue = extractValueStringFromTarsisStates(rendKeyValueState);
+				String uBoundValue = extractValueStringFromRegexAutomatonStates(rendKeyValueState);
 				if (uBoundValue != null)
 					u = value.compareTo(uBoundValue) < 0;
 
@@ -178,10 +263,10 @@ public class ReadWritePairChecker implements
 		return true;
 	}
 
-	private boolean possibleEqualsMatch(Tarsis state1, Tarsis state2) {
-		return state1.getAutomaton().isEqualTo(state2.getAutomaton())
-				|| state1.getAutomaton().isContained(state2.getAutomaton())
-				|| state2.getAutomaton().isContained(state1.getAutomaton());
+	private boolean possibleEqualsMatch(RegexAutomaton state1, RegexAutomaton state2) {
+		return state1.isEqualTo(state2)
+				|| state1.isContained(state2)
+				|| state2.isContained(state1);
 	}
 
 	private boolean matchCollection(AnalysisReadWriteHFInfo st1, AnalysisReadWriteHFInfo st2) {
@@ -194,10 +279,10 @@ public class ReadWritePairChecker implements
 			return false;
 
 		if (st1.getInfo().hasCollection() && st2.getInfo().hasCollection()) {
-			Set<Tarsis> c1Values = st1.getCollectionValues();
-			Set<Tarsis> c2Values = st2.getCollectionValues();
-			for (Tarsis c1ValueState : c1Values) {
-				for (Tarsis c2ValuesState : c2Values) {
+			Set<RegexAutomaton> c1Values = st1.getCollectionValues();
+			Set<RegexAutomaton> c2Values = st2.getCollectionValues();
+			for (RegexAutomaton c1ValueState : c1Values) {
+				for (RegexAutomaton c2ValuesState : c2Values) {
 					if (c1ValueState.isTop() || c2ValuesState.isTop()
 							|| possibleEqualsMatch(c2ValuesState, c1ValueState)) {
 						return true;
@@ -221,13 +306,13 @@ public class ReadWritePairChecker implements
 					continue;
 
 				if (!w1.equals(w2)) {
-					Set<Tarsis> w1keyValues = w1.getKeyValues().get(0);
-					Set<Tarsis> w2keyValues = w2.getKeyValues().get(0);
+					Set<RegexAutomaton> w1keyValues = w1.getKeyValues().get(0);
+					Set<RegexAutomaton> w2keyValues = w2.getKeyValues().get(0);
 					boolean found = false;
-					for (Tarsis w1kvState : w1keyValues) {
+					for (RegexAutomaton w1kvState : w1keyValues) {
 						if (found)
 							break;
-						for (Tarsis w2kvState : w2keyValues) {
+						for (RegexAutomaton w2kvState : w2keyValues) {
 							if (w1kvState.isTop() || w2kvState.isTop()
 									|| possibleEqualsMatch(w1kvState, w2kvState)) {
 								res.add(Pair.of(w1, w2));
@@ -242,158 +327,61 @@ public class ReadWritePairChecker implements
 		return res;
 	}
 
-	@Override
-	public void visitGlobal(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			Unit unit, Global global, boolean instance) {
-	}
 
-	@Override
-	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph) {
-		return true;
-	}
 
-	@Override
-	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Statement node) {
-
-		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
-		if (calls.isEmpty())
-			return true;
-
-		for (Call call : calls) {
-			if (ReadWriteHFUtils.isReadOrWriteCall(call)) {
-				try {
-					ReadWriteInfo info = ReadWriteHFUtils.getReadWriteInfo(call);
-					int[] keyParams = info.getKeyParameters();
-
-					for (AnalyzedCFG<
-							SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-									TypeEnvironment<InferredTypes>>> result : tool.getResultOf(call.getCFG())) {
-						Call resolved = call instanceof UnresolvedCall
-								? (Call) tool.getResolvedVersion((UnresolvedCall) call, result)
-								: call;
-						ArrayList<Set<Tarsis>> keyValues = new ArrayList<>();
-
-						if (resolved instanceof NativeCall) {
-							NativeCall nativeCfg = (NativeCall) resolved;
-							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
-							for (CodeMember n : nativeCfgs) {
-								Parameter[] parameters = n.getDescriptor().getFormals();
-								keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
-							}
-						} else if (resolved instanceof CFGCall) {
-							CFGCall cfg = (CFGCall) resolved;
-
-							for (CodeMember n : cfg.getTargets()) {
-								Parameter[] parameters = n.getDescriptor().getFormals();
-								keyValues = extractKeyValues(call, keyParams, parameters.length, node, result);
-							}
-						} else {
-							keyValues = extractKeyValues(call, keyParams, call.getParameters().length, node, result);
-						}
-
-						AnalysisReadWriteHFInfo infoForAnalysis;
-						if (!info.hasCollection())
-							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues);
-						else {
-							Set<Tarsis> collectionValues = extractCollectionValues(call,
-									info.getCollectionParam().intValue(), node, result);
-							infoForAnalysis = new AnalysisReadWriteHFInfo(call, info, keyValues, collectionValues);
-						}
-
-						if (ReadWriteHFUtils.isReadCall(call))
-							readers.add(infoForAnalysis);
-						else if (ReadWriteHFUtils.isWriteCall(call))
-							writers.add(infoForAnalysis);
-					}
-
-				} catch (SemanticException e) {
-					System.err.println("Cannot check " + node);
-					e.printStackTrace(System.err);
-				}
-			}
-		}
-		return true;
-	}
-
-	private Set<Tarsis> extractCollectionValues(Call call, int collectionParam, Statement node,
-			AnalyzedCFG<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-					TypeEnvironment<InferredTypes>>> result)
+	private Set<RegexAutomaton> extractCollectionValues(Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> analysis, Call call, int collectionParam, Statement node,
+			AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> result)
 			throws SemanticException {
 
 		int par = call.getCallType().equals(CallType.STATIC) ? collectionParam : collectionParam + 1;
-		Set<Tarsis> res = new HashSet<>();
+		Set<RegexAutomaton> res = new HashSet<>();
 
 		if (par < call.getParameters().length) {
-
-			AnalysisState<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>>> state = result
-									.getAnalysisStateAfter(call.getParameters()[par]);
-			for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
-					state.getState()))
-				res.add(state.getState().getValueState().eval((ValueExpression) stack, node, state.getState()));
+			var state = result.getAnalysisStateAfter(call.getParameters()[par]);
+			for (SymbolicExpression stack : analysis.rewrite(state, state.getExecutionExpressions(), node)) {
+				var valueState = state.getExecutionState().valueState;
+				Tarsis analysisValueDomain = (Tarsis) analysis.domain.valueDomain;
+				SemanticOracle oracle = analysis.domain.makeOracle(state.getExecutionState());
+				var value = analysisValueDomain.eval(valueState, (ValueExpression) stack, (ProgramPoint) node, oracle);
+				res.add(value);
+			}
 		}
 
 		return res;
 	}
 
-	private String extractValueStringFromTarsisStates(Tarsis state) {
-		if (state.getAutomaton().emptyString().equals(state.getAutomaton()))
+	private String extractValueStringFromRegexAutomatonStates(RegexAutomaton state) {
+		if (state.emptyString().equals(state))
 			return "";
-		else if (!state.getAutomaton().acceptsTopEventually())
-			return state.getAutomaton().toString();
+		else if (!state.acceptsTopEventually())
+			return state.toString();
 
 		return null;
 	}
 
-	private ArrayList<Set<Tarsis>> extractKeyValues(
-			Call call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<
-					PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> result)
+	private ArrayList<Set<RegexAutomaton>> extractKeyValues(Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> analysis,
+			Call call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> result)
 			throws SemanticException {
 
-		ArrayList<Set<Tarsis>> valStringDomain = new ArrayList<>(keyParams.length);
+		ArrayList<Set<RegexAutomaton>> valStringDomain = new ArrayList<>(keyParams.length);
 
 		for (int i = 0; i < keyParams.length; i++) {
 			int par = call.getCallType().equals(CallType.STATIC) ? keyParams[i] : keyParams[i] + 1;
 			valStringDomain.add(new HashSet<>());
 			if (par < parametersLength) {
 
-				AnalysisState<
-						SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-								TypeEnvironment<InferredTypes>>> state = result
-										.getAnalysisStateAfter(call.getParameters()[par]);
-				for (SymbolicExpression stack : state.getState().rewrite(state.getComputedExpressions(), node,
-						state.getState())) {
-					valStringDomain.get(i).add(
-							state.getState().getValueState().eval((ValueExpression) stack, node, state.getState()));
+				var state = result.getAnalysisStateAfter(call.getParameters()[par]);
+				for (SymbolicExpression stack : analysis.rewrite(state, state.getExecutionExpressions(), node)) {
+					var valueState = state.getExecutionState().valueState;
+					Tarsis analysisValueDomain = (Tarsis) analysis.domain.valueDomain;
+					SemanticOracle oracle = analysis.domain.makeOracle(state.getExecutionState());
+					var value = analysisValueDomain.eval(valueState, (ValueExpression) stack, (ProgramPoint) node, oracle);
+					valStringDomain.get(i).add(value);
 				}
 			}
 		}
 
 		return valStringDomain;
 
-	}
-
-	@Override
-	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Edge edge) {
-		return true;
-	}
-
-	@Override
-	public boolean visitUnit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			Unit unit) {
-		return true;
 	}
 }

@@ -22,5 +22,10 @@ public class StandardEdge extends LabeledEdge {
 	public StandardEdge clone() throws CloneNotSupportedException {
 		return new StandardEdge(getSource(), getDestination());
 	}
+
+	@Override
+	public boolean isErrorHandling() {
+		return false;
+	}
 	
 }

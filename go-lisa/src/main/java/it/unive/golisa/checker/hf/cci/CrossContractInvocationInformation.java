@@ -3,42 +3,41 @@ package it.unive.golisa.checker.hf.cci;
 import java.util.HashSet;
 import java.util.Set;
 
-
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 
 public class CrossContractInvocationInformation {
 	
-	Set<Tarsis> contractNameApproximations;
+	Set<RegexAutomaton> contractNameApproximations;
 	
-	Set<Tarsis> channelApproximations;
+	Set<RegexAutomaton> channelApproximations;
 	
 	
 	
 	public CrossContractInvocationInformation() {
 		
-		contractNameApproximations = new HashSet<Tarsis>();
-		channelApproximations = new HashSet<Tarsis>();
+		contractNameApproximations = new HashSet<RegexAutomaton>();
+		channelApproximations = new HashSet<RegexAutomaton>();
 	}
 
-	public CrossContractInvocationInformation(Set<Tarsis> contractNameApproximations,
-			Set<Tarsis> channelApproximations) {
+	public CrossContractInvocationInformation(Set<RegexAutomaton> contractNameApproximations,
+			Set<RegexAutomaton> channelApproximations) {
 		this.contractNameApproximations = contractNameApproximations;
 		this.channelApproximations = channelApproximations;
 	}
 
-	public Set<Tarsis> getContractNameApproximations() {
+	public Set<RegexAutomaton> getContractNameApproximations() {
 		return contractNameApproximations;
 	}
 
-	public Set<Tarsis> getChannelApproximations() {
+	public Set<RegexAutomaton> getChannelApproximations() {
 		return channelApproximations;
 	}
 
-	public void addAllContractNameApproximations(Set<Tarsis> contractNameApproximations) {
+	public void addAllContractNameApproximations(Set<RegexAutomaton> contractNameApproximations) {
 		this.contractNameApproximations.addAll(contractNameApproximations);
 	}
 
-	public void addAllChannelApproximations(Set<Tarsis> channelApproximations) {
+	public void addAllChannelApproximations(Set<RegexAutomaton> channelApproximations) {
 		this.channelApproximations.addAll(channelApproximations);
 	}
 	

@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.runtime.io.ioutil.function;
 
 import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.GoNilType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -87,15 +88,16 @@ public class NopCloser extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			AnalysisState<
-					A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
-							original);
-			AnalysisState<A> nilValue = state
-					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
+			
+			AnalysisState<A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Reader.getReaderType(null), getLocation()),
+					original);
+			AnalysisState<A> nilValue = interprocedural.getAnalysis()
+					.smallStepSemantics(state, new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return readerValue.lub(nilValue);
 		}
+
 	}
 }

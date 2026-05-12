@@ -6,7 +6,8 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -106,9 +107,9 @@ public class ReadAll extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
 			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(sliceOfBytes), GoErrorType.INSTANCE);
@@ -116,29 +117,28 @@ public class ReadAll extends NativeCFG {
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(sliceOfBytes, expr.getCodeLocation(), new Annotations(),
 					true);
-			AnalysisState<A> allocState = state.smallStepSemantics(created, this);
+			AnalysisState<A> allocState = interprocedural.getAnalysis().smallStepSemantics(state, created, this);
 
 			AnalysisState<A> result = state.bottom();
-			for (SymbolicExpression allocId : allocState.getComputedExpressions()) {
+			for (SymbolicExpression allocId : allocState.getExecutionExpressions()) {
 				HeapReference ref = new HeapReference(new ReferenceType(sliceOfBytes), allocId, expr.getCodeLocation());
 				HeapDereference deref = new HeapDereference(sliceOfBytes, ref, expr.getCodeLocation());
 				AnalysisState<A> asg = allocState.bottom();
 
 				// Retrieves all the identifiers reachable from expr
-				Collection<SymbolicExpression> reachableIds = allocState.getState().reachableFrom(expr, this,
-						allocState.getState()).elements;
+				Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(allocState, expr, this).elements;
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 					UnaryExpression left = new UnaryExpression(sliceOfBytes, derefId,
 							ReadAllOperatorFirstParameter.INSTANCE, getLocation());
-					asg = asg.lub(allocState.assign(deref, left, original));
+					asg = asg.lub(interprocedural.getAnalysis().assign(allocState, deref, left, original));
 				}
 
 				UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr,
 						ReadAllOperatorSecondParameter.INSTANCE,
 						getLocation());
 
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+				result = result.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
 						getLocation(), tupleType,
 						ref,
 						rExp));

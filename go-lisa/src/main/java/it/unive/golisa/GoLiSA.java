@@ -4,7 +4,9 @@ import it.unive.golisa.analysis.GoIntervalDomain;
 import it.unive.golisa.analysis.entrypoints.EntryPointsFactory;
 import it.unive.golisa.analysis.entrypoints.EntryPointsUtils;
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.analysis.taint.GoThreeLevelsTaint;
+import it.unive.golisa.analysis.taint.NonDetTaintDomain;
+import it.unive.golisa.analysis.taint.UCCITaintDomain;
 import it.unive.golisa.analysis.utils.AnalysisPreRequirementsUtils;
 import it.unive.golisa.analysis.utils.FileInfo;
 import it.unive.golisa.checker.DivByZeroChecker;
@@ -12,6 +14,7 @@ import it.unive.golisa.checker.GoRoutineSourcesChecker;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.NumericalOverflowOfVariablesChecker;
 import it.unive.golisa.checker.TaintChecker;
+import it.unive.golisa.checker.UntrustedCrossContractInvocationsChecker;
 import it.unive.golisa.checker.hf.CchiUtils;
 import it.unive.golisa.checker.hf.CrossChannelInvocationsIssuesChecker;
 import it.unive.golisa.checker.hf.CrossChannelInvocationsWriteOpsChecker;
@@ -20,7 +23,7 @@ import it.unive.golisa.checker.hf.cci.CrossContractInvocationInformation;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePairChecker;
 import it.unive.golisa.checker.hf.readwrite.ReadWritePathChecker;
 import it.unive.golisa.frontend.GoFrontEnd;
-import it.unive.golisa.interprocedural.RelaxedOpenCallPolicy;
+import it.unive.golisa.interprocedural.RelaxedInformationFlowOpenCallPolicy;
 import it.unive.golisa.loader.AnnotationLoader;
 import it.unive.golisa.loader.EntryPointLoader;
 import it.unive.golisa.loader.annotation.AnnotationSet;
@@ -30,22 +33,21 @@ import it.unive.golisa.loader.annotation.sets.PhantomReadAnnotationSet;
 import it.unive.golisa.loader.annotation.sets.UCCIPhase1AnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
-import it.unive.lisa.analysis.SimpleAbstractState;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.inference.InferenceSystem;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
-import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.analysis.types.InferredTypes;
 import it.unive.lisa.conf.LiSAConfiguration;
-import it.unive.lisa.conf.LiSAConfiguration.GraphType;
+import it.unive.lisa.interprocedural.ReturnTopPolicy;
 import it.unive.lisa.interprocedural.callgraph.RTACallGraph;
 import it.unive.lisa.interprocedural.context.ContextBasedAnalysis;
-import it.unive.lisa.interprocedural.context.FullStackToken;
+import it.unive.lisa.outputs.HtmlResults;
+import it.unive.lisa.outputs.JSONReportDumper;
 import it.unive.lisa.program.Program;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.statement.Statement;
+
+import static it.unive.lisa.DefaultConfiguration.defaultTypeDomain;
+import static it.unive.lisa.DefaultConfiguration.simpleDomain;
 
 import java.io.File;
 import java.io.IOException;
@@ -175,16 +177,17 @@ public class GoLiSA {
 			
 			LiSAConfiguration conf = new LiSAConfiguration();
 			conf.workdir = outputDir + File.separatorChar + "Result"+fileInfos.hashCode();
-			conf.jsonOutput = true;
-			conf.optimize = false;
+			conf.outputs.add(new JSONReportDumper());
 
-			conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
-			
+			if(cmd.hasOption(dump_opt))
+				conf.outputs.add(new HtmlResults<>(true));
+
 			AnnotationSet[] annotationSet = new AnnotationSet[] {};
 			boolean require2Phase = false;
 	
-			ReadWritePairChecker readwritePhase1 = null;
-			CrossChannelInvocationsIssuesChecker cchiChecker = null;
+			ReadWritePairChecker<?, ?> readwritePhase1 = null;
+			CrossChannelInvocationsIssuesChecker<?, ?> cchiChecker = null;
+			UntrustedCrossContractInvocationsChecker<?,?,?> ucciChecker = null;
 			
 			File dirPhase1 = null;
 			
@@ -194,57 +197,46 @@ public class GoLiSA {
 					annotationSet = FrameworkNonDeterminismAnnotationSetFactory
 							.getAnnotationSets(cmd.getOptionValue("framework"));
 					conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-							new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-					conf.semanticChecks.add(new TaintChecker("Possible issue of non-determinism."));
+					conf.openCallPolicy = RelaxedInformationFlowOpenCallPolicy.INSTANCE;
+			        conf.analysis = simpleDomain(new PointBasedHeap(), new NonDetTaintDomain(), defaultTypeDomain());
+					conf.semanticChecks.add(new TaintChecker<>("Possible issue of non-determinism."));
 					break;
 				case "non-determinism-ni":
 					annotationSet = FrameworkNonDeterminismAnnotationSetFactory
 							.getAnnotationSets(cmd.getOptionValue("framework"));
 					conf.syntacticChecks.add(new GoRoutineSourcesChecker());
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-							new InferenceSystem<>(new IntegrityNIDomain()), new TypeEnvironment<>(new InferredTypes()));
-					conf.semanticChecks.add(new IntegrityNIChecker());
+					conf.openCallPolicy = RelaxedInformationFlowOpenCallPolicy.INSTANCE;
+			        conf.analysis = simpleDomain(new PointBasedHeap(), new IntegrityNIDomain(), defaultTypeDomain());
+					conf.semanticChecks.add(new IntegrityNIChecker<>());
 					break;
 				case "phantom-read":
 					annotationSet = new AnnotationSet[] { new PhantomReadAnnotationSet() };
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-							new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-					conf.semanticChecks.add(new TaintChecker("Possible phantom read."));
+					conf.openCallPolicy = RelaxedInformationFlowOpenCallPolicy.INSTANCE;
+					conf.analysis = simpleDomain(new PointBasedHeap(), new GoThreeLevelsTaint(), defaultTypeDomain());
+					conf.semanticChecks.add(new TaintChecker<>("Possible phantom read."));
 					break;
 				case "ucci":
-					// TODO: add configuration for UCCI analysis
-					// TODO: support 2nd phase
-					// require2Phase = true;
-					/*
-					 * dirPhase1 = new File(outputDir, "Phase1"); if
-					 * (!dirPhase1.exists()) dirPhase1.mkdirs(); conf.workdir =
-					 * dirPhase1.getAbsolutePath(); break;
-					 */
+					require2Phase = true;
+					
 					annotationSet = new AnnotationSet[] { new UCCIPhase1AnnotationSet() };
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-							new ValueEnvironment<>(new TaintDomain()), new TypeEnvironment<>(new InferredTypes()));
-					conf.semanticChecks.add(new TaintChecker("Possible untrusted cross-contract invocation."));
+					conf.openCallPolicy = RelaxedInformationFlowOpenCallPolicy.INSTANCE;
+					conf.analysis = simpleDomain(new PointBasedHeap(), new GoThreeLevelsTaint(), defaultTypeDomain());
+					ucciChecker = new UntrustedCrossContractInvocationsChecker<>();
+					conf.semanticChecks.add(ucciChecker);
 					break;
 				case "cchi":
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
-							new TypeEnvironment<>(new InferredTypes()));
-					cchiChecker = new CrossChannelInvocationsIssuesChecker(!crossContractAnalysis, fInfo.getChannel());
+					conf.openCallPolicy = RelaxedInformationFlowOpenCallPolicy.INSTANCE;
+					conf.analysis = simpleDomain(new PointBasedHeap(), new Tarsis(), defaultTypeDomain());
+					cchiChecker = new CrossChannelInvocationsIssuesChecker<>(!crossContractAnalysis, fInfo.getChannel());
 					conf.semanticChecks.add(cchiChecker);
 					break;
 				case "read-write":
 		
 					require2Phase = true;
 		
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
-							new TypeEnvironment<>(new InferredTypes()));
-					readwritePhase1 = new ReadWritePairChecker();
+					conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+					conf.analysis = simpleDomain(new PointBasedHeap(), new Tarsis(), defaultTypeDomain());
+					readwritePhase1 = new ReadWritePairChecker<>();
 					conf.semanticChecks.add(readwritePhase1);
 		
 					dirPhase1 = new File(outputDir, "Phase1");
@@ -257,13 +249,14 @@ public class GoLiSA {
 					conf.syntacticChecks.add(new UnhandledErrorsChecker());
 					break;
 				case "numerical-issues":
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new GoIntervalDomain()),
-							new TypeEnvironment<>(new InferredTypes()));
-					conf.semanticChecks.add(new NumericalOverflowOfVariablesChecker());
-					conf.semanticChecks.add(new DivByZeroChecker());			
+					conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+					conf.analysis = simpleDomain(new PointBasedHeap(), new GoIntervalDomain(), defaultTypeDomain());
+					conf.semanticChecks.add(new NumericalOverflowOfVariablesChecker<>());
+					conf.semanticChecks.add(new DivByZeroChecker<>());	
+					break;
 				default:
-	
+					System.err.println("Invalid analysis option: "+ analysis);
+					return;
 			}
 	
 			File theDir = new File(outputDir);
@@ -285,30 +278,33 @@ public class GoLiSA {
 	
 				conf = new LiSAConfiguration();
 				conf.workdir = outputDir;
-				conf.jsonOutput = true;
-				conf.optimize = false;
+				conf.outputs.add(new JSONReportDumper());
+
+				if(cmd.hasOption(dump_opt))
+					conf.outputs.add(new HtmlResults<>(true));
 	
 				dirPhase2 = new File(outputDir, "Phase2");
 				if (!dirPhase2.exists())
 					dirPhase2.mkdirs();
 	
 				conf.workdir = dirPhase2.getAbsolutePath();
-				conf.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
-	
+
 				switch (analysis) {
 				case "ucci":
-					// TODO: add configuration for UCCI analysis
-					// break;
-					throw new IllegalArgumentException("The 2nd phase of UCCI analysis is currently not supported");
+					if(ucciChecker.getUCCIs().size() > 0) {
+						conf.openCallPolicy = RelaxedInformationFlowOpenCallPolicy.INSTANCE;
+						conf.analysis = simpleDomain(new PointBasedHeap(), new UCCITaintDomain(ucciChecker.getUCCIs()), defaultTypeDomain());
+						conf.semanticChecks.add(new TaintChecker<>("Possible operation with untrusted information coming from an untrusted cross-contract invocation."));
+					}
+					break;
 				case "read-write":
-					conf.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-					conf.abstractState = new SimpleAbstractState<>(new PointBasedHeap(),
-							new ValueEnvironment<>(new Tarsis()),
-							new TypeEnvironment<>(new InferredTypes()));
-					conf.semanticChecks.add(new ReadWritePathChecker(readwritePhase1.getReadAfterWriteCandidates(),
+					conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+					conf.analysis = simpleDomain(new PointBasedHeap(), new Tarsis(), defaultTypeDomain());
+					conf.semanticChecks.add(new ReadWritePathChecker<>(readwritePhase1.getReadAfterWriteCandidates(),
 							readwritePhase1.getOverWriteCandidates(), cmd.hasOption(dumpAdditionalAnalysisInfo)));
 					break;
 				default:
+					System.err.println("Invalid analysis option requiring phase 2: "+ analysis);
 	
 				}
 				lisaExecution(fInfo.getInput(), annotationSet, cmd.getOptionValue("framework"), analysis, conf);
@@ -325,25 +321,24 @@ public class GoLiSA {
 							
 							LiSAConfiguration cchis2 = new LiSAConfiguration();
 							cchis2.workdir = conf.workdir + File.separatorChar +"xcontract" + File.separatorChar+ "Result"+fileInfos.hashCode();
-							cchis2.jsonOutput = true;
-							cchis2.optimize = false;
-
-							cchis2.analysisGraphs = cmd.hasOption(dump_opt) ? GraphType.HTML_WITH_SUBNODES : GraphType.NONE;
+							cchis2.outputs.add(new JSONReportDumper());
 							
-							cchis2.openCallPolicy = RelaxedOpenCallPolicy.INSTANCE;
-							cchis2.abstractState = new SimpleAbstractState<>(new PointBasedHeap(), new ValueEnvironment<>(new Tarsis()),
-									new TypeEnvironment<>(new InferredTypes()));
+							if(cmd.hasOption(dump_opt))
+								cchis2.outputs.add(new HtmlResults<>(true));
+							
+							cchis2.openCallPolicy = RelaxedInformationFlowOpenCallPolicy.INSTANCE;
+							cchis2.analysis = simpleDomain(new PointBasedHeap(), new Tarsis(), defaultTypeDomain());
 							
 							cchisToCheck = CchiUtils.computeCchisToCheck(fi, cchis);
 							
 							if(cchisToCheck != null && !cchisToCheck.isEmpty()) {
-								cchis2.semanticChecks.add(new CrossChannelInvocationsWriteOpsChecker(cchisToCheck,  cmd.hasOption(dumpAdditionalAnalysisInfo)));
+								cchis2.semanticChecks.add(new CrossChannelInvocationsWriteOpsChecker<>(cchisToCheck,  cmd.hasOption(dumpAdditionalAnalysisInfo)));
 								lisaExecution(fi.getInput(), annotationSet, cmd.getOptionValue("framework"), "cchi-write", cchis2);
 							}
 						} 
 
 					default:
-						
+						System.err.println("Invalid analysis option requiring cross-contract analysis: "+ analysis);
 				}
 			}
 		}
@@ -385,7 +380,7 @@ public class GoLiSA {
 					program.addEntryPoint(c);
 
 			if (!program.getEntryPoints().isEmpty()) {
-				conf.interproceduralAnalysis = new ContextBasedAnalysis<>(FullStackToken.getSingleton());
+				conf.interproceduralAnalysis = new ContextBasedAnalysis<>();
 				conf.callGraph = new RTACallGraph();
 			} else
 				LOG.info("Entry points not found!");

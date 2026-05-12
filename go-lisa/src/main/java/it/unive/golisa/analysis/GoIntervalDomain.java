@@ -12,10 +12,8 @@ import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt32Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt64Type;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
-import it.unive.lisa.analysis.BaseLattice;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
-import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.analysis.numeric.Interval;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.PushAny;
@@ -45,33 +43,33 @@ public class GoIntervalDomain extends Interval {
 	 * 
 	 */
 	@Override
-	public Interval evalPushAny(PushAny pushAny, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
+	public IntInterval evalPushAny(PushAny pushAny, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		
 		Type type = pushAny.getStaticType();
 		
 		if (type == GoInt8Type.INSTANCE)
-			return new Interval(new IntInterval(-128, 127));
+			return new IntInterval(-128, 127);
 
 		if (type == GoInt16Type.INSTANCE)
-			return new Interval(new IntInterval(-32768, 32767));
+			return new IntInterval(-32768, 32767);
 
 		if (type == GoInt32Type.INSTANCE)
-			return new Interval(new IntInterval(-2147483648, 2147483647));
+			return new IntInterval(-2147483648, 2147483647);
 
 		if (type == GoInt64Type.INSTANCE || type == GoIntType.INSTANCE || type == GoUntypedInt.INSTANCE)
-			return new Interval(new IntInterval(new MathNumber(-9223372036854775808L), new MathNumber(9223372036854775807L)));
+			return new IntInterval(new MathNumber(-9223372036854775808L), new MathNumber(9223372036854775807L));
 
 		if (type == GoUInt8Type.INSTANCE)
-			return new Interval(new IntInterval(0, 255));
+			return new IntInterval(0, 255);
 
 		if (type == GoUInt16Type.INSTANCE)
-			return new Interval(new IntInterval(0, 65535));
+			return new IntInterval(0, 65535);
 
 		if (type == GoUInt32Type.INSTANCE)
-			return new Interval(new IntInterval(new MathNumber(0), new MathNumber(4294967295L)));
+			return new IntInterval(new MathNumber(0), new MathNumber(4294967295L));
 
 		if (type == GoUInt64Type.INSTANCE || type == Untyped.INSTANCE)
-			return new Interval(new IntInterval(new MathNumber(0), new MathNumber(new BigDecimal("18446744073709551615"))));
+			return new IntInterval(new MathNumber(0), new MathNumber(new BigDecimal("18446744073709551615")));
 		
 		return super.evalPushAny(pushAny, pp, oracle);
 	}

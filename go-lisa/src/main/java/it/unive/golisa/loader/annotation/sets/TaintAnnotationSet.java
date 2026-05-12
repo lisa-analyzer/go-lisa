@@ -1,13 +1,14 @@
 package it.unive.golisa.loader.annotation.sets;
 
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.checker.IntegrityNIChecker;
 import it.unive.golisa.checker.TaintChecker;
 import it.unive.golisa.loader.annotation.CodeAnnotation;
 import it.unive.golisa.loader.annotation.FrameworkAnnotationSet;
 import it.unive.golisa.loader.annotation.MethodAnnotation;
 import it.unive.golisa.loader.annotation.MethodParameterAnnotation;
+import it.unive.lisa.analysis.informationFlow.BaseTaint;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -73,8 +74,8 @@ public class TaintAnnotationSet extends FrameworkAnnotationSet {
 			if (entry.getKey() == Kind.METHOD)
 				for (Entry<String, Set<String>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, target.getKey(), mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(BaseTaint.TAINTED_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_CONF_ANNOTATION, target.getKey(), mtd));
 					});
 
 		// sink
@@ -98,8 +99,8 @@ public class TaintAnnotationSet extends FrameworkAnnotationSet {
 			if (entry.getKey() == Kind.METHOD)
 				for (Entry<String, Set<String>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, target.getKey(), mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(BaseTaint.TAINTED_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_CONF_ANNOTATION, target.getKey(), mtd));
 					});
 
 		// sinks
@@ -142,16 +143,16 @@ public class TaintAnnotationSet extends FrameworkAnnotationSet {
 			if (entry.getKey() == Kind.METHOD)
 				for (Entry<String, Set<String>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, target.getKey(), mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(BaseTaint.TAINTED_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_CONF_ANNOTATION, target.getKey(), mtd));
 					});
 
 		for (Entry<Kind, Map<String, Set<String>>> entry : SOURCE_CONSTRUCTORS_ANNOTATIONS.entrySet())
 			if (entry.getKey() == Kind.METHOD)
 				for (Entry<String, Set<String>> target : entry.getValue().entrySet())
 					target.getValue().forEach(mtd -> {
-						set.add(new MethodAnnotation(TaintDomain.TAINTED_ANNOTATION, target.getKey(), mtd));
-						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(BaseTaint.TAINTED_ANNOTATION, target.getKey(), mtd));
+						set.add(new MethodAnnotation(IntegrityNIDomain.LOW_CONF_ANNOTATION, target.getKey(), mtd));
 					});
 
 		return set;

@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.runtime.cosmossdk.types.errors.function;
 
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -84,12 +85,12 @@ public class Wrap extends NativeCFG {
 			super(cfg, location, "WrapImpl", GoErrorType.INSTANCE, left, right);
 		}
 
+		
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoErrorType.INSTANCE, getLocation()), original);
 		}
 
 		@Override
@@ -97,4 +98,6 @@ public class Wrap extends NativeCFG {
 			return 0; // nothing else to compare
 		}
 	}
+	
+	
 }

@@ -2,20 +2,25 @@ package it.unive.golisa.cfg.runtime.shim.method;
 
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
+import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIteratorInterface;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
+import it.unive.lisa.program.Unit;
+import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
@@ -111,37 +116,49 @@ public class GetQueryResult extends NativeCFG {
 					left, right);
 		}
 
+
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+			
+			Unit unit = getProgram().getUnit("ChaincodeStub");
+			Collection<CodeMember> members = ((CompilationUnit)unit).getInstanceCodeMembersByName("GetQueryResult", true);
+			
+			Annotations annots = new Annotations();
+			for(CodeMember cm : members) {
+				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+					annots.addAnnotation(a);
+				}
+			}
+			
 			Type allocType = StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(getProgram());
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(allocType), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(allocType, left.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(allocType, left.getCodeLocation(), annots, true);
 			HeapReference ref = new HeapReference(new ReferenceType(allocType), created, left.getCodeLocation());
 			HeapDereference deref = new HeapDereference(allocType, ref, left.getCodeLocation());
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(left, this,
-					state.getState()).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				BinaryExpression lExp = new BinaryExpression(Untyped.INSTANCE, derefId, right,
 						GetQueryResultOperatorFirstParameter.INSTANCE, getLocation());
-				asg = asg.lub(state.assign(deref, lExp, original));
+				asg = asg.lub(interprocedural.getAnalysis().assign(state, deref, lExp, original));
 			}
 
 			BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE,
 					new Constant(Untyped.INSTANCE, 1, getLocation()), right,
 					GetQueryResultSecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
 					ref,
-					rExp);
+					rExp);		
+			
 		}
 	}
 
@@ -173,7 +190,7 @@ public class GetQueryResult extends NativeCFG {
 
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> left, Set<Type> right) {
-			return Collections.singleton(Untyped.INSTANCE);
+			return Collections.singleton(StateQueryIterator.INSTANCE);
 		}
 	}
 

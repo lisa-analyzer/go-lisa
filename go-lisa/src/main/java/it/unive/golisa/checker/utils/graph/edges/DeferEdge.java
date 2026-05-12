@@ -22,5 +22,10 @@ public class DeferEdge extends LabeledEdge {
 	public DeferEdge clone() throws CloneNotSupportedException {
 		return new DeferEdge(getSource(), getDestination());
 	}
+
+	@Override
+	public boolean isErrorHandling() {
+		return false;
+	}
 	
 }

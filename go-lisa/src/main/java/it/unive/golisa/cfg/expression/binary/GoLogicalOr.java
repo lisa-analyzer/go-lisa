@@ -1,70 +1,93 @@
 package it.unive.golisa.cfg.expression.binary;
 
 import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
+import it.unive.lisa.analysis.Analysis;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.Satisfiability;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.Satisfiability;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
+import it.unive.lisa.program.cfg.statement.logic.Or;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.type.Type;
 
 /**
- * A Go Boolean logical oe expression (e.g., x && y).
+ * A Go Boolean logical or expression (e.g., x || y).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoLogicalOr extends it.unive.lisa.program.cfg.statement.BinaryExpression {
+public class GoLogicalOr extends Or {
 
-	/**
-	 * Builds the Boolean logical or expression.
-	 *
-	 * @param cfg      the {@link CFG} where this expression lies
-	 * @param location the location where this expression is defined
-	 * @param left     the left-hand side of this expression
-	 * @param right    the right-hand side of this expression
-	 */
-	public GoLogicalOr(CFG cfg, SourceCodeLocation location, Expression left, Expression right) {
-		super(cfg, location, "||", GoBoolType.INSTANCE, left, right);
+	public GoLogicalOr(CFG cfg, CodeLocation location, Expression left, Expression right) {
+		super(cfg, location, left, right);
 	}
 
-	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
-	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemantics(
+			AnalysisState<A> state,
+			InterproceduralAnalysis<A, D> interprocedural,
+			StatementStore<A> expressions)
 			throws SemanticException {
-		// FIXME: need to check which state needs to be returned (left/right)
-		Type ltype = state.getState().getDynamicTypeOf(left, this, state.getState());
-		Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
+		Analysis<A, D> analysis = interprocedural.getAnalysis();
+		AnalysisState<A> result = state.bottomExecution();
 
-		if (!ltype.isBooleanType() && !ltype.isUntyped())
-			return state.bottom();
-		if (!rtype.isBooleanType() && !rtype.isUntyped())
-			return state.bottom();
+		AnalysisState<A> leftState = getLeft().forwardSemantics(state, interprocedural, expressions);
+		expressions.put(getLeft(), leftState);
 
-		if (state.satisfies(left, this) == Satisfiability.SATISFIED)
-			return state;
-		else if (state.satisfies(left, this) == Satisfiability.NOT_SATISFIED)
-			return state
-					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-							left, right, LogicalOr.INSTANCE, getLocation()), this);
-		else if (state.satisfies(left, this) == Satisfiability.UNKNOWN)
-			return state.lub(state
-					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-							left, right, LogicalOr.INSTANCE, getLocation()), this));
-		else
-			return state.bottom();
+		for (SymbolicExpression left : leftState.getExecutionExpressions()) {
+			Satisfiability sat = analysis.satisfies(state, left, this);
+			if (sat == Satisfiability.SATISFIED)
+				result = result.lub(analysis.smallStepSemantics(state, left, this));
+			else if (sat == Satisfiability.NOT_SATISFIED) {
+				AnalysisState<A> rightState = getRight().forwardSemantics(leftState, interprocedural, expressions);
+				for (SymbolicExpression right : rightState.getExecutionExpressions())
+					result = result.lub(fwdBinarySemantics(interprocedural, state, left, right, expressions));
+			} else {
+				AnalysisState<A> rightState = getRight().forwardSemantics(leftState, interprocedural, expressions);
+				expressions.put(getRight(), rightState);
+
+				for (SymbolicExpression right : rightState.getExecutionExpressions())
+					result = result.lub(fwdBinarySemantics(interprocedural, state, left, right, expressions));
+
+				result = result.lub(leftState);
+				if (rightState.getExecutionExpressions().isEmpty())
+					result = result.lub(rightState);
+			}
+		}
+
+		return result;
 	}
+
+	@Override
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural,
+			AnalysisState<A> state,
+			SymbolicExpression left,
+			SymbolicExpression right,
+			StatementStore<A> expressions)
+			throws SemanticException {
+		Analysis<A, D> analysis = interprocedural.getAnalysis();
+
+		if (analysis.getRuntimeTypesOf(state, left, this).stream().noneMatch(Type::isBooleanType))
+			return state.bottomExecution();
+		if (analysis.getRuntimeTypesOf(state, right, this).stream().noneMatch(Type::isBooleanType))
+			return state.bottomExecution();
+
+		return analysis.smallStepSemantics(
+				state,
+				new BinaryExpression(getStaticType(), left, right, LogicalOr.INSTANCE, getLocation()),
+				this);
+	}
+
+
 }

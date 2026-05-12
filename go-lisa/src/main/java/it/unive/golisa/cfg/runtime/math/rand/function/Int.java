@@ -1,14 +1,14 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
+import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
@@ -27,8 +27,6 @@ import it.unive.lisa.symbolic.value.PushAny;
  */
 public class Int extends NativeCFG {
 
-	private static final Annotations anns = new Annotations(TaintDomain.TAINTED_ANNOTATION,
-			IntegrityNIDomain.LOW_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -37,7 +35,7 @@ public class Int extends NativeCFG {
 	 * @param randUnit the unit to which this native cfg belongs to
 	 */
 	public Int(CodeLocation location, CodeUnit randUnit) {
-		super(new CodeMemberDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE, anns),
+		super(new CodeMemberDescriptor(location, randUnit, false, "Int", GoIntType.INSTANCE),
 				IntImpl.class);
 	}
 
@@ -87,11 +85,11 @@ public class Int extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				ExpressionSet[] params, StatementStore<A> expressions)
-				throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoIntType.INSTANCE, getLocation()), original);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+				StatementStore<A> expressions) throws SemanticException {
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoIntType.INSTANCE, getLocation()), original);
 		}
+
 	}
 }

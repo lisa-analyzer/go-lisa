@@ -22,4 +22,9 @@ public class CallerEdge extends LabeledEdge {
 	public CallerEdge clone() throws CloneNotSupportedException {
 		return new CallerEdge(getSource(), getDestination());
 	}
+
+	@Override
+	public boolean isErrorHandling() {
+		return false;
+	}
 }

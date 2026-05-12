@@ -3,9 +3,11 @@ package it.unive.golisa.cfg.runtime.shim.method;
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
+import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -24,6 +26,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.HeapDereference;
 import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
+import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
@@ -103,14 +106,15 @@ public class Next extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
 
 			Response responseType = Response.getResponseType(getProgram());
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(responseType), GoErrorType.INSTANCE);
 
+			/*
 			// Allocates the new heap allocation
 			MemoryAllocation created = new MemoryAllocation(responseType, expr.getCodeLocation(), new Annotations(),
 					true);
@@ -119,21 +123,22 @@ public class Next extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(expr, this,
-					state.getState()).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(responseType, derefId, NextOperatorFirstParameter.INSTANCE,
 						getLocation());
-				asg = asg.lub(state.assign(deref, left, original));
+				asg = asg.lub(interprocedural.getAnalysis().assign(state, deref, left, original));
 			}
 
 			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, NextOperatorSecondParameter.INSTANCE,
 					getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
 					ref,
 					rExp);
+					*/
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(tupleType, getLocation()), original);
 		}
 	}
 

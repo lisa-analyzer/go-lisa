@@ -6,8 +6,7 @@ import java.util.Set;
 
 import it.unive.golisa.analysis.utils.FileInfo;
 import it.unive.golisa.checker.hf.cci.CrossContractInvocationInformation;
-import it.unive.lisa.analysis.string.tarsis.RegexAutomaton;
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.automaton.State;
 import it.unive.lisa.util.datastructures.automaton.Transition;
@@ -29,7 +28,7 @@ public class CchiUtils {
 			} else if(fi.getContractName() != null && fi.getChannel() == null) {
 				for(Statement cchi : cchis.keySet()) {
 					CrossContractInvocationInformation info = cchis.get(cchi);
-					for (Tarsis t : info.getContractNameApproximations()) {			
+					for (RegexAutomaton t : info.getContractNameApproximations()) {			
 							if(mayContractNameTarget(fi.getContractName(), t)) {
 								result.add(cchi);
 							}
@@ -40,7 +39,7 @@ public class CchiUtils {
 				
 				for(Statement cchi : cchis.keySet()) {
 					CrossContractInvocationInformation info = cchis.get(cchi);
-					for (Tarsis t : info.getChannelApproximations()) {			
+					for (RegexAutomaton t : info.getChannelApproximations()) {			
 							if(mayCrossChannel(fi.getChannel(), t)) {
 								result.add(cchi);
 							}
@@ -53,7 +52,7 @@ public class CchiUtils {
 					boolean foundChannel = false;
 					boolean foundContractName = false;
 					CrossContractInvocationInformation info = cchis.get(cchi);
-					for (Tarsis t : info.getChannelApproximations()) {			
+					for (RegexAutomaton t : info.getChannelApproximations()) {			
 							if(mayCrossChannelTarget(fi.getChannel(), t)) {
 								foundChannel = true;
 								break;
@@ -61,7 +60,7 @@ public class CchiUtils {
 					}
 					
 					if(foundChannel) {
-						for (Tarsis t : info.getContractNameApproximations()) {			
+						for (RegexAutomaton t : info.getContractNameApproximations()) {			
 							if(mayContractNameTarget(fi.getContractName(), t)) {
 								foundContractName = true;
 								break;
@@ -78,46 +77,46 @@ public class CchiUtils {
 		return result;
 	}
 
-	public static boolean isNameChannel(String channelName, Tarsis t) {
+	public static boolean isNameChannel(String channelName, RegexAutomaton a) {
 		if(channelName != null) {
 			// https://github.com/hyperledger/fabric-chaincode-go/blob/main/shim/interfaces.go#L73C2-L74C17
 			// if `channel` is empty string, the caller's channel is assumed.
-			return  t.getAutomaton().isEqualTo(RegexAutomaton.emptyStr())
-					|| t.getAutomaton().isEqualTo(RegexAutomaton.string(channelName));
+			return  a.isEqualTo(RegexAutomaton.emptyStr())
+					|| a.isEqualTo(RegexAutomaton.string(channelName));
 		}
 		return false;
 	}
 	
-	public static boolean isContractName(String contractName, Tarsis t) {
+	public static boolean isContractName(String contractName,  RegexAutomaton a) {
 		if(contractName != null) {
-			return  t.getAutomaton().isEqualTo(RegexAutomaton.string(contractName));
+			return  a.isEqualTo(RegexAutomaton.string(contractName));
 		}
 		return false;
 	}
 
 
-	public static boolean mayCrossChannel(String channelName, Tarsis t) {
-		return  containsApproximations(t)
-				|| (channelName != null && !isNameChannel(channelName,t));
+	public static boolean mayCrossChannel(String channelName, RegexAutomaton a) {
+		return  containsApproximations(a)
+				|| (channelName != null && !isNameChannel(channelName,a));
 	}
 	
-	private static boolean containsApproximations(Tarsis t) {
-		return t.isTop() || t.getAutomaton().getFinalStates().size() > 1
-		|| hasFinalStateMultipleIngoingEdges(t.getAutomaton())
-		|| t.getAutomaton().acceptsTopEventually()
-		|| hasCycle(t.getAutomaton());
+	private static boolean containsApproximations(RegexAutomaton a) {
+		return a.isTop() || a.getFinalStates().size() > 1
+		|| hasFinalStateMultipleIngoingEdges(a)
+		|| a.acceptsTopEventually()
+		|| hasCycle(a);
 	}
 
-	private static boolean mayContractNameTarget(String contractName, Tarsis t) {
-		return t.isTop() || isContractName(contractName, t) 
-				|| (contractName != null  && containsApproximations(t)
-						&& RegexAutomaton.string(contractName).isContained(t.getAutomaton()));
+	private static boolean mayContractNameTarget(String contractName, RegexAutomaton a) {
+		return a.isTop() || isContractName(contractName, a) 
+				|| (contractName != null  && containsApproximations(a)
+						&& RegexAutomaton.string(contractName).isContained(a));
 	}
 
-	public static boolean mayCrossChannelTarget(String channelName, Tarsis t) {
-		return t.isTop() || isNameChannel(channelName,t) 
-				||  (channelName != null  && containsApproximations(t) 
-						&& RegexAutomaton.string(channelName).isContained(t.getAutomaton()));
+	public static boolean mayCrossChannelTarget(String channelName, RegexAutomaton a) {
+		return a.isTop() || isNameChannel(channelName,a) 
+				||  (channelName != null  && containsApproximations(a) 
+						&& RegexAutomaton.string(channelName).isContained(a));
 	}
 
 	private static boolean hasFinalStateMultipleIngoingEdges(RegexAutomaton automaton) {

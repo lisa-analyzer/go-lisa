@@ -7,18 +7,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.cfg.utils.CFGUtils.Search;
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.lisa.analysis.SimpleAbstractDomain;
+import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
+import it.unive.lisa.analysis.nonrelational.heap.HeapValue;
+import it.unive.lisa.analysis.nonrelational.type.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
+import it.unive.lisa.checks.semantic.SemanticTool;
+import it.unive.lisa.lattices.SimpleAbstractState;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
@@ -37,9 +39,8 @@ import it.unive.lisa.util.file.FileManager;
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
-public class CrossChannelInvocationsWriteOpsChecker implements
-		SemanticCheck<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
+public class CrossChannelInvocationsWriteOpsChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
+SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> {
 
 
 	private final boolean computeGraph;
@@ -55,18 +56,27 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 		fileManager.mkDotFile(filename, writer -> graph.toDot().dump(writer));
 	}
 
+
+	@Override
+	public boolean visitUnit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			Unit unit) {
+		return true;
+	}
+
+
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
+
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph) {
-		
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			CFG graph, Statement node) {
+
 		if(graph.getDescriptor().getName().equals("Invoke")) {
 			Collection<Statement> entryPoints = graph.getEntrypoints();
 			
@@ -98,7 +108,7 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 		return result;
 	}
 	
-	private void interproceduralAnalysis(CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool, CFG graph, Set<CodeMember> seen) {
+	private void interproceduralAnalysis(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool, CFG graph, Set<CodeMember> seen) {
 		if(!seen.contains(graph)) {
 			seen.add(graph);
 			Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
@@ -122,24 +132,14 @@ public class CrossChannelInvocationsWriteOpsChecker implements
 		
 	}
 
-	public Collection<CodeMember> getCalleesTransitively(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CodeMember cm) {
-		VisitOnceWorkingSet<CodeMember> ws = VisitOnceFIFOWorkingSet.mk();
+	public Collection<CodeMember> getCalleesTransitively(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool, CodeMember cm) {
+
+		VisitOnceFIFOWorkingSet<CodeMember> instance = new VisitOnceFIFOWorkingSet<>();
+		VisitOnceWorkingSet<CodeMember> ws = instance.mk();
 		tool.getCallees(cm).stream().forEach(ws::push);
 		while (!ws.isEmpty())
 			tool.getCallees(ws.pop()).stream().forEach(ws::push);
 		return ws.getSeen();
 	}
-
-
-
-	@Override
-	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
-			CFG graph, Statement node) {
-		return true;
-	}
-
+	
 }

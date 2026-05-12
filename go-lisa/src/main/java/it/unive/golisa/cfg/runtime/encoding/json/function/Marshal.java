@@ -5,7 +5,8 @@ import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -104,10 +105,11 @@ public class Marshal extends NativeCFG {
 					expr);
 		}
 
+
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
 
 			Type sliceOfBytes = GoSliceType.getSliceOfBytes();
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
@@ -121,16 +123,15 @@ public class Marshal extends NativeCFG {
 			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = state.getState().reachableFrom(expr, this,
-					state.getState()).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(GoSliceType.getSliceOfBytes(), derefId,
 						MarshalOperatorFirstParameter.INSTANCE, getLocation());
 				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId,
 						MarshalOperatorSecondParameter.INSTANCE, getLocation());
-				AnalysisState<A> asg = state.assign(deref, left, original);
-				result = result.lub(GoTupleExpression.allocateTupleExpression(asg, new Annotations(), this,
+				AnalysisState<A> asg =  interprocedural.getAnalysis().assign(state, deref, left, original);
+				result = result.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
 						getLocation(), tupleType,
 						ref,
 						right));

@@ -1,6 +1,8 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
+import it.unive.lisa.analysis.Analysis;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -11,9 +13,9 @@ import it.unive.lisa.program.cfg.statement.BinaryExpression;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.Type;
-import java.util.Set;
+import it.unive.lisa.type.Untyped;
+
 
 /**
  * A Go bit-wise xor expression (e.g., x ^ y).
@@ -35,30 +37,33 @@ public class GoBitwiseXOr extends BinaryExpression implements GoBinaryNumericalO
 	}
 
 	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural,
+			AnalysisState<A> state,
+			SymbolicExpression left,
+			SymbolicExpression right,
+			StatementStore<A> expressions)
+			throws SemanticException {
+		Analysis<A, D> analysis = interprocedural.getAnalysis();
+		if (analysis.getRuntimeTypesOf(state, left, this).stream().noneMatch(Type::isNumericType))
+			return state.bottomExecution();
+		if (analysis.getRuntimeTypesOf(state, right, this).stream().noneMatch(Type::isNumericType))
+			return state.bottomExecution();
+
+		return analysis.smallStepSemantics(
+				state,
+				new it.unive.lisa.symbolic.value.BinaryExpression(
+						Untyped.INSTANCE,
+						left,
+						right,
+						it.unive.lisa.symbolic.value.operator.binary.BitwiseXor.INSTANCE,
+						getLocation()),
+				this);
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> arg0,
-			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> arg4)
-			throws SemanticException {
-
-		Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
-		Set<Type> rtypes = state.getState().getRuntimeTypesOf(right, this, state.getState());
-
-		AnalysisState<A> result = state.bottom();
-		for (Type leftType : ltypes)
-			for (Type rightType : rtypes)
-				if ((leftType.isUntyped() || (leftType.isNumericType() && leftType.asNumericType().isIntegral())) &&
-						(rightType.isUntyped()
-								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
-					// TODO: LiSA has not symbolic expression handling bitwise,
-					// return top at the moment
-					AnalysisState<A> tmp = state
-							.smallStepSemantics(new PushAny(resultType(leftType, rightType), getLocation()), this);
-					result = result.lub(tmp);
-				}
-		return result;
+	protected int compareSameClassAndParams(
+			Statement o) {
+		return 0;
 	}
 }

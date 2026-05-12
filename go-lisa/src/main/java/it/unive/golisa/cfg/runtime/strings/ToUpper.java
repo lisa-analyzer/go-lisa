@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.runtime.strings;
 
 import it.unive.golisa.cfg.runtime.strings.Len.LenImpl;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -83,14 +84,15 @@ public class ToUpper extends NativeCFG {
 		 * @param expr     the expression
 		 */
 		public ToUpperImpl(CFG cfg, CodeLocation location, Expression expr) {
-			super(cfg, location, "ToLower", GoStringType.INSTANCE, expr);
+			super(cfg, location, "ToUpper", GoStringType.INSTANCE, expr);
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
+
 	}
 }

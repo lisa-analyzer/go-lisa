@@ -5,7 +5,8 @@ import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.golisa.cfg.type.untyped.GoUntypedFloat;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -85,24 +86,23 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-			SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-			throws SemanticException {
-		// e.g., _ := f(), we just return right state
-		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
-			return state;
-		Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
-		AnalysisState<A> result = state.assign(left, NumericalTyper.type(right, rtype), this);
-		if (!getRight().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getRight().getMetaVariables());
-		if (!getLeft().getMetaVariables().isEmpty())
-			result = result.forgetIdentifiers(getLeft().getMetaVariables());
-		return result;
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+			SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+		// e.g., _ := f(), we just return right state
+		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
+			return state;
+		Type rtype = interprocedural.getAnalysis().getDynamicTypeOf(state, right, this);
+		AnalysisState<A> result = interprocedural.getAnalysis().assign(state, left, NumericalTyper.type(right, rtype), this);
+		if (!getRight().getMetaVariables().isEmpty())
+			result = result.withExecution(result.getExecution().forgetIdentifiers(getRight().getMetaVariables(), this));
+		if (!getLeft().getMetaVariables().isEmpty())
+			result = result.withExecution(result.getExecution().forgetIdentifiers(getLeft().getMetaVariables(), this));
+		return result;
 	}
 }

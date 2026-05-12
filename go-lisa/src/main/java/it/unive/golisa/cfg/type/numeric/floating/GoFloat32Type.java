@@ -4,7 +4,7 @@ import it.unive.golisa.cfg.expression.literal.GoFloat;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.NumericType;
+import it.unive.golisa.type.GoNumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
@@ -18,7 +18,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoFloat32Type implements NumericType, Type {
+public class GoFloat32Type implements GoNumericType, Type {
 
 	/**
 	 * Unique instance of Float32Type type.
@@ -91,5 +91,10 @@ public class GoFloat32Type implements NumericType, Type {
 	@Override
 	public boolean isIntegral() {
 		return false;
+	}
+
+	@Override
+	public int getNBits() {
+		return 32;
 	}
 }

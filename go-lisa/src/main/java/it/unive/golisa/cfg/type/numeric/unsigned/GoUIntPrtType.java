@@ -4,7 +4,7 @@ import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.NumericType;
+import it.unive.golisa.type.GoNumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
@@ -19,7 +19,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
-public class GoUIntPrtType implements NumericType, Type {
+public class GoUIntPrtType implements GoNumericType, Type {
 
 	/**
 	 * Unique instance of GoUIntPrtType type.
@@ -92,5 +92,10 @@ public class GoUIntPrtType implements NumericType, Type {
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public int getNBits() {
+		return 0; // TODO
 	}
 }

@@ -80,13 +80,6 @@ import it.unive.golisa.antlr.GoParser.UnaryExprContext;
 import it.unive.golisa.antlr.GoParser.VarDeclContext;
 import it.unive.golisa.antlr.GoParser.VarSpecContext;
 import it.unive.golisa.antlr.GoParserBaseVisitor;
-import it.unive.golisa.cfg.DefaultSwitchCase;
-import it.unive.golisa.cfg.Switch;
-import it.unive.golisa.cfg.SwitchCase;
-import it.unive.golisa.cfg.TypeSwitch;
-import it.unive.golisa.cfg.TypeSwitchCase;
-import it.unive.golisa.cfg.VarArgsParameter;
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoForRange;
 import it.unive.golisa.cfg.expression.GoMake;
@@ -135,8 +128,8 @@ import it.unive.golisa.cfg.expression.unary.GoNot;
 import it.unive.golisa.cfg.expression.unary.GoPlus;
 import it.unive.golisa.cfg.expression.unary.GoRange;
 import it.unive.golisa.cfg.expression.unary.GoRangeGetNextIndex;
-import it.unive.golisa.cfg.expression.unary.GoRangeGetNextValue;
 import it.unive.golisa.cfg.expression.unary.GoRef;
+import it.unive.golisa.cfg.expression.unary.instrumented.GoRangeGetNextValue;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.statement.GoFallThrough;
@@ -160,6 +153,14 @@ import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.golisa.golang.util.GoLangUtils;
+import it.unive.golisa.program.cfg.VarArgsParameter;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.golisa.program.cfg.controlflow.switches.DefaultSwitchCase;
+import it.unive.golisa.program.cfg.controlflow.switches.Switch;
+import it.unive.golisa.program.cfg.controlflow.switches.SwitchCase;
+import it.unive.golisa.program.cfg.controlflow.switches.TypeSwitch;
+import it.unive.golisa.program.cfg.controlflow.switches.TypeSwitchCase;
+import it.unive.golisa.program.cfg.controlflow.switches.instrumentations.SwitchDefault;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -584,7 +585,8 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 				Statement> res = visitStatementList(ctx.statementList());
 		updateVisileIds(backup, res.getRight());
 
-		cfs.forEach(cfg::addControlFlowStructure);
+		cfs.forEach(cfg.getDescriptor()::addControlFlowStructure);
+		
 		matrix.mergeWith(res.getMiddle());
 
 		return res;
@@ -1791,7 +1793,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			} else {
 				defaultBlock = caseBlock;
 				block.mergeWith(body);
-				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
+				def = new DefaultSwitchCase((SwitchDefault) caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
 
 			if (caseBlock.getRight() instanceof GoFallThrough)
@@ -2749,7 +2751,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			} else {
 				defaultBlock = caseBlock;
-				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
+				def = new DefaultSwitchCase((SwitchDefault) caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
 		}
 

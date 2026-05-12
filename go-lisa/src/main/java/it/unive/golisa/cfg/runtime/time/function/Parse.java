@@ -5,15 +5,19 @@ import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
+import it.unive.lisa.program.Unit;
+import it.unive.lisa.program.annotations.Annotation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
+import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.NativeCFG;
 import it.unive.lisa.program.cfg.Parameter;
@@ -29,6 +33,8 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -103,17 +109,26 @@ public class Parse extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
 
+			Unit unit = getProgram().getUnit("time");
+			Collection<CodeMember> members = unit.getCodeMembersByName("Parse");
+			
+			Annotations annots = new Annotations();
+			for(CodeMember cm : members) {
+				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+					annots.addAnnotation(a);
+				}
+			}
+			
 			Type timeType = Time.getTimeType(getProgram());
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(timeType), GoErrorType.INSTANCE);
 
 			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(timeType, left.getCodeLocation(), new Annotations(), true);
+			MemoryAllocation created = new MemoryAllocation(timeType, left.getCodeLocation(), annots, true);
 			HeapReference ref = new HeapReference(new ReferenceType(timeType), created, left.getCodeLocation());
 			HeapDereference deref = new HeapDereference(timeType, ref, left.getCodeLocation());
 
@@ -121,9 +136,9 @@ public class Parse extends NativeCFG {
 					ParseOperatorFirstParameter.INSTANCE, getLocation());
 			BinaryExpression lExp = new BinaryExpression(GoErrorType.INSTANCE, left, right,
 					ParseOperatorFirstParameter.INSTANCE, getLocation());
-			state = state.assign(deref, rExp, original);
+			state = interprocedural.getAnalysis().assign(state, deref, rExp, original);
 
-			return GoTupleExpression.allocateTupleExpression(state, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), this, getLocation(), tupleType,
 					ref,
 					lExp);
 		}

@@ -5,9 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import it.unive.golisa.analysis.DummyDomain;
-import it.unive.golisa.cfg.VariableScopingCFG;
-import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.GoPanic;
 import it.unive.golisa.cfg.expression.GoRecover;
 import it.unive.golisa.cfg.statement.GoDefer;
@@ -26,19 +23,22 @@ import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.lisa.analysis.SimpleAbstractDomain;
+import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
+import it.unive.lisa.analysis.nonrelational.heap.HeapValue;
+import it.unive.lisa.analysis.nonrelational.type.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
+import it.unive.lisa.checks.semantic.SemanticTool;
+import it.unive.lisa.lattices.SimpleAbstractState;
+import it.unive.lisa.lattices.SingleValueLattice;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.CFGCall;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
@@ -48,14 +48,16 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
  *
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
-public class ABCIPanicChecker implements SemanticCheck<
-SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>>  {
+public class ABCIPanicChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
+SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>> {
 
+	
+	
 	
 	
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 
 		if (node instanceof GoPanic) {
@@ -112,7 +114,7 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 	}
 
 
-	private GraphForCheckers computePossibleRecoveryDefers(GraphForCheckers panicGraph, GoPanic panic, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) throws CloneNotSupportedException {
+	private GraphForCheckers computePossibleRecoveryDefers(GraphForCheckers panicGraph, GoPanic panic, SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>> tool) throws CloneNotSupportedException {
 		GraphForCheckers graphWithRecovery = panicGraph.clone();
 		
 		computePossibleRecoveryDefersRecursive(graphWithRecovery, panic, tool, new HashSet<Statement>());
@@ -120,7 +122,7 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 		return graphWithRecovery;
 	}
 	
-	private void computePossibleRecoveryDefersRecursive(GraphForCheckers graphWithRecovery, Statement st, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool, Set<Statement> seen) throws CloneNotSupportedException {
+	private void computePossibleRecoveryDefersRecursive(GraphForCheckers graphWithRecovery, Statement st, SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>> tool, Set<Statement> seen) throws CloneNotSupportedException {
 
 		if(seen.contains(st))
 			return;
@@ -216,7 +218,7 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 	}
 
 
-	private boolean hasExplicitRecovery(GoDefer defer, CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) {
+	private boolean hasExplicitRecovery(GoDefer defer, SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>> tool) {
 		Expression expr = defer.getSubExpression();
 		if(expr instanceof CFGCall) {
 			CFGCall call = (CFGCall) expr;
@@ -226,7 +228,7 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 	}
 
 	private GraphForCheckers extractPathCriticalComponentsInvolvedInPanic(GoPanic node,
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool) throws CloneNotSupportedException {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>> tool) throws CloneNotSupportedException {
 		GraphForCheckers graph = new GraphForCheckers(node.getLocation().toString());
 		Set<CodeMember> seen = new HashSet<>();
 		return extractPathCriticalComponentsInvolvedInPanicRecursive(node, null, graph, tool,seen);
@@ -234,7 +236,7 @@ SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironme
 
 
 	private GraphForCheckers extractPathCriticalComponentsInvolvedInPanicRecursive(Statement node, Statement previous, GraphForCheckers graph,
-			CheckToolWithAnalysisResults<SimpleAbstractState<PointBasedHeap, ValueEnvironment<DummyDomain>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<SingleValueLattice>, TypeEnvironment<T>>> tool,
 			Set<CodeMember> seen) throws CloneNotSupportedException {
 		
 		if(!seen.contains(node.getCFG())) {

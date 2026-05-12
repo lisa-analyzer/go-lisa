@@ -22,5 +22,10 @@ public class CalleeEdge extends LabeledEdge {
 	public CalleeEdge clone() throws CloneNotSupportedException {
 		return new CalleeEdge(getSource(), getDestination());
 	}
+
+	@Override
+	public boolean isErrorHandling() {
+		return false;
+	}
 	
 }

@@ -1,13 +1,13 @@
 package it.unive.golisa.checker;
 
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.GoRoutine;
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiShortVariableDeclaration;
 import it.unive.golisa.cfg.statement.assignment.GoVariableDeclaration;
 import it.unive.golisa.cfg.statement.block.IdInfo;
-import it.unive.lisa.checks.syntactic.CheckTool;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.lisa.ReportingTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
@@ -31,15 +31,15 @@ import java.util.Set;
 public class GoRoutineSourcesChecker implements SyntacticCheck {
 
 	@Override
-	public void beforeExecution(CheckTool tool) {
+	public void beforeExecution(ReportingTool tool) {
 	}
 
 	@Override
-	public void afterExecution(CheckTool tool) {
+	public void afterExecution(ReportingTool tool) {
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG graph, Statement node) {
+	public boolean visit(ReportingTool tool, CFG graph, Statement node) {
 
 		if (node instanceof GoRoutine) {
 			GoRoutine routine = (GoRoutine) node;
@@ -96,22 +96,22 @@ public class GoRoutineSourcesChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG g) {
+	public boolean visit(ReportingTool tool, CFG g) {
 		return true;
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG graph, Edge edge) {
+	public boolean visit(ReportingTool tool, CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
-	public boolean visitUnit(CheckTool tool, Unit unit) {
+	public boolean visitUnit(ReportingTool tool, Unit unit) {
 		return true;
 	}
 
 	@Override
-	public void visitGlobal(CheckTool tool, Unit unit, Global global, boolean instance) {
+	public void visitGlobal(ReportingTool tool, Unit unit, Global global, boolean instance) {
 		global.addAnnotation(new Annotation("lisa.taint.Tainted"));
 	}
 }

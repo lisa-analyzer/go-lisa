@@ -5,7 +5,8 @@ import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -40,7 +41,7 @@ public class DelState extends NativeCFG {
 	 * @param shimUnit the unit to which this native cfg belongs to
 	 */
 	public DelState(CodeLocation location, CompilationUnit shimUnit) {
-		super(new CodeMemberDescriptor(location, shimUnit, false, "DelState", GoErrorType.INSTANCE,
+		super(new CodeMemberDescriptor(location, shimUnit, true, "DelState", GoErrorType.INSTANCE,
 				new Parameter(location, "this", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram())),
 				new Parameter(location, "key", GoStringType.INSTANCE)),
 				DelStateImpl.class);
@@ -94,16 +95,14 @@ public class DelState extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
-			AnalysisState<
-					A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
-							original);
-			AnalysisState<A> nilValue = state
-					.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
-			return readerValue.lub(nilValue);
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+				AnalysisState<
+						A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Reader.getReaderType(null), getLocation()),
+								original);
+				AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state, new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+				return readerValue.lub(nilValue);
 		}
 	}
 }

@@ -1,7 +1,8 @@
 package it.unive.golisa.cfg.expression;
 
 import it.unive.golisa.cfg.runtime.conversion.GoConv;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -42,17 +43,18 @@ public class GoTypeConversion extends UnaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-			SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-		Set<Type> castType = Collections.singleton(type);
-		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
-		return state.smallStepSemantics(
-				new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
 	}
 
 	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+			StatementStore<A> expressions) throws SemanticException {
+
+		Set<Type> castType = Collections.singleton(type);
+		Constant typeCast = new Constant(new TypeTokenType(castType), type, getLocation());
+		return interprocedural.getAnalysis().smallStepSemantics(state,
+				new BinaryExpression(type, expr, typeCast, GoConv.INSTANCE, getLocation()), this);
 	}
 }

@@ -27,6 +27,12 @@ import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
 
+/**
+ * The equality domain, tracking definite information about which variables are
+ * equals to another one.
+ * 
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ */
 public class EqualityDomain implements ValueDomain<EqualityLattice>{
 
 	@Override

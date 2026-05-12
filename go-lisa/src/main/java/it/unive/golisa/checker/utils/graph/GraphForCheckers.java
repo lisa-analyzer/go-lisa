@@ -1,5 +1,21 @@
 package it.unive.golisa.checker.utils.graph;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.BiFunction;
+//import org.graphstream.graph.Edge;
+//import org.graphstream.graph.Element;
+//import org.graphstream.graph.implementations.MultiGraph;
+//import org.graphstream.stream.file.FileSinkDOT;
+
 import it.unive.golisa.checker.utils.graph.edges.LabeledEdge;
 import it.unive.golisa.checker.utils.graph.edges.StandardEdge;
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
@@ -11,35 +27,30 @@ import it.unive.lisa.outputs.serializableGraph.SerializableNodeDescription;
 import it.unive.lisa.outputs.serializableGraph.SerializableValue;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.function.BiFunction;
-//import org.graphstream.graph.Edge;
-//import org.graphstream.graph.Element;
-//import org.graphstream.graph.implementations.MultiGraph;
-//import org.graphstream.stream.file.FileSinkDOT;
 
+/**
+ * Code graph used as support/output for checkers.
+ */
 public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, LabeledEdge> implements Cloneable {
 
+	/**
+	 * The graph name.
+	 */
 	private final String name; 
 
+	/**
+	 * Builds the graph instance.
+	 * @param name the graph name
+	 */
 	public GraphForCheckers(String name) {
 		super(new StandardEdge(null, null));
 		this.name = name;
 	}
 
+	/**
+	 * Yields the graph name.
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
@@ -86,8 +97,20 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		}
 	}
 
+	/**
+	 * Custom serializable graph class.
+	 */
 	static class CustomSerializableGraph extends SerializableGraph {
 
+		/**
+		 * Builds the graph instance.
+		 * 
+		 * @param name the graph name
+		 * @param description the graph description
+		 * @param nodes the graph nodes
+		 * @param edges the graph edges
+		 * @param descriptions the node descriptions
+		 */
 		public CustomSerializableGraph(String name, String description, SortedSet<SerializableNode> nodes,
 				SortedSet<SerializableEdge> edges, SortedSet<SerializableNodeDescription> descriptions) {
 			super(name, description, nodes, edges, descriptions);
@@ -122,8 +145,15 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		}
 	}
 
+	/**
+	 * Custom dot graph class.
+	 */
 	static class CustomDotGraph extends DotGraph {
 
+		/**
+		 * Builds the graph instance.
+		 * @param title the title of graph
+		 */
 		public CustomDotGraph(String title) {
 			super(title);
 		}
@@ -303,6 +333,12 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		}
 	}
 
+	/**
+	 * Yields a node of the graph if contains the statement.
+	 * 
+	 * @param statement the statement
+	 * @return the node containing the statement
+	 */
 	public StandardNode getNodeFromStatement(Statement statement) {
 		for(StandardNode n : getNodes())
 			if(n.getStatement().equals(statement))
@@ -310,6 +346,11 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		return null;
 	}
 
+	/**
+	 * Merges two graphs.
+	 * @param other the other graph to merge
+	 * @throws CloneNotSupportedException
+	 */
 	public void merge(GraphForCheckers other) throws CloneNotSupportedException {
 		for(StandardNode n : other.getNodes()) {
 			if(!this.containsNode(n))

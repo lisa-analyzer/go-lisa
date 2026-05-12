@@ -1,5 +1,9 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.function;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -32,9 +36,6 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error).

@@ -1,21 +1,29 @@
 package it.unive.golisa.cosmossdk.util;
 
-import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
-import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import it.unive.golisa.golang.api.signature.ConstGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
+import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
+
 public class CosmosSDKAPISignatureMapper {
 
+	/**
+	 * The instance of CosmosSDKAPISignatureMapper
+	 */
 	private static CosmosSDKAPISignatureMapper instance = null;
 
-	// singleton pattern
+	/**
+	 * Yields the Go API signatures.
+	 * @return the signatures
+	 */
 	public static synchronized CosmosSDKAPISignatureMapper getGoApiSignatures() {
+		// singleton pattern
 		if (instance == null) {
 			instance = new CosmosSDKAPISignatureMapper();
 		}
@@ -44,26 +52,50 @@ public class CosmosSDKAPISignatureMapper {
 		System.out.println(t);
 	}
 
+	/**
+	 * Yields the packages.
+	 * @return the packages
+	 */
 	public Set<String> getPackages() {
 		return pkgs;
 	}
 
+	/**
+	 * Yields the mapping of constants.
+	 * @return the mapping
+	 */
 	public Map<String, Set<ConstGoLangApiSignature>> getMapConst() {
 		return mapConst;
 	}
 
+	/**
+	 * Yields the mapping of functions.
+	 * @return the mapping
+	 */
 	public Map<String, Set<FuncGoLangApiSignature>> getMapFunc() {
 		return mapFunc;
 	}
 
+	/**
+	 * Yields the mapping of methods.
+	 * @return the mapping
+	 */
 	public Map<String, Set<MethodGoLangApiSignature>> getMapMethod() {
 		return mapMethod;
 	}
 
+	/**
+	 * Yields the mapping of type.
+	 * @return the mapping
+	 */
 	public Map<String, Set<TypeGoLangApiSignature>> getMapType() {
 		return mapType;
 	}
 
+	/**
+	 * Yields the mapping of variables.
+	 * @return the mapping
+	 */
 	public Map<String, Set<VarGoLangApiSignature>> getMapVar() {
 		return mapVar;
 	}

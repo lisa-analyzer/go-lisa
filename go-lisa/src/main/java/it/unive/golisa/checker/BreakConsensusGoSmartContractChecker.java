@@ -1,5 +1,9 @@
 package it.unive.golisa.checker;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.binary.GoChannelSend;
 import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
 import it.unive.golisa.cfg.statement.GoRoutine;
@@ -19,9 +23,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.program.cfg.statement.global.AccessInstanceGlobal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * A checker that checks if consensun is broken.

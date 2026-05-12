@@ -21,7 +21,7 @@ import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
 /**
- * func (s *ChaincodeStub) GetChannelID() string
+ * func (s *ChaincodeStub) GetChannelID() string.
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetChannelID
  * 

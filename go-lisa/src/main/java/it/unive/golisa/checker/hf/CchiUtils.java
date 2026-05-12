@@ -13,8 +13,18 @@ import it.unive.lisa.util.datastructures.automaton.Transition;
 import it.unive.lisa.util.datastructures.regex.RegularExpression;
 import it.unive.lisa.util.datastructures.regex.TopAtom;
 
+/**
+ * Utility class for cross channel invocation analysis.
+ */
 public class CchiUtils {
 
+	/**
+	 * Computes the cross-channel invocations to check.
+	 * 
+	 * @param fi the file information of the contracts
+	 * @param cchis the set of cross-contract invocations to check
+	 * @return the set of cross-channel invocations
+	 */
 	public static Set<Statement> computeCchisToCheck(FileInfo fi, Map<Statement, CrossContractInvocationInformation> cchis) {
 		
 		Set<Statement> result = null;
@@ -77,6 +87,13 @@ public class CchiUtils {
 		return result;
 	}
 
+	/**
+	 * Yields {@code true} if the channel name matches the automaton.
+	 * 
+	 * @param channelName the channel name
+	 * @param a the automaton
+	 * @return {@code true} if the channel name matches the automaton
+	 */
 	public static boolean isNameChannel(String channelName, RegexAutomaton a) {
 		if(channelName != null) {
 			// https://github.com/hyperledger/fabric-chaincode-go/blob/main/shim/interfaces.go#L73C2-L74C17
@@ -87,6 +104,13 @@ public class CchiUtils {
 		return false;
 	}
 	
+	/**
+	 * Yields {@code true} if the contract name matches the automaton.
+	 * 
+	 * @param contractName the contract name
+	 * @param a the automaton
+	 * @return {@code true} if the channel name matches the automaton
+	 */
 	public static boolean isContractName(String contractName,  RegexAutomaton a) {
 		if(contractName != null) {
 			return  a.isEqualTo(RegexAutomaton.string(contractName));
@@ -94,7 +118,12 @@ public class CchiUtils {
 		return false;
 	}
 
-
+	/**
+	 * Yields {@code true} if the channel name may different from the automaton.
+	 * @param channelName the channel name
+	 * @param a the automaton
+	 * @return {@code true} if the channel name may different from the automaton
+	 */
 	public static boolean mayCrossChannel(String channelName, RegexAutomaton a) {
 		return  containsApproximations(a)
 				|| (channelName != null && !isNameChannel(channelName,a));
@@ -107,12 +136,24 @@ public class CchiUtils {
 		|| hasCycle(a);
 	}
 
+	/**
+	 * Yields {@code true} if the contract name may match the automaton.
+	 * @param contractName the contract name
+	 * @param a the automaton
+	 * @return {@code true} if the contract name may match the automaton
+	 */
 	private static boolean mayContractNameTarget(String contractName, RegexAutomaton a) {
 		return a.isTop() || isContractName(contractName, a) 
 				|| (contractName != null  && containsApproximations(a)
 						&& RegexAutomaton.string(contractName).isContained(a));
 	}
 
+	/**
+	 * Yields {@code true} if may be a cross channel target.
+	 * @param channelName the channel name
+	 * @param a the automaton
+	 * @return {@code true} if may be a cross channel target
+	 */
 	public static boolean mayCrossChannelTarget(String channelName, RegexAutomaton a) {
 		return a.isTop() || isNameChannel(channelName,a) 
 				||  (channelName != null  && containsApproximations(a) 
@@ -126,7 +167,11 @@ public class CchiUtils {
 		return false;
 	}
 	
-	
+	/**
+	 * Yields {@code true} if the automaton contains top transaction.
+	 * @param automaton the automaton
+	 * @return {@code true} if the automaton contains top transaction
+	 */
 	public static boolean containsTopTransaction(RegexAutomaton automaton) {
 		for(Transition<RegularExpression> t : automaton.getTransitions())
 			if(t.getSymbol().equals(TopAtom.INSTANCE))
@@ -134,6 +179,11 @@ public class CchiUtils {
 		return false;
 	}
 
+	/**
+	 * Yields {@code true} if the automaton contains a cycle.
+	 * @param automaton the automaton
+	 * @return {@code true} if the automaton contains a cycle
+	 */
 	public static boolean hasCycle(RegexAutomaton automaton) {
 
        Set<State> initStates = automaton.getInitialStates();

@@ -15,6 +15,13 @@ import it.unive.lisa.program.cfg.statement.numeric.Negation;
  */
 public class GoMinus extends Negation {
 
+	/**
+	 * Builds the minus expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression of minus
+	 */
 	public GoMinus(CFG cfg, CodeLocation location, Expression expression) {
 		super(cfg, location, expression);
 	}

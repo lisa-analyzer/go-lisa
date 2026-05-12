@@ -1,5 +1,7 @@
 package it.unive.golisa.cfg.expression.unary;
 
+import java.util.Set;
+
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -15,7 +17,6 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.collections.externalSet.ExternalSet;
-import java.util.Set;
 
 /**
  * A Go range expression, tracking the beginning of a range statement.

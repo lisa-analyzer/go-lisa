@@ -2,8 +2,17 @@ package it.unive.golisa.checker.utils.graph.edges;
 
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
 
+/**
+ * The callee edge
+ */
 public class CalleeEdge extends LabeledEdge {
 
+	/**
+	 * Builds the callee edge.
+	 * 
+	 * @param source the source node
+	 * @param destination the destination node
+	 */
 	public CalleeEdge(StandardNode source, StandardNode destination) {
 		super(source, destination);
 	}

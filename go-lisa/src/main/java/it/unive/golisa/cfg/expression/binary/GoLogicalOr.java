@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.Analysis;
@@ -9,11 +8,9 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.lattices.Satisfiability;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.logic.Or;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.BinaryExpression;
@@ -27,6 +24,14 @@ import it.unive.lisa.type.Type;
  */
 public class GoLogicalOr extends Or {
 
+	/**
+	 * Builds the logical or expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param left     the left-hand side of this operation
+	 * @param right    the right-hand side of this operation
+	 */
 	public GoLogicalOr(CFG cfg, CodeLocation location, Expression left, Expression right) {
 		super(cfg, location, left, right);
 	}

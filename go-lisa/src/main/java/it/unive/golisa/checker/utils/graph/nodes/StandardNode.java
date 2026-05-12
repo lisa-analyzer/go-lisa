@@ -8,14 +8,21 @@ import it.unive.lisa.util.datastructures.graph.code.CodeNode;
 
 public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, LabeledEdge>, Cloneable {
 
+	/**
+	 * The parent graph.
+	 */
 	private final GraphForCheckers graph;
+	
+	/**
+	 * The statement represented by this node.
+	 */
 	private final Statement st;
 
 	/**
 	 * Builds the node.
 	 * 
 	 * @param graph the parent graph
-	 * @param cm    the code member represented by this node
+	 * @param st    the statement represented by this node
 	 */
 	public StandardNode(GraphForCheckers graph, Statement st) {
 		this.graph = graph;
@@ -52,10 +59,18 @@ public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, La
 		return true;
 	}
 
+	/**
+	 * Yields the parent graph.
+	 * @return the graph
+	 */
 	public GraphForCheckers getGraph() {
 		return graph;
 	}
 
+	/**
+	 * Yields the statement.
+	 * @return the statement
+	 */
 	public Statement getStatement() {
 		return st;
 	}

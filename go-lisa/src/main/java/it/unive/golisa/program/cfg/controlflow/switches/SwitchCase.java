@@ -1,10 +1,11 @@
 package it.unive.golisa.program.cfg.controlflow.switches;
 
-import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
+
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.Statement;
 
 /**
  * A switch-case control flow structure.

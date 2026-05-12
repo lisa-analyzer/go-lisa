@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;

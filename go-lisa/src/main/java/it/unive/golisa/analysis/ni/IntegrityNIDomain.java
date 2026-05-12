@@ -1,13 +1,13 @@
 package it.unive.golisa.analysis.ni;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.informationFlow.NonInterference;
 import it.unive.lisa.lattices.informationFlow.NonInterferenceValue;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.symbolic.value.Identifier;
-
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 /**
  * The type-system based implementation of the non interference analysis.
@@ -335,17 +335,7 @@ public class IntegrityNIDomain extends NonInterference {
 		return true;
 	}
 	*/
-
-	/**
-	 * Yields the computed state.
-	 * 
-	 * @param state the state used to compute the returned state
-	 * @param pp    the program point
-	 * 
-	 * @return the returned state after the computation
-	 * 
-	 * @throws SemanticException the exception triggered by lub operator
-	 */
+	
 	/*
 	private IntegrityNIDomain state(IntegrityNIDomain state, ProgramPoint pp) throws SemanticException {
 		Map<ProgramPoint, IntegrityNIDomain> guards = new IdentityHashMap<>();

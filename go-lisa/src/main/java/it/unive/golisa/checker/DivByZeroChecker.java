@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import it.unive.golisa.cfg.expression.binary.GoDiv;
-
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;

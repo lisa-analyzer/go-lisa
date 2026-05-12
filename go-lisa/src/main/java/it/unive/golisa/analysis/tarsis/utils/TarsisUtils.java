@@ -13,8 +13,8 @@ public class TarsisUtils {
 	/**
 	 * Compute if there is a possible equal match between two key values.
 	 * 
-	 * @param state1 the state of the first key parameter to check
-	 * @param state2 the state of the second key parameter to check
+	 * @param a1 the automaton of the first key parameter to check
+	 * @param a2 the automaton of the second key parameter to check
 	 * 
 	 * @return {@code true}, if there is a possible match. Otherwise,
 	 *             {@code false}.
@@ -24,9 +24,9 @@ public class TarsisUtils {
 	}
 
 	/**
-	 * Compute if possible the exact string value from Tarsis state.
+	 * Compute if possible the exact string value from a string automaton.
 	 * 
-	 * @param state the Tarsis state
+	 * @param a the automaton
 	 * 
 	 * @return the string value, if it is possible exactly compute the value.
 	 *             Otherwise, {@code null}.

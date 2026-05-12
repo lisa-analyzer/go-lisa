@@ -1,6 +1,5 @@
 package it.unive.golisa.interprocedural;
 
-import it.unive.golisa.analysis.taint.NonDetTaintDomain;
 import it.unive.golisa.cfg.expression.instrumented.TaintPlaceholder;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -10,16 +9,11 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.SimpleAbstractDomain;
 import it.unive.lisa.analysis.informationFlow.BaseTaint;
-import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
-import it.unive.lisa.analysis.nonrelational.type.TypeEnvironment;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.numeric.Interval;
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.interprocedural.OpenCallPolicy;
 import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.lattices.SimpleAbstractState;
 import it.unive.lisa.lattices.informationFlow.TaintLattice;
-import it.unive.lisa.lattices.informationFlow.ThreeTaint;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.call.OpenCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
@@ -28,7 +22,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.Skip;
 import it.unive.lisa.symbolic.value.ValueExpression;
-import it.unive.lisa.util.numeric.IntInterval;
 
 /**
  * OpenCall policy to be less conservative during taint and non-interference

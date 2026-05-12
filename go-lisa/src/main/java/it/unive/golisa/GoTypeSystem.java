@@ -3,18 +3,13 @@ package it.unive.golisa;
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.golisa.cfg.type.composite.GoArrayType;
-import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.golisa.type.GoNumericType;
 import it.unive.lisa.type.BooleanType;
 import it.unive.lisa.type.CharacterType;
 import it.unive.lisa.type.NumericType;
-import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.StringType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import it.unive.lisa.type.Untyped;
 
 /**
  * The {@link TypeSystem} for the Go language.
@@ -88,10 +83,21 @@ public class GoTypeSystem extends TypeSystem {
 */
 	}
 
+	/**
+	 * Yields {@code true} if the type is null
+	 * @param t the type to check
+	 * @return {@code true} if the type is null
+	 */
 	private boolean isNullType(Type t) {
 		return t.isNullType() || t instanceof GoNilType;
 	}
 
+	/**
+	 * Yields {@code true} if they have the same class
+	 * @param a the class to check
+	 * @param b the other class to check
+	 * @return {@code true} if they have the same class
+	 */
 	public static boolean areSameClass(Object a, Object b) {
 	    return a != null &&
 	           b != null &&

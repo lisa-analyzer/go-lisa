@@ -1,11 +1,12 @@
 package it.unive.golisa.loader;
 
-import it.unive.golisa.analysis.entrypoints.EntryPointSet;
-import it.unive.lisa.program.Program;
-import it.unive.lisa.program.cfg.CFG;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import it.unive.golisa.analysis.entrypoints.EntryPointSet;
+import it.unive.lisa.program.Program;
+import it.unive.lisa.program.cfg.CFG;
 
 /**
  * The loader of entry points in programs.

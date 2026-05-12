@@ -6,10 +6,20 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 
+/**
+ * The lattice of string constant propagation domain.
+ */
 public class StringConstantPropagationLattice 
 implements BaseLattice<StringConstantPropagationLattice>{
 
+	/**
+	 * The top element.
+	 */
 	public static final StringConstantPropagationLattice TOP = new StringConstantPropagationLattice(true, false);
+	
+	/**
+	 * The bottom element.
+	 */
 	public static final StringConstantPropagationLattice BOTTOM = new StringConstantPropagationLattice(false, true);
 
 	private final boolean isTop, isBottom;

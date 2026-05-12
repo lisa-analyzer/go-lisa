@@ -1,16 +1,17 @@
 package it.unive.golisa.cfg.type.numeric.signed;
 
+import java.util.Collections;
+import java.util.Set;
+
 import it.unive.golisa.cfg.expression.literal.GoInteger;
 import it.unive.golisa.cfg.type.untyped.GoUntypedInt;
+import it.unive.golisa.type.GoNumericType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.golisa.type.GoNumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Go int type. The int type, in Go, is a machine dependent type since his size

@@ -1,5 +1,14 @@
 package it.unive.golisa.analysis;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import it.unive.lisa.analysis.Lattice;
 import it.unive.lisa.analysis.ScopeToken;
 import it.unive.lisa.analysis.SemanticException;
@@ -12,18 +21,8 @@ import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 /**
- * The equality domain, tracking definite information about which variables are
- * equals to another one.
+ * The lattice of equality domain.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
@@ -32,24 +31,27 @@ public class EqualityLattice extends FunctionalLattice<EqualityLattice, Identifi
 
 	
 	/**
-	 * Builds the domain.
+	 * Builds the lattice.
 	 */
 	public EqualityLattice() {
 		this(new ExpressionInverseSet(), null);
 	}
 	
 	/**
-	 * Builds the domain.
+	 * Builds the lattice.
 	 * 
 	 * @param lattice  the underlying lattice
 	 * @param function the function to clone
 	 */
-	
 	public EqualityLattice(ExpressionInverseSet lattice,
 			Map<Identifier, ExpressionInverseSet> function) {
 		super(lattice, function);
 	}
 	
+	/**
+	 * Builds the lattice.
+	 * @param lattice the underlying lattice
+	 */
 	public EqualityLattice(ExpressionInverseSet lattice) {
 		super(lattice);
 	}

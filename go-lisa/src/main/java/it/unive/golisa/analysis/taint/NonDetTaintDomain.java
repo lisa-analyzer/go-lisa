@@ -14,6 +14,11 @@ import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.type.Untyped;
 
+/**
+ * Taint analysis domain specific for non-determinism issues.
+ * 
+ * 
+ */
 public class NonDetTaintDomain extends ThreeLevelsTaint {
 
 	@Override

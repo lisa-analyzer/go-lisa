@@ -2,12 +2,34 @@ package it.unive.golisa.analysis.utils;
 
 import java.util.Objects;
 
+/**
+ * Class containing file information of a contract.
+ */
 public class FileInfo {
 	
+	/**
+	 * The file path.
+	 */
     private final String input;
+    
+    /**
+     * The contract name at deployment time.
+     */
     private final String contractname;
+    
+    /**
+     * The channel name at deployment time.
+     * 
+     */
     private final String channel;
 
+    /**
+     * Builds the file information.
+     * 
+     * @param input the file path
+     * @param contractname the contract name
+     * @param channel the channel
+     */
     public FileInfo(String input, String contractname, String channel) {
         this.input = input;
         this.contractname = contractname;
@@ -19,14 +41,29 @@ public class FileInfo {
         return "Input File: " + input + ", Contract Name: " + contractname + ", Channel: " + channel;
     }
 
+    /**
+     * Yields the file path.
+     * 
+     * @return the file path
+     */
 	public String getInput() {
 		return input;
 	}
 
+    /**
+     * Yields the contract name.
+     * 
+     * @return the contract name
+     */
 	public String getContractName() {
 		return contractname;
 	}
 
+	/**
+	 * Yields the channel name.
+	 * 
+	 * @return the channel name
+	 */
 	public String getChannel() {
 		return channel;
 	}
@@ -48,6 +85,5 @@ public class FileInfo {
 		return Objects.equals(channel, other.channel) && Objects.equals(input, other.input)
 				&& Objects.equals(contractname, other.contractname);
 	}
-    
 	
 }

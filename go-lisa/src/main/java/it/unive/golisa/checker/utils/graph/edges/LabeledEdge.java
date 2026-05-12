@@ -1,16 +1,32 @@
 package it.unive.golisa.checker.utils.graph.edges;
 
+import java.util.Objects;
+
 import it.unive.golisa.checker.utils.graph.GraphForCheckers;
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeEdge;
-import java.util.Objects;
 
+/**
+ * The labeled edge.
+ */
 public abstract class LabeledEdge implements CodeEdge<GraphForCheckers, StandardNode, LabeledEdge>, Cloneable {
 
+	/**
+	 * The source of the edge.
+	 */
 	private final StandardNode source;
+	
+	/**
+	 * The destination of the edge.
+	 */
 	private final StandardNode destination;
 
+	/**
+	 * Builds the edge.
+	 * @param source the source node
+	 * @param destination the destination node
+	 */
 	public LabeledEdge(StandardNode source, StandardNode destination) {
 		this.source = source;
 		this.destination = destination;
@@ -68,6 +84,10 @@ public abstract class LabeledEdge implements CodeEdge<GraphForCheckers, Standard
 		return false;
 	}
 
+	/**
+	 * Yields the edge label
+	 * @return the label
+	 */
 	public abstract String getEdgeLabel();
 
 	@Override

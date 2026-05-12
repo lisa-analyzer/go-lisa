@@ -4,13 +4,16 @@ import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.checker.utils.graph.GraphForCheckers;
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
 
+/**
+ * The possible recovery node.
+ */
 public class PossileRecoveryNode extends StandardNode {
 
 	/**
 	 * Builds the node.
 	 * 
 	 * @param graph the parent graph
-	 * @param cm    the code member represented by this node
+	 * @param st    the defer node
 	 */
 	public PossileRecoveryNode(GraphForCheckers graph, GoDefer st) {
 		super(graph, st);

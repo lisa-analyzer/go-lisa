@@ -2,6 +2,9 @@ package it.unive.golisa.type;
 
 import it.unive.lisa.type.NumericType;
 
+/**
+ * The numerical type of Go.
+ */
 public interface GoNumericType extends NumericType{
 
 
@@ -28,6 +31,12 @@ public interface GoNumericType extends NumericType{
 		return -1; // incomparable (should never happen)
 	}
 
+	/**
+	 * Compute the distance between the numerical types.
+	 * 
+	 * @param other the other type
+	 * @return the distance between numerical types
+	 */
 	default int distance(
 			GoNumericType other) {
 		return distanceFromSmallest(other) - distanceFromSmallest(this);

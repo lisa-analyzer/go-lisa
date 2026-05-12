@@ -12,6 +12,10 @@ import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.UnaryExpression;
 
+/**
+ * Three levels taint domain tailored for Go programs.
+ * 
+ */
 public class GoThreeLevelsTaint extends ThreeLevelsTaint {
 
 	@Override

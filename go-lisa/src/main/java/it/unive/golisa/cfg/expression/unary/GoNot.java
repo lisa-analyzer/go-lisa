@@ -13,6 +13,13 @@ import it.unive.lisa.program.cfg.statement.logic.Not;
  */
 public class GoNot extends Not {
 
+	/**
+	 * Builds the logical negation expression.
+	 * 
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
+	 * @param exp      the expression of logical negation
+	 */
 	public GoNot(CFG cfg, CodeLocation location, Expression expression) {
 		super(cfg, location, expression);
 	}

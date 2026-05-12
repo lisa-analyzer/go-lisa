@@ -1,5 +1,16 @@
 package it.unive.golisa.analysis.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Function;
+
 import it.unive.golisa.cfg.expression.binary.GoChannelSend;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
@@ -18,23 +29,21 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-import java.util.function.Function;
-
 /**
+ * Utility class to check the pre-requiroments for each analysis.
+ * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class AnalysisPreRequirementsUtils {
 
 
+	/**
+	 * Yields {@code true} if the program matches the pre-requirement of the selected analysis.
+	 * 
+	 * @param program the program to check
+	 * @param analysis the analysis to select pre-requirements
+	 * @return  {@code true} if the program matches the pre-requirement of the selected analysis
+	 */
 	public static boolean satisfyPrerequirements(Program program, String analysis) {
 			switch (analysis) {
 
@@ -101,6 +110,13 @@ public class AnalysisPreRequirementsUtils {
 			return false;
 	}
 
+	/**
+	 * Counts the number of statements matching the type of specific Java classes.
+	 * 
+	 * @param program the program to check
+	 * @param classes the class to check
+	 * @return the count of matches
+	 */
 	private static int countStatementsMatchingType(Program program, Class<?> ...classes ) {
 		int res = 0;
 
@@ -128,6 +144,13 @@ public class AnalysisPreRequirementsUtils {
 		return res;
 	}
 
+	/**
+	 * Counts the calls in a program matching specific signatures.
+	 * 
+	 * @param program the program to check
+	 * @param signatures the signature to match
+	 * @return the count of matches
+	 */
 	private static int countCallsMatchingSignatures(Program program, Map<String, Set<String>> signatures) {
 
 		int res = 0;
@@ -157,13 +180,27 @@ public class AnalysisPreRequirementsUtils {
 
 	}
 
+	/**
+	 * Visitor to match signature descriptors.
+	 * 
+	 */
 	private static class SignatureDescriptorMatcher
 			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
 
+		/**
+		 * The signature to match.
+		 */
 		final Map<String, Set<String>> signatures;
 		
+		/**
+		 * The counter of matches-
+		 */
 		private int matches;
 		
+		/**
+		 * Yields {@code true} if there is at least a match (to use after visiting).
+		 * @return {@code true} if there is at least a match.
+		 */
 		public boolean isMatched() {
 			return matches > 0;
 		}
@@ -207,18 +244,34 @@ public class AnalysisPreRequirementsUtils {
 		
 	}
 	
-
+	/**
+	 * Visitor to match class descriptors.
+	 */
 	private static class ClassDescriptorMatcher
 			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
 
+		/**
+		 * Classes to match.
+		 */
 		final Class<?>[] classes;
 		
+		/**
+		 * The counter of matches.
+		 */
 		private int matches;
 		
+		/**
+		 * Yields {@code true} if there is at least a match (to use after visiting).
+		 * @return {@code true} if there is at least a match
+		 */
 		public boolean isMatched() {
 			return matches > 0;
 		}
 
+		/**
+		 * Builds the class descriptor matcher.
+		 * @param classes the classes to match
+		 */
 		public ClassDescriptorMatcher( Class<?> ...classes) {
 			this.classes = classes;
 		}

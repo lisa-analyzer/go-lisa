@@ -88,8 +88,7 @@ public class Sprintf extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param left     the left expression
-		 * @param right    the right expression
+		 * @param exprs     the exprs expression
 		 */
 		public SprintfImpl(CFG cfg, CodeLocation location, Expression[] exprs) {
 			super(cfg, location, "Sprintf", GoStringType.INSTANCE, exprs);

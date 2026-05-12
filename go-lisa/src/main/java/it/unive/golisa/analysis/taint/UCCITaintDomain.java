@@ -6,17 +6,28 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.informationFlow.BaseTaint;
 import it.unive.lisa.analysis.informationFlow.ThreeLevelsTaint;
-import it.unive.lisa.analysis.nonrelational.value.BaseNonRelationalValueDomain;
 import it.unive.lisa.lattices.informationFlow.ThreeTaint;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.ProgramPoint;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.symbolic.value.Identifier;
 
+/**
+ * Taint analysis domain specific for untrusted cross contract invocation issues.
+ * (for phase 2)
+ */
 public class UCCITaintDomain extends ThreeLevelsTaint {
 	
+	/**
+	 * Set that contains untrusted cross contract invocations detected during the phase 1.
+	 */
 	Set<Call> uccis;
 	
+	/**
+	 * Builds the domain.
+	 * 
+	 * @param uccis  the  untrusted cross contract invocations detected during the phase 1
+	 */
 	public UCCITaintDomain(Set<Call> uccis) {
 		this.uccis = uccis;
 	}
@@ -62,6 +73,12 @@ public class UCCITaintDomain extends ThreeLevelsTaint {
 		return super.defaultApprox(id, pp, oracle);
 	}
 
+	/**
+	 * Yields {@code true} if  the program point matches an ucci
+	 * 
+	 * @param pp the program point to check
+	 * @return {@code true} if pp matches an uccis
+	 */
 	private boolean isProgramPointWithUCCI(ProgramPoint pp) {
 		for(Call call : uccis) {
 			if(call.equals(pp))

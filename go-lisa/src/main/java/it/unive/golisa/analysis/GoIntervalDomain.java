@@ -23,13 +23,14 @@ import it.unive.lisa.util.numeric.IntInterval;
 import it.unive.lisa.util.numeric.MathNumber;
 
 /**
- * The overflow-insensitive interval abstract domain customized for Go
+ * The overflow-insensitive interval abstract domain customized for Go.
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class GoIntervalDomain extends Interval {
 
-	/**
+	/*
+	 * Intervals and types. 
 	 * 
 	 * uint8       the set of all unsigned  8-bit integers (0 to 255)
 	 * uint16      the set of all unsigned 16-bit integers (0 to 65535)

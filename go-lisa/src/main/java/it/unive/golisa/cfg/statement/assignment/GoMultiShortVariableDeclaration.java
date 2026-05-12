@@ -1,12 +1,14 @@
 package it.unive.golisa.cfg.statement.assignment;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.statement.Expression;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi short variable declaration statement.

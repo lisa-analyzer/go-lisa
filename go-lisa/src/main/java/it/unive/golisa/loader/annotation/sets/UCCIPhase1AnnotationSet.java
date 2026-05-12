@@ -3,6 +3,7 @@ package it.unive.golisa.loader.annotation.sets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -13,6 +14,9 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class UCCIPhase1AnnotationSet extends TaintAnnotationSet {
 
+	/**
+	 * Builds the annotation set.
+	 */
 	public UCCIPhase1AnnotationSet() {
 		super("hyperledger-fabric");
 	}

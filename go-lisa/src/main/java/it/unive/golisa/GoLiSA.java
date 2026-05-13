@@ -88,7 +88,8 @@ public class GoLiSA {
 		Options options = new Options();
 
 		Option input = new Option("i", "input", true, "input file path");
-		input.setRequired(true);
+		input.setRequired(false);
+		input.setArgName("file");
 		options.addOption(input);
 
 		Option contractInfo = new Option("ci", "contractinfo", true,
@@ -96,18 +97,22 @@ public class GoLiSA {
 		contractInfo.setRequired(false);
 		options.addOption(contractInfo);
 		contractInfo.setArgs(2);
+		contractInfo.setArgName("name> <channel");
 
 		Option output = new Option("o", "output", true, "output file path");
-		output.setRequired(true);
+		output.setRequired(false);
+		output.setArgName("directory");
 		options.addOption(output);
 
 		Option framework = new Option("f", "framework", true,
 				"framework to analyze (hyperledger-fabric, cosmos-sdk, tendermint-core)");
 		framework.setRequired(false);
+		framework.setArgName("framework");
 		options.addOption(framework);
 
 		Option analysis_opt = new Option("a", "analysis", true, "the analysis to perform (taint, non-interference)");
-		analysis_opt.setRequired(true);
+		analysis_opt.setRequired(false);
+		analysis_opt.setArgName("analysis");
 		options.addOption(analysis_opt);
 
 		Option crosscontract_opt = new Option("xc", "crosscontract", false,
@@ -124,12 +129,20 @@ public class GoLiSA {
 		dumpAdditionalAnalysisInfo.setRequired(false);
 		options.addOption(dumpAdditionalAnalysisInfo);
 
+		Option helpOption = new Option("h", "help", false, "Print this help message");
+		options.addOption(helpOption);
+
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
 
 		try {
 			cmd = parser.parse(options, args);
+
+			if (cmd.hasOption("h") || args.length == 0) {
+				formatter.printHelp("go-lisa", options, true);
+				System.exit(0);
+			}
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
 			formatter.printHelp("help", options);

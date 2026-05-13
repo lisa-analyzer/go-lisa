@@ -42,6 +42,9 @@ import it.unive.lisa.util.StringUtilities;
 /**
  * A non-interference integrity checker.
  * 
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class IntegrityNIChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements

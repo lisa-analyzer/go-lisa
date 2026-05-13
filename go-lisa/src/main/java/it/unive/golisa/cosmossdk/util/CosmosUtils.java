@@ -6,7 +6,7 @@ import java.util.Set;
 import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 
 /**
- * Utilities for Cosmos SDK framework
+ * Utilities for Cosmos SDK framework.
  */
 public class CosmosUtils {
 	

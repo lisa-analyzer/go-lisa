@@ -6,6 +6,9 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 import it.unive.lisa.util.datastructures.graph.code.CodeNode;
 
+/**
+ * The standard node.
+ */
 public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, LabeledEdge>, Cloneable {
 
 	/**

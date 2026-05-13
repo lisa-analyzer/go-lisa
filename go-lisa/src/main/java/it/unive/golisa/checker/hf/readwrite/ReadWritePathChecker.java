@@ -48,6 +48,9 @@ import it.unive.lisa.util.file.FileManager;
 
 /**
  * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.
+ *
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
@@ -62,6 +65,13 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	private final boolean computeGraph;
 	private final Map<String, GraphForCheckers> reconstructedGraphs;
 
+	/**
+	 * Builds an instance of the checker.
+	 * 
+	 * @param readAfterWriteCandidates the instruction pairs candidates as read-after-write
+	 * @param overWriteCandidates the instruction pairs candidates as over-write
+	 * @param computeGraph the computed graph
+	 */
 	public ReadWritePathChecker(Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates,
 			Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates, boolean computeGraph) {
 		this.readAfterWriteCandidates = readAfterWriteCandidates;
@@ -411,6 +421,13 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 		return true;
 	}
 
+	/**
+	 * Compute the callees.
+	 * 
+	 * @param tool the semantic tool
+	 * @param cm the code memeber
+	 * @return the computed callees
+	 */
 	public Collection<CodeMember> getCalleesTransitively(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
 			CodeMember cm) {
 		VisitOnceFIFOWorkingSet<CodeMember> instance = new VisitOnceFIFOWorkingSet<>();

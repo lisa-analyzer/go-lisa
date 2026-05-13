@@ -71,7 +71,9 @@ public class GoTupleExpression extends NaryExpression {
 	 * Yields an abstract state where the tuple expression passed as parameters
 	 * has been allocated.
 	 * 
-	 * @param <A>        abstract state type parameter
+	 * @param <A>        the abstract lattice 
+	 * @param <D>		 the abstract domain
+	 * @param interprocedural the interprocedural analysis
 	 * @param entryState the entry state
 	 * @param anns       the annotations of the tuple expression
 	 * @param pp         the program point where the allocation occurs

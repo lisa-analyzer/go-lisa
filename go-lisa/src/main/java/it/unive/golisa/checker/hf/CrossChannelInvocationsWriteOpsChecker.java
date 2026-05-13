@@ -36,6 +36,9 @@ import it.unive.lisa.util.file.FileManager;
 /**
  * A Go Checker for the detection write operations from different cross-channel invocations in
  * Hyperledger Fabric.
+ *
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
@@ -132,6 +135,12 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 		
 	}
 
+	/**
+	 * Yields the callees.
+	 * @param tool the semantic tool
+	 * @param cm the code member
+	 * @return the callees
+	 */
 	public Collection<CodeMember> getCalleesTransitively(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool, CodeMember cm) {
 
 		VisitOnceFIFOWorkingSet<CodeMember> instance = new VisitOnceFIFOWorkingSet<>();

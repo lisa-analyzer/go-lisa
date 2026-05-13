@@ -52,6 +52,9 @@ import it.unive.lisa.util.numeric.MathNumber;
 
 /**
  * Checker for the detection of integer overflow/underflow in program variables.
+ *
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
@@ -59,7 +62,7 @@ import it.unive.lisa.util.numeric.MathNumber;
 public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
 		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> {
 
-	Set<IssueInfo> detectedIssues = new HashSet<>();
+	private Set<IssueInfo> detectedIssues = new HashSet<>();
 
 	@Override
 	public void afterExecution(
@@ -395,36 +398,78 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 		return new MathNumber(-9223372036854775808L);
 	}
 
+	/**
+	 * Numerical issue enumeration.
+	 */
 	public static class NumericalIssueEnum {
 		public enum NumericalIssue {
-			OVERFLOW(false), MAY_OVERFLOW(true), UNDERFLOW(false), MAY_UNDERFLOW(true);
+			/**
+			 * Definitely overflow
+			 */
+			OVERFLOW(false), 
+			/**
+			 * Possible overflow
+			 */
+			MAY_OVERFLOW(true), 
+			/**
+			 * Definitely underflow
+			 */
+			UNDERFLOW(false), 
+			/**
+			 * Possible underflow
+			 */
+			MAY_UNDERFLOW(true);
 
 			private final boolean may;
 
+			/**
+			 * Builds the instance of numeric issue.
+			 * @param may if {@code true} it is possible. Otherwise, it is definite.
+			 */
 			NumericalIssue(boolean may) {
 				this.may = may;
 			}
 
+			/**
+			 * Yields {@code true} if it is possible. Otherwise, it is definite.
+			 * @return {@code true} if it is possible. Otherwise, it is definite
+			 */
 			boolean isMay() {
 				return may;
 			}
 		}
 	}
 
+	/**
+	 * Issue info.
+	 */
 	class IssueInfo {
 
 		private final Statement statement;
 		private final Set<NumericalIssue> issues;
 
+		/**
+		 * Builds an instance of issue info.
+		 * @param statement the statement
+		 * @param issues the issues of the statement
+		 */
 		public IssueInfo(Statement statement, Set<NumericalIssue> issues) {
 			this.statement = statement;
 			this.issues = issues;
 		}
 
+		/**
+		 * Builds an instance of issue info.
+		 * @return
+		 */
 		public Statement getStatement() {
 			return statement;
 		}
 
+		/**
+		 * Yields the issues of the statement.
+		 * @return the issues
+		 */
 		public Set<NumericalIssue> getIssues() {
 			return issues;
 		}

@@ -11,6 +11,9 @@ import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.TypeGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.VarGoLangApiSignature;
 
+/**
+ * The singature mapper of Cosmos SDK APIs.
+ */
 public class CosmosSDKAPISignatureMapper {
 
 	/**

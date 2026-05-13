@@ -41,17 +41,32 @@ import it.unive.lisa.util.StringUtilities;
 /**
  * A Go taint checker.
  * 
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
+ * @param <V> the taint analysis lattice
+ * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class TaintChecker<H extends HeapValue<H>, V extends TaintLattice<V>, T extends TypeValue<T>> implements
 SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> {
 	
+	/**
+	 * The message to add in the warnings.
+	 */
 	protected final String message;
 	
+	/**
+	 * Builds the instance of the checker.
+	 * 
+	 * @param message the message for the warnings
+	 */
 	public TaintChecker(String message) {
 		this.message = message;
 	}
 	
+	/**
+	 * Builds the instance of the checker.
+	 */
 	public TaintChecker() {
 		this.message = "";
 	}
@@ -65,9 +80,6 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeE
 	 * Sink matcher.
 	 */
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
-
-
-
 
 	@Override
 	public void beforeExecution(
@@ -215,7 +227,14 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeE
 		return true;
 	}
 
-	
+	/**
+	 * Builds the warning of taint checker.
+	 * 
+	 * @param tool the semantic tool
+	 * @param call the target call of the warning
+	 * @param parameters the call parameters
+	 * @param results the results of taint analysis for each parameters
+	 */
 	protected void buildWarning(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<V>, TypeEnvironment<T>>> tool,
 			UnresolvedCall call, Parameter[] parameters, boolean[] results) {
 			

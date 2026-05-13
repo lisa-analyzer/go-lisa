@@ -29,6 +29,9 @@ import it.unive.lisa.util.numeric.IntInterval;
 
 /**
  * Checker for the detection of division by zero.
+ *
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  * 

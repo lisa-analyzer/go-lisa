@@ -7,7 +7,7 @@ import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.KeyType;
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.TypeInstruction;
 
 /**
- * Read write information
+ * Read write information.
  */
 public class ReadWriteInfo {
 

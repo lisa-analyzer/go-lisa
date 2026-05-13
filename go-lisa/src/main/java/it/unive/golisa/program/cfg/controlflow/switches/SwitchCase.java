@@ -51,6 +51,8 @@ public class SwitchCase {
 
 	/**
 	 * Simplifies the switch case.
+	 * 
+	 * @param targets the targets
 	 */
 	public void simplify(
 			Set<Statement> targets) {

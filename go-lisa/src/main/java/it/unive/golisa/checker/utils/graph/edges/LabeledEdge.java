@@ -85,7 +85,7 @@ public abstract class LabeledEdge implements CodeEdge<GraphForCheckers, Standard
 	}
 
 	/**
-	 * Yields the edge label
+	 * Yields the edge label.
 	 * @return the label
 	 */
 	public abstract String getEdgeLabel();

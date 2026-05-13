@@ -17,15 +17,25 @@ import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 
 /**
- * A Go taint checker.
+ * A Go taint checker for untrusted cross-contract invocation issues.
+ * 
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
+ * @param <V> the taint analysis lattice
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class UntrustedCrossContractInvocationsChecker<H extends HeapValue<H>, V extends TaintLattice<V>, T extends TypeValue<T>>
 		extends TaintChecker<H, V, T> {
 	
+	/**
+	 * The untrusted cross-contract invocations.
+	 */
 	private final Set<Call> uccis;
 
+	/**
+	 * Builds an instance of the checker.
+	 */
 	public UntrustedCrossContractInvocationsChecker() {
 		super("Possible untrusted cross-contract invocation.");
 		uccis = new HashSet<>();
@@ -50,10 +60,12 @@ public class UntrustedCrossContractInvocationsChecker<H extends HeapValue<H>, V 
 		super.buildWarning(tool, call, parameters, results);
 	}
 
+	/**
+	 * Yields the untrusted cross contract invocations.
+	 * @return the untrusted cross contract invocations
+	 */
 	public Set<Call> getUCCIs() {
 		return uccis;
 	}
-	
-	
 
 }

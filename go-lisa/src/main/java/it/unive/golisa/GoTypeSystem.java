@@ -93,7 +93,7 @@ public class GoTypeSystem extends TypeSystem {
 	}
 
 	/**
-	 * Yields {@code true} if they have the same class
+	 * Yields {@code true} if they have the same class.
 	 * @param a the class to check
 	 * @param b the other class to check
 	 * @return {@code true} if they have the same class

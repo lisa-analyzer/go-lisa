@@ -47,6 +47,9 @@ import it.unive.lisa.symbolic.value.ValueExpression;
 /**
  * A Go Checker for the detection of different cross-channel invocations in
  * Hyperledger Fabric.
+ *
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
@@ -60,10 +63,18 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	private boolean intraChaincode = true;
 	private String channelName; // Name of the channel provided by the command line
 	
+	/**
+	 * Builds an instance of the checker.
+	 */
 	public CrossChannelInvocationsIssuesChecker() {
 		channelName= null;
 	}
 	
+	/**
+	 * Builds an instance of the checker.
+	 * @param intraChaincode if {@code true} only intra chaincode checks
+	 * @param channelName the channel name
+	 */
 	public CrossChannelInvocationsIssuesChecker(boolean intraChaincode, String channelName) {
 		this.intraChaincode = intraChaincode;
 		this.channelName= channelName;
@@ -318,6 +329,10 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 		return res;
 	}
 
+	/**
+	 * Yields the cross-channel invocations.
+	 * @return the cross-channel invocations
+	 */
 	public Map<Statement, CrossContractInvocationInformation> getCrossChannelInvocations() {
 		return crossChannelInvocations;
 	}

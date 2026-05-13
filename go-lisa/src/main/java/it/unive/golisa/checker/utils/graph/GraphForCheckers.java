@@ -194,6 +194,13 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		}
 		 */
 		
+		/**
+		 * The name of the edge.
+		 * @param src the source node id
+		 * @param dest the destination node id
+		 * @param edge the edge
+		 * @return the name of the edge
+		 */
 		protected static String edgeName(long src, long dest, SerializableEdge edge) {
 			return "edge-" + src + "-" + dest + "-" + edge.getKind();
 		}
@@ -349,7 +356,7 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 	/**
 	 * Merges two graphs.
 	 * @param other the other graph to merge
-	 * @throws CloneNotSupportedException
+	 * @throws CloneNotSupportedException when the node cannot be cloned
 	 */
 	public void merge(GraphForCheckers other) throws CloneNotSupportedException {
 		for(StandardNode n : other.getNodes()) {

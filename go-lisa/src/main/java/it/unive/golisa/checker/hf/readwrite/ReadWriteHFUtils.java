@@ -13,7 +13,14 @@ public class ReadWriteHFUtils {
 	 * The type of instruction.
 	 */
 	protected enum TypeInstruction {
+		/**
+		 * Read state operation.
+		 */
 		READ,
+		
+		/**
+		 * Write state operation.
+		 */
 		WRITE,
 	}
 
@@ -21,8 +28,18 @@ public class ReadWriteHFUtils {
 	 * The key type of the instruction.
 	 */
 	protected enum KeyType {
+		
+		/**
+		 * Instruction with a single key.
+		 */
 		SINGLE,
+		/**
+		 * Instruction with a range of keys.
+		 */
 		RANGE,
+		/**
+		 * Instruction with a composite key.
+		 */
 		COMPOSITE
 	}
 
@@ -79,7 +96,7 @@ public class ReadWriteHFUtils {
 	}
 
 	/**
-	 * Yields the read-write information of a call
+	 * Yields the read-write information of a call.
 	 * @param call the call
 	 * @return the read-write info
 	 */

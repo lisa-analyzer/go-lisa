@@ -3,7 +3,7 @@ package it.unive.golisa.checker.hf.readwrite;
 import it.unive.lisa.program.cfg.statement.Statement;
 
 /**
- * Write blockchain operation in Hyperledger Fabric
+ * Write blockchain operation in Hyperledger Fabric.
  */
 public class WriteBlockchainHF {
 	private final Statement st;

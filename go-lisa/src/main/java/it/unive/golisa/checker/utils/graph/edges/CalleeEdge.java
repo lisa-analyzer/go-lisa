@@ -3,7 +3,7 @@ package it.unive.golisa.checker.utils.graph.edges;
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
 
 /**
- * The callee edge
+ * The callee edge.
  */
 public class CalleeEdge extends LabeledEdge {
 

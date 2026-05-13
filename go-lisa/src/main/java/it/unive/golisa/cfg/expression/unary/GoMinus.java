@@ -20,7 +20,7 @@ public class GoMinus extends Negation {
 	 * 
 	 * @param cfg      the {@link CFG} where this expression lies
 	 * @param location the location where this expression is defined
-	 * @param exp      the expression of minus
+	 * @param expression      the expression of minus
 	 */
 	public GoMinus(CFG cfg, CodeLocation location, Expression expression) {
 		super(cfg, location, expression);

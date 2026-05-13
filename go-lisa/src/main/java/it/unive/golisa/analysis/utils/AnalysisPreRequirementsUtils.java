@@ -43,6 +43,7 @@ public class AnalysisPreRequirementsUtils {
 	 * @param program the program to check
 	 * @param analysis the analysis to select pre-requirements
 	 * @return  {@code true} if the program matches the pre-requirement of the selected analysis
+	 * @throws IllegalArgumentException if the analysis does not exist
 	 */
 	public static boolean satisfyPrerequirements(Program program, String analysis) {
 			switch (analysis) {

@@ -44,6 +44,9 @@ import it.unive.lisa.symbolic.value.ValueExpression;
  * A Go checker for read-write set issues of Hyperledger Fabric. Note that
  * read-write set issues analysis is split in two checkers/phases. This is the
  * first phase.
+ *
+ * @param <H> the lattice that represents a property of the memory of the program
+ * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
@@ -56,10 +59,18 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates;
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates;
 
+	/**
+	 * Yields the set of instruction pairs candidate to be read-after-write 
+	 * @return the set of instruction pairs
+	 */
 	public Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> getReadAfterWriteCandidates() {
 		return readAfterWriteCandidates;
 	}
 
+	/**
+	 * Yields the set of instruction pairs candidate to be over-write 
+	 * @return the set of instruction pairs
+	 */
 	public Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> getOverWriteCandidates() {
 		return overWriteCandidates;
 	}

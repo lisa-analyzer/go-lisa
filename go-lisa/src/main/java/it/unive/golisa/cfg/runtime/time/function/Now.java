@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.time.function;
 
-import java.util.Collection;
-
 import it.unive.golisa.cfg.runtime.time.type.Duration;
 import it.unive.golisa.cfg.runtime.time.type.Time;
 import it.unive.lisa.analysis.AbstractDomain;
@@ -28,6 +26,7 @@ import it.unive.lisa.symbolic.heap.HeapReference;
 import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.PushAny;
 import it.unive.lisa.type.ReferenceType;
+import java.util.Collection;
 
 /**
  * func Now() Time.
@@ -92,32 +91,32 @@ public class Now extends NativeCFG {
 			super(cfg, location, "NowImpl", Time.getTimeType(null));
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
 
 			Time timeType = Time.getTimeType(getProgram());
-			
+
 			Unit unit = getProgram().getUnit("time");
 			Collection<CodeMember> members = unit.getCodeMembersByName("Now");
-			
+
 			Annotations annots = new Annotations();
-			for(CodeMember cm : members) {
-				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+			for (CodeMember cm : members) {
+				for (Annotation a : cm.getDescriptor().getAnnotations()) {
 					annots.addAnnotation(a);
 				}
 			}
-			
+
 			// Allocates the new memory for a Time object
-			MemoryAllocation alloc = new MemoryAllocation(timeType, getLocation(), annots,  true);
+			MemoryAllocation alloc = new MemoryAllocation(timeType, getLocation(), annots, true);
 			AnalysisState<A> allocState = interprocedural.getAnalysis().smallStepSemantics(state, alloc, this);
 
 			// Assigns an unknown object to each allocation identifier
 			HeapReference ref = new HeapReference(new ReferenceType(timeType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(timeType, ref, getLocation());
-			AnalysisState<A> asg = interprocedural.getAnalysis().assign(allocState, deref, new PushAny(timeType, getLocation()), this);
+			AnalysisState<A> asg = interprocedural.getAnalysis().assign(allocState, deref,
+					new PushAny(timeType, getLocation()), this);
 
 			return interprocedural.getAnalysis().smallStepSemantics(asg, ref, original);
 		}

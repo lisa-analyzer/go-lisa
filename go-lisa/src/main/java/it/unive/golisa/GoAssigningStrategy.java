@@ -1,8 +1,5 @@
 package it.unive.golisa;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
@@ -32,6 +29,8 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * The Go assigning strategy.
@@ -48,7 +47,8 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 	private GoAssigningStrategy() {
 	}
 
-	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> smash(InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
+	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> smash(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
 			int i,
 			ExpressionSet[] actuals,
 			GoSliceType type,
@@ -76,7 +76,8 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 			AnalysisState<A> lenResult = state.bottom();
 			for (SymbolicExpression lenId : lenState.getExecutionExpressions())
 				lenResult = lenResult
-						.lub(interprocedural.getAnalysis().assign(lenState, lenId, new Constant(GoIntType.INSTANCE, sliceLenght, location), pp));
+						.lub(interprocedural.getAnalysis().assign(lenState, lenId,
+								new Constant(GoIntType.INSTANCE, sliceLenght, location), pp));
 
 			// Assign the cap property to this hid
 			Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
@@ -88,7 +89,8 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 			AnalysisState<A> capResult = state.bottom();
 			for (SymbolicExpression lenId : capState.getExecutionExpressions())
 				capResult = capResult.lub(
-						interprocedural.getAnalysis().assign(capState, lenId, new Constant(GoIntType.INSTANCE, sliceLenght, location), pp));
+						interprocedural.getAnalysis().assign(capState, lenId,
+								new Constant(GoIntType.INSTANCE, sliceLenght, location), pp));
 
 			// Allocate the heap location
 			AnalysisState<A> tmp = capResult;
@@ -163,7 +165,8 @@ public class GoAssigningStrategy implements ParameterAssigningStrategy {
 								formals[i].getAnnotations(), formals[i].getLocation());
 						temp = temp.lub(interprocedural.getAnalysis().assign(prepared, fId, exp, call));
 					} else
-						temp = temp.lub(interprocedural.getAnalysis().assign(prepared, formals[i].toSymbolicVariable(), exp, call));
+						temp = temp.lub(interprocedural.getAnalysis().assign(prepared, formals[i].toSymbolicVariable(),
+								exp, call));
 				prepared = temp;
 			}
 

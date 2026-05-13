@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.conversion;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -27,6 +24,8 @@ import it.unive.lisa.symbolic.value.Constant;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * String casting.
@@ -98,8 +97,10 @@ public class GoToString extends NativeCFG {
 				StatementStore<A> expressions) throws SemanticException {
 			Set<Type> castType = Collections.singleton(GoStringType.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoStringType.INSTANCE, getLocation());
-			return interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(GoStringType.INSTANCE, expr, typeCast, GoConv.INSTANCE,
-					original.getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new BinaryExpression(GoStringType.INSTANCE, expr, typeCast, GoConv.INSTANCE,
+							original.getLocation()),
+					original);
 		}
 	}
 }

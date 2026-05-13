@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.strings;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -22,6 +20,7 @@ import it.unive.lisa.program.cfg.statement.TernaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringReplace;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * The Replace function from string package.

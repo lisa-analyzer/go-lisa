@@ -41,6 +41,7 @@ public class GoChannelReceive extends UnaryExpression {
 	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
 			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 			StatementStore<A> expressions) throws SemanticException {
-		return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(expr.getStaticType(), getLocation()), this);
+		return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(expr.getStaticType(), getLocation()),
+				this);
 	}
 }

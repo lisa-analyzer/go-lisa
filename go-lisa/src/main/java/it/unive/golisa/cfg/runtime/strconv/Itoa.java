@@ -80,7 +80,6 @@ public class Itoa extends NativeCFG {
 			super(cfg, location, "Itoa", GoStringType.INSTANCE, expr);
 		}
 
-
 		@Override
 		protected int compareSameClassAndParams(Statement o) {
 			return 0; // nothing else to compare

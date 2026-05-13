@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -17,6 +15,7 @@ import it.unive.lisa.program.cfg.statement.UnaryExpression;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Set;
 
 /**
  * A Go type assertion (e.g., x.(string)).
@@ -44,7 +43,6 @@ public class GoTypeAssertion extends UnaryExpression {
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare
 	}
-
 
 	@Override
 	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(

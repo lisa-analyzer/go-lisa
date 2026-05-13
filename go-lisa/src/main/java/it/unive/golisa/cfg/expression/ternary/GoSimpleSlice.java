@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.ternary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -17,6 +15,7 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.TernaryExpression;
 import it.unive.lisa.symbolic.value.operator.ternary.StringSubstring;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go slice expression (e.g., s[1:5]).

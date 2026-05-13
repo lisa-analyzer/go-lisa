@@ -47,12 +47,11 @@ public class GoUnknown extends Expression {
 		return 0; // nothing else to compare
 	}
 
-
-
 	@Override
 	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemantics(
 			AnalysisState<A> entryState, InterproceduralAnalysis<A, D> interprocedural, StatementStore<A> expressions)
 			throws SemanticException {
-		return interprocedural.getAnalysis().smallStepSemantics(entryState, new PushAny(Untyped.INSTANCE, getLocation()), getParentStatement());
+		return interprocedural.getAnalysis().smallStepSemantics(entryState,
+				new PushAny(Untyped.INSTANCE, getLocation()), getParentStatement());
 	}
 }

@@ -5,8 +5,7 @@ import it.unive.lisa.type.NumericType;
 /**
  * The numerical type of Go.
  */
-public interface GoNumericType extends NumericType{
-
+public interface GoNumericType extends NumericType {
 
 	private static int distanceFromSmallest(
 			GoNumericType type) {
@@ -35,6 +34,7 @@ public interface GoNumericType extends NumericType{
 	 * Compute the distance between the numerical types.
 	 * 
 	 * @param other the other type
+	 * 
 	 * @return the distance between numerical types
 	 */
 	default int distance(

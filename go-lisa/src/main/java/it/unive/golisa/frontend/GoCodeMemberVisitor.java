@@ -1,31 +1,5 @@
 package it.unive.golisa.frontend;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
 import it.unive.golisa.antlr.GoLexer;
 import it.unive.golisa.antlr.GoParser;
 import it.unive.golisa.antlr.GoParser.ArgumentsContext;
@@ -220,6 +194,30 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.AdjacencyMatrix;
 import it.unive.lisa.util.datastructures.graph.code.NodeList;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 /**
  * A {@link GoParserBaseVisitor} that will parse the code of an Go method.
@@ -588,7 +586,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		updateVisileIds(backup, res.getRight());
 
 		cfs.forEach(cfg.getDescriptor()::addControlFlowStructure);
-		
+
 		matrix.mergeWith(res.getMiddle());
 
 		return res;
@@ -1748,7 +1746,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		block.addNode(exitNode);
 		storeIds(exitNode);
 		exitPoints.add(exitNode);
-		
 
 		int ncases = ctx.exprCaseClause().size();
 		List<SwitchCase> scases = new ArrayList<>(ncases);
@@ -1957,11 +1954,11 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 		rangeNode.setIdxRange(idxRange);
 		rangeNode.setValRange(valRange);
-		
+
 		entryPoints.add(rangeNode);
 
 		entryPoints.add(rangeNode);
-		
+
 		block.addNode(rangeNode);
 		addEdge(new FalseEdge(rangeNode, exitNode), block);
 
@@ -1996,7 +1993,6 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		entryPoints.remove(entryPoints.size() - 1);
 		// exitPoints.remove(exitPoints.size() - 1);
 		restoreVisibleIdsAfterForLoop(backup);
-
 
 		cfs.add(new GoForRange(matrix, idxRange, valueAssign, rangeNode, exitNode, body.getNodes()));
 
@@ -2683,7 +2679,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 		NoOp exitNode = new NoOp(cfg, location);
 		block.addNode(exitNode);
 		storeIds(exitNode);
-		
+
 		exitPoints.add(exitNode);
 
 		Statement entryNode = null;
@@ -2771,7 +2767,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			entryNode = simpleStmt.getLeft();
 		}
 
-		exitPoints.remove(exitPoints.size()-1);
+		exitPoints.remove(exitPoints.size() - 1);
 		cfs.add(new TypeSwitch(matrix, entryNode, exitNode, scases.toArray(TypeSwitchCase[]::new), def));
 		return Triple.of(entryNode, block, exitNode);
 	}

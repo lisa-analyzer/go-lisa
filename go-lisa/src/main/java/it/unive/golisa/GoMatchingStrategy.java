@@ -1,7 +1,5 @@
 package it.unive.golisa;
 
-import java.util.Set;
-
 import it.unive.golisa.program.cfg.VarArgsParameter;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -11,6 +9,7 @@ import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * The Go parameter matching strategy.
@@ -66,9 +65,10 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 	private boolean matchCallee(Parameter formal, Set<Type> types) {
 		if (formal.getStaticType().isPointerType()) {
 			Type inner = formal.getStaticType().asPointerType().getInnerType();
-			if(types.stream()
-					.anyMatch(rt -> rt.canBeAssignedTo(inner) || rt.canBeAssignedTo(formal.getStaticType()) || canBeAssignedPointRef(rt,formal.getStaticType())))
-					return true;
+			if (types.stream()
+					.anyMatch(rt -> rt.canBeAssignedTo(inner) || rt.canBeAssignedTo(formal.getStaticType())
+							|| canBeAssignedPointRef(rt, formal.getStaticType())))
+				return true;
 		} else if (types.stream().anyMatch(
 				rt -> rt.isPointerType() && rt.asPointerType().getInnerType().canBeAssignedTo(formal.getStaticType())))
 			return true;
@@ -76,10 +76,10 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 	}
 
 	private boolean canBeAssignedPointRef(Type rt, Type formal) {
-		if(rt.isReferenceType() && formal.isPointerType()) {
+		if (rt.isReferenceType() && formal.isPointerType()) {
 			ReferenceType ref = (ReferenceType) rt;
 			PointerType point = (PointerType) formal;
-			if(ref.getInnerType().canBeAssignedTo(point.getInnerType()))
+			if (ref.getInnerType().canBeAssignedTo(point.getInnerType()))
 				return true;
 		}
 		return false;

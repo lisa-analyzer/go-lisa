@@ -99,6 +99,5 @@ public class Read extends NativeCFG {
 			return state.top();
 		}
 
-
 	}
 }

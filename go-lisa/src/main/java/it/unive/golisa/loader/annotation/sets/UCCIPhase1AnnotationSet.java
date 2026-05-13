@@ -3,7 +3,6 @@ package it.unive.golisa.loader.annotation.sets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -27,8 +26,9 @@ public class UCCIPhase1AnnotationSet extends TaintAnnotationSet {
 
 		map1.put("ChaincodeStub", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice"));
 
-		map1.put("ChaincodeStubInterface", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice"));
-		
+		map1.put("ChaincodeStubInterface",
+				Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice"));
+
 		SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map1);
 
 		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();

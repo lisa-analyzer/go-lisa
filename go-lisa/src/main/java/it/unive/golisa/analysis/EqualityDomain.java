@@ -1,10 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.SemanticOracle;
 import it.unive.lisa.analysis.value.ValueDomain;
@@ -26,6 +21,10 @@ import it.unive.lisa.symbolic.value.operator.binary.ComparisonNe;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalAnd;
 import it.unive.lisa.symbolic.value.operator.binary.LogicalOr;
 import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The equality domain, tracking definite information about which variables are
@@ -33,7 +32,7 @@ import it.unive.lisa.symbolic.value.operator.unary.LogicalNegation;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class EqualityDomain implements ValueDomain<EqualityLattice>{
+public class EqualityDomain implements ValueDomain<EqualityLattice> {
 
 	@Override
 	public EqualityLattice assign(EqualityLattice state, Identifier id, ValueExpression expression, ProgramPoint pp,
@@ -59,7 +58,8 @@ public class EqualityDomain implements ValueDomain<EqualityLattice>{
 	}
 
 	@Override
-	public EqualityLattice assume(EqualityLattice state, ValueExpression expression, ProgramPoint src, ProgramPoint dest,
+	public EqualityLattice assume(EqualityLattice state, ValueExpression expression, ProgramPoint src,
+			ProgramPoint dest,
 			SemanticOracle oracle) throws SemanticException {
 		Satisfiability isSat = satisfies(state, expression, src, oracle);
 		if (isSat == Satisfiability.SATISFIED)
@@ -69,10 +69,10 @@ public class EqualityDomain implements ValueDomain<EqualityLattice>{
 		else
 			return state;
 	}
-	
-	
+
 	@Override
-	public Satisfiability satisfies(EqualityLattice state, ValueExpression expression, ProgramPoint pp, SemanticOracle oracle)
+	public Satisfiability satisfies(EqualityLattice state, ValueExpression expression, ProgramPoint pp,
+			SemanticOracle oracle)
 			throws SemanticException {
 		if (expression instanceof UnaryExpression) {
 			UnaryExpression unary = (UnaryExpression) expression;
@@ -92,7 +92,6 @@ public class EqualityDomain implements ValueDomain<EqualityLattice>{
 			Identifier left = (Identifier) binary.getLeft();
 			Identifier right = (Identifier) binary.getRight();
 
-			
 			BinaryOperator op = binary.getOperator();
 			if (op == ComparisonGe.INSTANCE || op == ComparisonEq.INSTANCE || op == ComparisonLe.INSTANCE) {
 				if (getState(state, left).contains(right) || getState(state, right).contains(left))
@@ -106,7 +105,8 @@ public class EqualityDomain implements ValueDomain<EqualityLattice>{
 				return satisfies(state, (ValueExpression) left, pp, oracle)
 						.and(satisfies(state, (ValueExpression) right, pp, oracle));
 			else if (op == LogicalOr.INSTANCE)
-				return satisfies(state, (ValueExpression) left, pp, oracle).or(satisfies(state, (ValueExpression) right, pp, oracle));
+				return satisfies(state, (ValueExpression) left, pp, oracle)
+						.or(satisfies(state, (ValueExpression) right, pp, oracle));
 			else
 				return Satisfiability.UNKNOWN;
 		}
@@ -114,7 +114,7 @@ public class EqualityDomain implements ValueDomain<EqualityLattice>{
 		return Satisfiability.UNKNOWN;
 	}
 
-	private  Set<SymbolicExpression> getState(EqualityLattice state, Identifier id) {
+	private Set<SymbolicExpression> getState(EqualityLattice state, Identifier id) {
 		return state.getMap().get(id).elements;
 	}
 

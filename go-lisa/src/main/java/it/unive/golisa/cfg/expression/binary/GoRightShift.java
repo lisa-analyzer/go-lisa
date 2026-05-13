@@ -33,10 +33,10 @@ public class GoRightShift extends BinaryExpression {
 	 * @param right    the right-hand side of this expression
 	 */
 	public GoRightShift(CFG cfg,
-		CodeLocation location,
-		Expression left,
-		Expression right) {
-	super(cfg, location, ">>", inferType(left, right), left, right);
+			CodeLocation location,
+			Expression left,
+			Expression right) {
+		super(cfg, location, ">>", inferType(left, right), left, right);
 	}
 
 	private static Type inferType(

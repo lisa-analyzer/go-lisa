@@ -91,7 +91,6 @@ public class HasSuffix extends NativeCFG {
 			return 0; // nothing else to compare
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,

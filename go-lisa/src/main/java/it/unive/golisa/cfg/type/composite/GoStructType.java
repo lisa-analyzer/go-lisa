@@ -1,11 +1,5 @@
 package it.unive.golisa.cfg.type.composite;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoNonKeyedLiteral;
 import it.unive.golisa.cfg.expression.unknown.GoUnknown;
 import it.unive.lisa.program.CompilationUnit;
@@ -22,6 +16,11 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.UnitType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * A Go struct type.
@@ -209,7 +208,8 @@ public class GoStructType implements Type, UnitType, InMemoryType {
 			if (key.getStaticType() instanceof ReferenceType)
 				values[i++] = new GoUnknown(cfg, location);
 			else
-				values[i++] = key.getStaticType().defaultValue(cfg, location) == null ? new GoUnknown(cfg, location) : key.getStaticType().defaultValue(cfg, location);
+				values[i++] = key.getStaticType().defaultValue(cfg, location) == null ? new GoUnknown(cfg, location)
+						: key.getStaticType().defaultValue(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, values, this);
 	}

@@ -20,7 +20,6 @@ import it.unive.lisa.program.cfg.statement.Statement;
  */
 public class GoPanic extends NaryExpression {
 
-
 	/**
 	 * Builds the expression.
 	 * 

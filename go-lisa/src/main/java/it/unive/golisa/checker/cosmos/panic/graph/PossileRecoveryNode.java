@@ -19,7 +19,6 @@ public class PossileRecoveryNode extends StandardNode {
 		super(graph, st);
 	}
 
-
 	@Override
 	public PossileRecoveryNode clone() throws CloneNotSupportedException {
 

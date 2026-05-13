@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
@@ -25,5 +24,4 @@ public class GoMul extends Multiplication {
 		super(cfg, location, left, right);
 	}
 
-	
 }

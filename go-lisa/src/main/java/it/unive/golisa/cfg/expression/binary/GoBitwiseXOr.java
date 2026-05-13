@@ -16,7 +16,6 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 
-
 /**
  * A Go bit-wise xor expression (e.g., x ^ y).
  * 

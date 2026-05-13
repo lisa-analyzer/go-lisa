@@ -9,7 +9,8 @@ public class StandardEdge extends LabeledEdge {
 
 	/**
 	 * Builds the standard edge.
-	 * @param source the source node
+	 * 
+	 * @param source      the source node
 	 * @param destination the destination node
 	 */
 	public StandardEdge(StandardNode source, StandardNode destination) {
@@ -18,7 +19,7 @@ public class StandardEdge extends LabeledEdge {
 
 	@Override
 	public LabeledEdge newInstance(StandardNode source, StandardNode destination) {
-		return new StandardEdge(source,destination);
+		return new StandardEdge(source, destination);
 	}
 
 	@Override
@@ -35,5 +36,5 @@ public class StandardEdge extends LabeledEdge {
 	public boolean isErrorHandling() {
 		return false;
 	}
-	
+
 }

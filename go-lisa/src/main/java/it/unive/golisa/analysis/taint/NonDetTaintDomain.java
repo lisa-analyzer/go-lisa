@@ -16,16 +16,14 @@ import it.unive.lisa.type.Untyped;
 
 /**
  * Taint analysis domain specific for non-determinism issues.
- * 
- * 
  */
 public class NonDetTaintDomain extends ThreeLevelsTaint {
 
 	@Override
 	protected ThreeTaint defaultApprox(Identifier id, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 
-		boolean isAssignedFromMapIteration = 
-				
+		boolean isAssignedFromMapIteration =
+
 				pp.getCFG().getDescriptor().getControlFlowStructures().stream().anyMatch(g -> {
 					Statement condition = g.getCondition();
 					if (condition instanceof GoRange && isMapRange((GoRange) condition)
@@ -34,15 +32,17 @@ public class NonDetTaintDomain extends ThreeLevelsTaint {
 					return false;
 				});
 
-	if (isAssignedFromMapIteration) // map iterations lead to non-determinism
-		return tainted();
-	
-	if(pp.getProgram().getGlobal(id.getName()) != null) // global vars lead to non-determinism
-		return tainted();
+		if (isAssignedFromMapIteration) // map iterations lead to
+										// non-determinism
+			return tainted();
 
-	return super.defaultApprox(id, pp, oracle);
+		if (pp.getProgram().getGlobal(id.getName()) != null) // global vars lead
+																// to
+																// non-determinism
+			return tainted();
+
+		return super.defaultApprox(id, pp, oracle);
 	}
-	
 
 	private boolean matchMapRangeIds(GoRange range, Identifier id) {
 		return matchMapRangeId(range.getIdxRange(), id) || matchMapRangeId(range.getValRange(), id);

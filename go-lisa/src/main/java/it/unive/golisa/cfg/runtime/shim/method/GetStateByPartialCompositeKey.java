@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
@@ -38,6 +34,9 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) GetStateByPartialCompositeKey(objectType string,
@@ -116,7 +115,6 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 					left, middle, right);
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdTernarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
@@ -133,8 +131,10 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
-			Collection<SymbolicExpression> reachableIdsRight = interprocedural.getAnalysis().reachableFrom(state, right, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
+			Collection<SymbolicExpression> reachableIdsRight = interprocedural.getAnalysis().reachableFrom(state, right,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				for (SymbolicExpression r : reachableIdsRight) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
@@ -144,10 +144,11 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 					TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, derefId, middle, r,
 							GetStateByPartialCompositeKeyOperatorSecondParameter.INSTANCE, getLocation());
 
-					result = result.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
-							getLocation(), tupleType,
-							ref,
-							rExp));
+					result = result.lub(
+							GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+									getLocation(), tupleType,
+									ref,
+									rExp));
 				}
 			}
 

@@ -1,11 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.GoCollectionAccess;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.binary.GoMul;
@@ -49,24 +43,33 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.numeric.IntInterval;
 import it.unive.lisa.util.numeric.MathNumber;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Checker for the detection of integer overflow/underflow in program variables.
  *
- * @param <H> the lattice that represents a property of the memory of the program
- * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
+ * @param <H> the lattice that represents a property of the memory of the
+ *                program
+ * @param <T> the lattice that represents a set of types corresponding to the
+ *                runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
-		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> {
+		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>,
+				SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> {
 
 	private Set<IssueInfo> detectedIssues = new HashSet<>();
 
 	@Override
 	public void afterExecution(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool) {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool) {
 		// TODO: find a more smart way to trigger warnings
 		for (IssueInfo issue : detectedIssues) {
 			tool.warnOn(issue.getStatement(), getWarningMessage(issue.getIssues()));
@@ -105,7 +108,8 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 
 		Expression leftExpression = null;
@@ -151,7 +155,8 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 	}
 
 	private void checkVariableRef(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
 			VariableRef varRef, Type vType, Set<Type> numericalTypes, CFG graph, Statement node) {
 		Variable id = new Variable(((VariableRef) varRef).getStaticType(), ((VariableRef) varRef).getName(),
 				((VariableRef) varRef).getLocation());
@@ -252,19 +257,18 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 			}
 
 			/*
-			 * Interval intervalAbstractValue = state.getValueState().getState(id);
+			 * Interval intervalAbstractValue =
+			 * state.getValueState().getState(id);
 			 * if(!intervalAbstractValue.isBottom()) { IntInterval interval =
-			 * intervalAbstractValue.interval;
-			 * 
-			 * 
-			 * }
+			 * intervalAbstractValue.interval; }
 			 */
 		}
 
 	}
 
 	private NumericalIssue checkOverflow(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
 			Statement node, IntInterval interval, Set<Type> numericalTypes) {
 		Type[] arrayTypes = numericalTypes.toArray(new Type[] {});
 		if (!numericalTypes.isEmpty())
@@ -299,7 +303,8 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 	}
 
 	private NumericalIssue checkUnderflow(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>> tool,
 			Statement node, IntInterval interval, Set<Type> numericalTypes) {
 		Type[] arrayTypes = numericalTypes.toArray(new Type[] {});
 		if (!numericalTypes.isEmpty()) {
@@ -334,24 +339,19 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 	}
 
 	/*
-	 * Min-max numerical type values
-	 * 
-	 * uint8 the set of all unsigned 8-bit integers (0 to 255) uint16 the set of all
-	 * unsigned 16-bit integers (0 to 65535) uint32 the set of all unsigned 32-bit
-	 * integers (0 to 4294967295) uint64 the set of all unsigned 64-bit integers (0
-	 * to 18446744073709551615)
-	 * 
-	 * int8 the set of all signed 8-bit integers (-128 to 127) int16 the set of all
-	 * signed 16-bit integers (-32768 to 32767) int32 the set of all signed 32-bit
-	 * integers (-2147483648 to 2147483647) int64 the set of all signed 64-bit
-	 * integers (-9223372036854775808 to 9223372036854775807)
-	 * 
-	 * float32 the set of all IEEE-754 32-bit floating-point numbers float64 the set
-	 * of all IEEE-754 64-bit floating-point numbers
-	 * 
-	 * complex64 the set of all complex numbers with float32 real and imaginary
-	 * parts complex128 the set of all complex numbers with float64 real and
-	 * imaginary parts
+	 * Min-max numerical type values uint8 the set of all unsigned 8-bit
+	 * integers (0 to 255) uint16 the set of all unsigned 16-bit integers (0 to
+	 * 65535) uint32 the set of all unsigned 32-bit integers (0 to 4294967295)
+	 * uint64 the set of all unsigned 64-bit integers (0 to
+	 * 18446744073709551615) int8 the set of all signed 8-bit integers (-128 to
+	 * 127) int16 the set of all signed 16-bit integers (-32768 to 32767) int32
+	 * the set of all signed 32-bit integers (-2147483648 to 2147483647) int64
+	 * the set of all signed 64-bit integers (-9223372036854775808 to
+	 * 9223372036854775807) float32 the set of all IEEE-754 32-bit
+	 * floating-point numbers float64 the set of all IEEE-754 64-bit
+	 * floating-point numbers complex64 the set of all complex numbers with
+	 * float32 real and imaginary parts complex128 the set of all complex
+	 * numbers with float64 real and imaginary parts
 	 */
 	private MathNumber getMaxValue(Type type) {
 		if (type == GoInt8Type.INSTANCE)
@@ -406,15 +406,15 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 			/**
 			 * Definitely overflow
 			 */
-			OVERFLOW(false), 
+			OVERFLOW(false),
 			/**
 			 * Possible overflow
 			 */
-			MAY_OVERFLOW(true), 
+			MAY_OVERFLOW(true),
 			/**
 			 * Definitely underflow
 			 */
-			UNDERFLOW(false), 
+			UNDERFLOW(false),
 			/**
 			 * Possible underflow
 			 */
@@ -424,7 +424,9 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 
 			/**
 			 * Builds the instance of numeric issue.
-			 * @param may if {@code true} it is possible. Otherwise, it is definite.
+			 * 
+			 * @param may if {@code true} it is possible. Otherwise, it is
+			 *                definite.
 			 */
 			NumericalIssue(boolean may) {
 				this.may = may;
@@ -432,6 +434,7 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 
 			/**
 			 * Yields {@code true} if it is possible. Otherwise, it is definite.
+			 * 
 			 * @return {@code true} if it is possible. Otherwise, it is definite
 			 */
 			boolean isMay() {
@@ -450,8 +453,9 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 
 		/**
 		 * Builds an instance of issue info.
+		 * 
 		 * @param statement the statement
-		 * @param issues the issues of the statement
+		 * @param issues    the issues of the statement
 		 */
 		public IssueInfo(Statement statement, Set<NumericalIssue> issues) {
 			this.statement = statement;
@@ -460,6 +464,7 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 
 		/**
 		 * Builds an instance of issue info.
+		 * 
 		 * @return
 		 */
 		public Statement getStatement() {
@@ -468,6 +473,7 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 
 		/**
 		 * Yields the issues of the statement.
+		 * 
 		 * @return the issues
 		 */
 		public Set<NumericalIssue> getIssues() {

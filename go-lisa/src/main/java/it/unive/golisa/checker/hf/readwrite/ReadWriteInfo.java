@@ -1,10 +1,9 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.KeyType;
 import it.unive.golisa.checker.hf.readwrite.ReadWriteHFUtils.TypeInstruction;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Read write information.
@@ -15,24 +14,24 @@ public class ReadWriteInfo {
 	 * The type of instruction.
 	 */
 	private final TypeInstruction instructionType;
-	
+
 	/**
 	 * The signature of instruction.
 	 */
 	private final String signature;
-	
+
 	/**
 	 * The type of key.
 	 */
 	private final KeyType keyType;
-	
+
 	/**
 	 * The key parameters.
 	 */
 	private final int[] keyParameters;
-	
+
 	/**
-	 * The  collection parameter.
+	 * The collection parameter.
 	 */
 	private final Integer collectionParam;
 
@@ -40,9 +39,9 @@ public class ReadWriteInfo {
 	 * Builds the information.
 	 * 
 	 * @param instructionType the instruction type
-	 * @param signature the signature of instruction
-	 * @param keyType the key type
-	 * @param keyParameters the key parameters 
+	 * @param signature       the signature of instruction
+	 * @param keyType         the key type
+	 * @param keyParameters   the key parameters
 	 */
 	public ReadWriteInfo(TypeInstruction instructionType, String signature, KeyType keyType, int[] keyParameters) {
 		this.instructionType = instructionType;
@@ -56,9 +55,9 @@ public class ReadWriteInfo {
 	 * Builds the information.
 	 * 
 	 * @param instructionType the instruction type
-	 * @param signature the signature of instruction
-	 * @param keyType the key type
-	 * @param keyParameters the key parameters 
+	 * @param signature       the signature of instruction
+	 * @param keyType         the key type
+	 * @param keyParameters   the key parameters
 	 * @param collectionParam the collection parameter
 	 */
 	public ReadWriteInfo(TypeInstruction instructionType, String signature, KeyType keyType, int[] keyParameters,
@@ -72,6 +71,7 @@ public class ReadWriteInfo {
 
 	/**
 	 * Yields the instruction type.
+	 * 
 	 * @return the instruction type
 	 */
 	public TypeInstruction getInstructionType() {
@@ -80,6 +80,7 @@ public class ReadWriteInfo {
 
 	/**
 	 * Yields the signature.
+	 * 
 	 * @return the signature
 	 */
 	public String getSignature() {
@@ -88,13 +89,16 @@ public class ReadWriteInfo {
 
 	/**
 	 * Yields the key type.
+	 * 
 	 * @return the key type
 	 */
 	public KeyType getKeyType() {
 		return keyType;
 	}
+
 	/**
 	 * Yields the key parameters.
+	 * 
 	 * @return the key parameters
 	 */
 	public int[] getKeyParameters() {
@@ -103,6 +107,7 @@ public class ReadWriteInfo {
 
 	/**
 	 * Yields the collection parameter.
+	 * 
 	 * @return the collection parameter
 	 */
 	public Integer getCollectionParam() {
@@ -111,6 +116,7 @@ public class ReadWriteInfo {
 
 	/**
 	 * Yields {@code true} if the instruction has a collection parameter.
+	 * 
 	 * @return {@code true} if the instruction has a collection parameter
 	 */
 	public boolean hasCollection() {

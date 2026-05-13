@@ -1,13 +1,12 @@
 package it.unive.golisa.cfg.statement.block;
 
+import it.unive.lisa.program.cfg.statement.Expression;
+import it.unive.lisa.program.cfg.statement.VariableRef;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.VariableRef;
 
 /**
  * A class tracking information about the variable declarations occurring in a

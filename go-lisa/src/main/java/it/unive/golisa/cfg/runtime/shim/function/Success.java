@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.function;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUInt8Type;
@@ -31,6 +28,8 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Success response chaincodes. func Success(payload []byte) pb.Response.
@@ -115,7 +114,7 @@ public class Success extends NativeCFG {
 			UnaryExpression un = new UnaryExpression(GoSliceType.getSliceOfBytes(), expr, SuccessOperator.INSTANCE,
 					getLocation());
 			AnalysisState<A> asg = interprocedural.getAnalysis().assign(allocState, deref, un, this);
-					
+
 			return interprocedural.getAnalysis().smallStepSemantics(asg, ref, original);
 		}
 	}

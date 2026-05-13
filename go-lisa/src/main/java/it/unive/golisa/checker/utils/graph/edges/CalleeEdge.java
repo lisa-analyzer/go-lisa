@@ -10,7 +10,7 @@ public class CalleeEdge extends LabeledEdge {
 	/**
 	 * Builds the callee edge.
 	 * 
-	 * @param source the source node
+	 * @param source      the source node
 	 * @param destination the destination node
 	 */
 	public CalleeEdge(StandardNode source, StandardNode destination) {
@@ -36,5 +36,5 @@ public class CalleeEdge extends LabeledEdge {
 	public boolean isErrorHandling() {
 		return false;
 	}
-	
+
 }

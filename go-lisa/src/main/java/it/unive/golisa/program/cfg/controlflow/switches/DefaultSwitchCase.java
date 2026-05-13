@@ -1,10 +1,9 @@
 package it.unive.golisa.program.cfg.controlflow.switches;
 
-import java.util.Collection;
-import java.util.Set;
-
 import it.unive.golisa.program.cfg.controlflow.switches.instrumentations.SwitchDefault;
 import it.unive.lisa.program.cfg.statement.Statement;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * A default switch-case control flow structure.

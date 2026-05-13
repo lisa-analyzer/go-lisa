@@ -9,21 +9,21 @@ import it.unive.lisa.util.representation.StructuredRepresentation;
 /**
  * The lattice of string constant propagation domain.
  */
-public class StringConstantPropagationLattice 
-implements BaseLattice<StringConstantPropagationLattice>{
+public class StringConstantPropagationLattice
+		implements BaseLattice<StringConstantPropagationLattice> {
 
 	/**
 	 * The top element.
 	 */
 	public static final StringConstantPropagationLattice TOP = new StringConstantPropagationLattice(true, false);
-	
+
 	/**
 	 * The bottom element.
 	 */
 	public static final StringConstantPropagationLattice BOTTOM = new StringConstantPropagationLattice(false, true);
 
 	private final boolean isTop, isBottom;
-	
+
 	/**
 	 * The string constant representing a value of this domain element.
 	 */
@@ -48,7 +48,6 @@ implements BaseLattice<StringConstantPropagationLattice>{
 		this.isTop = isTop;
 		this.isBottom = isBottom;
 	}
-	
 
 	/**
 	 * Builds the string constant propagation.
@@ -62,7 +61,7 @@ implements BaseLattice<StringConstantPropagationLattice>{
 	private StringConstantPropagationLattice(boolean isTop, boolean isBottom) {
 		this(null, isTop, isBottom);
 	}
-	
+
 	@Override
 	public StringConstantPropagationLattice top() {
 		return TOP;
@@ -92,7 +91,6 @@ implements BaseLattice<StringConstantPropagationLattice>{
 	public boolean lessOrEqualAux(StringConstantPropagationLattice other) throws SemanticException {
 		return false;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -133,5 +131,5 @@ implements BaseLattice<StringConstantPropagationLattice>{
 	public String getValue() {
 		return value;
 	}
-	
+
 }

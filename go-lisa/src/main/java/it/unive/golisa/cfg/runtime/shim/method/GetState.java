@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -37,6 +34,8 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (s *ChaincodeStub) GetState(key string) ([]byte, error).
@@ -126,7 +125,7 @@ public class GetState extends NativeCFG {
 			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			 ExpressionSet reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this);
+			ExpressionSet reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				BinaryExpression lExp = new BinaryExpression(GoSliceType.getSliceOfBytes(), derefId, right,
@@ -134,7 +133,8 @@ public class GetState extends NativeCFG {
 				BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, derefId, right,
 						GetStateSecondParameter.INSTANCE, getLocation());
 				AnalysisState<A> asg = interprocedural.getAnalysis().assign(state, deref, lExp, original);
-				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(interprocedural, asg,
+						new Annotations(), this,
 						getLocation(), tupleType,
 						ref,
 						rExp);

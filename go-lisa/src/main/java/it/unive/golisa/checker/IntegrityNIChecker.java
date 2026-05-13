@@ -1,10 +1,5 @@
 package it.unive.golisa.checker;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import it.unive.golisa.analysis.ni.IntegrityNIDomain;
 import it.unive.lisa.analysis.AnalyzedCFG;
 import it.unive.lisa.analysis.SemanticException;
@@ -38,18 +33,24 @@ import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.util.StringUtilities;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * A non-interference integrity checker.
  * 
- * @param <H> the lattice that represents a property of the memory of the program
- * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
+ * @param <H> the lattice that represents a property of the memory of the
+ *                program
+ * @param <T> the lattice that represents a set of types corresponding to the
+ *                runtime types of an expression
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class IntegrityNIChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
-SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> {
-
+		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+				SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> {
 
 	/**
 	 * The sink annotation.
@@ -61,35 +62,37 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment
 	 */
 	public static final AnnotationMatcher SINK_MATCHER = new BasicAnnotationMatcher(SINK_ANNOTATION);
 
-	
-
 	@Override
 	public void beforeExecution(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool) {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool) {
 	}
 
 	@Override
 	public void afterExecution(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool) {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool) {
 	}
 
 	@Override
 	public boolean visitUnit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
 			Unit unit) {
 		return true;
 	}
 
-
 	@Override
 	public void visitGlobal(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 		if (!(node instanceof UnresolvedCall))
 			return true;
@@ -119,8 +122,10 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment
 	}
 
 	private void process(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
-			UnresolvedCall call, Call resolved, CodeMemberDescriptor desc, AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> res)
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
+			UnresolvedCall call, Call resolved, CodeMemberDescriptor desc,
+			AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> res)
 			throws SemanticException {
 		if (desc.getAnnotations().contains(SINK_MATCHER)) {
 			var postState = res.getAnalysisStateAfter(call);
@@ -143,11 +148,12 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment
 
 						SemanticOracle oracle = tool.getAnalysis().domain.makeOracle(postState.getExecutionState());
 
-						IntegrityNIDomain analysisValueDomain = (IntegrityNIDomain) tool.getAnalysis().domain.valueDomain;
+						IntegrityNIDomain analysisValueDomain = (IntegrityNIDomain) tool
+								.getAnalysis().domain.valueDomain;
 
 						var abstractValue = analysisValueDomain.eval(valueState, (ValueExpression) s,
 								(ProgramPoint) call, oracle);
-						
+
 						if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 							continue;
 
@@ -155,7 +161,6 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment
 							tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
 									+ " resulting in an implicit flow");
 						}
-
 
 					}
 				} catch (SemanticException e) {
@@ -187,11 +192,12 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment
 
 							SemanticOracle oracle = tool.getAnalysis().domain.makeOracle(postState.getExecutionState());
 
-							IntegrityNIDomain analysisValueDomain = (IntegrityNIDomain) tool.getAnalysis().domain.valueDomain;
+							IntegrityNIDomain analysisValueDomain = (IntegrityNIDomain) tool
+									.getAnalysis().domain.valueDomain;
 
 							var abstractValue = analysisValueDomain.eval(valueState, (ValueExpression) s,
 									(ProgramPoint) call, oracle);
-							
+
 							if (types.stream().allMatch(t -> t.isInMemoryType() || t.isPointerType()))
 								continue;
 
@@ -199,11 +205,10 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment
 								tool.warnOn(call, "The value passed for the " + StringUtilities.ordinal(i + 1)
 										+ " parameter of this call is tainted, and it reaches the sink at parameter '"
 										+ parameters[i].getName() + "' of " + resolved.getFullTargetName());
-								if(i == call.getParameters().length- 1)
+								if (i == call.getParameters().length - 1)
 									tool.warnOn(call, "The execution of this call is guarded by a tainted condition"
 											+ " resulting in an implicit flow");
 							}
-
 
 						}
 					} catch (SemanticException e) {
@@ -215,17 +220,18 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment
 
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, NonInterferenceEnvironment, TypeEnvironment<T>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
-
 
 }

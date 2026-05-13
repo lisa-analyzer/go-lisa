@@ -72,9 +72,9 @@ public class Printf extends NativeCFG {
 		 * @return the pluggable statement
 		 */
 		public static PrintfImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			if(params.length > 1)
-				return new	PrintfImpl(cfg, location, params);
-			else 
+			if (params.length > 1)
+				return new PrintfImpl(cfg, location, params);
+			else
 				return new PrintfImpl(cfg, location, params[0]);
 		}
 
@@ -84,7 +84,7 @@ public class Printf extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param params     the param expressions
+		 * @param params   the param expressions
 		 */
 		public PrintfImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "Printf", GoStringType.INSTANCE, params);
@@ -94,7 +94,8 @@ public class Printf extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
 				it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
 	}
 }

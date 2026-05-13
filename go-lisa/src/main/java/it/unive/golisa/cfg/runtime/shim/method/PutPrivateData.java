@@ -72,7 +72,8 @@ public class PutPrivateData extends NativeCFG {
 		 * Builds the pluggable statement.
 		 * 
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
-		 * @param location the location where this pluggable statement is defined
+		 * @param location the location where this pluggable statement is
+		 *                     defined
 		 * @param params   the parameters
 		 * 
 		 * @return the pluggable statement
@@ -85,7 +86,8 @@ public class PutPrivateData extends NativeCFG {
 		 * Builds the pluggable statement.
 		 * 
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
-		 * @param location the location where this pluggable statement is defined
+		 * @param location the location where this pluggable statement is
+		 *                     defined
 		 * @param params   the parameters
 		 */
 		public PutPrivateDataImpl(CFG cfg, CodeLocation location, Expression... params) {

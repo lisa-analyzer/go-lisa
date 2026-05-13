@@ -10,7 +10,7 @@ public class DeferEdge extends LabeledEdge {
 	/**
 	 * Builds the defer edge.
 	 * 
-	 * @param source the source node
+	 * @param source      the source node
 	 * @param destination the destination node
 	 */
 	public DeferEdge(StandardNode source, StandardNode destination) {
@@ -36,5 +36,5 @@ public class DeferEdge extends LabeledEdge {
 	public boolean isErrorHandling() {
 		return false;
 	}
-	
+
 }

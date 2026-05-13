@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -30,6 +27,8 @@ import it.unive.lisa.symbolic.value.BinaryExpression;
 import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func ParseFloat(s string, bitSize int) (float64, error).
@@ -101,7 +100,6 @@ public class ParseFloat extends NativeCFG {
 					GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE), left, right);
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
@@ -110,7 +108,8 @@ public class ParseFloat extends NativeCFG {
 					ParseFloatOperatorFirstParameter.INSTANCE, getLocation());
 			BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, left, right,
 					ParseFloatOperatorSecondParameter.INSTANCE, getLocation());
-			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), this, getLocation(),
+			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), this,
+					getLocation(),
 					GoTupleType.getTupleTypeOf(getLocation(), GoFloat64Type.INSTANCE, GoErrorType.INSTANCE),
 					lExp,
 					rExp);

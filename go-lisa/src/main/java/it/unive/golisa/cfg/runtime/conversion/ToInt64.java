@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.conversion;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -27,6 +24,8 @@ import it.unive.lisa.symbolic.value.operator.binary.TypeConv;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeTokenType;
 import it.unive.lisa.type.Untyped;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * int64 casting.
@@ -98,8 +97,10 @@ public class ToInt64 extends NativeCFG {
 				StatementStore<A> expressions) throws SemanticException {
 			Set<Type> castType = Collections.singleton(GoInt64Type.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoInt64Type.INSTANCE, getLocation());
-			return interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(GoInt64Type.INSTANCE, expr, typeCast, TypeConv.INSTANCE,
-					original.getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new BinaryExpression(GoInt64Type.INSTANCE, expr, typeCast, TypeConv.INSTANCE,
+							original.getLocation()),
+					original);
 		}
 	}
 }

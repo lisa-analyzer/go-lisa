@@ -35,7 +35,6 @@ public class GoBitwiseOr extends BinaryExpression implements GoBinaryNumericalOp
 		super(cfg, location, "|", left, right);
 	}
 
-
 	@Override
 	protected int compareSameClassAndParams(
 			Statement o) {

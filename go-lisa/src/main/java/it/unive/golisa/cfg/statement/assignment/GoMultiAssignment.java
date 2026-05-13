@@ -1,12 +1,5 @@
 package it.unive.golisa.cfg.statement.assignment;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-
 import it.unive.golisa.cfg.statement.block.BlockInfo;
 import it.unive.golisa.cfg.statement.block.OpenBlock;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
@@ -34,6 +27,11 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A Go multi-assignment.
@@ -107,9 +105,10 @@ public class GoMultiAssignment extends Expression {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> assignScopedId(InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> rightState,
+	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> assignScopedId(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> rightState,
 			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
-					throws SemanticException {
+			throws SemanticException {
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
 		// needs to be performed

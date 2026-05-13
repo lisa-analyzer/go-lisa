@@ -18,12 +18,11 @@ import it.unive.lisa.program.cfg.statement.Statement;
  */
 public class GoRecover extends NaryExpression {
 
-
 	/**
 	 * Builds the expression.
 	 * 
-	 * @param cfg        the {@link CFG} where this expression lies
-	 * @param location   the location where this expression is defined
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
 	 */
 	public GoRecover(CFG cfg, CodeLocation location) {
 		super(cfg, location, "recover");

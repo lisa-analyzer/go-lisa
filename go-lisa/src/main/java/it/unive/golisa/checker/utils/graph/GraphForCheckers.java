@@ -1,21 +1,5 @@
 package it.unive.golisa.checker.utils.graph;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.function.BiFunction;
-//import org.graphstream.graph.Edge;
-//import org.graphstream.graph.Element;
-//import org.graphstream.graph.implementations.MultiGraph;
-//import org.graphstream.stream.file.FileSinkDOT;
-
 import it.unive.golisa.checker.utils.graph.edges.LabeledEdge;
 import it.unive.golisa.checker.utils.graph.edges.StandardEdge;
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
@@ -27,6 +11,17 @@ import it.unive.lisa.outputs.serializableGraph.SerializableNodeDescription;
 import it.unive.lisa.outputs.serializableGraph.SerializableValue;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.BiFunction;
 
 /**
  * Code graph used as support/output for checkers.
@@ -36,10 +31,11 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 	/**
 	 * The graph name.
 	 */
-	private final String name; 
+	private final String name;
 
 	/**
 	 * Builds the graph instance.
+	 * 
 	 * @param name the graph name
 	 */
 	public GraphForCheckers(String name) {
@@ -49,6 +45,7 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 
 	/**
 	 * Yields the graph name.
+	 * 
 	 * @return the name
 	 */
 	public String getName() {
@@ -72,11 +69,11 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		}
 
 		/*
-		for (StandardNode src : getNodes())
-			for (StandardNode dest : followersOf(src))
-				for (LabeledEdge edge : list.getEdgesConnecting(src, dest))
-					edges.add(new SerializableEdge(nodeIds.get(src), nodeIds.get(dest),
-							edge.getClass().getSimpleName()));
+		 * for (StandardNode src : getNodes()) for (StandardNode dest :
+		 * followersOf(src)) for (LabeledEdge edge :
+		 * list.getEdgesConnecting(src, dest)) edges.add(new
+		 * SerializableEdge(nodeIds.get(src), nodeIds.get(dest),
+		 * edge.getClass().getSimpleName()));
 		 */
 		return new CustomSerializableGraph(name, null, nodes, edges, descrs);
 	}
@@ -105,10 +102,10 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		/**
 		 * Builds the graph instance.
 		 * 
-		 * @param name the graph name
-		 * @param description the graph description
-		 * @param nodes the graph nodes
-		 * @param edges the graph edges
+		 * @param name         the graph name
+		 * @param description  the graph description
+		 * @param nodes        the graph nodes
+		 * @param edges        the graph edges
 		 * @param descriptions the node descriptions
 		 */
 		public CustomSerializableGraph(String name, String description, SortedSet<SerializableNode> nodes,
@@ -152,6 +149,7 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 
 		/**
 		 * Builds the graph instance.
+		 * 
 		 * @param title the title of graph
 		 */
 		public CustomDotGraph(String title) {
@@ -164,41 +162,29 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 			long id1 = edge.getDestId();
 
 			/*
-			Edge e = graph.addEdge(edgeName(id, id1, edge), nodeName(id), nodeName(id1), true);
+			 * Edge e = graph.addEdge(edgeName(id, id1, edge), nodeName(id),
+			 * nodeName(id1), true); switch (edge.getKind()) { case "DeferEdge":
+			 * e.setAttribute(COLOR, COLOR_RED); e.setAttribute(LABEL, "DEFER");
+			 * e.setAttribute(STYLE, CONDITIONAL_EDGE_STYLE); break; case
+			 * "CallerEdge": e.setAttribute(COLOR, COLOR_BLUE);
+			 * e.setAttribute(LABEL, "CALLER"); break; case "CalleeEdge":
+			 * e.setAttribute(COLOR, COLOR_GRAY); e.setAttribute(LABEL,
+			 * "CALLEE"); break; case "StandardEdge": default:
+			 * e.setAttribute(COLOR, COLOR_BLACK); break; }
+			 */
+		}
 
-			switch (edge.getKind()) {
-			case "DeferEdge":
-				e.setAttribute(COLOR, COLOR_RED);
-				e.setAttribute(LABEL, "DEFER");
-				e.setAttribute(STYLE, CONDITIONAL_EDGE_STYLE);
-				break;
-			case "CallerEdge":
-				e.setAttribute(COLOR, COLOR_BLUE);
-				e.setAttribute(LABEL, "CALLER");
-				break;
-			case "CalleeEdge":
-				e.setAttribute(COLOR, COLOR_GRAY);
-				e.setAttribute(LABEL, "CALLEE");
-				break;
-			case "StandardEdge":
-			default:
-				e.setAttribute(COLOR, COLOR_BLACK);
-				break;
-			}
-			*/
-		}
-		
 		/*
-		public void removeEdge(Edge edge) {
-			graph.removeEdge(edge);
-		}
+		 * public void removeEdge(Edge edge) { graph.removeEdge(edge); }
 		 */
-		
+
 		/**
 		 * The name of the edge.
-		 * @param src the source node id
+		 * 
+		 * @param src  the source node id
 		 * @param dest the destination node id
 		 * @param edge the edge
+		 * 
 		 * @return the name of the edge
 		 */
 		protected static String edgeName(long src, long dest, SerializableEdge edge) {
@@ -206,136 +192,90 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		}
 
 		/*
-		private class CustomDotSink extends FileSinkDOT {
+		 * private class CustomDotSink extends FileSinkDOT {
+		 * @Override protected void outputHeader() throws IOException { out =
+		 * (PrintWriter) output; out.printf("%s {%n", "digraph"); }
+		 * @Override protected String outputAttribute(String key, Object value,
+		 * boolean first) { boolean quote = true; if (value instanceof Number ||
+		 * key.equals(LABEL)) // labels that we output are always in html format
+		 * // so no need to quote them quote = false; Object quoting = quote ?
+		 * "\"" : ""; return String.format("%s%s=%s%s%s", first ? "" : ",", key,
+		 * quoting, value, quoting); }
+		 * @Override protected String outputAttributes(Element e) { if
+		 * (e.getAttributeCount() == 0) return ""; Map<String, String> attrs =
+		 * new HashMap<>(); e.attributeKeys().forEach(key -> attrs.put(key,
+		 * outputAttribute(key, e.getAttribute(key), true))); StringBuilder
+		 * buffer = new StringBuilder("["); for (Entry<String, String> entry :
+		 * attrs.entrySet()) if (!entry.getKey().equals(LABEL))
+		 * buffer.append(entry.getValue()).append(","); if
+		 * (attrs.containsKey(LABEL)) buffer.append(attrs.get(LABEL)); String
+		 * result = buffer.toString(); if (result.endsWith(",")) result =
+		 * result.substring(0, result.length() - 1); return result + "]"; } }
+		 */
 
-			@Override
-			protected void outputHeader() throws IOException {
-				out = (PrintWriter) output;
-				out.printf("%s {%n", "digraph");
-			}
-
-			@Override
-			protected String outputAttribute(String key, Object value, boolean first) {
-				boolean quote = true;
-
-				if (value instanceof Number || key.equals(LABEL))
-					// labels that we output are always in html format
-					// so no need to quote them
-					quote = false;
-
-				Object quoting = quote ? "\"" : "";
-				return String.format("%s%s=%s%s%s", first ? "" : ",", key, quoting, value, quoting);
-			}
-
-			@Override
-			protected String outputAttributes(Element e) {
-				if (e.getAttributeCount() == 0)
-					return "";
-
-				Map<String, String> attrs = new HashMap<>();
-				e.attributeKeys().forEach(key -> attrs.put(key, outputAttribute(key, e.getAttribute(key), true)));
-
-				StringBuilder buffer = new StringBuilder("[");
-				for (Entry<String, String> entry : attrs.entrySet())
-					if (!entry.getKey().equals(LABEL))
-						buffer.append(entry.getValue()).append(",");
-
-				if (attrs.containsKey(LABEL))
-					buffer.append(attrs.get(LABEL));
-
-				String result = buffer.toString();
-				if (result.endsWith(","))
-					result = result.substring(0, result.length() - 1);
-
-				return result + "]";
-			}
-		}
-		*/
-		
 		@Override
 		public void dump(Writer writer) throws IOException {
 			/*
-			FileSinkDOT sink = new CustomDotSink() {
-				@Override
-				protected void outputEndOfFile() throws IOException {
-					LegendClusterSink legend = new LegendClusterSink();
-					legend.setDirected(true);
-					StringWriter sw = new StringWriter();
-					legend.writeAll(new Legend().graph, sw);
-					out.printf("%s%n", sw.toString());
-					super.outputEndOfFile();
-				}
-			};
-			sink.setDirected(true);
-			sink.writeAll(graph, writer);
-			*/
+			 * FileSinkDOT sink = new CustomDotSink() {
+			 * @Override protected void outputEndOfFile() throws IOException {
+			 * LegendClusterSink legend = new LegendClusterSink();
+			 * legend.setDirected(true); StringWriter sw = new StringWriter();
+			 * legend.writeAll(new Legend().graph, sw); out.printf("%s%n",
+			 * sw.toString()); super.outputEndOfFile(); } };
+			 * sink.setDirected(true); sink.writeAll(graph, writer);
+			 */
 		}
 		/*
-		private class LegendClusterSink extends CustomDotSink {
-			@Override
-			protected void outputHeader() throws IOException {
-				out = (PrintWriter) output;
-				out.printf("%s {%n", "subgraph cluster_legend");
-				out.printf("\tlabel=\"Legend\";%n");
-				out.printf("\tstyle=dotted;%n");
-				out.printf("\tnode [shape=plaintext];%n");
-			}
-		}*/
+		 * private class LegendClusterSink extends CustomDotSink {
+		 * @Override protected void outputHeader() throws IOException { out =
+		 * (PrintWriter) output; out.printf("%s {%n",
+		 * "subgraph cluster_legend"); out.printf("\tlabel=\"Legend\";%n");
+		 * out.printf("\tstyle=dotted;%n");
+		 * out.printf("\tnode [shape=plaintext];%n"); } }
+		 */
 
 		private static final class Legend {
-			//private final org.graphstream.graph.Graph graph;
+			// private final org.graphstream.graph.Graph graph;
 
 			private Legend() {
 				/*
-				graph = new MultiGraph("legend");
-				org.graphstream.graph.Node l = graph.addNode("legend");
-				StringBuilder builder = new StringBuilder();
-				builder.append("<");
-				builder.append("<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" cellborder=\"0\">");
-				builder.append(
-						"<tr><td align=\"right\">write instruction border&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(SPECIAL_NODE_COLOR);
-				builder.append("\">");
-				builder.append(SPECIAL_NODE_COLOR);
-				builder.append("</font>, single</td></tr>");
-				builder.append(
-						"<tr><td align=\"right\">read instruction border&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(SPECIAL_NODE_COLOR);
-				builder.append("\">");
-				builder.append(SPECIAL_NODE_COLOR);
-				builder.append("</font>, double</td></tr>");
-				builder.append(
-						"<tr><td align=\"right\">other instructions border&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(NORMAL_NODE_COLOR);
-				builder.append("\">");
-				builder.append(NORMAL_NODE_COLOR);
-				builder.append("</font>, single</td></tr>");
-				builder.append("<tr><td align=\"right\">sequential edge&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(COLOR_BLACK);
-				builder.append("\">");
-				builder.append(COLOR_BLACK);
-				builder.append("</font>, solid</td></tr>");
-				builder.append("<tr><td align=\"right\">caller edge&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(COLOR_BLUE);
-				builder.append("\">");
-				builder.append(COLOR_BLUE);
-				builder.append("</font>, solid</td></tr>");
-				builder.append("<tr><td align=\"right\">callee edge&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(COLOR_GRAY);
-				builder.append("\">");
-				builder.append(COLOR_GRAY);
-				builder.append("</font>, solid</td></tr>");
-				builder.append("<tr><td align=\"right\">defer edge&nbsp;</td><td align=\"left\"><font color=\"");
-				builder.append(COLOR_RED);
-				builder.append("\">");
-				builder.append(COLOR_RED);
-				builder.append("</font>, ");
-				builder.append(CONDITIONAL_EDGE_STYLE);
-				builder.append("</td></tr>");
-				builder.append("</table>");
-				builder.append(">");
-				l.setAttribute("label", builder.toString());
-				*/
+				 * graph = new MultiGraph("legend"); org.graphstream.graph.Node
+				 * l = graph.addNode("legend"); StringBuilder builder = new
+				 * StringBuilder(); builder.append("<"); builder.
+				 * append("<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" cellborder=\"0\">"
+				 * ); builder.append(
+				 * "<tr><td align=\"right\">write instruction border&nbsp;</td><td align=\"left\"><font color=\""
+				 * ); builder.append(SPECIAL_NODE_COLOR); builder.append("\">");
+				 * builder.append(SPECIAL_NODE_COLOR);
+				 * builder.append("</font>, single</td></tr>"); builder.append(
+				 * "<tr><td align=\"right\">read instruction border&nbsp;</td><td align=\"left\"><font color=\""
+				 * ); builder.append(SPECIAL_NODE_COLOR); builder.append("\">");
+				 * builder.append(SPECIAL_NODE_COLOR);
+				 * builder.append("</font>, double</td></tr>"); builder.append(
+				 * "<tr><td align=\"right\">other instructions border&nbsp;</td><td align=\"left\"><font color=\""
+				 * ); builder.append(NORMAL_NODE_COLOR); builder.append("\">");
+				 * builder.append(NORMAL_NODE_COLOR);
+				 * builder.append("</font>, single</td></tr>"); builder.
+				 * append("<tr><td align=\"right\">sequential edge&nbsp;</td><td align=\"left\"><font color=\""
+				 * ); builder.append(COLOR_BLACK); builder.append("\">");
+				 * builder.append(COLOR_BLACK);
+				 * builder.append("</font>, solid</td></tr>"); builder.
+				 * append("<tr><td align=\"right\">caller edge&nbsp;</td><td align=\"left\"><font color=\""
+				 * ); builder.append(COLOR_BLUE); builder.append("\">");
+				 * builder.append(COLOR_BLUE);
+				 * builder.append("</font>, solid</td></tr>"); builder.
+				 * append("<tr><td align=\"right\">callee edge&nbsp;</td><td align=\"left\"><font color=\""
+				 * ); builder.append(COLOR_GRAY); builder.append("\">");
+				 * builder.append(COLOR_GRAY);
+				 * builder.append("</font>, solid</td></tr>"); builder.
+				 * append("<tr><td align=\"right\">defer edge&nbsp;</td><td align=\"left\"><font color=\""
+				 * ); builder.append(COLOR_RED); builder.append("\">");
+				 * builder.append(COLOR_RED); builder.append("</font>, ");
+				 * builder.append(CONDITIONAL_EDGE_STYLE);
+				 * builder.append("</td></tr>"); builder.append("</table>");
+				 * builder.append(">"); l.setAttribute("label",
+				 * builder.toString());
+				 */
 			}
 		}
 	}
@@ -344,27 +284,30 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 	 * Yields a node of the graph if contains the statement.
 	 * 
 	 * @param statement the statement
+	 * 
 	 * @return the node containing the statement
 	 */
 	public StandardNode getNodeFromStatement(Statement statement) {
-		for(StandardNode n : getNodes())
-			if(n.getStatement().equals(statement))
-					return n;
+		for (StandardNode n : getNodes())
+			if (n.getStatement().equals(statement))
+				return n;
 		return null;
 	}
 
 	/**
 	 * Merges two graphs.
+	 * 
 	 * @param other the other graph to merge
+	 * 
 	 * @throws CloneNotSupportedException when the node cannot be cloned
 	 */
 	public void merge(GraphForCheckers other) throws CloneNotSupportedException {
-		for(StandardNode n : other.getNodes()) {
-			if(!this.containsNode(n))
+		for (StandardNode n : other.getNodes()) {
+			if (!this.containsNode(n))
 				this.addNode(n.clone());
 		}
-		for(LabeledEdge e : other.getEdges()) {
-			if(!this.containsEdge(e))
+		for (LabeledEdge e : other.getEdges()) {
+			if (!this.containsEdge(e))
 				this.addEdge(e.clone());
 		}
 	}
@@ -372,12 +315,12 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 	@Override
 	public GraphForCheckers clone() throws CloneNotSupportedException {
 		GraphForCheckers clone = new GraphForCheckers(getName());
-		for(StandardNode n : getNodes())
+		for (StandardNode n : getNodes())
 			clone.addNode(n.clone());
-		for(LabeledEdge e : getEdges()) {
+		for (LabeledEdge e : getEdges()) {
 			clone.addEdge(e.clone());
 		}
-		
+
 		return clone;
 	}
 
@@ -397,8 +340,5 @@ public class GraphForCheckers extends CodeGraph<GraphForCheckers, StandardNode, 
 		GraphForCheckers other = (GraphForCheckers) obj;
 		return Objects.equals(name, other.name);
 	}
-	
-	
-	
-	
+
 }

@@ -20,7 +20,7 @@ public class TarsisUtils {
 	 *             {@code false}.
 	 */
 	public static boolean possibleEqualsMatch(RegexAutomaton a1, RegexAutomaton a2) {
-		return a1.isEqualTo(a2)	|| a1.isContained(a2) || a2.isContained(a1);
+		return a1.isEqualTo(a2) || a1.isContained(a2) || a2.isContained(a1);
 	}
 
 	/**

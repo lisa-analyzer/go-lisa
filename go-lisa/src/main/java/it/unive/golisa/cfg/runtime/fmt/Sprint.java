@@ -91,7 +91,8 @@ public class Sprint extends NativeCFG {
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
 			// TODO Auto-generated method stub
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
 	}
 }

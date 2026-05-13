@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.strconv;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -29,6 +26,8 @@ import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func Atoi(s string) (int, error).
@@ -109,12 +108,12 @@ public class Atoi extends NativeCFG {
 
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), original, getLocation(),
+			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), original,
+					getLocation(),
 					tupleType,
 					lExp,
 					rExp);
 		}
-
 
 	}
 

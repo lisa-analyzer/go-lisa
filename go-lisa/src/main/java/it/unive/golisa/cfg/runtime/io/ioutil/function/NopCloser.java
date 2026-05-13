@@ -91,8 +91,9 @@ public class NopCloser extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
-			
-			AnalysisState<A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Reader.getReaderType(null), getLocation()),
+
+			AnalysisState<A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(Reader.getReaderType(null), getLocation()),
 					original);
 			AnalysisState<A> nilValue = interprocedural.getAnalysis()
 					.smallStepSemantics(state, new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);

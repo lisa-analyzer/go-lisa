@@ -35,6 +35,4 @@ public class PanicNode extends StandardNode {
 		return new PanicNode(getGraph(), (GoPanic) getStatement());
 	}
 
-	
-
 }

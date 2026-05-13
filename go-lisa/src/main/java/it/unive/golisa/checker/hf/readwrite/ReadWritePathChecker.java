@@ -1,18 +1,5 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.cfg.utils.CFGUtils.Search;
@@ -45,18 +32,32 @@ import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
 import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
 import it.unive.lisa.util.file.FileManager;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.
  *
- * @param <H> the lattice that represents a property of the memory of the program
- * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
+ * @param <H> the lattice that represents a property of the memory of the
+ *                program
+ * @param <T> the lattice that represents a set of types corresponding to the
+ *                runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class ReadWritePathChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
-SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>>  {
-	
+		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+				SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> {
+
 	private static final Logger LOG = LogManager.getLogger(ReadWritePathChecker.class);
 
 	private final Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates;
@@ -68,9 +69,11 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	/**
 	 * Builds an instance of the checker.
 	 * 
-	 * @param readAfterWriteCandidates the instruction pairs candidates as read-after-write
-	 * @param overWriteCandidates the instruction pairs candidates as over-write
-	 * @param computeGraph the computed graph
+	 * @param readAfterWriteCandidates the instruction pairs candidates as
+	 *                                     read-after-write
+	 * @param overWriteCandidates      the instruction pairs candidates as
+	 *                                     over-write
+	 * @param computeGraph             the computed graph
 	 */
 	public ReadWritePathChecker(Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates,
 			Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates, boolean computeGraph) {
@@ -81,11 +84,15 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	}
 
 	@Override
-	public void beforeExecution(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
+	public void beforeExecution(SemanticTool<
+			SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+			SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 	}
 
 	@Override
-	public void afterExecution(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
+	public void afterExecution(SemanticTool<
+			SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+			SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 
 		if (computeGraph) {
 			for (Entry<String, GraphForCheckers> entry : reconstructedGraphs.entrySet()) {
@@ -105,19 +112,26 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 
 	@Override
 	public void visitGlobal(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
-	public boolean visit(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
@@ -136,7 +150,9 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	private boolean isDeferredCallee;
 
 	private void checkReadAfterWriteIssues(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 		for (Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
 			if (CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
@@ -159,13 +175,16 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	}
 
 	private void checkOverWriteIssue(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 		for (Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : overWriteCandidates) {
 			if (CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
 				if (computeGraph)
-					tmpGraph = new GraphForCheckers("OverWrite - Write1 location: " + p.getRight().getCall().getLocation()
-							+ " - Write2 Location -" + p.getLeft().getCall().getLocation());
+					tmpGraph = new GraphForCheckers(
+							"OverWrite - Write1 location: " + p.getRight().getCall().getLocation()
+									+ " - Write2 Location -" + p.getLeft().getCall().getLocation());
 				if (interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(),
 						new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
 					if (computeGraph)
@@ -179,7 +198,9 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	}
 
 	private boolean interproceduralCheck(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Statement startNode = CFGUtils.extractTargetNodeFromGraph(graph, start);
@@ -278,7 +299,9 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	}
 
 	private boolean checkCallees(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seen, boolean isStartDeferred) {
 
 		if (seen.contains(graph))
@@ -326,7 +349,9 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	}
 
 	private boolean checkCalleesRecursive(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seen) {
 
 		if (seen.contains(graph))
@@ -376,7 +401,9 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	}
 
 	private boolean checkCallers(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>>tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Collection<CodeMember> callers = tool.getCallers(graph);
@@ -409,14 +436,18 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
 	public boolean visitUnit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			Unit unit) {
 		return true;
 	}
@@ -425,10 +456,14 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	 * Compute the callees.
 	 * 
 	 * @param tool the semantic tool
-	 * @param cm the code memeber
+	 * @param cm   the code memeber
+	 * 
 	 * @return the computed callees
 	 */
-	public Collection<CodeMember> getCalleesTransitively(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+	public Collection<CodeMember> getCalleesTransitively(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CodeMember cm) {
 		VisitOnceFIFOWorkingSet<CodeMember> instance = new VisitOnceFIFOWorkingSet<>();
 		VisitOnceWorkingSet<CodeMember> ws = instance.mk();

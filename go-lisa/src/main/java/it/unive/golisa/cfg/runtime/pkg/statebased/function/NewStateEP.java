@@ -1,9 +1,5 @@
 package it.unive.golisa.cfg.runtime.pkg.statebased.function;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.pkg.statebased.type.KeyEndorsementPolicy;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -36,6 +32,9 @@ import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func NewStateEP(policy []byte) (KeyEndorsementPolicy, error).
@@ -128,7 +127,8 @@ public class NewStateEP extends NativeCFG {
 				AnalysisState<A> asg = allocState.bottom();
 
 				// Retrieves all the identifiers reachable from expr
-				Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(allocState, expr, this).elements;
+				Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(allocState,
+						expr, this).elements;
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(
 							KeyEndorsementPolicy.getKeyEndorsementPolicyType(null), id, expr.getCodeLocation());
@@ -140,10 +140,11 @@ public class NewStateEP extends NativeCFG {
 				UnaryExpression rightRes = new UnaryExpression(GoErrorType.INSTANCE, expr,
 						KeyEndorsementPolicyOperatorSecondParameter.INSTANCE, getLocation());
 
-				result = result.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
-						getLocation(), tupleType,
-						ref,
-						rightRes));
+				result = result
+						.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+								getLocation(), tupleType,
+								ref,
+								rightRes));
 			}
 
 			return result;

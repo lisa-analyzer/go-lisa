@@ -1,8 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collections;
-import java.util.Set;
-
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
@@ -28,6 +25,8 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * func (iter *StateQueryIterator) Next() (*queryresult.KV, error).
@@ -107,30 +106,29 @@ public class Next extends NativeCFG {
 					new ReferenceType(responseType), GoErrorType.INSTANCE);
 
 			/*
-			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(responseType, expr.getCodeLocation(), new Annotations(),
-					true);
-			HeapReference ref = new HeapReference(new ReferenceType(responseType), created, expr.getCodeLocation());
-			HeapDereference deref = new HeapDereference(responseType, ref, expr.getCodeLocation());
-			AnalysisState<A> asg = state.bottom();
-
-			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
-			for (SymbolicExpression id : reachableIds) {
-				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(responseType, derefId, NextOperatorFirstParameter.INSTANCE,
-						getLocation());
-				asg = asg.lub(interprocedural.getAnalysis().assign(state, deref, left, original));
-			}
-
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, NextOperatorSecondParameter.INSTANCE,
-					getLocation());
-
-			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
-					ref,
-					rExp);
-					*/
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(tupleType, getLocation()), original);
+			 * // Allocates the new heap allocation MemoryAllocation created =
+			 * new MemoryAllocation(responseType, expr.getCodeLocation(), new
+			 * Annotations(), true); HeapReference ref = new HeapReference(new
+			 * ReferenceType(responseType), created, expr.getCodeLocation());
+			 * HeapDereference deref = new HeapDereference(responseType, ref,
+			 * expr.getCodeLocation()); AnalysisState<A> asg = state.bottom();
+			 * // Retrieves all the identifiers reachable from expr
+			 * Collection<SymbolicExpression> reachableIds =
+			 * interprocedural.getAnalysis().reachableFrom(state, expr,
+			 * this).elements; for (SymbolicExpression id : reachableIds) {
+			 * HeapDereference derefId = new HeapDereference(Untyped.INSTANCE,
+			 * id, expr.getCodeLocation()); UnaryExpression left = new
+			 * UnaryExpression(responseType, derefId,
+			 * NextOperatorFirstParameter.INSTANCE, getLocation()); asg =
+			 * asg.lub(interprocedural.getAnalysis().assign(state, deref, left,
+			 * original)); } UnaryExpression rExp = new
+			 * UnaryExpression(GoErrorType.INSTANCE, expr,
+			 * NextOperatorSecondParameter.INSTANCE, getLocation()); return
+			 * GoTupleExpression.allocateTupleExpression(interprocedural, asg,
+			 * new Annotations(), this, getLocation(), tupleType, ref, rExp);
+			 */
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(tupleType, getLocation()),
+					original);
 		}
 	}
 

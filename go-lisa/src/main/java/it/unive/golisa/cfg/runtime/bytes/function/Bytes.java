@@ -94,6 +94,5 @@ public class Bytes extends NativeCFG {
 			return interprocedural.getAnalysis().smallStepSemantics(state, expr, original);
 		}
 
-		
 	}
 }

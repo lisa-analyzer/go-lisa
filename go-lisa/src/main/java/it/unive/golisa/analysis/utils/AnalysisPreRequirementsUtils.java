@@ -1,16 +1,5 @@
 package it.unive.golisa.analysis.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
-
 import it.unive.golisa.cfg.expression.binary.GoChannelSend;
 import it.unive.golisa.cfg.expression.binary.GoDiv;
 import it.unive.golisa.cfg.expression.unary.GoChannelReceive;
@@ -28,6 +17,16 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Utility class to check the pre-requiroments for each analysis.
@@ -36,93 +35,100 @@ import it.unive.lisa.util.datastructures.graph.GraphVisitor;
  */
 public class AnalysisPreRequirementsUtils {
 
-
 	/**
-	 * Yields {@code true} if the program matches the pre-requirement of the selected analysis.
+	 * Yields {@code true} if the program matches the pre-requirement of the
+	 * selected analysis.
 	 * 
-	 * @param program the program to check
+	 * @param program  the program to check
 	 * @param analysis the analysis to select pre-requirements
-	 * @return  {@code true} if the program matches the pre-requirement of the selected analysis
+	 * 
+	 * @return {@code true} if the program matches the pre-requirement of the
+	 *             selected analysis
+	 * 
 	 * @throws IllegalArgumentException if the analysis does not exist
 	 */
 	public static boolean satisfyPrerequirements(Program program, String analysis) {
-			switch (analysis) {
+		switch (analysis) {
 
-			case "non-determinism":
-			case "non-determinism-ni":
-				// at least a non-det function	or goroutine or channel or global variables
-				InputStream input = GoNonDeterminismAnnotationSet.class
-				.getResourceAsStream("/for-analysis/nondeterm_sources.txt");
+		case "non-determinism":
+		case "non-determinism-ni":
+			// at least a non-det function or goroutine or channel or global
+			// variables
+			InputStream input = GoNonDeterminismAnnotationSet.class
+					.getResourceAsStream("/for-analysis/nondeterm_sources.txt");
 
-				Map<String, Set<String>> nondetcalls = new HashMap<>();
-		
-				GoLangAPISignatureLoader loader;
-				try {
-					loader = new GoLangAPISignatureLoader(input);
-					
-					for (Entry<String, ? extends Set<FuncGoLangApiSignature>> e : loader.getFunctionAPIs().entrySet())
-						for (FuncGoLangApiSignature sig : e.getValue()) {
-							nondetcalls.putIfAbsent(e.getKey(), new HashSet<>());
-							nondetcalls.get(e.getKey()).add(sig.getName());
-						}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		
-		
-				if( countCallsMatchingSignatures(program, nondetcalls) > 0 
-						|| countStatementsMatchingType(program, GoRoutine.class, GoRange.class, GoChannelSend.class, GoChannelReceive.class)  > 0
-						|| program.getGlobals().size() > 0)
-					return true;
-				//break;
-			case "phantom-read":
-				// at least a range query
-				Map<String, Set<String>> rangequeries = new HashMap<>();
-				rangequeries.put("ChaincodeStub", Set.of("GetQueryResult", "GetHistoryForKey", "GetPrivateDataQueryResult"));
-				rangequeries.put("ChaincodeStubInterface",
-						Set.of("GetQueryResult", "GetHistoryForKey", "GetPrivateDataQueryResult"));
-				
-				if(countCallsMatchingSignatures(program, rangequeries) > 0)
-					return true;
-				break;
-			case "ucci":
-			case "cchi":
-				// at least a cross-contract invocation
-				Map<String, Set<String>> CCIs = new HashMap<>();
-				CCIs.put("ChaincodeStub", Set.of("InvokeChaincode"));
-				CCIs.put("ChaincodeStubInterface", Set.of("InvokeChaincode"));
-				if(countCallsMatchingSignatures(program, CCIs) > 0)
-					return true;
-				break;
-			
-			case "div-by-zero":
-				if( countStatementsMatchingType(program, GoDiv.class) > 0)
-					return true;
-			case "read-write":
-			case "unhandled-errors":
-			case "numerical-issues":
-			case "cchi-write":
-				//no particular pre-requirements
-				return true;
-			default:
-				throw new IllegalArgumentException("No pre-requirements set for the analysis \""+analysis+"\"");
+			Map<String, Set<String>> nondetcalls = new HashMap<>();
+
+			GoLangAPISignatureLoader loader;
+			try {
+				loader = new GoLangAPISignatureLoader(input);
+
+				for (Entry<String, ? extends Set<FuncGoLangApiSignature>> e : loader.getFunctionAPIs().entrySet())
+					for (FuncGoLangApiSignature sig : e.getValue()) {
+						nondetcalls.putIfAbsent(e.getKey(), new HashSet<>());
+						nondetcalls.get(e.getKey()).add(sig.getName());
+					}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			
-			return false;
+
+			if (countCallsMatchingSignatures(program, nondetcalls) > 0
+					|| countStatementsMatchingType(program, GoRoutine.class, GoRange.class, GoChannelSend.class,
+							GoChannelReceive.class) > 0
+					|| program.getGlobals().size() > 0)
+				return true;
+			// break;
+		case "phantom-read":
+			// at least a range query
+			Map<String, Set<String>> rangequeries = new HashMap<>();
+			rangequeries.put("ChaincodeStub",
+					Set.of("GetQueryResult", "GetHistoryForKey", "GetPrivateDataQueryResult"));
+			rangequeries.put("ChaincodeStubInterface",
+					Set.of("GetQueryResult", "GetHistoryForKey", "GetPrivateDataQueryResult"));
+
+			if (countCallsMatchingSignatures(program, rangequeries) > 0)
+				return true;
+			break;
+		case "ucci":
+		case "cchi":
+			// at least a cross-contract invocation
+			Map<String, Set<String>> CCIs = new HashMap<>();
+			CCIs.put("ChaincodeStub", Set.of("InvokeChaincode"));
+			CCIs.put("ChaincodeStubInterface", Set.of("InvokeChaincode"));
+			if (countCallsMatchingSignatures(program, CCIs) > 0)
+				return true;
+			break;
+
+		case "div-by-zero":
+			if (countStatementsMatchingType(program, GoDiv.class) > 0)
+				return true;
+		case "read-write":
+		case "unhandled-errors":
+		case "numerical-issues":
+		case "cchi-write":
+			// no particular pre-requirements
+			return true;
+		default:
+			throw new IllegalArgumentException("No pre-requirements set for the analysis \"" + analysis + "\"");
+		}
+
+		return false;
 	}
 
 	/**
-	 * Counts the number of statements matching the type of specific Java classes.
+	 * Counts the number of statements matching the type of specific Java
+	 * classes.
 	 * 
 	 * @param program the program to check
 	 * @param classes the class to check
+	 * 
 	 * @return the count of matches
 	 */
-	private static int countStatementsMatchingType(Program program, Class<?> ...classes ) {
+	private static int countStatementsMatchingType(Program program, Class<?>... classes) {
 		int res = 0;
 
 		ClassDescriptorMatcher matcher;
-		
+
 		for (CFG cfg : program.getAllCFGs()) {
 			LinkedList<Statement> possibleEntries = new LinkedList<>();
 			matcher = new ClassDescriptorMatcher(classes);
@@ -137,7 +143,7 @@ public class AnalysisPreRequirementsUtils {
 					LinkedList<Statement> possibleEntries = new LinkedList<>();
 					matcher = new ClassDescriptorMatcher(classes);
 					((CFG) cfg).accept(matcher, possibleEntries);
-					
+
 					if (matcher.isMatched())
 						res += matcher.matches;
 				}
@@ -148,8 +154,9 @@ public class AnalysisPreRequirementsUtils {
 	/**
 	 * Counts the calls in a program matching specific signatures.
 	 * 
-	 * @param program the program to check
+	 * @param program    the program to check
 	 * @param signatures the signature to match
+	 * 
 	 * @return the count of matches
 	 */
 	private static int countCallsMatchingSignatures(Program program, Map<String, Set<String>> signatures) {
@@ -157,7 +164,7 @@ public class AnalysisPreRequirementsUtils {
 		int res = 0;
 
 		SignatureDescriptorMatcher matcher;
-		
+
 		for (CFG cfg : program.getAllCFGs()) {
 			LinkedList<Statement> possibleEntries = new LinkedList<>();
 			matcher = new SignatureDescriptorMatcher(signatures);
@@ -172,7 +179,7 @@ public class AnalysisPreRequirementsUtils {
 					LinkedList<Statement> possibleEntries = new LinkedList<>();
 					matcher = new SignatureDescriptorMatcher(signatures);
 					((CFG) cfg).accept(matcher, possibleEntries);
-					
+
 					if (matcher.isMatched())
 						res += matcher.matches;
 				}
@@ -183,7 +190,6 @@ public class AnalysisPreRequirementsUtils {
 
 	/**
 	 * Visitor to match signature descriptors.
-	 * 
 	 */
 	private static class SignatureDescriptorMatcher
 			implements GraphVisitor<CFG, Statement, Edge, Collection<Statement>> {
@@ -192,14 +198,16 @@ public class AnalysisPreRequirementsUtils {
 		 * The signature to match.
 		 */
 		final Map<String, Set<String>> signatures;
-		
+
 		/**
 		 * The counter of matches-
 		 */
 		private int matches;
-		
+
 		/**
-		 * Yields {@code true} if there is at least a match (to use after visiting).
+		 * Yields {@code true} if there is at least a match (to use after
+		 * visiting).
+		 * 
 		 * @return {@code true} if there is at least a match.
 		 */
 		public boolean isMatched() {
@@ -212,24 +220,24 @@ public class AnalysisPreRequirementsUtils {
 
 		@Override
 		public boolean visit(Collection<Statement> tool, CFG graph) {
-			
+
 			Function<Statement, Boolean> condition = new Function<Statement, Boolean>() {
-				
+
 				@Override
 				public Boolean apply(Statement t) {
 					if (t instanceof Call) {
-						if(signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
-										.anyMatch(s -> (((Call) t).getFullTargetName()).equals(set.getKey()+"::"+s)  //qualifier::targetName
-												|| (((Call) t).getFullTargetName()).equals(s)))) {
+						if (signatures.entrySet().stream().anyMatch(set -> set.getValue().stream()
+								.anyMatch(s -> (((Call) t).getFullTargetName()).equals(set.getKey() + "::" + s) // qualifier::targetName
+										|| (((Call) t).getFullTargetName()).equals(s)))) {
 							return true;
 						}
 					}
 					return false;
 				}
 			};
-			
+
 			matches += CFGUtils.countMatchInCFGNodes(graph, condition);
-			
+
 			return true;
 		}
 
@@ -242,9 +250,9 @@ public class AnalysisPreRequirementsUtils {
 		public boolean visit(Collection<Statement> tool, CFG graph, Edge edge) {
 			return true;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Visitor to match class descriptors.
 	 */
@@ -255,14 +263,16 @@ public class AnalysisPreRequirementsUtils {
 		 * Classes to match.
 		 */
 		final Class<?>[] classes;
-		
+
 		/**
 		 * The counter of matches.
 		 */
 		private int matches;
-		
+
 		/**
-		 * Yields {@code true} if there is at least a match (to use after visiting).
+		 * Yields {@code true} if there is at least a match (to use after
+		 * visiting).
+		 * 
 		 * @return {@code true} if there is at least a match
 		 */
 		public boolean isMatched() {
@@ -271,29 +281,30 @@ public class AnalysisPreRequirementsUtils {
 
 		/**
 		 * Builds the class descriptor matcher.
+		 * 
 		 * @param classes the classes to match
 		 */
-		public ClassDescriptorMatcher( Class<?> ...classes) {
+		public ClassDescriptorMatcher(Class<?>... classes) {
 			this.classes = classes;
 		}
 
 		@Override
 		public boolean visit(Collection<Statement> tool, CFG graph) {
-			
+
 			Function<Statement, Boolean> condition = new Function<Statement, Boolean>() {
-				
+
 				@Override
 				public Boolean apply(Statement t) {
-					for(Class<?> c : classes)
+					for (Class<?> c : classes)
 						if (t.getClass() == c || t.getClass().isInstance(c))
 							return true;
 					return false;
 				}
 			};
-			
+
 			matches += CFGUtils.countMatchInCFGNodes(graph, condition);
-			 
-			 return true;
+
+			return true;
 		}
 
 		@Override
@@ -305,6 +316,6 @@ public class AnalysisPreRequirementsUtils {
 		public boolean visit(Collection<Statement> tool, CFG graph, Edge edge) {
 			return true;
 		}
-		
+
 	}
 }

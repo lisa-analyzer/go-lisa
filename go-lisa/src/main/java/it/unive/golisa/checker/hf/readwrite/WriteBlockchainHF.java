@@ -11,6 +11,7 @@ public class WriteBlockchainHF {
 
 	/**
 	 * Yields the statement.
+	 * 
 	 * @return the statement
 	 */
 	public Statement getSt() {
@@ -19,6 +20,7 @@ public class WriteBlockchainHF {
 
 	/**
 	 * Yields the key.
+	 * 
 	 * @return the key
 	 */
 	public Object getKey() {
@@ -27,7 +29,8 @@ public class WriteBlockchainHF {
 
 	/**
 	 * Builds the instance.
-	 * @param st the statement
+	 * 
+	 * @param st  the statement
 	 * @param key the key
 	 */
 	public WriteBlockchainHF(Statement st, Object key) {

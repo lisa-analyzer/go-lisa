@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.unary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractDomain;
@@ -23,6 +21,7 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.symbolic.value.operator.unary.StringLength;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Set;
 
 /**
  * A Go len expression (e.g., len(x)).
@@ -46,14 +45,12 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare
 	}
-	
-	
 
 	@Override
 	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
 			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 			StatementStore<A> expressions) throws SemanticException {
-		 AnalysisState<A> result = state.bottom();
+		AnalysisState<A> result = state.bottom();
 		Set<Type> etypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, expr, this);
 		for (Type type : etypes) {
 			if (type.isPointerType()) {
@@ -64,7 +61,8 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 			} else if (type.isArrayType() || type instanceof GoSliceType) {
 				// FIXME we get here when rec is a parameter of an entrypoint,
 				// and len is not defined yet..
-				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoIntType.INSTANCE, getLocation()), this));
+				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(state,
+						new PushAny(GoIntType.INSTANCE, getLocation()), this));
 			} else if (type.isStringType())
 				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(state,
 						new UnaryExpression(GoIntType.INSTANCE, expr, StringLength.INSTANCE, getLocation()), this));
@@ -72,6 +70,5 @@ public class GoLength extends it.unive.lisa.program.cfg.statement.UnaryExpressio
 
 		return result;
 	}
-
 
 }

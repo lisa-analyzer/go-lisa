@@ -1,14 +1,5 @@
 package it.unive.golisa.cfg.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
-
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.edge.Edge;
@@ -18,6 +9,14 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Class containing some utils methods to deal with CFGs.
@@ -58,7 +57,7 @@ public class CFGUtils {
 	 * @throws IllegalArgumentException if the search algorithm is not supported
 	 */
 	public static boolean existPath(CFG cfg, Statement source, Statement destination, Search search) {
-		if(source.equals(destination))
+		if (source.equals(destination))
 			return true;
 		if (search.equals(Search.BFS))
 			return searchBFS(cfg, source, destination);
@@ -207,6 +206,7 @@ public class CFGUtils {
 	 * 
 	 * @param graph the CFG to check
 	 * @param nodes the statements to check
+	 * 
 	 * @return Yields {@code true} if the CFG contains all the statements
 	 */
 	private static boolean containsAllNodes(CFG graph, Statement... nodes) {
@@ -223,10 +223,12 @@ public class CFGUtils {
 
 	/**
 	 * Recursive DFS search on a CFG to find if exist a path between two nodes.
-	 * @param graph the CFG to check
-	 * @param source the source node
+	 * 
+	 * @param graph       the CFG to check
+	 * @param source      the source node
 	 * @param destination the destination node
-	 * @param seen the set of nodes already seen
+	 * @param seen        the set of nodes already seen
+	 * 
 	 * @return {@code true} if there is a path between the two nodes
 	 */
 	private static boolean recursiveDFS(CFG graph, Statement source, Statement destination, Set<Statement> seen) {
@@ -249,23 +251,27 @@ public class CFGUtils {
 
 	/**
 	 * Given a condition, counts the number of matches in the CFG.
-	 * @param cfg the CFG to check
+	 * 
+	 * @param cfg       the CFG to check
 	 * @param condition the condition
+	 * 
 	 * @return the number of matches
 	 */
 	public static int countMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		int res = 0;
-		for( Statement node : cfg.getNodes()) {
-			 if(matchNodeOrSubExpressions(node, condition))
-				 res++;
+		for (Statement node : cfg.getNodes()) {
+			if (matchNodeOrSubExpressions(node, condition))
+				res++;
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Given a condition, it checks if there is a match in the nodes of CFG.
-	 * @param cfg the CFG to check
+	 * 
+	 * @param cfg       the CFG to check
 	 * @param condition the condition
+	 * 
 	 * @return {@code true} if there is a match
 	 */
 	public static boolean anyMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
@@ -273,9 +279,12 @@ public class CFGUtils {
 	}
 
 	/**
-	 * Given a condition, it checks if the condition match with all nodes of CFG.
-	 * @param cfg the CFG to check
+	 * Given a condition, it checks if the condition match with all nodes of
+	 * CFG.
+	 * 
+	 * @param cfg       the CFG to check
 	 * @param condition the condition
+	 * 
 	 * @return {@code true} if all nodes match the condition
 	 */
 	public static boolean allMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
@@ -341,9 +350,10 @@ public class CFGUtils {
 	/**
 	 * Yields a code graph that contains a path between two nodes.
 	 * 
-	 * @param graph the CFG to check
-	 * @param source the source node
+	 * @param graph       the CFG to check
+	 * @param source      the source node
 	 * @param destination the destination node
+	 * 
 	 * @return the graph with the path
 	 */
 	private static CodeGraph<CFG, Statement, Edge> getSearchGraphDFS(CFG graph, Statement source,
@@ -357,15 +367,16 @@ public class CFGUtils {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Yields a code graph that contains a path between two nodes.
 	 * 
-	 * @param graph the CFG to check
-	 * @param source the source node
+	 * @param graph       the CFG to check
+	 * @param source      the source node
 	 * @param destination the destination statement
-	 * @param seen the set of nodes aready seen
-	 * @param res the collection of code graphs found
+	 * @param seen        the set of nodes aready seen
+	 * @param res         the collection of code graphs found
+	 * 
 	 * @return the destination statement or the node that contain it
 	 */
 	private static Statement getSearchGraphRecursiveDFS(CFG graph, Statement source, Statement destination,

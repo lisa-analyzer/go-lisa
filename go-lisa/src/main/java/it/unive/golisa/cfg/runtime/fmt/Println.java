@@ -90,10 +90,10 @@ public class Println extends NativeCFG {
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
 			AnalysisState<A> res = state.bottom();
-			
-			for(ExpressionSet p : params)
-				for(SymbolicExpression e : p) 
-				res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state, e, original));
+
+			for (ExpressionSet p : params)
+				for (SymbolicExpression e : p)
+					res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state, e, original));
 			return res;
 		}
 	}

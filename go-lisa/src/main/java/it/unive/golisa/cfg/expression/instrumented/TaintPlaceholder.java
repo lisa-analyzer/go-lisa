@@ -11,7 +11,8 @@ public class TaintPlaceholder extends Constant {
 
 	/**
 	 * Builds the placeholder.
-	 * @param type the type 
+	 * 
+	 * @param type     the type
 	 * @param location the location
 	 */
 	public TaintPlaceholder(Type type, CodeLocation location) {

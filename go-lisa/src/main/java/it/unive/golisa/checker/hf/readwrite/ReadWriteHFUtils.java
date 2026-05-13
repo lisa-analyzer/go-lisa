@@ -1,8 +1,7 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import java.util.List;
-
 import it.unive.lisa.program.cfg.statement.call.Call;
+import java.util.List;
 
 /**
  * Utility class fore read-write analysis.
@@ -17,7 +16,7 @@ public class ReadWriteHFUtils {
 		 * Read state operation.
 		 */
 		READ,
-		
+
 		/**
 		 * Write state operation.
 		 */
@@ -28,7 +27,7 @@ public class ReadWriteHFUtils {
 	 * The key type of the instruction.
 	 */
 	protected enum KeyType {
-		
+
 		/**
 		 * Instruction with a single key.
 		 */
@@ -68,7 +67,9 @@ public class ReadWriteHFUtils {
 
 	/**
 	 * Yields {@code true} if the call is a read or write operation.
+	 * 
 	 * @param call the call to check
+	 * 
 	 * @return {@code true} if the call is a read or write operation
 	 */
 	public static boolean isReadOrWriteCall(Call call) {
@@ -77,7 +78,9 @@ public class ReadWriteHFUtils {
 
 	/**
 	 * Yields {@code true} if the call is a write operation.
+	 * 
 	 * @param call the call to check
+	 * 
 	 * @return {@code true} if the call is a write operation
 	 */
 	public static boolean isWriteCall(Call call) {
@@ -87,7 +90,9 @@ public class ReadWriteHFUtils {
 
 	/**
 	 * Yields {@code true} if the call is a read operation.
+	 * 
 	 * @param call the call to check
+	 * 
 	 * @return {@code true} if the call is a read operation
 	 */
 	public static boolean isReadCall(Call call) {
@@ -97,7 +102,9 @@ public class ReadWriteHFUtils {
 
 	/**
 	 * Yields the read-write information of a call.
+	 * 
 	 * @param call the call
+	 * 
 	 * @return the read-write info
 	 */
 	public static ReadWriteInfo getReadWriteInfo(Call call) {

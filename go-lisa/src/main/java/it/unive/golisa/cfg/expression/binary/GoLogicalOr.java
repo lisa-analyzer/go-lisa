@@ -36,7 +36,6 @@ public class GoLogicalOr extends Or {
 		super(cfg, location, left, right);
 	}
 
-
 	@Override
 	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemantics(
 			AnalysisState<A> state,
@@ -93,6 +92,5 @@ public class GoLogicalOr extends Or {
 				new BinaryExpression(getStaticType(), left, right, LogicalOr.INSTANCE, getLocation()),
 				this);
 	}
-
 
 }

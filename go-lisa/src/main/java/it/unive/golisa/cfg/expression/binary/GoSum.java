@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.expression.binary;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -19,6 +17,7 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.symbolic.value.operator.binary.NumericNonOverflowingAdd;
 import it.unive.lisa.symbolic.value.operator.binary.StringConcat;
 import it.unive.lisa.type.Type;
+import java.util.Set;
 
 /**
  * A Go numerical sum expression (e.g., x + y).
@@ -55,11 +54,13 @@ public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 		if (left.getStaticType().isNumericType() && right.getStaticType().isNumericType()) {
 			op = NumericNonOverflowingAdd.INSTANCE;
 			type = resultType(left.getStaticType(), right.getStaticType());
-			result = interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(type, left, right, op, getLocation()), this);
+			result = interprocedural.getAnalysis().smallStepSemantics(state,
+					new BinaryExpression(type, left, right, op, getLocation()), this);
 		} else if (left.getStaticType().isStringType() && right.getStaticType().isStringType()) {
 			op = StringConcat.INSTANCE;
 			type = GoStringType.INSTANCE;
-			result = interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(type, left, right, op, getLocation()), this);
+			result = interprocedural.getAnalysis().smallStepSemantics(state,
+					new BinaryExpression(type, left, right, op, getLocation()), this);
 		} else {
 			Set<Type> ltypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, left, this);
 			Set<Type> rtypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, right, this);

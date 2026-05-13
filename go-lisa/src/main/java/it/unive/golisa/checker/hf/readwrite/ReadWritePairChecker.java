@@ -1,13 +1,5 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.lisa.analysis.Analysis;
 import it.unive.lisa.analysis.AnalyzedCFG;
@@ -39,19 +31,28 @@ import it.unive.lisa.program.cfg.statement.call.NativeCall;
 import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.value.ValueExpression;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * A Go checker for read-write set issues of Hyperledger Fabric. Note that
  * read-write set issues analysis is split in two checkers/phases. This is the
  * first phase.
  *
- * @param <H> the lattice that represents a property of the memory of the program
- * @param <T> the lattice that represents a set of types corresponding to the runtime types of an expression
+ * @param <H> the lattice that represents a property of the memory of the
+ *                program
+ * @param <T> the lattice that represents a set of types corresponding to the
+ *                runtime types of an expression
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class ReadWritePairChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
-SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>>  {
+		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+				SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> {
 
 	private Set<AnalysisReadWriteHFInfo> writers;
 	private Set<AnalysisReadWriteHFInfo> readers;
@@ -60,7 +61,8 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	private Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates;
 
 	/**
-	 * Yields the set of instruction pairs candidate to be read-after-write 
+	 * Yields the set of instruction pairs candidate to be read-after-write
+	 * 
 	 * @return the set of instruction pairs
 	 */
 	public Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> getReadAfterWriteCandidates() {
@@ -68,7 +70,8 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 	}
 
 	/**
-	 * Yields the set of instruction pairs candidate to be over-write 
+	 * Yields the set of instruction pairs candidate to be over-write
+	 * 
 	 * @return the set of instruction pairs
 	 */
 	public Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> getOverWriteCandidates() {
@@ -77,36 +80,44 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 
 	@Override
 	public void beforeExecution(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool) {
 		writers = new HashSet<>();
 		readers = new HashSet<>();
 	}
 
 	@Override
 	public void afterExecution(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool) {
 		readAfterWriteCandidates = computeReadAfterWriteCandidates();
 		overWriteCandidates = computeOverWriteCandidates();
 	}
 
 	@Override
 	public boolean visitUnit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			Unit unit) {
 		return true;
 	}
 
 	@Override
 	public void visitGlobal(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
-	
-
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
@@ -130,17 +141,20 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 							Collection<CodeMember> nativeCfgs = nativeCfg.getTargets();
 							for (CodeMember n : nativeCfgs) {
 								Parameter[] parameters = n.getDescriptor().getFormals();
-								keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, parameters.length, node, result);
+								keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, parameters.length,
+										node, result);
 							}
 						} else if (resolved instanceof CFGCall) {
 							CFGCall cfg = (CFGCall) resolved;
 
 							for (CodeMember n : cfg.getTargets()) {
 								Parameter[] parameters = n.getDescriptor().getFormals();
-								keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, parameters.length, node, result);
+								keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, parameters.length,
+										node, result);
 							}
 						} else {
-							keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams, call.getParameters().length, node, result);
+							keyValues = extractKeyValues(tool.getAnalysis(), call, keyParams,
+									call.getParameters().length, node, result);
 						}
 
 						AnalysisReadWriteHFInfo infoForAnalysis;
@@ -169,7 +183,9 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 
 	@Override
 	public boolean visit(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
@@ -252,7 +268,8 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 		return true;
 	}
 
-	private boolean possibleRangeMatch(RegexAutomaton wkvState, RegexAutomaton rstartKeyValueState, RegexAutomaton rendKeyValueState) {
+	private boolean possibleRangeMatch(RegexAutomaton wkvState, RegexAutomaton rstartKeyValueState,
+			RegexAutomaton rendKeyValueState) {
 		if (!rendKeyValueState.isEqualTo(RegexAutomaton.emptyStr())) {
 			String value = extractValueStringFromRegexAutomatonStates(wkvState);
 			if (value != null) {
@@ -340,10 +357,13 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 		return res;
 	}
 
-
-
-	private Set<RegexAutomaton> extractCollectionValues(Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> analysis, Call call, int collectionParam, Statement node,
-			AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> result)
+	private Set<RegexAutomaton> extractCollectionValues(
+			Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<
+							HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> analysis,
+			Call call, int collectionParam, Statement node,
+			AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+					TypeEnvironment<T>>> result)
 			throws SemanticException {
 
 		int par = call.getCallType().equals(CallType.STATIC) ? collectionParam : collectionParam + 1;
@@ -372,8 +392,13 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 		return null;
 	}
 
-	private ArrayList<Set<RegexAutomaton>> extractKeyValues(Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> analysis,
-			Call call, int[] keyParams, int parametersLength, Statement node, AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> result)
+	private ArrayList<Set<RegexAutomaton>> extractKeyValues(
+			Analysis<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> analysis,
+			Call call, int[] keyParams, int parametersLength, Statement node,
+			AnalyzedCFG<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+					TypeEnvironment<T>>> result)
 			throws SemanticException {
 
 		ArrayList<Set<RegexAutomaton>> valStringDomain = new ArrayList<>(keyParams.length);
@@ -388,7 +413,8 @@ SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAuto
 					var valueState = state.getExecutionState().valueState;
 					Tarsis analysisValueDomain = (Tarsis) analysis.domain.valueDomain;
 					SemanticOracle oracle = analysis.domain.makeOracle(state.getExecutionState());
-					var value = analysisValueDomain.eval(valueState, (ValueExpression) stack, (ProgramPoint) node, oracle);
+					var value = analysisValueDomain.eval(valueState, (ValueExpression) stack, (ProgramPoint) node,
+							oracle);
 					valStringDomain.get(i).add(value);
 				}
 			}

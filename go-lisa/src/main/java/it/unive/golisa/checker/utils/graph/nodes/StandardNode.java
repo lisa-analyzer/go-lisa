@@ -15,7 +15,7 @@ public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, La
 	 * The parent graph.
 	 */
 	private final GraphForCheckers graph;
-	
+
 	/**
 	 * The statement represented by this node.
 	 */
@@ -64,6 +64,7 @@ public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, La
 
 	/**
 	 * Yields the parent graph.
+	 * 
 	 * @return the graph
 	 */
 	public GraphForCheckers getGraph() {
@@ -72,6 +73,7 @@ public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, La
 
 	/**
 	 * Yields the statement.
+	 * 
 	 * @return the statement
 	 */
 	public Statement getStatement() {
@@ -102,6 +104,5 @@ public class StandardNode implements CodeNode<GraphForCheckers, StandardNode, La
 	public StandardNode clone() throws CloneNotSupportedException {
 		return new StandardNode(graph, st);
 	}
-	
-	
+
 }

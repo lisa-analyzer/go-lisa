@@ -52,13 +52,13 @@ import java.util.Set;
 /**
  * Checker for the detection of integer overflow/underflow in program variables.
  *
+ * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
+ * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ *
  * @param <H> the lattice that represents a property of the memory of the
  *                program
  * @param <T> the lattice that represents a set of types corresponding to the
  *                runtime types of an expression
- * 
- * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
- * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
 		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<IntInterval>, TypeEnvironment<T>>,
@@ -402,21 +402,25 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 	 * Numerical issue enumeration.
 	 */
 	public static class NumericalIssueEnum {
+
+		/**
+		 * Numerical issue enumeration.
+		 */
 		public enum NumericalIssue {
 			/**
-			 * Definitely overflow
+			 * Definitely overflow.
 			 */
 			OVERFLOW(false),
 			/**
-			 * Possible overflow
+			 * Possible overflow.
 			 */
 			MAY_OVERFLOW(true),
 			/**
-			 * Definitely underflow
+			 * Definitely underflow.
 			 */
 			UNDERFLOW(false),
 			/**
-			 * Possible underflow
+			 * Possible underflow.
 			 */
 			MAY_UNDERFLOW(true);
 
@@ -465,7 +469,7 @@ public class NumericalOverflowOfVariablesChecker<H extends HeapValue<H>, T exten
 		/**
 		 * Builds an instance of issue info.
 		 * 
-		 * @return
+		 * @return the statement
 		 */
 		public Statement getStatement() {
 			return statement;

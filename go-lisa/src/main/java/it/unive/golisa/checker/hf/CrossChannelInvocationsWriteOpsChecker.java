@@ -34,12 +34,12 @@ import java.util.Set;
  * A Go Checker for the detection write operations from different cross-channel
  * invocations in Hyperledger Fabric.
  *
+ * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+ *
  * @param <H> the lattice that represents a property of the memory of the
  *                program
  * @param <T> the lattice that represents a set of types corresponding to the
  *                runtime types of an expression
- * 
- * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class CrossChannelInvocationsWriteOpsChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
 		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
@@ -48,6 +48,12 @@ public class CrossChannelInvocationsWriteOpsChecker<H extends HeapValue<H>, T ex
 	private final boolean computeGraph;
 	private Set<Statement> cchisToCheck;
 
+	/**
+	 * Builds an instance of the checker.
+	 * 
+	 * @param cchisToCheck the cross-channel invocations to check
+	 * @param computeGraph the computed graph
+	 */
 	public CrossChannelInvocationsWriteOpsChecker(Set<Statement> cchisToCheck, boolean computeGraph) {
 		this.cchisToCheck = cchisToCheck;
 		this.computeGraph = computeGraph;

@@ -46,12 +46,12 @@ import org.apache.commons.lang3.tuple.Pair;
  * A Go Checker for the detection of different cross-channel invocations in
  * Hyperledger Fabric.
  *
+ * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+ *
  * @param <H> the lattice that represents a property of the memory of the
  *                program
  * @param <T> the lattice that represents a set of types corresponding to the
  *                runtime types of an expression
- * 
- * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class CrossChannelInvocationsIssuesChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
 		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,

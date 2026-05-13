@@ -18,13 +18,13 @@ import java.util.Set;
 /**
  * A Go taint checker for untrusted cross-contract invocation issues.
  * 
+ * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+ * 
  * @param <H> the lattice that represents a property of the memory of the
  *                program
  * @param <T> the lattice that represents a set of types corresponding to the
  *                runtime types of an expression
  * @param <V> the taint analysis lattice
- * 
- * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class UntrustedCrossContractInvocationsChecker<H extends HeapValue<H>,
 		V extends TaintLattice<V>,

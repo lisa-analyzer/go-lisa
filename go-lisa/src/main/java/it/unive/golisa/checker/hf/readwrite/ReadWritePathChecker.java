@@ -47,12 +47,12 @@ import org.apache.logging.log4j.Logger;
 /**
  * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.
  *
+ * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+ *
  * @param <H> the lattice that represents a property of the memory of the
  *                program
  * @param <T> the lattice that represents a set of types corresponding to the
  *                runtime types of an expression
- * 
- * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class ReadWritePathChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
 		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,

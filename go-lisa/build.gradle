@@ -97,8 +97,7 @@ spotless {
         indentWithTabs()
     
         // keep imports clean 
-        importOrder() 
-        removeUnusedImports()
+        importOrder()
     
         // use the eclipse formatting with the one provided with the project
         eclipse().configFile(new File(rootProject.projectDir, 'spotless-formatting.xml'))

@@ -97,10 +97,10 @@ public class Front extends NativeCFG {
 			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), true);
 			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(listType, ref, getLocation());
-			AnalysisState<A> asg = interprocedural.getAnalysis().assign(state, deref, new PushAny(Untyped.INSTANCE, getLocation()), this);
+			AnalysisState<A> asg = interprocedural.getAnalysis().assign(state, deref,
+					new PushAny(Untyped.INSTANCE, getLocation()), this);
 			return interprocedural.getAnalysis().smallStepSemantics(asg, ref, original);
 		}
-
 
 	}
 

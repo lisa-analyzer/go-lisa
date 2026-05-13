@@ -85,12 +85,12 @@ public class Wrap extends NativeCFG {
 			super(cfg, location, "WrapImpl", GoErrorType.INSTANCE, left, right);
 		}
 
-		
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoErrorType.INSTANCE, getLocation()), original);
 		}
 
 		@Override
@@ -98,6 +98,5 @@ public class Wrap extends NativeCFG {
 			return 0; // nothing else to compare
 		}
 	}
-	
-	
+
 }

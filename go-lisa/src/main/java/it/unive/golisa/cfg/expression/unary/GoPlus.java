@@ -41,8 +41,6 @@ public class GoPlus extends UnaryExpression {
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare
 	}
-	
-	
 
 	@Override
 	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(

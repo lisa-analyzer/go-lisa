@@ -115,7 +115,6 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 					left, middle, right);
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdTernarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
@@ -132,8 +131,10 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
-			Collection<SymbolicExpression> reachableIdsRight = interprocedural.getAnalysis().reachableFrom(state, right, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
+			Collection<SymbolicExpression> reachableIdsRight = interprocedural.getAnalysis().reachableFrom(state, right,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				for (SymbolicExpression r : reachableIdsRight) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
@@ -143,10 +144,11 @@ public class GetStateByPartialCompositeKey extends NativeCFG {
 					TernaryExpression rExp = new TernaryExpression(GoErrorType.INSTANCE, derefId, middle, r,
 							GetStateByPartialCompositeKeyOperatorSecondParameter.INSTANCE, getLocation());
 
-					result = result.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
-							getLocation(), tupleType,
-							ref,
-							rExp));
+					result = result.lub(
+							GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+									getLocation(), tupleType,
+									ref,
+									rExp));
 				}
 			}
 

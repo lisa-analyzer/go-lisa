@@ -14,7 +14,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.util.datastructures.graph.GraphVisitor;
 
 /**
- * Instrumentation for switch statements: represent the default case check
+ * Instrumentation for switch statements: represent the default case check.
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */

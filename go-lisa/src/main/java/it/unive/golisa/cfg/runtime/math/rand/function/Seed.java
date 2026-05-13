@@ -93,6 +93,5 @@ public class Seed extends NativeCFG {
 			return interprocedural.getAnalysis().smallStepSemantics(state, new Skip(getLocation()), original);
 		}
 
-
 	}
 }

@@ -91,7 +91,8 @@ public class Close extends NativeCFG {
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
 
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoErrorType.INSTANCE, getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoErrorType.INSTANCE, getLocation()), original);
 		}
 	}
 }

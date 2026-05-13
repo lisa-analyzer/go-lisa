@@ -65,9 +65,10 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 	private boolean matchCallee(Parameter formal, Set<Type> types) {
 		if (formal.getStaticType().isPointerType()) {
 			Type inner = formal.getStaticType().asPointerType().getInnerType();
-			if(types.stream()
-					.anyMatch(rt -> rt.canBeAssignedTo(inner) || rt.canBeAssignedTo(formal.getStaticType()) || canBeAssignedPointRef(rt,formal.getStaticType())))
-					return true;
+			if (types.stream()
+					.anyMatch(rt -> rt.canBeAssignedTo(inner) || rt.canBeAssignedTo(formal.getStaticType())
+							|| canBeAssignedPointRef(rt, formal.getStaticType())))
+				return true;
 		} else if (types.stream().anyMatch(
 				rt -> rt.isPointerType() && rt.asPointerType().getInnerType().canBeAssignedTo(formal.getStaticType())))
 			return true;
@@ -75,10 +76,10 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 	}
 
 	private boolean canBeAssignedPointRef(Type rt, Type formal) {
-		if(rt.isReferenceType() && formal.isPointerType()) {
+		if (rt.isReferenceType() && formal.isPointerType()) {
 			ReferenceType ref = (ReferenceType) rt;
 			PointerType point = (PointerType) formal;
-			if(ref.getInnerType().canBeAssignedTo(point.getInnerType()))
+			if (ref.getInnerType().canBeAssignedTo(point.getInnerType()))
 				return true;
 		}
 		return false;

@@ -65,8 +65,9 @@ public class GoAssignment extends BinaryExpression {
 		return getLeft() + " = " + getRight();
 	}
 
-	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> assignScopedId(InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> entryState,
-					SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
+	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> assignScopedId(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> entryState,
+			SymbolicExpression expr1, SymbolicExpression expr2) throws SemanticException {
 
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
@@ -104,8 +105,6 @@ public class GoAssignment extends BinaryExpression {
 		AnalysisState<A> result = assignScopedId(interprocedural, state, left, right);
 		result = interprocedural.getAnalysis().assign(result, left, right, this);
 
-
-		
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.withExecution(result.getExecution().forgetIdentifiers(getRight().getMetaVariables(), this));
 		if (!getLeft().getMetaVariables().isEmpty())

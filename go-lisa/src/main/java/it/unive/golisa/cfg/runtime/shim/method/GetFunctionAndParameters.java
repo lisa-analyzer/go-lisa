@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
@@ -38,6 +36,7 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
 
 /**
  * func (s *ChaincodeStub) GetFunctionAndParameters() (function string, params
@@ -48,7 +47,7 @@ import it.unive.lisa.type.Untyped;
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class GetFunctionAndParameters extends NativeCFG {
-	
+
 	/**
 	 * Builds the native cfg.
 	 * 
@@ -117,17 +116,18 @@ public class GetFunctionAndParameters extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
-			
+
 			Unit unit = getProgram().getUnit("ChaincodeStub");
-			Collection<CodeMember> members = ((CompilationUnit)unit).getInstanceCodeMembersByName("GetFunctionAndParameters", true);
-			
+			Collection<CodeMember> members = ((CompilationUnit) unit)
+					.getInstanceCodeMembersByName("GetFunctionAndParameters", true);
+
 			Annotations annots = new Annotations();
-			for(CodeMember cm : members) {
-				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+			for (CodeMember cm : members) {
+				for (Annotation a : cm.getDescriptor().getAnnotations()) {
 					annots.addAnnotation(a);
 				}
 			}
-			
+
 			Type sliceOfString = GoSliceType.getSliceOfStrings();
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoStringType.INSTANCE,
 					new ReferenceType(sliceOfString));
@@ -144,16 +144,19 @@ public class GetFunctionAndParameters extends NativeCFG {
 					getLocation());
 			AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
 					len, getLocation());
-			AnalysisState<A> lenState = interprocedural.getAnalysis().assign(state, lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			AnalysisState<A> lenState = interprocedural.getAnalysis().assign(state, lenAccess,
+					new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
 			// Assign the cap property to this hid
 			Variable cap = new Variable(Untyped.INSTANCE, "cap",
 					getLocation());
 			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
 					cap, getLocation());
-			AnalysisState<A> capState = interprocedural.getAnalysis().assign(lenState, capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			AnalysisState<A> capState = interprocedural.getAnalysis().assign(lenState, capAccess,
+					new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, capState, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, capState, new Annotations(), this,
+					getLocation(), tupleType,
 					new PushAny(GoStringType.INSTANCE, getLocation()),
 					ref);
 		}

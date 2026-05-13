@@ -71,20 +71,23 @@ public class GoTupleExpression extends NaryExpression {
 	 * Yields an abstract state where the tuple expression passed as parameters
 	 * has been allocated.
 	 * 
-	 * @param <A>        abstract state type parameter
-	 * @param entryState the entry state
-	 * @param anns       the annotations of the tuple expression
-	 * @param pp         the program point where the allocation occurs
-	 * @param location   the location where the allocation occurs
-	 * @param tupleType  the type of the tuple expressions
-	 * @param exps       the expressions initializing the tuple
+	 * @param <A>             the abstract lattice
+	 * @param <D>             the abstract domain
+	 * @param interprocedural the interprocedural analysis
+	 * @param entryState      the entry state
+	 * @param anns            the annotations of the tuple expression
+	 * @param pp              the program point where the allocation occurs
+	 * @param location        the location where the allocation occurs
+	 * @param tupleType       the type of the tuple expressions
+	 * @param exps            the expressions initializing the tuple
 	 * 
 	 * @return an abstract state where the tuple expression passed as parameters
 	 *             has been allocated
 	 * 
 	 * @throws SemanticException if an error occurs during the computation
 	 */
-	public static <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> allocateTupleExpression(InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> entryState,
+	public static <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> allocateTupleExpression(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> entryState,
 			Annotations anns, ProgramPoint pp, CodeLocation location, GoTupleType tupleType, SymbolicExpression... exps)
 			throws SemanticException {
 		// Allocates the new heap allocation
@@ -131,6 +134,5 @@ public class GoTupleExpression extends NaryExpression {
 
 		return interprocedural.getAnalysis().smallStepSemantics(tmp, ref, this);
 	}
-	
-	
+
 }

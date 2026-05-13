@@ -30,7 +30,6 @@ import java.util.Set;
  */
 public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
-	
 	@Override
 	public void beforeExecution(ReportingTool tool) {
 	}

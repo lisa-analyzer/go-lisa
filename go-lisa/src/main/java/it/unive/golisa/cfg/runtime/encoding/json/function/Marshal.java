@@ -105,7 +105,6 @@ public class Marshal extends NativeCFG {
 					expr);
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
@@ -123,18 +122,20 @@ public class Marshal extends NativeCFG {
 			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(GoSliceType.getSliceOfBytes(), derefId,
 						MarshalOperatorFirstParameter.INSTANCE, getLocation());
 				UnaryExpression right = new UnaryExpression(GoErrorType.INSTANCE, derefId,
 						MarshalOperatorSecondParameter.INSTANCE, getLocation());
-				AnalysisState<A> asg =  interprocedural.getAnalysis().assign(state, deref, left, original);
-				result = result.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
-						getLocation(), tupleType,
-						ref,
-						right));
+				AnalysisState<A> asg = interprocedural.getAnalysis().assign(state, deref, left, original);
+				result = result
+						.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+								getLocation(), tupleType,
+								ref,
+								right));
 			}
 
 			return result;

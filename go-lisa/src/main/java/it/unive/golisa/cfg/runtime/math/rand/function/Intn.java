@@ -1,6 +1,5 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
-import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
@@ -90,7 +89,8 @@ public class Intn extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoIntType.INSTANCE, getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoIntType.INSTANCE, getLocation()), original);
 		}
 	}
 }

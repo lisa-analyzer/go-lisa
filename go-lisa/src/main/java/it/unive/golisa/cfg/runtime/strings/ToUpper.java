@@ -91,7 +91,8 @@ public class ToUpper extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoStringType.INSTANCE, getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
 
 	}

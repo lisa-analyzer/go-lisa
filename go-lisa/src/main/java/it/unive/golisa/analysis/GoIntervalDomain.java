@@ -1,7 +1,5 @@
 package it.unive.golisa.analysis;
 
-import java.math.BigDecimal;
-
 import it.unive.golisa.cfg.type.numeric.signed.GoInt16Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.golisa.cfg.type.numeric.signed.GoInt64Type;
@@ -21,32 +19,30 @@ import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
 import it.unive.lisa.util.numeric.IntInterval;
 import it.unive.lisa.util.numeric.MathNumber;
+import java.math.BigDecimal;
 
 /**
- * The overflow-insensitive interval abstract domain customized for Go
+ * The overflow-insensitive interval abstract domain customized for Go.
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class GoIntervalDomain extends Interval {
 
-	/**
-	 * 
-	 * uint8       the set of all unsigned  8-bit integers (0 to 255)
-	 * uint16      the set of all unsigned 16-bit integers (0 to 65535)
-	 * uint32      the set of all unsigned 32-bit integers (0 to 4294967295)
-	 * uint64      the set of all unsigned 64-bit integers (0 to 18446744073709551615)
-	 * 
-	 * int8        the set of all signed  8-bit integers (-128 to 127)
-	 * int16       the set of all signed 16-bit integers (-32768 to 32767)
-	 * int32       the set of all signed 32-bit integers (-2147483648 to 2147483647)
-	 * int64       the set of all signed 64-bit integers (-9223372036854775808 to 9223372036854775807)
-	 * 
+	/*
+	 * Intervals and types. uint8 the set of all unsigned 8-bit integers (0 to
+	 * 255) uint16 the set of all unsigned 16-bit integers (0 to 65535) uint32
+	 * the set of all unsigned 32-bit integers (0 to 4294967295) uint64 the set
+	 * of all unsigned 64-bit integers (0 to 18446744073709551615) int8 the set
+	 * of all signed 8-bit integers (-128 to 127) int16 the set of all signed
+	 * 16-bit integers (-32768 to 32767) int32 the set of all signed 32-bit
+	 * integers (-2147483648 to 2147483647) int64 the set of all signed 64-bit
+	 * integers (-9223372036854775808 to 9223372036854775807)
 	 */
 	@Override
 	public IntInterval evalPushAny(PushAny pushAny, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
-		
+
 		Type type = pushAny.getStaticType();
-		
+
 		if (type == GoInt8Type.INSTANCE)
 			return new IntInterval(-128, 127);
 
@@ -70,7 +66,7 @@ public class GoIntervalDomain extends Interval {
 
 		if (type == GoUInt64Type.INSTANCE || type == Untyped.INSTANCE)
 			return new IntInterval(new MathNumber(0), new MathNumber(new BigDecimal("18446744073709551615")));
-		
+
 		return super.evalPushAny(pushAny, pp, oracle);
 	}
 

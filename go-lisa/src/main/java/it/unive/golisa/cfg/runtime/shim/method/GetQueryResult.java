@@ -116,22 +116,22 @@ public class GetQueryResult extends NativeCFG {
 					left, right);
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
-			
+
 			Unit unit = getProgram().getUnit("ChaincodeStub");
-			Collection<CodeMember> members = ((CompilationUnit)unit).getInstanceCodeMembersByName("GetQueryResult", true);
-			
+			Collection<
+					CodeMember> members = ((CompilationUnit) unit).getInstanceCodeMembersByName("GetQueryResult", true);
+
 			Annotations annots = new Annotations();
-			for(CodeMember cm : members) {
-				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+			for (CodeMember cm : members) {
+				for (Annotation a : cm.getDescriptor().getAnnotations()) {
 					annots.addAnnotation(a);
 				}
 			}
-			
+
 			Type allocType = StateQueryIteratorInterface.getStateQueryIteratorInterfaceType(getProgram());
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(allocType), GoErrorType.INSTANCE);
@@ -143,7 +143,8 @@ public class GetQueryResult extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				BinaryExpression lExp = new BinaryExpression(Untyped.INSTANCE, derefId, right,
@@ -155,10 +156,11 @@ public class GetQueryResult extends NativeCFG {
 					new Constant(Untyped.INSTANCE, 1, getLocation()), right,
 					GetQueryResultSecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+					getLocation(), tupleType,
 					ref,
-					rExp);		
-			
+					rExp);
+
 		}
 	}
 

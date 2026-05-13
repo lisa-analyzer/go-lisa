@@ -91,7 +91,8 @@ public class PathEscape extends NativeCFG {
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
 				StatementStore<A> expressions) throws SemanticException {
 			// TODO to implement path escape method from url package
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(getStaticType(), getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(getStaticType(), getLocation()),
+					original);
 		}
 	}
 }

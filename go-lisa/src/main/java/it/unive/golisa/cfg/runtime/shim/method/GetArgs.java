@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import java.util.Collection;
-
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
@@ -35,6 +33,7 @@ import it.unive.lisa.symbolic.value.Variable;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
+import java.util.Collection;
 
 /**
  * func (s *ChaincodeStub) GetArgs() [][]byte.
@@ -44,7 +43,6 @@ import it.unive.lisa.type.Untyped;
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class GetArgs extends NativeCFG {
-
 
 	/**
 	 * Builds the native cfg.
@@ -109,17 +107,17 @@ public class GetArgs extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
-			
+
 			Unit unit = getProgram().getUnit("ChaincodeStub");
-			Collection<CodeMember> members = ((CompilationUnit)unit).getInstanceCodeMembersByName("GetArgs", true);
-			
+			Collection<CodeMember> members = ((CompilationUnit) unit).getInstanceCodeMembersByName("GetArgs", true);
+
 			Annotations annots = new Annotations();
-			for(CodeMember cm : members) {
-				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+			for (CodeMember cm : members) {
+				for (Annotation a : cm.getDescriptor().getAnnotations()) {
 					annots.addAnnotation(a);
 				}
 			}
-			
+
 			Type sliceOfSliceOfBytes = GoSliceType.getSliceOfSliceOfBytes();
 
 			// Allocates the new heap allocation
@@ -132,7 +130,8 @@ public class GetArgs extends NativeCFG {
 					getLocation());
 			AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, deref,
 					len, getLocation());
-			AnalysisState<A> lenState = interprocedural.getAnalysis().assign(state, lenAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+			AnalysisState<A> lenState = interprocedural.getAnalysis().assign(state, lenAccess,
+					new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
 			// Assign the cap property to this hid
 			Variable cap = new Variable(Untyped.INSTANCE, "cap",
@@ -140,7 +139,8 @@ public class GetArgs extends NativeCFG {
 			AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, deref,
 					cap, getLocation());
 			AnalysisState<
-					A> capState = interprocedural.getAnalysis().assign(lenState, capAccess, new PushAny(GoIntType.INSTANCE, getLocation()), this);
+					A> capState = interprocedural.getAnalysis().assign(lenState, capAccess,
+							new PushAny(GoIntType.INSTANCE, getLocation()), this);
 
 			return interprocedural.getAnalysis().smallStepSemantics(capState, ref, original);
 		}

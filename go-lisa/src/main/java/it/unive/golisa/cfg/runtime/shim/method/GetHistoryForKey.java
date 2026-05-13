@@ -127,7 +127,8 @@ public class GetHistoryForKey extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				BinaryExpression lExp = new BinaryExpression(Untyped.INSTANCE, derefId, right,
@@ -139,7 +140,8 @@ public class GetHistoryForKey extends NativeCFG {
 					new Constant(Untyped.INSTANCE, 1, getLocation()), right,
 					GetHistoryForKeySecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+					getLocation(), tupleType,
 					ref,
 					rExp);
 		}

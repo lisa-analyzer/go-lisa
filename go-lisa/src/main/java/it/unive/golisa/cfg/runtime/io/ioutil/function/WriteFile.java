@@ -97,9 +97,10 @@ public class WriteFile extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
-			 AnalysisState<A> errorValue = interprocedural.getAnalysis()
+			AnalysisState<A> errorValue = interprocedural.getAnalysis()
 					.smallStepSemantics(state, new PushAny(GoErrorType.INSTANCE, getLocation()), original);
-			AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state, new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
 			return errorValue.lub(nilValue);
 		}
 	}

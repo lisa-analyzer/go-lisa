@@ -1,9 +1,7 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.runtime.peer.type.Response;
 import it.unive.golisa.cfg.runtime.shim.type.StateQueryIterator;
-import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;
 import it.unive.lisa.analysis.AbstractDomain;
@@ -13,7 +11,6 @@ import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -23,17 +20,11 @@ import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.symbolic.heap.HeapReference;
-import it.unive.lisa.symbolic.heap.MemoryAllocation;
 import it.unive.lisa.symbolic.value.PushAny;
-import it.unive.lisa.symbolic.value.UnaryExpression;
 import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-import it.unive.lisa.type.Untyped;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -115,30 +106,29 @@ public class Next extends NativeCFG {
 					new ReferenceType(responseType), GoErrorType.INSTANCE);
 
 			/*
-			// Allocates the new heap allocation
-			MemoryAllocation created = new MemoryAllocation(responseType, expr.getCodeLocation(), new Annotations(),
-					true);
-			HeapReference ref = new HeapReference(new ReferenceType(responseType), created, expr.getCodeLocation());
-			HeapDereference deref = new HeapDereference(responseType, ref, expr.getCodeLocation());
-			AnalysisState<A> asg = state.bottom();
-
-			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
-			for (SymbolicExpression id : reachableIds) {
-				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
-				UnaryExpression left = new UnaryExpression(responseType, derefId, NextOperatorFirstParameter.INSTANCE,
-						getLocation());
-				asg = asg.lub(interprocedural.getAnalysis().assign(state, deref, left, original));
-			}
-
-			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr, NextOperatorSecondParameter.INSTANCE,
-					getLocation());
-
-			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
-					ref,
-					rExp);
-					*/
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(tupleType, getLocation()), original);
+			 * // Allocates the new heap allocation MemoryAllocation created =
+			 * new MemoryAllocation(responseType, expr.getCodeLocation(), new
+			 * Annotations(), true); HeapReference ref = new HeapReference(new
+			 * ReferenceType(responseType), created, expr.getCodeLocation());
+			 * HeapDereference deref = new HeapDereference(responseType, ref,
+			 * expr.getCodeLocation()); AnalysisState<A> asg = state.bottom();
+			 * // Retrieves all the identifiers reachable from expr
+			 * Collection<SymbolicExpression> reachableIds =
+			 * interprocedural.getAnalysis().reachableFrom(state, expr,
+			 * this).elements; for (SymbolicExpression id : reachableIds) {
+			 * HeapDereference derefId = new HeapDereference(Untyped.INSTANCE,
+			 * id, expr.getCodeLocation()); UnaryExpression left = new
+			 * UnaryExpression(responseType, derefId,
+			 * NextOperatorFirstParameter.INSTANCE, getLocation()); asg =
+			 * asg.lub(interprocedural.getAnalysis().assign(state, deref, left,
+			 * original)); } UnaryExpression rExp = new
+			 * UnaryExpression(GoErrorType.INSTANCE, expr,
+			 * NextOperatorSecondParameter.INSTANCE, getLocation()); return
+			 * GoTupleExpression.allocateTupleExpression(interprocedural, asg,
+			 * new Annotations(), this, getLocation(), tupleType, ref, rExp);
+			 */
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(tupleType, getLocation()),
+					original);
 		}
 	}
 

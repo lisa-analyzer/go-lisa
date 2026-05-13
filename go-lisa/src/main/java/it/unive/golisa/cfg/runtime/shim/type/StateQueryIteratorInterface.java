@@ -47,24 +47,26 @@ public class StateQueryIteratorInterface extends GoInterfaceType {
 			StateQueryIteratorInterface stateQueryIteratorInterfaceeType = new StateQueryIteratorInterface(
 					stateQueryIteratorInterfaceUnit);
 
+			stateQueryIteratorInterfaceUnit.addInstanceCodeMember(
+					new AbstractCodeMember(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+							stateQueryIteratorInterfaceUnit, true, "Next",
+							Untyped.INSTANCE,
+							new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this",
+									stateQueryIteratorInterfaceeType))));
 
-			stateQueryIteratorInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-					stateQueryIteratorInterfaceUnit, true, "Next",
-					Untyped.INSTANCE,
-					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this",
-							stateQueryIteratorInterfaceeType))));
-			
-			stateQueryIteratorInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-					stateQueryIteratorInterfaceUnit, true, "Close",
-					VoidType.INSTANCE,
-					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this",
-							stateQueryIteratorInterfaceeType))));
-			
-			stateQueryIteratorInterfaceUnit.addInstanceCodeMember(new AbstractCodeMember(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
-					stateQueryIteratorInterfaceUnit, true, "HasNext",
-					GoBoolType.INSTANCE,
-					new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this",
-							stateQueryIteratorInterfaceeType))));
+			stateQueryIteratorInterfaceUnit.addInstanceCodeMember(
+					new AbstractCodeMember(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+							stateQueryIteratorInterfaceUnit, true, "Close",
+							VoidType.INSTANCE,
+							new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this",
+									stateQueryIteratorInterfaceeType))));
+
+			stateQueryIteratorInterfaceUnit.addInstanceCodeMember(
+					new AbstractCodeMember(new CodeMemberDescriptor(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION,
+							stateQueryIteratorInterfaceUnit, true, "HasNext",
+							GoBoolType.INSTANCE,
+							new Parameter(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, "this",
+									stateQueryIteratorInterfaceeType))));
 
 			INSTANCE = stateQueryIteratorInterfaceeType;
 		}
@@ -86,6 +88,5 @@ public class StateQueryIteratorInterface extends GoInterfaceType {
 	public int hashCode() {
 		return System.identityHashCode(this);
 	}
-	
-	
+
 }

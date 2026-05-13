@@ -13,6 +13,9 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class UCCIPhase1AnnotationSet extends TaintAnnotationSet {
 
+	/**
+	 * Builds the annotation set.
+	 */
 	public UCCIPhase1AnnotationSet() {
 		super("hyperledger-fabric");
 	}
@@ -23,8 +26,9 @@ public class UCCIPhase1AnnotationSet extends TaintAnnotationSet {
 
 		map1.put("ChaincodeStub", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice"));
 
-		map1.put("ChaincodeStubInterface", Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice"));
-		
+		map1.put("ChaincodeStubInterface",
+				Set.of("GetArgs", "GetStringArgs", "GetFunctionAndParameters", "GetArgsSlice"));
+
 		SOURCE_CODE_MEMBER_ANNOTATIONS.put(Kind.METHOD, map1);
 
 		Map<String, Set<Pair<String, Integer>>> map2 = new HashMap<>();

@@ -98,10 +98,12 @@ public class DelPrivateData extends NativeCFG {
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
 			AnalysisState<
-			A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Reader.getReaderType(null), getLocation()),
-					original);
-	AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state, new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
-	return readerValue.lub(nilValue);
+					A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state,
+							new PushAny(Reader.getReaderType(null), getLocation()),
+							original);
+			AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			return readerValue.lub(nilValue);
 		}
 
 	}

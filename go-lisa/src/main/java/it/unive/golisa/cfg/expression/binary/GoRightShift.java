@@ -7,7 +7,6 @@ import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.BinaryExpression;
@@ -34,10 +33,10 @@ public class GoRightShift extends BinaryExpression {
 	 * @param right    the right-hand side of this expression
 	 */
 	public GoRightShift(CFG cfg,
-		CodeLocation location,
-		Expression left,
-		Expression right) {
-	super(cfg, location, ">>", inferType(left, right), left, right);
+			CodeLocation location,
+			Expression left,
+			Expression right) {
+		super(cfg, location, ">>", inferType(left, right), left, right);
 	}
 
 	private static Type inferType(

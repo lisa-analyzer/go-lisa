@@ -97,8 +97,10 @@ public class GoToString extends NativeCFG {
 				StatementStore<A> expressions) throws SemanticException {
 			Set<Type> castType = Collections.singleton(GoStringType.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoStringType.INSTANCE, getLocation());
-			return interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(GoStringType.INSTANCE, expr, typeCast, GoConv.INSTANCE,
-					original.getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new BinaryExpression(GoStringType.INSTANCE, expr, typeCast, GoConv.INSTANCE,
+							original.getLocation()),
+					original);
 		}
 	}
 }

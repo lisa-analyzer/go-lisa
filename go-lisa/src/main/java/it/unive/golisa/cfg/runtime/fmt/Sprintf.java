@@ -1,7 +1,5 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
-import java.util.Set;
-
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.program.cfg.VarArgsParameter;
@@ -28,6 +26,7 @@ import it.unive.lisa.symbolic.value.operator.unary.UnaryOperator;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
+import java.util.Set;
 
 /**
  * func Sprintf(format string, a ...any) string.
@@ -88,8 +87,7 @@ public class Sprintf extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param left     the left expression
-		 * @param right    the right expression
+		 * @param exprs    the exprs expression
 		 */
 		public SprintfImpl(CFG cfg, CodeLocation location, Expression[] exprs) {
 			super(cfg, location, "Sprintf", GoStringType.INSTANCE, exprs);
@@ -101,21 +99,26 @@ public class Sprintf extends NativeCFG {
 				it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
 			ExpressionSet p1 = params[0];
 			AnalysisState<A> res = state.bottom();
-			
-			if(params.length > 1) {	
-				for(SymbolicExpression e1 : p1) {
-					for(int i = 1; i< params.length; i++)
-						for(SymbolicExpression e2 : params[i]) 
-							res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state, new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), e1,
-								e2, SprintfOperator.INSTANCE, getLocation()), original));
+
+			if (params.length > 1) {
+				for (SymbolicExpression e1 : p1) {
+					for (int i = 1; i < params.length; i++)
+						for (SymbolicExpression e2 : params[i])
+							res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state,
+									new it.unive.lisa.symbolic.value.BinaryExpression(getStaticType(), e1,
+											e2, SprintfOperator.INSTANCE, getLocation()),
+									original));
 				}
 			} else {
-				for(SymbolicExpression e1 : p1) {
-					res = res.lub(interprocedural.getAnalysis().smallStepSemantics(state, new it.unive.lisa.symbolic.value.UnaryExpression(getStaticType(),
-							e1, (UnaryOperator) SprintfOperatorUnary.INSTANCE, getLocation()), original));
+				for (SymbolicExpression e1 : p1) {
+					res = res
+							.lub(interprocedural.getAnalysis().smallStepSemantics(state,
+									new it.unive.lisa.symbolic.value.UnaryExpression(getStaticType(),
+											e1, (UnaryOperator) SprintfOperatorUnary.INSTANCE, getLocation()),
+									original));
 				}
 			}
-			
+
 			return res;
 		}
 	}
@@ -145,7 +148,7 @@ public class Sprintf extends NativeCFG {
 			return Set.of(types.getStringType());
 		}
 	}
-	
+
 	/**
 	 * The Sprintf operator.
 	 * 
@@ -165,7 +168,7 @@ public class Sprintf extends NativeCFG {
 		public String toString() {
 			return "SprintfOperatorUnary";
 		}
-		
+
 		@Override
 		public Set<Type> typeInference(TypeSystem types, Set<Type> argument) {
 			return Set.of(types.getStringType());

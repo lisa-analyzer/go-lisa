@@ -122,7 +122,8 @@ public class Policy extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(sliceOfBytes, derefId,
@@ -133,7 +134,8 @@ public class Policy extends NativeCFG {
 			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, expr,
 					PolicyOperatorSecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+					getLocation(), tupleType,
 					ref,
 					rExp);
 		}

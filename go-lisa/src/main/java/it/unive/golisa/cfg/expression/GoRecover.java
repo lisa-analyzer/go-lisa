@@ -8,10 +8,8 @@ import it.unive.lisa.analysis.StatementStore;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
-import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.symbolic.SymbolicExpression;
 
 /**
  * A Go recover expression (e.g., recover()).
@@ -20,14 +18,11 @@ import it.unive.lisa.symbolic.SymbolicExpression;
  */
 public class GoRecover extends NaryExpression {
 
-
 	/**
-	 * Builds the make expression.
+	 * Builds the expression.
 	 * 
-	 * @param cfg        the {@link CFG} where this expression lies
-	 * @param location   the location where this expression is defined
-	 * @param type       the type to allocate
-	 * @param parameters the parameters
+	 * @param cfg      the {@link CFG} where this expression lies
+	 * @param location the location where this expression is defined
 	 */
 	public GoRecover(CFG cfg, CodeLocation location) {
 		super(cfg, location, "recover");

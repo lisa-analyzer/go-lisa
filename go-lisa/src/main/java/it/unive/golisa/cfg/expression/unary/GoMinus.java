@@ -1,11 +1,9 @@
 package it.unive.golisa.cfg.expression.unary;
 
-
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.numeric.Negation;
-
 
 /**
  * The Go unary minus expression (e.g., -x).
@@ -15,6 +13,13 @@ import it.unive.lisa.program.cfg.statement.numeric.Negation;
  */
 public class GoMinus extends Negation {
 
+	/**
+	 * Builds the minus expression.
+	 * 
+	 * @param cfg        the {@link CFG} where this expression lies
+	 * @param location   the location where this expression is defined
+	 * @param expression the expression of minus
+	 */
 	public GoMinus(CFG cfg, CodeLocation location, Expression expression) {
 		super(cfg, location, expression);
 	}

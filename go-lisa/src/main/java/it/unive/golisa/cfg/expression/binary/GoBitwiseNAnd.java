@@ -56,8 +56,8 @@ public class GoBitwiseNAnd extends BinaryExpression implements GoBinaryNumerical
 								|| (rightType.isNumericType() && rightType.asNumericType().isIntegral()))) {
 					// TODO: LiSA has not symbolic expression handling bitwise,
 					// return top at the moment
-					AnalysisState<A> tmp = 
-							interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(resultType(leftType, rightType), getLocation()), this);
+					AnalysisState<A> tmp = interprocedural.getAnalysis().smallStepSemantics(state,
+							new PushAny(resultType(leftType, rightType), getLocation()), this);
 					result = result.lub(tmp);
 				}
 		return result;

@@ -1,8 +1,5 @@
 package it.unive.golisa.checker.hf;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import it.unive.golisa.cfg.statement.assignment.GoAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoMultiAssignment;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration;
@@ -23,6 +20,8 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.VariableRef;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Unhandled errors Checker in Hyperledger Fabric.
@@ -32,32 +31,32 @@ import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
 public class UnhandledErrorsChecker implements SyntacticCheck {
 
 	private Map<Call, Boolean> assignmentMap;
-	
+
 	@Override
 	public void beforeExecution(ReportingTool tool) {
-		
+
 		assignmentMap = new HashMap<>();
 	}
 
 	@Override
 	public void afterExecution(ReportingTool tool) {
-		
-		for(Call call : assignmentMap.keySet()) {
-			if(!assignmentMap.get(call).booleanValue()) {
+
+		for (Call call : assignmentMap.keySet()) {
+			if (!assignmentMap.get(call).booleanValue()) {
 				tool.warnOn(call, "Unhandled error of a blockchain "
 						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : "write")
 						+ " operation. The error seems not assigned in any variable");
 			}
-				
+
 		}
 	}
 
 	@Override
 	public boolean visit(ReportingTool tool, CFG graph, Statement node) {
-		
+
 		if (node instanceof Call) {
 			if (ReadWriteHFUtils.isReadOrWriteCall((Call) node)) {
-				if(!assignmentMap.containsKey((Call) node))
+				if (!assignmentMap.containsKey((Call) node))
 					assignmentMap.put((Call) node, Boolean.FALSE);
 			}
 		}
@@ -76,7 +75,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 
 			}
 		}
-		
+
 		if (node instanceof GoAssignment) {
 			GoAssignment assign = (GoAssignment) node;
 			Expression right = assign.getRight();
@@ -91,7 +90,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 
 			}
 		}
-		
+
 		if (node instanceof GoShortVariableDeclaration) {
 			GoShortVariableDeclaration declr = (GoShortVariableDeclaration) node;
 			Expression right = declr.getRight();
@@ -106,7 +105,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 
 			}
 		}
-		
+
 		if (node instanceof GoVariableDeclaration) {
 			GoVariableDeclaration declr = (GoVariableDeclaration) node;
 			Expression right = declr.getRight();
@@ -125,7 +124,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		return true;
 	}
 
-	private void checkVariableRef( VariableRef ref, Call call, ReportingTool tool, CFG graph, Statement node) {
+	private void checkVariableRef(VariableRef ref, Call call, ReportingTool tool, CFG graph, Statement node) {
 		if (GoLangUtils.isBlankIdentifier(ref.getVariable()))
 			tool.warnOn(node,
 					"Unhandled error of a blockchain "

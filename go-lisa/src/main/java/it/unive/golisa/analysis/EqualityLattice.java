@@ -11,7 +11,6 @@ import it.unive.lisa.symbolic.value.Identifier;
 import it.unive.lisa.symbolic.value.OutOfScopeIdentifier;
 import it.unive.lisa.util.representation.StringRepresentation;
 import it.unive.lisa.util.representation.StructuredRepresentation;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,34 +21,36 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * The equality domain, tracking definite information about which variables are
- * equals to another one.
+ * The lattice of equality domain.
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
 public class EqualityLattice extends FunctionalLattice<EqualityLattice, Identifier, ExpressionInverseSet>
 		implements ValueLattice<EqualityLattice> {
 
-	
 	/**
-	 * Builds the domain.
+	 * Builds the lattice.
 	 */
 	public EqualityLattice() {
 		this(new ExpressionInverseSet(), null);
 	}
-	
+
 	/**
-	 * Builds the domain.
+	 * Builds the lattice.
 	 * 
 	 * @param lattice  the underlying lattice
 	 * @param function the function to clone
 	 */
-	
 	public EqualityLattice(ExpressionInverseSet lattice,
 			Map<Identifier, ExpressionInverseSet> function) {
 		super(lattice, function);
 	}
-	
+
+	/**
+	 * Builds the lattice.
+	 * 
+	 * @param lattice the underlying lattice
+	 */
 	public EqualityLattice(ExpressionInverseSet lattice) {
 		super(lattice);
 	}
@@ -63,7 +64,7 @@ public class EqualityLattice extends FunctionalLattice<EqualityLattice, Identifi
 	public EqualityLattice bottom() {
 		return new EqualityLattice(lattice.bottom(), null);
 	}
-	
+
 	@Override
 	public ExpressionInverseSet stateOfUnknown(Identifier key) {
 		return lattice.bottom();
@@ -73,7 +74,6 @@ public class EqualityLattice extends FunctionalLattice<EqualityLattice, Identifi
 	public EqualityLattice mk(ExpressionInverseSet lattice, Map<Identifier, ExpressionInverseSet> function) {
 		return new EqualityLattice(lattice, function);
 	}
-	
 
 	@Override
 	public boolean isTop() {
@@ -126,7 +126,7 @@ public class EqualityLattice extends FunctionalLattice<EqualityLattice, Identifi
 			return this;
 
 		EqualityLattice result = new EqualityLattice(lattice, new HashMap<>(function));
-		for(Identifier id : ids)
+		for (Identifier id : ids)
 			if (result.function.containsKey(id))
 				result.function.remove(id);
 
@@ -198,6 +198,5 @@ public class EqualityLattice extends FunctionalLattice<EqualityLattice, Identifi
 
 		return new EqualityLattice(lattice, function);
 	}
-
 
 }

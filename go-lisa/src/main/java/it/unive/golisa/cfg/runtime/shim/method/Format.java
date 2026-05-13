@@ -98,13 +98,14 @@ public class Format extends NativeCFG {
 					GoStringType.INSTANCE,
 					left, right);
 		}
-		
+
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
 			AnalysisState<A> result = state.bottom();
 			for (SymbolicExpression id : reachableIds) {
 				if (id instanceof MemoryPointer)

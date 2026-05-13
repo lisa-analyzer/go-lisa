@@ -95,7 +95,8 @@ public class PutState extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoErrorType.INSTANCE, getLocation()), this);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoErrorType.INSTANCE, getLocation()), this);
 		}
 	}
 }

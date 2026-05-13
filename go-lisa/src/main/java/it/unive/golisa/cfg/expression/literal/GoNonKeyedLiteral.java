@@ -129,10 +129,12 @@ public class GoNonKeyedLiteral extends NaryExpression {
 						if (i < params.length)
 							for (SymbolicExpression v : params[i]) {
 								Type vtype = interprocedural.getAnalysis().getDynamicTypeOf(tmp, v, this);
-								tmp = interprocedural.getAnalysis().assign(fieldState, id, NumericalTyper.type(v, vtype), this);
+								tmp = interprocedural.getAnalysis().assign(fieldState, id,
+										NumericalTyper.type(v, vtype), this);
 							}
 						else
-							tmp = interprocedural.getAnalysis().assign(fieldState, id, new PushAny(Untyped.INSTANCE, getLocation()),
+							tmp = interprocedural.getAnalysis().assign(fieldState, id,
+									new PushAny(Untyped.INSTANCE, getLocation()),
 									this);
 
 					i++;
@@ -159,24 +161,28 @@ public class GoNonKeyedLiteral extends NaryExpression {
 						getLocation());
 				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						lenProperty, getLocation());
-				AnalysisState<A> lenState = interprocedural.getAnalysis().smallStepSemantics(containerState, lenAccess, this);
+				AnalysisState<
+						A> lenState = interprocedural.getAnalysis().smallStepSemantics(containerState, lenAccess, this);
 
 				AnalysisState<A> lenResult = state.bottom();
 				for (SymbolicExpression lenId : lenState.getExecutionExpressions())
 					lenResult = lenResult.lub(
-							interprocedural.getAnalysis().assign(lenState, lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+							interprocedural.getAnalysis().assign(lenState, lenId,
+									new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				// Assign the cap property to this hid
 				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
 						getLocation());
 				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						capProperty, getLocation());
-				AnalysisState<A> capState = interprocedural.getAnalysis().smallStepSemantics(lenResult, capAccess, this);
+				AnalysisState<
+						A> capState = interprocedural.getAnalysis().smallStepSemantics(lenResult, capAccess, this);
 
 				AnalysisState<A> capResult = state.bottom();
 				for (SymbolicExpression lenId : capState.getExecutionExpressions())
 					capResult = capResult.lub(
-							interprocedural.getAnalysis().assign(capState, lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+							interprocedural.getAnalysis().assign(capState, lenId,
+									new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				if (getSubExpressions().length == 0) {
 					result = result.lub(capResult);
@@ -217,24 +223,28 @@ public class GoNonKeyedLiteral extends NaryExpression {
 						getLocation());
 				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						lenProperty, getLocation());
-				AnalysisState<A> lenState = interprocedural.getAnalysis().smallStepSemantics(containerState, lenAccess, this);
+				AnalysisState<
+						A> lenState = interprocedural.getAnalysis().smallStepSemantics(containerState, lenAccess, this);
 
 				AnalysisState<A> lenResult = state.bottom();
 				for (SymbolicExpression lenId : lenState.getExecutionExpressions())
 					lenResult = lenResult.lub(
-							interprocedural.getAnalysis().assign(lenState, lenId, new Constant(GoIntType.INSTANCE, sliceLenght, getLocation()), this));
+							interprocedural.getAnalysis().assign(lenState, lenId,
+									new Constant(GoIntType.INSTANCE, sliceLenght, getLocation()), this));
 
 				// Assign the cap property to this hid
 				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
 						getLocation());
 				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						capProperty, getLocation());
-				AnalysisState<A> capState = interprocedural.getAnalysis().smallStepSemantics(lenResult, capAccess, this);
+				AnalysisState<
+						A> capState = interprocedural.getAnalysis().smallStepSemantics(lenResult, capAccess, this);
 
 				AnalysisState<A> capResult = state.bottom();
 				for (SymbolicExpression lenId : capState.getExecutionExpressions())
 					capResult = capResult.lub(
-							interprocedural.getAnalysis().assign(capState, lenId, new Constant(GoIntType.INSTANCE, sliceLenght, getLocation()), this));
+							interprocedural.getAnalysis().assign(capState, lenId,
+									new Constant(GoIntType.INSTANCE, sliceLenght, getLocation()), this));
 
 				if (getSubExpressions().length == 0) {
 					result = result.lub(capResult);

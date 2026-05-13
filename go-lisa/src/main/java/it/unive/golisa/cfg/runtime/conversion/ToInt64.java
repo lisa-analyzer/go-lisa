@@ -97,8 +97,10 @@ public class ToInt64 extends NativeCFG {
 				StatementStore<A> expressions) throws SemanticException {
 			Set<Type> castType = Collections.singleton(GoInt64Type.INSTANCE);
 			Constant typeCast = new Constant(new TypeTokenType(castType), GoInt64Type.INSTANCE, getLocation());
-			return interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(GoInt64Type.INSTANCE, expr, typeCast, TypeConv.INSTANCE,
-					original.getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new BinaryExpression(GoInt64Type.INSTANCE, expr, typeCast, TypeConv.INSTANCE,
+							original.getLocation()),
+					original);
 		}
 	}
 }

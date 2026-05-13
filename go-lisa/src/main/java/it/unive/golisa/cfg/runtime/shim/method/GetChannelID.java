@@ -20,8 +20,9 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
+
 /**
- * func (s *ChaincodeStub) GetChannelID() string
+ * func (s *ChaincodeStub) GetChannelID() string.
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetChannelID
  * 
@@ -37,7 +38,8 @@ public class GetChannelID extends NativeCFG {
 	 */
 	public GetChannelID(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "GetChannelID",
-				GoStringType.INSTANCE, 	new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),
+				GoStringType.INSTANCE,
+				new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),
 				GetChannelIDImpl.class);
 	}
 
@@ -93,8 +95,9 @@ public class GetChannelID extends NativeCFG {
 				StatementStore<A> expressions) throws SemanticException {
 			// https://github.com/hyperledger/fabric-chaincode-go/blob/main/shim/interfaces.go#L73C2-L74C17
 			// if `channel` is empty string, the caller's channel is assumed.
-			return interprocedural.getAnalysis().smallStepSemantics(state, new Constant(GoStringType.INSTANCE, "", getLocation()), original); 
-	
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new Constant(GoStringType.INSTANCE, "", getLocation()), original);
+
 		}
 	}
 }

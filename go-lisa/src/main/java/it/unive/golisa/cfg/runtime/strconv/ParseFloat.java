@@ -100,7 +100,6 @@ public class ParseFloat extends NativeCFG {
 					GoTupleType.getTupleTypeOf(location, GoFloat64Type.INSTANCE, GoErrorType.INSTANCE), left, right);
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
@@ -109,7 +108,8 @@ public class ParseFloat extends NativeCFG {
 					ParseFloatOperatorFirstParameter.INSTANCE, getLocation());
 			BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, left, right,
 					ParseFloatOperatorSecondParameter.INSTANCE, getLocation());
-			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), this, getLocation(),
+			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), this,
+					getLocation(),
 					GoTupleType.getTupleTypeOf(getLocation(), GoFloat64Type.INSTANCE, GoErrorType.INSTANCE),
 					lExp,
 					rExp);

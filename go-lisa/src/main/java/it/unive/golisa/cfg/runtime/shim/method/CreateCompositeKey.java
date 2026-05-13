@@ -116,7 +116,8 @@ public class CreateCompositeKey extends NativeCFG {
 					GoErrorType.INSTANCE);
 			AnalysisState<A> result = state.bottom();
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				if (id instanceof MemoryPointer)
 					continue;

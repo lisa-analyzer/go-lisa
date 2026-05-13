@@ -98,11 +98,13 @@ public class DelState extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
 				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
-				AnalysisState<
-						A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Reader.getReaderType(null), getLocation()),
-								original);
-				AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state, new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
-				return readerValue.lub(nilValue);
+			AnalysisState<
+					A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state,
+							new PushAny(Reader.getReaderType(null), getLocation()),
+							original);
+			AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			return readerValue.lub(nilValue);
 		}
 	}
 }

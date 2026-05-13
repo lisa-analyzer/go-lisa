@@ -61,11 +61,12 @@ public class StringConstantPropagation implements BaseNonRelationalValueDomain<S
 			StringConstantPropagationLattice right, ProgramPoint pp, SemanticOracle oracle) throws SemanticException {
 		if (left.isBottom() || middle.isBottom() || right.isBottom())
 			return bottom();
-		
+
 		if (left.isTop() || middle.isTop() || right.isTop())
 			return top();
 		else if (expression.getOperator() == StringReplace.INSTANCE)
-			return new StringConstantPropagationLattice(left.getValue().replaceAll(middle.getValue(), right.getValue()));
+			return new StringConstantPropagationLattice(
+					left.getValue().replaceAll(middle.getValue(), right.getValue()));
 		else
 			return top();
 	}
@@ -103,13 +104,15 @@ public class StringConstantPropagation implements BaseNonRelationalValueDomain<S
 	public ValueEnvironment<StringConstantPropagationLattice> assumeBinaryExpression(
 			ValueEnvironment<StringConstantPropagationLattice> environment, BinaryExpression expression,
 			ProgramPoint src, ProgramPoint dest, SemanticOracle oracle) throws SemanticException {
-	
+
 		if (expression.getOperator() == StringEquals.INSTANCE || expression.getOperator() == ComparisonEq.INSTANCE) {
 			ValueEnvironment<StringConstantPropagationLattice> env = environment;
 			if (expression.getLeft() instanceof Identifier)
-				 env = assign(environment, (Identifier) expression.getLeft(), (ValueExpression) expression.getRight(), src, oracle);
+				env = assign(environment, (Identifier) expression.getLeft(), (ValueExpression) expression.getRight(),
+						src, oracle);
 			else if (expression.getRight() instanceof Identifier)
-				env = assign(environment, (Identifier) expression.getRight(), (ValueExpression) expression.getLeft(), src, oracle);
+				env = assign(environment, (Identifier) expression.getRight(), (ValueExpression) expression.getLeft(),
+						src, oracle);
 			return env;
 		} else
 			return environment;

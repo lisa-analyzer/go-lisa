@@ -208,7 +208,8 @@ public class GoStructType implements Type, UnitType, InMemoryType {
 			if (key.getStaticType() instanceof ReferenceType)
 				values[i++] = new GoUnknown(cfg, location);
 			else
-				values[i++] = key.getStaticType().defaultValue(cfg, location) == null ? new GoUnknown(cfg, location) : key.getStaticType().defaultValue(cfg, location);
+				values[i++] = key.getStaticType().defaultValue(cfg, location) == null ? new GoUnknown(cfg, location)
+						: key.getStaticType().defaultValue(cfg, location);
 
 		return new GoNonKeyedLiteral(cfg, location, values, this);
 	}

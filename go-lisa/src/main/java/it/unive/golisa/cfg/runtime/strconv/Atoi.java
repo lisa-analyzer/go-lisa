@@ -108,12 +108,12 @@ public class Atoi extends NativeCFG {
 
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(), GoIntType.INSTANCE, GoErrorType.INSTANCE);
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), original, getLocation(),
+			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), original,
+					getLocation(),
 					tupleType,
 					lExp,
 					rExp);
 		}
-
 
 	}
 

@@ -33,7 +33,6 @@ import it.unive.lisa.symbolic.value.operator.binary.BinaryOperator;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -115,14 +114,14 @@ public class Parse extends NativeCFG {
 
 			Unit unit = getProgram().getUnit("time");
 			Collection<CodeMember> members = unit.getCodeMembersByName("Parse");
-			
+
 			Annotations annots = new Annotations();
-			for(CodeMember cm : members) {
-				for(Annotation a : cm.getDescriptor().getAnnotations()) {
+			for (CodeMember cm : members) {
+				for (Annotation a : cm.getDescriptor().getAnnotations()) {
 					annots.addAnnotation(a);
 				}
 			}
-			
+
 			Type timeType = Time.getTimeType(getProgram());
 			GoTupleType tupleType = GoTupleType.getTupleTypeOf(getLocation(),
 					new ReferenceType(timeType), GoErrorType.INSTANCE);
@@ -138,7 +137,8 @@ public class Parse extends NativeCFG {
 					ParseOperatorFirstParameter.INSTANCE, getLocation());
 			state = interprocedural.getAnalysis().assign(state, deref, rExp, original);
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, state, new Annotations(), this,
+					getLocation(), tupleType,
 					ref,
 					lExp);
 		}

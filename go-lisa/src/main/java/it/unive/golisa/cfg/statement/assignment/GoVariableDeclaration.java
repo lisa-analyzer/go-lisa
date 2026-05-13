@@ -102,10 +102,12 @@ public class GoVariableDeclaration extends it.unive.lisa.program.cfg.statement.B
 			AnalysisState<A> tmp = state.bottom();
 			if (rightType instanceof GoUntypedInt || rightType instanceof GoUntypedFloat) {
 				Constant typeCast = new Constant(new TypeTokenType(setIdType), idType, getRight().getLocation());
-				tmp = interprocedural.getAnalysis().assign(state, id, new BinaryExpression(type, right, typeCast, TypeConv.INSTANCE,
-						getRight().getLocation()), this);
+				tmp = interprocedural.getAnalysis().assign(state, id,
+						new BinaryExpression(type, right, typeCast, TypeConv.INSTANCE,
+								getRight().getLocation()),
+						this);
 			} else
-				tmp =  interprocedural.getAnalysis().assign(state, id, right, this);
+				tmp = interprocedural.getAnalysis().assign(state, id, right, this);
 
 			result = result.lub(tmp);
 		}

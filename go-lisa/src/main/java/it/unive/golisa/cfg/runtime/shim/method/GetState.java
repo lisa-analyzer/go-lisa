@@ -125,7 +125,7 @@ public class GetState extends NativeCFG {
 			AnalysisState<A> result = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			 ExpressionSet reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this);
+			ExpressionSet reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this);
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				BinaryExpression lExp = new BinaryExpression(GoSliceType.getSliceOfBytes(), derefId, right,
@@ -133,7 +133,8 @@ public class GetState extends NativeCFG {
 				BinaryExpression rExp = new BinaryExpression(GoErrorType.INSTANCE, derefId, right,
 						GetStateSecondParameter.INSTANCE, getLocation());
 				AnalysisState<A> asg = interprocedural.getAnalysis().assign(state, deref, lExp, original);
-				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+				AnalysisState<A> tupleExp = GoTupleExpression.allocateTupleExpression(interprocedural, asg,
+						new Annotations(), this,
 						getLocation(), tupleType,
 						ref,
 						rExp);

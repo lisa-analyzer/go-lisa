@@ -2,8 +2,17 @@ package it.unive.golisa.checker.utils.graph.edges;
 
 import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
 
+/**
+ * The caller edge.
+ */
 public class CallerEdge extends LabeledEdge {
 
+	/**
+	 * Builds the edge.
+	 * 
+	 * @param source      the source node
+	 * @param destination the destination node
+	 */
 	public CallerEdge(StandardNode source, StandardNode destination) {
 		super(source, destination);
 	}

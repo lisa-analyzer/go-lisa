@@ -90,7 +90,6 @@ public class HasPrefix extends NativeCFG {
 			super(cfg, location, "HasPrefix", GoBoolType.INSTANCE, left, right);
 		}
 
-
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
@@ -105,8 +104,8 @@ public class HasPrefix extends NativeCFG {
 				return state.bottom();
 
 			return interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(GoBoolType.INSTANCE,
-							left, right, it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE,
-							getLocation()), original);
+					left, right, it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE,
+					getLocation()), original);
 		}
 	}
 }

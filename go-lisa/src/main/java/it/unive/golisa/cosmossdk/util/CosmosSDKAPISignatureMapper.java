@@ -10,12 +10,23 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The singature mapper of Cosmos SDK APIs.
+ */
 public class CosmosSDKAPISignatureMapper {
 
+	/**
+	 * The instance of CosmosSDKAPISignatureMapper
+	 */
 	private static CosmosSDKAPISignatureMapper instance = null;
 
-	// singleton pattern
+	/**
+	 * Yields the Go API signatures.
+	 * 
+	 * @return the signatures
+	 */
 	public static synchronized CosmosSDKAPISignatureMapper getGoApiSignatures() {
+		// singleton pattern
 		if (instance == null) {
 			instance = new CosmosSDKAPISignatureMapper();
 		}
@@ -44,26 +55,56 @@ public class CosmosSDKAPISignatureMapper {
 		System.out.println(t);
 	}
 
+	/**
+	 * Yields the packages.
+	 * 
+	 * @return the packages
+	 */
 	public Set<String> getPackages() {
 		return pkgs;
 	}
 
+	/**
+	 * Yields the mapping of constants.
+	 * 
+	 * @return the mapping
+	 */
 	public Map<String, Set<ConstGoLangApiSignature>> getMapConst() {
 		return mapConst;
 	}
 
+	/**
+	 * Yields the mapping of functions.
+	 * 
+	 * @return the mapping
+	 */
 	public Map<String, Set<FuncGoLangApiSignature>> getMapFunc() {
 		return mapFunc;
 	}
 
+	/**
+	 * Yields the mapping of methods.
+	 * 
+	 * @return the mapping
+	 */
 	public Map<String, Set<MethodGoLangApiSignature>> getMapMethod() {
 		return mapMethod;
 	}
 
+	/**
+	 * Yields the mapping of type.
+	 * 
+	 * @return the mapping
+	 */
 	public Map<String, Set<TypeGoLangApiSignature>> getMapType() {
 		return mapType;
 	}
 
+	/**
+	 * Yields the mapping of variables.
+	 * 
+	 * @return the mapping
+	 */
 	public Map<String, Set<VarGoLangApiSignature>> getMapVar() {
 		return mapVar;
 	}
@@ -72,17 +113,25 @@ public class CosmosSDKAPISignatureMapper {
 		String pkg = "telemetry";
 		pkgs.add(pkg);
 		Set<FuncGoLangApiSignature> set = new HashSet<>();
-		set.add(new FuncGoLangApiSignature(pkg, "EnableTelemetry", new String[] {""} , new String[] {""}));
-		set.add(new FuncGoLangApiSignature(pkg, "IncrCounter", new String[] {"float32", "...string"} , new String[] {""}));
-		set.add(new FuncGoLangApiSignature(pkg, "ncrCounterWithLabels ", new String[] {"[]string", "float32", "[]metrics.Label"} , new String[] {""}));
-		set.add(new FuncGoLangApiSignature(pkg, "IsTelemetryEnabled", new String[] {""} , new String[] {"bool"}));
-		set.add(new FuncGoLangApiSignature(pkg, "MeasureSince", new String[] {"time.Time", "...string"} , new String[] {""}));
-		set.add(new FuncGoLangApiSignature(pkg, "ModuleMeasureSince", new String[] {"string", "time.Time", "...string"} , new String[] {""}));
-		set.add(new FuncGoLangApiSignature(pkg, "ModuleSetGauge", new String[] {"string", "float32", "...string"} , new String[] {""}));
-		set.add(new FuncGoLangApiSignature(pkg, "NewLabel", new String[] {"string", "string"} , new String[] {"metrics.Label"}));
-		set.add(new FuncGoLangApiSignature(pkg, "Now", new String[] {""} , new String[] {"time.Time"}));
-		set.add(new FuncGoLangApiSignature(pkg, "SetGauge", new String[] {"float32", "...string"} , new String[] {""}));
-		set.add(new FuncGoLangApiSignature(pkg, "SetGaugeWithLabels", new String[] {"[]string", "float32", "[]metrics.Label"} , new String[] {""}));
+		set.add(new FuncGoLangApiSignature(pkg, "EnableTelemetry", new String[] { "" }, new String[] { "" }));
+		set.add(new FuncGoLangApiSignature(pkg, "IncrCounter", new String[] { "float32", "...string" },
+				new String[] { "" }));
+		set.add(new FuncGoLangApiSignature(pkg, "ncrCounterWithLabels ",
+				new String[] { "[]string", "float32", "[]metrics.Label" }, new String[] { "" }));
+		set.add(new FuncGoLangApiSignature(pkg, "IsTelemetryEnabled", new String[] { "" }, new String[] { "bool" }));
+		set.add(new FuncGoLangApiSignature(pkg, "MeasureSince", new String[] { "time.Time", "...string" },
+				new String[] { "" }));
+		set.add(new FuncGoLangApiSignature(pkg, "ModuleMeasureSince",
+				new String[] { "string", "time.Time", "...string" }, new String[] { "" }));
+		set.add(new FuncGoLangApiSignature(pkg, "ModuleSetGauge", new String[] { "string", "float32", "...string" },
+				new String[] { "" }));
+		set.add(new FuncGoLangApiSignature(pkg, "NewLabel", new String[] { "string", "string" },
+				new String[] { "metrics.Label" }));
+		set.add(new FuncGoLangApiSignature(pkg, "Now", new String[] { "" }, new String[] { "time.Time" }));
+		set.add(new FuncGoLangApiSignature(pkg, "SetGauge", new String[] { "float32", "...string" },
+				new String[] { "" }));
+		set.add(new FuncGoLangApiSignature(pkg, "SetGaugeWithLabels",
+				new String[] { "[]string", "float32", "[]metrics.Label" }, new String[] { "" }));
 		mapFunc.put(pkg, set);
 
 	}

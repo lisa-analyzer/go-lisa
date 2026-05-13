@@ -105,9 +105,10 @@ public class GoMultiAssignment extends Expression {
 		return StringUtils.join(ids, ", ") + " := " + e.toString();
 	}
 
-	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> assignScopedId(InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> rightState,
+	private <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> assignScopedId(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> rightState,
 			SymbolicExpression expr1, SymbolicExpression expr2, List<BlockInfo> blockInfo, Expression at)
-					throws SemanticException {
+			throws SemanticException {
 		// if the assignment occurs in the same block in which
 		// the variable is declared, no assignment on scoped ids
 		// needs to be performed

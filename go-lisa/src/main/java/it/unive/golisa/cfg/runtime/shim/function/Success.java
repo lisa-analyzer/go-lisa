@@ -114,7 +114,7 @@ public class Success extends NativeCFG {
 			UnaryExpression un = new UnaryExpression(GoSliceType.getSliceOfBytes(), expr, SuccessOperator.INSTANCE,
 					getLocation());
 			AnalysisState<A> asg = interprocedural.getAnalysis().assign(allocState, deref, un, this);
-					
+
 			return interprocedural.getAnalysis().smallStepSemantics(asg, ref, original);
 		}
 	}

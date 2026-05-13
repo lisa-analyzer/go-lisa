@@ -24,7 +24,8 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.PushAny;
 
 /**
- * func (s *ChaincodeStub) InvokeChaincode(chaincodeName string, args [][]byte, channel string) pb.Response
+ * func (s *ChaincodeStub) InvokeChaincode(chaincodeName string, args [][]byte,
+ * channel string) pb.Response.
  * https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.InvokeChaincode
  * 
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
@@ -89,14 +90,15 @@ public class InvokeChaincode extends NativeCFG {
 
 		@Override
 		protected int compareSameClassAndParams(Statement o) {
-			return 0;  // nothing else to compare
+			return 0; // nothing else to compare
 		}
 
 		@Override
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(Response.getResponseType(null), getLocation()),	original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(Response.getResponseType(null), getLocation()), original);
 		}
 	}
 }

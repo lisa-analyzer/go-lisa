@@ -126,7 +126,8 @@ public class ReadAll extends NativeCFG {
 				AnalysisState<A> asg = allocState.bottom();
 
 				// Retrieves all the identifiers reachable from expr
-				Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(allocState, expr, this).elements;
+				Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(allocState,
+						expr, this).elements;
 				for (SymbolicExpression id : reachableIds) {
 					HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 					UnaryExpression left = new UnaryExpression(sliceOfBytes, derefId,
@@ -138,10 +139,11 @@ public class ReadAll extends NativeCFG {
 						ReadAllOperatorSecondParameter.INSTANCE,
 						getLocation());
 
-				result = result.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
-						getLocation(), tupleType,
-						ref,
-						rExp));
+				result = result
+						.lub(GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+								getLocation(), tupleType,
+								ref,
+								rExp));
 			}
 
 			return result;

@@ -110,7 +110,8 @@ public class NewBuffer extends NativeCFG {
 			HeapDereference deref = new HeapDereference(bufferType, ref, getLocation());
 
 			AnalysisState<A> asg = state.bottom();
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, expr,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, expr.getCodeLocation());
 				UnaryExpression left = new UnaryExpression(bufferType, derefId, NewBufferOperator.INSTANCE,

@@ -126,7 +126,8 @@ public class SplitCompositeKey extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				UnaryExpression unary = new UnaryExpression(sliceOfStrings, derefId,
@@ -140,7 +141,8 @@ public class SplitCompositeKey extends NativeCFG {
 			UnaryExpression rExp = new UnaryExpression(GoErrorType.INSTANCE, right,
 					SplitCompositeKeyOperatorThirdParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+					getLocation(), tupleType,
 					lExp,
 					ref,
 					rExp);

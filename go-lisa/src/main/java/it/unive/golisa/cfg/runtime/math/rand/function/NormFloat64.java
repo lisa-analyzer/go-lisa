@@ -1,7 +1,6 @@
 package it.unive.golisa.cfg.runtime.math.rand.function;
 
 import it.unive.golisa.cfg.type.numeric.floating.GoFloat64Type;
-import it.unive.golisa.cfg.type.numeric.signed.GoInt32Type;
 import it.unive.lisa.analysis.AbstractDomain;
 import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
@@ -85,7 +84,8 @@ public class NormFloat64 extends NativeCFG {
 		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
 				it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
-			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(GoFloat64Type.INSTANCE, getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoFloat64Type.INSTANCE, getLocation()), original);
 		}
 	}
 }

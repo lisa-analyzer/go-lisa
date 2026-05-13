@@ -131,7 +131,8 @@ public class GetStateByRange extends NativeCFG {
 			AnalysisState<A> asg = state.bottom();
 
 			// Retrieves all the identifiers reachable from expr
-			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left, this).elements;
+			Collection<SymbolicExpression> reachableIds = interprocedural.getAnalysis().reachableFrom(state, left,
+					this).elements;
 			for (SymbolicExpression id : reachableIds) {
 				HeapDereference derefId = new HeapDereference(Untyped.INSTANCE, id, left.getCodeLocation());
 				TernaryExpression lExp = new TernaryExpression(Untyped.INSTANCE, derefId, middle, right,
@@ -143,7 +144,8 @@ public class GetStateByRange extends NativeCFG {
 					new Constant(Untyped.INSTANCE, 1, getLocation()), middle, right,
 					GetStateByRangeSecondParameter.INSTANCE, getLocation());
 
-			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this, getLocation(), tupleType,
+			return GoTupleExpression.allocateTupleExpression(interprocedural, asg, new Annotations(), this,
+					getLocation(), tupleType,
 					ref,
 					rExp);
 		}

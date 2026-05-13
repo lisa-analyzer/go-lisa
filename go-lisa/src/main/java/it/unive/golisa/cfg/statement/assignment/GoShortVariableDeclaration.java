@@ -98,7 +98,8 @@ public class GoShortVariableDeclaration extends it.unive.lisa.program.cfg.statem
 		if (GoLangUtils.refersToBlankIdentifier(getLeft()))
 			return state;
 		Type rtype = interprocedural.getAnalysis().getDynamicTypeOf(state, right, this);
-		AnalysisState<A> result = interprocedural.getAnalysis().assign(state, left, NumericalTyper.type(right, rtype), this);
+		AnalysisState<
+				A> result = interprocedural.getAnalysis().assign(state, left, NumericalTyper.type(right, rtype), this);
 		if (!getRight().getMetaVariables().isEmpty())
 			result = result.withExecution(result.getExecution().forgetIdentifiers(getRight().getMetaVariables(), this));
 		if (!getLeft().getMetaVariables().isEmpty())

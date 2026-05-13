@@ -59,12 +59,11 @@ public class GoRangeGetNextIndex extends NaryExpression {
 		return Untyped.INSTANCE;
 	}
 
-	
 	@Override
 	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
 			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
 			it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
-		
+
 		if (state.getExecutionExpressions().size() == 1) {
 			for (SymbolicExpression e : state.getExecutionExpressions()) {
 				Type etype = interprocedural.getAnalysis().getDynamicTypeOf(state, e, this);
@@ -75,7 +74,7 @@ public class GoRangeGetNextIndex extends NaryExpression {
 							this);
 			}
 		}
-		
+
 		return state;
 	}
 }

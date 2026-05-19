@@ -33,7 +33,7 @@ The main class is [GoLiSA](go-lisa/src/main/java/it/unive/golisa/GoLiSA.java) an
 
 ## GoLiSA Publications
 - Luca Olivieri:  <i>Static Detection of Cross-Channel Invocation Issues in Hyperledger Fabric</i>, in Proceedings of The 36th IEEE International Symposium on Software Reliability Engineering , 2025
-- Luca Olivieri, David Beste, Luca Negrini, Lea SchÃ¶nherr, Antonio Emanuele CinÃ  and Pietro Ferrara <i>Code Generation of Smart Contracts with LLMs: A Case Study on Hyperledger Fabric</i>, in Proceedings of The 36th IEEE International Symposium on Software Reliability Engineering , 2025
+- Luca Olivieri, David Beste, Luca Negrini, Lea Schönherr, Antonio Emanuele Cinà and Pietro Ferrara <i>Code Generation of Smart Contracts with LLMs: A Case Study on Hyperledger Fabric</i>, in Proceedings of The 36th IEEE International Symposium on Software Reliability Engineering , 2025
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Pietro Ferrara, Agostino Cortesi: <i>Detection of Read-Write Issues in Hyperledger Fabric Smart Contracts</i>, in Proceedings of The 40th ACM/SIGAPP Symposium On Applied Computing (SAC), 2025 ([link](https://doi.org/10.1145/3672608.3707721))
 - Luca Olivieri, Luca Negrini, Vincenzo Arceri, Pietro Ferrara, Agostino Cortesi, Fausto Spoto: <i>Static Detection of Untrusted Cross-Contract Invocations in Go Smart Contracts</i> in Proceedings of The 40th ACM/SIGAPP Symposium On Applied Computing (SAC), 2025 ([link](https://doi.org/10.1145/3672608.3707728)) 
 - Luca Olivieri, Luca Negrini,  Vincenzo Arceri, Badar Chachar, Pietro Ferrara, Agostino Cortesi: <i>Detection of Phantom Reads in Hyperledger Fabric</i>, in IEEE Access, vol. 12, pp. 80687-80697, 2024 ([link]([10.1109/ACCESS.2024.3410019](http://doi.org/10.1109/ACCESS.2024.3410019)))

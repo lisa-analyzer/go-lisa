@@ -63,7 +63,7 @@ public class EmptyEventNameChecker<H extends HeapValue<H>, T extends TypeValue<T
 			return true;
 
 		for (Call call : calls) {
-			if (call.getTargetName().equals("SetEvent") && call.getParameters().length == 2) {
+			if (call.getTargetName().equals("SetEvent") && call.getParameters().length == 3) {
 				try {
 					for (var result : tool
 							.getResultOf(call.getCFG())) {

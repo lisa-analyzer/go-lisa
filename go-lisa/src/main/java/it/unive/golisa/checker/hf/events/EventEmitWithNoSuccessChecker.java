@@ -105,7 +105,7 @@ public class EventEmitWithNoSuccessChecker<H extends HeapValue<H>, T extends Typ
 
 		boolean found = false;
 		for (Call c : calls)
-			if (c.getTargetName().equals("SetEvent") && c.getParameters().length == 2)
+			if (c.getTargetName().equals("SetEvent") && c.getParameters().length == 3)
 				found = true;
 
 		if (!found)

@@ -1,10 +1,10 @@
 package it.unive.golisa.cfg.type.numeric.unsigned;
 
 import it.unive.golisa.cfg.expression.literal.GoInteger;
+import it.unive.golisa.type.GoNumericType;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.type.NumericType;
 import it.unive.lisa.type.Type;
 import it.unive.lisa.type.TypeSystem;
 import it.unive.lisa.type.Untyped;
@@ -18,7 +18,7 @@ import java.util.Set;
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
  */
-public class GoUInt16Type implements NumericType, Type {
+public class GoUInt16Type implements GoNumericType, Type {
 
 	/**
 	 * Unique instance of GoInt16 type.
@@ -91,5 +91,10 @@ public class GoUInt16Type implements NumericType, Type {
 	@Override
 	public Set<Type> allInstances(TypeSystem type) {
 		return Collections.singleton(this);
+	}
+
+	@Override
+	public int getNBits() {
+		return 16;
 	}
 }

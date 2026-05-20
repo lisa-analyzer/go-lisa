@@ -1,16 +1,14 @@
 package it.unive.golisa.cfg.runtime.container.list.function;
 
-import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.ProgramUnit;
-import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -29,9 +27,6 @@ import it.unive.lisa.type.ReferenceType;
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class New extends NativeCFG {
-
-	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION,
-			IntegrityNIDomain.HIGH_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -86,20 +81,21 @@ public class New extends NativeCFG {
 		 *                     defined
 		 */
 		public NewImpl(CFG cfg, CodeLocation location) {
-			super(cfg, location, "ListImpl", List.INSTANCE);
+			super(cfg, location, "NewImpl", List.INSTANCE);
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
 				StatementStore<A> expressions) throws SemanticException {
 
 			List listType = List.getListType(getProgram());
 
 			// Allocates the new memory for a Time object
-			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), anns, true);
+			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), true);
 			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
-			return state.smallStepSemantics(ref, original);
+			return interprocedural.getAnalysis().smallStepSemantics(state, ref, original);
 		}
+
 	}
 }

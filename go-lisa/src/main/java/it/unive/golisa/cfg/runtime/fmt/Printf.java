@@ -1,13 +1,13 @@
 package it.unive.golisa.cfg.runtime.fmt;
 
-import it.unive.golisa.cfg.VarArgsParameter;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.golisa.program.cfg.VarArgsParameter;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.CodeUnit;
 import it.unive.lisa.program.cfg.CFG;
@@ -72,9 +72,9 @@ public class Printf extends NativeCFG {
 		 * @return the pluggable statement
 		 */
 		public static PrintfImpl build(CFG cfg, CodeLocation location, Expression... params) {
-			if(params.length > 1)
-				return new	PrintfImpl(cfg, location, params);
-			else 
+			if (params.length > 1)
+				return new PrintfImpl(cfg, location, params);
+			else
 				return new PrintfImpl(cfg, location, params[0]);
 		}
 
@@ -84,18 +84,18 @@ public class Printf extends NativeCFG {
 		 * @param cfg      the {@link CFG} where this pluggable statement lies
 		 * @param location the location where this pluggable statement is
 		 *                     defined
-		 * @param params     the param expressions
+		 * @param params   the param expressions
 		 */
 		public PrintfImpl(CFG cfg, CodeLocation location, Expression... params) {
 			super(cfg, location, "Printf", GoStringType.INSTANCE, params);
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
-				StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(GoStringType.INSTANCE, getLocation()), original);
-
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
+				it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(GoStringType.INSTANCE, getLocation()), original);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.golisa.cfg.type.composite.GoStructType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -14,9 +14,7 @@ import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.SymbolicExpression;
 import it.unive.lisa.symbolic.heap.AccessChild;
 import it.unive.lisa.symbolic.heap.HeapDereference;
-import it.unive.lisa.type.Type;
 import it.unive.lisa.type.Untyped;
-import java.util.Set;
 
 /**
  * A Go access expression (e.g., x.y).
@@ -61,23 +59,24 @@ public class GoCollectionAccess extends BinaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-			throws SemanticException {
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+			SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
 		AnalysisState<A> result = state.bottom();
-		//Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this, state.getState());
-		//for (Type type : ltypes) {
-		//	if (type.isPointerType() 
-		//			|| type instanceof GoStructType) {
-				
-				
-				result = result.lub(state.smallStepSemantics(
-						new AccessChild(Untyped.INSTANCE,
-								new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
-						this));
-		//	}
-		//}
+		// Set<Type> ltypes = state.getState().getRuntimeTypesOf(left, this,
+		// state.getState());
+		// for (Type type : ltypes) {
+		// if (type.isPointerType()
+		// || type instanceof GoStructType) {
+
+		result = result.lub(interprocedural.getAnalysis().smallStepSemantics(state,
+				new AccessChild(Untyped.INSTANCE,
+						new HeapDereference(getStaticType(), left, getLocation()), right, getLocation()),
+				this));
+		// }
+		// }
 
 		return result;
 	}
+
 }

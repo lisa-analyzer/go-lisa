@@ -5,11 +5,11 @@ import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.unsigned.GoUIntType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
@@ -60,14 +60,16 @@ public class GoRangeGetNextIndex extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
-		if (state.getComputedExpressions().size() == 1) {
-			for (SymbolicExpression e : state.getComputedExpressions()) {
-				Type etype = state.getState().getDynamicTypeOf(e, this, state.getState());
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
+			it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
+
+		if (state.getExecutionExpressions().size() == 1) {
+			for (SymbolicExpression e : state.getExecutionExpressions()) {
+				Type etype = interprocedural.getAnalysis().getDynamicTypeOf(state, e, this);
 				Type computed = computeType(etype);
 				if (!computed.equals(Untyped.INSTANCE))
-					return state.smallStepSemantics(
+					return interprocedural.getAnalysis().smallStepSemantics(state,
 							new PushAny(computed, this.getLocation()),
 							this);
 			}

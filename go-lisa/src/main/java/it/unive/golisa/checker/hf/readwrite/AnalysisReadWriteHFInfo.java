@@ -1,6 +1,6 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import java.util.List;
 import java.util.Objects;
@@ -26,12 +26,12 @@ public class AnalysisReadWriteHFInfo {
 	/**
 	 * The list of sets of key values.
 	 */
-	private final List<Set<Tarsis>> keyValues;
+	private final List<Set<RegexAutomaton>> keyValues;
 
 	/**
 	 * The collection values.
 	 */
-	private final Set<Tarsis> collectionValues;
+	private final Set<RegexAutomaton> collectionValues;
 
 	/**
 	 * Builds the read-write analysis information object.
@@ -40,7 +40,7 @@ public class AnalysisReadWriteHFInfo {
 	 * @param info      the read-write information
 	 * @param keyValues the key values
 	 */
-	public AnalysisReadWriteHFInfo(Call call, ReadWriteInfo info, List<Set<Tarsis>> keyValues) {
+	public AnalysisReadWriteHFInfo(Call call, ReadWriteInfo info, List<Set<RegexAutomaton>> keyValues) {
 		this(call, info, keyValues, null);
 	}
 
@@ -52,8 +52,8 @@ public class AnalysisReadWriteHFInfo {
 	 * @param keyValues        the key values
 	 * @param collectionValues the collection values
 	 */
-	public AnalysisReadWriteHFInfo(Call call, ReadWriteInfo info, List<Set<Tarsis>> keyValues,
-			Set<Tarsis> collectionValues) {
+	public AnalysisReadWriteHFInfo(Call call, ReadWriteInfo info, List<Set<RegexAutomaton>> keyValues,
+			Set<RegexAutomaton> collectionValues) {
 		this.call = call;
 		this.info = info;
 		this.keyValues = keyValues;
@@ -83,7 +83,7 @@ public class AnalysisReadWriteHFInfo {
 	 * 
 	 * @return the key values
 	 */
-	public List<Set<Tarsis>> getKeyValues() {
+	public List<Set<RegexAutomaton>> getKeyValues() {
 		return keyValues;
 	}
 
@@ -102,7 +102,7 @@ public class AnalysisReadWriteHFInfo {
 	 * 
 	 * @return the collection values
 	 */
-	public Set<Tarsis> getCollectionValues() {
+	public Set<RegexAutomaton> getCollectionValues() {
 		return collectionValues;
 	}
 

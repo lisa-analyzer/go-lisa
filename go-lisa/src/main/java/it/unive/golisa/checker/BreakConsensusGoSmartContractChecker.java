@@ -7,7 +7,7 @@ import it.unive.golisa.golang.api.signature.FuncGoLangApiSignature;
 import it.unive.golisa.golang.api.signature.GoLangApiSignature;
 import it.unive.golisa.golang.api.signature.MethodGoLangApiSignature;
 import it.unive.golisa.golang.util.GoLangUtils;
-import it.unive.lisa.checks.syntactic.CheckTool;
+import it.unive.lisa.ReportingTool;
 import it.unive.lisa.checks.syntactic.SyntacticCheck;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -31,22 +31,22 @@ import java.util.Set;
 public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 	@Override
-	public void beforeExecution(CheckTool tool) {
+	public void beforeExecution(ReportingTool tool) {
 	}
 
 	@Override
-	public void afterExecution(CheckTool tool) {
+	public void afterExecution(ReportingTool tool) {
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG graph, Statement node) {
+	public boolean visit(ReportingTool tool, CFG graph, Statement node) {
 
 		checkIssuesRelatedToGoLangAPI(tool, graph, node);
 
 		return true;
 	}
 
-	private void checkIssuesRelatedToGoLangAPI(CheckTool tool, CFG graph, Statement node) {
+	private void checkIssuesRelatedToGoLangAPI(ReportingTool tool, CFG graph, Statement node) {
 
 		if (node instanceof UnresolvedCall) {
 			if (matchRandomStatement((UnresolvedCall) node))
@@ -66,7 +66,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 
 	}
 
-	private void checkIssuesRelatedToExternalEnviroments(CheckTool tool, CFG graph, Statement node) {
+	private void checkIssuesRelatedToExternalEnviroments(ReportingTool tool, CFG graph, Statement node) {
 
 		if (node instanceof UnresolvedCall) {
 
@@ -192,17 +192,17 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG g) {
+	public boolean visit(ReportingTool tool, CFG g) {
 		return true;
 	}
 
 	@Override
-	public boolean visit(CheckTool tool, CFG graph, Edge edge) {
+	public boolean visit(ReportingTool tool, CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
-	public boolean visitUnit(CheckTool tool, Unit unit) {
+	public boolean visitUnit(ReportingTool tool, Unit unit) {
 
 		if (unit instanceof CompilationUnit)
 			if (checkExternalLibraries(tool, (CompilationUnit) unit))
@@ -210,7 +210,7 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 		return true;
 	}
 
-	private boolean checkExternalLibraries(CheckTool tool, CompilationUnit unit) {
+	private boolean checkExternalLibraries(ReportingTool tool, CompilationUnit unit) {
 
 		if (unit.getLocation() instanceof SourceCodeLocation) {
 			SourceCodeLocation scl = (SourceCodeLocation) unit.getLocation();
@@ -230,6 +230,6 @@ public class BreakConsensusGoSmartContractChecker implements SyntacticCheck {
 	}
 
 	@Override
-	public void visitGlobal(CheckTool tool, Unit unit, Global global, boolean instance) {
+	public void visitGlobal(ReportingTool tool, Unit unit, Global global, boolean instance) {
 	}
 }

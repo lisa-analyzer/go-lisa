@@ -1,18 +1,19 @@
 package it.unive.golisa.cfg.expression.literal;
 
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.assignment.GoShortVariableDeclaration.NumericalTyper;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.composite.GoStructType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.annotations.Annotations;
@@ -80,13 +81,14 @@ public class GoKeyedLiteral extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+			StatementStore<A> expressions) throws SemanticException {
 		Type type = getStaticType();
 		MemoryAllocation created = new MemoryAllocation(type, getLocation(), new Annotations(), true);
 		// Allocates the new heap allocation
-		AnalysisState<A> containerState = state.smallStepSemantics(created, this);
-		ExpressionSet containerExps = containerState.getComputedExpressions();
+		AnalysisState<A> containerState = interprocedural.getAnalysis().smallStepSemantics(state, created, this);
+		ExpressionSet containerExps = containerState.getExecutionExpressions();
 
 		/*
 		 * Array allocation
@@ -105,27 +107,31 @@ public class GoKeyedLiteral extends NaryExpression {
 						getLocation());
 				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						lenProperty, getLocation());
-				AnalysisState<A> lenState = containerState.smallStepSemantics(lenAccess, this);
+				AnalysisState<
+						A> lenState = interprocedural.getAnalysis().smallStepSemantics(containerState, lenAccess, this);
 
 				AnalysisState<A> lenResult = state.bottom();
-				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+				for (SymbolicExpression lenId : lenState.getExecutionExpressions())
 					lenResult = lenResult.lub(
-							lenState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+							interprocedural.getAnalysis().assign(lenState, lenId,
+									new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				// Assign the cap property to this hid
 				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
 						getLocation());
 				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						capProperty, getLocation());
-				AnalysisState<A> capState = lenResult.smallStepSemantics(capAccess, this);
+				AnalysisState<
+						A> capState = interprocedural.getAnalysis().smallStepSemantics(lenResult, capAccess, this);
 
 				AnalysisState<A> capResult = state.bottom();
-				for (SymbolicExpression lenId : capState.getComputedExpressions())
+				for (SymbolicExpression lenId : capState.getExecutionExpressions())
 					capResult = capResult.lub(
-							capState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+							interprocedural.getAnalysis().assign(capState, lenId,
+									new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				if (getSubExpressions().length == 0)
-					return capResult.smallStepSemantics(reference, this);
+					return interprocedural.getAnalysis().smallStepSemantics(capResult, reference, this);
 
 			}
 		}
@@ -146,27 +152,31 @@ public class GoKeyedLiteral extends NaryExpression {
 						getLocation());
 				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						lenProperty, getLocation());
-				AnalysisState<A> lenState = containerState.smallStepSemantics(lenAccess, this);
+				AnalysisState<
+						A> lenState = interprocedural.getAnalysis().smallStepSemantics(containerState, lenAccess, this);
 
 				AnalysisState<A> lenResult = state.bottom();
-				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+				for (SymbolicExpression lenId : lenState.getExecutionExpressions())
 					lenResult = lenResult.lub(
-							lenState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+							interprocedural.getAnalysis().assign(lenState, lenId,
+									new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				// Assign the cap property to this hid
 				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
 						getLocation());
 				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, dereference,
 						capProperty, getLocation());
-				AnalysisState<A> capState = lenResult.smallStepSemantics(capAccess, this);
+				AnalysisState<
+						A> capState = interprocedural.getAnalysis().smallStepSemantics(lenResult, capAccess, this);
 
 				AnalysisState<A> capResult = state.bottom();
-				for (SymbolicExpression lenId : capState.getComputedExpressions())
+				for (SymbolicExpression lenId : capState.getExecutionExpressions())
 					capResult = capResult.lub(
-							capState.assign(lenId, new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
+							interprocedural.getAnalysis().assign(capState, lenId,
+									new Constant(GoIntType.INSTANCE, arrayLength, getLocation()), this));
 
 				if (getSubExpressions().length == 0)
-					return capResult.smallStepSemantics(reference, this);
+					return interprocedural.getAnalysis().smallStepSemantics(capResult, reference, this);
 			}
 		}
 
@@ -190,19 +200,22 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A> tmp = containerState;
 
 				for (int i = 0; i < keys.length; i++) {
-					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true) == null ? Untyped.INSTANCE : structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true)
-							.getStaticType();
+					Type fieldType = structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true) == null
+							? Untyped.INSTANCE
+							: structUnit.getInstanceGlobal(((VariableRef) keys[i]).getName(), true)
+									.getStaticType();
 					Variable field = getVariable((VariableRef) keys[i]);
 					AccessChild access = new AccessChild(fieldType, dereference, field, getLocation());
-					AnalysisState<A> fieldState = tmp.smallStepSemantics(access, this);
-					for (SymbolicExpression id : fieldState.getComputedExpressions())
+					AnalysisState<A> fieldState = interprocedural.getAnalysis().smallStepSemantics(tmp, access, this);
+					for (SymbolicExpression id : fieldState.getExecutionExpressions())
 						for (SymbolicExpression v : params[i]) {
-							Type vtype = tmp.getState().getDynamicTypeOf(v, this, tmp.getState());
-							tmp = fieldState.assign(id, NumericalTyper.type(v, vtype), this);
+							Type vtype = interprocedural.getAnalysis().getDynamicTypeOf(tmp, v, this);
+							tmp = interprocedural.getAnalysis().assign(fieldState, id, NumericalTyper.type(v, vtype),
+									this);
 						}
 				}
 
-				result = result.lub(tmp.smallStepSemantics(reference, this));
+				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(tmp, reference, this));
 			}
 
 			return result;
@@ -230,18 +243,18 @@ public class GoKeyedLiteral extends NaryExpression {
 					AccessChild keyAcces = new AccessChild(contentType, dereference,
 							keyProperty, getLocation());
 
-					AnalysisState<A> keyState = tmp.smallStepSemantics(keyAcces, this);
+					AnalysisState<A> keyState = interprocedural.getAnalysis().smallStepSemantics(tmp, keyAcces, this);
 
 					AnalysisState<A> keyResult = state.bottom();
-					for (SymbolicExpression keyId : keyState.getComputedExpressions())
+					for (SymbolicExpression keyId : keyState.getExecutionExpressions())
 						for (SymbolicExpression expr : params[i])
 							keyResult = keyResult.lub(
-									keyState.assign(keyId, expr, this));
+									interprocedural.getAnalysis().assign(keyState, keyId, expr, this));
 
 					tmp = keyResult;
 				}
 
-				result = result.lub(tmp.smallStepSemantics(reference, this));
+				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(tmp, reference, this));
 
 			}
 
@@ -255,18 +268,20 @@ public class GoKeyedLiteral extends NaryExpression {
 				AnalysisState<A> result = state.bottom();
 				for (ExpressionSet p : params) {
 					for (SymbolicExpression e : p) {
-						state.lub(state.smallStepSemantics(e, this));
+						state.lub(interprocedural.getAnalysis().smallStepSemantics(state, e, this));
 					}
 				}
 
 				return result;
 			} else {
-				return state.smallStepSemantics(new Constant(Untyped.INSTANCE, "KEYED_LITERAL", getLocation()),
+				return interprocedural.getAnalysis().smallStepSemantics(state,
+						new Constant(Untyped.INSTANCE, "KEYED_LITERAL", getLocation()),
 						getEvaluationPredecessor() != null ? getEvaluationPredecessor() : this);
 			}
 		}
 
-		return state.top().smallStepSemantics(new PushAny(type, getLocation()), this);
+		return interprocedural.getAnalysis().smallStepSemantics(state.top(), new PushAny(type, getLocation()), this);
 
 	}
+
 }

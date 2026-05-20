@@ -1,16 +1,13 @@
 package it.unive.golisa.cfg.runtime.container.list.function;
 
-import it.unive.golisa.analysis.ni.IntegrityNIDomain;
-import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.runtime.container.list.type.List;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.ProgramUnit;
-import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -33,9 +30,6 @@ import it.unive.lisa.type.Untyped;
  * @author <a href="mailto:luca.olivieri@univr.it">Luca Olivieri</a>
  */
 public class Front extends NativeCFG {
-
-	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION,
-			IntegrityNIDomain.HIGH_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -95,17 +89,19 @@ public class Front extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
-				StatementStore<A> expressions) throws SemanticException {
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
+				it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
 
 			List listType = List.getListType(getProgram());
-			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), anns, true);
+			MemoryAllocation alloc = new MemoryAllocation(listType, getLocation(), true);
 			HeapReference ref = new HeapReference(new ReferenceType(listType), alloc, getLocation());
 			HeapDereference deref = new HeapDereference(listType, ref, getLocation());
-			AnalysisState<A> asg = state.assign(deref, new PushAny(Untyped.INSTANCE, getLocation()), this);
-			return asg.smallStepSemantics(ref, original);
+			AnalysisState<A> asg = interprocedural.getAnalysis().assign(state, deref,
+					new PushAny(Untyped.INSTANCE, getLocation()), this);
+			return interprocedural.getAnalysis().smallStepSemantics(asg, ref, original);
 		}
+
 	}
 
 }

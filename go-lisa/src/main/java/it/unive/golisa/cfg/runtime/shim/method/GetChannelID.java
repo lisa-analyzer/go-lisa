@@ -1,16 +1,15 @@
 package it.unive.golisa.cfg.runtime.shim.method;
 
-import it.unive.golisa.analysis.taint.TaintDomain;
 import it.unive.golisa.cfg.runtime.shim.type.ChaincodeStub;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.CompilationUnit;
-import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
 import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.CodeMemberDescriptor;
@@ -21,16 +20,15 @@ import it.unive.lisa.program.cfg.statement.NaryExpression;
 import it.unive.lisa.program.cfg.statement.PluggableStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.symbolic.value.Constant;
+
 /**
- * func (s *ChaincodeStub) GetChannelID() string
+ * func (s *ChaincodeStub) GetChannelID() string.
  * 
  * @link https://pkg.go.dev/github.com/hyperledger/fabric-chaincode-go/shim#ChaincodeStub.GetChannelID
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  */
 public class GetChannelID extends NativeCFG {
-
-	private final static Annotations anns = new Annotations(TaintDomain.CLEAN_ANNOTATION);
 
 	/**
 	 * Builds the native cfg.
@@ -40,7 +38,7 @@ public class GetChannelID extends NativeCFG {
 	 */
 	public GetChannelID(CodeLocation location, CompilationUnit shimUnit) {
 		super(new CodeMemberDescriptor(location, shimUnit, true, "GetChannelID",
-				GoStringType.INSTANCE, anns,
+				GoStringType.INSTANCE,
 				new Parameter(location, "s", ChaincodeStub.getChaincodeStubType(shimUnit.getProgram()))),
 				GetChannelIDImpl.class);
 	}
@@ -92,14 +90,14 @@ public class GetChannelID extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				ExpressionSet[] params, StatementStore<A> expressions)
-				throws SemanticException {
-
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+				StatementStore<A> expressions) throws SemanticException {
 			// https://github.com/hyperledger/fabric-chaincode-go/blob/main/shim/interfaces.go#L73C2-L74C17
 			// if `channel` is empty string, the caller's channel is assumed.
-			return state.smallStepSemantics(new Constant(GoStringType.INSTANCE, "", getLocation()), original); 
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new Constant(GoStringType.INSTANCE, "", getLocation()), original);
+
 		}
 	}
 }

@@ -1,7 +1,8 @@
 package it.unive.golisa.cfg.expression.unary;
 
 import it.unive.golisa.cfg.type.GoBoolType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -37,12 +38,6 @@ public class GoRange extends UnaryExpression {
 	 */
 	public GoRange(CFG cfg, SourceCodeLocation location, Expression exp) {
 		super(cfg, location, "range", GoBoolType.INSTANCE, exp);
-	}
-
-	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-		return state.smallStepSemantics(expr, this);
 	}
 
 	/**
@@ -130,5 +125,12 @@ public class GoRange extends UnaryExpression {
 	@Override
 	protected int compareSameClassAndParams(Statement o) {
 		return 0; // nothing else to compare
+	}
+
+	@Override
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+			StatementStore<A> expressions) throws SemanticException {
+		return interprocedural.getAnalysis().smallStepSemantics(state, expr, this);
 	}
 }

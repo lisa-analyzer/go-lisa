@@ -1,52 +1,27 @@
 package it.unive.golisa.cfg.expression.unary;
 
-import it.unive.lisa.analysis.AbstractState;
-import it.unive.lisa.analysis.AnalysisState;
-import it.unive.lisa.analysis.SemanticException;
-import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.interprocedural.InterproceduralAnalysis;
-import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.cfg.CFG;
+import it.unive.lisa.program.cfg.CodeLocation;
 import it.unive.lisa.program.cfg.statement.Expression;
-import it.unive.lisa.program.cfg.statement.Statement;
-import it.unive.lisa.symbolic.SymbolicExpression;
-import it.unive.lisa.symbolic.value.UnaryExpression;
-import it.unive.lisa.symbolic.value.operator.unary.NumericNegation;
-import it.unive.lisa.type.Type;
+import it.unive.lisa.program.cfg.statement.numeric.Negation;
 
 /**
  * The Go unary minus expression (e.g., -x).
  * 
  * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
+ * @author <a href="mailto:luca.negrini@unive.it">Luca Negrini</a>
  */
-public class GoMinus extends it.unive.lisa.program.cfg.statement.UnaryExpression {
+public class GoMinus extends Negation {
 
 	/**
-	 * Builds the unary minus expression.
+	 * Builds the minus expression.
 	 * 
-	 * @param cfg      the {@link CFG} where this expression lies
-	 * @param location the location where this expression is defined
-	 * @param exp      the expression
+	 * @param cfg        the {@link CFG} where this expression lies
+	 * @param location   the location where this expression is defined
+	 * @param expression the expression of minus
 	 */
-	public GoMinus(CFG cfg, SourceCodeLocation location, Expression exp) {
-		super(cfg, location, "-", exp);
+	public GoMinus(CFG cfg, CodeLocation location, Expression expression) {
+		super(cfg, location, expression);
 	}
 
-	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
-	}
-
-	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(InterproceduralAnalysis<A> interprocedural,
-			AnalysisState<A> state, SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-		Type etype = state.getState().getDynamicTypeOf(expr, this, state.getState());
-		if (!etype.isNumericType() && !etype.isUntyped())
-			return state.bottom();
-
-		return state.smallStepSemantics(
-				new UnaryExpression(etype, expr,
-						NumericNegation.INSTANCE, getLocation()),
-				this);
-	}
 }

@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.runtime.tendermint.core.abci.method;
 
 import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.BaseApplication;
 import it.unive.golisa.cfg.runtime.tendermint.core.abci.type.ResponseCommit;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -84,16 +85,17 @@ public class Commit extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdUnarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression expr, StatementStore<A> expressions) throws SemanticException {
-			return state.smallStepSemantics(new PushAny(ResponseCommit.getRequestEndBlockType(null), getLocation()),
-					original);
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
 		}
 
 		@Override
-		protected int compareSameClassAndParams(Statement o) {
-			return 0; // nothing else to compare
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdUnarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression expr,
+				StatementStore<A> expressions) throws SemanticException {
+			return interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(ResponseCommit.getRequestEndBlockType(null), getLocation()),
+					original);
 		}
 	}
 }

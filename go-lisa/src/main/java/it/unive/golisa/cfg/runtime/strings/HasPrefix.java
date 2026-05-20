@@ -2,7 +2,8 @@ package it.unive.golisa.cfg.runtime.strings;
 
 import it.unive.golisa.cfg.type.GoBoolType;
 import it.unive.golisa.cfg.type.GoStringType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -90,12 +91,11 @@ public class HasPrefix extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
-			Type ltype = state.getState().getDynamicTypeOf(left, this, state.getState());
-			Type rtype = state.getState().getDynamicTypeOf(right, this, state.getState());
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+			Type ltype = interprocedural.getAnalysis().getDynamicTypeOf(state, left, this);
+			Type rtype = interprocedural.getAnalysis().getDynamicTypeOf(state, right, this);
 
 			if (!ltype.isStringType() && !ltype.isUntyped())
 				return state.bottom();
@@ -103,10 +103,9 @@ public class HasPrefix extends NativeCFG {
 			if (!rtype.isStringType() && !rtype.isUntyped())
 				return state.bottom();
 
-			return state
-					.smallStepSemantics(new BinaryExpression(GoBoolType.INSTANCE,
-							left, right, it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE,
-							getLocation()), original);
+			return interprocedural.getAnalysis().smallStepSemantics(state, new BinaryExpression(GoBoolType.INSTANCE,
+					left, right, it.unive.lisa.symbolic.value.operator.binary.StringStartsWith.INSTANCE,
+					getLocation()), original);
 		}
 	}
 }

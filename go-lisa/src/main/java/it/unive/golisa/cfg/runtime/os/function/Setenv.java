@@ -4,7 +4,8 @@ import it.unive.golisa.cfg.runtime.io.type.Reader;
 import it.unive.golisa.cfg.type.GoNilType;
 import it.unive.golisa.cfg.type.GoStringType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
@@ -39,11 +40,9 @@ public class Setenv extends NativeCFG {
 	 * @param osUnit   the unit to which this native cfg belongs to
 	 */
 	public Setenv(CodeLocation location, CodeUnit osUnit) {
-		super(new CodeMemberDescriptor(location, osUnit, false, "Setenv",
-				GoErrorType.INSTANCE,
+		super(new CodeMemberDescriptor(location, osUnit, false, "Setenv", GoErrorType.INSTANCE,
 				new Parameter(location, "key", GoStringType.INSTANCE),
-				new Parameter(location, "value", GoStringType.INSTANCE)),
-				SetenvImpl.class);
+				new Parameter(location, "value", GoStringType.INSTANCE)), SetenvImpl.class);
 	}
 
 	/**
@@ -51,8 +50,7 @@ public class Setenv extends NativeCFG {
 	 * 
 	 * @author <a href="mailto:vincenzo.arceri@unipr.it">Vincenzo Arceri</a>
 	 */
-	public static class SetenvImpl extends BinaryExpression
-			implements PluggableStatement {
+	public static class SetenvImpl extends BinaryExpression implements PluggableStatement {
 
 		private Statement original;
 
@@ -89,21 +87,19 @@ public class Setenv extends NativeCFG {
 		}
 
 		@Override
-		public <A extends AbstractState<A>> AnalysisState<A> fwdBinarySemantics(
-				InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-				SymbolicExpression left, SymbolicExpression right, StatementStore<A> expressions)
-				throws SemanticException {
-			AnalysisState<
-					A> readerValue = state.smallStepSemantics(new PushAny(Reader.getReaderType(null), getLocation()),
-							original);
-			AnalysisState<A> nilValue = state.smallStepSemantics(new Constant(GoNilType.INSTANCE, "nil", getLocation()),
-					original);
-			return readerValue.lub(nilValue);
+		protected int compareSameClassAndParams(Statement o) {
+			return 0; // nothing else to compare
 		}
 
 		@Override
-		protected int compareSameClassAndParams(Statement o) {
-			return 0; // nothing else to compare
+		public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> fwdBinarySemantics(
+				InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, SymbolicExpression left,
+				SymbolicExpression right, StatementStore<A> expressions) throws SemanticException {
+			AnalysisState<A> readerValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new PushAny(Reader.getReaderType(null), getLocation()), original);
+			AnalysisState<A> nilValue = interprocedural.getAnalysis().smallStepSemantics(state,
+					new Constant(GoNilType.INSTANCE, "nil", getLocation()), original);
+			return readerValue.lub(nilValue);
 		}
 	}
 }

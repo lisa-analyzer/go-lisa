@@ -19,7 +19,7 @@ public class StateQueryIterator extends GoStructType {
 	/**
 	 * Unique instance of the {@link Handler} type.
 	 */
-	private static StateQueryIterator INSTANCE;
+	public static StateQueryIterator INSTANCE;
 
 	private StateQueryIterator(CompilationUnit unit) {
 		super("StateQueryIterator", unit);
@@ -59,7 +59,6 @@ public class StateQueryIterator extends GoStructType {
 		stateQueryIteratorUnit
 				.addInstanceCodeMember(
 						new HasNext(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, stateQueryIteratorUnit));
-
 		stateQueryIteratorUnit
 				.addInstanceCodeMember(
 						new Next(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, stateQueryIteratorUnit));

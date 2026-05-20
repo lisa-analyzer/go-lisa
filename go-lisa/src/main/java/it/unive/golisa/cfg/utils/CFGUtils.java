@@ -57,7 +57,7 @@ public class CFGUtils {
 	 * @throws IllegalArgumentException if the search algorithm is not supported
 	 */
 	public static boolean existPath(CFG cfg, Statement source, Statement destination, Search search) {
-		if(source.equals(destination))
+		if (source.equals(destination))
 			return true;
 		if (search.equals(Search.BFS))
 			return searchBFS(cfg, source, destination);
@@ -65,6 +65,60 @@ public class CFGUtils {
 			return searchDFS(cfg, source, destination);
 		else
 			throw new IllegalArgumentException("The following search algorithm \"" + search + "\" is not supported");
+	}
+
+	/**
+	 * Checks whether there exists a path in {@code cfg} between {@code source}
+	 * and {@code destination}, with at least one edge.
+	 * 
+	 * @param cfg         the cfg
+	 * @param source      the source statement
+	 * @param destination the destination statement
+	 * @param search      the type of search
+	 * 
+	 * @return whether there exists a path in {@code cfg} between {@code source}
+	 *             and {@code destination}
+	 * 
+	 * @throws IllegalArgumentException if the search algorithm is not supported
+	 */
+	public static boolean existPathWithAtLeastOneEdge(CFG cfg, Statement source, Statement destination, Search search) {
+		if (search.equals(Search.BFS))
+			return searchBFSAtLeastOneEdge(cfg, source, destination);
+		else if (search.equals(Search.DFS))
+			return searchDFSAtLeastOneEdge(cfg, source, destination);
+		else
+			throw new IllegalArgumentException("The following search algorithm \"" + search + "\" is not supported");
+	}
+
+	private static boolean searchBFSAtLeastOneEdge(CFG graph, Statement source, Statement destination) {
+		if (containsNode(graph, source) && containsNode(graph, destination)) {
+			Set<Statement> seen = new HashSet<>();
+
+			LinkedList<Statement> workingList = new LinkedList<Statement>();
+			Statement start = extractTargetNodeFromGraph(graph, source);
+			boolean firstNode = true;
+			if (start != null) {
+				workingList.add(start);
+
+				while (!workingList.isEmpty()) {
+					Statement node = workingList.remove();
+					if (!firstNode) {
+						if (!seen.contains(node)) {
+							seen.add(node);
+
+							if (equalsOrContains(node, destination))
+								return true;
+						}
+					} else
+						firstNode = false;
+
+					Collection<Edge> edges = graph.getOutgoingEdges(node);
+					edges.forEach(e -> workingList.add(e.getDestination()));
+				}
+			}
+		}
+
+		return false;
 	}
 
 	private static boolean searchBFS(CFG graph, Statement source, Statement destination) {
@@ -195,12 +249,30 @@ public class CFGUtils {
 
 		if (containsNode(graph, source) && containsNode(graph, destination)) {
 			Set<Statement> seen = new HashSet<>();
-			recursiveDFS(graph, extractTargetNodeFromGraph(graph, source), destination, seen);
+			return recursiveDFS(graph, extractTargetNodeFromGraph(graph, source), destination, seen);
 		}
 
 		return false;
 	}
 
+	private static boolean searchDFSAtLeastOneEdge(CFG graph, Statement source, Statement destination) {
+		if (containsNode(graph, source) && containsNode(graph, destination)) {
+			Set<Statement> seen = new HashSet<>();
+			return recursiveDFSAtLeastOneEdge(graph, extractTargetNodeFromGraph(graph, source), destination, seen,
+					true);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Yields {@code true} if the CFG contains all the statements.
+	 * 
+	 * @param graph the CFG to check
+	 * @param nodes the statements to check
+	 * 
+	 * @return Yields {@code true} if the CFG contains all the statements
+	 */
 	private static boolean containsAllNodes(CFG graph, Statement... nodes) {
 		boolean[] res = new boolean[nodes.length];
 		for (Statement cfgNode : graph.getNodes())
@@ -213,6 +285,16 @@ public class CFGUtils {
 		return true;
 	}
 
+	/**
+	 * Recursive DFS search on a CFG to find if exist a path between two nodes.
+	 * 
+	 * @param graph       the CFG to check
+	 * @param source      the source node
+	 * @param destination the destination node
+	 * @param seen        the set of nodes already seen
+	 * 
+	 * @return {@code true} if there is a path between the two nodes
+	 */
 	private static boolean recursiveDFS(CFG graph, Statement source, Statement destination, Set<Statement> seen) {
 		if (!seen.contains(source)) {
 			seen.add(source);
@@ -231,19 +313,66 @@ public class CFGUtils {
 		return false;
 	}
 
+	private static boolean recursiveDFSAtLeastOneEdge(CFG graph, Statement source, Statement destination,
+			Set<Statement> seen, boolean firstNode) {
+		if (!seen.contains(source)) {
+
+			if (!firstNode) {
+				seen.add(source);
+
+				if (equalsOrContains(source, destination))
+					return true;
+			}
+
+			Collection<Edge> edges = graph.getOutgoingEdges(source);
+			Iterator<Edge> iter = edges.iterator();
+			while (iter.hasNext()) {
+				Edge e = iter.next();
+				if (recursiveDFSAtLeastOneEdge(graph, e.getDestination(), destination, seen, false))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Given a condition, counts the number of matches in the CFG.
+	 * 
+	 * @param cfg       the CFG to check
+	 * @param condition the condition
+	 * 
+	 * @return the number of matches
+	 */
 	public static int countMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		int res = 0;
-		for( Statement node : cfg.getNodes()) {
-			 if(matchNodeOrSubExpressions(node, condition))
-				 res++;
+		for (Statement node : cfg.getNodes()) {
+			if (matchNodeOrSubExpressions(node, condition))
+				res++;
 		}
 		return res;
 	}
-	
+
+	/**
+	 * Given a condition, it checks if there is a match in the nodes of CFG.
+	 * 
+	 * @param cfg       the CFG to check
+	 * @param condition the condition
+	 * 
+	 * @return {@code true} if there is a match
+	 */
 	public static boolean anyMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		return cfg.getNodes().stream().anyMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
 
+	/**
+	 * Given a condition, it checks if the condition match with all nodes of
+	 * CFG.
+	 * 
+	 * @param cfg       the CFG to check
+	 * @param condition the condition
+	 * 
+	 * @return {@code true} if all nodes match the condition
+	 */
 	public static boolean allMatchInCFGNodes(CFG cfg, Function<Statement, Boolean> condition) {
 		return cfg.getNodes().stream().allMatch(n -> matchNodeOrSubExpressions(n, condition));
 	}
@@ -304,6 +433,15 @@ public class CFGUtils {
 		return null;
 	}
 
+	/**
+	 * Yields a code graph that contains a path between two nodes.
+	 * 
+	 * @param graph       the CFG to check
+	 * @param source      the source node
+	 * @param destination the destination node
+	 * 
+	 * @return the graph with the path
+	 */
 	private static CodeGraph<CFG, Statement, Edge> getSearchGraphDFS(CFG graph, Statement source,
 			Statement destination) {
 
@@ -316,6 +454,17 @@ public class CFGUtils {
 		return null;
 	}
 
+	/**
+	 * Yields a code graph that contains a path between two nodes.
+	 * 
+	 * @param graph       the CFG to check
+	 * @param source      the source node
+	 * @param destination the destination statement
+	 * @param seen        the set of nodes aready seen
+	 * @param res         the collection of code graphs found
+	 * 
+	 * @return the destination statement or the node that contain it
+	 */
 	private static Statement getSearchGraphRecursiveDFS(CFG graph, Statement source, Statement destination,
 			Set<Statement> seen, CodeGraph<CFG, Statement, Edge> res) {
 		if (!seen.contains(source)) {

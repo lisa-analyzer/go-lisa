@@ -6,11 +6,11 @@ import it.unive.golisa.cfg.type.composite.GoChannelType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoSliceType;
 import it.unive.golisa.cfg.type.numeric.signed.GoIntType;
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.annotations.Annotations;
@@ -68,10 +68,14 @@ public class GoMake extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(
-			InterproceduralAnalysis<A> interprocedural, AnalysisState<A> state,
-			ExpressionSet[] params, StatementStore<A> expressions)
-			throws SemanticException {
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
+	}
+
+	@Override
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state,
+			it.unive.lisa.lattices.ExpressionSet[] params, StatementStore<A> expressions) throws SemanticException {
 		// No type information is provided and just a single type
 		// is passed as argument and it should be allocated
 		if (type == null)
@@ -89,14 +93,14 @@ public class GoMake extends NaryExpression {
 			// FIXME: currently, we handle just slice allocation where the
 			// length is integer
 			if (!(getSubExpressions()[0] instanceof GoInteger))
-				return state.top()
-						.smallStepSemantics(new PushAny(type, getLocation()), this);
+				return interprocedural.getAnalysis()
+						.smallStepSemantics(state.top(), new PushAny(type, getLocation()), this);
 
 			// FIXME: currently, we handle just slice allocation where the
 			// capability is integer
 			if (getSubExpressions().length == 2 && !(getSubExpressions()[1] instanceof GoInteger))
-				return state.top()
-						.smallStepSemantics(new PushAny(type, getLocation()), this);
+				return interprocedural.getAnalysis()
+						.smallStepSemantics(state.top(), new PushAny(type, getLocation()), this);
 
 			int length = (int) ((GoInteger) getSubExpressions()[0]).getValue();
 			int cap = getSubExpressions().length == 1 ? length : (int) ((GoInteger) getSubExpressions()[1]).getValue();
@@ -113,8 +117,9 @@ public class GoMake extends NaryExpression {
 			MemoryAllocation sliceCreated = new MemoryAllocation(sliceType, getLocation(), new Annotations());
 
 			// Allocates the new heap allocation
-			AnalysisState<A> containerState = arraySemantics.smallStepSemantics(sliceCreated, this);
-			ExpressionSet sliceExps = containerState.getComputedExpressions();
+			AnalysisState<A> containerState = interprocedural.getAnalysis().smallStepSemantics(arraySemantics,
+					sliceCreated, this);
+			var sliceExps = containerState.getExecutionExpressions();
 
 			AnalysisState<A> result = state.bottom();
 
@@ -129,36 +134,41 @@ public class GoMake extends NaryExpression {
 						getLocation());
 				AccessChild lenAccess = new AccessChild(GoIntType.INSTANCE, sliceDeref,
 						lenProperty, getLocation());
-				AnalysisState<A> lenState = containerState.smallStepSemantics(lenAccess, this);
+				AnalysisState<
+						A> lenState = interprocedural.getAnalysis().smallStepSemantics(containerState, lenAccess, this);
 
 				AnalysisState<A> lenResult = state.bottom();
-				for (SymbolicExpression lenId : lenState.getComputedExpressions())
+				for (SymbolicExpression lenId : lenState.getExecutionExpressions())
 					lenResult = lenResult
-							.lub(lenState.assign(lenId, new Constant(GoIntType.INSTANCE, length, getLocation()), this));
+							.lub(interprocedural.getAnalysis().assign(lenState, lenId,
+									new Constant(GoIntType.INSTANCE, length, getLocation()), this));
 
 				// Allocates the cap property of the slice
 				Variable capProperty = new Variable(Untyped.INSTANCE, "cap",
 						getLocation());
 				AccessChild capAccess = new AccessChild(GoIntType.INSTANCE, sliceDeref,
 						capProperty, getLocation());
-				AnalysisState<A> capState = lenResult.smallStepSemantics(capAccess, this);
+				AnalysisState<
+						A> capState = interprocedural.getAnalysis().smallStepSemantics(lenResult, capAccess, this);
 				AnalysisState<A> capResult = state.bottom();
-				for (SymbolicExpression lenId : capState.getComputedExpressions())
+				for (SymbolicExpression lenId : capState.getExecutionExpressions())
 					capResult = capResult
-							.lub(capState.assign(lenId, new Constant(GoIntType.INSTANCE, cap, getLocation()), this));
+							.lub(interprocedural.getAnalysis().assign(capState, lenId,
+									new Constant(GoIntType.INSTANCE, cap, getLocation()), this));
 
 				// Allocates the ptr property of the slice
 				Variable ptrProperty = new Variable(Untyped.INSTANCE, "ptr",
 						getLocation());
 				AccessChild ptrAccess = new AccessChild(arrayType, sliceDeref,
 						ptrProperty, getLocation());
-				AnalysisState<A> ptrState = capResult.smallStepSemantics(ptrAccess, this);
+				AnalysisState<
+						A> ptrState = interprocedural.getAnalysis().smallStepSemantics(capResult, ptrAccess, this);
 				AnalysisState<A> ptrResult = state.bottom();
-				for (SymbolicExpression ptrId : ptrState.getComputedExpressions())
-					for (SymbolicExpression arrayId : arraySemantics.getComputedExpressions())
-						ptrResult = ptrResult.lub(ptrState.assign(ptrId, arrayId, this));
+				for (SymbolicExpression ptrId : ptrState.getExecutionExpressions())
+					for (SymbolicExpression arrayId : arraySemantics.getExecutionExpressions())
+						ptrResult = ptrResult.lub(interprocedural.getAnalysis().assign(ptrState, ptrId, arrayId, this));
 
-				result = result.lub(ptrResult.smallStepSemantics(sliceRef, this));
+				result = result.lub(interprocedural.getAnalysis().smallStepSemantics(ptrResult, sliceRef, this));
 			}
 
 			return result;
@@ -166,20 +176,15 @@ public class GoMake extends NaryExpression {
 
 		// channel allocation
 		if (type instanceof GoChannelType)
-			return state.top().smallStepSemantics(new PushAny(type, getLocation()),
+			return interprocedural.getAnalysis().smallStepSemantics(state.top(), new PushAny(type, getLocation()),
 					this);
 
 		// map allocation
 		if (type instanceof GoMapType)
-			return state.smallStepSemantics(new PushAny(type, getLocation()),
+			return interprocedural.getAnalysis().smallStepSemantics(state, new PushAny(type, getLocation()),
 					this);
 
-		return state.top().smallStepSemantics(new PushAny(type, getLocation()),
+		return interprocedural.getAnalysis().smallStepSemantics(state.top(), new PushAny(type, getLocation()),
 				this);
-	}
-
-	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
 	}
 }

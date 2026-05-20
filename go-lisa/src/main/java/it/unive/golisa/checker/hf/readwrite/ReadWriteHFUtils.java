@@ -3,16 +3,42 @@ package it.unive.golisa.checker.hf.readwrite;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import java.util.List;
 
+/**
+ * Utility class fore read-write analysis.
+ */
 public class ReadWriteHFUtils {
 
+	/**
+	 * The type of instruction.
+	 */
 	protected enum TypeInstruction {
+		/**
+		 * Read state operation.
+		 */
 		READ,
+
+		/**
+		 * Write state operation.
+		 */
 		WRITE,
 	}
 
+	/**
+	 * The key type of the instruction.
+	 */
 	protected enum KeyType {
+
+		/**
+		 * Instruction with a single key.
+		 */
 		SINGLE,
+		/**
+		 * Instruction with a range of keys.
+		 */
 		RANGE,
+		/**
+		 * Instruction with a composite key.
+		 */
 		COMPOSITE
 	}
 
@@ -39,20 +65,48 @@ public class ReadWriteHFUtils {
 			new ReadWriteInfo(TypeInstruction.WRITE, "SetPrivateDataValidationParameter", KeyType.SINGLE,
 					new int[] { 1 }, 0));
 
+	/**
+	 * Yields {@code true} if the call is a read or write operation.
+	 * 
+	 * @param call the call to check
+	 * 
+	 * @return {@code true} if the call is a read or write operation
+	 */
 	public static boolean isReadOrWriteCall(Call call) {
 		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName()));
 	}
 
+	/**
+	 * Yields {@code true} if the call is a write operation.
+	 * 
+	 * @param call the call to check
+	 * 
+	 * @return {@code true} if the call is a write operation
+	 */
 	public static boolean isWriteCall(Call call) {
 		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName())
 				&& e.getInstructionType().equals(TypeInstruction.WRITE));
 	}
 
+	/**
+	 * Yields {@code true} if the call is a read operation.
+	 * 
+	 * @param call the call to check
+	 * 
+	 * @return {@code true} if the call is a read operation
+	 */
 	public static boolean isReadCall(Call call) {
 		return signatures.stream().anyMatch(e -> e.getSignature().equals(call.getTargetName())
 				&& e.getInstructionType().equals(TypeInstruction.READ));
 	}
 
+	/**
+	 * Yields the read-write information of a call.
+	 * 
+	 * @param call the call
+	 * 
+	 * @return the read-write info
+	 */
 	public static ReadWriteInfo getReadWriteInfo(Call call) {
 		for (ReadWriteInfo e : signatures) {
 			if (e.getSignature().equals(call.getTargetName()))

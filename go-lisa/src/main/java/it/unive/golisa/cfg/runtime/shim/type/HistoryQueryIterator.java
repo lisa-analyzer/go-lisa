@@ -59,7 +59,6 @@ public class HistoryQueryIterator extends GoStructType {
 		historyQueryIteratorUnit
 				.addInstanceCodeMember(
 						new HasNext(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, historyQueryIteratorUnit));
-
 		historyQueryIteratorUnit
 				.addInstanceCodeMember(
 						new Next(GoLangUtils.GO_RUNTIME_SOURCECODE_LOCATION, historyQueryIteratorUnit));

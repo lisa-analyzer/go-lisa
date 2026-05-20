@@ -1,11 +1,12 @@
 package it.unive.golisa.cfg.expression;
 
-import it.unive.lisa.analysis.AbstractState;
+import it.unive.lisa.analysis.AbstractDomain;
+import it.unive.lisa.analysis.AbstractLattice;
 import it.unive.lisa.analysis.AnalysisState;
 import it.unive.lisa.analysis.SemanticException;
 import it.unive.lisa.analysis.StatementStore;
-import it.unive.lisa.analysis.lattices.ExpressionSet;
 import it.unive.lisa.interprocedural.InterproceduralAnalysis;
+import it.unive.lisa.lattices.ExpressionSet;
 import it.unive.lisa.program.SourceCodeLocation;
 import it.unive.lisa.program.annotations.Annotations;
 import it.unive.lisa.program.cfg.CFG;
@@ -35,8 +36,14 @@ public class GoNew extends NaryExpression {
 	}
 
 	@Override
-	public <A extends AbstractState<A>> AnalysisState<A> forwardSemanticsAux(InterproceduralAnalysis<A> arg0,
-			AnalysisState<A> state, ExpressionSet[] arg2, StatementStore<A> arg3) throws SemanticException {
+	protected int compareSameClassAndParams(Statement o) {
+		return 0; // nothing else to compare
+	}
+
+	@Override
+	public <A extends AbstractLattice<A>, D extends AbstractDomain<A>> AnalysisState<A> forwardSemanticsAux(
+			InterproceduralAnalysis<A, D> interprocedural, AnalysisState<A> state, ExpressionSet[] params,
+			StatementStore<A> expressions) throws SemanticException {
 		// Following the Golang reference:
 		// The new built-in function allocates memory. The first argument is a
 		// type, not a value,
@@ -44,11 +51,6 @@ public class GoNew extends NaryExpression {
 		// of that type.
 		MemoryAllocation created = new MemoryAllocation(getStaticType(), getLocation(), new Annotations(), false);
 		HeapReference ref = new HeapReference(new ReferenceType(getStaticType()), created, getLocation());
-		return state.smallStepSemantics(ref, this);
-	}
-
-	@Override
-	protected int compareSameClassAndParams(Statement o) {
-		return 0; // nothing else to compare
+		return interprocedural.getAnalysis().smallStepSemantics(state, ref, this);
 	}
 }

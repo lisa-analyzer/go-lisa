@@ -1,23 +1,25 @@
 package it.unive.golisa.checker.hf.readwrite;
 
-import it.unive.golisa.cfg.VariableScopingCFG;
 import it.unive.golisa.cfg.statement.GoDefer;
 import it.unive.golisa.cfg.utils.CFGUtils;
 import it.unive.golisa.cfg.utils.CFGUtils.Search;
-import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteGraph;
-import it.unive.golisa.checker.hf.readwrite.graph.ReadWriteNode;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.CalleeEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.CallerEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.DeferEdge;
-import it.unive.golisa.checker.hf.readwrite.graph.edges.StandardEdge;
-import it.unive.lisa.analysis.SimpleAbstractState;
-import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
-import it.unive.lisa.analysis.nonrelational.value.TypeEnvironment;
+import it.unive.golisa.checker.utils.graph.GraphForCheckers;
+import it.unive.golisa.checker.utils.graph.edges.CalleeEdge;
+import it.unive.golisa.checker.utils.graph.edges.CallerEdge;
+import it.unive.golisa.checker.utils.graph.edges.DeferEdge;
+import it.unive.golisa.checker.utils.graph.edges.StandardEdge;
+import it.unive.golisa.checker.utils.graph.nodes.StandardNode;
+import it.unive.golisa.program.cfg.VariableScopingCFG;
+import it.unive.lisa.analysis.SimpleAbstractDomain;
+import it.unive.lisa.analysis.nonrelational.heap.HeapEnvironment;
+import it.unive.lisa.analysis.nonrelational.heap.HeapValue;
+import it.unive.lisa.analysis.nonrelational.type.TypeEnvironment;
+import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
-import it.unive.lisa.analysis.string.tarsis.Tarsis;
-import it.unive.lisa.analysis.types.InferredTypes;
-import it.unive.lisa.checks.semantic.CheckToolWithAnalysisResults;
 import it.unive.lisa.checks.semantic.SemanticCheck;
+import it.unive.lisa.checks.semantic.SemanticTool;
+import it.unive.lisa.lattices.SimpleAbstractState;
+import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
@@ -44,12 +46,17 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * A Go Checker for Read-Write Set Issues of Hyperledger Fabric.
- * 
+ *
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
+ *
+ * @param <H> the lattice that represents a property of the memory of the
+ *                program
+ * @param <T> the lattice that represents a set of types corresponding to the
+ *                runtime types of an expression
  */
-public class ReadWritePathChecker implements
-		SemanticCheck<
-				SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> {
+public class ReadWritePathChecker<H extends HeapValue<H>, T extends TypeValue<T>> implements
+		SemanticCheck<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+				SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> {
 
 	private static final Logger LOG = LogManager.getLogger(ReadWritePathChecker.class);
 
@@ -57,8 +64,18 @@ public class ReadWritePathChecker implements
 	private final Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates;
 
 	private final boolean computeGraph;
-	private final Map<String, ReadWriteGraph> reconstructedGraphs;
+	private final Map<String, GraphForCheckers> reconstructedGraphs;
 
+	/**
+	 * Builds an instance of the checker.
+	 * 
+	 * @param readAfterWriteCandidates the instruction pairs candidates as
+	 *                                     read-after-write
+	 * @param overWriteCandidates      the instruction pairs candidates as
+	 *                                     over-write
+	 * @param computeGraph             {@code true} if required the computed
+	 *                                     graph
+	 */
 	public ReadWritePathChecker(Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> readAfterWriteCandidates,
 			Set<Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo>> overWriteCandidates, boolean computeGraph) {
 		this.readAfterWriteCandidates = readAfterWriteCandidates;
@@ -68,18 +85,18 @@ public class ReadWritePathChecker implements
 	}
 
 	@Override
-	public void beforeExecution(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool) {
+	public void beforeExecution(SemanticTool<
+			SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+			SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 	}
 
 	@Override
-	public void afterExecution(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>,
-							TypeEnvironment<InferredTypes>>> tool) {
+	public void afterExecution(SemanticTool<
+			SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+			SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool) {
 
 		if (computeGraph) {
-			for (Entry<String, ReadWriteGraph> entry : reconstructedGraphs.entrySet()) {
+			for (Entry<String, GraphForCheckers> entry : reconstructedGraphs.entrySet()) {
 				try {
 
 					dump(tool.getFileManager(), entry.getKey(), entry.getValue().toSerializableGraph());
@@ -96,22 +113,26 @@ public class ReadWritePathChecker implements
 
 	@Override
 	public void visitGlobal(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			Unit unit, Global global, boolean instance) {
 	}
 
 	@Override
-	public boolean visit(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+	public boolean visit(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph) {
 		return true;
 	}
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
@@ -125,20 +146,21 @@ public class ReadWritePathChecker implements
 		return true;
 	}
 
-	private ReadWriteGraph tmpGraph;
-	private ReadWriteNode destinationNode;
+	private GraphForCheckers tmpGraph;
+	private StandardNode destinationNode;
 	private boolean isDeferredCallee;
 
 	private void checkReadAfterWriteIssues(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 		for (Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : readAfterWriteCandidates) {
 			if (CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
 				AnalysisReadWriteHFInfo write = p.getLeft();
 				AnalysisReadWriteHFInfo read = p.getRight();
 				if (computeGraph)
-					tmpGraph = new ReadWriteGraph("ReadAfterWrite - Write location: " + write.getCall().getLocation()
+					tmpGraph = new GraphForCheckers("ReadAfterWrite - Write location: " + write.getCall().getLocation()
 							+ " - Read Location -" + read.getCall().getLocation());
 				if (interproceduralCheck(tool, graph, write.getCall(), read.getCall(), new HashSet<CodeMember>(),
 						new HashSet<CodeMember>())) {
@@ -154,14 +176,16 @@ public class ReadWritePathChecker implements
 	}
 
 	private void checkOverWriteIssue(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 		for (Pair<AnalysisReadWriteHFInfo, AnalysisReadWriteHFInfo> p : overWriteCandidates) {
 			if (CFGUtils.equalsOrContains(node, p.getLeft().getCall())) {
 				if (computeGraph)
-					tmpGraph = new ReadWriteGraph("OverWrite - Write1 location: " + p.getRight().getCall().getLocation()
-							+ " - Write2 Location -" + p.getLeft().getCall().getLocation());
+					tmpGraph = new GraphForCheckers(
+							"OverWrite - Write1 location: " + p.getRight().getCall().getLocation()
+									+ " - Write2 Location -" + p.getLeft().getCall().getLocation());
 				if (interproceduralCheck(tool, graph, p.getLeft().getCall(), p.getRight().getCall(),
 						new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
 					if (computeGraph)
@@ -175,8 +199,9 @@ public class ReadWritePathChecker implements
 	}
 
 	private boolean interproceduralCheck(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Statement startNode = CFGUtils.extractTargetNodeFromGraph(graph, start);
@@ -191,8 +216,8 @@ public class ReadWritePathChecker implements
 
 			if (isMatching(graph, startNode, isStartDeferred, endNode, isEndDeferred)) {
 				if (computeGraph) {
-					ReadWriteNode node1 = new ReadWriteNode(tmpGraph, startNode);
-					ReadWriteNode node2 = new ReadWriteNode(tmpGraph, endNode);
+					StandardNode node1 = new StandardNode(tmpGraph, startNode);
+					StandardNode node2 = new StandardNode(tmpGraph, endNode);
 
 					tmpGraph.addNode(node1);
 					tmpGraph.addNode(node2);
@@ -207,7 +232,7 @@ public class ReadWritePathChecker implements
 
 		if (checkCallees(tool, graph, startNode, end, seenCallees, isStartDeferred)) {
 			if (computeGraph) {
-				ReadWriteNode node = new ReadWriteNode(tmpGraph, startNode);
+				StandardNode node = new StandardNode(tmpGraph, startNode);
 
 				tmpGraph.addNode(node);
 
@@ -220,7 +245,7 @@ public class ReadWritePathChecker implements
 
 		if (checkCallers(tool, graph, end, seenCallees, seenCallers)) {
 			if (computeGraph) {
-				ReadWriteNode node = new ReadWriteNode(tmpGraph, startNode);
+				StandardNode node = new StandardNode(tmpGraph, startNode);
 
 				tmpGraph.addNode(node);
 
@@ -275,8 +300,9 @@ public class ReadWritePathChecker implements
 	}
 
 	private boolean checkCallees(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seen, boolean isStartDeferred) {
 
 		if (seen.contains(graph))
@@ -303,7 +329,7 @@ public class ReadWritePathChecker implements
 										for (Statement e : interCFG.getEntrypoints())
 											if (checkCalleesRecursive(tool, interCFG, e, end, seen)) {
 												if (computeGraph) {
-													ReadWriteNode node = new ReadWriteNode(tmpGraph, n);
+													StandardNode node = new StandardNode(tmpGraph, n);
 													tmpGraph.addNode(node);
 													tmpGraph.addEdge(new CalleeEdge(node, destinationNode));
 													destinationNode = node;
@@ -324,8 +350,9 @@ public class ReadWritePathChecker implements
 	}
 
 	private boolean checkCalleesRecursive(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement start, Statement end, Set<CodeMember> seen) {
 
 		if (seen.contains(graph))
@@ -336,7 +363,7 @@ public class ReadWritePathChecker implements
 
 		if (endNode != null) {
 			if (computeGraph) {
-				ReadWriteNode node = new ReadWriteNode(tmpGraph, endNode);
+				StandardNode node = new StandardNode(tmpGraph, endNode);
 				tmpGraph.addNode(node);
 				destinationNode = node;
 			}
@@ -358,7 +385,7 @@ public class ReadWritePathChecker implements
 										for (Statement e : interCFG.getEntrypoints())
 											if (checkCalleesRecursive(tool, interCFG, e, end, seen)) {
 												if (computeGraph) {
-													ReadWriteNode node = new ReadWriteNode(tmpGraph, e);
+													StandardNode node = new StandardNode(tmpGraph, e);
 													tmpGraph.addNode(node);
 													tmpGraph.addEdge(new CalleeEdge(node, destinationNode));
 													destinationNode = node;
@@ -375,8 +402,9 @@ public class ReadWritePathChecker implements
 	}
 
 	private boolean checkCallers(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Statement end, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
 		Collection<CodeMember> callers = tool.getCallers(graph);
@@ -409,24 +437,37 @@ public class ReadWritePathChecker implements
 
 	@Override
 	public boolean visit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CFG graph, Edge edge) {
 		return true;
 	}
 
 	@Override
 	public boolean visitUnit(
-			CheckToolWithAnalysisResults<
-					SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			Unit unit) {
 		return true;
 	}
 
-	public Collection<CodeMember> getCalleesTransitively(CheckToolWithAnalysisResults<
-			SimpleAbstractState<PointBasedHeap, ValueEnvironment<Tarsis>, TypeEnvironment<InferredTypes>>> tool,
+	/**
+	 * Compute the callees.
+	 * 
+	 * @param tool the semantic tool
+	 * @param cm   the code memeber
+	 * 
+	 * @return the computed callees
+	 */
+	public Collection<CodeMember> getCalleesTransitively(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
+					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
+							TypeEnvironment<T>>> tool,
 			CodeMember cm) {
-		VisitOnceWorkingSet<CodeMember> ws = VisitOnceFIFOWorkingSet.mk();
+		VisitOnceFIFOWorkingSet<CodeMember> instance = new VisitOnceFIFOWorkingSet<>();
+		VisitOnceWorkingSet<CodeMember> ws = instance.mk();
 		tool.getCallees(cm).stream().forEach(ws::push);
 		while (!ws.isEmpty())
 			tool.getCallees(ws.pop()).stream().forEach(ws::push);

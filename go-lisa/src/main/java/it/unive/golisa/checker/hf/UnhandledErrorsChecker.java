@@ -44,7 +44,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		for (Call call : assignmentMap.keySet()) {
 			if (!assignmentMap.get(call).booleanValue()) {
 				tool.warnOn(call, "Unhandled error of a blockchain "
-						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : "write")
+						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
 						+ " operation. The error seems not assigned in any variable");
 			}
 
@@ -55,7 +55,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 	public boolean visit(ReportingTool tool, CFG graph, Statement node) {
 
 		if (node instanceof Call) {
-			if (ReadWriteHFUtils.isReadOrWriteCall((Call) node)) {
+			if (ReadWriteHFUtils.isReadOrWriteCall((Call) node)  || isEvent((Call) node)) {
 				if (!assignmentMap.containsKey((Call) node))
 					assignmentMap.put((Call) node, Boolean.FALSE);
 			}
@@ -72,7 +72,6 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 							checkVariableRef((VariableRef) multiAssign.getIds()[1], (Call) expr, tool, graph, node);
 						}
 				}
-
 			}
 		}
 
@@ -80,7 +79,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 			GoAssignment assign = (GoAssignment) node;
 			Expression right = assign.getRight();
 			if (right instanceof Call) {
-				if (ReadWriteHFUtils.isWriteCall((Call) right)) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) node)) {
 					assignmentMap.put((Call) right, Boolean.TRUE);
 					Expression left = assign.getLeft();
 					if (left instanceof VariableRef) {
@@ -95,7 +94,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 			GoShortVariableDeclaration declr = (GoShortVariableDeclaration) node;
 			Expression right = declr.getRight();
 			if (right instanceof Call) {
-				if (ReadWriteHFUtils.isWriteCall((Call) right)) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) node)) {
 					assignmentMap.put((Call) right, Boolean.TRUE);
 					Expression left = declr.getLeft();
 					if (left instanceof VariableRef) {
@@ -110,7 +109,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 			GoVariableDeclaration declr = (GoVariableDeclaration) node;
 			Expression right = declr.getRight();
 			if (right instanceof Call) {
-				if (ReadWriteHFUtils.isWriteCall((Call) right)) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) node)) {
 					assignmentMap.put((Call) right, Boolean.TRUE);
 					Expression left = declr.getLeft();
 					if (left instanceof VariableRef) {
@@ -124,11 +123,15 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		return true;
 	}
 
+	private boolean isEvent(Call call) {
+		return call.getTargetName().equals("SetEvent") && call.getParameters().length == 3;
+	}
+
 	private void checkVariableRef(VariableRef ref, Call call, ReportingTool tool, CFG graph, Statement node) {
 		if (GoLangUtils.isBlankIdentifier(ref.getVariable()))
 			tool.warnOn(node,
 					"Unhandled error of a blockchain "
-							+ (ReadWriteHFUtils.isReadCall(call) ? "read" : "write")
+							+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
 							+ " operation. It is discarded during the assignment.");
 		else {
 			boolean found = false;
@@ -148,7 +151,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 
 			if (!found)
 				tool.warnOn(node, "Unhandled error of a blockchain "
-						+ (ReadWriteHFUtils.isReadCall(call) ? "read" : "write")
+						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
 						+ " operation. It seems not checked in any condition statements in the method");
 		}
 	}

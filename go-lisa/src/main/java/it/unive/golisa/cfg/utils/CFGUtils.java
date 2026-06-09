@@ -195,9 +195,9 @@ public class CFGUtils {
 			for (Expression subExp : nExpr.getSubExpressions()) {
 				extractCallsFromStatementRecursive(subExp, list, seen);
 			}
-		}  else if(n instanceof NaryStatement) {
+		} else if (n instanceof NaryStatement) {
 			NaryStatement nStmt = (NaryStatement) n;
-			for(Expression subExp : nStmt.getSubExpressions()) {
+			for (Expression subExp : nStmt.getSubExpressions()) {
 				extractCallsFromStatementRecursive(subExp, list, seen);
 			}
 		} else if (n instanceof GoMultiAssignment) {
@@ -233,9 +233,9 @@ public class CFGUtils {
 				if (equalsOrContainsRecursive(subExp, n2, seen))
 					return true;
 			}
-		}  else if(n1 instanceof NaryStatement) {
+		} else if (n1 instanceof NaryStatement) {
 			NaryStatement nStmt = (NaryStatement) n1;
-			for(Expression subExp : nStmt.getSubExpressions()) {
+			for (Expression subExp : nStmt.getSubExpressions()) {
 				if (equalsOrContainsRecursive(subExp, n2, seen))
 					return true;
 			}
@@ -418,9 +418,9 @@ public class CFGUtils {
 				if (matchNodeOrSubExpressions(subExp, condition))
 					return true;
 			}
-		} else if(st instanceof NaryStatement) {
+		} else if (st instanceof NaryStatement) {
 			NaryStatement nStmt = (NaryStatement) st;
-			for(Expression subExp : nStmt.getSubExpressions()) {
+			for (Expression subExp : nStmt.getSubExpressions()) {
 				if (matchNodeOrSubExpressions(subExp, condition))
 					return true;
 			}

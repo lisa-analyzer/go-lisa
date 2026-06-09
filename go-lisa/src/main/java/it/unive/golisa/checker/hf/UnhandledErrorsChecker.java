@@ -44,7 +44,8 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		for (Call call : assignmentMap.keySet()) {
 			if (!assignmentMap.get(call).booleanValue()) {
 				tool.warnOn(call, "Unhandled error of a blockchain "
-						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
+						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read"
+								: (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
 						+ " operation. The error seems not assigned in any variable");
 			}
 
@@ -55,7 +56,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 	public boolean visit(ReportingTool tool, CFG graph, Statement node) {
 
 		if (node instanceof Call) {
-			if (ReadWriteHFUtils.isReadOrWriteCall((Call) node)  || isEvent((Call) node)) {
+			if (ReadWriteHFUtils.isReadOrWriteCall((Call) node) || isEvent((Call) node)) {
 				if (!assignmentMap.containsKey((Call) node))
 					assignmentMap.put((Call) node, Boolean.FALSE);
 			}
@@ -131,7 +132,8 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 		if (GoLangUtils.isBlankIdentifier(ref.getVariable()))
 			tool.warnOn(node,
 					"Unhandled error of a blockchain "
-							+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
+							+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read"
+									: (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
 							+ " operation. It is discarded during the assignment.");
 		else {
 			boolean found = false;
@@ -151,7 +153,8 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 
 			if (!found)
 				tool.warnOn(node, "Unhandled error of a blockchain "
-						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read" : (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
+						+ (ReadWriteHFUtils.isReadCall((Call) call) ? "read"
+								: (ReadWriteHFUtils.isWriteCall((Call) call) ? "write" : "event emission"))
 						+ " operation. It seems not checked in any condition statements in the method");
 		}
 	}

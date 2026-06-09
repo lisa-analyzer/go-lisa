@@ -6,6 +6,7 @@ import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.edge.SequentialEdge;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.NaryExpression;
+import it.unive.lisa.program.cfg.statement.NaryStatement;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.util.datastructures.graph.code.CodeGraph;
@@ -194,6 +195,11 @@ public class CFGUtils {
 			for (Expression subExp : nExpr.getSubExpressions()) {
 				extractCallsFromStatementRecursive(subExp, list, seen);
 			}
+		}  else if(n instanceof NaryStatement) {
+			NaryStatement nStmt = (NaryStatement) n;
+			for(Expression subExp : nStmt.getSubExpressions()) {
+				extractCallsFromStatementRecursive(subExp, list, seen);
+			}
 		} else if (n instanceof GoMultiAssignment) {
 			GoMultiAssignment multiAssign = (GoMultiAssignment) n;
 			extractCallsFromStatementRecursive(multiAssign.getExpressionToAssign(), list, seen);
@@ -224,6 +230,12 @@ public class CFGUtils {
 		} else if (n1 instanceof NaryExpression) {
 			NaryExpression nExpr = (NaryExpression) n1;
 			for (Expression subExp : nExpr.getSubExpressions()) {
+				if (equalsOrContainsRecursive(subExp, n2, seen))
+					return true;
+			}
+		}  else if(n1 instanceof NaryStatement) {
+			NaryStatement nStmt = (NaryStatement) n1;
+			for(Expression subExp : nStmt.getSubExpressions()) {
 				if (equalsOrContainsRecursive(subExp, n2, seen))
 					return true;
 			}
@@ -403,6 +415,12 @@ public class CFGUtils {
 		} else if (st instanceof NaryExpression) {
 			NaryExpression nExpr = (NaryExpression) st;
 			for (Expression subExp : nExpr.getSubExpressions()) {
+				if (matchNodeOrSubExpressions(subExp, condition))
+					return true;
+			}
+		} else if(st instanceof NaryStatement) {
+			NaryStatement nStmt = (NaryStatement) st;
+			for(Expression subExp : nStmt.getSubExpressions()) {
 				if (matchNodeOrSubExpressions(subExp, condition))
 					return true;
 			}

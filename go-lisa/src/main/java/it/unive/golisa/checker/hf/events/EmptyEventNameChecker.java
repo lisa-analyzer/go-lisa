@@ -96,7 +96,7 @@ public class EmptyEventNameChecker<H extends HeapValue<H>, T extends TypeValue<T
 						for (RegexAutomaton val : nameValues) {
 							if (val.isEqualTo(val.emptyString())) {
 								tool.warnOn(node, "The event name is an empty string");
-							} else if (val.isTop() && val.getStates().size() == 1) {
+							} else if (val.isTop() && val.getTransitions().size() <= 1) {
 								if (val.getTransitions().size() == 0)
 									tool.warnOn(node, "The event may set an empty name string");
 								else // added to be sound, but it may be a non

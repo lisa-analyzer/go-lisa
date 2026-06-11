@@ -160,7 +160,6 @@ import it.unive.golisa.program.cfg.controlflow.switches.Switch;
 import it.unive.golisa.program.cfg.controlflow.switches.SwitchCase;
 import it.unive.golisa.program.cfg.controlflow.switches.TypeSwitch;
 import it.unive.golisa.program.cfg.controlflow.switches.TypeSwitchCase;
-import it.unive.golisa.program.cfg.controlflow.switches.instrumentations.SwitchDefault;
 import it.unive.lisa.program.ClassUnit;
 import it.unive.lisa.program.CompilationUnit;
 import it.unive.lisa.program.Global;
@@ -1792,7 +1791,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 			} else {
 				defaultBlock = caseBlock;
 				block.mergeWith(body);
-				def = new DefaultSwitchCase((SwitchDefault) caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
+				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
 
 			if (caseBlock.getRight() instanceof GoFallThrough)
@@ -2749,7 +2748,7 @@ public class GoCodeMemberVisitor extends GoParserBaseVisitor<Object> {
 
 			} else {
 				defaultBlock = caseBlock;
-				def = new DefaultSwitchCase((SwitchDefault) caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
+				def = new DefaultSwitchCase(caseBlock.getLeft(), caseBlock.getMiddle().getNodes());
 			}
 		}
 

@@ -1,6 +1,5 @@
 package it.unive.golisa.program.cfg.controlflow.switches;
 
-import it.unive.golisa.program.cfg.controlflow.switches.instrumentations.SwitchDefault;
 import it.unive.lisa.program.cfg.statement.Statement;
 import java.util.Collection;
 import java.util.Set;
@@ -14,7 +13,7 @@ public class DefaultSwitchCase {
 
 	private final Collection<Statement> body;
 
-	private final SwitchDefault entry;
+	private final Statement entry;
 
 	/**
 	 * Builds the switch-case control flow structure.
@@ -23,7 +22,7 @@ public class DefaultSwitchCase {
 	 * @param body  the body associated with this switch-case
 	 */
 	public DefaultSwitchCase(
-			SwitchDefault entry,
+			Statement entry,
 			Collection<Statement> body) {
 		this.body = body;
 		this.entry = entry;
@@ -45,7 +44,7 @@ public class DefaultSwitchCase {
 	 * @return the entry of the default switch case, i.e., the first node of its
 	 *             body
 	 */
-	public SwitchDefault getEntry() {
+	public Statement getEntry() {
 		return entry;
 	}
 

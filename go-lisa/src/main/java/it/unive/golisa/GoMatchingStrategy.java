@@ -1,14 +1,18 @@
 package it.unive.golisa;
 
 import it.unive.golisa.program.cfg.VarArgsParameter;
+import it.unive.lisa.program.cfg.CodeMember;
+import it.unive.lisa.program.cfg.CodeMemberDescriptor;
 import it.unive.lisa.program.cfg.Parameter;
 import it.unive.lisa.program.cfg.statement.Expression;
 import it.unive.lisa.program.cfg.statement.call.Call;
 import it.unive.lisa.program.cfg.statement.call.Call.CallType;
+import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.program.language.resolution.ParameterMatchingStrategy;
 import it.unive.lisa.type.PointerType;
 import it.unive.lisa.type.ReferenceType;
 import it.unive.lisa.type.Type;
+import it.unive.lisa.type.Untyped;
 import java.util.Set;
 
 /**
@@ -84,4 +88,48 @@ public class GoMatchingStrategy implements ParameterMatchingStrategy {
 		}
 		return false;
 	}
+
+	@Override
+	public int distanceFromPerfectTarget(UnresolvedCall call, Set<Type>[] types, CodeMember cm, boolean instance) {
+		int distance = 0;
+		int startIdx = instance ? 1 : 0;
+		Expression[] params = call.getParameters();
+		CodeMemberDescriptor descriptor = cm.getDescriptor();
+		boolean hasVarargs = descriptor.getFormals().length > 0
+				&& descriptor.getFormals()[descriptor.getFormals().length - 1] instanceof VarArgsParameter;
+		for (int i = startIdx; i < params.length; i++) {
+			if (i == descriptor.getFormals().length - 1 && hasVarargs)
+				if (i == types.length)
+					// no values passed for the varargs parameter
+					return distance;
+			Expression parameter = params[i];
+			Type paramType = parameter.getStaticType();
+			Type formalType;
+			if (hasVarargs && i > descriptor.getFormals().length - 1)
+				formalType = descriptor.getFormals()[descriptor.getFormals().length - 1].getStaticType();
+			else
+				formalType = descriptor.getFormals()[i].getStaticType();
+			if (formalType instanceof Untyped)
+				return 0;
+			if (paramType instanceof Untyped) {
+				boolean allIncomparable = true;
+				for (Type runtimeType : types[i]) {
+					int dist = call.getProgram().getTypes().distanceBetweenTypes(formalType, runtimeType);
+					if (dist >= 0) {
+						allIncomparable = false;
+						distance += dist;
+					}
+				}
+				if (allIncomparable)
+					return -1;
+				continue;
+			}
+			int dist = call.getProgram().getTypes().distanceBetweenTypes(formalType, paramType);
+			if (dist < 0)
+				return -1;
+			distance += dist;
+		}
+		return distance;
+	}
+
 }

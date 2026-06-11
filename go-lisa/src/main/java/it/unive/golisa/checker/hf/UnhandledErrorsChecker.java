@@ -80,7 +80,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 			GoAssignment assign = (GoAssignment) node;
 			Expression right = assign.getRight();
 			if (right instanceof Call) {
-				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) node)) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) right)) {
 					assignmentMap.put((Call) right, Boolean.TRUE);
 					Expression left = assign.getLeft();
 					if (left instanceof VariableRef) {
@@ -95,7 +95,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 			GoShortVariableDeclaration declr = (GoShortVariableDeclaration) node;
 			Expression right = declr.getRight();
 			if (right instanceof Call) {
-				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) node)) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) right)) {
 					assignmentMap.put((Call) right, Boolean.TRUE);
 					Expression left = declr.getLeft();
 					if (left instanceof VariableRef) {
@@ -110,7 +110,7 @@ public class UnhandledErrorsChecker implements SyntacticCheck {
 			GoVariableDeclaration declr = (GoVariableDeclaration) node;
 			Expression right = declr.getRight();
 			if (right instanceof Call) {
-				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) node)) {
+				if (ReadWriteHFUtils.isWriteCall((Call) right) || isEvent((Call) right)) {
 					assignmentMap.put((Call) right, Boolean.TRUE);
 					Expression left = declr.getLeft();
 					if (left instanceof VariableRef) {

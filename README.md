@@ -27,7 +27,6 @@ GoLiSA provides several static analyses for detecting issues in blockchain softw
 - [Awards, Honors, and Honorable Mentions](#awards)
 - [Experimental Evaluations](#experimental-evaluations)
 - [Analysis Examples](#analysis-examples)
-- [Analysis Examples](#analysis-examples)
 - [Other Licences](#other-licences)
 
 ---
@@ -41,17 +40,6 @@ GoLiSA translates Go source code into [LiSA](https://github.com/lisa-analyzer/li
 ## Installation
 
 **Prerequisites:** Java 23+, Gradle (wrapper included), GitHub credentials for the LiSA dependency.
-
-### LiSA Dependency
-
-LiSA packages are hosted on [GitHub Packages](https://github.com/lisa-analyzer/lisa/packages). Add your credentials to `~/.gradle/gradle.properties`:
-
-```properties
-gpr.user=<your-github-username>
-gpr.key=<your-github-personal-access-token>
-```
-
-Or export the environment variables `USERNAME` and `TOKEN`.
 
 ### Build
 

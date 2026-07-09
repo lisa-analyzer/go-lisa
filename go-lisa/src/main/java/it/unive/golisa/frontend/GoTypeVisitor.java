@@ -29,6 +29,7 @@ import it.unive.golisa.cfg.type.composite.GoAliasType;
 import it.unive.golisa.cfg.type.composite.GoArrayType;
 import it.unive.golisa.cfg.type.composite.GoChannelType;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
+import it.unive.golisa.cfg.type.composite.GoFunctionType;
 import it.unive.golisa.cfg.type.composite.GoInterfaceType;
 import it.unive.golisa.cfg.type.composite.GoMapType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
@@ -312,6 +313,8 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 	public Type visitSliceType(SliceTypeContext ctx) {
 		Type contentType = visitElementType(ctx.elementType());
 		contentType = contentType == null ? Untyped.INSTANCE : contentType;
+		if (contentType instanceof GoFunctionType)
+			throw new UnsupportedOperationException("Slice of functions not supported!");
 		return GoSliceType.lookup(contentType);
 	}
 
@@ -322,6 +325,9 @@ public class GoTypeVisitor extends GoParserBaseVisitor<Object> {
 
 		Type elementType = visitElementType(ctx.elementType());
 		elementType = elementType == null ? Untyped.INSTANCE : elementType;
+
+		if (keyType instanceof GoFunctionType || elementType instanceof GoFunctionType)
+			throw new UnsupportedOperationException("Map of functions not supported!");
 
 		return GoMapType.lookup(keyType, elementType);
 	}

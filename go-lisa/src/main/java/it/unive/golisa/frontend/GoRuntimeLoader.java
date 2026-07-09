@@ -167,12 +167,16 @@ public interface GoRuntimeLoader {
 		else if (module.startsWith("github.com/hyperledger")) {
 			if (module.endsWith("/shim"))
 				loadShim(program);
-			if (module.endsWith("pkg/statebased"))
+			else if (module.endsWith("pkg/statebased"))
 				loadStateBased(program);
+			else
+				loadUnhandledLib(module, program, mapper);
 		} else if (module.startsWith("github.com/cosmos/cosmos-sdk")) {
 			loadCosmosTypes(program);
 			if (module.endsWith("/errors"))
 				loadCosmosErrors(program);
+			else
+				loadUnhandledLib(module, program, mapper);
 		} else
 			loadUnhandledLib(module, program, mapper);
 	}

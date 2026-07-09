@@ -163,7 +163,7 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 		boolean found = false;
 		for (Call c : calls)
 			if (c.getTargetName().equals("SetEvent")
-					&& c.getParameters().length == 3)
+					&& (c.getParameters().length == 2 || c.getParameters().length == 3))
 				found = true;
 
 		if (!found)
@@ -198,7 +198,8 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 		for (Statement node : graph.getNodeList()) {
 			List<Call> calls = CFGUtils.extractCallsFromStatement(node);
 			for (Call c : calls)
-				if (c.getTargetName().equals("SetEvent") && c.getParameters().length == 3)
+				if (c.getTargetName().equals("SetEvent")
+						&& (c.getParameters().length == 2 || c.getParameters().length == 3))
 					emitEventsNodes.add(node);
 		}
 
@@ -316,7 +317,8 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 		for (Statement node : graph.getNodeList()) {
 			List<Call> calls = CFGUtils.extractCallsFromStatement(node);
 			for (Call c : calls)
-				if (c.getTargetName().equals("SetEvent") && c.getParameters().length == 2)
+				if (c.getTargetName().equals("SetEvent")
+						&& (c.getParameters().length == 2 || c.getParameters().length == 3))
 					emitEventsNodes.add(node);
 		}
 
@@ -374,21 +376,24 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 							TypeEnvironment<T>>> tool,
 			CFG graph, Statement root, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
-		Collection<CodeMember> callers = tool.getCallers(graph);
+		if (tool.getCallGraph().getNodes().stream().anyMatch(n -> n.getCodeMember().equals(graph))) {
 
-		for (CodeMember cm : callers) {
-			if (seenCallers.contains(cm))
-				return false;
-			seenCallers.add(cm);
+			Collection<CodeMember> callers = tool.getCallers(graph);
 
-			for (Call c : tool.getCallSites(graph)) {
-				if (cm instanceof VariableScopingCFG) {
-					VariableScopingCFG callerCFG = (VariableScopingCFG) cm;
-					Statement sTarget = CFGUtils.extractTargetNodeFromGraph(callerCFG, c);
-					if (sTarget != null)
-						if (interproceduralCheck(tool, callerCFG, root, sTarget, seenCallees, seenCallers)) {
-							return true;
-						}
+			for (CodeMember cm : callers) {
+				if (seenCallers.contains(cm))
+					return false;
+				seenCallers.add(cm);
+
+				for (Call c : tool.getCallSites(graph)) {
+					if (cm instanceof VariableScopingCFG) {
+						VariableScopingCFG callerCFG = (VariableScopingCFG) cm;
+						Statement sTarget = CFGUtils.extractTargetNodeFromGraph(callerCFG, c);
+						if (sTarget != null)
+							if (interproceduralCheck(tool, callerCFG, root, sTarget, seenCallees, seenCallers)) {
+								return true;
+							}
+					}
 				}
 			}
 		}
@@ -433,10 +438,13 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 			CodeMember cm) {
 		VisitOnceFIFOWorkingSet<CodeMember> instance = new VisitOnceFIFOWorkingSet<>();
 		VisitOnceWorkingSet<CodeMember> ws = instance.mk();
-		tool.getCallees(cm).stream().forEach(ws::push);
-		while (!ws.isEmpty())
-			tool.getCallees(ws.pop()).stream().forEach(ws::push);
+		if (tool.getCallGraph().getNodes().stream().anyMatch(n -> n.getCodeMember().equals(cm))) {
+			tool.getCallees(cm).stream().forEach(ws::push);
+			while (!ws.isEmpty())
+				tool.getCallees(ws.pop()).stream().forEach(ws::push);
+		}
 		return ws.getSeen();
+
 	}
 
 }

@@ -66,7 +66,7 @@ public class GoSum extends it.unive.lisa.program.cfg.statement.BinaryExpression 
 			Set<Type> rtypes = interprocedural.getAnalysis().getRuntimeTypesOf(state, right, this);
 			for (Type leftType : ltypes)
 				for (Type rightType : rtypes) {
-					if (leftType.isStringType() && rightType.isStringType()) {
+					if (leftType.isStringType() || rightType.isStringType()) {
 						op = StringConcat.INSTANCE;
 						type = GoStringType.INSTANCE;
 					} else if (leftType.isNumericType() || rightType.isNumericType()) {

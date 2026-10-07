@@ -40,6 +40,7 @@ import it.unive.golisa.loader.annotation.sets.UCCIPhase1AnnotationSet;
 import it.unive.lisa.AnalysisSetupException;
 import it.unive.lisa.LiSA;
 import it.unive.lisa.analysis.heap.pointbased.PointBasedHeap;
+import it.unive.lisa.analysis.numeric.Sign;
 import it.unive.lisa.analysis.string.tarsis.Tarsis;
 import it.unive.lisa.conf.LiSAConfiguration;
 import it.unive.lisa.interprocedural.ReturnTopPolicy;
@@ -261,7 +262,9 @@ public class GoLiSA {
 				conf.workdir = dirPhase1.getAbsolutePath();
 				break;
 			case "unhandled-errors":
-				conf.syntacticChecks.add(new UnhandledErrorsChecker());
+				conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
+				conf.analysis = simpleDomain(new PointBasedHeap(), new Sign(), defaultTypeDomain());
+				conf.semanticChecks.add(new UnhandledErrorsChecker<>());
 				break;
 			case "numerical-issues":
 				conf.openCallPolicy = ReturnTopPolicy.INSTANCE;
@@ -404,7 +407,8 @@ public class GoLiSA {
 
 			}
 
-			if (analysis.equals("numerical-issues") || analysis.equals("div-by-zero"))
+			if (analysis.equals("numerical-issues") || analysis.equals("div-by-zero")
+					|| isContractAPIHyperledgerFabric(program, framework))
 				for (CFG c : program.getAllCFGs())
 					program.addEntryPoint(c);
 
@@ -449,6 +453,12 @@ public class GoLiSA {
 			}
 		}
 		return program;
+	}
+
+	private static boolean isContractAPIHyperledgerFabric(Program program, String framework) {
+		boolean isContractAPI = framework.toUpperCase().equals("HYPERLEDGER-FABRIC") && program.getUnits().stream()
+				.anyMatch(u -> u.getName().contains("contractapi"));
+		return isContractAPI;
 	}
 
 }

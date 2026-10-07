@@ -12,6 +12,7 @@ import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.checks.semantic.SemanticTool;
+import it.unive.lisa.interprocedural.callgraph.CallGraph;
 import it.unive.lisa.lattices.SimpleAbstractState;
 import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
 import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
@@ -54,6 +55,8 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 	private final boolean computeGraph;
 	// private final Map<String, ReadWriteGraph> reconstructedGraphs;
 	private Set<Pair<Statement, Statement>> multipleEventEmittion;
+	
+	private Set<CodeMember> containCallToSameEventEmit;
 
 	/**
 	 * Builds the checker.
@@ -75,6 +78,7 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
 					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
 							TypeEnvironment<T>>> tool) {
+		containCallToSameEventEmit = new HashSet<>();
 	}
 
 	@Override
@@ -169,6 +173,7 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 		if (!found)
 			return;
 
+		containCallToSameEventEmit.add(graph);
 		/*
 		 * if (computeGraph) tmpGraph = new ReadWriteGraph("MultipleEvent - " +
 		 * node.getLocation());
@@ -252,12 +257,16 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 							TypeEnvironment<T>>> tool,
 			CFG graph, Statement root, Statement start, Set<CodeMember> seen, boolean isStartDeferred) {
 
-		if (seen.contains(graph))
+		if (seen.contains(graph)) {
 			return false;
+		}
 		seen.add(graph);
 
 		Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
 		for (CodeMember cm : codemembers) {
+			if(containCallToSameEventEmit.contains(cm))
+				return true; // call to a function that trigger the same emit
+			
 			if (cm instanceof VariableScopingCFG) {
 				VariableScopingCFG interCFG = (VariableScopingCFG) cm;
 
@@ -334,6 +343,8 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 
 		Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
 		for (CodeMember cm : codemembers) {
+			if(containCallToSameEventEmit.contains(cm))
+				return true; // call to a function that trigger the same emit
 			if (cm instanceof VariableScopingCFG) {
 				VariableScopingCFG interCFG = (VariableScopingCFG) cm;
 				for (Statement endNode : emitEventsNodes) {
@@ -376,6 +387,8 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 							TypeEnvironment<T>>> tool,
 			CFG graph, Statement root, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
 
+		CallGraph cg = tool.getCallGraph();
+		
 		if (tool.getCallGraph().getNodes().stream().anyMatch(n -> n.getCodeMember().equals(graph))) {
 
 			Collection<CodeMember> callers = tool.getCallers(graph);
@@ -387,6 +400,7 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 
 				for (Call c : tool.getCallSites(graph)) {
 					if (cm instanceof VariableScopingCFG) {
+						containCallToSameEventEmit.add(cm);
 						VariableScopingCFG callerCFG = (VariableScopingCFG) cm;
 						Statement sTarget = CFGUtils.extractTargetNodeFromGraph(callerCFG, c);
 						if (sTarget != null)

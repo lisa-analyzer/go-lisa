@@ -3,7 +3,6 @@ package it.unive.golisa.checker.hf.events;
 import it.unive.golisa.cfg.expression.literal.GoNil;
 import it.unive.golisa.cfg.expression.literal.GoTupleExpression;
 import it.unive.golisa.cfg.statement.GoDefer;
-import it.unive.golisa.cfg.statement.GoReturn;
 import it.unive.golisa.cfg.type.composite.GoErrorType;
 import it.unive.golisa.cfg.type.composite.GoPointerType;
 import it.unive.golisa.cfg.type.composite.GoTupleType;

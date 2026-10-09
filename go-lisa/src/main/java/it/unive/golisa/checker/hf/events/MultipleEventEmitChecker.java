@@ -12,10 +12,8 @@ import it.unive.lisa.analysis.nonrelational.type.TypeValue;
 import it.unive.lisa.analysis.nonrelational.value.ValueEnvironment;
 import it.unive.lisa.checks.semantic.SemanticCheck;
 import it.unive.lisa.checks.semantic.SemanticTool;
-import it.unive.lisa.interprocedural.callgraph.CallGraph;
 import it.unive.lisa.lattices.SimpleAbstractState;
 import it.unive.lisa.lattices.string.tarsis.RegexAutomaton;
-import it.unive.lisa.outputs.serializableGraph.SerializableGraph;
 import it.unive.lisa.program.Global;
 import it.unive.lisa.program.Unit;
 import it.unive.lisa.program.cfg.CFG;
@@ -23,11 +21,8 @@ import it.unive.lisa.program.cfg.CodeMember;
 import it.unive.lisa.program.cfg.edge.Edge;
 import it.unive.lisa.program.cfg.statement.Statement;
 import it.unive.lisa.program.cfg.statement.call.Call;
-import it.unive.lisa.program.cfg.statement.call.UnresolvedCall;
 import it.unive.lisa.util.collections.workset.VisitOnceFIFOWorkingSet;
 import it.unive.lisa.util.collections.workset.VisitOnceWorkingSet;
-import it.unive.lisa.util.file.FileManager;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -37,7 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * A Go Checker for detect multiple event emits in Hyperledger Fabric.
+ * A Go Checker for detect multiple event emits in Hyperledger Fabric. Including also self-multiple event emits
  * 
  * @author <a href="mailto:luca.olivieri@unive.it">Luca Olivieri</a>
  * 
@@ -53,10 +48,9 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 	private static final Logger LOG = LogManager.getLogger(MultipleEventEmitChecker.class);
 
 	private final boolean computeGraph;
-	// private final Map<String, ReadWriteGraph> reconstructedGraphs;
 	private Set<Pair<Statement, Statement>> multipleEventEmittion;
 	
-	private Set<CodeMember> containCallToSameEventEmit;
+	private Set<CodeMember> eventTriggerCFGs;
 
 	/**
 	 * Builds the checker.
@@ -65,12 +59,7 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 	 */
 	public MultipleEventEmitChecker(boolean computeGraph) {
 		this.computeGraph = computeGraph;
-		// this.reconstructedGraphs = new HashMap<>();
 		this.multipleEventEmittion = new HashSet<>();
-	}
-
-	private void dump(FileManager fileManager, String filename, SerializableGraph graph) throws IOException {
-		fileManager.mkDotFile(filename, writer -> graph.toDot().dump(writer));
 	}
 
 	@Override
@@ -78,7 +67,7 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
 					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
 							TypeEnvironment<T>>> tool) {
-		containCallToSameEventEmit = new HashSet<>();
+		eventTriggerCFGs = new HashSet<>();
 	}
 
 	@Override
@@ -89,16 +78,8 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 
 		for (Pair<Statement, Statement> pair : multipleEventEmittion)
 			tool.warnOn(pair.getLeft(),
-					"Detected at least a possible multiple event emittion. Other emitted event location: "
-							+ pair.getRight().getLocation());
-
-		/*
-		 * if (computeGraph) { for (Entry<String, ReadWriteGraph> entry :
-		 * reconstructedGraphs.entrySet()) { try { dump(tool.getFileManager(),
-		 * entry.getKey(), entry.getValue().toSerializableGraph()); } catch
-		 * (IOException e) { LOG.warn("Unable to dump read-write graph \"" +
-		 * entry.getKey() + "\". Error: " + e.getMessage()); } } }
-		 */
+					"Detected at least a possible multiple event emittion. " +  (pair.getLeft().equals(pair.getRight()) ? "There is at least an execution flow that trigger the same event emission multiple time." : "Other emitted event location: "
+							+ pair.getRight().getLocation()));
 	}
 
 	@Override
@@ -143,6 +124,7 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 							TypeEnvironment<T>>> tool,
 			CFG graph, Statement node) {
 		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
+		
 		if (calls.isEmpty())
 			return true;
 
@@ -150,11 +132,6 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 
 		return true;
 	}
-
-	/*
-	 * private ReadWriteGraph tmpGraph; private ReadWriteNode destinationNode;
-	 */
-	private boolean isDeferredCallee;
 
 	private void checkMultipleEventEmittionIssue(
 			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
@@ -166,255 +143,204 @@ public class MultipleEventEmitChecker<H extends HeapValue<H>, T extends TypeValu
 
 		boolean found = false;
 		for (Call c : calls)
-			if (c.getTargetName().equals("SetEvent")
-					&& (c.getParameters().length == 2 || c.getParameters().length == 3))
+			if (isSetEventCall(c))
 				found = true;
 
 		if (!found)
 			return;
 
-		containCallToSameEventEmit.add(graph);
-		/*
-		 * if (computeGraph) tmpGraph = new ReadWriteGraph("MultipleEvent - " +
-		 * node.getLocation());
-		 */
-		if (interproceduralCheck(tool, graph, node, node, new HashSet<CodeMember>(), new HashSet<CodeMember>())) {
-
-			/*
-			 * if (computeGraph) reconstructedGraphs.put(tmpGraph.getName(),
-			 * tmpGraph);
-			 */
-		}
+		// node contains a SetEvent call
+		Set<CodeMember> seenCallers = new HashSet<>();
+		
+		checkForMultipleEmissions(tool, node, graph, seenCallers, node);
 
 	}
+	
+	private void checkForMultipleEmissions(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			Statement eventEmitter, CFG graph, Set<CodeMember> seenCallers, Statement firstEventEmit) {
+		
+		eventTriggerCFGs.add(graph);
+		
+		if(!intraproceduralCheck(tool, eventEmitter, graph, firstEventEmit)) // checks for multiple event emission in the same CFG
+			interproceduralChecks(tool, eventEmitter, graph, seenCallers, firstEventEmit); // checks in other functions
+		
+	}
 
-	private boolean interproceduralCheck(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
-					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
-							TypeEnvironment<T>>> tool,
-			CFG graph, Statement root, Statement start, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
+	private boolean isSetEventCall(Call c) {
+		return c.getTargetName().equals("SetEvent")
+				&& (c.getParameters().length == 2 || c.getParameters().length == 3);
+	}
 
-		Statement startNode = CFGUtils.extractTargetNodeFromGraph(graph, start);
-		startNode = startNode == null ? start : startNode;
+	private boolean intraproceduralCheck(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool, Statement first, CFG graph, Statement firstEventEmit) {
+		Set<Statement> statements = extractAllSetEventsOrEventTriggerCalls(graph);
+		
+		for(Statement second : statements) {
 
-		boolean isStartDeferred = startNode instanceof GoDefer;
-
-		Set<Statement> emitEventsNodes = new HashSet<>();
-		for (Statement node : graph.getNodeList()) {
-			List<Call> calls = CFGUtils.extractCallsFromStatement(node);
-			for (Call c : calls)
-				if (c.getTargetName().equals("SetEvent")
-						&& (c.getParameters().length == 2 || c.getParameters().length == 3))
-					emitEventsNodes.add(node);
-		}
-
-		for (Statement endNode : emitEventsNodes) {
-			boolean isEndDeferred = endNode instanceof GoDefer;
-
-			if (isMatching(graph, startNode, isStartDeferred, endNode, isEndDeferred)) {
-				/*
-				 * if (computeGraph) { ReadWriteNode node1 = new
-				 * ReadWriteNode(tmpGraph, startNode); ReadWriteNode node2 = new
-				 * ReadWriteNode(tmpGraph, endNode); tmpGraph.addNode(node1);
-				 * tmpGraph.addNode(node2); tmpGraph.addEdge(isEndDeferred ? new
-				 * DeferEdge(node1, node2) : new StandardEdge(node1, node2));
-				 * destinationNode = node1; }
-				 */
-				multipleEventEmittion.add(Pair.of(root, endNode));
-
+			if (isExecutedAfter(graph, first, second)) {
+				multipleEventEmittion.add(Pair.of(firstEventEmit, containsSetEventCall(second) ? second : firstEventEmit));
 				return true;
 			}
-
 		}
-
-		if (checkCallees(tool, graph, root, startNode, seenCallees, isStartDeferred)) {
-			/*
-			 * if (computeGraph) { ReadWriteNode node = new
-			 * ReadWriteNode(tmpGraph, startNode); tmpGraph.addNode(node);
-			 * tmpGraph.addEdge(isDeferredCallee ? new DeferEdge(node,
-			 * destinationNode) : new StandardEdge(node, destinationNode));
-			 * destinationNode = node; }
-			 */
-			return true;
-		}
-
-		if (checkCallers(tool, graph, root, seenCallees, seenCallers)) {
-			/*
-			 * if (computeGraph) { ReadWriteNode node = new
-			 * ReadWriteNode(tmpGraph, startNode); tmpGraph.addNode(node);
-			 * tmpGraph.addEdge(new CallerEdge(node, destinationNode));
-			 * destinationNode = node; }
-			 */
-			return true;
-		}
-
 		return false;
 	}
 
-	private boolean checkCallees(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
-					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
-							TypeEnvironment<T>>> tool,
-			CFG graph, Statement root, Statement start, Set<CodeMember> seen, boolean isStartDeferred) {
+	/**
+	 * Check if the second statement is executed after the first
+	 * @param graph the CFG to check
+	 * @param first the first statement
+	 * @param second the second statement
+	 * @return true, if the second is executed after the first
+	 */
+	private boolean isExecutedAfter(CFG graph, Statement first, Statement second) {
+		boolean isStartDeferred = first instanceof GoDefer;
+		boolean isEndDeferred = second instanceof GoDefer;
 
-		if (seen.contains(graph)) {
-			return false;
+		if (existExecutionPath(graph, first, isStartDeferred, second, isEndDeferred)) {
+			return true;
 		}
-		seen.add(graph);
+		
+		return false;
+	}
 
+	private Set<Statement> extractAllSetEventsOrEventTriggerCalls(CFG graph) {
+		Set<Statement> res = new HashSet<>();
+		for(Statement node : graph.getNodes()) {
+			List<Call> calls = CFGUtils.extractCallsFromStatement(node);
+			for (Call c : calls)
+				if (isSetEventCall(c) || isCallToEventTriggerCFGs(c)) {
+					res.add(node);
+					break;
+				}
+		}
+
+		return res;
+	}
+	
+	private boolean containsSetEventCall(Statement node) {
+		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
+		for (Call c : calls)
+			if (isSetEventCall(c)) {
+				return true;
+			}
+		return false;
+	}
+	
+	private boolean containsCallToEventTriggerCFGs(Statement node) {
+		List<Call> calls = CFGUtils.extractCallsFromStatement(node);
+		for (Call c : calls)
+			if (isCallToEventTriggerCFGs(c)) {
+				return true;
+			}
+		return false;
+	}
+	
+	private boolean isCallToEventTriggerCFGs(Call c) {
+		for(CodeMember cm : eventTriggerCFGs) {
+			if(c.getTargetName().equals(cm.getDescriptor().getName())
+					&&  c.getParameters().length == cm.getDescriptor().getFormals().length){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void interproceduralChecks(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			Statement eventEmitter, CFG graph, Set<CodeMember> seenCallers, Statement firstEventEmit) {
+		
+		if (!checkCalleesAfter(tool, graph, eventEmitter, firstEventEmit))
+			 checkCallersAfterCallStatements(tool, graph, eventEmitter, seenCallers, firstEventEmit);
+	}
+
+	private boolean checkCalleesAfter(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			CFG graph, Statement eventEmitter, Statement firstEventEmit) {
 		Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
-		for (CodeMember cm : codemembers) {
-			if(containCallToSameEventEmit.contains(cm))
-				return true; // call to a function that trigger the same emit
-			
-			if (cm instanceof VariableScopingCFG) {
-				VariableScopingCFG interCFG = (VariableScopingCFG) cm;
-
-				for (Statement n : graph.getNodes()) {
-					if (n.equals(start))
-						continue;
-					List<Call> calls = CFGUtils.extractCallsFromStatement(n);
-					if (!calls.isEmpty()) {
-
-						boolean isEndDeferred = n instanceof GoDefer;
-						isDeferredCallee = false;
-						if (isMatching(graph, start, isStartDeferred, n, isEndDeferred)) {
-							for (Call c : calls)
-								if (c instanceof UnresolvedCall) {
-									if (tool.getCallSites(cm).contains(c)) {
-										for (Statement e : interCFG.getEntrypoints())
-											if (checkCalleesRecursive(tool, interCFG, e, seen)) {
-												/*
-												 * if (computeGraph) {
-												 * ReadWriteNode node = new
-												 * ReadWriteNode(tmpGraph, n);
-												 * tmpGraph.addNode(node);
-												 * tmpGraph.addEdge(new
-												 * CalleeEdge(node,
-												 * destinationNode));
-												 * destinationNode = node;
-												 * isDeferredCallee = n
-												 * instanceof GoDefer;
-												 * multipleEventEmittion.add(
-												 * Pair.of(root, n)); }
-												 */
-
-												return true;
-											}
-									}
-								}
+	
+		for(Statement node : graph.getNodes()) {
+			List<Call> calls = CFGUtils.extractCallsFromStatement(firstEventEmit);
+			if(!calls.isEmpty()) 
+				for (CodeMember cm : codemembers) {	
+					if (cm instanceof VariableScopingCFG && atLeastOneCallMatchesCodeMember(calls,cm)
+						&& isExecutedAfter(graph, firstEventEmit, node)) {
+						VariableScopingCFG callCFG = (VariableScopingCFG) cm;
+						//check if contains the SetEvent, then trigger a waning
+						Set<Statement> secondEmittions = extractAllSetEventsOrEventTriggerCalls(callCFG);
+						if(!secondEmittions.isEmpty())
+							for(Statement second : secondEmittions)
+								multipleEventEmittion.add(Pair.of(firstEventEmit, containsSetEventCall(second) ? second : firstEventEmit));
+						else {  //if not found continue to check callees recursively (sub-calls)
+							Set<CodeMember> seen = new HashSet<>();
+							checkCallees(tool, graph, eventEmitter, seen, firstEventEmit);
 						}
 					}
 				}
-			}
 		}
-
 		return false;
 	}
 
-	private boolean checkCalleesRecursive(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
-					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
-							TypeEnvironment<T>>> tool,
-			CFG graph, Statement start, Set<CodeMember> seen) {
-
-		if (seen.contains(graph))
-			return false;
-		seen.add(graph);
-
-		Set<Statement> emitEventsNodes = new HashSet<>();
-		for (Statement node : graph.getNodeList()) {
-			List<Call> calls = CFGUtils.extractCallsFromStatement(node);
-			for (Call c : calls)
-				if (c.getTargetName().equals("SetEvent")
-						&& (c.getParameters().length == 2 || c.getParameters().length == 3))
-					emitEventsNodes.add(node);
+	private boolean atLeastOneCallMatchesCodeMember(List<Call> calls, CodeMember cm) {
+		for(Call c : calls) {
+			if(c.getTargetName().equals(cm.getDescriptor().getName())
+					&&  c.getParameters().length == cm.getDescriptor().getFormals().length){
+				return true;
+			}
 		}
+		return false;
+	}
 
-		for (Statement endNode : emitEventsNodes) {
-
-			/*
-			 * if (computeGraph) { ReadWriteNode node = new
-			 * ReadWriteNode(tmpGraph, endNode); tmpGraph.addNode(node);
-			 * destinationNode = node; }
-			 */
-			return true;
-		}
-
+	private void checkCallees(SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			CFG graph, Statement eventEmitter, Set<CodeMember> seen, Statement firstEventEmit) {
+		if(seen.contains(graph))
+			return;
+		else
+			seen.add(graph);
+		
 		Collection<CodeMember> codemembers = getCalleesTransitively(tool, graph);
 		for (CodeMember cm : codemembers) {
-			if(containCallToSameEventEmit.contains(cm))
-				return true; // call to a function that trigger the same emit
 			if (cm instanceof VariableScopingCFG) {
-				VariableScopingCFG interCFG = (VariableScopingCFG) cm;
-				for (Statement endNode : emitEventsNodes) {
-					if (CFGUtils.extractTargetNodeFromGraph(graph, endNode) != null)
-						for (Statement n : graph.getNodes()) {
-							List<Call> calls = CFGUtils.extractCallsFromStatement(n);
-							if (!calls.isEmpty()) {
-								for (Call c : calls)
-									if (c instanceof UnresolvedCall) {
-										if (tool.getCallSites(cm).contains(c)) {
-											for (Statement e : interCFG.getEntrypoints())
-												if (checkCalleesRecursive(tool, interCFG, e, seen)) {
-													/*
-													 * if (computeGraph) {
-													 * ReadWriteNode node = new
-													 * ReadWriteNode(tmpGraph,
-													 * e);
-													 * tmpGraph.addNode(node);
-													 * tmpGraph.addEdge(new
-													 * CalleeEdge(node,
-													 * destinationNode));
-													 * destinationNode = node; }
-													 */
-													return true;
-												}
-										}
-									}
-							}
-						}
+				VariableScopingCFG callCFG = (VariableScopingCFG) cm;
+				//check if contains the SetEvent, then trigger a waning
+				Set<Statement> secondEmittions = extractAllSetEventsOrEventTriggerCalls(callCFG);
+				if(!secondEmittions.isEmpty())
+					for(Statement second : secondEmittions)
+						multipleEventEmittion.add(Pair.of(firstEventEmit, containsSetEventCall(second) ? second : firstEventEmit));
+				else { //if not found continue to check callees recursively
+					checkCallees(tool, graph, eventEmitter, seen, firstEventEmit);
 				}
-
 			}
 		}
-		return false;
 	}
-
-	private boolean checkCallers(
-			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>,
-					SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>,
-							TypeEnvironment<T>>> tool,
-			CFG graph, Statement root, Set<CodeMember> seenCallees, Set<CodeMember> seenCallers) {
-
-		CallGraph cg = tool.getCallGraph();
-		
+	
+	
+	private void checkCallersAfterCallStatements(
+			SemanticTool<SimpleAbstractState<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>, SimpleAbstractDomain<HeapEnvironment<H>, ValueEnvironment<RegexAutomaton>, TypeEnvironment<T>>> tool,
+			CFG graph, Statement eventEmitter, Set<CodeMember> seenCallers, Statement firstEventEmit) {
+	
 		if (tool.getCallGraph().getNodes().stream().anyMatch(n -> n.getCodeMember().equals(graph))) {
 
 			Collection<CodeMember> callers = tool.getCallers(graph);
-
+			
 			for (CodeMember cm : callers) {
 				if (seenCallers.contains(cm))
-					return false;
+					return;
 				seenCallers.add(cm);
-
-				for (Call c : tool.getCallSites(graph)) {
-					if (cm instanceof VariableScopingCFG) {
-						containCallToSameEventEmit.add(cm);
+				
+				for (Call c : tool.getCallSites(graph)) { // yields calling points as start , and rerun checks recursively
+					if (cm instanceof VariableScopingCFG && c.getCFG().equals(cm)) {
 						VariableScopingCFG callerCFG = (VariableScopingCFG) cm;
 						Statement sTarget = CFGUtils.extractTargetNodeFromGraph(callerCFG, c);
 						if (sTarget != null)
-							if (interproceduralCheck(tool, callerCFG, root, sTarget, seenCallees, seenCallers)) {
-								return true;
-							}
+							checkForMultipleEmissions(tool, sTarget, callerCFG, seenCallers, firstEventEmit);
 					}
 				}
 			}
 		}
-		return false;
+		
 	}
 
-	private boolean isMatching(CFG graph, Statement startNode, boolean isStartDeferred, Statement endNode,
+	private boolean existExecutionPath(CFG graph, Statement startNode, boolean isStartDeferred, Statement endNode,
 			boolean isEndDeferred) {
 
 		if (!isStartDeferred && !isEndDeferred) {

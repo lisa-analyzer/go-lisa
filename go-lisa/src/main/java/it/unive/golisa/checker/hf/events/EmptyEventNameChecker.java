@@ -103,6 +103,8 @@ public class EmptyEventNameChecker<H extends HeapValue<H>, T extends TypeValue<T
 								else // added to be sound, but it may be a non
 										// empty combined string
 									tool.warnOn(node, "The event name may be an empty string");
+							} else if(val.isBottom()) {
+								tool.warnOn(node, "Unable to compute event name, it may be empty string");
 							}
 						}
 					}
